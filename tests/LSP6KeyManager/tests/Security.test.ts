@@ -113,6 +113,63 @@ export const testSecurityScenarios = (
       .withArgs(addressWithNoPermissions.address);
   });
 
+  it("Should revert when caller calls the lsp20VerifyCall function on the KeyManager through execute", async () => {
+    let lsp20VerifyCallPayload =
+      context.keyManager.interface.encodeFunctionData(
+        "lsp20VerifyCall",
+        [context.accounts[2].address, 0, "0xaabbccdd"] // random arguments
+      );
+
+    let executePayload = context.universalProfile.interface.encodeFunctionData(
+      "execute(uint256,address,uint256,bytes)",
+      [
+        OPERATION_TYPES.CALL,
+        context.keyManager.address,
+        0,
+        lsp20VerifyCallPayload,
+      ]
+    );
+
+    await expect(
+      context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](executePayload)
+    ).to.be.revertedWithCustomError(
+      context.keyManager,
+      "CallingLSP20FunctionsOnLSP6NotAllowed"
+    );
+  });
+
+  it("Should revert when caller calls the lsp20VerifyCallResult function on the KeyManager through execute", async () => {
+    let lsp20VerifyCallResultPayload =
+      context.keyManager.interface.encodeFunctionData(
+        "lsp20VerifyCallResult",
+        [
+          "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+          "0xaabbccdd",
+        ] // random arguments
+      );
+
+    let executePayload = context.universalProfile.interface.encodeFunctionData(
+      "execute(uint256,address,uint256,bytes)",
+      [
+        OPERATION_TYPES.CALL,
+        context.keyManager.address,
+        0,
+        lsp20VerifyCallResultPayload,
+      ]
+    );
+
+    await expect(
+      context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](executePayload)
+    ).to.be.revertedWithCustomError(
+      context.keyManager,
+      "CallingLSP20FunctionsOnLSP6NotAllowed"
+    );
+  });
+
   describe("should revert when admin with ALL PERMISSIONS try to call `renounceOwnership(...)`", () => {
     it("via `execute(...)`", async () => {
       let payload =
