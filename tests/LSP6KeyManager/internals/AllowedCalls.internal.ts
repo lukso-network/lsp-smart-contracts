@@ -166,8 +166,8 @@ export const testAllowedCallsInternals = (
       //  - reading the AllowedCalls from storage will return them lowercase
       encodedAllowedCalls = combineAllowedCalls(
         [
-          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
-          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
         ],
         [
           allowedEOA.address.toLowerCase(),
@@ -225,7 +225,6 @@ export const testAllowedCallsInternals = (
     describe("`verifyAllowedCall(...)`", () => {
       describe("when the ERC725X payload (transfer 1 LYX) is for an address listed in the allowed calls", () => {
         it("should pass", async () => {
-          console.log("encodedAllowedCalls: ", encodedAllowedCalls);
           const payload = context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
             [
@@ -309,12 +308,458 @@ export const testAllowedCallsInternals = (
     });
   });
 
-  describe.skip("`verifyAllowedCall(...)` with `rvwx` permissions per Allowed Call", () => {
-    describe("when controller has permission CALL", () => {
-      describe("when the allowed address has `w` permission (Write = CALL)", () => {
-        it("should pass when making a CALL", async () => {
-          // ...
-        });
+  describe("`verifyAllowedCall(...)` with `vcsd` permissions per Allowed Call", () => {
+    // for testing purpose, we use a random payload
+    // we are not doing integration tests to tests the effects on the TargetContract
+    // we are just testing that the `verifyAllowedCall(...)` function works as expected
+    const randomPayload = "0xcafecafe";
+
+    let targetContractValue: TargetContract,
+      targetContractCall: TargetContract,
+      targetContractStaticCall: TargetContract,
+      targetContractDelegateCall: TargetContract;
+
+    let allowedCalls: string;
+
+    before("setup AllowedCalls", async () => {
+      targetContractValue = await new TargetContract__factory(
+        context.accounts[0]
+      ).deploy();
+
+      targetContractCall = await new TargetContract__factory(
+        context.accounts[0]
+      ).deploy();
+
+      targetContractStaticCall = await new TargetContract__factory(
+        context.accounts[0]
+      ).deploy();
+
+      targetContractDelegateCall = await new TargetContract__factory(
+        context.accounts[0]
+      ).deploy();
+
+      allowedCalls = combineAllowedCalls(
+        [
+          CALLTYPE.VALUE,
+          CALLTYPE.CALL,
+          CALLTYPE.STATICCALL,
+          CALLTYPE.DELEGATECALL,
+        ],
+        [
+          targetContractValue.address,
+          targetContractCall.address,
+          targetContractStaticCall.address,
+          targetContractDelegateCall.address,
+        ],
+        ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
+        ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
+      );
+    });
+
+    describe("when controller has permission CALL + some AllowedCalls + does `ERC725X.execute(...)` with `operationType == CALL`", () => {
+      let controller: SignerWithAddress;
+
+      let permissionKeys: string[];
+      let permissionValues: string[];
+
+      before("setup permissions", async () => {
+        controller = context.accounts[1];
+
+        permissionKeys = [
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            controller.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            controller.address.substring(2),
+        ];
+
+        permissionValues = [combinePermissions(PERMISSIONS.CALL), allowedCalls];
+
+        await setupKeyManagerHelper(context, permissionKeys, permissionValues);
+      });
+
+      after("reset permissions", async () => {
+        await teardownKeyManagerHelper(context, permissionKeys);
+      });
+
+      it("should fail with `NotAllowedCall` error when the allowed address has `v` permission only (`v` = VALUE)", async () => {
+        const payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            targetContractValue.address,
+            0,
+            randomPayload, // random payload
+          ]
+        );
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedCall(
+            controller.address,
+            payload
+          )
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "NotAllowedCall"
+          )
+          .withArgs(
+            controller.address,
+            targetContractValue.address,
+            randomPayload
+          );
+      });
+
+      it("should pass when the allowed address has `c` permission only (`c` = CALL)", async () => {
+        const payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            targetContractCall.address,
+            0,
+            randomPayload, // random payload
+          ]
+        );
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedCall(
+            controller.address,
+            payload
+          )
+        ).to.not.be.reverted;
+      });
+
+      it("should fail with `NotAllowedCall` error when the allowed address has `s` permission only (`s` = STATICCALL)", async () => {
+        const payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            targetContractStaticCall.address,
+            0,
+            randomPayload, // random payload
+          ]
+        );
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedCall(
+            controller.address,
+            payload
+          )
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "NotAllowedCall"
+          )
+          .withArgs(
+            controller.address,
+            targetContractStaticCall.address,
+            randomPayload
+          );
+      });
+
+      it("should fail with `NotAllowedCall` error when the allowed address has `d` permission only (`d` = DELEGATECALL)", async () => {
+        const payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            targetContractDelegateCall.address,
+            0,
+            randomPayload, // random payload
+          ]
+        );
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedCall(
+            controller.address,
+            payload
+          )
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "NotAllowedCall"
+          )
+          .withArgs(
+            controller.address,
+            targetContractDelegateCall.address,
+            randomPayload
+          );
+      });
+    });
+
+    describe("when controller has permission STATICCALL + some AllowedCalls + does `ERC725X.execute(...)` with `operationType == STATICCALL`", () => {
+      let controller: SignerWithAddress;
+
+      let permissionKeys: string[];
+      let permissionValues: string[];
+
+      before("setup permissions", async () => {
+        controller = context.accounts[1];
+
+        permissionKeys = [
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            controller.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            controller.address.substring(2),
+        ];
+
+        permissionValues = [
+          combinePermissions(PERMISSIONS.STATICCALL),
+          allowedCalls,
+        ];
+
+        const setup = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [permissionKeys, permissionValues]
+        );
+
+        await context.keyManagerInternalTester
+          .connect(context.owner)
+          ["execute(bytes)"](setup);
+      });
+
+      after("reset permissions", async () => {
+        await teardownKeyManagerHelper(context, permissionKeys);
+      });
+
+      it("should fail with `NotAllowedCall` error when the allowed address has `v` permission only (`v` = VALUE)", async () => {
+        const payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.STATICCALL,
+            targetContractValue.address,
+            0,
+            randomPayload, // random payload
+          ]
+        );
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedCall(
+            controller.address,
+            payload
+          )
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "NotAllowedCall"
+          )
+          .withArgs(
+            controller.address,
+            targetContractValue.address,
+            randomPayload
+          );
+      });
+
+      it("should fail with `NotAllowedCall` error when the allowed address has `c` permission only (`c` = CALL)", async () => {
+        const payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.STATICCALL,
+            targetContractCall.address,
+            0,
+            randomPayload, // random payload
+          ]
+        );
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedCall(
+            controller.address,
+            payload
+          )
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "NotAllowedCall"
+          )
+          .withArgs(
+            controller.address,
+            targetContractCall.address,
+            randomPayload
+          );
+      });
+
+      it("should pass when the allowed address has `s` permission only (`s` = STATICCALL)", async () => {
+        const payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.STATICCALL,
+            targetContractStaticCall.address,
+            0,
+            randomPayload, // random payload
+          ]
+        );
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedCall(
+            controller.address,
+            payload
+          )
+        ).to.not.be.reverted;
+      });
+
+      it("should fail with `NotAllowedCall` error when the allowed address has `d` permission only (`d` = DELEGATECALL)", async () => {
+        const payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.STATICCALL,
+            targetContractDelegateCall.address,
+            0,
+            randomPayload, // random payload
+          ]
+        );
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedCall(
+            controller.address,
+            payload
+          )
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "NotAllowedCall"
+          )
+          .withArgs(
+            controller.address,
+            targetContractDelegateCall.address,
+            randomPayload
+          );
+      });
+    });
+
+    describe("when controller has permission DELEGATECALL + some AllowedCalls + does `ERC725X.execute(...)` with `operationType == DELEGATECALL`", () => {
+      let controller: SignerWithAddress;
+
+      let permissionKeys: string[];
+      let permissionValues: string[];
+
+      before("setup permissions", async () => {
+        controller = context.accounts[1];
+
+        permissionKeys = [
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            controller.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            controller.address.substring(2),
+        ];
+
+        permissionValues = [
+          combinePermissions(PERMISSIONS.DELEGATECALL),
+          allowedCalls,
+        ];
+
+        const setup = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [permissionKeys, permissionValues]
+        );
+
+        await context.keyManagerInternalTester
+          .connect(context.owner)
+          ["execute(bytes)"](setup);
+      });
+
+      after("reset permissions", async () => {
+        await teardownKeyManagerHelper(context, permissionKeys);
+      });
+
+      it("should fail with `NotAllowedCall` error when the allowed address has `v` permission only (`v` = VALUE)", async () => {
+        const payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.DELEGATECALL,
+            targetContractValue.address,
+            0,
+            randomPayload, // random payload
+          ]
+        );
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedCall(
+            controller.address,
+            payload
+          )
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "NotAllowedCall"
+          )
+          .withArgs(
+            controller.address,
+            targetContractValue.address,
+            randomPayload
+          );
+      });
+
+      it("should fail with `NotAllowedCall` error when the allowed address has `c` permission only (`c` = CALL)", async () => {
+        const payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.DELEGATECALL,
+            targetContractCall.address,
+            0,
+            randomPayload, // random payload
+          ]
+        );
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedCall(
+            controller.address,
+            payload
+          )
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "NotAllowedCall"
+          )
+          .withArgs(
+            controller.address,
+            targetContractCall.address,
+            randomPayload
+          );
+      });
+
+      it("should fail with `NotAllowedCall` error when the allowed address has `s` permission only (`s` = STATICCALL)", async () => {
+        const payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.DELEGATECALL,
+            targetContractStaticCall.address,
+            0,
+            randomPayload, // random payload
+          ]
+        );
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedCall(
+            controller.address,
+            payload
+          )
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "NotAllowedCall"
+          )
+          .withArgs(
+            controller.address,
+            targetContractStaticCall.address,
+            randomPayload
+          );
+      });
+
+      it("should pass when the allowed address has `d` permission only (`d` = DELEGATECALL)", async () => {
+        const payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.DELEGATECALL,
+            targetContractDelegateCall.address,
+            0,
+            randomPayload, // random payload
+          ]
+        );
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedCall(
+            controller.address,
+            payload
+          )
+        ).to.not.be.reverted;
       });
     });
   });
@@ -693,3 +1138,17 @@ export const testAllowedCallsInternals = (
     });
   });
 };
+
+async function teardownKeyManagerHelper(
+  context: LSP6InternalsTestContext,
+  permissionsKeys: string[]
+) {
+  const teardownPayload = context.universalProfile.interface.encodeFunctionData(
+    "setData(bytes32[],bytes[])",
+    [permissionsKeys, Array(permissionsKeys.length).fill("0x")]
+  );
+
+  await context.keyManagerInternalTester
+    .connect(context.owner)
+    ["execute(bytes)"](teardownPayload);
+}
