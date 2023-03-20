@@ -102,13 +102,15 @@ export const otherTestScenarios = (
 
       const INVALID_OPERATION_TYPE = 8;
 
-      let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
-        [INVALID_OPERATION_TYPE, targetContract.address, 0, targetPayload]
-      );
-
       await expect(
-        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+        context.universalProfile
+          .connect(context.owner)
+          ["execute(uint256,address,uint256,bytes)"](
+            INVALID_OPERATION_TYPE,
+            targetContract.address,
+            0,
+            targetPayload
+          )
       ).to.be.revertedWithCustomError(
         context.universalProfile,
         "ERC725X_UnknownOperationType"
@@ -123,15 +125,15 @@ export const otherTestScenarios = (
 
       const INVALID_OPERATION_TYPE = 8;
 
-      let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
-        [INVALID_OPERATION_TYPE, targetContract.address, 0, targetPayload]
-      );
-
       await expect(
-        context.keyManager
+        context.universalProfile
           .connect(addressCanMakeCall)
-          ["execute(bytes)"](payload)
+          ["execute(uint256,address,uint256,bytes)"](
+            INVALID_OPERATION_TYPE,
+            targetContract.address,
+            0,
+            targetPayload
+          )
       ).to.be.revertedWithCustomError(
         context.universalProfile,
         "ERC725X_UnknownOperationType"

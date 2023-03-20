@@ -54,16 +54,10 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
   describe("when transferring Ownership to the target address", () => {
     it("should revert", async () => {
-      const transferOwnershipPayload =
-        context.universalProfile.interface.encodeFunctionData(
-          "transferOwnership",
-          [context.universalProfile.address]
-        );
-
       await expect(
-        context.keyManager
+        context.universalProfile
           .connect(canChangeOwner)
-          ["execute(bytes)"](transferOwnershipPayload)
+          .transferOwnership(context.universalProfile.address)
       ).to.be.revertedWithCustomError(
         context.universalProfile,
         "CannotTransferOwnershipToSelf"
@@ -89,16 +83,10 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
     describe("when caller does not have have CHANGEOWNER permission", () => {
       it("should revert", async () => {
-        let transferOwnershipPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "transferOwnership",
-            [newKeyManager.address]
-          );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(cannotChangeOwner)
-            ["execute(bytes)"](transferOwnershipPayload)
+            .transferOwnership(newKeyManager.address)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(cannotChangeOwner.address, "TRANSFEROWNERSHIP");
@@ -107,9 +95,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
     describe("when caller has ALL PERMISSIONS", () => {
       beforeEach(async () => {
-        await context.keyManager
+        await context.universalProfile
           .connect(context.owner)
-          ["execute(bytes)"](transferOwnershipPayload);
+          .transferOwnership(newKeyManager.address);
       });
 
       it("should have set newKeyManager as pendingOwner", async () => {
@@ -120,15 +108,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
       it("owner should remain the current KeyManager", async () => {
         const ownerBefore = await context.universalProfile.owner();
 
-        let transferOwnershipPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "transferOwnership",
-            [newKeyManager.address]
-          );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(context.owner)
-          ["execute(bytes)"](transferOwnershipPayload);
+          .transferOwnership(newKeyManager.address);
 
         const ownerAfter = await context.universalProfile.owner();
 
@@ -141,14 +123,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
           context.owner
         ).deploy(context.universalProfile.address);
 
-        await context.keyManager
+        await context.universalProfile
           .connect(context.owner)
-          ["execute(bytes)"](
-            context.universalProfile.interface.encodeFunctionData(
-              "transferOwnership",
-              [overridenPendingOwner.address]
-            )
-          );
+          .transferOwnership(overridenPendingOwner.address);
 
         const pendingOwner = await context.universalProfile.pendingOwner();
         expect(pendingOwner).to.equal(overridenPendingOwner.address);
@@ -160,14 +137,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
             "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
           const value = "0xabcd";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](key, value);
 
           const result = await context.universalProfile["getData(bytes32)"](
             key
@@ -186,14 +158,14 @@ export const shouldBehaveLikePermissionChangeOwner = (
             context.universalProfile.address
           );
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["execute(uint256,address,uint256,bytes)"](
+              OPERATION_TYPES.CALL,
+              recipient.address,
+              amount,
+              "0x"
+            );
 
           const recipientBalanceAfter = await provider.getBalance(
             recipient.address
@@ -213,15 +185,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
     describe("when caller has only CHANGE0OWNER permission", () => {
       beforeEach(async () => {
-        let transferOwnershipPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "transferOwnership",
-            [newKeyManager.address]
-          );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canChangeOwner)
-          ["execute(bytes)"](transferOwnershipPayload);
+          .transferOwnership(newKeyManager.address);
       });
 
       it("should have set newKeyManager as pendingOwner", async () => {
@@ -232,15 +198,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
       it("owner should remain the current KeyManager", async () => {
         const ownerBefore = await context.universalProfile.owner();
 
-        let transferOwnershipPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "transferOwnership",
-            [newKeyManager.address]
-          );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canChangeOwner)
-          ["execute(bytes)"](transferOwnershipPayload);
+          .transferOwnership(newKeyManager.address);
 
         const ownerAfter = await context.universalProfile.owner();
 
@@ -253,14 +213,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
           context.owner
         ).deploy(context.universalProfile.address);
 
-        await context.keyManager
+        await context.universalProfile
           .connect(canChangeOwner)
-          ["execute(bytes)"](
-            context.universalProfile.interface.encodeFunctionData(
-              "transferOwnership",
-              [overridenPendingOwner.address]
-            )
-          );
+          .transferOwnership(overridenPendingOwner.address);
 
         const pendingOwner = await context.universalProfile.pendingOwner();
         expect(pendingOwner).to.equal(overridenPendingOwner.address);
@@ -291,15 +246,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
         context.universalProfile.address
       );
 
-      let transferOwnershipPayload =
-        context.universalProfile.interface.encodeFunctionData(
-          "transferOwnership",
-          [newKeyManager.address]
-        );
-
-      await context.keyManager
+      await context.universalProfile
         .connect(context.owner)
-        ["execute(bytes)"](transferOwnershipPayload);
+        .transferOwnership(newKeyManager.address);
     });
 
     it("should have change the account's owner to the pendingOwner (= pending KeyManager)", async () => {

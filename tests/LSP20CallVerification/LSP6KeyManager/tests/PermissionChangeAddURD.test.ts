@@ -164,14 +164,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](
+              payloadParam.dataKey,
+              payloadParam.dataValue
+            );
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -185,14 +183,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](
+              payloadParam.dataKey,
+              payloadParam.dataValue
+            );
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -206,14 +202,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: "0x",
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](
+              payloadParam.dataKey,
+              payloadParam.dataValue
+            );
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -229,14 +223,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canAddAndChangeUniversalReceiverDelegate)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](
+              payloadParam.dataKey,
+              payloadParam.dataValue
+            );
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -250,14 +242,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canAddAndChangeUniversalReceiverDelegate)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](
+              payloadParam.dataKey,
+              payloadParam.dataValue
+            );
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -271,14 +261,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: "0x",
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canAddAndChangeUniversalReceiverDelegate)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](
+              payloadParam.dataKey,
+              payloadParam.dataValue
+            );
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -294,14 +282,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canOnlyAddUniversalReceiverDelegate)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](
+              payloadParam.dataKey,
+              payloadParam.dataValue
+            );
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -315,15 +301,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddUniversalReceiverDelegate)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](
+                payloadParam.dataKey,
+                payloadParam.dataValue
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -338,15 +322,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddUniversalReceiverDelegate)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](
+                payloadParam.dataKey,
+                payloadParam.dataValue
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -361,15 +343,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: "0x",
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddUniversalReceiverDelegate)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](
+                payloadParam.dataKey,
+                payloadParam.dataValue
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -386,15 +366,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyChangeUniversalReceiverDelegate)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](
+                payloadParam.dataKey,
+                payloadParam.dataValue
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -409,14 +387,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateD,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canOnlyChangeUniversalReceiverDelegate)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](
+              payloadParam.dataKey,
+              payloadParam.dataValue
+            );
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -431,14 +407,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: "0x",
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canOnlyChangeUniversalReceiverDelegate)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](
+              payloadParam.dataKey,
+              payloadParam.dataValue
+            );
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -457,14 +431,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](
+              payloadParam.dataKey,
+              payloadParam.dataValue
+            );
         });
         it("should NOT be allowed to ADD another UniversalReceiverDelegate key", async () => {
           const payloadParam = {
@@ -472,15 +444,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlySuperSetData)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](
+                payloadParam.dataKey,
+                payloadParam.dataValue
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -495,15 +465,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlySuperSetData)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](
+                payloadParam.dataKey,
+                payloadParam.dataValue
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -518,15 +486,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: "0x",
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlySuperSetData)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](
+                payloadParam.dataKey,
+                payloadParam.dataValue
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -545,14 +511,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](
+              payloadParam.dataKey,
+              payloadParam.dataValue
+            );
         });
 
         it("should NOT be allowed to ADD another UniversalReceiverDelegate key even when UniversalReceiverDelegate key is allowed in AllowedERC725YDataKey", async () => {
@@ -561,15 +525,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlySetData)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](
+                payloadParam.dataKey,
+                payloadParam.dataValue
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDUNIVERSALRECEIVERDELEGATE");
@@ -581,15 +543,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlySetData)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](
+                payloadParam.dataKey,
+                payloadParam.dataValue
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -604,15 +564,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: "0x",
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlySetData)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](
+                payloadParam.dataKey,
+                payloadParam.dataValue
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -631,14 +589,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](
+              payloadParam.dataKey,
+              payloadParam.dataValue
+            );
         });
 
         it("should NOT be allowed to ADD another UniversalReceiverDelegate key", async () => {
@@ -647,13 +603,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
           await expect(
-            context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload)
+            context.universalProfile
+              .connect(canOnlyCall)
+              ["setData(bytes32,bytes)"](
+                payloadParam.dataKey,
+                payloadParam.dataValue
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyCall.address, "ADDUNIVERSALRECEIVERDELEGATE");
@@ -665,13 +621,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
           await expect(
-            context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload)
+            context.universalProfile
+              .connect(canOnlyCall)
+              ["setData(bytes32,bytes)"](
+                payloadParam.dataKey,
+                payloadParam.dataValue
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyCall.address, "CHANGEUNIVERSALRECEIVERDELEGATE");
@@ -683,13 +639,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: "0x",
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [payloadParam.dataKey, payloadParam.dataValue]
-          );
-
           await expect(
-            context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload)
+            context.universalProfile
+              .connect(canOnlyCall)
+              ["setData(bytes32,bytes)"](
+                payloadParam.dataKey,
+                payloadParam.dataValue
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyCall.address, "CHANGEUNIVERSALRECEIVERDELEGATE");
@@ -718,9 +674,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKeys, payloadParam.dataValues]
           );
 
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](
+              payloadParam.dataKeys,
+              payloadParam.dataValues
+            );
 
           const result = await context.universalProfile["getData(bytes32[])"](
             payloadParam.dataKeys
@@ -748,9 +707,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKeys, payloadParam.dataValues]
           );
 
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](
+              payloadParam.dataKeys,
+              payloadParam.dataValues
+            );
 
           const result = await context.universalProfile["getData(bytes32[])"](
             payloadParam.dataKeys
@@ -778,9 +740,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKeys, payloadParam.dataValues]
           );
 
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](
+              payloadParam.dataKeys,
+              payloadParam.dataValues
+            );
 
           const result = await context.universalProfile["getData(bytes32[])"](
             payloadParam.dataKeys
@@ -806,15 +771,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canAddAndChangeUniversalReceiverDelegate)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32[],bytes[])"](
+                  payloadParam.dataKeys,
+                  payloadParam.dataValues
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -837,15 +800,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateA, "0xaabbccdd"],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canAddAndChangeUniversalReceiverDelegate)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32[],bytes[])"](
+                  payloadParam.dataKeys,
+                  payloadParam.dataValues
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -871,14 +832,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(canAddAndChangeUniversalReceiverDelegate)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32[],bytes[])"](
+                payloadParam.dataKeys,
+                payloadParam.dataValues
+              );
 
             const [result] = await context.universalProfile[
               "getData(bytes32[])"
@@ -905,9 +864,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKeys, payloadParam.dataValues]
           );
 
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](
+              payloadParam.dataKeys,
+              payloadParam.dataValues
+            );
         });
         describe("when adding multiple UniversalReceiverDelegate keys", () => {
           it("should pass", async () => {
@@ -922,14 +884,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(canOnlyAddUniversalReceiverDelegate)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32[],bytes[])"](
+                payloadParam.dataKeys,
+                payloadParam.dataValues
+              );
 
             const result = await context.universalProfile["getData(bytes32[])"](
               payloadParam.dataKeys
@@ -952,15 +912,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyAddUniversalReceiverDelegate)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32[],bytes[])"](
+                  payloadParam.dataKeys,
+                  payloadParam.dataValues
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -983,15 +941,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateA, "0xaabbccdd"],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyAddUniversalReceiverDelegate)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32[],bytes[])"](
+                  payloadParam.dataKeys,
+                  payloadParam.dataValues
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1019,14 +975,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(canOnlyChangeUniversalReceiverDelegate)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32[],bytes[])"](
+                payloadParam.dataKeys,
+                payloadParam.dataValues
+              );
 
             const result = await context.universalProfile["getData(bytes32[])"](
               payloadParam.dataKeys
@@ -1054,15 +1008,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyChangeUniversalReceiverDelegate)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32[],bytes[])"](
+                  payloadParam.dataKeys,
+                  payloadParam.dataValues
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1094,15 +1046,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyChangeUniversalReceiverDelegate)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32[],bytes[])"](
+                  payloadParam.dataKeys,
+                  payloadParam.dataValues
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1127,14 +1077,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: ["0x", "0x", "0x"],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(canOnlyChangeUniversalReceiverDelegate)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32[],bytes[])"](
+                payloadParam.dataKeys,
+                payloadParam.dataValues
+              );
 
             const result = await context.universalProfile["getData(bytes32[])"](
               payloadParam.dataKeys
@@ -1157,15 +1105,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyChangeUniversalReceiverDelegate)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32[],bytes[])"](
+                  payloadParam.dataKeys,
+                  payloadParam.dataValues
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1188,15 +1134,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateA, "0xaabbccdd"],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyAddUniversalReceiverDelegate)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32[],bytes[])"](
+                  payloadParam.dataKeys,
+                  payloadParam.dataValues
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1221,15 +1165,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlySuperSetData)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32[],bytes[])"](
+                  payloadParam.dataKeys,
+                  payloadParam.dataValues
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1251,15 +1193,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateA, "0xaabbccdd"],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlySuperSetData)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32[],bytes[])"](
+                  payloadParam.dataKeys,
+                  payloadParam.dataValues
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1287,15 +1227,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlySetData)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32[],bytes[])"](
+                  payloadParam.dataKeys,
+                  payloadParam.dataValues
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1315,15 +1253,13 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateA, "0xaabbccdd"],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlySetData)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32[],bytes[])"](
+                  payloadParam.dataKeys,
+                  payloadParam.dataValues
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1348,14 +1284,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(context.owner)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32[],bytes[])"](
+                payloadParam.dataKeys,
+                payloadParam.dataValues
+              );
           });
           describe("When adding UniversalReceiverDelegate key and one of his allowedERC725Y Data Key", () => {
             it("should pass", async () => {
@@ -1375,9 +1309,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
                   [payloadParam.dataKeys, payloadParam.dataValues]
                 );
 
-              await context.keyManager
+              await context.universalProfile
                 .connect(canOnlySetData)
-                ["execute(bytes)"](payload);
+                ["setData(bytes32[],bytes[])"](
+                  payloadParam.dataKeys,
+                  payloadParam.dataValues
+                );
 
               const result = await context.universalProfile[
                 "getData(bytes32[])"

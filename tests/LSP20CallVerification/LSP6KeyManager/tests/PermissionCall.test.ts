@@ -112,15 +112,15 @@ export const shouldBehaveLikePermissionCall = (
       it("should fail with `NotAuthorised` error when `to` is an EOA", async () => {
         const targetEOA = ethers.Wallet.createRandom().address;
 
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [OPERATION_TYPES.CALL, targetEOA, 0, "0x"]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(addressCannotMakeCallNoAllowedCalls)
-            ["execute(bytes)"](payload)
+            ["execute(uint256,address,uint256,bytes)"](
+              OPERATION_TYPES.CALL,
+              targetEOA,
+              0,
+              "0x"
+            )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotMakeCallNoAllowedCalls.address, "CALL");
@@ -137,9 +137,14 @@ export const shouldBehaveLikePermissionCall = (
         );
 
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(addressCannotMakeCallNoAllowedCalls)
-            ["execute(bytes)"](payload)
+            ["execute(uint256,address,uint256,bytes)"](
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              "0x"
+            )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotMakeCallNoAllowedCalls.address, "CALL");
@@ -150,15 +155,15 @@ export const shouldBehaveLikePermissionCall = (
       it("should fail with `NotAuthorised` error when `to` is an EOA", async () => {
         const targetEOA = ethers.Wallet.createRandom().address;
 
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [OPERATION_TYPES.CALL, targetEOA, 0, "0x"]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(addressCannotMakeCallWithAllowedCalls)
-            ["execute(bytes)"](payload)
+            ["execute(uint256,address,uint256,bytes)"](
+              OPERATION_TYPES.CALL,
+              targetEOA,
+              0,
+              "0x"
+            )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotMakeCallWithAllowedCalls.address, "CALL");
@@ -169,15 +174,15 @@ export const shouldBehaveLikePermissionCall = (
           context.accounts[0]
         ).deploy();
 
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [OPERATION_TYPES.CALL, targetContract.address, 0, "0x"]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(addressCannotMakeCallWithAllowedCalls)
-            ["execute(bytes)"](payload)
+            ["execute(uint256,address,uint256,bytes)"](
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              "0x"
+            )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotMakeCallWithAllowedCalls.address, "CALL");
@@ -188,15 +193,15 @@ export const shouldBehaveLikePermissionCall = (
       it("should fail with `NoCallsAllowed` error when `to` is an EOA", async () => {
         const targetEOA = ethers.Wallet.createRandom().address;
 
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [OPERATION_TYPES.CALL, targetEOA, 0, "0x"]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(addressCanMakeCallNoAllowedCalls)
-            ["execute(bytes)"](payload)
+            ["execute(uint256,address,uint256,bytes)"](
+              OPERATION_TYPES.CALL,
+              targetEOA,
+              0,
+              "0x"
+            )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
           .withArgs(addressCanMakeCallNoAllowedCalls.address);
@@ -207,15 +212,15 @@ export const shouldBehaveLikePermissionCall = (
           context.accounts[0]
         ).deploy();
 
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [OPERATION_TYPES.CALL, targetContract.address, 0, "0x"]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(addressCanMakeCallNoAllowedCalls)
-            ["execute(bytes)"](payload)
+            ["execute(uint256,address,uint256,bytes)"](
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              "0x"
+            )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
           .withArgs(addressCanMakeCallNoAllowedCalls.address);
@@ -228,16 +233,15 @@ export const shouldBehaveLikePermissionCall = (
           it("should fail with `NotAllowedCall` error", async () => {
             const targetEOA = ethers.Wallet.createRandom().address;
 
-            const payload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
-                [OPERATION_TYPES.CALL, targetEOA, 0, "0x"]
-              );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(addressCanMakeCallWithAllowedCalls)
-                ["execute(bytes)"](payload)
+                ["execute(uint256,address,uint256,bytes)"](
+                  OPERATION_TYPES.CALL,
+                  targetEOA,
+                  0,
+                  "0x"
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -253,16 +257,15 @@ export const shouldBehaveLikePermissionCall = (
 
         describe("when `to` is in the list of Allowed Calls", () => {
           it("should pass", async () => {
-            const payload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
-                [OPERATION_TYPES.CALL, allowedEOA, 0, "0x"]
-              );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(addressCanMakeCallWithAllowedCalls)
-                ["execute(bytes)"](payload)
+                ["execute(uint256,address,uint256,bytes)"](
+                  OPERATION_TYPES.CALL,
+                  allowedEOA,
+                  0,
+                  "0x"
+                )
             ).to.not.be.reverted;
           });
         });
@@ -275,16 +278,15 @@ export const shouldBehaveLikePermissionCall = (
               context.accounts[0]
             ).deploy();
 
-            const payload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
-                [OPERATION_TYPES.CALL, targetContract.address, 0, "0x"]
-              );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(addressCanMakeCallWithAllowedCalls)
-                ["execute(bytes)"](payload)
+                ["execute(uint256,address,uint256,bytes)"](
+                  OPERATION_TYPES.CALL,
+                  targetContract.address,
+                  0,
+                  "0x"
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -301,20 +303,14 @@ export const shouldBehaveLikePermissionCall = (
         describe("when `to` is in the list of Allowed Calls", () => {
           describe("if the `fallback()` function of `to` update some state", () => {
             it("should pass and update `to` contract's storage", async () => {
-              const payload =
-                context.universalProfile.interface.encodeFunctionData(
-                  "execute(uint256,address,uint256,bytes)",
-                  [
-                    OPERATION_TYPES.CALL,
-                    allowedContractWithFallback.address,
-                    0,
-                    "0x",
-                  ]
-                );
-
-              await context.keyManager
+              await context.universalProfile
                 .connect(addressCanMakeCallWithAllowedCalls)
-                ["execute(bytes)"](payload);
+                ["execute(uint256,address,uint256,bytes)"](
+                  OPERATION_TYPES.CALL,
+                  allowedContractWithFallback.address,
+                  0,
+                  "0x"
+                );
 
               expect(await allowedContractWithFallback.caller()).to.equal(
                 context.universalProfile.address
@@ -324,21 +320,15 @@ export const shouldBehaveLikePermissionCall = (
 
           describe("if the `fallback()` function of `to` reverts", () => {
             it("should fail and bubble the error back to the Key Manager", async () => {
-              const payload =
-                context.universalProfile.interface.encodeFunctionData(
-                  "execute(uint256,address,uint256,bytes)",
-                  [
+              await expect(
+                context.universalProfile
+                  .connect(addressCanMakeCallWithAllowedCalls)
+                  ["execute(uint256,address,uint256,bytes)"](
                     OPERATION_TYPES.CALL,
                     allowedContractWithFallbackRevert.address,
                     0,
-                    "0x",
-                  ]
-                );
-
-              await expect(
-                context.keyManager
-                  .connect(addressCanMakeCallWithAllowedCalls)
-                  ["execute(bytes)"](payload)
+                    "0x"
+                  )
               ).to.be.revertedWith("fallback reverted");
             });
           });
@@ -350,14 +340,14 @@ export const shouldBehaveLikePermissionCall = (
       it("should pass and allow to call an EOA", async () => {
         const targetEOA = ethers.Wallet.createRandom().address;
 
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [OPERATION_TYPES.CALL, targetEOA, 0, "0x"]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(addressWithSuperCall)
-          ["execute(bytes)"](payload);
+          ["execute(uint256,address,uint256,bytes)"](
+            OPERATION_TYPES.CALL,
+            targetEOA,
+            0,
+            "0x"
+          );
       });
 
       describe("when `to` is a contract", () => {
@@ -368,20 +358,14 @@ export const shouldBehaveLikePermissionCall = (
                 context.accounts[0]
               ).deploy();
 
-            const payload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContractWithFallback.address,
-                  0,
-                  "0x",
-                ]
-              );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(addressWithSuperCall)
-              ["execute(bytes)"](payload);
+              ["execute(uint256,address,uint256,bytes)"](
+                OPERATION_TYPES.CALL,
+                targetContractWithFallback.address,
+                0,
+                "0x"
+              );
 
             expect(await targetContractWithFallback.caller()).to.equal(
               context.universalProfile.address
@@ -394,21 +378,15 @@ export const shouldBehaveLikePermissionCall = (
             const targetContractWithFallbackRevert =
               await new FallbackRevert__factory(context.accounts[0]).deploy();
 
-            const payload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
-                [
+            await expect(
+              context.universalProfile
+                .connect(addressWithSuperCall)
+                ["execute(uint256,address,uint256,bytes)"](
                   OPERATION_TYPES.CALL,
                   targetContractWithFallbackRevert.address,
                   0,
-                  "0x",
-                ]
-              );
-
-            await expect(
-              context.keyManager
-                .connect(addressWithSuperCall)
-                ["execute(bytes)"](payload)
+                  "0x"
+                )
             ).to.be.revertedWith("fallback reverted");
           });
         });
@@ -476,9 +454,10 @@ export const shouldBehaveLikePermissionCall = (
         );
 
         await expect(
-          context.keyManager
-            .connect(addressCanMakeCallWithAllowedCalls)
-            ["execute(bytes)"](payload)
+          addressCanMakeCallWithAllowedCalls.sendTransaction({
+            to: context.universalProfile.address,
+            data: payload,
+          })
         )
           .to.be.revertedWithCustomError(context.keyManager, "InvalidPayload")
           .withArgs(payload);
@@ -495,14 +474,14 @@ export const shouldBehaveLikePermissionCall = (
             [argument]
           );
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["execute(uint256,address,uint256,bytes)"](
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetPayload
+            );
 
           const result = await targetContract.callStatic.getName();
           expect(result).to.equal(argument);
@@ -515,20 +494,14 @@ export const shouldBehaveLikePermissionCall = (
             let targetContractPayload =
               targetContract.interface.encodeFunctionData("getName");
 
-            let executePayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContract.address,
-                  0,
-                  targetContractPayload,
-                ]
-              );
-
-            let result = await context.keyManager
+            let result = await context.universalProfile
               .connect(context.owner)
-              .callStatic["execute(bytes)"](executePayload);
+              .callStatic["execute(uint256,address,uint256,bytes)"](
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload
+              );
 
             let [decodedResult] = abiCoder.decode(["string"], result);
             expect(decodedResult).to.equal(expectedName);
@@ -540,20 +513,14 @@ export const shouldBehaveLikePermissionCall = (
             let targetContractPayload =
               targetContract.interface.encodeFunctionData("getNumber");
 
-            let executePayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContract.address,
-                  0,
-                  targetContractPayload,
-                ]
-              );
-
-            let result = await context.keyManager
+            let result = await context.universalProfile
               .connect(context.owner)
-              .callStatic["execute(bytes)"](executePayload);
+              .callStatic["execute(uint256,address,uint256,bytes)"](
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload
+              );
 
             let [decodedResult] = abiCoder.decode(["uint256"], result);
             expect(decodedResult).to.equal(expectedNumber);
@@ -565,18 +532,15 @@ export const shouldBehaveLikePermissionCall = (
             let targetContractPayload =
               targetContract.interface.encodeFunctionData("revertCall");
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [
+            await expect(
+              context.universalProfile[
+                "execute(uint256,address,uint256,bytes)"
+              ](
                 OPERATION_TYPES.CALL,
                 targetContract.address,
                 0,
-                targetContractPayload,
-              ]
-            );
-
-            await expect(
-              context.keyManager["execute(bytes)"](payload)
+                targetContractPayload
+              )
             ).to.be.revertedWith(
               "TargetContract:revertCall: this function has reverted!"
             );
@@ -594,15 +558,15 @@ export const shouldBehaveLikePermissionCall = (
               [argument]
             );
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(addressCanMakeCallNoAllowedCalls)
-                ["execute(bytes)"](payload)
+                ["execute(uint256,address,uint256,bytes)"](
+                  OPERATION_TYPES.CALL,
+                  targetContract.address,
+                  0,
+                  targetPayload
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -621,14 +585,14 @@ export const shouldBehaveLikePermissionCall = (
               [argument]
             );
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
-            );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(addressCanMakeCallWithAllowedCalls)
-              ["execute(bytes)"](payload);
+              ["execute(uint256,address,uint256,bytes)"](
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetPayload
+              );
 
             const result = await targetContract.callStatic.getName();
             expect(result).to.equal(argument);
@@ -645,15 +609,15 @@ export const shouldBehaveLikePermissionCall = (
             [argument]
           );
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(addressCannotMakeCall)
-              ["execute(bytes)"](payload)
+              ["execute(uint256,address,uint256,bytes)"](
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetPayload
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(addressCannotMakeCall.address, "CALL");

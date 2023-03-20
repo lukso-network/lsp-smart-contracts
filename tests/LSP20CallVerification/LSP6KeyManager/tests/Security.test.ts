@@ -99,15 +99,15 @@ export const testSecurityScenarios = (
       ["New Contract Name"]
     );
 
-    let executePayload = context.universalProfile.interface.encodeFunctionData(
-      "execute(uint256,address,uint256,bytes)",
-      [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload]
-    );
-
     await expect(
-      context.keyManager
+      context.universalProfile
         .connect(addressWithNoPermissions)
-        ["execute(bytes)"](executePayload)
+        ["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          targetContract.address,
+          0,
+          targetContractPayload
+        )
     )
       .to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet")
       .withArgs(addressWithNoPermissions.address);
@@ -166,7 +166,7 @@ export const testSecurityScenarios = (
         context.universalProfile.interface.getSighash("renounceOwnership");
 
       await expect(
-        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+        context.universalProfile.connect(context.owner).renounceOwnership()
       )
         .to.be.revertedWithCustomError(
           context.keyManager,

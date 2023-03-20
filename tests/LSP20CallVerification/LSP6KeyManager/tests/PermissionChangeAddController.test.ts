@@ -20,6 +20,7 @@ import {
   combineAllowedCalls,
   encodeCompactBytesArray,
 } from "../../../utils/helpers";
+import { randomBytes } from "crypto";
 
 export const shouldBehaveLikePermissionChangeOrAddController = (
   buildContext: () => Promise<LSP6TestContext>
@@ -113,14 +114,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             newController.address.substr(2);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, PERMISSIONS.SETDATA]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](key, PERMISSIONS.SETDATA);
 
           // prettier-ignore
           const result = await context.universalProfile["getData(bytes32)"](key);
@@ -134,14 +130,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = PERMISSIONS.SETDATA;
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](key, value);
 
           // prettier-ignore
           const result = await context.universalProfile["getData(bytes32)"](key);
@@ -165,15 +156,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               16
             );
 
-            const payload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, value]
-              );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(context.owner)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32,bytes)"](key, value);
 
             // prettier-ignore
             const result = await context.universalProfile["getData(bytes32)"](key);
@@ -196,15 +181,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               16
             );
 
-            const payload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, value]
-              );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(context.owner)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32,bytes)"](key, value);
 
             // prettier-ignore
             const result = await context.universalProfile["getData(bytes32)"](key);
@@ -219,14 +198,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               "00000000000000000000000000000006";
             let value = ethers.Wallet.createRandom().address.toLowerCase();
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(context.owner)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32,bytes)"](key, value);
 
             const result = await context.universalProfile["getData(bytes32)"](
               key
@@ -241,16 +215,11 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             let randomValue = "0xcafecafecafecafecafe";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
 
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(context.owner)
-                ["execute(bytes)"](setupPayload)
+                ["setData(bytes32,bytes)"](key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -267,16 +236,11 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
 
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(context.owner)
-                ["execute(bytes)"](setupPayload)
+                ["setData(bytes32,bytes)"](key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -296,14 +260,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             let value = randomWallet.address;
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(context.owner)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32,bytes)"](key, value);
 
             // prettier-ignore
             const result = await context.universalProfile["getData(bytes32)"](key);
@@ -317,16 +276,11 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             let randomValue = "0xcafecafecafecafecafe";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
 
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(context.owner)
-                ["execute(bytes)"](setupPayload)
+                ["setData(bytes32,bytes)"](key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -343,16 +297,11 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
 
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(context.owner)
-                ["execute(bytes)"](setupPayload)
+                ["setData(bytes32,bytes)"](key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -370,14 +319,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             let value = "0x";
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(context.owner)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32,bytes)"](key, value);
 
             // prettier-ignore
             const result = await context.universalProfile["getData(bytes32)"](key);
@@ -398,15 +342,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             let value =
               "0x0000000000000000000000000000000000000000000000000000000000000008";
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(context.owner)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32,bytes)"](key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -427,14 +366,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = PERMISSIONS.SETDATA;
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](key, value);
 
           // prettier-ignore
           const result = await context.universalProfile["getData(bytes32)"](key);
@@ -448,15 +382,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = PERMISSIONS.SETDATA;
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -479,15 +408,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               16
             );
 
-            const payload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, value]
-              );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32,bytes)"](key, value);
 
             // prettier-ignore
             const result = await context.universalProfile["getData(bytes32)"](key);
@@ -510,15 +433,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               16
             );
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyAddController)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32,bytes)"](key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -535,14 +453,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               "00000000000000000000000000000006";
             let value = ethers.Wallet.createRandom().address.toLowerCase();
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32,bytes)"](key, value);
 
             const result = await context.universalProfile["getData(bytes32)"](
               key
@@ -557,16 +470,11 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             let randomValue = "0xcafecafecafecafecafe";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
 
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyAddController)
-                ["execute(bytes)"](setupPayload)
+                ["setData(bytes32,bytes)"](key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -582,17 +490,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             let randomValue =
               "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
-            // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyAddController)
-                ["execute(bytes)"](setupPayload)
+                ["setData(bytes32,bytes)"](key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -612,15 +513,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             let value = randomWallet.address;
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyAddController)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32,bytes)"](key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -638,15 +534,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             let value = "0x";
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyAddController)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32,bytes)"](key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -669,15 +560,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             let value =
               "0x0000000000000000000000000000000000000000000000000000000000000008";
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyAddController)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32,bytes)"](key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -698,15 +584,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = PERMISSIONS.SETDATA;
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -718,15 +599,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             addressWithZeroHexPermissions.address.substring(2);
           let value = PERMISSIONS.SETDATA;
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -739,14 +615,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = PERMISSIONS.SETDATA;
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](key, value);
 
           // prettier-ignore
           const result = await context.universalProfile["getData(bytes32)"](key);
@@ -770,15 +641,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               16
             );
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyEditPermissions)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32,bytes)"](key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -803,14 +669,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               32
             );
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32,bytes)"](key, value);
 
             // prettier-ignore
             const result = await context.universalProfile["getData(bytes32)"](key);
@@ -825,15 +686,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               "00000000000000000000000000000006";
             let value = ethers.Wallet.createRandom().address.toLowerCase();
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyEditPermissions)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32,bytes)"](key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -853,14 +709,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             let value = randomWallet.address;
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32,bytes)"](key, value);
 
             // prettier-ignore
             const result = await context.universalProfile["getData(bytes32)"](key);
@@ -874,16 +725,11 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             let randomValue = "0xcafecafecafecafecafe";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
 
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyEditPermissions)
-                ["execute(bytes)"](setupPayload)
+                ["setData(bytes32,bytes)"](key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -900,16 +746,11 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
 
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyEditPermissions)
-                ["execute(bytes)"](setupPayload)
+                ["setData(bytes32,bytes)"](key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -927,14 +768,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             let value = "0x";
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
-            await context.keyManager
+            await context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload);
+              ["setData(bytes32,bytes)"](key, value);
 
             // prettier-ignore
             const result = await context.universalProfile["getData(bytes32)"](key);
@@ -955,15 +791,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             let value =
               "0x0000000000000000000000000000000000000000000000000000000000000008";
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlyEditPermissions)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32,bytes)"](key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -984,15 +815,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = PERMISSIONS.SETDATA;
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlySetData)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDCONTROLLER");
@@ -1004,15 +830,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             addressWithZeroHexPermissions.address.substring(2);
           let value = PERMISSIONS.SETDATA;
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlySetData)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDCONTROLLER");
@@ -1025,15 +846,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = PERMISSIONS.SETDATA;
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlySetData)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "EDITPERMISSIONS");
@@ -1056,16 +872,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               16
             );
 
-            const payload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, value]
-              );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlySetData)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32,bytes)"](key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1090,15 +900,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               16
             );
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlySetData)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32,bytes)"](key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1116,15 +921,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             let value = "0x";
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlySetData)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32,bytes)"](key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1140,15 +940,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             "00000000000000000000000000000006";
           let value = ethers.Wallet.createRandom().address.toLowerCase();
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlySetData)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDCONTROLLER");
@@ -1163,15 +958,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = randomWallet.address;
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlySetData)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "EDITPERMISSIONS");
@@ -1190,15 +980,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             let value =
               "0x0000000000000000000000000000000000000000000000000000000000000008";
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
-            );
-
             await expect(
-              context.keyManager
+              context.universalProfile
                 .connect(canOnlySetData)
-                ["execute(bytes)"](payload)
+                ["setData(bytes32,bytes)"](key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1278,16 +1063,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           beneficiary.address.substring(2);
         const dataValue = "0x";
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [dataKey, dataValue]
-          );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](setDataPayload)
+            ["setData(bytes32,bytes)"](dataKey, dataValue)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1301,15 +1080,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           beneficiary.address.substring(2);
         const dataValue = "0x";
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [dataKey, dataValue]
-          );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](setDataPayload);
+          ["setData(bytes32,bytes)"](dataKey, dataValue);
 
         const result = await context.universalProfile["getData(bytes32)"](
           dataKey
@@ -1388,15 +1161,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1416,15 +1184,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1447,15 +1210,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1478,15 +1236,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1508,14 +1261,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyAddController)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -1532,15 +1280,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1559,15 +1302,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           let value =
             "0xffffffffcafecafecafecafecafecafecafecafecafecafeffffffff";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1595,15 +1333,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -1623,14 +1356,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -1651,14 +1379,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -1682,14 +1405,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -1713,14 +1431,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -1735,15 +1448,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1760,15 +1468,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           let value =
             "0xffffffffcafecafecafecafecafecafecafecafecafecafeffffffff";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1849,15 +1552,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xcafecafe", "0xca11ca11"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1877,15 +1575,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xcafecafe", "0xca11ca11"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1908,15 +1601,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xcafecafe", "0xca11ca11"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1939,15 +1627,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xcafecafe", "0xca11ca11"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1969,14 +1652,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xcafecafe", "0xca11ca11"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyAddController)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -1993,15 +1671,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -2020,15 +1693,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           let value =
             "0xffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -2056,15 +1724,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xcafecafe", "0xbeefbeef"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -2084,14 +1747,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xcafecafe", "0xca11ca11"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -2112,14 +1770,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xcafecafe", "0xbeefbeef"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -2143,14 +1796,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xcafecafe", "0xbeefbeef"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -2174,14 +1822,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xcafecafe", "0xbeefbeef"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -2196,15 +1839,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -2221,15 +1859,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           let value =
             "0xffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -2317,15 +1950,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -2352,15 +1980,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -2390,15 +2013,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -2428,15 +2046,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -2465,14 +2078,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyAddController)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -2489,15 +2097,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -2516,15 +2119,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           let value =
             "0xffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -2552,15 +2150,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload)
+            ["setData(bytes32,bytes)"](key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -2587,14 +2180,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -2615,14 +2203,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -2646,14 +2229,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -2677,14 +2255,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ["0xffffffff", "0xffffffff"]
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [key, value]
-        );
-
-        await context.keyManager
+        await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+          ["setData(bytes32,bytes)"](key, value);
 
         // prettier-ignore
         const result = await context.universalProfile["getData(bytes32)"](key);
@@ -2699,15 +2272,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -2724,15 +2292,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           let value =
             "0xffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -2810,15 +2373,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Another Custom Data Key")),
           ]);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -2833,15 +2391,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ERC725YDataKeys.LSP3["LSP3Profile"],
           ]);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -2854,15 +2407,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = "0x";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -2875,15 +2423,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           ).to.be.revertedWithCustomError(
             context.keyManager,
             "InvalidEncodedAllowedERC725YDataKeys"
@@ -2906,14 +2449,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Profile Key 2")),
           ]);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](key, value);
 
           // prettier-ignore
           const result = await context.universalProfile["getData(bytes32)"](key);
@@ -2929,15 +2467,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           ).to.be.revertedWithCustomError(
             context.keyManager,
             "InvalidEncodedAllowedERC725YDataKeys"
@@ -2961,14 +2494,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Another Custom Data Key")),
           ]);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](key, value);
 
           // prettier-ignore
           const result = await context.universalProfile["getData(bytes32)"](key);
@@ -2984,14 +2512,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ERC725YDataKeys.LSP3["LSP3Profile"],
           ]);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](key, value);
 
           // prettier-ignore
           const result = await context.universalProfile["getData(bytes32)"](key);
@@ -3005,14 +2528,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = "0x";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](key, value);
 
           // prettier-ignore
           const result = await context.universalProfile["getData(bytes32)"](key);
@@ -3026,15 +2544,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           ).to.be.revertedWithCustomError(
             context.keyManager,
             "InvalidEncodedAllowedERC725YDataKeys"
@@ -3055,15 +2568,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Key 2")),
           ]);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -3078,15 +2586,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           ).to.be.revertedWithCustomError(
             context.keyManager,
             "InvalidEncodedAllowedERC725YDataKeys"
@@ -3174,14 +2677,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             PERMISSIONS.SETDATA,
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](keys, values);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
@@ -3205,14 +2703,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](keys, values);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
@@ -3240,14 +2733,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](keys, values);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
@@ -3276,14 +2764,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             PERMISSIONS.SETDATA,
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canSetDataAndAddController)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](keys, values);
 
           expect(
             await context.universalProfile["getData(bytes32[])"](keys)
@@ -3325,14 +2808,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ),
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canSetDataAndAddController)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](keys, values);
 
           expect(
             await context.universalProfile["getData(bytes32[])"](keys)
@@ -3361,15 +2839,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ethers.utils.hexZeroPad(ethers.utils.hexlify(5), 16),
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canSetDataAndAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32[],bytes[])"](keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndAddController.address, "EDITPERMISSIONS");
@@ -3392,15 +2865,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canSetDataAndAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32[],bytes[])"](keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndAddController.address, "EDITPERMISSIONS");
@@ -3427,15 +2895,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canSetDataAndAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32[],bytes[])"](keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndAddController.address, "EDITPERMISSIONS");
@@ -3473,9 +2936,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           );
 
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canSetDataAndAddController)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32[],bytes[])"](dataKeys, dataValues)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -3508,14 +2971,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 16),
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canSetDataAndEditPermissions)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](keys, values);
 
           expect(
             await context.universalProfile["getData(bytes32[])"](keys)
@@ -3539,14 +2997,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canSetDataAndEditPermissions)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](keys, values);
 
           expect(
             await context.universalProfile["getData(bytes32[])"](keys)
@@ -3573,15 +3026,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             PERMISSIONS.SETDATA,
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canSetDataAndEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32[],bytes[])"](keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndEditPermissions.address, "ADDCONTROLLER");
@@ -3608,15 +3056,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ethers.utils.hexZeroPad(ethers.utils.hexlify(newArrayLength), 16),
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canSetDataAndEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32[],bytes[])"](keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndEditPermissions.address, "ADDCONTROLLER");
@@ -3641,15 +3084,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canSetDataAndEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32[],bytes[])"](keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndEditPermissions.address, "ADDCONTROLLER");
@@ -3673,21 +3111,15 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
             combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
             combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
-            combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
             ethers.utils.hexlify(
               ethers.utils.toUtf8Bytes("Random data for not allowed value")
             ),
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canSetDataAndEditPermissions)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32[],bytes[])"](keys, values)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,

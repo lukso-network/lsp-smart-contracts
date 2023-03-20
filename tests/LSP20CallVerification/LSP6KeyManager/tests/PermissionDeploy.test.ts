@@ -57,22 +57,24 @@ export const shouldBehaveLikePermissionDeploy = (
     it("should be allowed to deploy a contract TargetContract via CREATE", async () => {
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
-      let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
-        [
-          OPERATION_TYPES.CREATE, // operation type
-          ethers.constants.AddressZero, // recipient
-          0, // value
-          contractBytecodeToDeploy, // data
-        ]
+      const expectedContractAddress = await context.universalProfile.callStatic[
+        "execute(uint256,address,uint256,bytes)"
+      ](
+        OPERATION_TYPES.CREATE, // operation type
+        ethers.constants.AddressZero, // recipient
+        0, // value
+        contractBytecodeToDeploy
       );
 
-      const expectedContractAddress = await context.keyManager
-        .connect(context.owner)
-        .callStatic["execute(bytes)"](payload);
-
       await expect(
-        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+        context.universalProfile
+          .connect(context.owner)
+          ["execute(uint256,address,uint256,bytes)"](
+            OPERATION_TYPES.CREATE, // operation type
+            ethers.constants.AddressZero, // recipient
+            0, // value
+            contractBytecodeToDeploy
+          )
       )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
@@ -88,16 +90,6 @@ export const shouldBehaveLikePermissionDeploy = (
       let salt =
         "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
 
-      let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
-        [
-          OPERATION_TYPES.CREATE2,
-          ethers.constants.AddressZero,
-          0,
-          contractBytecodeToDeploy + salt.substring(2),
-        ]
-      );
-
       let preComputedAddress = calculateCreate2(
         context.universalProfile.address,
         salt,
@@ -105,7 +97,14 @@ export const shouldBehaveLikePermissionDeploy = (
       ).toLowerCase();
 
       await expect(
-        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+        context.universalProfile
+          .connect(context.owner)
+          ["execute(uint256,address,uint256,bytes)"](
+            OPERATION_TYPES.CREATE2,
+            ethers.constants.AddressZero,
+            0,
+            contractBytecodeToDeploy + salt.substring(2)
+          )
       )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
@@ -121,22 +120,24 @@ export const shouldBehaveLikePermissionDeploy = (
     it("should be allowed to deploy a contract TargetContract via CREATE", async () => {
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
-      let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
-        [
+      const expectedContractAddress = await context.universalProfile
+        .connect(addressCanDeploy)
+        .callStatic["execute(uint256,address,uint256,bytes)"](
           OPERATION_TYPES.CREATE,
           ethers.constants.AddressZero,
           0,
-          contractBytecodeToDeploy,
-        ]
-      );
-
-      const expectedContractAddress = await context.keyManager
-        .connect(addressCanDeploy)
-        .callStatic["execute(bytes)"](payload);
+          contractBytecodeToDeploy
+        );
 
       await expect(
-        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+        context.universalProfile
+          .connect(addressCanDeploy)
+          ["execute(uint256,address,uint256,bytes)"](
+            OPERATION_TYPES.CREATE,
+            ethers.constants.AddressZero,
+            0,
+            contractBytecodeToDeploy
+          )
       )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
@@ -152,16 +153,6 @@ export const shouldBehaveLikePermissionDeploy = (
       let salt =
         "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
 
-      let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
-        [
-          OPERATION_TYPES.CREATE2,
-          ethers.constants.AddressZero,
-          0,
-          contractBytecodeToDeploy + salt.substring(2),
-        ]
-      );
-
       let preComputedAddress = calculateCreate2(
         context.universalProfile.address,
         salt,
@@ -169,7 +160,14 @@ export const shouldBehaveLikePermissionDeploy = (
       ).toLowerCase();
 
       await expect(
-        context.keyManager.connect(addressCanDeploy)["execute(bytes)"](payload)
+        context.universalProfile
+          .connect(addressCanDeploy)
+          ["execute(uint256,address,uint256,bytes)"](
+            OPERATION_TYPES.CREATE2,
+            ethers.constants.AddressZero,
+            0,
+            contractBytecodeToDeploy + salt.substring(2)
+          )
       )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
@@ -186,20 +184,15 @@ export const shouldBehaveLikePermissionDeploy = (
       it("should revert when trying to deploy a contract via CREATE", async () => {
         let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
-            OPERATION_TYPES.CREATE,
-            ethers.constants.AddressZero,
-            0,
-            contractBytecodeToDeploy,
-          ]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(addressCannotDeploy)
-            ["execute(bytes)"](payload)
+            ["execute(uint256,address,uint256,bytes)"](
+              OPERATION_TYPES.CREATE,
+              ethers.constants.AddressZero,
+              0,
+              contractBytecodeToDeploy
+            )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotDeploy.address, "DEPLOY");
@@ -210,20 +203,15 @@ export const shouldBehaveLikePermissionDeploy = (
         let salt =
           "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
-            OPERATION_TYPES.CREATE2,
-            ethers.constants.AddressZero,
-            0,
-            contractBytecodeToDeploy + salt.substring(2),
-          ]
-        );
-
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(addressCannotDeploy)
-            ["execute(bytes)"](payload)
+            ["execute(uint256,address,uint256,bytes)"](
+              OPERATION_TYPES.CREATE2,
+              ethers.constants.AddressZero,
+              0,
+              contractBytecodeToDeploy + salt.substring(2)
+            )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotDeploy.address, "DEPLOY");

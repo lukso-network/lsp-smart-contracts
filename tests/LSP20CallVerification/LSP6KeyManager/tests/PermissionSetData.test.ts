@@ -7,7 +7,7 @@ import {
   ERC725JSONSchema,
 } from "@erc725/erc725.js";
 
-import { Executor, Executor__factory } from "../../../../types";
+import { ExecutorLSP20, ExecutorLSP20__factory } from "../../../../types";
 
 // constants
 import {
@@ -114,14 +114,10 @@ export const shouldBehaveLikePermissionSetData = (
             ethers.utils.toUtf8Bytes("Hello Lukso!")
           );
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](key, value);
+
           const fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32)"
           ](key);
@@ -138,14 +134,9 @@ export const shouldBehaveLikePermissionSetData = (
             ethers.utils.toUtf8Bytes("Hello Lukso!")
           );
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canSetDataWithAllowedERC725YDataKeys)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32,bytes)"](key, value);
           const fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32)"
           ](key);
@@ -162,15 +153,10 @@ export const shouldBehaveLikePermissionSetData = (
             ethers.utils.toUtf8Bytes("Hello Lukso!")
           );
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canSetDataWithoutAllowedERC725YDataKeys)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -189,13 +175,10 @@ export const shouldBehaveLikePermissionSetData = (
             ethers.utils.toUtf8Bytes("Hello Lukso!")
           );
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
           await expect(
-            context.keyManager.connect(cannotSetData)["execute(bytes)"](payload)
+            context.universalProfile
+              .connect(cannotSetData)
+              ["setData(bytes32,bytes)"](key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(cannotSetData.address, "SETDATA");
@@ -216,14 +199,10 @@ export const shouldBehaveLikePermissionSetData = (
 
           let [keys, values] = generateKeysAndValues(elements);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](keys, values);
+
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
           ](keys);
@@ -250,14 +229,9 @@ export const shouldBehaveLikePermissionSetData = (
             values.push(data.value);
           });
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](keys, values);
 
           const fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
@@ -291,14 +265,9 @@ export const shouldBehaveLikePermissionSetData = (
             values.push(data.value);
           });
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](keys, values);
 
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
@@ -319,14 +288,9 @@ export const shouldBehaveLikePermissionSetData = (
 
           let [keys, values] = generateKeysAndValues(elements);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canSetDataWithAllowedERC725YDataKeys)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](keys, values);
 
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
@@ -354,14 +318,9 @@ export const shouldBehaveLikePermissionSetData = (
             values.push(data.value);
           });
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canSetDataWithAllowedERC725YDataKeys)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](keys, values);
 
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
@@ -393,14 +352,9 @@ export const shouldBehaveLikePermissionSetData = (
             values.push(data.value);
           });
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(canSetDataWithAllowedERC725YDataKeys)
-            ["execute(bytes)"](payload);
+            ["setData(bytes32[],bytes[])"](keys, values);
 
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
@@ -421,15 +375,10 @@ export const shouldBehaveLikePermissionSetData = (
 
           let [keys, values] = generateKeysAndValues(elements);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canSetDataWithoutAllowedERC725YDataKeys)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32[],bytes[])"](keys, values)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -454,15 +403,10 @@ export const shouldBehaveLikePermissionSetData = (
             values.push(data.value);
           });
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canSetDataWithoutAllowedERC725YDataKeys)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32[],bytes[])"](keys, values)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -495,15 +439,10 @@ export const shouldBehaveLikePermissionSetData = (
             values.push(data.value);
           });
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(canSetDataWithoutAllowedERC725YDataKeys)
-              ["execute(bytes)"](payload)
+              ["setData(bytes32[],bytes[])"](keys, values)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -525,13 +464,10 @@ export const shouldBehaveLikePermissionSetData = (
 
           let [keys, values] = generateKeysAndValues(elements);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
           await expect(
-            context.keyManager.connect(cannotSetData)["execute(bytes)"](payload)
+            context.universalProfile
+              .connect(cannotSetData)
+              ["setData(bytes32[],bytes[])"](keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(cannotSetData.address, "SETDATA");
@@ -553,13 +489,10 @@ export const shouldBehaveLikePermissionSetData = (
             values.push(data.value);
           });
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
           await expect(
-            context.keyManager.connect(cannotSetData)["execute(bytes)"](payload)
+            context.universalProfile
+              .connect(cannotSetData)
+              ["setData(bytes32[],bytes[])"](keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(cannotSetData.address, "SETDATA");
@@ -589,13 +522,10 @@ export const shouldBehaveLikePermissionSetData = (
             values.push(data.value);
           });
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [keys, values]
-          );
-
           await expect(
-            context.keyManager.connect(cannotSetData)["execute(bytes)"](payload)
+            context.universalProfile
+              .connect(cannotSetData)
+              ["setData(bytes32[],bytes[])"](keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(cannotSetData.address, "SETDATA");
@@ -605,7 +535,7 @@ export const shouldBehaveLikePermissionSetData = (
   });
 
   describe("when caller is a contract", () => {
-    let contractCanSetData: Executor;
+    let contractCanSetData: ExecutorLSP20;
 
     const hardcodedDataKey =
       "0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1";
@@ -623,10 +553,9 @@ export const shouldBehaveLikePermissionSetData = (
     before(async () => {
       context = await buildContext();
 
-      contractCanSetData = await new Executor__factory(context.owner).deploy(
-        context.universalProfile.address,
-        context.keyManager.address
-      );
+      contractCanSetData = await new ExecutorLSP20__factory(
+        context.owner
+      ).deploy(context.universalProfile.address);
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -865,26 +794,15 @@ export const shouldBehaveLikePermissionSetData = (
           [key, value]
         );
 
-      let bobKeyManagerPayload =
-        bobContext.keyManager.interface.encodeFunctionData("execute(bytes)", [
-          finalSetDataPayload,
-        ]);
-
-      let aliceUniversalProfilePayload =
-        aliceContext.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
-            OPERATION_TYPES.CALL,
-            bobContext.keyManager.address,
-            0,
-            bobKeyManagerPayload,
-          ]
-        );
-
       await expect(
-        aliceContext.keyManager
+        aliceContext.universalProfile
           .connect(alice)
-          ["execute(bytes)"](aliceUniversalProfilePayload)
+          ["execute(uint256,address,uint256,bytes)"](
+            OPERATION_TYPES.CALL,
+            bobContext.universalProfile.address,
+            0,
+            finalSetDataPayload
+          )
       )
         .to.be.revertedWithCustomError(
           bobContext.keyManager,
@@ -900,15 +818,13 @@ export const shouldBehaveLikePermissionSetData = (
       );
 
       // Adding `key` to AllowedERC725YDataKeys for Alice
-      const payload = bobContext.universalProfile.interface.encodeFunctionData(
-        "setData(bytes32,bytes)",
-        [
+      await bobContext.universalProfile
+        .connect(bob)
+        ["setData(bytes32,bytes)"](
           ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
             aliceContext.universalProfile.address.substring(2),
-          encodeCompactBytesArray([key]),
-        ]
-      );
-      await bobContext.keyManager.connect(bob)["execute(bytes)"](payload);
+          encodeCompactBytesArray([key])
+        );
 
       let finalSetDataPayload =
         bobContext.universalProfile.interface.encodeFunctionData(
@@ -916,25 +832,14 @@ export const shouldBehaveLikePermissionSetData = (
           [key, value]
         );
 
-      let bobKeyManagerPayload =
-        bobContext.keyManager.interface.encodeFunctionData("execute(bytes)", [
-          finalSetDataPayload,
-        ]);
-
-      let aliceUniversalProfilePayload =
-        aliceContext.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
-            OPERATION_TYPES.CALL,
-            bobContext.keyManager.address,
-            0,
-            bobKeyManagerPayload,
-          ]
-        );
-
-      await aliceContext.keyManager
+      await aliceContext.universalProfile
         .connect(alice)
-        ["execute(bytes)"](aliceUniversalProfilePayload);
+        ["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          bobContext.universalProfile.address,
+          0,
+          finalSetDataPayload
+        );
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
       expect(result).to.equal(value);
@@ -980,12 +885,9 @@ export const shouldBehaveLikePermissionSetData = (
         );
 
         it(`should be allowed to set a disallowed key: ${key}`, async () => {
-          const payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
-
-          await context.keyManager.connect(caller)["execute(bytes)"](payload);
+          await context.universalProfile
+            .connect(caller)
+            ["setData(bytes32,bytes)"](key, value);
 
           const result = await context.universalProfile["getData(bytes32)"](
             key
@@ -1001,12 +903,9 @@ export const shouldBehaveLikePermissionSetData = (
           ethers.utils.toUtf8Bytes("some value 1")
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [AllowedERC725YDataKeys[0], value]
-        );
-
-        await context.keyManager.connect(caller)["execute(bytes)"](payload);
+        await context.universalProfile
+          .connect(caller)
+          ["setData(bytes32,bytes)"](AllowedERC725YDataKeys[0], value);
 
         const result = await context.universalProfile["getData(bytes32)"](
           AllowedERC725YDataKeys[0]
@@ -1019,12 +918,9 @@ export const shouldBehaveLikePermissionSetData = (
           ethers.utils.toUtf8Bytes("some value 2")
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [AllowedERC725YDataKeys[1], value]
-        );
-
-        await context.keyManager.connect(caller)["execute(bytes)"](payload);
+        await context.universalProfile
+          .connect(caller)
+          ["setData(bytes32,bytes)"](AllowedERC725YDataKeys[1], value);
 
         const result = await context.universalProfile["getData(bytes32)"](
           AllowedERC725YDataKeys[1]
@@ -1037,12 +933,9 @@ export const shouldBehaveLikePermissionSetData = (
           ethers.utils.toUtf8Bytes("some value 3")
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [AllowedERC725YDataKeys[2], value]
-        );
-
-        await context.keyManager.connect(caller)["execute(bytes)"](payload);
+        await context.universalProfile
+          .connect(caller)
+          ["setData(bytes32,bytes)"](AllowedERC725YDataKeys[2], value);
 
         const result = await context.universalProfile["getData(bytes32)"](
           AllowedERC725YDataKeys[2]
