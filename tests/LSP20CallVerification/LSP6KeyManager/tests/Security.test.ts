@@ -398,9 +398,12 @@ export const testSecurityScenarios = (
                 PERMISSIONS.TRANSFERVALUE,
                 PERMISSIONS.REENTRANCY
               ),
-              encodeCompactBytesArray([
-                "0xffffffff" + URDDummy.address.substring(2) + "ffffffff",
-              ]),
+              combineAllowedCalls(
+                [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
+                [URDDummy.address],
+                ["0xffffffff"],
+                ["0xffffffff"]
+              ),
             ],
           ]
         );

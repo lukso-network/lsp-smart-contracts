@@ -584,7 +584,6 @@ export const testAllowedERC725YDataKeysInternals = (
           }
         });
 
-        // TODO: investigate the Panic revert reason
         it("should revert if compactBytesArray length element is superior at 32", async () => {
           const dynamicKeyOfLength33 = ethers.utils.hexlify(
             ethers.utils.randomBytes(33)
@@ -603,7 +602,15 @@ export const testAllowedERC725YDataKeysInternals = (
               dataKeys.firstFixedKey.key,
               compactBytesArray_with_invalid_length
             )
-          ).to.be.revertedWithPanic(PANIC_CODES.ARITHMETIC_UNDER_OR_OVERFLOW);
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManagerInternalTester,
+              "InvalidEncodedAllowedERC725YDataKeys"
+            )
+            .withArgs(
+              compactBytesArray_with_invalid_length,
+              "couldn't DECODE from storage"
+            );
         });
       });
     });
@@ -847,7 +854,15 @@ export const testAllowedERC725YDataKeysInternals = (
             dataKeys.firstFixedKey.key,
             compactBytesArray_with_33_length
           )
-        ).to.be.revertedWithPanic(PANIC_CODES.ARITHMETIC_UNDER_OR_OVERFLOW);
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "InvalidEncodedAllowedERC725YDataKeys"
+          )
+          .withArgs(
+            compactBytesArray_with_33_length,
+            "couldn't DECODE from storage"
+          );
       });
     });
   });
