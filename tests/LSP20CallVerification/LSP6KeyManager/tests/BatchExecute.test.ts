@@ -496,7 +496,7 @@ export const shouldBehaveLikeBatchExecute = (
         });
 
         describe("if specifying some value for each values[index]", () => {
-          it("should revert LSP6 `_executePayload` error since `setData(...)` is not payable", async () => {
+          it("should revert with Key Manager error `CannotSendValueToSetData` when sending value while setting data", async () => {
             const amountToFund = ethers.utils.parseEther("2");
 
             const dataKeys = [
@@ -531,19 +531,10 @@ export const shouldBehaveLikeBatchExecute = (
                   [firstSetDataPayload, secondSetDataPayload],
                   { value: amountToFund }
                 )
-            ).to.be.revertedWith("LSP6: failed executing payload");
-
-            const keyManagerBalanceAfter = await ethers.provider.getBalance(
-              context.keyManager.address
+            ).to.be.revertedWithCustomError(
+              context.keyManager,
+              "CannotSendValueToSetData"
             );
-
-            expect(keyManagerBalanceAfter).to.equal(keyManagerBalanceBefore);
-
-            // the Key Manager must not hold any funds and must always forward any funds sent to it.
-            // it's balance must always be 0 after any execution
-            expect(
-              await provider.getBalance(context.keyManager.address)
-            ).to.equal(0);
           });
         });
       });
@@ -633,7 +624,10 @@ export const shouldBehaveLikeBatchExecute = (
                 ["execute(uint256[],bytes[])"](msgValues, payloads, {
                   value: totalValues,
                 })
-            ).to.be.revertedWith("LSP6: failed executing payload");
+            ).to.be.revertedWithCustomError(
+              context.keyManager,
+              "CannotSendValueToSetData"
+            );
           });
         });
       });
