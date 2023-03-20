@@ -96,44 +96,6 @@ export function generateKeysAndValues(_elementObject) {
   return [keys, values];
 }
 
-export function getRandomString() {
-  const value =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const randoms = [];
-  for (let i = 0; i < 32; i++) {
-    randoms.push(value[Math.floor(Math.random() * value.length)]);
-  }
-  return randoms.join("");
-}
-
-export function getRandomBytes32() {
-  const value =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const randoms = [];
-  for (let i = 0; i < 32; i++) {
-    randoms.push(value[Math.floor(Math.random() * value.length)]);
-  }
-  return ethers.utils.hashMessage(randoms.join(""));
-}
-
-export async function getMapAndArrayKeyValues(
-  account,
-  vaultMapKey: string,
-  arrayKey: string,
-  elementInArray: string
-) {
-  // prettier-ignore
-  let [mapValue, arrayLength, elementAddress] = await account["getData(bytes32[])"](
-        [
-            vaultMapKey, 
-            arrayKey, 
-            elementInArray
-        ]
-    );
-
-  return [mapValue, arrayLength, elementAddress];
-}
-
 export function combinePermissions(..._permissions: string[]) {
   let result: BigNumber = ethers.BigNumber.from(0);
 

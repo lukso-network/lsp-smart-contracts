@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { BytesLike } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
@@ -17,9 +18,7 @@ import { setupKeyManager } from "../../utils/fixtures";
 import {
   encodeCompactBytesArray,
   decodeCompactBytes,
-  getRandomString,
 } from "../../utils/helpers";
-import { BytesLike } from "ethers";
 
 export type TestCase = {
   datakeyToSet: BytesLike;
@@ -999,9 +998,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
     describe("when address can set any key", () => {
       describe("when setting one key", () => {
         it("should pass when setting any random key", async () => {
-          let key = ethers.utils.keccak256(
-            ethers.utils.toUtf8Bytes(getRandomString())
-          );
+          let key = ethers.utils.hexlify(ethers.utils.randomBytes(32));
           let value = ethers.utils.hexlify(
             ethers.utils.toUtf8Bytes("Some data")
           );
@@ -1025,9 +1022,9 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
       describe("when setting multiple keys", () => {
         it("should pass when setting any multiple keys", async () => {
           let keys = [
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
+            ethers.utils.hexlify(ethers.utils.randomBytes(32)),
+            ethers.utils.hexlify(ethers.utils.randomBytes(32)),
+            ethers.utils.hexlify(ethers.utils.randomBytes(32)),
           ];
           let values = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 1")),
