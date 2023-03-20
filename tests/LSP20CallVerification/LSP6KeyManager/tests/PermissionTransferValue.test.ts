@@ -23,6 +23,7 @@ import {
   LSP6_VERSION,
   PERMISSIONS,
   OPERATION_TYPES,
+  CALLTYPE,
 } from "../../../../constants";
 
 // setup
@@ -34,6 +35,7 @@ import {
   provider,
   combinePermissions,
   combineAllowedCalls,
+  combineCallTypes,
   LOCAL_PRIVATE_KEYS,
 } from "../../../utils/helpers";
 
@@ -78,14 +80,16 @@ export const shouldBehaveLikePermissionTransferValue = (
         ALL_PERMISSIONS,
         PERMISSIONS.TRANSFERVALUE,
         combineAllowedCalls(
-          ["0xffffffff"],
+          [CALLTYPE.VALUE],
           [recipient.address],
+          ["0xffffffff"],
           ["0xffffffff"]
         ),
         combinePermissions(PERMISSIONS.TRANSFERVALUE, PERMISSIONS.CALL),
         combineAllowedCalls(
-          ["0xffffffff"],
+          [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
           [recipient.address],
+          ["0xffffffff"],
           ["0xffffffff"]
         ),
         PERMISSIONS.CALL,
@@ -447,8 +451,9 @@ export const shouldBehaveLikePermissionTransferValue = (
         ALL_PERMISSIONS,
         PERMISSIONS.TRANSFERVALUE,
         combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [hardcodedRecipient, recipient],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         ),
       ];
@@ -551,8 +556,9 @@ export const shouldBehaveLikePermissionTransferValue = (
         ALL_PERMISSIONS,
         PERMISSIONS.TRANSFERVALUE,
         combineAllowedCalls(
-          ["0xffffffff"],
+          [CALLTYPE.VALUE],
           [aliceContext.universalProfile.address],
+          ["0xffffffff"],
           ["0xffffffff"]
         ),
       ];
@@ -682,13 +688,21 @@ export const shouldBehaveLikePermissionTransferValue = (
         combinePermissions(PERMISSIONS.SUPER_TRANSFERVALUE, PERMISSIONS.CALL),
         // restriction = only a specific address (e.g: an LSP7 contract)
         combineAllowedCalls(
-          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
+          // TODO: we set the bits for both TRANSFERVALUE + CALL in this test.
+          // is the bit for TRANSFERVALUE required as well? (since the controller has SUPER_TRANSFERVALUE)
+          [
+            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+          ],
           [
             lsp7Token.address,
             targetContract.address,
             lyxRecipientEOA,
             lyxRecipientContract.address,
           ],
+          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         ),
       ];
@@ -1011,8 +1025,11 @@ export const shouldBehaveLikePermissionTransferValue = (
       const permissionsValues = [
         combinePermissions(PERMISSIONS.TRANSFERVALUE, PERMISSIONS.SUPER_CALL),
         combineAllowedCalls(
-          ["0xffffffff"],
+          // TODO: we set the bits for both TRANSFERVALUE + CALL in this test.
+          // is the bit for CALL required as well? (since the controller has SUPER_CALL)
+          [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
           [allowedAddress.address],
+          ["0xffffffff"],
           ["0xffffffff"]
         ),
       ];
@@ -1265,8 +1282,12 @@ export const shouldBehaveLikePermissionTransferValue = (
           PERMISSIONS.SUPER_CALL
         ),
         combineAllowedCalls(
-          ["0xffffffff"],
+          // TODO: we set the bits for both TRANSFERVALUE + CALL in this test.
+          // are both bits required to be set?
+          // since the controller already has permissions SUPER_TRANSFERVALUE + SUPER_CALL
+          [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
           [allowedAddress.address],
+          ["0xffffffff"],
           ["0xffffffff"]
         ),
       ];

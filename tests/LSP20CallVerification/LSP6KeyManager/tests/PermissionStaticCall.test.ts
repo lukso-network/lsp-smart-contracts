@@ -9,6 +9,7 @@ import {
   ALL_PERMISSIONS,
   PERMISSIONS,
   OPERATION_TYPES,
+  CALLTYPE,
 } from "../../../../constants";
 
 // setup
@@ -16,7 +17,11 @@ import { LSP6TestContext } from "../../../utils/context";
 import { setupKeyManager } from "../../../utils/fixtures";
 
 // helpers
-import { abiCoder, combineAllowedCalls } from "../../../utils/helpers";
+import {
+  abiCoder,
+  combineAllowedCalls,
+  combineCallTypes,
+} from "../../../utils/helpers";
 
 export const shouldBehaveLikePermissionStaticCall = (
   buildContext: () => Promise<LSP6TestContext>
@@ -57,8 +62,9 @@ export const shouldBehaveLikePermissionStaticCall = (
       ALL_PERMISSIONS,
       PERMISSIONS.STATICCALL,
       combineAllowedCalls(
-        ["0xffffffff"],
+        [combineCallTypes(CALLTYPE.READ, CALLTYPE.VALUE)],
         [targetContract.address],
+        ["0xffffffff"],
         ["0xffffffff"]
       ),
       PERMISSIONS.SETDATA,
@@ -218,11 +224,12 @@ export const shouldBehaveLikePermissionStaticCall = (
       const permissionValues = [
         PERMISSIONS.STATICCALL,
         combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.READ, CALLTYPE.READ],
           [
             allowedTargetContracts[0].address,
             allowedTargetContracts[1].address,
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         ),
       ];
@@ -434,11 +441,12 @@ export const shouldBehaveLikePermissionStaticCall = (
       const permissionValues = [
         PERMISSIONS.SUPER_STATICCALL,
         combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          ["00000004", "00000004"],
           [
             allowedTargetContracts[0].address,
             allowedTargetContracts[1].address,
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         ),
       ];

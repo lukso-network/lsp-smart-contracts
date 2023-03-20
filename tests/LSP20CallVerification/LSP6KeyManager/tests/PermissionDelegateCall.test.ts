@@ -12,6 +12,7 @@ import {
   ALL_PERMISSIONS,
   PERMISSIONS,
   OPERATION_TYPES,
+  CALLTYPE,
 } from "../../../../constants";
 
 // setup
@@ -198,11 +199,12 @@ export const shouldBehaveLikePermissionDelegateCall = (
       const permissionValues = [
         PERMISSIONS.SUPER_DELEGATECALL,
         combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.EXECUTE, CALLTYPE.EXECUTE],
           [
             allowedDelegateCallContracts[0].address,
             allowedDelegateCallContracts[1].address,
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         ),
       ];

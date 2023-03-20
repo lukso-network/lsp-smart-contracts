@@ -14,6 +14,7 @@ import {
   ERC725YDataKeys,
   OPERATION_TYPES,
   PERMISSIONS,
+  CALLTYPE,
 } from "../../../../constants";
 
 // setup
@@ -24,6 +25,7 @@ import { setupKeyManagerHelper } from "../../../utils/fixtures";
 import {
   combinePermissions,
   combineAllowedCalls,
+  combineCallTypes,
 } from "../../../utils/helpers";
 
 export const testAllowedCallsInternals = (
@@ -39,8 +41,9 @@ export const testAllowedCallsInternals = (
     describe("when passing a compact bytes array with 1 element", () => {
       it("should return `true` if element is 28 bytes long", async () => {
         const allowedCalls = combineAllowedCalls(
-          ["0xffffffff"],
+          [CALLTYPE.VALUE],
           [context.accounts[5].address],
+          ["0xffffffff"],
           ["0xffffffff"]
         );
 
@@ -92,12 +95,13 @@ export const testAllowedCallsInternals = (
     describe("when passing a compact bytes array with 3 x elements", () => {
       it("should pass if all elements are 28 bytes long", async () => {
         const allowedCalls = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             context.accounts[5].address,
             context.accounts[6].address,
             context.accounts[7].address,
           ],
+          ["0xffffffff", "0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff", "0xffffffff"]
         );
 
@@ -111,12 +115,13 @@ export const testAllowedCallsInternals = (
 
       it("should fail if one of the element is not 28 bytes long", async () => {
         const allowedCalls = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             context.accounts[5].address,
             ethers.utils.hexlify(ethers.utils.randomBytes(27)),
             context.accounts[7].address,
           ],
+          ["0xffffffff", "0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         );
 
@@ -157,8 +162,15 @@ export const testAllowedCallsInternals = (
       ).deploy();
 
       encodedAllowedCalls = combineAllowedCalls(
+        [
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+        ],
+        [
+          allowedEOA.address.toLowerCase(),
+          allowedTargetContract.address.toLowerCase(),
+        ],
         ["0xffffffff", "0xffffffff"],
-        [allowedEOA.address, allowedTargetContract.address],
         ["0xffffffff", "0xffffffff"]
       );
 
@@ -626,8 +638,13 @@ export const testAllowedCallsInternals = (
         ALL_PERMISSIONS,
         combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
         combineAllowedCalls(
-          ["0xffffffff"],
+          // we do not consider the first 4 bytes (32 bits) of the allowed call
+          // as they are for the call types
+          // the test below should revert regardless of the call type
+          // TODO: is this the correct behaviour?
+          ["0x00000000"],
           ["0xffffffffffffffffffffffffffffffffffffffff"],
+          ["0xffffffff"],
           ["0xffffffff"]
         ),
       ];

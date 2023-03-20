@@ -12,6 +12,7 @@ import {
   OPERATION_TYPES,
   LSP6_VERSION,
   PERMISSIONS,
+  CALLTYPE,
 } from "../../../../constants";
 
 // setup
@@ -55,13 +56,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
       ALL_PERMISSIONS,
       PERMISSIONS.CALL,
       combineAllowedCalls(
-        ["0xffffffff"],
+        [CALLTYPE.WRITE],
         [targetContract.address],
+        ["0xffffffff"],
         ["0xffffffff"]
       ),
       combineAllowedCalls(
-        ["0xffffffff"],
+        [CALLTYPE.WRITE],
         [targetContract.address],
+        ["0xffffffff"],
         ["0xffffffff"]
       ),
     ];
