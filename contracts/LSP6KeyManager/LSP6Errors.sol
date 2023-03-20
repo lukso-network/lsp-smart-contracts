@@ -152,3 +152,8 @@ error CallerIsNotTheTarget(address caller);
  * @dev reverts when sending value to the `setData(..)` functions
  */
 error CannotSendValueToSetData();
+
+/**
+ * @dev reverts when calling LSP20 functions on the KeyManager through execute(..)
+ */
+error CallingLSP20FunctionsOnLSP6NotAllowed();

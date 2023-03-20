@@ -9,7 +9,7 @@ import {
   TargetContract,
   TargetContract__factory,
   UniversalReceiverDelegateDataUpdater__factory,
-} from "../../../types";
+} from "../../../../types";
 
 // constants
 import {
@@ -19,11 +19,11 @@ import {
   OPERATION_TYPES,
   LSP6_VERSION,
   PERMISSIONS,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
 
 // helpers
 import {
@@ -33,7 +33,7 @@ import {
   LOCAL_PRIVATE_KEYS,
   combineAllowedCalls,
   encodeCompactBytesArray,
-} from "../../utils/helpers";
+} from "../../../utils/helpers";
 
 export const testSecurityScenarios = (
   buildContext: () => Promise<LSP6TestContext>
@@ -99,15 +99,15 @@ export const testSecurityScenarios = (
       ["New Contract Name"]
     );
 
-    let executePayload = context.universalProfile.interface.encodeFunctionData(
-      "execute(uint256,address,uint256,bytes)",
-      [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload]
-    );
-
     await expect(
-      context.keyManager
+      context.universalProfile
         .connect(addressWithNoPermissions)
-        ["execute(bytes)"](executePayload)
+        ["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          targetContract.address,
+          0,
+          targetContractPayload
+        )
     )
       .to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet")
       .withArgs(addressWithNoPermissions.address);
@@ -120,20 +120,15 @@ export const testSecurityScenarios = (
         [context.accounts[2].address, 0, "0xaabbccdd"] // random arguments
       );
 
-    let executePayload = context.universalProfile.interface.encodeFunctionData(
-      "execute(uint256,address,uint256,bytes)",
-      [
-        OPERATION_TYPES.CALL,
-        context.keyManager.address,
-        0,
-        lsp20VerifyCallPayload,
-      ]
-    );
-
     await expect(
-      context.keyManager
+      context.universalProfile
         .connect(context.owner)
-        ["execute(bytes)"](executePayload)
+        ["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          context.keyManager.address,
+          0,
+          lsp20VerifyCallPayload
+        )
     ).to.be.revertedWithCustomError(
       context.keyManager,
       "CallingLSP20FunctionsOnLSP6NotAllowed"
@@ -150,20 +145,15 @@ export const testSecurityScenarios = (
         ] // random arguments
       );
 
-    let executePayload = context.universalProfile.interface.encodeFunctionData(
-      "execute(uint256,address,uint256,bytes)",
-      [
-        OPERATION_TYPES.CALL,
-        context.keyManager.address,
-        0,
-        lsp20VerifyCallResultPayload,
-      ]
-    );
-
     await expect(
-      context.keyManager
+      context.universalProfile
         .connect(context.owner)
-        ["execute(bytes)"](executePayload)
+        ["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          context.keyManager.address,
+          0,
+          lsp20VerifyCallResultPayload
+        )
     ).to.be.revertedWithCustomError(
       context.keyManager,
       "CallingLSP20FunctionsOnLSP6NotAllowed"
@@ -176,7 +166,7 @@ export const testSecurityScenarios = (
         context.universalProfile.interface.getSighash("renounceOwnership");
 
       await expect(
-        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+        context.universalProfile.connect(context.owner).renounceOwnership()
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
