@@ -713,7 +713,7 @@ export const EventSignatures = {
      *
      * signature = keccak256('VerifiedCall(address,uint256,bytes4)')
      */
-    Executed:
+    VerifiedCall:
       "0xa54458b75709e42f79700ffb6cfc57c7e224d8a77a52c457ee7ecb8e22636280",
   },
   LSP7: {
