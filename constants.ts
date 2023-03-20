@@ -203,6 +203,16 @@ export const ERC725YDataKeys = {
 export const LSP6_VERSION: number = 6;
 
 /**
+ * @dev The types of calls for AllowedCalls
+ */
+export const CALLTYPE = {
+  VALUE: "0x00000001", // TRANSFER VALUE
+  WRITE: "0x00000002", // CALL
+  READ: "0x00000004", // STATIC CALL
+  EXECUTE: "0x00000008", // DELEGATE CALL
+};
+
+/**
  * @dev `bytes32` hex value for all the LSP6 permissions excluding REENTRANCY, DELEGATECALL and SUPER_DELEGATECALL for security (these should be set manually)
  */
 export const ALL_PERMISSIONS: string =
@@ -380,8 +390,8 @@ export const Errors = {
       error: "NoERC725YDataKeysAllowed(address)",
       message: "LSP6: caller has no AllowedERC725YDataKeys",
     },
-    "0x4f0dfdda": {
-      error: "InvalidEncodedAllowedERC725YDataKeys(bytes)",
+    "0xae6cbd37": {
+      error: "InvalidEncodedAllowedERC725YDataKeys(bytes,string)",
       message:
         "LSP6: Invalid Encoding for the Compact Bytes Array of Allowed ERC725Y Data Keys.",
     },

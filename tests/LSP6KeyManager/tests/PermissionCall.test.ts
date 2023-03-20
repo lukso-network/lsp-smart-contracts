@@ -19,6 +19,7 @@ import {
   PERMISSIONS,
   LSP6_VERSION,
   OPERATION_TYPES,
+  CALLTYPE,
 } from "../../../constants";
 
 // setup
@@ -86,12 +87,13 @@ export const shouldBehaveLikePermissionCall = (
       ];
 
       const allowedCallsValues = combineAllowedCalls(
-        ["0xffffffff", "0xffffffff", "0xffffffff"],
+        [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
         [
           allowedEOA,
           allowedContractWithFallback.address,
           allowedContractWithFallbackRevert.address,
         ],
+        ["0xffffffff", "0xffffffff", "0xffffffff"],
         ["0xffffffff", "0xffffffff", "0xffffffff"]
       );
 
@@ -453,8 +455,9 @@ export const shouldBehaveLikePermissionCall = (
         PERMISSIONS.CALL,
         PERMISSIONS.SETDATA,
         combineAllowedCalls(
-          ["0xffffffff"],
+          [CALLTYPE.WRITE],
           [targetContract.address],
+          ["0xffffffff"],
           ["0xffffffff"]
         ),
       ];

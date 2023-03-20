@@ -8,6 +8,7 @@ import {
   ALL_PERMISSIONS,
   PERMISSIONS,
   INTERFACE_IDS,
+  CALLTYPE,
 } from "../../../constants";
 
 // setup
@@ -1257,11 +1258,13 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
         PERMISSIONS.CALL,
         PERMISSIONS.CALL,
         combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          // allow the beneficiary to transfer value to addresses 0xcafe... and 0xbeef...
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             "0xcafecafecafecafecafecafecafecafecafecafe",
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         ),
         "0xbadbadbadbad",
@@ -1358,11 +1361,13 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
         PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.EDITPERMISSIONS,
         combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          // allow the beneficiary to transfer value to addresses 0xcafe... and 0xbeef...
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             "0xcafecafecafecafecafecafecafecafecafecafe",
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         ),
         "0x11223344",
@@ -1380,11 +1385,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           beneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             "0xcafecafecafecafecafecafecafecafecafecafe",
             "0xca11ca11ca11ca11ca11ca11ca11ca11ca11ca11",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         );
 
@@ -1407,12 +1413,15 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           invalidBeneficiary.address.substring(2);
 
+        // try to set for the invalidBeneficiary some allowed calls
+        // that allow it to transfer value to addresses 0xcafe... and 0xbeef...
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             "0xcafecafecafecafecafecafecafecafecafecafe",
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         );
 
@@ -1439,11 +1448,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero32Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             "0xcafecafecafecafecafecafecafecafecafecafe",
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         );
 
@@ -1470,11 +1480,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero40Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             "0xcafecafecafecafecafecafecafecafecafecafe",
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         );
 
@@ -1499,12 +1510,15 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           newController.address.substr(2);
 
+        // set for the newController some allowed calls
+        // that allow it to transfer value to addresses 0xcafe... and 0xbeef...
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             "0xcafecafecafecafecafecafecafecafecafecafe",
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         );
 
@@ -1557,7 +1571,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             newController.address.substr(2);
 
           let value =
-            "0xffffffffcafecafecafecafecafecafecafecafecafecafeffffffff";
+            "0x00000001cafecafecafecafecafecafecafecafecafecafeffffffffffffffff";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
@@ -1586,12 +1600,15 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           newController.address.substr(2);
 
+        // try to set for the newController some allowed calls
+        // that allow it to transfer value to addresses 0xcafe... and 0xbeef...
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             "0xcafecafecafecafecafecafecafecafecafecafe",
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         );
 
@@ -1614,12 +1631,16 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           beneficiary.address.substring(2);
 
+        // edit the allowed calls of the beneficiary
+        // still transfering values to 2 x addresses
+        // change 2nd address 0xbeef... to 0xf00d...
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             "0xcafecafecafecafecafecafecafecafecafecafe",
-            "0xca11ca11ca11ca11ca11ca11ca11ca11ca11ca11",
+            "0xf00df00df00df00df00df00df00df00df00df00d",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         );
 
@@ -1642,12 +1663,14 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           invalidBeneficiary.address.substring(2);
 
+        // set some allowed calls for the beneficiary
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             "0xcafecafecafecafecafecafecafecafecafecafe",
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         );
 
@@ -1674,11 +1697,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero32Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             "0xcafecafecafecafecafecafecafecafecafecafe",
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         );
 
@@ -1705,11 +1729,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero40Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             "0xcafecafecafecafecafecafecafecafecafecafe",
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff"]
         );
 
@@ -1758,7 +1783,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             beneficiary.address.substring(2);
 
           let value =
-            "0xffffffffcafecafecafecafecafecafecafecafecafecafeffffffff";
+            "0x00000001cafecafecafecafecafecafecafecafecafecafeffffffffffffffff";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
@@ -1819,11 +1844,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
         PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.EDITPERMISSIONS,
         combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xcafecafe", "0xbeefbeef"]
         ),
         "0x11223344",
@@ -1841,12 +1867,14 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           beneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          // allow beneficiary to make a CALL to only function selectors 0xcafecafe and 0xf00df00d
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
-          ["0xcafecafe", "0xca11ca11"]
+          ["0xffffffff", "0xffffffff"],
+          ["0xcafecafe", "0xf00df00d"]
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
@@ -1869,12 +1897,14 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           invalidBeneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          // allow beneficiary to make a CALL to only function selectors 0xcafecafe and 0xf00df00d
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
-          ["0xcafecafe", "0xca11ca11"]
+          ["0xffffffff", "0xffffffff"],
+          ["0xcafecafe", "0xf00df00d"]
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
@@ -1900,11 +1930,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero32Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xcafecafe", "0xca11ca11"]
         );
 
@@ -1931,11 +1962,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero40Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xcafecafe", "0xca11ca11"]
         );
 
@@ -1961,12 +1993,14 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           newController.address.substr(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          // allow beneficiary to CALL only function selectors 0xcafecafe and 0xf00df00d
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
-          ["0xcafecafe", "0xca11ca11"]
+          ["0xffffffff", "0xffffffff"],
+          ["0xcafecafe", "0xf00df00d"]
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
@@ -2018,7 +2052,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             newController.address.substr(2);
 
           let value =
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
+            "0x00000002ffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
@@ -2048,11 +2082,13 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           newController.address.substr(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          // allow beneficiary to CALL only function selectors 0xcafecafe and 0xbeefbeef
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xcafecafe", "0xbeefbeef"]
         );
 
@@ -2076,12 +2112,14 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           beneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          // allow beneficiary to CALL only function selectors 0xcafecafe and 0xbeefbeef
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
-          ["0xcafecafe", "0xca11ca11"]
+          ["0xffffffff", "0xffffffff"],
+          ["0xcafecafe", "0xbeefbeef"]
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
@@ -2104,11 +2142,13 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           invalidBeneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          // allow beneficiary to CALL only function selectors 0xcafecafe and 0xbeefbeef
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xcafecafe", "0xbeefbeef"]
         );
 
@@ -2135,11 +2175,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero32Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xcafecafe", "0xbeefbeef"]
         );
 
@@ -2166,11 +2207,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero40Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff"],
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
+          ["0xffffffff", "0xffffffff"],
           ["0xcafecafe", "0xbeefbeef"]
         );
 
@@ -2219,7 +2261,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             beneficiary.address.substring(2);
 
           let value =
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
+            "0x00000002ffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
@@ -2280,11 +2322,14 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
         PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.EDITPERMISSIONS,
         combineAllowedCalls(
-          [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
+          // allow beneficiary controller to CALL any functions
+          // on any LSP7 or ERC20 contracts
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
+          [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
           ["0xffffffff", "0xffffffff"]
         ),
         "0x11223344",
@@ -2302,17 +2347,21 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           beneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
+          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+          ],
           [
             INTERFACE_IDS.LSP7DigitalAsset,
             INTERFACE_IDS.ERC20,
-            INTERFACE_IDS.LSP8IdentifiableDigitalAsset, // try to allow interacting with NFTs
+            // add NFT standards (new LSP8 + old ERC721)
+            // in the list of allowed calls for the beneficiary controller
+            // (in addition to token contracts LSP7 + ERC20)
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
             INTERFACE_IDS.ERC721,
-          ],
-          [
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         );
@@ -2337,17 +2386,21 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           invalidBeneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
+          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+          ],
           [
             INTERFACE_IDS.LSP7DigitalAsset,
             INTERFACE_IDS.ERC20,
-            INTERFACE_IDS.LSP8IdentifiableDigitalAsset, // try to allow interacting with NFTs
+            // add NFT standards (new LSP8 + old ERC721)
+            // in the list of allowed calls for the beneficiary controller
+            // (in addition to token standards LSP7 + ERC20)
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
             INTERFACE_IDS.ERC721,
-          ],
-          [
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         );
@@ -2375,17 +2428,18 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero32Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
+          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+          ],
           [
             INTERFACE_IDS.LSP7DigitalAsset,
             INTERFACE_IDS.ERC20,
-            INTERFACE_IDS.LSP8IdentifiableDigitalAsset, // try to allow interacting with NFTs
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
             INTERFACE_IDS.ERC721,
-          ],
-          [
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         );
@@ -2413,17 +2467,18 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero40Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
+          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+          ],
           [
             INTERFACE_IDS.LSP7DigitalAsset,
             INTERFACE_IDS.ERC20,
-            INTERFACE_IDS.LSP8IdentifiableDigitalAsset, // try to allow interacting with NFTs
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
             INTERFACE_IDS.ERC721,
-          ],
-          [
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         );
@@ -2450,17 +2505,21 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           newController.address.substr(2);
 
         let value = combineAllowedCalls(
+          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+          ],
           [
             INTERFACE_IDS.LSP7DigitalAsset,
             INTERFACE_IDS.ERC20,
-            INTERFACE_IDS.LSP8IdentifiableDigitalAsset, // try to allow interacting with NFTs
+            // add NFT standards (new LSP8 + old ERC721)
+            // in the list of allowed calls for the beneficiary controller
+            // (in addition to token standards LSP7 + ERC20)
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
             INTERFACE_IDS.ERC721,
-          ],
-          [
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         );
@@ -2514,7 +2573,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             newController.address.substr(2);
 
           let value =
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
+            "0x00000002ffffffffffffffffffffffffffffffffffffffffcafecafeffffffff";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
@@ -2544,11 +2603,15 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           newController.address.substr(2);
 
         let value = combineAllowedCalls(
-          [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
+          // try to add in the list of allowed calls for the beneficiary controller
+          // the rights to CALL any LSP7 or ERC20 token contract
+          // (NB: just the AllowedCalls, not the permission CALL)
+          [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
           ["0xffffffff", "0xffffffff"]
         );
 
@@ -2572,17 +2635,21 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           beneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
+          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+          ],
           [
             INTERFACE_IDS.LSP7DigitalAsset,
             INTERFACE_IDS.ERC20,
-            INTERFACE_IDS.LSP8IdentifiableDigitalAsset, // try to allow interacting with NFTs
+            // add NFT standards (new LSP8 + old ERC721)
+            // in the list of allowed calls for the beneficiary controller
+            // (in addition to token standards LSP7 + ERC20)
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
             INTERFACE_IDS.ERC721,
-          ],
-          [
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         );
@@ -2607,11 +2674,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           invalidBeneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
-          [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
+          [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
           ["0xffffffff", "0xffffffff"]
         );
 
@@ -2638,11 +2706,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero32Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
+          [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
           ["0xffffffff", "0xffffffff"]
         );
 
@@ -2669,11 +2738,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero40Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
+          [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
           ["0xffffffff", "0xffffffff"]
         );
 
@@ -2722,7 +2792,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             beneficiary.address.substring(2);
 
           let value =
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
+            "0x00000002ffffffffffffffffffffffffffffffffffffffffcafecafeffffffff";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
@@ -2884,10 +2954,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             context.keyManager
               .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "InvalidEncodedAllowedERC725YDataKeys"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidEncodedAllowedERC725YDataKeys"
+            )
+            .withArgs(value, "couldn't VALIDATE the data value");
         });
       });
 
@@ -2938,10 +3010,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             context.keyManager
               .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "InvalidEncodedAllowedERC725YDataKeys"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidEncodedAllowedERC725YDataKeys"
+            )
+            .withArgs(value, "couldn't VALIDATE the data value");
         });
       });
     });
@@ -3035,10 +3109,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             context.keyManager
               .connect(canOnlyEditPermissions)
               ["execute(bytes)"](payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "InvalidEncodedAllowedERC725YDataKeys"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidEncodedAllowedERC725YDataKeys"
+            )
+            .withArgs(value, "couldn't VALIDATE the data value");
         });
       });
 
@@ -3087,10 +3163,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             context.keyManager
               .connect(canOnlyEditPermissions)
               ["execute(bytes)"](payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "InvalidEncodedAllowedERC725YDataKeys"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidEncodedAllowedERC725YDataKeys"
+            )
+            .withArgs(value, "couldn't VALIDATE the data value");
         });
       });
     });

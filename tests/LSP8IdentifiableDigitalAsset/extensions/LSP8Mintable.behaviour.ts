@@ -14,6 +14,7 @@ import {
   PERMISSIONS,
   ERC725YDataKeys,
   OPERATION_TYPES,
+  CALLTYPE,
 } from "../../../constants";
 import { combineAllowedCalls, combinePermissions } from "../../utils/helpers";
 
@@ -129,8 +130,9 @@ export const shouldBehaveLikeLSP8Mintable = (
           [
             combinePermissions(PERMISSIONS.CALL, PERMISSIONS.REENTRANCY),
             combineAllowedCalls(
-              ["0xffffffff"],
+              [CALLTYPE.WRITE],
               [context.lsp8Mintable.address],
+              ["0xffffffff"],
               ["0xffffffff"]
             ),
             URDTokenReentrant.address,
