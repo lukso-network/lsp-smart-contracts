@@ -322,6 +322,8 @@ export const testAllowedCallsInternals = (
     let allowedCalls: string;
 
     before("setup AllowedCalls", async () => {
+      context = await buildContext();
+
       targetContractValue = await new TargetContract__factory(
         context.accounts[0]
       ).deploy();
@@ -354,6 +356,9 @@ export const testAllowedCallsInternals = (
         ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
         ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
       );
+
+      // setup empty allowed calls
+      await setupKeyManagerHelper(context, [], []);
     });
 
     describe("when controller has permission CALL + some AllowedCalls + does `ERC725X.execute(...)` with `operationType == CALL`", () => {
@@ -374,7 +379,14 @@ export const testAllowedCallsInternals = (
 
         permissionValues = [combinePermissions(PERMISSIONS.CALL), allowedCalls];
 
-        await setupKeyManagerHelper(context, permissionKeys, permissionValues);
+        const setup = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [permissionKeys, permissionValues]
+        );
+
+        await context.keyManagerInternalTester
+          .connect(context.owner)
+          ["execute(bytes)"](setup);
       });
 
       after("reset permissions", async () => {
