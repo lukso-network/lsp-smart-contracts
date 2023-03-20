@@ -82,8 +82,8 @@ export const testSecurityScenarios = (
       combineAllowedCalls(
         // TODO: test reentrancy against the bits for the allowed calls
         [
-          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
-          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
         ],
         [signer.address, ethers.constants.AddressZero],
         ["0xffffffff", "0xffffffff"],
@@ -352,7 +352,7 @@ export const testSecurityScenarios = (
                 PERMISSIONS.REENTRANCY
               ),
               combineAllowedCalls(
-                [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
+                [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL)],
                 [URDDummy.address],
                 ["0xffffffff"],
                 ["0xffffffff"]

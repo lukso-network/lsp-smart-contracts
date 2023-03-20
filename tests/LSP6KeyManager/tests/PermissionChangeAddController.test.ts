@@ -1844,7 +1844,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
         PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.EDITPERMISSIONS,
         combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1868,7 +1868,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
         let value = combineAllowedCalls(
           // allow beneficiary to make a CALL to only function selectors 0xcafecafe and 0xf00df00d
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1898,7 +1898,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
         let value = combineAllowedCalls(
           // allow beneficiary to make a CALL to only function selectors 0xcafecafe and 0xf00df00d
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1930,7 +1930,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero32Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1962,7 +1962,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero40Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1994,7 +1994,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
         let value = combineAllowedCalls(
           // allow beneficiary to CALL only function selectors 0xcafecafe and 0xf00df00d
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2083,7 +2083,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
         let value = combineAllowedCalls(
           // allow beneficiary to CALL only function selectors 0xcafecafe and 0xbeefbeef
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2113,7 +2113,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
         let value = combineAllowedCalls(
           // allow beneficiary to CALL only function selectors 0xcafecafe and 0xbeefbeef
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2143,7 +2143,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
         let value = combineAllowedCalls(
           // allow beneficiary to CALL only function selectors 0xcafecafe and 0xbeefbeef
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2175,7 +2175,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero32Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2207,7 +2207,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero40Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2324,7 +2324,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
         combineAllowedCalls(
           // allow beneficiary controller to CALL any functions
           // on any LSP7 or ERC20 contracts
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2347,7 +2347,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           beneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2386,7 +2386,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           invalidBeneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2428,7 +2428,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero32Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2467,7 +2467,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero40Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2505,7 +2505,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           newController.address.substr(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2603,7 +2603,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           newController.address.substr(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2635,7 +2635,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           beneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2674,7 +2674,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           invalidBeneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2706,7 +2706,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero32Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -2738,7 +2738,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           zero40Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
