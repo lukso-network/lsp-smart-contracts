@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.5;
 
+// interfaces
+import {
+    ILSP20CallVerification as ILSP20
+} from "../../LSP20CallVerification/ILSP20CallVerification.sol";
+
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
@@ -37,7 +42,8 @@ import {
     InvalidEncodedAllowedCalls,
     InvalidWhitelistedCall,
     NotAuthorised,
-    InvalidPayload
+    InvalidPayload,
+    CallingLSP20FunctionsOnLSP6NotAllowed
 } from "../LSP6Errors.sol";
 
 abstract contract LSP6ExecuteModule {
@@ -118,6 +124,19 @@ abstract contract LSP6ExecuteModule {
         // --------------------
         // = 164 bytes in total
         bool isCallDataPresent = payload.length > 164;
+
+        address to = address(bytes20(payload[48:68]));
+
+        // Check to restrict controllers with execute permissions to call lsp20 functions
+        // to avoid setting the reentrancy guard to a non-valid state
+        if (payload.length >= 168 && to == address(this)) {
+            if (
+                bytes4(payload[164:168]) == ILSP20.lsp20VerifyCall.selector ||
+                bytes4(payload[164:168]) == ILSP20.lsp20VerifyCallResult.selector
+            ) {
+                revert CallingLSP20FunctionsOnLSP6NotAllowed();
+            }
+        }
 
         bool hasSuperOperation = controllerPermissions.hasPermission(superOperationPermission);
 
