@@ -19,6 +19,7 @@ import {
   OPERATION_TYPES,
   LSP6_VERSION,
   PERMISSIONS,
+  CALLTYPE,
 } from "../../../constants";
 
 // setup
@@ -33,6 +34,7 @@ import {
   LOCAL_PRIVATE_KEYS,
   combineAllowedCalls,
   encodeCompactBytesArray,
+  combineCallTypes,
 } from "../../utils/helpers";
 
 export const testSecurityScenarios = (
@@ -78,8 +80,13 @@ export const testSecurityScenarios = (
       ALL_PERMISSIONS,
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       combineAllowedCalls(
-        ["0xffffffff", "0xffffffff"],
+        // TODO: test reentrancy against the bits for the allowed calls
+        [
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+        ],
         [signer.address, ethers.constants.AddressZero],
+        ["0xffffffff", "0xffffffff"],
         ["0xffffffff", "0xffffffff"]
       ),
     ];
@@ -344,9 +351,12 @@ export const testSecurityScenarios = (
                 PERMISSIONS.TRANSFERVALUE,
                 PERMISSIONS.REENTRANCY
               ),
-              encodeCompactBytesArray([
-                "0xffffffff" + URDDummy.address.substring(2) + "ffffffff",
-              ]),
+              combineAllowedCalls(
+                [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
+                [URDDummy.address],
+                ["0xffffffff"],
+                ["0xffffffff"]
+              ),
             ],
           ]
         );

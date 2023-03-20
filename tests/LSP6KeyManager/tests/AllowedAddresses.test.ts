@@ -10,6 +10,7 @@ import {
   ERC725YDataKeys,
   OPERATION_TYPES,
   PERMISSIONS,
+  CALLTYPE,
 } from "../../../constants";
 
 // setup
@@ -23,6 +24,7 @@ import {
   getRandomAddresses,
   combinePermissions,
   combineAllowedCalls,
+  combineCallTypes,
 } from "../../utils/helpers";
 
 export const shouldBehaveLikeAllowedAddresses = (
@@ -37,6 +39,7 @@ export const shouldBehaveLikeAllowedAddresses = (
     notAllowedEOA: SignerWithAddress,
     allowedTargetContract: TargetContract,
     notAllowedTargetContract: TargetContract;
+
   const invalidEncodedAllowedCallsValue = "0xbadbadbadbad";
 
   before(async () => {
@@ -70,8 +73,12 @@ export const shouldBehaveLikeAllowedAddresses = (
     ];
 
     const encodedAllowedCalls = combineAllowedCalls(
-      ["0xffffffff", "0xffffffff"],
+      [
+        combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+        combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+      ],
       [allowedEOA.address, allowedTargetContract.address],
+      ["0xffffffff", "0xffffffff"],
       ["0xffffffff", "0xffffffff"]
     );
 

@@ -107,8 +107,8 @@ library LSP6Utils {
                     )
                 )
             );
-            // each entries in the allowedCalls (compact) array must be 28 bytes long
-            if (elementLength != 28) return false;
+            // each entries in the allowedCalls (compact) array must be 32 bytes long
+            if (elementLength != 32) return false;
             pointer += elementLength + 2;
         }
         if (pointer == allowedCallsCompacted.length) return true;

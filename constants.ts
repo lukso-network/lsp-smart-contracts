@@ -203,6 +203,16 @@ export const ERC725YDataKeys = {
 export const LSP6_VERSION: number = 6;
 
 /**
+ * @dev The types of calls for AllowedCalls
+ */
+export const CALLTYPE = {
+  VALUE: "0x00000001", // TRANSFER VALUE
+  WRITE: "0x00000002", // CALL
+  READ: "0x00000004", // STATIC CALL
+  EXECUTE: "0x00000008", // DELEGATE CALL
+};
+
+/**
  * @dev `bytes32` hex value for all the LSP6 permissions excluding REENTRANCY, DELEGATECALL and SUPER_DELEGATECALL for security (these should be set manually)
  */
 export const ALL_PERMISSIONS: string =

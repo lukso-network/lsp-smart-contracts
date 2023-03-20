@@ -19,7 +19,11 @@ import {
     _PERMISSION_STATICCALL,
     _PERMISSION_SUPER_STATICCALL,
     _PERMISSION_DELEGATECALL,
-    _PERMISSION_SUPER_DELEGATECALL
+    _PERMISSION_SUPER_DELEGATECALL,
+    _ALLOWEDCALLS_VALUE,
+    _ALLOWEDCALLS_WRITE,
+    _ALLOWEDCALLS_READ,
+    _ALLOWEDCALLS_EXECUTE
 } from "../LSP6Constants.sol";
 import {
     OPERATION_0_CALL,
@@ -132,7 +136,7 @@ abstract contract LSP6ExecuteModule {
         bytes32 permissions,
         bytes calldata payload
     ) internal view virtual {
-        bool isTransferingValue = uint256(bytes32(payload[68:100])) != 0;
+        bool isTransferringValue = uint256(bytes32(payload[68:100])) != 0;
 
         bool hasSuperTransferValue = permissions.hasPermission(_PERMISSION_SUPER_TRANSFERVALUE);
 
@@ -150,13 +154,13 @@ abstract contract LSP6ExecuteModule {
 
         bool hasSuperCall = permissions.hasPermission(_PERMISSION_SUPER_CALL);
 
-        if (isTransferingValue && !hasSuperTransferValue) {
+        if (isTransferringValue && !hasSuperTransferValue) {
             _requirePermissions(controller, permissions, _PERMISSION_TRANSFERVALUE);
         }
 
         // CHECK if we are doing an empty call, as the receive() or fallback() function
         // of the controlledContract could run some code.
-        if (!hasSuperCall && !isCallDataPresent && !isTransferingValue) {
+        if (!hasSuperCall && !isCallDataPresent && !isTransferringValue) {
             _requirePermissions(controller, permissions, _PERMISSION_CALL);
         }
 
@@ -165,10 +169,10 @@ abstract contract LSP6ExecuteModule {
         }
 
         // Skip if caller has SUPER permissions for external calls, with or without calldata (empty calls)
-        if (hasSuperCall && !isTransferingValue) return;
+        if (hasSuperCall && !isTransferringValue) return;
 
         // Skip if caller has SUPER permission for value transfers
-        if (hasSuperTransferValue && !isCallDataPresent && isTransferingValue) return;
+        if (hasSuperTransferValue && !isCallDataPresent && isTransferringValue) return;
 
         // Skip if both SUPER permissions are present
         if (hasSuperCall && hasSuperTransferValue) return;
@@ -181,54 +185,178 @@ abstract contract LSP6ExecuteModule {
         address controllerAddress,
         bytes calldata payload
     ) internal view virtual {
+        (
+            uint256 operationType,
+            address to,
+            uint256 value,
+            bytes4 selector
+        ) = _extractExecuteParameters(payload);
+
         // CHECK for ALLOWED CALLS
-        address to = address(bytes20(payload[48:68]));
-
-        bool containsFunctionCall = payload.length >= 168;
-        bytes4 selector;
-        if (containsFunctionCall) selector = bytes4(payload[164:168]);
-
         bytes memory allowedCalls = ERC725Y(controlledContract).getAllowedCallsFor(
             controllerAddress
         );
-        uint256 allowedCallsLength = allowedCalls.length;
 
-        if (allowedCallsLength == 0) {
+        if (allowedCalls.length == 0) {
             revert NoCallsAllowed(controllerAddress);
         }
 
-        bool isAllowedStandard;
-        bool isAllowedAddress;
-        bool isAllowedFunction;
+        bytes4 requiredCallTypes = _extractCallType(operationType, selector, value);
 
-        for (uint256 ii; ii < allowedCallsLength; ii += 30) {
-            if (ii + 30 > allowedCallsLength) {
+        for (uint256 ii; ii < allowedCalls.length; ii += 34) {
+            /// @dev structure of an AllowedCall
+            //
+            /// AllowedCall = 0x00200000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
+            ///
+            ///                                     0020 = hex for '32' bytes long
+            ///                                 0000000n = call type(s)
+            /// cafecafecafecafecafecafecafecafecafecafe = address
+            ///                                 5a5a5a5a = standard
+            ///                                 f1f1f1f1 = function
+
+            // CHECK that we can extract an AllowedCall
+            if (ii + 34 > allowedCalls.length) {
                 revert InvalidEncodedAllowedCalls(allowedCalls);
             }
-            bytes memory chunk = BytesLib.slice(allowedCalls, ii + 2, 28);
 
-            if (bytes28(chunk) == 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff) {
+            // extract one AllowedCall at a time
+            bytes memory allowedCall = BytesLib.slice(allowedCalls, ii + 2, 32);
+
+            // 0xxxxxxxxxffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            // (excluding the callTypes) not allowed
+            // as equivalent to whitelisting any call (= SUPER permission)
+            if (bytes28(bytes32(allowedCall) << 32) == bytes28(type(uint224).max)) {
                 revert InvalidWhitelistedCall(controllerAddress);
             }
 
-            bytes4 allowedStandard = bytes4(chunk);
-            address allowedAddress = address(bytes20(bytes28(chunk) << 32));
-            bytes4 allowedFunction = bytes4(bytes28(chunk) << 192);
-
-            isAllowedStandard =
-                allowedStandard == 0xffffffff ||
-                to.supportsERC165InterfaceUnchecked(allowedStandard);
-            isAllowedAddress =
-                allowedAddress == 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF ||
-                to == allowedAddress;
-            isAllowedFunction =
-                allowedFunction == 0xffffffff ||
-                (containsFunctionCall && (selector == allowedFunction));
-
-            if (isAllowedStandard && isAllowedAddress && isAllowedFunction) return;
+            if (
+                _isAllowedCallType(allowedCall, requiredCallTypes) &&
+                _isAllowedAddress(allowedCall, to) &&
+                _isAllowedStandard(allowedCall, to) &&
+                _isAllowedFunction(allowedCall, selector)
+            ) return;
         }
 
         revert NotAllowedCall(controllerAddress, to, selector);
+    }
+
+    /**
+     * @dev extract the bytes4 representation of a single bit for the type of call according to the `operationType`
+     * @param operationType 0 = CALL, 3 = STATICCALL or 3 = DELEGATECALL
+     * @return a bytes4 value containing a single 1 bit for the callType
+     */
+    function _extractCallType(
+        uint256 operationType,
+        bytes4 selector,
+        uint256 value
+    ) internal pure returns (bytes4) {
+        bytes4 requiredCallTypes;
+
+        if (operationType == OPERATION_0_CALL) {
+            if (
+                // CHECK if we are doing an empty call
+                (selector == bytes4(0) && value == 0) ||
+                // we do not require callType CALL
+                // if we are just transferring value without `data`
+                selector != bytes4(0)
+            ) {
+                requiredCallTypes = _ALLOWEDCALLS_WRITE;
+            }
+        }
+
+        if (operationType == OPERATION_3_STATICCALL) requiredCallTypes = _ALLOWEDCALLS_READ;
+        if (operationType == OPERATION_4_DELEGATECALL) requiredCallTypes = _ALLOWEDCALLS_EXECUTE;
+
+        // if there is value being transferred, add the extra bit
+        // for the first bit for Value Transfer in the `requiredCallTypes`
+        if (value != 0) {
+            requiredCallTypes |= _ALLOWEDCALLS_VALUE;
+        }
+
+        return requiredCallTypes;
+    }
+
+    function _extractExecuteParameters(bytes calldata executeCalldata)
+        internal
+        pure
+        returns (
+            uint256,
+            address,
+            uint256,
+            bytes4
+        )
+    {
+        uint256 operationType = uint256(bytes32(executeCalldata[4:36]));
+        address to = address(bytes20(executeCalldata[48:68]));
+        uint256 value = uint256(bytes32(executeCalldata[68:100]));
+
+        // CHECK if there is at least a 4 bytes function selector
+        bytes4 selector = executeCalldata.length >= 168
+            ? bytes4(executeCalldata[164:168])
+            : bytes4(0);
+
+        return (operationType, to, value, selector);
+    }
+
+    function _isAllowedAddress(bytes memory allowedCall, address to) internal pure returns (bool) {
+        // <offset> = 4 bytes x 8 bits = 32 bits
+        //
+        // <offset>v----------------address---------------v
+        // 0000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
+        address allowedAddress = address(bytes20(bytes32(allowedCall) << 32));
+
+        // ANY address = 0xffffffffffffffffffffffffffffffffffffffff
+        return allowedAddress == address(bytes20(type(uint160).max)) || to == allowedAddress;
+    }
+
+    function _isAllowedStandard(bytes memory allowedCall, address to) internal view returns (bool) {
+        // <offset> = 24 bytes x 8 bits = 192 bits
+        //
+        //                                                 standard
+        // <----------------<offset>---------------------->v------v
+        // 0000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
+        bytes4 allowedStandard = bytes4(bytes32(allowedCall) << 192);
+
+        // ANY Standard = 0xffffffff
+        return
+            allowedStandard == bytes4(type(uint32).max) ||
+            to.supportsERC165InterfaceUnchecked(allowedStandard);
+    }
+
+    function _isAllowedFunction(bytes memory allowedCall, bytes4 requiredFunction)
+        internal
+        pure
+        returns (bool)
+    {
+        // <offset> = 28 bytes x 8 bits = 224 bits
+        //
+        //                                                         function
+        // <------------------------<offset>---------------------->v------v
+        // 0000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
+        bytes4 allowedFunction = bytes4(bytes32(allowedCall) << 224);
+
+        bool isFunctionCall = requiredFunction != bytes4(0);
+
+        // ANY function = 0xffffffff
+        return
+            allowedFunction == bytes4(type(uint32).max) ||
+            (isFunctionCall && (requiredFunction == allowedFunction));
+    }
+
+    function _isAllowedCallType(bytes memory allowedCall, bytes4 requiredCallTypes)
+        internal
+        pure
+        returns (bool)
+    {
+        // extract callType
+        //
+        // <offset> = 0
+        //
+        // callType
+        // v------v
+        // 0000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
+        bytes4 allowedCallType = bytes4(allowedCall);
+        return (allowedCallType & requiredCallTypes == requiredCallTypes);
     }
 
     /**

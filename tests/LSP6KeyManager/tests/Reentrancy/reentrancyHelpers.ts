@@ -20,6 +20,7 @@ import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
+  CALLTYPE,
 } from "../../../../constants";
 
 // setup
@@ -360,22 +361,26 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
     ALL_PERMISSIONS,
     PERMISSIONS.CALL,
     combineAllowedCalls(
-      ["0xffffffff", "0xffffffff", "0xffffffff"],
+      // allow controller to call the 3 x addresses listed below
+      [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
       [
         reentrantContract.address,
         singleReentarncyRelayer.address,
         batchReentarncyRelayer.address,
       ],
+      ["0xffffffff", "0xffffffff", "0xffffffff"],
       ["0xffffffff", "0xffffffff", "0xffffffff"]
     ),
     PERMISSIONS.CALL,
     combineAllowedCalls(
-      ["0xffffffff", "0xffffffff", "0xffffffff"],
+      // allow controller to call the 3 x addresses listed below
+      [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
       [
         reentrantContract.address,
         singleReentarncyRelayer.address,
         batchReentarncyRelayer.address,
       ],
+      ["0xffffffff", "0xffffffff", "0xffffffff"],
       ["0xffffffff", "0xffffffff", "0xffffffff"]
     ),
   ];
@@ -656,8 +661,10 @@ export const loadTestCase = async (
         testCase.permissions,
         (testCase as TransferValueTestCase).allowedCalls
           ? combineAllowedCalls(
-              ["0xffffffff"],
+              // TODO: is the call permission enough here for this test?
+              [CALLTYPE.VALUE],
               [valueReceiverAddress],
+              ["0xffffffff"],
               ["0xffffffff"]
             )
           : "0x",
