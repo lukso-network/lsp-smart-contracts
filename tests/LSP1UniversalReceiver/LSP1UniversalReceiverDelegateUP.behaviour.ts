@@ -41,7 +41,6 @@ import {
 // fixtures
 import {
   callPayload,
-  getLSP10MapAndArrayKeysValue,
   getLSP5MapAndArrayKeysValue,
   setupKeyManager,
 } from "../utils/fixtures";
@@ -54,15 +53,43 @@ export type LSP1TestAccounts = {
   any: SignerWithAddress;
 };
 
-export const getNamedAccounts = async (): Promise<LSP1TestAccounts> => {
-  const [owner1, owner2, random, any] = await ethers.getSigners();
-  return {
-    owner1,
-    owner2,
-    random,
-    any,
-  };
-};
+/**
+ * Returns the LSP10 arraylength, elementAddress, index and interfaceId of the vault provided
+ * for the account provided.
+ */
+async function getLSP10MapAndArrayKeysValue(account, lsp9Vault) {
+  const mapValue = await account["getData(bytes32)"](
+    ethers.utils.hexConcat([
+      ERC725YDataKeys.LSP10.LSP10VaultsMap,
+      lsp9Vault.address,
+    ])
+  );
+
+  const indexInHex = "0x" + mapValue.substr(10, mapValue.length);
+  const interfaceId = mapValue.substr(0, 10);
+  const indexInNumber = ethers.BigNumber.from(indexInHex).toNumber();
+
+  const rawIndexInArray = ethers.utils.hexZeroPad(
+    ethers.utils.hexValue(indexInNumber),
+    16
+  );
+
+  const elementInArrayKey = ethers.utils.hexConcat([
+    ERC725YDataKeys.LSP10["LSP10Vaults[]"].index,
+    rawIndexInArray,
+  ]);
+
+  let arrayKey = ERC725YDataKeys.LSP10["LSP10Vaults[]"].length;
+  let [arrayLength, elementAddress] = await account["getData(bytes32[])"]([
+    arrayKey,
+    elementInArrayKey,
+  ]);
+
+  if (elementAddress != "0x") {
+    elementAddress = ethers.utils.getAddress(elementAddress);
+  }
+  return [indexInNumber, interfaceId, arrayLength, elementAddress];
+}
 
 export type LSP1DelegateTestContext = {
   accounts: LSP1TestAccounts;

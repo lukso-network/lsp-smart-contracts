@@ -42,6 +42,7 @@ export const getNamedAccounts = async (): Promise<LSP11TestAccounts> => {
     guardian3,
     guardian4,
   ] = await ethers.getSigners();
+
   return {
     owner,
     addressASelected,
