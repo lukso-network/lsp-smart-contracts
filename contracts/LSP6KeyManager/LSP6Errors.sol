@@ -155,6 +155,6 @@ error CallerIsNotTheTarget(address caller);
 error CannotSendValueToSetData();
 
 /**
- * @dev reverts when calling LSP20 functions on the KeyManager through execute(..)
+ * @dev reverts when calling the KeyManager through execute(..)
  */
-error CallingLSP20FunctionsOnLSP6NotAllowed();
+error CallingKeyManagerFromLSP0NotAllowed();

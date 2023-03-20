@@ -120,7 +120,7 @@ export const testSecurityScenarios = (
       .withArgs(addressWithNoPermissions.address);
   });
 
-  it("Should revert when caller calls the lsp20VerifyCall function on the KeyManager through execute", async () => {
+  it("Should revert when caller calls the KeyManager through execute", async () => {
     let lsp20VerifyCallPayload =
       context.keyManager.interface.encodeFunctionData(
         "lsp20VerifyCall",
@@ -143,37 +143,7 @@ export const testSecurityScenarios = (
         ["execute(bytes)"](executePayload)
     ).to.be.revertedWithCustomError(
       context.keyManager,
-      "CallingLSP20FunctionsOnLSP6NotAllowed"
-    );
-  });
-
-  it("Should revert when caller calls the lsp20VerifyCallResult function on the KeyManager through execute", async () => {
-    let lsp20VerifyCallResultPayload =
-      context.keyManager.interface.encodeFunctionData(
-        "lsp20VerifyCallResult",
-        [
-          "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-          "0xaabbccdd",
-        ] // random arguments
-      );
-
-    let executePayload = context.universalProfile.interface.encodeFunctionData(
-      "execute(uint256,address,uint256,bytes)",
-      [
-        OPERATION_TYPES.CALL,
-        context.keyManager.address,
-        0,
-        lsp20VerifyCallResultPayload,
-      ]
-    );
-
-    await expect(
-      context.keyManager
-        .connect(context.owner)
-        ["execute(bytes)"](executePayload)
-    ).to.be.revertedWithCustomError(
-      context.keyManager,
-      "CallingLSP20FunctionsOnLSP6NotAllowed"
+      "CallingKeyManagerFromLSP0NotAllowed"
     );
   });
 

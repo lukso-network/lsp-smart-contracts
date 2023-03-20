@@ -47,7 +47,7 @@ import {
     InvalidWhitelistedCall,
     NotAuthorised,
     InvalidPayload,
-    CallingLSP20FunctionsOnLSP6NotAllowed
+    CallingKeyManagerFromLSP0NotAllowed
 } from "../LSP6Errors.sol";
 
 abstract contract LSP6ExecuteModule {
@@ -80,16 +80,26 @@ abstract contract LSP6ExecuteModule {
 
         address to = address(bytes20(payload[48:68]));
 
+        // if to is the KeyManager address revert
+        if (to == address(this)) {
+            revert CallingKeyManagerFromLSP0NotAllowed();
+        }
+
+        // Future versions of the KeyManager willing to allow LSP0 to call the KeyManager
+        // may need to implement the check below to avoid unconsistent state of reentrancy guard
+        // that may lead to lock the use of the KeyManager
+
         // Check to restrict controllers with execute permissions to call lsp20 functions
         // to avoid setting the reentrancy guard to a non-valid state
-        if (payload.length >= 168 && to == address(this)) {
-            if (
-                bytes4(payload[164:168]) == ILSP20.lsp20VerifyCall.selector ||
-                bytes4(payload[164:168]) == ILSP20.lsp20VerifyCallResult.selector
-            ) {
-                revert CallingLSP20FunctionsOnLSP6NotAllowed();
-            }
-        }
+
+        // if (payload.length >= 168 && to == address(this)) {
+        //     if (
+        //         bytes4(payload[164:168]) == ILSP20.lsp20VerifyCall.selector ||
+        //         bytes4(payload[164:168]) == ILSP20.lsp20VerifyCallResult.selector
+        //     ) {
+        //         revert CallingLSP20FunctionsOnLSP6NotAllowed();
+        //     }
+        // }
 
         // if it is a message call
         if (operationType == OPERATION_0_CALL) {
@@ -295,16 +305,9 @@ abstract contract LSP6ExecuteModule {
         return requiredCallTypes;
     }
 
-    function _extractExecuteParameters(bytes calldata executeCalldata)
-        internal
-        pure
-        returns (
-            uint256,
-            address,
-            uint256,
-            bytes4
-        )
-    {
+    function _extractExecuteParameters(
+        bytes calldata executeCalldata
+    ) internal pure returns (uint256, address, uint256, bytes4) {
         uint256 operationType = uint256(bytes32(executeCalldata[4:36]));
         address to = address(bytes20(executeCalldata[48:68]));
         uint256 value = uint256(bytes32(executeCalldata[68:100]));
@@ -342,11 +345,10 @@ abstract contract LSP6ExecuteModule {
             to.supportsERC165InterfaceUnchecked(allowedStandard);
     }
 
-    function _isAllowedFunction(bytes memory allowedCall, bytes4 requiredFunction)
-        internal
-        pure
-        returns (bool)
-    {
+    function _isAllowedFunction(
+        bytes memory allowedCall,
+        bytes4 requiredFunction
+    ) internal pure returns (bool) {
         // <offset> = 28 bytes x 8 bits = 224 bits
         //
         //                                                         function
@@ -362,11 +364,10 @@ abstract contract LSP6ExecuteModule {
             (isFunctionCall && (requiredFunction == allowedFunction));
     }
 
-    function _isAllowedCallType(bytes memory allowedCall, bytes4 requiredCallTypes)
-        internal
-        pure
-        returns (bool)
-    {
+    function _isAllowedCallType(
+        bytes memory allowedCall,
+        bytes4 requiredCallTypes
+    ) internal pure returns (bool) {
         // extract callType
         //
         // <offset> = 0
