@@ -143,7 +143,7 @@ export const testSecurityScenarios = (
         ["execute(bytes)"](executePayload)
     ).to.be.revertedWithCustomError(
       context.keyManager,
-      "CallingKeyManagerFromLSP0NotAllowed"
+      "CallingKeyManagerNotAllowed"
     );
   });
 

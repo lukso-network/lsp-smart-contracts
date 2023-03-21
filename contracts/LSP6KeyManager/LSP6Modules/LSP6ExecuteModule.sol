@@ -47,7 +47,7 @@ import {
     InvalidWhitelistedCall,
     NotAuthorised,
     InvalidPayload,
-    CallingKeyManagerFromLSP0NotAllowed
+    CallingKeyManagerNotAllowed
 } from "../LSP6Errors.sol";
 
 abstract contract LSP6ExecuteModule {
@@ -82,11 +82,11 @@ abstract contract LSP6ExecuteModule {
 
         // if to is the KeyManager address revert
         if (to == address(this)) {
-            revert CallingKeyManagerFromLSP0NotAllowed();
+            revert CallingKeyManagerNotAllowed();
         }
 
         // Future versions of the KeyManager willing to allow LSP0 to call the KeyManager
-        // may need to implement the check below to avoid unconsistent state of reentrancy guard
+        // may need to implement this check to avoid inconsistent state of reentrancy
         // that may lead to lock the use of the KeyManager
 
         // Check to restrict controllers with execute permissions to call lsp20 functions
@@ -305,16 +305,9 @@ abstract contract LSP6ExecuteModule {
         return requiredCallTypes;
     }
 
-    function _extractExecuteParameters(bytes calldata executeCalldata)
-        internal
-        pure
-        returns (
-            uint256,
-            address,
-            uint256,
-            bytes4
-        )
-    {
+    function _extractExecuteParameters(
+        bytes calldata executeCalldata
+    ) internal pure returns (uint256, address, uint256, bytes4) {
         uint256 operationType = uint256(bytes32(executeCalldata[4:36]));
         address to = address(bytes20(executeCalldata[48:68]));
         uint256 value = uint256(bytes32(executeCalldata[68:100]));
@@ -352,11 +345,10 @@ abstract contract LSP6ExecuteModule {
             to.supportsERC165InterfaceUnchecked(allowedStandard);
     }
 
-    function _isAllowedFunction(bytes memory allowedCall, bytes4 requiredFunction)
-        internal
-        pure
-        returns (bool)
-    {
+    function _isAllowedFunction(
+        bytes memory allowedCall,
+        bytes4 requiredFunction
+    ) internal pure returns (bool) {
         // <offset> = 28 bytes x 8 bits = 224 bits
         //
         //                                                         function
@@ -372,11 +364,10 @@ abstract contract LSP6ExecuteModule {
             (isFunctionCall && (requiredFunction == allowedFunction));
     }
 
-    function _isAllowedCallType(bytes memory allowedCall, bytes4 requiredCallTypes)
-        internal
-        pure
-        returns (bool)
-    {
+    function _isAllowedCallType(
+        bytes memory allowedCall,
+        bytes4 requiredCallTypes
+    ) internal pure returns (bool) {
         // extract callType
         //
         // <offset> = 0

@@ -157,4 +157,4 @@ error CannotSendValueToSetData();
 /**
  * @dev reverts when calling the KeyManager through execute(..)
  */
-error CallingKeyManagerFromLSP0NotAllowed();
+error CallingKeyManagerNotAllowed();
