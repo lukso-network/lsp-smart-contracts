@@ -62,7 +62,7 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
 
         if (isReceiving) {
             // if the map value is already set, then do nothing
-            if (bytes12(notifierMapValue) != bytes12(0))
+            if (bytes20(notifierMapValue) != bytes20(0))
                 return "URD: asset received is already registered";
 
             // if the amount sent is 0, then do not update the keys
@@ -79,7 +79,7 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
             IERC725Y(msg.sender).setData(dataKeys, dataValues);
         } else {
             // if there is no map value for the asset to remove, then do nothing
-            if (bytes12(notifierMapValue) == bytes12(0))
+            if (bytes20(notifierMapValue) == bytes20(0))
                 return "LSP1: asset sent is not registered";
             // if it's a token transfer (LSP7/LSP8)
             uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
