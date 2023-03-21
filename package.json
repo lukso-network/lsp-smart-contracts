@@ -51,6 +51,7 @@
     "test:lsp8": "hardhat test --no-compile tests/LSP8IdentifiableDigitalAsset/*.test.ts tests/LSP8IdentifiableDigitalAsset/extensions/*.test.ts",
     "test:lsp9": "hardhat test --no-compile tests/LSP9Vault/*.test.ts",
     "test:lsp11": "hardhat test --no-compile tests/LSP11BasicSocialRecovery/*.test.ts",
+    "test:lsp20": "hardhat test --no-compile tests/LSP20CallVerification/LSP6KeyManager/*.test.ts",
     "test:universalfactory": "hardhat test --no-compile tests/LSP16UniversalFactory/LSP16UniversalFactory.test.ts",
     "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
     "build": "hardhat compile",
@@ -84,7 +85,7 @@
   },
   "homepage": "https://github.com/lukso-network/lsp-smart-contracts#readme",
   "dependencies": {
-    "@erc725/smart-contracts": "^4.1.1",
+    "@erc725/smart-contracts": "^4.2.0",
     "@openzeppelin/contracts": "^4.8.0",
     "@openzeppelin/contracts-upgradeable": "^4.8.0",
     "solidity-bytes-utils": "0.8.0"

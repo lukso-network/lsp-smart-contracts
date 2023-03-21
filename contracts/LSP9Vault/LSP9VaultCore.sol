@@ -281,7 +281,9 @@ contract LSP9VaultCore is
      *
      * Emits a {DataChanged} event.
      */
-    function setData(bytes32 dataKey, bytes memory dataValue) public virtual override {
+    function setData(bytes32 dataKey, bytes memory dataValue) public payable virtual override {
+        if (msg.value != 0) revert ERC725Y_MsgValueDisallowed();
+
         bool isURD = _validateAndIdentifyCaller();
         if (isURD) {
             if (
@@ -303,11 +305,18 @@ contract LSP9VaultCore is
      *
      * Emits a {DataChanged} event.
      */
-    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues) public virtual override {
+    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues)
+        public
+        payable
+        virtual
+        override
+    {
         bool isURD = _validateAndIdentifyCaller();
         if (dataKeys.length != dataValues.length) {
             revert ERC725Y_DataKeysValuesLengthMismatch(dataKeys.length, dataValues.length);
         }
+
+        if (msg.value != 0) revert ERC725Y_MsgValueDisallowed();
 
         for (uint256 i = 0; i < dataKeys.length; i = GasLib.uncheckedIncrement(i)) {
             if (isURD) {

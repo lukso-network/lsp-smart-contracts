@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.5;
 
+// interfaces
+import {
+    ILSP20CallVerification as ILSP20
+} from "../../LSP20CallVerification/ILSP20CallVerification.sol";
+
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
@@ -41,7 +46,8 @@ import {
     InvalidEncodedAllowedCalls,
     InvalidWhitelistedCall,
     NotAuthorised,
-    InvalidPayload
+    InvalidPayload,
+    CallingKeyManagerNotAllowed
 } from "../LSP6Errors.sol";
 
 abstract contract LSP6ExecuteModule {
@@ -71,6 +77,29 @@ abstract contract LSP6ExecuteModule {
 
         // MUST be one of the ERC725X operation types.
         uint256 operationType = uint256(bytes32(payload[4:36]));
+
+        address to = address(bytes20(payload[48:68]));
+
+        // if to is the KeyManager address revert
+        if (to == address(this)) {
+            revert CallingKeyManagerNotAllowed();
+        }
+
+        // Future versions of the KeyManager willing to allow LSP0 to call the KeyManager
+        // may need to implement this check to avoid inconsistent state of reentrancy
+        // that may lead to lock the use of the KeyManager
+
+        // Check to restrict controllers with execute permissions to call lsp20 functions
+        // to avoid setting the reentrancy guard to a non-valid state
+
+        // if (payload.length >= 168 && to == address(this)) {
+        //     if (
+        //         bytes4(payload[164:168]) == ILSP20.lsp20VerifyCall.selector ||
+        //         bytes4(payload[164:168]) == ILSP20.lsp20VerifyCallResult.selector
+        //     ) {
+        //         revert CallingLSP20FunctionsOnLSP6NotAllowed();
+        //     }
+        // }
 
         // if it is a message call
         if (operationType == OPERATION_0_CALL) {
