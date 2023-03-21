@@ -25,7 +25,6 @@ import {
 // helpers
 import {
   ARRAY_LENGTH,
-  TOKEN_ID,
   LSP1_HOOK_PLACEHOLDER,
   abiCoder,
 } from "../utils/helpers";
@@ -51,6 +50,15 @@ export type LSP1TestAccounts = {
   owner2: SignerWithAddress;
   random: SignerWithAddress;
   any: SignerWithAddress;
+};
+
+export type LSP1DelegateTestContext = {
+  accounts: LSP1TestAccounts;
+  universalProfile1: UniversalProfile;
+  lsp6KeyManager1: LSP6KeyManager;
+  universalProfile2: UniversalProfile;
+  lsp6KeyManager2: LSP6KeyManager;
+  lsp1universalReceiverDelegateUP: LSP1UniversalReceiverDelegateUP;
 };
 
 /**
@@ -91,13 +99,17 @@ async function getLSP10MapAndArrayKeysValue(account, lsp9Vault) {
   return [indexInNumber, interfaceId, arrayLength, elementAddress];
 }
 
-export type LSP1DelegateTestContext = {
-  accounts: LSP1TestAccounts;
-  universalProfile1: UniversalProfile;
-  lsp6KeyManager1: LSP6KeyManager;
-  universalProfile2: UniversalProfile;
-  lsp6KeyManager2: LSP6KeyManager;
-  lsp1universalReceiverDelegateUP: LSP1UniversalReceiverDelegateUP;
+// Random Token IDs
+// prettier-ignore
+export const TOKEN_ID = {
+  ONE:   "0xad7c5bef027816a800da1736444fb58a807ef4c9603b7848673f7e3a68eb14a5",
+  TWO:   "0xd4d1a59767271eefdc7830a772b9732a11d503531d972ab8c981a6b1c0e666e5",
+  THREE: "0x3672b35640006da199633c5c75015da83589c4fb84ef8276b18076529e3d3196",
+  FOUR:  "0x80a6c6138772c2d7c710a3d49f4eea603028994b7e390f670dd68566005417f0",
+  FIVE:  "0x5c6f8b1aed769a328dad1ae15220e93730cdd52cb12817ae5fd8c15023d660d3",
+  SIX:   "0x65ce3c3668a850c4f9fce91762a3fb886380399f02a9eb1495055234e7c0287a",
+  SEVEN: "0x00121ee2bd9802ce88a413ac1851c8afe6fe7474fb5d1b7da4475151b013da53",
+  EIGHT: "0x367f9d97f8dd1bece61f8b74c5db7616958147682674fd32de73490bd6347f60",
 };
 
 export const shouldBehaveLikeLSP1Delegate = (
