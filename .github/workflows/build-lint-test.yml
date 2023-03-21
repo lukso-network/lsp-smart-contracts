@@ -2,11 +2,7 @@
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 name: Node.js CI - Build + Lint + Test
 
-on:
-  pull_request:
-    branches:
-      - "main"
-      - "develop"
+on: pull_request
 
 jobs:
   build:
@@ -58,6 +54,7 @@ jobs:
             "lsp8",
             "lsp9",
             "lsp11",
+            "lsp20",
             "universalfactory",
             "mocks",
           ]

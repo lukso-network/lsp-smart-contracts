@@ -19,6 +19,7 @@ import {
   OPERATION_TYPES,
   LSP6_VERSION,
   PERMISSIONS,
+  CALLTYPE,
 } from "../../../constants";
 
 // setup
@@ -33,6 +34,7 @@ import {
   LOCAL_PRIVATE_KEYS,
   combineAllowedCalls,
   encodeCompactBytesArray,
+  combineCallTypes,
 } from "../../utils/helpers";
 
 export const testSecurityScenarios = (
@@ -78,8 +80,13 @@ export const testSecurityScenarios = (
       ALL_PERMISSIONS,
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       combineAllowedCalls(
-        ["0xffffffff", "0xffffffff"],
+        // TODO: test reentrancy against the bits for the allowed calls
+        [
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+        ],
         [signer.address, ethers.constants.AddressZero],
+        ["0xffffffff", "0xffffffff"],
         ["0xffffffff", "0xffffffff"]
       ),
     ];
@@ -111,6 +118,33 @@ export const testSecurityScenarios = (
     )
       .to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet")
       .withArgs(addressWithNoPermissions.address);
+  });
+
+  it("Should revert when caller calls the KeyManager through execute", async () => {
+    let lsp20VerifyCallPayload =
+      context.keyManager.interface.encodeFunctionData(
+        "lsp20VerifyCall",
+        [context.accounts[2].address, 0, "0xaabbccdd"] // random arguments
+      );
+
+    let executePayload = context.universalProfile.interface.encodeFunctionData(
+      "execute(uint256,address,uint256,bytes)",
+      [
+        OPERATION_TYPES.CALL,
+        context.keyManager.address,
+        0,
+        lsp20VerifyCallPayload,
+      ]
+    );
+
+    await expect(
+      context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](executePayload)
+    ).to.be.revertedWithCustomError(
+      context.keyManager,
+      "CallingKeyManagerNotAllowed"
+    );
   });
 
   describe("should revert when admin with ALL PERMISSIONS try to call `renounceOwnership(...)`", () => {
@@ -344,9 +378,12 @@ export const testSecurityScenarios = (
                 PERMISSIONS.TRANSFERVALUE,
                 PERMISSIONS.REENTRANCY
               ),
-              encodeCompactBytesArray([
-                "0xffffffff" + URDDummy.address.substring(2) + "ffffffff",
-              ]),
+              combineAllowedCalls(
+                [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
+                [URDDummy.address],
+                ["0xffffffff"],
+                ["0xffffffff"]
+              ),
             ],
           ]
         );

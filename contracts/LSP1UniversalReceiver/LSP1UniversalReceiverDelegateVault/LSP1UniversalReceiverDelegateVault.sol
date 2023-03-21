@@ -57,31 +57,41 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
         bytes32 notifierMapKey = LSP2Utils.generateMappingKey(mapPrefix, bytes20(notifier));
         bytes memory notifierMapValue = IERC725Y(msg.sender).getData(notifierMapKey);
 
+        bytes32[] memory dataKeys;
+        bytes[] memory dataValues;
+
         if (isReceiving) {
             // if the map value is already set, then do nothing
-            if (bytes12(notifierMapValue) != bytes12(0))
+            if (bytes20(notifierMapValue) != bytes20(0))
                 return "URD: asset received is already registered";
 
             // if the amount sent is 0, then do not update the keys
             uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
             if (balance == 0) return "LSP1: balance not updated";
 
-            (bytes32[] memory receiverDataKeys, bytes[] memory receiverDataValues) = LSP5Utils
-                .generateReceivedAssetKeys(msg.sender, notifier, notifierMapKey, interfaceID);
+            (dataKeys, dataValues) = LSP5Utils.generateReceivedAssetKeys(
+                msg.sender,
+                notifier,
+                notifierMapKey,
+                interfaceID
+            );
 
-            IERC725Y(msg.sender).setData(receiverDataKeys, receiverDataValues);
+            IERC725Y(msg.sender).setData(dataKeys, dataValues);
         } else {
             // if there is no map value for the asset to remove, then do nothing
-            if (bytes12(notifierMapValue) == bytes12(0))
+            if (bytes20(notifierMapValue) == bytes20(0))
                 return "LSP1: asset sent is not registered";
             // if it's a token transfer (LSP7/LSP8)
             uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
             if (balance != 0) return "LSP1: full balance is not sent";
 
-            (bytes32[] memory senderDataKeys, bytes[] memory senderDataValues) = LSP5Utils
-                .generateSentAssetKeys(msg.sender, notifierMapKey, notifierMapValue);
+            (dataKeys, dataValues) = LSP5Utils.generateSentAssetKeys(
+                msg.sender,
+                notifierMapKey,
+                notifierMapValue
+            );
 
-            IERC725Y(msg.sender).setData(senderDataKeys, senderDataValues);
+            IERC725Y(msg.sender).setData(dataKeys, dataValues);
         }
     }
 

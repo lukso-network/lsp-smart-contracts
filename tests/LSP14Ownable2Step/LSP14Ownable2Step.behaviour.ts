@@ -3,8 +3,6 @@ import { ethers, network } from "hardhat";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
-  contracts,
-  LSP0ERC725Account,
   LSP9Vault,
   UPWithInstantAcceptOwnership__factory,
   UPWithInstantAcceptOwnership,
@@ -19,7 +17,7 @@ import { BigNumber, ContractTransaction } from "ethers";
 
 export type LSP14TestContext = {
   accounts: SignerWithAddress[];
-  contract: LSP0ERC725Account | LSP9Vault;
+  contract: LSP9Vault;
   deployParams: { owner: SignerWithAddress };
   onlyOwnerRevertString: string;
 };
@@ -532,25 +530,13 @@ export const shouldBehaveLikeLSP14 = (
               ethers.utils.toUtf8Bytes("Random Value")
             );
 
-            /** @todo check using Typescript type */
-            const getExpectedRevertString = async () => {
-              if (
-                await context.contract.supportsInterface(
-                  INTERFACE_IDS.LSP9Vault
-                )
-              ) {
-                return "Only Owner or reentered Universal Receiver Delegate allowed";
-              } else {
-                return "Ownable: caller is not the owner";
-              }
-            };
-            const revertString = await getExpectedRevertString();
-
             await expect(
               context.contract
                 .connect(context.deployParams.owner)
                 ["setData(bytes32,bytes)"](key, value)
-            ).to.be.revertedWith(revertString);
+            ).to.be.revertedWith(
+              "Only Owner or reentered Universal Receiver Delegate allowed"
+            );
           });
 
           it("transfer LYX via `execute(...)`", async () => {

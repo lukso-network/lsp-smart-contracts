@@ -3,9 +3,11 @@ pragma solidity ^0.8.4;
 
 // libraries
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // constants
 import "./ILSP1UniversalReceiver.sol";
+import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import "../LSP0ERC725Account/LSP0Constants.sol";
 import "../LSP5ReceivedAssets/LSP5Constants.sol";
 import "../LSP7DigitalAsset/LSP7Constants.sol";
@@ -15,6 +17,16 @@ import "../LSP14Ownable2Step/LSP14Constants.sol";
 import "../LSP10ReceivedVaults/LSP10Constants.sol";
 
 library LSP1Utils {
+    function tryNotifyUniversalReceiver(
+        address lsp1Implementation,
+        bytes32 typeId,
+        bytes memory data
+    ) internal {
+        if (ERC165Checker.supportsERC165InterfaceUnchecked(lsp1Implementation, _INTERFACEID_LSP1)) {
+            ILSP1UniversalReceiver(lsp1Implementation).universalReceiver(typeId, data);
+        }
+    }
+
     function callUniversalReceiverWithCallerInfos(
         address universalReceiverDelegate,
         bytes32 typeId,

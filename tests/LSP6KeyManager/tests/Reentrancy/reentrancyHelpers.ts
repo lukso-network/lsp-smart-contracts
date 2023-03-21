@@ -20,6 +20,7 @@ import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
+  CALLTYPE,
 } from "../../../../constants";
 
 // setup
@@ -51,7 +52,7 @@ export type SetDataTestCase = {
   missingPermission: string;
 };
 
-//Other permissions, e.g.: ADDCONTROLLER, CHANGEPERMISSIONS, ADDUNIVERSALRECEIVERDELEGATE, CHANGEUNIVERSALRECEIVERDELEGATE
+//Other permissions, e.g.: ADDCONTROLLER, EDITPERMISSIONS, ADDUNIVERSALRECEIVERDELEGATE, CHANGEUNIVERSALRECEIVERDELEGATE
 export type SimplePermissionTestCase = {
   permissionsText: string;
   permissions: string;
@@ -222,7 +223,7 @@ export const addPermissionsTestCases = {
   },
 };
 
-export const changePermissionsTestCases = {
+export const editPermissionsTestCases = {
   NotAuthorised: [
     {
       permissionsText: "NO Permissions",
@@ -237,19 +238,19 @@ export const changePermissionsTestCases = {
     {
       permissionsText: "REENTRANCY",
       permissions: PERMISSIONS.REENTRANCY,
-      missingPermission: "CHANGEPERMISSIONS",
+      missingPermission: "EDITPERMISSIONS",
     },
     {
-      permissionsText: "CHANGEPERMISSIONS",
-      permissions: PERMISSIONS.CHANGEPERMISSIONS,
+      permissionsText: "EDITPERMISSIONS",
+      permissions: PERMISSIONS.EDITPERMISSIONS,
       missingPermission: "REENTRANCY",
     },
   ],
   ValidCase: {
-    permissionsText: "REENTRANCY, CHANGEPERMISSIONS",
+    permissionsText: "REENTRANCY, EDITPERMISSIONS",
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
-      PERMISSIONS.CHANGEPERMISSIONS
+      PERMISSIONS.EDITPERMISSIONS
     ),
     missingPermission: "",
   },
@@ -360,22 +361,26 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
     ALL_PERMISSIONS,
     PERMISSIONS.CALL,
     combineAllowedCalls(
-      ["0xffffffff", "0xffffffff", "0xffffffff"],
+      // allow controller to call the 3 x addresses listed below
+      [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
       [
         reentrantContract.address,
         singleReentarncyRelayer.address,
         batchReentarncyRelayer.address,
       ],
+      ["0xffffffff", "0xffffffff", "0xffffffff"],
       ["0xffffffff", "0xffffffff", "0xffffffff"]
     ),
     PERMISSIONS.CALL,
     combineAllowedCalls(
-      ["0xffffffff", "0xffffffff", "0xffffffff"],
+      // allow controller to call the 3 x addresses listed below
+      [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
       [
         reentrantContract.address,
         singleReentarncyRelayer.address,
         batchReentarncyRelayer.address,
       ],
+      ["0xffffffff", "0xffffffff", "0xffffffff"],
       ["0xffffffff", "0xffffffff", "0xffffffff"]
     ),
   ];
@@ -466,7 +471,7 @@ export const generateSingleRelayPayload = async (
         ]
       );
       break;
-    case "CHANGEPERMISSIONS":
+    case "EDITPERMISSIONS":
       payload = universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
@@ -556,7 +561,7 @@ export const generateBatchRelayPayload = async (
         ]
       );
       break;
-    case "CHANGEPERMISSIONS":
+    case "EDITPERMISSIONS":
       payload = universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
@@ -656,8 +661,10 @@ export const loadTestCase = async (
         testCase.permissions,
         (testCase as TransferValueTestCase).allowedCalls
           ? combineAllowedCalls(
-              ["0xffffffff"],
+              // TODO: is the call permission enough here for this test?
+              [CALLTYPE.VALUE],
               [valueReceiverAddress],
+              ["0xffffffff"],
               ["0xffffffff"]
             )
           : "0x",

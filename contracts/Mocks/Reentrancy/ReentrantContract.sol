@@ -40,7 +40,7 @@ contract ReentrantContract {
             ),
             bytes.concat(bytes32(uint256(16)))
         );
-        _payloads["CHANGEPERMISSIONS"] = abi.encodeWithSignature(
+        _payloads["EDITPERMISSIONS"] = abi.encodeWithSignature(
             "setData(bytes32,bytes)",
             bytes32(
                 bytes.concat(

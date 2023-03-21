@@ -12,6 +12,7 @@ import {
   OPERATION_TYPES,
   LSP6_VERSION,
   PERMISSIONS,
+  CALLTYPE,
 } from "../../../constants";
 
 // helpers
@@ -20,7 +21,11 @@ import { combineAllowedCalls, combinePermissions } from "../../utils/helpers";
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
-import { provider, LOCAL_PRIVATE_KEYS } from "../../utils/helpers";
+import {
+  provider,
+  LOCAL_PRIVATE_KEYS,
+  combineCallTypes,
+} from "../../utils/helpers";
 
 export const shouldBehaveLikeExecuteRelayCall = (
   buildContext: () => Promise<LSP6TestContext>
@@ -61,8 +66,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
       ALL_PERMISSIONS,
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       combineAllowedCalls(
-        ["0xffffffff", "0xffffffff"],
+        [
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+        ],
         [random.address, targetContract.address],
+        ["0xffffffff", "0xffffffff"],
         ["0xffffffff", "0xffffffff"]
       ),
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),

@@ -12,6 +12,7 @@ import {
   OPERATION_TYPES,
   PERMISSIONS,
   INTERFACE_IDS,
+  CALLTYPE,
 } from "../../constants";
 
 import { LSP6TestContext } from "../utils/context";
@@ -20,6 +21,7 @@ import {
   provider,
   combinePermissions,
   combineAllowedCalls,
+  combineCallTypes,
 } from "../utils/helpers";
 
 import { setupKeyManager } from "../utils/fixtures";
@@ -77,13 +79,15 @@ describe("Key Manager gas cost interactions", () => {
           combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
           combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
           combineAllowedCalls(
-            [INTERFACE_IDS.ERC1271],
+            [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
             [contractImplementsERC1271.address],
+            [INTERFACE_IDS.ERC1271],
             ["0xffffffff"]
           ),
           combineAllowedCalls(
-            ["0xffffffff"],
+            [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
             [contractImplementsERC1271.address],
+            ["0xffffffff"],
             ["0xffffffff"]
           ),
         ];

@@ -2,6 +2,22 @@
 # options:
 #   -c: name of the contract to deploy + verify
 #   -n: network to deploy + verify the contract on
+
+cmd_description="options:\n
+    -c: name of the contract to deploy + verify\n
+    -n: network to deploy + verify the contract on"
+
+error_header="deploy-verify.sh cmd failed\n----------\n"
+
+# Check that we have passed the right arguments to the shell command
+if [ $# -eq 0 ]
+  then
+    echo $error_header "error: no arguments supplied"
+    echo $cmd_description + "\n"
+    exit 1
+fi
+
+
 while getopts c:d:n: flag
 do
     case "${flag}" in
@@ -9,6 +25,20 @@ do
         n) network=${OPTARG};;
     esac
 done
+
+if [ -z "$contract" ]
+  then
+    echo $error_header"error: No contract name specified. Use the option below:\n"
+    echo "    -c: name of the contract to deploy + verify\n"
+    exit 1
+fi
+
+if [ -z "$network" ]
+  then
+    echo $error_header"error: No network specified. Use the option below:\n"
+    echo "    -n: network to deploy + verify the contract on\n"
+    exit 1
+fi
 
 # Save the output of the deployment in a text file.
 npx hardhat deploy --network ${network} --tags ${contract} --reset >> deployment.txt

@@ -15,7 +15,6 @@ import {
   INTERFACE_IDS,
 } from "../../constants";
 
-import { ARRAY_LENGTH } from "../utils/helpers";
 import { callPayload } from "../utils/fixtures";
 
 export type LSP11TestAccounts = {
@@ -267,7 +266,9 @@ export const shouldBehaveLikeLSP11 = (
             txParams.permissionMap,
           ]);
 
-          expect(permissionArrayLength).to.equal(ARRAY_LENGTH.FOUR);
+          expect(permissionArrayLength).to.equal(
+            ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 16)
+          );
           expect(ethers.utils.getAddress(controllerAddress)).to.equal(
             context.accounts.addressASelected.address
           );
@@ -1165,7 +1166,9 @@ export const shouldBehaveLikeLSP11 = (
             txParams.permissionMap,
           ]);
 
-          expect(permissionArrayLength).to.equal(ARRAY_LENGTH.FOUR);
+          expect(permissionArrayLength).to.equal(
+            ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 16)
+          );
           expect(ethers.utils.getAddress(controllerAddress)).to.equal(
             context.accounts.addressASelected.address
           );

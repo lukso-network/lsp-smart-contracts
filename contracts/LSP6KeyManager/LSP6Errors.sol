@@ -88,8 +88,9 @@ error NoCallsAllowed(address from);
 /**
  * @dev reverts when `value` is not encoded properly using the CompactBytesArray
  * @param value the value to check for an CompactBytesArray
+ * @param context a brief description of where the error occured
  */
-error InvalidEncodedAllowedERC725YDataKeys(bytes value);
+error InvalidEncodedAllowedERC725YDataKeys(bytes value, string context);
 
 /**
  * @dev a `from` address is not allowed to have 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff
@@ -141,3 +142,19 @@ error DelegateCallDisallowedViaKeyManager();
  * @dev reverts when the payload is invalid.
  */
 error InvalidPayload(bytes payload);
+
+/**
+ * @dev reverts when the caller is not the linked target
+ * @param caller The address calling lsp20 related functions
+ */
+error CallerIsNotTheTarget(address caller);
+
+/**
+ * @dev reverts when sending value to the `setData(..)` functions
+ */
+error CannotSendValueToSetData();
+
+/**
+ * @dev reverts when calling the KeyManager through execute(..)
+ */
+error CallingKeyManagerNotAllowed();

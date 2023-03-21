@@ -33,6 +33,7 @@ import {
   PERMISSIONS,
   OPERATION_TYPES,
   LSP1_TYPE_IDS,
+  CALLTYPE,
 } from "../../constants";
 import { BigNumber } from "ethers";
 
@@ -538,6 +539,52 @@ export const shouldBehaveLikeLSP9 = (
         expect(result).to.equal(value);
       });
     });
+
+    describe("When sending value to setData", () => {
+      it("should revert when sending value to setData(..)", async () => {
+        let value = ethers.utils.parseEther("2");
+        const txParams = {
+          dataKey: ethers.utils.solidityKeccak256(["string"], ["FirstDataKey"]),
+          dataValue: "0xaabbccdd",
+        };
+
+        await expect(
+          context.lsp9Vault
+            .connect(context.accounts.owner)
+            ["setData(bytes32,bytes)"](txParams.dataKey, txParams.dataValue, {
+              value: value,
+            })
+        ).to.be.revertedWithCustomError(
+          context.lsp9Vault,
+          "ERC725Y_MsgValueDisallowed"
+        );
+      });
+
+      it("should revert when sending value to setData(..) Array", async () => {
+        let value = ethers.utils.parseEther("2");
+        const txParams = {
+          dataKey: [
+            ethers.utils.solidityKeccak256(["string"], ["FirstDataKey"]),
+          ],
+          dataValue: ["0xaabbccdd"],
+        };
+
+        await expect(
+          context.lsp9Vault
+            .connect(context.accounts.owner)
+            ["setData(bytes32[],bytes[])"](
+              txParams.dataKey,
+              txParams.dataValue,
+              {
+                value: value,
+              }
+            )
+        ).to.be.revertedWithCustomError(
+          context.lsp9Vault,
+          "ERC725Y_MsgValueDisallowed"
+        );
+      });
+    });
   });
 
   describe("when testing execute(...)", () => {
@@ -594,9 +641,166 @@ export const shouldBehaveLikeLSP9 = (
       });
     });
 
+    describe("when using batchCalls function", () => {
+      before(async () => {
+        await context.accounts.friend.sendTransaction({
+          value: 1000,
+          to: context.lsp9Vault.address,
+        });
+      });
+
+      describe("when non-owner is calling", () => {
+        it("shoud revert", async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+          let setDataPayload = context.lsp9Vault.interface.encodeFunctionData(
+            "setData(bytes32,bytes)",
+            [key, value]
+          );
+
+          await expect(
+            context.lsp9Vault
+              .connect(context.accounts.random)
+              .batchCalls([setDataPayload])
+          ).to.be.revertedWith(
+            "Only Owner or reentered Universal Receiver Delegate allowed"
+          );
+        });
+      });
+
+      describe("when the owner is calling", () => {
+        describe("when executing one function", () => {
+          describe("setData", () => {
+            it("should pass", async () => {
+              let key = ethers.utils.keccak256(
+                ethers.utils.toUtf8Bytes("My Key")
+              );
+              let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+              let setDataPayload =
+                context.lsp9Vault.interface.encodeFunctionData(
+                  "setData(bytes32,bytes)",
+                  [key, value]
+                );
+
+              const multiCallPayload =
+                context.lsp9Vault.interface.encodeFunctionData("batchCalls", [
+                  [setDataPayload],
+                ]);
+
+              const executePayloadUP =
+                context.universalProfile.interface.encodeFunctionData(
+                  "execute(uint256,address,uint256,bytes)",
+                  [0, context.lsp9Vault.address, 0, multiCallPayload]
+                );
+
+              await context.lsp6KeyManager
+                .connect(context.accounts.owner)
+                ["execute(bytes)"](executePayloadUP);
+
+              const result = await context.lsp9Vault["getData(bytes32)"](key);
+              expect(result).to.equal(value);
+            });
+          });
+
+          describe("execute", () => {
+            it("should pass", async () => {
+              let amount = 20;
+              let executePayload =
+                context.lsp9Vault.interface.encodeFunctionData(
+                  "execute(uint256,address,uint256,bytes)",
+                  [0, context.accounts.random.address, amount, "0x"]
+                );
+
+              const multiCallPayload =
+                context.lsp9Vault.interface.encodeFunctionData("batchCalls", [
+                  [executePayload],
+                ]);
+
+              const executePayloadUP =
+                context.universalProfile.interface.encodeFunctionData(
+                  "execute(uint256,address,uint256,bytes)",
+                  [0, context.lsp9Vault.address, 0, multiCallPayload]
+                );
+
+              await expect(() =>
+                context.lsp6KeyManager
+                  .connect(context.accounts.owner)
+                  ["execute(bytes)"](executePayloadUP)
+              ).to.changeEtherBalances(
+                [context.lsp9Vault.address, context.accounts.random.address],
+                [`-${amount}`, amount]
+              );
+            });
+          });
+        });
+
+        describe("when executing several functions", () => {
+          describe("When transfering lyx, setting data, transferring ownership", () => {
+            it("should pass", async () => {
+              let amount = 20;
+              let executePayload =
+                context.lsp9Vault.interface.encodeFunctionData(
+                  "execute(uint256,address,uint256,bytes)",
+                  [0, context.accounts.random.address, amount, "0x"]
+                );
+
+              let key = ethers.utils.keccak256(
+                ethers.utils.toUtf8Bytes("A new key")
+              );
+              let value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
+
+              let setDataPayload =
+                context.lsp9Vault.interface.encodeFunctionData(
+                  "setData(bytes32,bytes)",
+                  [key, value]
+                );
+
+              let transferOwnershipPayload =
+                context.lsp9Vault.interface.encodeFunctionData(
+                  "transferOwnership",
+                  [context.accounts.anyone.address]
+                );
+
+              expect(
+                await context.lsp9Vault.callStatic.pendingOwner()
+              ).to.equal(ethers.constants.AddressZero);
+
+              const multiCallPayload =
+                context.lsp9Vault.interface.encodeFunctionData("batchCalls", [
+                  [executePayload, setDataPayload, transferOwnershipPayload],
+                ]);
+
+              const executePayloadUP =
+                context.universalProfile.interface.encodeFunctionData(
+                  "execute(uint256,address,uint256,bytes)",
+                  [0, context.lsp9Vault.address, 0, multiCallPayload]
+                );
+
+              await expect(() =>
+                context.lsp6KeyManager
+                  .connect(context.accounts.owner)
+                  ["execute(bytes)"](executePayloadUP)
+              ).to.changeEtherBalances(
+                [context.lsp9Vault.address, context.accounts.random.address],
+                [`-${amount}`, amount]
+              );
+
+              const result = await context.lsp9Vault["getData(bytes32)"](key);
+              expect(result).to.equal(value);
+
+              expect(
+                await context.lsp9Vault.callStatic.pendingOwner()
+              ).to.equal(context.accounts.anyone.address);
+            });
+          });
+        });
+      });
+    });
+
     describe("when restricitng address to only talk to the vault", () => {
       before(async () => {
-        let abiCoder = await ethers.utils.defaultAbiCoder;
         let friendPermissions = PERMISSIONS.CALL;
         const payload = context.universalProfile.interface.encodeFunctionData(
           "setData(bytes32[],bytes[])",
@@ -610,8 +814,10 @@ export const shouldBehaveLikeLSP9 = (
             [
               friendPermissions,
               combineAllowedCalls(
-                ["0xffffffff"],
+                // TODO: is the bit permission CALL in the allowed call enough for this test?
+                [CALLTYPE.WRITE],
                 [context.lsp9Vault.address],
+                ["0xffffffff"],
                 ["0xffffffff"]
               ),
             ],

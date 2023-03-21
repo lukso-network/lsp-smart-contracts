@@ -212,6 +212,33 @@ contract LSP9VaultCore is
     }
 
     /**
+     * @dev Receives and executes a batch of function calls on this contract.
+     */
+    function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
+        results = new bytes[](data.length);
+        for (uint256 i; i < data.length; i = GasLib.uncheckedIncrement(i)) {
+            (bool success, bytes memory result) = address(this).delegatecall(data[i]);
+
+            if (!success) {
+                // Look for revert reason and bubble it up if present
+                if (result.length > 0) {
+                    // The easiest way to bubble the revert reason is using memory via assembly
+                    // solhint-disable no-inline-assembly
+                    /// @solidity memory-safe-assembly
+                    assembly {
+                        let returndata_size := mload(result)
+                        revert(add(32, result), returndata_size)
+                    }
+                } else {
+                    revert("LSP9: batchCalls reverted");
+                }
+            }
+
+            results[i] = result;
+        }
+    }
+
+    /**
      * @inheritdoc IERC725X
      * @param operationType The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3
      * @dev Executes any other smart contract.
@@ -254,7 +281,9 @@ contract LSP9VaultCore is
      *
      * Emits a {DataChanged} event.
      */
-    function setData(bytes32 dataKey, bytes memory dataValue) public virtual override {
+    function setData(bytes32 dataKey, bytes memory dataValue) public payable virtual override {
+        if (msg.value != 0) revert ERC725Y_MsgValueDisallowed();
+
         bool isURD = _validateAndIdentifyCaller();
         if (isURD) {
             if (
@@ -276,11 +305,18 @@ contract LSP9VaultCore is
      *
      * Emits a {DataChanged} event.
      */
-    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues) public virtual override {
+    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues)
+        public
+        payable
+        virtual
+        override
+    {
         bool isURD = _validateAndIdentifyCaller();
         if (dataKeys.length != dataValues.length) {
             revert ERC725Y_DataKeysValuesLengthMismatch(dataKeys.length, dataValues.length);
         }
+
+        if (msg.value != 0) revert ERC725Y_MsgValueDisallowed();
 
         for (uint256 i = 0; i < dataKeys.length; i = GasLib.uncheckedIncrement(i)) {
             if (isURD) {
@@ -373,21 +409,59 @@ contract LSP9VaultCore is
     }
 
     /**
-     * @dev Sets the pending owner and notify the pending owner
+     * @inheritdoc LSP14Ownable2Step
      *
-     * @param _newOwner The address nofied and set as `pendingOwner`
+     * @dev same as ILSP14.transferOwnership with the additional requirement:
+     *
+     * Requirements:
+     *  - when notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP9OwnershipTransferStarted')
      */
-    function transferOwnership(address _newOwner)
+    function transferOwnership(address newOwner)
         public
         virtual
         override(LSP14Ownable2Step, OwnableUnset)
         onlyOwner
     {
-        LSP14Ownable2Step._transferOwnership(_newOwner);
+        LSP14Ownable2Step._transferOwnership(newOwner);
+
+        address currentOwner = owner();
+        emit OwnershipTransferStarted(currentOwner, newOwner);
+
+        newOwner.tryNotifyUniversalReceiver(_TYPEID_LSP9_OwnershipTransferStarted, "");
+
+        require(
+            currentOwner == owner(),
+            "LSP14: newOwner MUST accept ownership in a separate transaction"
+        );
     }
 
     /**
-     * @dev Renounce ownership of the contract in a 2-step process
+     * @inheritdoc LSP14Ownable2Step
+     *
+     * @dev same as ILSP14.acceptOwnership with the additional requirement:
+     *
+     * Requirements:
+     * - when notifying the previous owner via LSP1, the typeId used MUST be keccak256('LSP9OwnershipTransferred_SenderNotification')
+     * - when notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP9OwnershipTransferred_RecipientNotification')
+     */
+    function acceptOwnership() public virtual override {
+        address previousOwner = owner();
+
+        _acceptOwnership();
+
+        previousOwner.tryNotifyUniversalReceiver(
+            _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
+            ""
+        );
+
+        msg.sender.tryNotifyUniversalReceiver(
+            _TYPEID_LSP9_OwnershipTransferred_RecipientNotification,
+            ""
+        );
+    }
+
+    /**
+     * @inheritdoc LSP14Ownable2Step
      */
     function renounceOwnership()
         public
@@ -444,56 +518,5 @@ contract LSP9VaultCore is
         }
 
         revert ERC725X_UnknownOperationType(operationType);
-    }
-
-    // --- LSP14 URD Hooks
-
-    /**
-     * @dev Calls the universalReceiver function of the sender when ownerhsip transfer starts
-     * if supports LSP1 InterfaceId
-     */
-    function _notifyLSP1SenderOnOwnershipTransferStart(address notifiedContract, bytes memory data)
-        internal
-        virtual
-        override
-    {
-        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
-                _TYPEID_LSP9_OwnershipTransferStarted,
-                data
-            );
-        }
-    }
-
-    /**
-     * @dev Calls the universalReceiver function of the sender when ownerhsip transfer is complete
-     * if supports LSP1 InterfaceId
-     */
-    function _notifyLSP1SenderOnOwnershipTransferCompletion(
-        address notifiedContract,
-        bytes memory data
-    ) internal virtual override {
-        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
-                _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
-                data
-            );
-        }
-    }
-
-    /**
-     * @dev Calls the universalReceiver function of the recipient when ownerhsip transfer is complete
-     * if supports LSP1 InterfaceId
-     */
-    function _notifyLSP1RecipientOnOwnershipTransferCompletion(
-        address notifiedContract,
-        bytes memory data
-    ) internal virtual override {
-        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
-                _TYPEID_LSP9_OwnershipTransferred_RecipientNotification,
-                data
-            );
-        }
     }
 }

@@ -45,15 +45,15 @@ export const LOCAL_PRIVATE_KEYS = {
 // bytes32 arraylength
 
 export const ARRAY_LENGTH = {
-  ZERO: "0x0000000000000000000000000000000000000000000000000000000000000000",
-  ONE: "0x0000000000000000000000000000000000000000000000000000000000000001",
-  TWO: "0x0000000000000000000000000000000000000000000000000000000000000002",
-  THREE: "0x0000000000000000000000000000000000000000000000000000000000000003",
-  FOUR: "0x0000000000000000000000000000000000000000000000000000000000000004",
-  FIVE: "0x0000000000000000000000000000000000000000000000000000000000000005",
-  SIX: "0x0000000000000000000000000000000000000000000000000000000000000006",
-  SEVEN: "0x0000000000000000000000000000000000000000000000000000000000000007",
-  EIGHT: "0x0000000000000000000000000000000000000000000000000000000000000008",
+  ZERO: "0x00000000000000000000000000000000",
+  ONE: "0x00000000000000000000000000000001",
+  TWO: "0x00000000000000000000000000000002",
+  THREE: "0x00000000000000000000000000000003",
+  FOUR: "0x00000000000000000000000000000004",
+  FIVE: "0x00000000000000000000000000000005",
+  SIX: "0x00000000000000000000000000000006",
+  SEVEN: "0x00000000000000000000000000000007",
+  EIGHT: "0x00000000000000000000000000000008",
 };
 
 // Random Token Id
@@ -145,6 +145,17 @@ export function combinePermissions(..._permissions: string[]) {
   return ethers.utils.hexZeroPad(result.toHexString(), 32);
 }
 
+export function combineCallTypes(..._callTypes: string[]) {
+  let result: BigNumber = ethers.BigNumber.from(0);
+
+  _callTypes.forEach((callType) => {
+    let callTypeAsBN = ethers.BigNumber.from(callType);
+    result = result.add(callTypeAsBN);
+  });
+
+  return ethers.utils.hexZeroPad(result.toHexString(), 4);
+}
+
 export function encodeCompactBytesArray(inputKeys: BytesLike[]) {
   let compactBytesArray = "0x";
   for (let i = 0; i < inputKeys.length; i++) {
@@ -182,22 +193,29 @@ export function decodeCompactBytes(compactBytesArray: BytesLike) {
 }
 
 export function combineAllowedCalls(
-  _allowedStandards: string[],
+  _allowedInteractions: string[],
   _allowedAddresses: string[],
+  _allowedStandards: string[],
   _allowedFunctions: string[]
 ) {
-  let result: string = "0x001c";
+  let result: string = "0x0020";
 
   for (let ii = 0; ii < _allowedStandards.length; ii++) {
     // remove "0x" prefixes
-    let allowedStandard = _allowedStandards[ii].substring(2);
+    let allowedInteractions = _allowedInteractions[ii].substring(2);
     let allowedAddress = _allowedAddresses[ii].substring(2).toLowerCase();
+    let allowedStandard = _allowedStandards[ii].substring(2);
     let allowedFunction = _allowedFunctions[ii].substring(2);
 
-    result = result + allowedStandard + allowedAddress + allowedFunction;
+    result =
+      result +
+      allowedInteractions +
+      allowedAddress +
+      allowedStandard +
+      allowedFunction;
 
     if (ii != _allowedStandards.length - 1) {
-      result = result + "001c";
+      result = result + "0020";
     }
   }
 

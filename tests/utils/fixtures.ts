@@ -11,7 +11,7 @@ import {
 import { PERMISSIONS, ERC725YDataKeys, ALL_PERMISSIONS } from "../../constants";
 
 // helpers
-import { ARRAY_LENGTH, combinePermissions } from "../utils/helpers";
+import { combinePermissions } from "../utils/helpers";
 
 import { LSP6TestContext, LSP6InternalsTestContext } from "./context";
 
@@ -48,8 +48,8 @@ export async function deployProxy(
 
 export async function setupKeyManager(
   _context: LSP6TestContext,
-  _permissionsKeys: string[],
-  _permissionsValues: string[]
+  _dataKeys: string[],
+  _dataValues: string[]
 ) {
   await _context.universalProfile
     .connect(_context.owner)
@@ -60,9 +60,9 @@ export async function setupKeyManager(
         // when trying to setup the KeyManager
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           _context.owner.address.substring(2),
-        ..._permissionsKeys,
+        ..._dataKeys,
       ],
-      [ALL_PERMISSIONS, ..._permissionsValues]
+      [ALL_PERMISSIONS, ..._dataValues]
     );
 
   await _context.universalProfile
@@ -131,11 +131,11 @@ export async function setupProfileWithKeyManagerWithURD(
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           EOA.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          lsp1universalReceiverDelegateUP.address.substr(2),
+          lsp1universalReceiverDelegateUP.address.substring(2),
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
       ],
       [
-        ARRAY_LENGTH.TWO,
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(2), 16),
         EOA.address,
         lsp1universalReceiverDelegateUP.address,
         ALL_PERMISSIONS,
@@ -180,7 +180,7 @@ export async function grantPermissionViaKeyManager(
   const newPermissionArrayLength = permissionArrayLength + 1;
   const newRawPermissionArrayLength = ethers.utils.hexZeroPad(
     ethers.utils.hexValue(newPermissionArrayLength),
-    32
+    16
   );
 
   const payload = universalProfile.interface.encodeFunctionData(
@@ -189,9 +189,9 @@ export async function grantPermissionViaKeyManager(
       [
         ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
         ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          rawPermissionArrayLength.substring(34, 66),
+          rawPermissionArrayLength.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressToGrant.substr(2),
+          addressToGrant.substring(2),
       ],
       [newRawPermissionArrayLength, addressToGrant, permissions],
     ]
@@ -217,17 +217,19 @@ export function callPayload(from: any, to: string, abi: string) {
 export async function getLSP5MapAndArrayKeysValue(account, token) {
   let mapKey =
     ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap + token.address.substr(2);
+
   const mapValue = await account["getData(bytes32)"](mapKey);
-  const indexInHex = "0x" + mapValue.substr(10, 16);
+  const indexInHex = "0x" + mapValue.substr(10, 42);
   const interfaceId = mapValue.substr(0, 10);
   const indexInNumber = ethers.BigNumber.from(indexInHex).toNumber();
   const rawIndexInArray = ethers.utils.hexZeroPad(
     ethers.utils.hexValue(indexInNumber),
-    32
+    16
   );
+
   const elementInArrayKey =
     ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-    rawIndexInArray.substr(34);
+    rawIndexInArray.substring(2);
   let arrayKey = ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length;
   let [arrayLength, elementAddress] = await account["getData(bytes32[])"]([
     arrayKey,
@@ -247,15 +249,15 @@ export async function getLSP10MapAndArrayKeysValue(account, lsp9Vault) {
   let mapKey =
     ERC725YDataKeys.LSP10.LSP10VaultsMap + lsp9Vault.address.substr(2);
   const mapValue = await account["getData(bytes32)"](mapKey);
-  const indexInHex = "0x" + mapValue.substr(10, 16);
+  const indexInHex = "0x" + mapValue.substr(10, 42);
   const interfaceId = mapValue.substr(0, 10);
   const indexInNumber = ethers.BigNumber.from(indexInHex).toNumber();
   const rawIndexInArray = ethers.utils.hexZeroPad(
     ethers.utils.hexValue(indexInNumber),
-    32
+    16
   );
   const elementInArrayKey =
-    ERC725YDataKeys.LSP10["LSP10Vaults[]"].index + rawIndexInArray.substr(34);
+    ERC725YDataKeys.LSP10["LSP10Vaults[]"].index + rawIndexInArray.substring(2);
   let arrayKey = ERC725YDataKeys.LSP10["LSP10Vaults[]"].length;
   let [arrayLength, elementAddress] = await account["getData(bytes32[])"]([
     arrayKey,

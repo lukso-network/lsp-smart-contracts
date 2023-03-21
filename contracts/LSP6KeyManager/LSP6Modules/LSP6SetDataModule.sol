@@ -19,7 +19,7 @@ import {
     _PERMISSION_SETDATA,
     _PERMISSION_SUPER_SETDATA,
     _PERMISSION_ADDCONTROLLER,
-    _PERMISSION_CHANGEPERMISSIONS,
+    _PERMISSION_EDITPERMISSIONS,
     _PERMISSION_ADDEXTENSIONS,
     _PERMISSION_CHANGEEXTENSIONS,
     _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE,
@@ -238,12 +238,12 @@ abstract contract LSP6SetDataModule {
 
         // AddressPermissions[] -> array length
         if (inputDataKey == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY) {
-            uint256 newLength = uint256(bytes32(inputDataValue));
+            uint128 newLength = uint128(bytes16(inputDataValue));
 
             return
-                newLength > uint256(bytes32(currentValue))
+                newLength > uint128(bytes16(currentValue))
                     ? _PERMISSION_ADDCONTROLLER
-                    : _PERMISSION_CHANGEPERMISSIONS;
+                    : _PERMISSION_EDITPERMISSIONS;
         }
 
         // AddressPermissions[index] -> array index
@@ -253,7 +253,7 @@ abstract contract LSP6SetDataModule {
             revert AddressPermissionArrayIndexValueNotAnAddress(inputDataKey, inputDataValue);
         }
 
-        return currentValue.length == 0 ? _PERMISSION_ADDCONTROLLER : _PERMISSION_CHANGEPERMISSIONS;
+        return currentValue.length == 0 ? _PERMISSION_ADDCONTROLLER : _PERMISSION_EDITPERMISSIONS;
     }
 
     /**
@@ -271,7 +271,7 @@ abstract contract LSP6SetDataModule {
             // if there are already some permissions set under the data key, we are trying to CHANGE the permissions of a controller.
             bytes32(ERC725Y(controlledContract).getData(inputPermissionDataKey)) == bytes32(0)
                 ? _PERMISSION_ADDCONTROLLER
-                : _PERMISSION_CHANGEPERMISSIONS;
+                : _PERMISSION_EDITPERMISSIONS;
     }
 
     /**
@@ -298,7 +298,7 @@ abstract contract LSP6SetDataModule {
         return
             ERC725Y(controlledContract).getData(dataKey).length == 0
                 ? _PERMISSION_ADDCONTROLLER
-                : _PERMISSION_CHANGEPERMISSIONS;
+                : _PERMISSION_EDITPERMISSIONS;
     }
 
     /**
@@ -314,7 +314,10 @@ abstract contract LSP6SetDataModule {
         bytes memory dataValue
     ) internal view returns (bytes32) {
         if (!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(dataValue)) {
-            revert InvalidEncodedAllowedERC725YDataKeys(dataValue);
+            revert InvalidEncodedAllowedERC725YDataKeys(
+                dataValue,
+                "couldn't VALIDATE the data value"
+            );
         }
 
         // if there is nothing stored under the Allowed ERC725Y Data Keys of the controller,
@@ -325,7 +328,7 @@ abstract contract LSP6SetDataModule {
         return
             ERC725Y(controlledContract).getData(dataKey).length == 0
                 ? _PERMISSION_ADDCONTROLLER
-                : _PERMISSION_CHANGEPERMISSIONS;
+                : _PERMISSION_EDITPERMISSIONS;
     }
 
     /**
@@ -413,6 +416,18 @@ abstract contract LSP6SetDataModule {
                     )
                 )
             );
+
+            /**
+             * The length of a data key is 32 bytes.
+             * Therefore we can have a fixed allowed data key which has
+             * a length of 32 bytes or we can have a dynamic data key
+             * which can have a length of up to 31 bytes.
+             */
+            if (length > 32)
+                revert InvalidEncodedAllowedERC725YDataKeys(
+                    allowedERC725YDataKeysCompacted,
+                    "couldn't DECODE from storage"
+                );
 
             /**
              * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &
@@ -518,6 +533,18 @@ abstract contract LSP6SetDataModule {
                     )
                 )
             );
+
+            /**
+             * The length of a data key is 32 bytes.
+             * Therefore we can have a fixed allowed data key which has
+             * a length of 32 bytes or we can have a dynamic data key
+             * which can have a length of up to 31 bytes.
+             */
+            if (length > 32)
+                revert InvalidEncodedAllowedERC725YDataKeys(
+                    allowedERC725YDataKeysCompacted,
+                    "couldn't DECODE from storage"
+                );
 
             /**
              * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &

@@ -83,10 +83,11 @@ contract UniversalProfileTestsHelper is Test {
         bytes memory allowedCalls = new bytes(0);
 
         for (uint256 i = 0; i < supportedStandards.length; i++) {
-            bytes[] memory newElement = new bytes[](3);
-            newElement[0] = abi.encodePacked(supportedStandards[i]);
+            bytes[] memory newElement = new bytes[](4);
+            newElement[0] = abi.encodePacked(bytes4(0x000000ff));
             newElement[1] = abi.encodePacked(callContracts[i]);
-            newElement[2] = abi.encodePacked(callSignatures[i]);
+            newElement[2] = abi.encodePacked(supportedStandards[i]);
+            newElement[3] = abi.encodePacked(callSignatures[i]);
             bytes memory generatedAllowedCall = generateCompactByteArrayElement(newElement);
             allowedCalls = bytes.concat(allowedCalls, generatedAllowedCall);
         }

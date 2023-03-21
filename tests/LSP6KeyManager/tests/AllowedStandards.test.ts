@@ -21,6 +21,7 @@ import {
   INTERFACE_IDS,
   OPERATION_TYPES,
   PERMISSIONS,
+  CALLTYPE,
 } from "../../../constants";
 
 // setup
@@ -33,6 +34,7 @@ import {
   provider,
   combinePermissions,
   combineAllowedCalls,
+  combineCallTypes,
 } from "../../utils/helpers";
 
 export const shouldBehaveLikeAllowedStandards = (
@@ -83,13 +85,15 @@ export const shouldBehaveLikeAllowedStandards = (
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       combineAllowedCalls(
-        [INTERFACE_IDS.ERC1271],
+        [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
         ["0xffffffffffffffffffffffffffffffffffffffff"],
+        [INTERFACE_IDS.ERC1271],
         ["0xffffffff"]
       ),
       combineAllowedCalls(
-        [INTERFACE_IDS.LSP7DigitalAsset],
+        [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
         ["0xffffffffffffffffffffffffffffffffffffffff"],
+        [INTERFACE_IDS.LSP7DigitalAsset],
         ["0xffffffff"]
       ),
     ];
