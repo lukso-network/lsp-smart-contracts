@@ -14,14 +14,14 @@ import {
 } from "./LSP1UniversalReceiver/LSP1UniversalReceiver.behaviour";
 
 import {
-  LSP14TestContext,
-  shouldBehaveLikeLSP14,
-} from "./LSP14Ownable2Step/LSP14Ownable2Step.behaviour";
-
-import {
   LSP17TestContext,
   shouldBehaveLikeLSP17,
 } from "./LSP17ContractExtension/LSP17Extendable.behaviour";
+
+import {
+  LSP20TestContext,
+  shouldBehaveLikeLSP20,
+} from "./LSP20CallVerification/LSP20CallVerification.behaviour";
 
 import {
   LSP3TestContext,
@@ -30,6 +30,10 @@ import {
 } from "./UniversalProfile.behaviour";
 import { provider } from "./utils/helpers";
 import { BigNumber } from "ethers";
+import {
+  LSP14CombinedWithLSP20TestContext,
+  shouldBehaveLikeLSP14CombinedWithLSP20,
+} from "./LSP20CallVerification/LSP14CombinedWithLSP20.behaviour";
 
 describe("UniversalProfile", () => {
   describe("when using UniversalProfile contract with constructor", () => {
@@ -64,9 +68,9 @@ describe("UniversalProfile", () => {
       return { accounts, lsp1Implementation, lsp1Checker };
     };
 
-    const buildLSP14TestContext = async (
+    const buildLSP14CombinedWithLSP20TestContext = async (
       initialFunding?: number | BigNumber
-    ): Promise<LSP14TestContext> => {
+    ): Promise<LSP14CombinedWithLSP20TestContext> => {
       const accounts = await ethers.getSigners();
       const deployParams = {
         owner: accounts[0],
@@ -93,6 +97,18 @@ describe("UniversalProfile", () => {
       );
 
       return { accounts, contract, deployParams };
+    };
+
+    const buildLSP20TestContext = async (): Promise<LSP20TestContext> => {
+      const accounts = await ethers.getSigners();
+      const deployParams = {
+        owner: accounts[0],
+      };
+      const universalProfile = await new UniversalProfile__factory(
+        accounts[0]
+      ).deploy(deployParams.owner.address);
+
+      return { accounts, universalProfile, deployParams };
     };
 
     [
@@ -131,23 +147,31 @@ describe("UniversalProfile", () => {
     describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP3(buildLSP3TestContext);
       shouldBehaveLikeLSP1(buildLSP1TestContext);
-      shouldBehaveLikeLSP14(buildLSP14TestContext);
+      shouldBehaveLikeLSP14CombinedWithLSP20(
+        buildLSP14CombinedWithLSP20TestContext
+      );
       shouldBehaveLikeLSP17(buildLSP17TestContext);
+      shouldBehaveLikeLSP20(buildLSP20TestContext);
     });
   });
 
   describe("when using UniversalProfile contract with proxy", () => {
+    let universalProfileInit;
+    let accounts;
+    before(async () => {
+      accounts = await ethers.getSigners();
+      universalProfileInit = await new UniversalProfileInit__factory(
+        accounts[0]
+      ).deploy();
+    });
+
     const buildLSP3TestContext = async (
       initialFunding?: number
     ): Promise<LSP3TestContext> => {
-      const accounts = await ethers.getSigners();
       const deployParams = {
         owner: accounts[0],
         initialFunding,
       };
-      const universalProfileInit = await new UniversalProfileInit__factory(
-        accounts[0]
-      ).deploy();
 
       const universalProfileProxy = await deployProxy(
         universalProfileInit.address,
@@ -169,11 +193,6 @@ describe("UniversalProfile", () => {
     };
 
     const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
-      const accounts = await ethers.getSigners();
-
-      const universalProfileInit = await new UniversalProfileInit__factory(
-        accounts[0]
-      ).deploy();
       const universalProfileProxy = await deployProxy(
         universalProfileInit.address,
         accounts[0]
@@ -192,18 +211,13 @@ describe("UniversalProfile", () => {
       return { accounts, lsp1Implementation, lsp1Checker };
     };
 
-    const buildLSP14TestContext = async (
+    const buildLSP14CombinedWithLSP20TestContext = async (
       initialFunding?: number | BigNumber
-    ): Promise<LSP14TestContext> => {
-      const accounts = await ethers.getSigners();
+    ): Promise<LSP14CombinedWithLSP20TestContext> => {
       const deployParams = {
         owner: accounts[0],
         initialFunding: initialFunding,
       };
-
-      const universalProfileInit = await new UniversalProfileInit__factory(
-        accounts[0]
-      ).deploy();
 
       const universalProfileProxy = await deployProxy(
         universalProfileInit.address,
@@ -225,6 +239,23 @@ describe("UniversalProfile", () => {
     };
 
     const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
+      const deployParams = {
+        owner: accounts[0],
+      };
+
+      const universalProfileProxy = await deployProxy(
+        universalProfileInit.address,
+        accounts[0]
+      );
+
+      const universalProfile = universalProfileInit.attach(
+        universalProfileProxy
+      );
+
+      return { accounts, contract: universalProfile, deployParams };
+    };
+
+    const buildLSP20TestContext = async (): Promise<LSP20TestContext> => {
       const accounts = await ethers.getSigners();
       const deployParams = {
         owner: accounts[0],
@@ -243,17 +274,11 @@ describe("UniversalProfile", () => {
         universalProfileProxy
       );
 
-      return { accounts, contract: universalProfile, deployParams };
+      return { accounts, universalProfile: universalProfile, deployParams };
     };
 
     describe("when deploying the base implementation contract", () => {
       it("prevent any address from calling the initialize(...) function on the implementation", async () => {
-        const accounts = await ethers.getSigners();
-
-        const universalProfileInit = await new UniversalProfileInit__factory(
-          accounts[0]
-        ).deploy();
-
         const randomCaller = accounts[1];
 
         await expect(
@@ -312,17 +337,21 @@ describe("UniversalProfile", () => {
         return lsp1Context;
       });
 
-      shouldBehaveLikeLSP14(async (initialFunding?: number | BigNumber) => {
-        let claimOwnershipContext = await buildLSP14TestContext(initialFunding);
+      shouldBehaveLikeLSP14CombinedWithLSP20(
+        async (initialFunding?: number | BigNumber) => {
+          let claimOwnershipContext =
+            await buildLSP14CombinedWithLSP20TestContext(initialFunding);
 
-        await initializeProxy({
-          accounts: claimOwnershipContext.accounts,
-          universalProfile: claimOwnershipContext.contract as LSP0ERC725Account,
-          deployParams: claimOwnershipContext.deployParams,
-        });
+          await initializeProxy({
+            accounts: claimOwnershipContext.accounts,
+            universalProfile:
+              claimOwnershipContext.contract as LSP0ERC725Account,
+            deployParams: claimOwnershipContext.deployParams,
+          });
 
-        return claimOwnershipContext;
-      });
+          return claimOwnershipContext;
+        }
+      );
 
       shouldBehaveLikeLSP17(async () => {
         let fallbackExtensionContext = await buildLSP17TestContext();
@@ -335,6 +364,18 @@ describe("UniversalProfile", () => {
         });
 
         return fallbackExtensionContext;
+      });
+
+      shouldBehaveLikeLSP20(async () => {
+        let reverseVerificationContext = await buildLSP20TestContext();
+
+        await initializeProxy({
+          accounts: reverseVerificationContext.accounts,
+          universalProfile: reverseVerificationContext.universalProfile,
+          deployParams: reverseVerificationContext.deployParams,
+        });
+
+        return reverseVerificationContext;
       });
     });
   });

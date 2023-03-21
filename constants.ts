@@ -705,15 +705,16 @@ export const EventSignatures = {
   },
   LSP6: {
     /**
-     * event Executed(
+     * event VerifiedCall(
+     *     address indexed signer,
+     *     uint256 indexed value,
      *     bytes4 indexed selector,
-     *     uint256 indexed value
      * );
      *
-     * signature = keccak256('Executed(bytes4,uint256)')
+     * signature = keccak256('VerifiedCall(address,uint256,bytes4)')
      */
-    Executed:
-      "0x4004d18dc05f04c061c306cbb394d4083af494786ab828142d6118ab2c43a492",
+    VerifiedCall:
+      "0xa54458b75709e42f79700ffb6cfc57c7e224d8a77a52c457ee7ecb8e22636280",
   },
   LSP7: {
     /**
