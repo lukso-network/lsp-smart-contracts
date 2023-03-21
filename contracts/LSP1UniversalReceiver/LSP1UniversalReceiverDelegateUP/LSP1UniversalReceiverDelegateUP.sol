@@ -78,7 +78,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
 
         bytes32 notifierMapKey = LSP2Utils.generateMappingKey(mapPrefix, bytes20(notifier));
         bytes memory notifierMapValue = IERC725Y(msg.sender).getData(notifierMapKey);
-        bool isMapValueSet = bytes12(notifierMapValue) != bytes12(0);
+        bool isMapValueSet = bytes20(notifierMapValue) != bytes20(0);
 
         if (isReceiving) {
             if (isMapValueSet) return "LSP1: asset received is already registered";
