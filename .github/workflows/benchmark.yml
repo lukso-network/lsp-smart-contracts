@@ -8,8 +8,14 @@ on:
 
   pull_request:
     types: [opened]
+
+    # compare gas diff only when editing Solidity smart contract code
+    paths:
+      - "contracts/**/*.sol"
+
+    # do not run on releases (merging to main)
     branches-ignore:
-      - "main" # do not run on releases (merging to main)
+      - "main"
 
 jobs:
   benchmark:
