@@ -343,11 +343,11 @@ abstract contract LSP0ERC725AccountCore is
         address currentOwner = owner();
 
         if (msg.sender == currentOwner) {
-            // setting the pending owner
+            // set the pending owner
             LSP14Ownable2Step._transferOwnership(newOwner);
             emit OwnershipTransferStarted(currentOwner, newOwner);
 
-            // notfying the pending owner through LSP1
+            // notify the pending owner through LSP1
             newOwner.tryNotifyUniversalReceiver(_TYPEID_LSP0_OwnershipTransferStarted, "");
 
             // Require that the owner didn't change after the LSP1 Call
@@ -364,7 +364,7 @@ abstract contract LSP0ERC725AccountCore is
             LSP14Ownable2Step._transferOwnership(newOwner);
             emit OwnershipTransferStarted(currentOwner, newOwner);
 
-            // notfying the pending owner through LSP1
+            // notify the pending owner through LSP1
             newOwner.tryNotifyUniversalReceiver(_TYPEID_LSP0_OwnershipTransferStarted, "");
 
             // Require that the owner didn't change after the LSP1 Call

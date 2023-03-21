@@ -98,7 +98,7 @@ abstract contract LSP6KeyManagerCore is
     ) external returns (bytes4) {
         if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
 
-        bool isSetData;
+        bool isSetData = false;
         if (bytes4(data) == SETDATA_SELECTOR || bytes4(data) == SETDATA_ARRAY_SELECTOR) {
             isSetData = true;
         }
