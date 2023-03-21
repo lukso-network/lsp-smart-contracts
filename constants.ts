@@ -562,7 +562,7 @@ export const Errors = {
     },
   } as Record<string, LSPErrorInfo>,
   LSP11: {
-    "0x5560e16": {
+    "0x5560e16d": {
       error: "CallerIsNotGuardian(address)",
       message: "LSP11: The caller is not a guardian",
     },
