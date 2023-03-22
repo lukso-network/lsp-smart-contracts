@@ -371,13 +371,13 @@ describe("⛽📊 Gas Benchmark", () => {
               PERMISSIONS.CALL,
               combineAllowedCalls([CALLTYPE.VALUE], [allowedAddressToTransferValue], ["0xffffffff"], ["0xffffffff"]),
               combineAllowedCalls(
-                [CALLTYPE.WRITE, CALLTYPE.WRITE], 
+                [CALLTYPE.CALL, CALLTYPE.CALL], 
                 [lsp7MetaCoin.address, lsp7LyxDai.address], 
                 [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.LSP7DigitalAsset], 
                 ["0xffffffff", "0xffffffff"]
             ),
               combineAllowedCalls(
-                [CALLTYPE.WRITE, CALLTYPE.WRITE], 
+                [CALLTYPE.CALL, CALLTYPE.CALL], 
                 [lsp8MetaNFT.address, lsp8LyxPunks.address], 
                 [INTERFACE_IDS.LSP8IdentifiableDigitalAsset, INTERFACE_IDS.LSP8IdentifiableDigitalAsset], 
                 ["0xffffffff", "0xffffffff"]
@@ -681,7 +681,7 @@ describe("⛽📊 Gas Benchmark", () => {
         const dataKey = ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + controllerToEdit.address.substring(2)
 
         const dataValue = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [allowedAddresses[0], allowedAddresses[1], allowedAddresses[2]],
           ["0xffffffff", "0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff", "0xffffffff"]

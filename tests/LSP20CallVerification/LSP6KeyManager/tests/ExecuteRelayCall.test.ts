@@ -67,8 +67,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       combineAllowedCalls(
         [
-          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
-          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
         ],
         [random.address, targetContract.address],
         ["0xffffffff", "0xffffffff"],

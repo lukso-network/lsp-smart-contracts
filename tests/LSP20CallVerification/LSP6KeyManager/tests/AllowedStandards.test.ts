@@ -85,13 +85,13 @@ export const shouldBehaveLikeAllowedStandards = (
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       combineAllowedCalls(
-        [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
+        [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL)],
         ["0xffffffffffffffffffffffffffffffffffffffff"],
         [INTERFACE_IDS.ERC1271],
         ["0xffffffff"]
       ),
       combineAllowedCalls(
-        [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
+        [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL)],
         ["0xffffffffffffffffffffffffffffffffffffffff"],
         [INTERFACE_IDS.LSP7DigitalAsset],
         ["0xffffffff"]
