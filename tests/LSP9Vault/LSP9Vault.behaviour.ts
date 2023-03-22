@@ -815,7 +815,7 @@ export const shouldBehaveLikeLSP9 = (
               friendPermissions,
               combineAllowedCalls(
                 // TODO: is the bit permission CALL in the allowed call enough for this test?
-                [CALLTYPE.WRITE],
+                [CALLTYPE.CALL],
                 [context.lsp9Vault.address],
                 ["0xffffffff"],
                 ["0xffffffff"]

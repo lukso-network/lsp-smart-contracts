@@ -1120,7 +1120,7 @@ export const shouldBehaveLikeBatchExecute = (
             [
               PERMISSIONS.CALL,
               combineAllowedCalls(
-                [CALLTYPE.WRITE],
+                [CALLTYPE.CALL],
                 [tokenContract.address],
                 [INTERFACE_IDS.LSP7DigitalAsset],
                 [tokenContract.interface.getSighash("mint")]

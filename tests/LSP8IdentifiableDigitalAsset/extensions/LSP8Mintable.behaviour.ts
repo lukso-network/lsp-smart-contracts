@@ -130,7 +130,7 @@ export const shouldBehaveLikeLSP8Mintable = (
           [
             combinePermissions(PERMISSIONS.CALL, PERMISSIONS.REENTRANCY),
             combineAllowedCalls(
-              [CALLTYPE.WRITE],
+              [CALLTYPE.CALL],
               [context.lsp8Mintable.address],
               ["0xffffffff"],
               ["0xffffffff"]

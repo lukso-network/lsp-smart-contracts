@@ -87,7 +87,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         ),
         combinePermissions(PERMISSIONS.TRANSFERVALUE, PERMISSIONS.CALL),
         combineAllowedCalls(
-          [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
+          [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL)],
           [recipient.address],
           ["0xffffffff"],
           ["0xffffffff"]
@@ -691,10 +691,10 @@ export const shouldBehaveLikePermissionTransferValue = (
           // TODO: we set the bits for both TRANSFERVALUE + CALL in this test.
           // is the bit for TRANSFERVALUE required as well? (since the controller has SUPER_TRANSFERVALUE)
           [
-            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
-            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
-            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
-            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
+            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
+            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
+            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
           ],
           [
             lsp7Token.address,
@@ -1027,7 +1027,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         combineAllowedCalls(
           // TODO: we set the bits for both TRANSFERVALUE + CALL in this test.
           // is the bit for CALL required as well? (since the controller has SUPER_CALL)
-          [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
+          [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL)],
           [allowedAddress.address],
           ["0xffffffff"],
           ["0xffffffff"]
@@ -1285,7 +1285,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           // TODO: we set the bits for both TRANSFERVALUE + CALL in this test.
           // are both bits required to be set?
           // since the controller already has permissions SUPER_TRANSFERVALUE + SUPER_CALL
-          [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
+          [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL)],
           [allowedAddress.address],
           ["0xffffffff"],
           ["0xffffffff"]
