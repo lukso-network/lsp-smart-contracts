@@ -1603,12 +1603,9 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
               [keys, values]
             );
 
-          let tx = await context.keyManager
+          await context.keyManager
             .connect(controllerCanSetArrayKeys)
             ["execute(bytes)"](setDataPayload);
-
-          let receipt = await tx.wait();
-          console.log("test gas cost: ", receipt.gasUsed.toNumber());
 
           let result = await context.universalProfile["getData(bytes32[])"](
             keys

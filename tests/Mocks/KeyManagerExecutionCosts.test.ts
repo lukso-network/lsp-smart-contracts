@@ -79,13 +79,13 @@ describe("Key Manager gas cost interactions", () => {
           combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
           combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
           combineAllowedCalls(
-            [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
+            [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL)],
             [contractImplementsERC1271.address],
             [INTERFACE_IDS.ERC1271],
             ["0xffffffff"]
           ),
           combineAllowedCalls(
-            [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
+            [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL)],
             [contractImplementsERC1271.address],
             ["0xffffffff"],
             ["0xffffffff"]

@@ -163,8 +163,8 @@ export const testAllowedCallsInternals = (
 
       encodedAllowedCalls = combineAllowedCalls(
         [
-          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
-          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
         ],
         [
           allowedEOA.address.toLowerCase(),

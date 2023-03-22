@@ -87,7 +87,7 @@ export const shouldBehaveLikePermissionCall = (
       ];
 
       const allowedCallsValues = combineAllowedCalls(
-        [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+        [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
         [
           allowedEOA,
           allowedContractWithFallback.address,
@@ -433,7 +433,7 @@ export const shouldBehaveLikePermissionCall = (
         PERMISSIONS.CALL,
         PERMISSIONS.SETDATA,
         combineAllowedCalls(
-          [CALLTYPE.WRITE],
+          [CALLTYPE.CALL],
           [targetContract.address],
           ["0xffffffff"],
           ["0xffffffff"]
