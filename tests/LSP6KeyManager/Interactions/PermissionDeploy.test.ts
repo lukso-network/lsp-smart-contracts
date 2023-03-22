@@ -7,7 +7,7 @@ import { EIP191Signer } from "@lukso/eip191-signer.js";
 import {
   TargetContract__factory,
   UniversalProfile__factory,
-} from "../../../../types";
+} from "../../../types";
 
 // constants
 import {
@@ -16,17 +16,17 @@ import {
   LSP6_VERSION,
   PERMISSIONS,
   OPERATION_TYPES,
-} from "../../../../constants";
+} from "../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../../utils/context";
-import { setupKeyManager } from "../../../utils/fixtures";
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
 
 import {
   combinePermissions,
   LOCAL_PRIVATE_KEYS,
   provider,
-} from "../../../utils/helpers";
+} from "../../utils/helpers";
 import { BigNumber } from "ethers";
 
 export const shouldBehaveLikePermissionDeploy = (

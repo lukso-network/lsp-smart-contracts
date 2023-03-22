@@ -7,16 +7,16 @@ import {
   ERC725YDataKeys,
   PERMISSIONS,
   OPERATION_TYPES,
-} from "../../../../constants";
+} from "../../../constants";
 
-import { LSP6KeyManager, LSP6KeyManager__factory } from "../../../../types";
+import { LSP6KeyManager, LSP6KeyManager__factory } from "../../../types";
 
 // setup
-import { LSP6TestContext } from "../../../utils/context";
-import { setupKeyManager } from "../../../utils/fixtures";
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { provider } from "../../../utils/helpers";
+import { provider } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionChangeOwner = (
   buildContext: () => Promise<LSP6TestContext>

@@ -7,20 +7,17 @@ import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
-  INTERFACE_IDS,
-  CALLTYPE,
-} from "../../../../constants";
+} from "../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../../utils/context";
-import { setupKeyManager } from "../../../utils/fixtures";
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import {
   combinePermissions,
-  combineAllowedCalls,
   encodeCompactBytesArray,
-} from "../../../utils/helpers";
+} from "../../utils/helpers";
 
 /**
  * @dev fixture to reset all the permissions to 0x

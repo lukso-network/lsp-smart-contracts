@@ -7,7 +7,7 @@ import {
   ERC725JSONSchema,
 } from "@erc725/erc725.js";
 
-import { Executor, Executor__factory } from "../../../../types";
+import { Executor, Executor__factory } from "../../../types";
 
 // constants
 import {
@@ -15,18 +15,18 @@ import {
   ALL_PERMISSIONS,
   PERMISSIONS,
   OPERATION_TYPES,
-} from "../../../../constants";
+} from "../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../../utils/context";
-import { setupKeyManager } from "../../../utils/fixtures";
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import {
   getRandomAddresses,
   combinePermissions,
   encodeCompactBytesArray,
-} from "../../../utils/helpers";
+} from "../../utils/helpers";
 
 const BasicUPSetup_Schema: ERC725JSONSchema[] = [
   {
@@ -645,16 +645,17 @@ export const shouldBehaveLikePermissionSetData = (
 
       describe("when sending value while setting data", async () => {
         it("should revert with Key Manager error `CannotSendValueToSetData`", async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
-          let elements = {
-            MyFirstKey: "aaaaaaaaaa",
-            MySecondKey: "bbbbbbbbbb",
-            MyThirdKey: "cccccccccc",
-            MyFourthKey: "dddddddddd",
-            MyFifthKey: "eeeeeeeeee",
-          };
+          const keys = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("My Key")
+          );
 
-          let [keys, values] = generateKeysAndValues(elements);
+          const values = [
+            "0xaaaaaaaaaa",
+            "0xbbbbbbbbbb",
+            "0xcccccccccc",
+            "0xdddddddddd",
+            "0xeeeeeeeeee",
+          ];
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32[],bytes[])",

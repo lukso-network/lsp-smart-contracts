@@ -1,5 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { BigNumber } from "ethers";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
@@ -10,25 +12,23 @@ import {
   OPERATION_TYPES,
   PERMISSIONS,
   CALLTYPE,
-} from "../../../../constants";
+} from "../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../../utils/context";
-import { setupKeyManager } from "../../../utils/fixtures";
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
 import {
   abiCoder,
   combineAllowedCalls,
   LOCAL_PRIVATE_KEYS,
   provider,
   signLSP6ExecuteRelayCall,
-} from "../../../utils/helpers";
+} from "../../utils/helpers";
 import {
   LSP7Mintable,
   LSP7MintableInit__factory,
   LSP7Mintable__factory,
-} from "../../../../types";
-import { BigNumber } from "ethers";
-import { EIP191Signer } from "@lukso/eip191-signer.js";
+} from "../../../types";
 
 export const shouldBehaveLikeBatchExecute = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>

@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
-
+import { BytesLike } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {
@@ -10,17 +10,16 @@ import {
   LSP7Mintable__factory,
   LSP7Tester__factory,
   LSP8Mintable,
-  LSP8Mintable__factory,
   LSP0ERC725Account__factory,
-} from "../../../types";
+} from "../../types";
+
 import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
   ERC1271_VALUES,
-} from "../../../constants";
-import { ARRAY_LENGTH, encodeCompactBytesArray } from "../../utils/helpers";
-import { BytesLike } from "ethers";
+} from "../../constants";
+import { ARRAY_LENGTH, encodeCompactBytesArray } from "../utils/helpers";
 
 export type LSP6ControlledToken = {
   accounts: SignerWithAddress[];

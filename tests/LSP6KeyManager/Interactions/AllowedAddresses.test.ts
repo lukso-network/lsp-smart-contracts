@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { TargetContract, TargetContract__factory } from "../../../../types";
+import { TargetContract, TargetContract__factory } from "../../../types";
 
 // constants
 import {
@@ -11,11 +11,11 @@ import {
   OPERATION_TYPES,
   PERMISSIONS,
   CALLTYPE,
-} from "../../../../constants";
+} from "../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../../utils/context";
-import { setupKeyManager } from "../../../utils/fixtures";
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import {
@@ -25,7 +25,7 @@ import {
   combinePermissions,
   combineAllowedCalls,
   combineCallTypes,
-} from "../../../utils/helpers";
+} from "../../utils/helpers";
 
 export const shouldBehaveLikeAllowedAddresses = (
   buildContext: () => Promise<LSP6TestContext>

@@ -8,14 +8,14 @@ import {
   PERMISSIONS,
   INTERFACE_IDS,
   CALLTYPE,
-} from "../../../../constants";
+} from "../../../constants";
 
 // helpers
-import { combineAllowedCalls } from "../../../utils/helpers";
+import { combineAllowedCalls } from "../../utils/helpers";
 
 // setup
-import { LSP6TestContext } from "../../../utils/context";
-import { setupKeyManager } from "../../../utils/fixtures";
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
 
 export const shouldBehaveLikeSettingAllowedCalls = (
   buildContext: () => Promise<LSP6TestContext>

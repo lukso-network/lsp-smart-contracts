@@ -2,7 +2,7 @@
 import { BigNumber } from "ethers";
 
 // setup
-import { LSP6TestContext } from "../../../utils/context";
+import { LSP6TestContext } from "../../utils/context";
 import { buildReentrancyContext } from "./reentrancyHelpers";
 
 // tests
