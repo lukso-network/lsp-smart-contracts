@@ -382,13 +382,13 @@ abstract contract LSP6SetDataModule {
         /**
          * The pointer will always land on the length of each bytes value:
          *
-         * ↓↓
-         * 03 a00000
-         * 05 fff83a0011
-         * 20 aa0000000000000000000000000000000000000000000000000000000000cafe
-         * 12 bb000000000000000000000000000000beef
-         * 19 cc00000000000000000000000000000000000000000000deed
-         * ↑↑
+         * ↓↓↓↓
+         * 0003 a00000
+         * 0005 fff83a0011
+         * 0020 aa0000000000000000000000000000000000000000000000000000000000cafe
+         * 0012 bb000000000000000000000000000000beef
+         * 0019 cc00000000000000000000000000000000000000000000deed
+         * ↑↑↑↑
          *
          */
         uint256 pointer;
@@ -401,10 +401,10 @@ abstract contract LSP6SetDataModule {
         /**
          * iterate over each data key and update the `pointer` variable with the index where to find the length of each data key.
          *
-         * 0x 03 a00000 03 fff83a 20 aa00...00cafe
-         *    ↑↑        ↑↑        ↑↑
-         *  first  |  second  |  third
-         *  length |  length  |  length
+         * 0x 0003 a00000 0003 fff83a 0020 aa00...00cafe
+         *    ↑↑↑↑        ↑↑↑↑        ↑↑↑↑
+         *    first   |   second   |  third
+         *    length  |   length   |  length
          */
         while (pointer < allowedERC725YDataKeysCompacted.length) {
             // save the length of the allowed data key to calculate the `mask`.
@@ -499,13 +499,13 @@ abstract contract LSP6SetDataModule {
         /**
          * The pointer will always land on the length of each bytes value:
          *
-         * ↓↓
-         * 03 a00000
-         * 05 fff83a0011
-         * 20 aa0000000000000000000000000000000000000000000000000000000000cafe
-         * 12 bb000000000000000000000000000000beef
-         * 19 cc00000000000000000000000000000000000000000000deed
-         * ↑↑
+         * ↓↓↓↓
+         * 0003 a00000
+         * 0005 fff83a0011
+         * 0020 aa0000000000000000000000000000000000000000000000000000000000cafe
+         * 0012 bb000000000000000000000000000000beef
+         * 0019 cc00000000000000000000000000000000000000000000deed
+         * ↑↑↑↑
          *
          */
         uint256 pointer;
@@ -518,10 +518,10 @@ abstract contract LSP6SetDataModule {
         /**
          * iterate over each data key and update the `pointer` variable with the index where to find the length of each data key.
          *
-         * 0x 03 a00000 03 fff83a 20 aa00...00cafe
-         *    ↑↑        ↑↑        ↑↑
-         *  first  |  second  |  third
-         *  length |  length  |  length
+         * 0x 0003 a00000 0003 fff83a 0020 aa00...00cafe
+         *    ↑↑↑↑        ↑↑↑↑        ↑↑↑↑
+         *    first   |   second   |  third
+         *    length  |   length   |  length
          */
         while (pointer < allowedERC725YDataKeysCompacted.length) {
             // save the length of the allowed data key to calculate the `mask`.
