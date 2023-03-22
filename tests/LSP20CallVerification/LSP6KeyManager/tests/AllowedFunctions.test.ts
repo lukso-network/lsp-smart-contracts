@@ -65,7 +65,7 @@ export const shouldBehaveLikeAllowedFunctions = (
       PERMISSIONS.CALL,
       PERMISSIONS.CALL,
       combineAllowedCalls(
-        [CALLTYPE.WRITE],
+        [CALLTYPE.CALL],
         ["0xffffffffffffffffffffffffffffffffffffffff"],
         ["0xffffffff"],
         [targetContract.interface.getSighash("setName")]
@@ -381,7 +381,7 @@ export const shouldBehaveLikeAllowedFunctions = (
         PERMISSIONS.CALL,
         // LSP8:ANY:transfer(…)
         combineAllowedCalls(
-          [CALLTYPE.WRITE],
+          [CALLTYPE.CALL],
           ["0xffffffffffffffffffffffffffffffffffffffff"],
           [INTERFACE_IDS.LSP8IdentifiableDigitalAsset],
           [lsp8Contract.interface.getSighash("transfer")]
@@ -389,7 +389,7 @@ export const shouldBehaveLikeAllowedFunctions = (
         PERMISSIONS.CALL,
         // LSP7:ANY:ANY + LSP8:ANY: authorizeOperator(…)
         combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",

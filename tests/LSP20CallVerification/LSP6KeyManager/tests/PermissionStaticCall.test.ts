@@ -62,7 +62,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       ALL_PERMISSIONS,
       PERMISSIONS.STATICCALL,
       combineAllowedCalls(
-        [combineCallTypes(CALLTYPE.READ, CALLTYPE.VALUE)],
+        [combineCallTypes(CALLTYPE.STATICCALL, CALLTYPE.VALUE)],
         [targetContract.address],
         ["0xffffffff"],
         ["0xffffffff"]
@@ -224,7 +224,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       const permissionValues = [
         PERMISSIONS.STATICCALL,
         combineAllowedCalls(
-          [CALLTYPE.READ, CALLTYPE.READ],
+          [CALLTYPE.STATICCALL, CALLTYPE.STATICCALL],
           [
             allowedTargetContracts[0].address,
             allowedTargetContracts[1].address,

@@ -199,7 +199,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
       const permissionValues = [
         PERMISSIONS.SUPER_DELEGATECALL,
         combineAllowedCalls(
-          [CALLTYPE.EXECUTE, CALLTYPE.EXECUTE],
+          [CALLTYPE.DELEGATECALL, CALLTYPE.DELEGATECALL],
           [
             allowedDelegateCallContracts[0].address,
             allowedDelegateCallContracts[1].address,
