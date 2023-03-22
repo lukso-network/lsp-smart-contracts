@@ -8,7 +8,7 @@ import {
   OnERC721ReceivedExtension,
   SignatureValidator__factory,
   OnERC721ReceivedExtension__factory,
-} from "../../../types";
+} from "../../../../types";
 
 // constants
 import {
@@ -18,11 +18,11 @@ import {
   OPERATION_TYPES,
   ERC1271_VALUES,
   CALLTYPE,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
 
 // helpers
 import {
@@ -30,7 +30,7 @@ import {
   combineAllowedCalls,
   combineCallTypes,
   combinePermissions,
-} from "../../utils/helpers";
+} from "../../../utils/helpers";
 import { ethers } from "ethers";
 
 export const shouldBehaveLikePermissionStaticCall = (

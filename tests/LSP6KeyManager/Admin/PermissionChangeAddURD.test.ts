@@ -7,28 +7,28 @@ import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
 
 // helpers
 import {
   combinePermissions,
   encodeCompactBytesArray,
   getRandomAddresses,
-} from "../../utils/helpers";
+} from "../../../utils/helpers";
 
-export const shouldBehaveLikePermissionChangeOrAddExtensions = (
+export const shouldBehaveLikePermissionChangeOrAddURD = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
   let context: LSP6TestContext;
 
-  describe("setting Extension Handler keys (CHANGE vs ADD)", () => {
-    let canAddAndChangeExtensions: SignerWithAddress,
-      canOnlyAddExtensions: SignerWithAddress,
-      canOnlyChangeExtensions: SignerWithAddress,
+  describe("setting UniversalReceiverDelegate keys (CHANGE vs ADD)", () => {
+    let canAddAndChangeUniversalReceiverDelegate: SignerWithAddress,
+      canOnlyAddUniversalReceiverDelegate: SignerWithAddress,
+      canOnlyChangeUniversalReceiverDelegate: SignerWithAddress,
       canOnlySuperSetData: SignerWithAddress,
       canOnlySetData: SignerWithAddress,
       canOnlyCall;
@@ -36,49 +36,47 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
     let permissionArrayKeys: string[] = [];
     let permissionArrayValues: string[] = [];
 
-    // Generate few bytes32 Extension Handler dataKeys
-    let extensionHandlerKey1,
-      extensionHandlerKey2,
-      extensionHandlerKey3,
-      extensionHandlerKey4,
-      extensionHandlerKey5;
+    // Generate few bytes32 LSP1UniversalReceiverDelegate dataKeys
+    let universalReceiverDelegateKey1,
+      universalReceiverDelegateKey2,
+      universalReceiverDelegateKey3,
+      universalReceiverDelegateKey4;
 
-    // Generate few addresses to be used as dataValue for Extension Handler dataKeys
-    let extensionA, extensionB, extensionC, extensionD;
+    // Generate few addresses to be used as dataValue for LSP1 Keys
+    let universalReceiverDelegateA,
+      universalReceiverDelegateB,
+      universalReceiverDelegateC,
+      universalReceiverDelegateD;
 
     before(async () => {
       context = await buildContext();
 
-      extensionHandlerKey1 =
-        ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-        ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
-        "00000000000000000000000000000000"; // zero padded
+      universalReceiverDelegateKey1 =
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+        ethers.utils.hexlify(ethers.utils.randomBytes(32)).substring(2, 42);
 
-      extensionHandlerKey2 =
-        ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-        ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
-        "00000000000000000000000000000000"; // zero padded
+      universalReceiverDelegateKey2 =
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+        ethers.utils.hexlify(ethers.utils.randomBytes(32)).substring(2, 42);
 
-      extensionHandlerKey3 =
-        ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-        ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
-        "00000000000000000000000000000000"; // zero padded
+      universalReceiverDelegateKey3 =
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+        ethers.utils.hexlify(ethers.utils.randomBytes(32)).substring(2, 42);
 
-      extensionHandlerKey4 =
-        ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-        ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
-        "00000000000000000000000000000000"; // zero padded
+      universalReceiverDelegateKey4 =
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+        ethers.utils.hexlify(ethers.utils.randomBytes(32)).substring(2, 42);
 
-      extensionHandlerKey5 =
-        ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-        ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
-        "00000000000000000000000000000000"; // zero padded
+      [
+        universalReceiverDelegateA,
+        universalReceiverDelegateB,
+        universalReceiverDelegateC,
+        universalReceiverDelegateD,
+      ] = getRandomAddresses(4);
 
-      [extensionA, extensionB, extensionC, extensionD] = getRandomAddresses(4);
-
-      canAddAndChangeExtensions = context.accounts[1];
-      canOnlyAddExtensions = context.accounts[2];
-      canOnlyChangeExtensions = context.accounts[3];
+      canAddAndChangeUniversalReceiverDelegate = context.accounts[1];
+      canOnlyAddUniversalReceiverDelegate = context.accounts[2];
+      canOnlyChangeUniversalReceiverDelegate = context.accounts[3];
       canOnlySuperSetData = context.accounts[4];
       canOnlySetData = context.accounts[5];
       canOnlyCall = context.accounts[6];
@@ -87,11 +85,11 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canAddAndChangeExtensions.address.substring(2),
+          canAddAndChangeUniversalReceiverDelegate.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyAddExtensions.address.substring(2),
+          canOnlyAddUniversalReceiverDelegate.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyChangeExtensions.address.substring(2),
+          canOnlyChangeUniversalReceiverDelegate.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlySuperSetData.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -105,16 +103,17 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
       let permissionValues = [
         ALL_PERMISSIONS,
         combinePermissions(
-          PERMISSIONS.ADDEXTENSIONS,
-          PERMISSIONS.CHANGEEXTENSIONS
+          PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE,
+          PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE
         ),
-        PERMISSIONS.ADDEXTENSIONS,
-        PERMISSIONS.CHANGEEXTENSIONS,
+        PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE,
+        PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE,
         PERMISSIONS.SUPER_SETDATA,
         PERMISSIONS.SETDATA,
         encodeCompactBytesArray([
-          // Adding the Extension Handler Keys as AllowedERC725YDataKey to test if it break the behavior
-          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix,
+          // Adding the LSP1 Keys as AllowedERC725YDataKey to test if it break the behavior
+          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix,
+          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFirstKey")),
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyThirdKey")),
@@ -143,9 +142,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
       permissionArrayValues = [
         ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
         context.owner.address,
-        canAddAndChangeExtensions.address,
-        canOnlyAddExtensions.address,
-        canOnlyChangeExtensions.address,
+        canAddAndChangeUniversalReceiverDelegate.address,
+        canOnlyAddUniversalReceiverDelegate.address,
+        canOnlyChangeUniversalReceiverDelegate.address,
         canOnlySuperSetData.address,
         canOnlySetData.address,
         canOnlyCall.address,
@@ -157,12 +156,12 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
       await setupKeyManager(context, permissionKeys, permissionValues);
     });
 
-    describe("when setting one ExtensionHandler key", () => {
+    describe("when setting one UniversalReceiverDelegate key", () => {
       describe("when caller is an address with ALL PERMISSIONS", () => {
-        it("should be allowed to ADD a ExtensionHandler key", async () => {
+        it("should be allowed to ADD a UniversalReceiverDelegate key", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey5,
-            dataValue: extensionA,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataValue: universalReceiverDelegateA,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -180,10 +179,10 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           expect(result).to.equal(payloadParam.dataValue);
         });
 
-        it("should be allowed to edit a ExtensionHandler key", async () => {
+        it("should be allowed to edit a UniversalReceiverDelegate key", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey5,
-            dataValue: extensionB,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataValue: universalReceiverDelegateB,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -201,9 +200,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           expect(result).to.equal(payloadParam.dataValue);
         });
 
-        it("should be allowed to remove a ExtensionHandler key set", async () => {
+        it("should be allowed to remove a UniversalReceiverDelegate key set", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey5,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
             dataValue: "0x",
           };
 
@@ -223,11 +222,11 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         });
       });
 
-      describe("when caller is an address with ADD/CHANGE Extensions permission", () => {
-        it("should be allowed to ADD a ExtensionHandler key", async () => {
+      describe("when caller is an address with ADD/CHANGE UniversalReceiverDelegate permission", () => {
+        it("should be allowed to ADD a UniversalReceiverDelegate key", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey1,
-            dataValue: extensionA,
+            dataKey: universalReceiverDelegateKey1,
+            dataValue: universalReceiverDelegateA,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -236,7 +235,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await context.keyManager
-            .connect(canAddAndChangeExtensions)
+            .connect(canAddAndChangeUniversalReceiverDelegate)
             ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
@@ -245,10 +244,10 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           expect(result).to.equal(payloadParam.dataValue);
         });
 
-        it("should be allowed to edit a ExtensionHandler key", async () => {
+        it("should be allowed to edit a UniversalReceiverDelegate key", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey1,
-            dataValue: extensionB,
+            dataKey: universalReceiverDelegateKey1,
+            dataValue: universalReceiverDelegateB,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -257,7 +256,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await context.keyManager
-            .connect(canAddAndChangeExtensions)
+            .connect(canAddAndChangeUniversalReceiverDelegate)
             ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
@@ -266,9 +265,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           expect(result).to.equal(payloadParam.dataValue);
         });
 
-        it("should be allowed to remove a ExtensionHandler key set", async () => {
+        it("should be allowed to remove a UniversalReceiverDelegate key set", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey1,
+            dataKey: universalReceiverDelegateKey1,
             dataValue: "0x",
           };
 
@@ -278,7 +277,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await context.keyManager
-            .connect(canAddAndChangeExtensions)
+            .connect(canAddAndChangeUniversalReceiverDelegate)
             ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
@@ -288,11 +287,11 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         });
       });
 
-      describe("when caller is an address with ADDExtensions permission", () => {
-        it("should be allowed to ADD a ExtensionHandler key", async () => {
+      describe("when caller is an address with ADDUniversalReceiverDelegate permission", () => {
+        it("should be allowed to ADD a UniversalReceiverDelegate key", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey5,
-            dataValue: extensionA,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataValue: universalReceiverDelegateA,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -301,7 +300,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await context.keyManager
-            .connect(canOnlyAddExtensions)
+            .connect(canOnlyAddUniversalReceiverDelegate)
             ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
@@ -310,10 +309,10 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           expect(result).to.equal(payloadParam.dataValue);
         });
 
-        it("should NOT be allowed to edit the ExtensionHandler key set even if it's setting existing data", async () => {
+        it("should NOT be allowed to edit the UniversalReceiverDelegate key set even if it's setting existing data", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey5,
-            dataValue: extensionA,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataValue: universalReceiverDelegateA,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -323,17 +322,20 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddExtensions)
+              .connect(canOnlyAddUniversalReceiverDelegate)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlyAddExtensions.address, "CHANGEEXTENSIONS");
+            .withArgs(
+              canOnlyAddUniversalReceiverDelegate.address,
+              "CHANGEUNIVERSALRECEIVERDELEGATE"
+            );
         });
 
-        it("should NOT be allowed to edit the ExtensionHandler key set", async () => {
+        it("should NOT be allowed to edit the UniversalReceiverDelegate key set", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey5,
-            dataValue: extensionB,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataValue: universalReceiverDelegateB,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -343,16 +345,19 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddExtensions)
+              .connect(canOnlyAddUniversalReceiverDelegate)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlyAddExtensions.address, "CHANGEEXTENSIONS");
+            .withArgs(
+              canOnlyAddUniversalReceiverDelegate.address,
+              "CHANGEUNIVERSALRECEIVERDELEGATE"
+            );
         });
 
-        it("should NOT be allowed to remove a ExtensionHandler key set", async () => {
+        it("should NOT be allowed to remove a UniversalReceiverDelegate key set", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey5,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
             dataValue: "0x",
           };
 
@@ -363,19 +368,22 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddExtensions)
+              .connect(canOnlyAddUniversalReceiverDelegate)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlyAddExtensions.address, "CHANGEEXTENSIONS");
+            .withArgs(
+              canOnlyAddUniversalReceiverDelegate.address,
+              "CHANGEUNIVERSALRECEIVERDELEGATE"
+            );
         });
       });
 
-      describe("when caller is an address with CHANGEExtensions permission", () => {
-        it("should NOT be allowed to ADD another ExtensionHandler key", async () => {
+      describe("when caller is an address with CHANGEUniversalReceiverDelegate permission", () => {
+        it("should NOT be allowed to ADD another UniversalReceiverDelegate key", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey1,
-            dataValue: extensionA,
+            dataKey: universalReceiverDelegateKey1,
+            dataValue: universalReceiverDelegateA,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -385,17 +393,20 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyChangeExtensions)
+              .connect(canOnlyChangeUniversalReceiverDelegate)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlyChangeExtensions.address, "ADDEXTENSIONS");
+            .withArgs(
+              canOnlyChangeUniversalReceiverDelegate.address,
+              "ADDUNIVERSALRECEIVERDELEGATE"
+            );
         });
 
-        it("should be allowed to edit the ExtensionHandler key set", async () => {
+        it("should be allowed to edit the UniversalReceiverDelegate key set", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey5,
-            dataValue: extensionD,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataValue: universalReceiverDelegateD,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -404,7 +415,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await context.keyManager
-            .connect(canOnlyChangeExtensions)
+            .connect(canOnlyChangeUniversalReceiverDelegate)
             ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
@@ -414,9 +425,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           expect(result).to.equal(payloadParam.dataValue);
         });
 
-        it("should be allowed to remove the ExtensionHandler key set", async () => {
+        it("should be allowed to remove the UniversalReceiverDelegate key set", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey5,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
             dataValue: "0x",
           };
 
@@ -426,7 +437,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await context.keyManager
-            .connect(canOnlyChangeExtensions)
+            .connect(canOnlyChangeUniversalReceiverDelegate)
             ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
@@ -439,11 +450,11 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
       describe("when caller is an address with SUPER_SETDATA permission", () => {
         before(async () => {
-          // Adding am extensionHandler data key by the owner to test if address with SUPER_SETDATA
+          // Adding a LSP1 data key by the owner to test if address with SUPER_SETDATA
           // can CHANGE its content
           const payloadParam = {
-            dataKey: extensionHandlerKey2,
-            dataValue: extensionB,
+            dataKey: universalReceiverDelegateKey2,
+            dataValue: universalReceiverDelegateB,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -455,10 +466,10 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .connect(context.owner)
             ["execute(bytes)"](payload);
         });
-        it("should NOT be allowed to ADD another ExtensionHandler key", async () => {
+        it("should NOT be allowed to ADD another UniversalReceiverDelegate key", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey1,
-            dataValue: extensionA,
+            dataKey: universalReceiverDelegateKey1,
+            dataValue: universalReceiverDelegateA,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -472,13 +483,16 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlySuperSetData.address, "ADDEXTENSIONS");
+            .withArgs(
+              canOnlySuperSetData.address,
+              "ADDUNIVERSALRECEIVERDELEGATE"
+            );
         });
 
-        it("should NOT be allowed to edit the ExtensionHandler key set", async () => {
+        it("should NOT be allowed to edit the UniversalReceiverDelegate key set", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey2,
-            dataValue: extensionB,
+            dataKey: universalReceiverDelegateKey2,
+            dataValue: universalReceiverDelegateB,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -492,12 +506,15 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlySuperSetData.address, "CHANGEEXTENSIONS");
+            .withArgs(
+              canOnlySuperSetData.address,
+              "CHANGEUNIVERSALRECEIVERDELEGATE"
+            );
         });
 
-        it("should NOT be allowed to remove the ExtensionHandler key set", async () => {
+        it("should NOT be allowed to remove the UniversalReceiverDelegate key set", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey2,
+            dataKey: universalReceiverDelegateKey2,
             dataValue: "0x",
           };
 
@@ -512,17 +529,20 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlySuperSetData.address, "CHANGEEXTENSIONS");
+            .withArgs(
+              canOnlySuperSetData.address,
+              "CHANGEUNIVERSALRECEIVERDELEGATE"
+            );
         });
       });
 
-      describe("when caller is an address with SETDATA permission with LSP0_EXTENSIONSHANDLER_Prefix as allowedKey", () => {
+      describe("when caller is an address with SETDATA permission with LSP1URDPrefix as allowedKey", () => {
         before(async () => {
-          // Adding an extensionHandler data key by the owner to test if address with SETDATA
+          // Adding a LSP1 data key by the owner to test if address with SETDATA
           // can CHANGE its content
           const payloadParam = {
-            dataKey: extensionHandlerKey2,
-            dataValue: extensionB,
+            dataKey: universalReceiverDelegateKey2,
+            dataValue: universalReceiverDelegateB,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -535,10 +555,10 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             ["execute(bytes)"](payload);
         });
 
-        it("should NOT be allowed to ADD another ExtensionHandler key even when ExtensionHandler key is allowed in AllowedERC725YDataKey", async () => {
+        it("should NOT be allowed to ADD another UniversalReceiverDelegate key even when UniversalReceiverDelegate key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey5,
-            dataValue: extensionA,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataValue: universalReceiverDelegateA,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -552,13 +572,13 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlySetData.address, "ADDEXTENSIONS");
+            .withArgs(canOnlySetData.address, "ADDUNIVERSALRECEIVERDELEGATE");
         });
 
-        it("should NOT be allowed to edit ExtensionHandler key even when ExtensionHandler key is allowed in AllowedERC725YDataKey", async () => {
+        it("should NOT be allowed to edit UniversalReceiverDelegate key even when UniversalReceiverDelegate key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey2,
-            dataValue: extensionA,
+            dataKey: universalReceiverDelegateKey2,
+            dataValue: universalReceiverDelegateA,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -572,12 +592,15 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlySetData.address, "CHANGEEXTENSIONS");
+            .withArgs(
+              canOnlySetData.address,
+              "CHANGEUNIVERSALRECEIVERDELEGATE"
+            );
         });
 
-        it("should NOT be allowed to remove the ExtensionHandler key set even when ExtensionHandler key is allowed in AllowedERC725YDataKey", async () => {
+        it("should NOT be allowed to remove the UniversalReceiverDelegate key set even when UniversalReceiverDelegate key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey2,
+            dataKey: universalReceiverDelegateKey2,
             dataValue: "0x",
           };
 
@@ -592,17 +615,20 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlySetData.address, "CHANGEEXTENSIONS");
+            .withArgs(
+              canOnlySetData.address,
+              "CHANGEUNIVERSALRECEIVERDELEGATE"
+            );
         });
       });
 
       describe("when caller is an address with CALL permission (Without SETDATA)", () => {
         before(async () => {
-          // Adding an extensionHandler data key by the owner to test if address with CALL
+          // Adding a LSP1 data key by the owner to test if address with CALL
           // can CHANGE its content
           const payloadParam = {
-            dataKey: extensionHandlerKey2,
-            dataValue: extensionB,
+            dataKey: universalReceiverDelegateKey2,
+            dataValue: universalReceiverDelegateB,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -615,10 +641,10 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             ["execute(bytes)"](payload);
         });
 
-        it("should NOT be allowed to ADD another ExtensionHandler key", async () => {
+        it("should NOT be allowed to ADD another UniversalReceiverDelegate key", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey5,
-            dataValue: extensionA,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataValue: universalReceiverDelegateA,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -630,13 +656,13 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlyCall.address, "ADDEXTENSIONS");
+            .withArgs(canOnlyCall.address, "ADDUNIVERSALRECEIVERDELEGATE");
         });
 
-        it("should NOT be allowed to edit ExtensionHandler key even when ExtensionHandler key is allowed in AllowedERC725YDataKey", async () => {
+        it("should NOT be allowed to edit UniversalReceiverDelegate key even when UniversalReceiverDelegate key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey2,
-            dataValue: extensionA,
+            dataKey: universalReceiverDelegateKey2,
+            dataValue: universalReceiverDelegateA,
           };
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -648,12 +674,12 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlyCall.address, "CHANGEEXTENSIONS");
+            .withArgs(canOnlyCall.address, "CHANGEUNIVERSALRECEIVERDELEGATE");
         });
 
-        it("should NOT be allowed to remove the ExtensionHandler key set even when ExtensionHandler key is allowed in AllowedERC725YDataKey", async () => {
+        it("should NOT be allowed to remove the UniversalReceiverDelegate key set even when UniversalReceiverDelegate key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
-            dataKey: extensionHandlerKey2,
+            dataKey: universalReceiverDelegateKey2,
             dataValue: "0x",
           };
 
@@ -666,22 +692,22 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlyCall.address, "CHANGEEXTENSIONS");
+            .withArgs(canOnlyCall.address, "CHANGEUNIVERSALRECEIVERDELEGATE");
         });
       });
     });
 
-    describe("when setting mixed keys (ExtensionHandler + AddressPermission + ERC725Y Data Key)", () => {
+    describe("when setting mixed keys (UniversalReceiverDelegate + AddressPermission + ERC725Y Data Key)", () => {
       describe("when caller is an address with ALL PERMISSIONS", () => {
-        it("should be allowed to ADD a ExtensionHandler, AddressPermission and ERC725Y Data Key", async () => {
+        it("should be allowed to ADD a UniversalReceiverDelegate, AddressPermission and ERC725Y Data Key", async () => {
           const payloadParam = {
             dataKeys: [
-              extensionHandlerKey5,
+              ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
               ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
             ],
             dataValues: [
-              extensionA,
+              universalReceiverDelegateA,
               ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
               "0xaabbccdd",
             ],
@@ -703,16 +729,16 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           expect(result).to.deep.equal(payloadParam.dataValues);
         });
 
-        it("should be allowed to edit a ExtensionHandler key already set and add new AddressPermission and ERC725Y Data Key ", async () => {
+        it("should be allowed to edit a UniversalReceiverDelegate Key already set and add new AddressPermission and ERC725Y Data Key ", async () => {
           const payloadParam = {
             dataKeys: [
-              extensionHandlerKey5,
+              ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
               ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
             ],
             dataValues: [
-              extensionB,
-              ethers.utils.hexZeroPad(ethers.utils.hexlify(8), 32),
+              universalReceiverDelegateB,
+              ethers.utils.hexZeroPad(ethers.utils.hexlify(8), 16),
               "0xaabb",
             ],
           };
@@ -733,10 +759,10 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           expect(result).to.deep.equal(payloadParam.dataValues);
         });
 
-        it("should be allowed to remove a ExtensionHandler key already set and add new AddressPermission and ERC725Y Data Key ", async () => {
+        it("should be allowed to remove a UniversalReceiverDelegate Key already set and add new AddressPermission and ERC725Y Data Key ", async () => {
           const payloadParam = {
             dataKeys: [
-              extensionHandlerKey5,
+              ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
               ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
             ],
@@ -764,17 +790,17 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         });
       });
 
-      describe("when caller is an address with ADD/CHANGE Extensions permission ", () => {
-        describe("when adding a ExtensionHandler, AddressPermission and ERC725Y Data Key", () => {
+      describe("when caller is an address with ADD/CHANGE UniversalReceiverDelegate permission ", () => {
+        describe("when adding a UniversalReceiverDelegate, AddressPermission and ERC725Y Data Key", () => {
           it("should revert because of caller don't have EDITPERMISSIONS Permission", async () => {
             const payloadParam = {
               dataKeys: [
-                extensionHandlerKey5,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
                 ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
                 ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
               ],
               dataValues: [
-                extensionA,
+                universalReceiverDelegateA,
                 ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
                 "0xaabbccdd",
               ],
@@ -787,25 +813,28 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
             await expect(
               context.keyManager
-                .connect(canAddAndChangeExtensions)
+                .connect(canAddAndChangeUniversalReceiverDelegate)
                 ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canAddAndChangeExtensions.address, "EDITPERMISSIONS");
+              .withArgs(
+                canAddAndChangeUniversalReceiverDelegate.address,
+                "EDITPERMISSIONS"
+              );
           });
         });
 
-        describe("when adding a ExtensionHandler and ERC725Y Data Key", () => {
+        describe("when adding a UniversalReceiverDelegate and ERC725Y Data Key", () => {
           it("should revert because of caller don't have SETDATA Permission", async () => {
             const payloadParam = {
               dataKeys: [
-                extensionHandlerKey5,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
                 ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
               ],
-              dataValues: [extensionA, "0xaabbccdd"],
+              dataValues: [universalReceiverDelegateA, "0xaabbccdd"],
             };
 
             let payload = context.universalProfile.interface.encodeFunctionData(
@@ -815,22 +844,31 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
             await expect(
               context.keyManager
-                .connect(canAddAndChangeExtensions)
+                .connect(canAddAndChangeUniversalReceiverDelegate)
                 ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canAddAndChangeExtensions.address, "SETDATA");
+              .withArgs(
+                canAddAndChangeUniversalReceiverDelegate.address,
+                "SETDATA"
+              );
           });
         });
 
-        describe("when adding and changing in same tx ExtensionHandler", () => {
+        describe("when adding and changing in same tx UniversalReceiverDelegate", () => {
           it("should pass", async () => {
             const payloadParam = {
-              dataKeys: [extensionHandlerKey5, extensionHandlerKey5],
-              dataValues: [extensionA, extensionB],
+              dataKeys: [
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+              ],
+              dataValues: [
+                universalReceiverDelegateA,
+                universalReceiverDelegateB,
+              ],
             };
 
             let payload = context.universalProfile.interface.encodeFunctionData(
@@ -839,7 +877,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             );
 
             await context.keyManager
-              .connect(canAddAndChangeExtensions)
+              .connect(canAddAndChangeUniversalReceiverDelegate)
               ["execute(bytes)"](payload);
 
             const [result] = await context.universalProfile[
@@ -851,11 +889,14 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         });
       });
 
-      describe("when caller is an address with ADD Extensions permission ", () => {
+      describe("when caller is an address with ADD UniversalReceiverDelegate permission ", () => {
         before(async () => {
-          // Nullfying the value of ExtensionHandler keys to test that we cannot add them
+          // Nullfying the value of UniversalReceiverDelegate keys to test that we cannot add them
           const payloadParam = {
-            dataKeys: [extensionHandlerKey1, extensionHandlerKey2],
+            dataKeys: [
+              universalReceiverDelegateKey1,
+              universalReceiverDelegateKey2,
+            ],
             dataValues: ["0x", "0x"],
           };
 
@@ -868,11 +909,17 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .connect(context.owner)
             ["execute(bytes)"](payload);
         });
-        describe("when adding multiple ExtensionHandler keys", () => {
+        describe("when adding multiple UniversalReceiverDelegate keys", () => {
           it("should pass", async () => {
             const payloadParam = {
-              dataKeys: [extensionHandlerKey1, extensionHandlerKey2],
-              dataValues: [extensionA, extensionB],
+              dataKeys: [
+                universalReceiverDelegateKey1,
+                universalReceiverDelegateKey2,
+              ],
+              dataValues: [
+                universalReceiverDelegateA,
+                universalReceiverDelegateB,
+              ],
             };
 
             let payload = context.universalProfile.interface.encodeFunctionData(
@@ -881,7 +928,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             );
 
             await context.keyManager
-              .connect(canOnlyAddExtensions)
+              .connect(canOnlyAddUniversalReceiverDelegate)
               ["execute(bytes)"](payload);
 
             const result = await context.universalProfile["getData(bytes32[])"](
@@ -892,11 +939,17 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           });
         });
 
-        describe("when adding and changing ExtensionHandler keys in 1 tx ", () => {
-          it("should revert because caller don't have CHANGE Extensions permission", async () => {
+        describe("when adding and changing UniversalReceiverDelegate keys in 1 tx ", () => {
+          it("should revert because caller don't have CHANGE UniversalReceiverDelegate permission", async () => {
             const payloadParam = {
-              dataKeys: [extensionHandlerKey3, extensionHandlerKey1],
-              dataValues: [extensionC, extensionD],
+              dataKeys: [
+                universalReceiverDelegateKey3,
+                universalReceiverDelegateKey1,
+              ],
+              dataValues: [
+                universalReceiverDelegateC,
+                universalReceiverDelegateD,
+              ],
             };
 
             let payload = context.universalProfile.interface.encodeFunctionData(
@@ -906,25 +959,28 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
             await expect(
               context.keyManager
-                .connect(canOnlyAddExtensions)
+                .connect(canOnlyAddUniversalReceiverDelegate)
                 ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canOnlyAddExtensions.address, "CHANGEEXTENSIONS");
+              .withArgs(
+                canOnlyAddUniversalReceiverDelegate.address,
+                "CHANGEUNIVERSALRECEIVERDELEGATE"
+              );
           });
         });
 
-        describe("when adding a ExtensionHandler and ERC725Y Data Key", () => {
+        describe("when adding a UniversalReceiverDelegate and ERC725Y Data Key", () => {
           it("should revert because of caller don't have SETDATA Permission", async () => {
             const payloadParam = {
               dataKeys: [
-                extensionHandlerKey4,
+                universalReceiverDelegateKey4,
                 ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
               ],
-              dataValues: [extensionA, "0xaabbccdd"],
+              dataValues: [universalReceiverDelegateA, "0xaabbccdd"],
             };
 
             let payload = context.universalProfile.interface.encodeFunctionData(
@@ -934,29 +990,33 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
             await expect(
               context.keyManager
-                .connect(canOnlyAddExtensions)
+                .connect(canOnlyAddUniversalReceiverDelegate)
                 ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canOnlyAddExtensions.address, "SETDATA");
+              .withArgs(canOnlyAddUniversalReceiverDelegate.address, "SETDATA");
           });
         });
       });
 
-      describe("when caller is an address with CHANGE Extensions permission ", () => {
-        describe("when changing multiple ExtensionHandler keys", () => {
+      describe("when caller is an address with CHANGE UniversalReceiverDelegate permission ", () => {
+        describe("when changing multiple UniversalReceiverDelegate keys", () => {
           it("should pass", async () => {
             const payloadParam = {
               dataKeys: [
                 // All these keys have their values set in previous tests
-                extensionHandlerKey5,
-                extensionHandlerKey1,
-                extensionHandlerKey2,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+                universalReceiverDelegateKey1,
+                universalReceiverDelegateKey2,
               ],
-              dataValues: [extensionA, extensionB, extensionC],
+              dataValues: [
+                universalReceiverDelegateA,
+                universalReceiverDelegateB,
+                universalReceiverDelegateC,
+              ],
             };
 
             let payload = context.universalProfile.interface.encodeFunctionData(
@@ -965,7 +1025,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             );
 
             await context.keyManager
-              .connect(canOnlyChangeExtensions)
+              .connect(canOnlyChangeUniversalReceiverDelegate)
               ["execute(bytes)"](payload);
 
             const result = await context.universalProfile["getData(bytes32[])"](
@@ -976,17 +1036,22 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           });
         });
 
-        describe("when changing multiple ExtensionHandler keys with adding ERC725Y Data Key", () => {
+        describe("when changing multiple UniversalReceiverDelegate keys with adding ERC725Y Data Key", () => {
           it("should revert because caller don't have SETDATA permission", async () => {
             const payloadParam = {
               dataKeys: [
                 // All these keys have their values set in previous tests
-                extensionHandlerKey5,
-                extensionHandlerKey1,
-                extensionHandlerKey2,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+                universalReceiverDelegateKey1,
+                universalReceiverDelegateKey2,
                 ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
               ],
-              dataValues: [extensionA, extensionB, extensionC, "0xaabbccdd"],
+              dataValues: [
+                universalReceiverDelegateA,
+                universalReceiverDelegateB,
+                universalReceiverDelegateC,
+                "0xaabbccdd",
+              ],
             };
 
             let payload = context.universalProfile.interface.encodeFunctionData(
@@ -996,29 +1061,37 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
             await expect(
               context.keyManager
-                .connect(canOnlyChangeExtensions)
+                .connect(canOnlyChangeUniversalReceiverDelegate)
                 ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canOnlyChangeExtensions.address, "SETDATA");
+              .withArgs(
+                canOnlyChangeUniversalReceiverDelegate.address,
+                "SETDATA"
+              );
           });
         });
 
-        describe("when changing multiple ExtensionHandler keys with adding a ExtensionHandler key", () => {
-          it("should revert because caller don't have ADDExtensions permission", async () => {
+        describe("when changing multiple UniversalReceiverDelegate keys with adding a UniversalReceiverDelegate Key", () => {
+          it("should revert because caller don't have ADDUniversalReceiverDelegate permission", async () => {
             const payloadParam = {
               dataKeys: [
                 // All these keys have their values set in previous tests
-                extensionHandlerKey5,
-                extensionHandlerKey1,
-                extensionHandlerKey2,
-                // ExtensionHandler key to ADD
-                extensionHandlerKey4,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+                universalReceiverDelegateKey1,
+                universalReceiverDelegateKey2,
+                // UniversalReceiverDelegate key to ADD
+                universalReceiverDelegateKey4,
               ],
-              dataValues: [extensionA, extensionB, extensionC, extensionD],
+              dataValues: [
+                universalReceiverDelegateA,
+                universalReceiverDelegateB,
+                universalReceiverDelegateC,
+                universalReceiverDelegateD,
+              ],
             };
 
             let payload = context.universalProfile.interface.encodeFunctionData(
@@ -1028,25 +1101,28 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
             await expect(
               context.keyManager
-                .connect(canOnlyChangeExtensions)
+                .connect(canOnlyChangeUniversalReceiverDelegate)
                 ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canOnlyChangeExtensions.address, "ADDEXTENSIONS");
+              .withArgs(
+                canOnlyChangeUniversalReceiverDelegate.address,
+                "ADDUNIVERSALRECEIVERDELEGATE"
+              );
           });
         });
 
-        describe("when changing (removing) multiple ExtensionHandler keys", () => {
+        describe("when changing (removing) multiple UniversalReceiverDelegate keys", () => {
           it("should pass", async () => {
             const payloadParam = {
               dataKeys: [
                 // All these keys have their values set in previous tests
-                extensionHandlerKey5,
-                extensionHandlerKey1,
-                extensionHandlerKey2,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+                universalReceiverDelegateKey1,
+                universalReceiverDelegateKey2,
               ],
               dataValues: ["0x", "0x", "0x"],
             };
@@ -1057,7 +1133,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             );
 
             await context.keyManager
-              .connect(canOnlyChangeExtensions)
+              .connect(canOnlyChangeUniversalReceiverDelegate)
               ["execute(bytes)"](payload);
 
             const result = await context.universalProfile["getData(bytes32[])"](
@@ -1068,11 +1144,17 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           });
         });
 
-        describe("when adding ExtensionHandler keys ", () => {
-          it("should revert because caller don't have ADD Extensions permission", async () => {
+        describe("when adding UniversalReceiverDelegate keys ", () => {
+          it("should revert because caller don't have ADD UniversalReceiverDelegate permission", async () => {
             const payloadParam = {
-              dataKeys: [extensionHandlerKey1, extensionHandlerKey2],
-              dataValues: [extensionC, extensionD],
+              dataKeys: [
+                universalReceiverDelegateKey1,
+                universalReceiverDelegateKey2,
+              ],
+              dataValues: [
+                universalReceiverDelegateC,
+                universalReceiverDelegateD,
+              ],
             };
 
             let payload = context.universalProfile.interface.encodeFunctionData(
@@ -1082,25 +1164,28 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
             await expect(
               context.keyManager
-                .connect(canOnlyChangeExtensions)
+                .connect(canOnlyChangeUniversalReceiverDelegate)
                 ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canOnlyChangeExtensions.address, "ADDEXTENSIONS");
+              .withArgs(
+                canOnlyChangeUniversalReceiverDelegate.address,
+                "ADDUNIVERSALRECEIVERDELEGATE"
+              );
           });
         });
 
-        describe("when adding a ExtensionHandler and ERC725Y Data Key", () => {
+        describe("when adding a UniversalReceiverDelegate and ERC725Y Data Key", () => {
           it("should revert because of caller don't have SETDATA Permission", async () => {
             const payloadParam = {
               dataKeys: [
-                extensionHandlerKey4,
+                universalReceiverDelegateKey4,
                 ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
               ],
-              dataValues: [extensionA, "0xaabbccdd"],
+              dataValues: [universalReceiverDelegateA, "0xaabbccdd"],
             };
 
             let payload = context.universalProfile.interface.encodeFunctionData(
@@ -1110,51 +1195,30 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
             await expect(
               context.keyManager
-                .connect(canOnlyAddExtensions)
+                .connect(canOnlyAddUniversalReceiverDelegate)
                 ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canOnlyAddExtensions.address, "SETDATA");
+              .withArgs(canOnlyAddUniversalReceiverDelegate.address, "SETDATA");
           });
         });
       });
 
       describe("when caller is an address with SUPER SETDATA permission ", () => {
-        describe("when adding ExtensionHandler keys ", () => {
-          it("should revert because caller don't have ADD Extensions permission", async () => {
-            const payloadParam = {
-              dataKeys: [extensionHandlerKey1, extensionHandlerKey2],
-              dataValues: [extensionC, extensionD],
-            };
-
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
-            await expect(
-              context.keyManager
-                .connect(canOnlySuperSetData)
-                ["execute(bytes)"](payload)
-            )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAuthorised"
-              )
-              .withArgs(canOnlySuperSetData.address, "ADDEXTENSIONS");
-          });
-        });
-        describe("when Adding multiple ExtensionHandler keys with adding ERC725Y Data Key", () => {
-          it("should revert because caller don't have ADDExtensions permission", async () => {
+        describe("when adding UniversalReceiverDelegate keys ", () => {
+          it("should revert because caller don't have ADD UniversalReceiverDelegate permission", async () => {
             const payloadParam = {
               dataKeys: [
-                extensionHandlerKey4,
-                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
+                universalReceiverDelegateKey1,
+                universalReceiverDelegateKey2,
               ],
-              dataValues: [extensionA, "0xaabbccdd"],
+              dataValues: [
+                universalReceiverDelegateC,
+                universalReceiverDelegateD,
+              ],
             };
 
             let payload = context.universalProfile.interface.encodeFunctionData(
@@ -1171,45 +1235,56 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canOnlySuperSetData.address, "ADDEXTENSIONS");
+              .withArgs(
+                canOnlySuperSetData.address,
+                "ADDUNIVERSALRECEIVERDELEGATE"
+              );
+          });
+        });
+        describe("when Adding multiple UniversalReceiverDelegate keys with adding ERC725Y Data Key", () => {
+          it("should revert because caller don't have ADDUniversalReceiverDelegate permission", async () => {
+            const payloadParam = {
+              dataKeys: [
+                universalReceiverDelegateKey4,
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
+              ],
+              dataValues: [universalReceiverDelegateA, "0xaabbccdd"],
+            };
+
+            let payload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [payloadParam.dataKeys, payloadParam.dataValues]
+            );
+
+            await expect(
+              context.keyManager
+                .connect(canOnlySuperSetData)
+                ["execute(bytes)"](payload)
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NotAuthorised"
+              )
+              .withArgs(
+                canOnlySuperSetData.address,
+                "ADDUNIVERSALRECEIVERDELEGATE"
+              );
           });
         });
       });
 
-      describe("when caller is an address with SETDATA permission with ExtensionHandler keys as AllowedERC725YDataKeys ", () => {
-        describe("when adding ExtensionHandler keys ", () => {
-          it("should revert because caller don't have ADD Extensions permission and ExtensionHandler keys are not part of AllowedERC725YDataKeys", async () => {
-            const payloadParam = {
-              dataKeys: [extensionHandlerKey5, extensionHandlerKey2],
-              dataValues: [extensionC, extensionD],
-            };
-
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32[],bytes[])",
-              [payloadParam.dataKeys, payloadParam.dataValues]
-            );
-
-            await expect(
-              context.keyManager
-                .connect(canOnlySetData)
-                ["execute(bytes)"](payload)
-            )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAuthorised"
-              )
-              .withArgs(canOnlySetData.address, "ADDEXTENSIONS");
-          });
-        });
-
-        describe("when Adding multiple ExtensionHandler keys with adding other allowedERC725YDataKey", () => {
-          it("should revert because caller don't have ADDExtensions permission", async () => {
+      describe("when caller is an address with SETDATA permission with UniversalReceiverDelegate keys as AllowedERC725YDataKeys ", () => {
+        describe("when adding UniversalReceiverDelegate keys ", () => {
+          it("should revert because caller don't have ADD UniversalReceiverDelegate permission and UniversalReceiverDelegate keys are not part of AllowedERC725YDataKeys", async () => {
             const payloadParam = {
               dataKeys: [
-                extensionHandlerKey4,
-                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+                universalReceiverDelegateKey2,
               ],
-              dataValues: [extensionA, "0xaabbccdd"],
+              dataValues: [
+                universalReceiverDelegateC,
+                universalReceiverDelegateD,
+              ],
             };
 
             let payload = context.universalProfile.interface.encodeFunctionData(
@@ -1226,11 +1301,39 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canOnlySetData.address, "ADDEXTENSIONS");
+              .withArgs(canOnlySetData.address, "ADDUNIVERSALRECEIVERDELEGATE");
           });
         });
 
-        describe("When granting the caller ADDExtensions permission", () => {
+        describe("when Adding multiple UniversalReceiverDelegate keys with adding other allowedERC725YDataKey", () => {
+          it("should revert because caller don't have ADDUniversalReceiverDelegate permission", async () => {
+            const payloadParam = {
+              dataKeys: [
+                universalReceiverDelegateKey4,
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
+              ],
+              dataValues: [universalReceiverDelegateA, "0xaabbccdd"],
+            };
+
+            let payload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [payloadParam.dataKeys, payloadParam.dataValues]
+            );
+
+            await expect(
+              context.keyManager
+                .connect(canOnlySetData)
+                ["execute(bytes)"](payload)
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NotAuthorised"
+              )
+              .withArgs(canOnlySetData.address, "ADDUNIVERSALRECEIVERDELEGATE");
+          });
+        });
+
+        describe("When granting the caller ADDUniversalReceiverDelegate permission", () => {
           before(async () => {
             const payloadParam = {
               dataKeys: [
@@ -1239,7 +1342,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               ],
               dataValues: [
                 combinePermissions(
-                  PERMISSIONS.ADDEXTENSIONS,
+                  PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE,
                   PERMISSIONS.SETDATA
                 ),
               ],
@@ -1254,16 +1357,16 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               .connect(context.owner)
               ["execute(bytes)"](payload);
           });
-          describe("When adding ExtensionHandler key and one of his allowedERC725Y Data Key", () => {
+          describe("When adding UniversalReceiverDelegate key and one of his allowedERC725Y Data Key", () => {
             it("should pass", async () => {
               const payloadParam = {
                 dataKeys: [
-                  extensionHandlerKey4,
+                  universalReceiverDelegateKey4,
                   ethers.utils.keccak256(
                     ethers.utils.toUtf8Bytes("MyFirstKey")
                   ),
                 ],
-                dataValues: [extensionA, "0xaabbccdd"],
+                dataValues: [universalReceiverDelegateA, "0xaabbccdd"],
               };
 
               let payload =

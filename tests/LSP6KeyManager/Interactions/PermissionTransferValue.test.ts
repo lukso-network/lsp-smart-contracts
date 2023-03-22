@@ -14,7 +14,7 @@ import {
   TargetPayableContract,
   TargetPayableContract__factory,
   UniversalProfile__factory,
-} from "../../../types";
+} from "../../../../types";
 
 // constants
 import {
@@ -24,11 +24,11 @@ import {
   PERMISSIONS,
   OPERATION_TYPES,
   CALLTYPE,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
 
 // helpers
 import {
@@ -37,7 +37,7 @@ import {
   combineAllowedCalls,
   LOCAL_PRIVATE_KEYS,
   combineCallTypes,
-} from "../../utils/helpers";
+} from "../../../utils/helpers";
 
 const universalProfileInterface = UniversalProfile__factory.createInterface();
 

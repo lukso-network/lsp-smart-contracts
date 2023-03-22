@@ -2,17 +2,17 @@
 import { BigNumber } from "ethers";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { buildReentrancyContext } from "./Reentrancy/reentrancyHelpers";
+import { LSP6TestContext } from "../../../utils/context";
+import { buildReentrancyContext } from "./reentrancyHelpers";
 
 // tests
-import { testSingleExecuteToSingleExecute } from "./Reentrancy/SingleExecuteToSingleExecute.test";
-import { testSingleExecuteRelayCallToSingleExecute } from "./Reentrancy/SingleExecuteRelayCallToSingleExecute.test";
-import { testSingleExecuteToSingleExecuteRelayCall } from "./Reentrancy/SingleExecuteToSingleExecuteRelayCall.test";
-import { testSingleExecuteRelayCallToSingleExecuteRelayCall } from "./Reentrancy/SingleExecuteRelayCallToSingleExecuteRelayCall.test";
+import { testSingleExecuteToSingleExecute } from "./SingleExecuteToSingleExecute.test";
+import { testSingleExecuteRelayCallToSingleExecute } from "./SingleExecuteRelayCallToSingleExecute.test";
+import { testSingleExecuteToSingleExecuteRelayCall } from "./SingleExecuteToSingleExecuteRelayCall.test";
+import { testSingleExecuteRelayCallToSingleExecuteRelayCall } from "./SingleExecuteRelayCallToSingleExecuteRelayCall.test";
 
-import { testSingleExecuteToBatchExecute } from "./Reentrancy/SingleExecuteToBatchExecute.test";
-import { testSingleExecuteToBatchExecuteRelayCall } from "./Reentrancy/SingleExecuteToBatchExecuteRelayCall.test";
+import { testSingleExecuteToBatchExecute } from "./SingleExecuteToBatchExecute.test";
+import { testSingleExecuteToBatchExecuteRelayCall } from "./SingleExecuteToBatchExecuteRelayCall.test";
 
 export const testReentrancyScenarios = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>

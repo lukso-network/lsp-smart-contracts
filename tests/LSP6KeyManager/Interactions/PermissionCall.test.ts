@@ -10,7 +10,7 @@ import {
   FallbackRevert__factory,
   TargetContract,
   TargetContract__factory,
-} from "../../../types";
+} from "../../../../types";
 
 // constants
 import {
@@ -20,18 +20,18 @@ import {
   LSP6_VERSION,
   OPERATION_TYPES,
   CALLTYPE,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
 
 // helpers
 import {
   abiCoder,
   combineAllowedCalls,
   LOCAL_PRIVATE_KEYS,
-} from "../../utils/helpers";
+} from "../../../utils/helpers";
 
 export const shouldBehaveLikePermissionCall = (
   buildContext: () => Promise<LSP6TestContext>

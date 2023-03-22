@@ -4,9 +4,11 @@ import { LSP6TestContext, LSP6InternalsTestContext } from "../utils/context";
 
 import { INTERFACE_IDS } from "../../constants";
 
+import { shouldBehaveLikePermissionChangeOrAddController, shouldBehaveLikeSettingAllowedCalls } from "./SetPermissions";
+
 import {
   shouldBehaveLikePermissionChangeOwner,
-  shouldBehaveLikePermissionChangeOrAddController,
+  ,
   shouldBehaveLikePermissionChangeOrAddExtensions,
   shouldBehaveLikePermissionChangeOrAddURD,
   shouldBehaveLikePermissionSetData,
@@ -41,7 +43,8 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionChangeOwner(buildContext);
   });
 
-  describe("CHANGE / ADD permissions", () => {
+  describe("Set Permissions", () => {
+    shouldBehaveLikeSettingAllowedCalls(buildContext);
     shouldBehaveLikePermissionChangeOrAddController(buildContext);
   });
 

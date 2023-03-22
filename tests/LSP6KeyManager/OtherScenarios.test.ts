@@ -115,7 +115,7 @@ export const otherTestScenarios = (
       );
     });
 
-    it("Should revert because of wrong operation type when caller has not ALL PERMISSIONS", async () => {
+    it("Should revert because of wrong operation type when caller has permission CALL", async () => {
       let targetPayload = targetContract.interface.encodeFunctionData(
         "setName",
         ["new name"]
