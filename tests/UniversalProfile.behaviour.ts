@@ -299,6 +299,52 @@ export const shouldBehaveLikeLSP3 = (
         expect(result).to.equal(value);
       });
     });
+
+    describe("when sending value while setting data", () => {
+      describe("when calling setData(..)", () => {
+        it("should pass and emit the ValueReceived event", async () => {
+          let msgValue = ethers.utils.parseEther("2");
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+          let value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
+
+          await expect(
+            context.universalProfile
+              .connect(context.accounts[0])
+              ["setData(bytes32,bytes)"](key, value, { value: msgValue })
+          )
+            .to.emit(context.universalProfile, "ValueReceived")
+            .withArgs(context.accounts[0].address, msgValue);
+
+          const result = await context.universalProfile["getData(bytes32)"](
+            key
+          );
+          expect(result).to.equal(value);
+        });
+      });
+
+      describe("when calling setData(..) Array", () => {
+        it("should pass and emit the ValueReceived event", async () => {
+          let msgValue = ethers.utils.parseEther("2");
+          let key = [
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key")),
+          ];
+          let value = [ethers.utils.hexlify(ethers.utils.randomBytes(256))];
+
+          await expect(
+            context.universalProfile
+              .connect(context.accounts[0])
+              ["setData(bytes32[],bytes[])"](key, value, { value: msgValue })
+          )
+            .to.emit(context.universalProfile, "ValueReceived")
+            .withArgs(context.accounts[0].address, msgValue);
+
+          const result = await context.universalProfile["getData(bytes32[])"](
+            key
+          );
+          expect(result).to.deep.equal(value);
+        });
+      });
+    });
   });
 
   describe("when calling the contract without any value or data", () => {
@@ -427,7 +473,12 @@ export const shouldBehaveLikeLSP3 = (
           context.universalProfile
             .connect(context.accounts[4])
             .batchCalls([setDataPayload])
-        ).to.be.revertedWith("Ownable: caller is not the owner");
+        )
+          .to.be.revertedWithCustomError(
+            context.universalProfile,
+            "LSP20InvalidMagicValue"
+          )
+          .withArgs(false, "0x");
       });
     });
 

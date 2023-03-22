@@ -551,6 +551,52 @@ export const shouldBehaveLikeLSP9 = (
         expect(result).to.equal(value);
       });
     });
+
+    describe("When sending value to setData", () => {
+      it("should revert when sending value to setData(..)", async () => {
+        let value = ethers.utils.parseEther("2");
+        const txParams = {
+          dataKey: ethers.utils.solidityKeccak256(["string"], ["FirstDataKey"]),
+          dataValue: "0xaabbccdd",
+        };
+
+        await expect(
+          context.lsp9Vault
+            .connect(context.accounts.owner)
+            ["setData(bytes32,bytes)"](txParams.dataKey, txParams.dataValue, {
+              value: value,
+            })
+        ).to.be.revertedWithCustomError(
+          context.lsp9Vault,
+          "ERC725Y_MsgValueDisallowed"
+        );
+      });
+
+      it("should revert when sending value to setData(..) Array", async () => {
+        let value = ethers.utils.parseEther("2");
+        const txParams = {
+          dataKey: [
+            ethers.utils.solidityKeccak256(["string"], ["FirstDataKey"]),
+          ],
+          dataValue: ["0xaabbccdd"],
+        };
+
+        await expect(
+          context.lsp9Vault
+            .connect(context.accounts.owner)
+            ["setData(bytes32[],bytes[])"](
+              txParams.dataKey,
+              txParams.dataValue,
+              {
+                value: value,
+              }
+            )
+        ).to.be.revertedWithCustomError(
+          context.lsp9Vault,
+          "ERC725Y_MsgValueDisallowed"
+        );
+      });
+    });
   });
 
   describe("when testing execute(...)", () => {

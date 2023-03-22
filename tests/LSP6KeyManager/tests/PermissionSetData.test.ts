@@ -200,6 +200,29 @@ export const shouldBehaveLikePermissionSetData = (
             .withArgs(cannotSetData.address, "SETDATA");
         });
       });
+
+      describe("when sending value while setting data", async () => {
+        it("should revert with Key Manager error `CannotSendValueToSetData`", async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+          let value = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("Hello Lukso!!!")
+          );
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32,bytes)",
+            [key, value]
+          );
+
+          await expect(
+            context.keyManager
+              .connect(canSetDataWithAllowedERC725YDataKeys)
+              ["execute(bytes)"](payload, { value: 12 })
+          ).to.be.revertedWithCustomError(
+            context.keyManager,
+            "CannotSendValueToSetData"
+          );
+        });
+      });
     });
 
     describe("when setting multiple keys", () => {
@@ -617,6 +640,35 @@ export const shouldBehaveLikePermissionSetData = (
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(cannotSetData.address, "SETDATA");
+        });
+      });
+
+      describe("when sending value while setting data", async () => {
+        it("should revert with Key Manager error `CannotSendValueToSetData`", async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+          let elements = {
+            MyFirstKey: "aaaaaaaaaa",
+            MySecondKey: "bbbbbbbbbb",
+            MyThirdKey: "cccccccccc",
+            MyFourthKey: "dddddddddd",
+            MyFifthKey: "eeeeeeeeee",
+          };
+
+          let [keys, values] = generateKeysAndValues(elements);
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [keys, values]
+          );
+
+          await expect(
+            context.keyManager
+              .connect(context.owner)
+              ["execute(bytes)"](payload, { value: 12 })
+          ).to.be.revertedWithCustomError(
+            context.keyManager,
+            "CannotSendValueToSetData"
+          );
         });
       });
     });
