@@ -645,16 +645,20 @@ export const shouldBehaveLikePermissionSetData = (
 
       describe("when sending value while setting data", async () => {
         it("should revert with Key Manager error `CannotSendValueToSetData`", async () => {
-          const keys = ethers.utils.keccak256(
-            ethers.utils.toUtf8Bytes("My Key")
-          );
+          const keys = [
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Second Key")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Third Key")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Fourth Key")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Fifth Key")),
+          ];
 
           const values = [
-            "0xaaaaaaaaaa",
-            "0xbbbbbbbbbb",
-            "0xcccccccccc",
-            "0xdddddddddd",
-            "0xeeeeeeeeee",
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("0xaaaaaaaaaa")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("0xbbbbbbbbbb")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("0xcccccccccc")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("0xdddddddddd")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("0xeeeeeeeeee")),
           ];
 
           let payload = context.universalProfile.interface.encodeFunctionData(
