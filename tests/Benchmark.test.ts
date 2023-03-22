@@ -128,14 +128,8 @@ describe("⛽📊 Gas Benchmark", () => {
       it("transfer some LYXes to an EOA", async () => {
         const lyxAmount = ethers.utils.parseEther("3");
 
-        const transferLYX =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [OPERATION_TYPES.CALL, recipientEOA.address, lyxAmount, "0x"]
-          );
-
         // prettier-ignore
-        const tx = await context.keyManager.connect(context.owner)["execute(bytes)"](transferLYX);
+        const tx = await context.universalProfile.connect(context.owner)["execute(uint256,address,uint256,bytes)"](OPERATION_TYPES.CALL, recipientEOA.address, lyxAmount, "0x");
         const receipt = await tx.wait();
 
         casesExecuteMainController.push([
@@ -147,14 +141,8 @@ describe("⛽📊 Gas Benchmark", () => {
       it("transfers some LYXes to a UP", async () => {
         const lyxAmount = ethers.utils.parseEther("3");
 
-        const transferLYX =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [OPERATION_TYPES.CALL, aliceUP.address, lyxAmount, "0x"]
-          );
-
         // prettier-ignore
-        const tx = await context.keyManager.connect(context.owner)["execute(bytes)"](transferLYX);
+        const tx = await context.universalProfile.connect(context.owner)["execute(uint256,address,uint256,bytes)"](OPERATION_TYPES.CALL, aliceUP.address, lyxAmount, "0x");
         const receipt = await tx.wait();
 
         casesExecuteMainController.push([
@@ -166,25 +154,19 @@ describe("⛽📊 Gas Benchmark", () => {
       it("transfers some tokens (LSP7) to an EOA (no data)", async () => {
         const tokenAmount = 100;
 
-        const transferTokens =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              lsp7MetaCoin.address,
-              0,
-              lsp7MetaCoin.interface.encodeFunctionData("transfer", [
-                context.universalProfile.address,
-                recipientEOA.address,
-                tokenAmount,
-                true,
-                "0x",
-              ]),
-            ]
-          );
-
         // prettier-ignore
-        const tx = await context.keyManager.connect(context.owner)["execute(bytes)"](transferTokens);
+        const tx = await context.universalProfile.connect(context.owner)["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          lsp7MetaCoin.address,
+          0,
+          lsp7MetaCoin.interface.encodeFunctionData("transfer", [
+            context.universalProfile.address,
+            recipientEOA.address,
+            tokenAmount,
+            true,
+            "0x",
+          ])
+        );
         const receipt = await tx.wait();
 
         casesExecuteMainController.push([
@@ -196,25 +178,19 @@ describe("⛽📊 Gas Benchmark", () => {
       it("transfer some tokens (LSP7) to a UP (no data)", async () => {
         const tokenAmount = 100;
 
-        const transferTokens =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              lsp7MetaCoin.address,
-              0,
-              lsp7MetaCoin.interface.encodeFunctionData("transfer", [
-                context.universalProfile.address,
-                aliceUP.address,
-                tokenAmount,
-                true,
-                "0x",
-              ]),
-            ]
-          );
-
         // prettier-ignore
-        const tx = await context.keyManager.connect(context.owner)["execute(bytes)"](transferTokens);
+        const tx = await context.universalProfile.connect(context.owner)["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          lsp7MetaCoin.address,
+          0,
+          lsp7MetaCoin.interface.encodeFunctionData("transfer", [
+            context.universalProfile.address,
+            aliceUP.address,
+            tokenAmount,
+            true,
+            "0x",
+          ])
+        );
         const receipt = await tx.wait();
 
         casesExecuteMainController.push([
@@ -226,25 +202,19 @@ describe("⛽📊 Gas Benchmark", () => {
       it("transfer a NFT (LSP8) to a EOA (no data)", async () => {
         const nftId = nftList[0];
 
-        const transferNFT =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              lsp8MetaNFT.address,
-              0,
-              lsp8MetaNFT.interface.encodeFunctionData("transfer", [
-                context.universalProfile.address,
-                recipientEOA.address,
-                nftId,
-                true,
-                "0x",
-              ]),
-            ]
-          );
-
         // prettier-ignore
-        const tx = await context.keyManager.connect(context.owner)["execute(bytes)"](transferNFT);
+        const tx = await context.universalProfile.connect(context.owner)["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          lsp8MetaNFT.address,
+          0,
+          lsp8MetaNFT.interface.encodeFunctionData("transfer", [
+            context.universalProfile.address,
+            recipientEOA.address,
+            nftId,
+            true,
+            "0x",
+          ])
+        );
         const receipt = await tx.wait();
 
         casesExecuteMainController.push([
@@ -256,25 +226,19 @@ describe("⛽📊 Gas Benchmark", () => {
       it("transfer a NFT (LSP8) to a UP (no data)", async () => {
         const nftId = nftList[1];
 
-        const transferNFT =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              lsp8MetaNFT.address,
-              0,
-              lsp8MetaNFT.interface.encodeFunctionData("transfer", [
-                context.universalProfile.address,
-                aliceUP.address,
-                nftId,
-                false,
-                "0x",
-              ]),
-            ]
-          );
-
         // prettier-ignore
-        const tx = await context.keyManager.connect(context.owner)["execute(bytes)"](transferNFT);
+        const tx = await context.universalProfile.connect(context.owner)["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          lsp8MetaNFT.address,
+          0,
+          lsp8MetaNFT.interface.encodeFunctionData("transfer", [
+            context.universalProfile.address,
+            aliceUP.address,
+            nftId,
+            false,
+            "0x",
+          ])
+        );
         const receipt = await tx.wait();
 
         casesExecuteMainController.push([
@@ -425,20 +389,14 @@ describe("⛽📊 Gas Benchmark", () => {
       it("transfer some LYXes to an EOA - restricted to 1 x allowed address only (TRANSFERVALUE + 1x AllowedCalls)", async () => {
         const lyxAmount = 10;
 
-        const transferLYX =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              allowedAddressToTransferValue,
-              lyxAmount,
-              "0x",
-            ]
-          );
-
-        const tx = await context.keyManager
+        const tx = await context.universalProfile
           .connect(canTransferValueToOneAddress)
-          ["execute(bytes)"](transferLYX);
+          ["execute(uint256,address,uint256,bytes)"](
+            OPERATION_TYPES.CALL,
+            allowedAddressToTransferValue,
+            lyxAmount,
+            "0x"
+          );
         const receipt = await tx.wait();
 
         casesExecuteRestrictedController.push([
@@ -450,25 +408,19 @@ describe("⛽📊 Gas Benchmark", () => {
       it("transfers some tokens (LSP7) to an EOA - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
         const tokenAmount = 100;
 
-        const transferTokens =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              lsp7MetaCoin.address,
-              0,
-              lsp7MetaCoin.interface.encodeFunctionData("transfer", [
-                context.universalProfile.address,
-                recipientEOA.address,
-                tokenAmount,
-                true,
-                "0x",
-              ]),
-            ]
-          );
-
         // prettier-ignore
-        const tx = await context.keyManager.connect(canTransferTwoTokens)["execute(bytes)"](transferTokens);
+        const tx = await context.universalProfile.connect(canTransferTwoTokens)["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          lsp7MetaCoin.address,
+          0,
+          lsp7MetaCoin.interface.encodeFunctionData("transfer", [
+            context.universalProfile.address,
+            recipientEOA.address,
+            tokenAmount,
+            true,
+            "0x",
+          ])
+        );
         const receipt = await tx.wait();
 
         casesExecuteRestrictedController.push([
@@ -480,25 +432,19 @@ describe("⛽📊 Gas Benchmark", () => {
       it("transfers some tokens (LSP7) to an other UP - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
         const tokenAmount = 100;
 
-        const transferTokens =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              lsp7MetaCoin.address,
-              0,
-              lsp7MetaCoin.interface.encodeFunctionData("transfer", [
-                context.universalProfile.address,
-                aliceUP.address,
-                tokenAmount,
-                true,
-                "0x",
-              ]),
-            ]
-          );
-
         // prettier-ignore
-        const tx = await context.keyManager.connect(canTransferTwoTokens)["execute(bytes)"](transferTokens);
+        const tx = await context.universalProfile.connect(canTransferTwoTokens)["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          lsp7MetaCoin.address,
+          0,
+          lsp7MetaCoin.interface.encodeFunctionData("transfer", [
+            context.universalProfile.address,
+            aliceUP.address,
+            tokenAmount,
+            true,
+            "0x",
+          ])
+        );
         const receipt = await tx.wait();
 
         casesExecuteRestrictedController.push([
@@ -510,25 +456,19 @@ describe("⛽📊 Gas Benchmark", () => {
       it("transfers a NFT (LSP8) to an EOA - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
         const nftId = metaNFTList[0];
 
-        const transferNFT =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              lsp8MetaNFT.address,
-              0,
-              lsp8MetaNFT.interface.encodeFunctionData("transfer", [
-                context.universalProfile.address,
-                recipientEOA.address,
-                nftId,
-                true,
-                "0x",
-              ]),
-            ]
-          );
-
         // prettier-ignore
-        const tx = await context.keyManager.connect(canTransferTwoNFTs)["execute(bytes)"](transferNFT);
+        const tx = await context.universalProfile.connect(canTransferTwoNFTs)["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          lsp8MetaNFT.address,
+          0,
+          lsp8MetaNFT.interface.encodeFunctionData("transfer", [
+            context.universalProfile.address,
+            recipientEOA.address,
+            nftId,
+            true,
+            "0x",
+          ])
+        );
         const receipt = await tx.wait();
 
         casesExecuteRestrictedController.push([
@@ -540,25 +480,19 @@ describe("⛽📊 Gas Benchmark", () => {
       it("transfers a NFT (LSP8) to an other UP - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
         const nftId = metaNFTList[1];
 
-        const transferNFT =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              lsp8MetaNFT.address,
-              0,
-              lsp8MetaNFT.interface.encodeFunctionData("transfer", [
-                context.universalProfile.address,
-                aliceUP.address,
-                nftId,
-                false,
-                "0x",
-              ]),
-            ]
-          );
-
         // prettier-ignore
-        const tx = await context.keyManager.connect(canTransferTwoNFTs)["execute(bytes)"](transferNFT);
+        const tx = await context.universalProfile.connect(canTransferTwoNFTs)["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          lsp8MetaNFT.address,
+          0,
+          lsp8MetaNFT.interface.encodeFunctionData("transfer", [
+            context.universalProfile.address,
+            aliceUP.address,
+            nftId,
+            false,
+            "0x",
+          ])
+        );
         const receipt = await tx.wait();
 
         casesExecuteRestrictedController.push([
@@ -644,15 +578,9 @@ describe("⛽📊 Gas Benchmark", () => {
         const dataValue =
           "0x6f357c6a820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361696670733a2f2f516d597231564a4c776572673670456f73636468564775676f3339706136727963455a4c6a7452504466573834554178";
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [dataKey, dataValue]
-          );
-
-        const tx = await context.keyManager
+        const tx = await context.universalProfile
           .connect(context.owner)
-          ["execute(bytes)"](setDataPayload);
+          ["setData(bytes32,bytes)"](dataKey, dataValue);
         const receipt = await tx.wait();
 
         benchmarkCasesSetDataMainController.push([
@@ -686,15 +614,9 @@ describe("⛽📊 Gas Benchmark", () => {
           combinePermissions(PERMISSIONS.SETDATA),
         ];
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [dataKeys, dataValues]
-          );
-
-        let tx = await context.keyManager
+        let tx = await context.universalProfile
           .connect(context.owner)
-          ["execute(bytes)"](setDataPayload);
+          ["setData(bytes32[],bytes[])"](dataKeys, dataValues);
 
         let receipt = await tx.wait();
 
@@ -728,18 +650,11 @@ describe("⛽📊 Gas Benchmark", () => {
           ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + controllerToEdit.address.substring(2)
 
         // prettier-ignore
-        const dataValue = 
-        encodeCompactBytesArray([allowedDataKeys[0], allowedDataKeys[1], allowedDataKeys[2]])
+        const dataValue = encodeCompactBytesArray([allowedDataKeys[0], allowedDataKeys[1], allowedDataKeys[2]])
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [dataKey, dataValue]
-          );
-
-        let tx = await context.keyManager
+        let tx = await context.universalProfile
           .connect(context.owner)
-          ["execute(bytes)"](setDataPayload);
+          ["setData(bytes32,bytes)"](dataKey, dataValue);
 
         let receipt = await tx.wait();
 
@@ -772,15 +687,9 @@ describe("⛽📊 Gas Benchmark", () => {
           ["0xffffffff", "0xffffffff", "0xffffffff"]
         );
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [dataKey, dataValue]
-          );
-
-        let tx = await context.keyManager
+        let tx = await context.universalProfile
           .connect(context.owner)
-          ["execute(bytes)"](setDataPayload);
+          ["setData(bytes32,bytes)"](dataKey, dataValue);
 
         let receipt = await tx.wait();
 
@@ -819,15 +728,9 @@ describe("⛽📊 Gas Benchmark", () => {
           "0x",
         ];
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [dataKeys, dataValues]
-          );
-
-        let tx = await context.keyManager
+        let tx = await context.universalProfile
           .connect(context.owner)
-          ["execute(bytes)"](setDataPayload);
+          ["setData(bytes32[],bytes[])"](dataKeys, dataValues);
 
         let receipt = await tx.wait();
 
@@ -859,15 +762,12 @@ describe("⛽📊 Gas Benchmark", () => {
           context.accounts[9].address,
         ];
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [issuedAssetsDataKeys, issuedAssetsDataValues]
-          );
-
-        let tx = await context.keyManager
+        let tx = await context.universalProfile
           .connect(context.owner)
-          ["execute(bytes)"](setDataPayload);
+          ["setData(bytes32[],bytes[])"](
+            issuedAssetsDataKeys,
+            issuedAssetsDataValues
+          );
 
         let receipt = await tx.wait();
 
@@ -901,15 +801,9 @@ describe("⛽📊 Gas Benchmark", () => {
         const dataKey = allowedERC725YDataKeys[5];
         const dataValue = "0xaabbccdd";
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [dataKey, dataValue]
-          );
-
-        const tx = await context.keyManager
+        const tx = await context.universalProfile
           .connect(controllerCanSetData)
-          ["execute(bytes)"](setDataPayload);
+          ["setData(bytes32,bytes)"](dataKey, dataValue);
         const receipt = await tx.wait();
 
         benchmarkCasesSetDataRestrictedController.push([
@@ -922,15 +816,9 @@ describe("⛽📊 Gas Benchmark", () => {
         const dataKeys = allowedERC725YDataKeys.slice(0, 3);
         const dataValues = ["0xaabbccdd", "0xaabbccdd", "0xaabbccdd"];
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [dataKeys, dataValues]
-          );
-
-        const tx = await context.keyManager
+        const tx = await context.universalProfile
           .connect(controllerCanSetData)
-          ["execute(bytes)"](setDataPayload);
+          ["setData(bytes32[],bytes[])"](dataKeys, dataValues);
         const receipt = await tx.wait();
 
         benchmarkCasesSetDataRestrictedController.push([
@@ -943,15 +831,9 @@ describe("⛽📊 Gas Benchmark", () => {
         const dataKeys = allowedERC725YDataKeys.slice(3, 6);
         const dataValues = ["0xaabbccdd", "0xaabbccdd", "0xaabbccdd"];
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [dataKeys, dataValues]
-          );
-
-        const tx = await context.keyManager
+        const tx = await context.universalProfile
           .connect(controllerCanSetData)
-          ["execute(bytes)"](setDataPayload);
+          ["setData(bytes32[],bytes[])"](dataKeys, dataValues);
         const receipt = await tx.wait();
 
         benchmarkCasesSetDataRestrictedController.push([
@@ -964,15 +846,9 @@ describe("⛽📊 Gas Benchmark", () => {
         const dataKeys = allowedERC725YDataKeys.slice(7, 10);
         const dataValues = ["0xaabbccdd", "0xaabbccdd", "0xaabbccdd"];
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [dataKeys, dataValues]
-          );
-
-        const tx = await context.keyManager
+        const tx = await context.universalProfile
           .connect(controllerCanSetData)
-          ["execute(bytes)"](setDataPayload);
+          ["setData(bytes32[],bytes[])"](dataKeys, dataValues);
         const receipt = await tx.wait();
 
         benchmarkCasesSetDataRestrictedController.push([
@@ -1001,15 +877,9 @@ describe("⛽📊 Gas Benchmark", () => {
           PERMISSIONS.SETDATA,
         ];
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [dataKeys, dataValues]
-          );
-
-        const tx = await context.keyManager
+        const tx = await context.universalProfile
           .connect(controllerCanSetDataAndAddController)
-          ["execute(bytes)"](setDataPayload);
+          ["setData(bytes32[],bytes[])"](dataKeys, dataValues);
         const receipt = await tx.wait();
 
         benchmarkCasesSetDataRestrictedController.push([

@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.9.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.8.1...v0.9.0) (2023-03-21)
+
+### ⚠ BREAKING CHANGES
+
+- Add LSP20 Call Verification to LSP0-ERC725Account (#511)
+- add call type permissions (`dsct`) per Allowed Calls (#506)
+- require `SUPER_TRANSFERVALUE` permission for deploying contracts with value (#505)
+- change name of LSP6 event from `Executed` to `CallVerified` (#511)
+- replace tuple value for LSP5/10 from `bytes8` -> `uint128` (#486)
+- change LSP5/6/10 Array length from `uint256` to `uint128` (#482)
+- Add batchCalls function in LSP0 and LSP9 (#476)
+- change `CHANGEPERMISSIONS` to `EDITPERMISSIONS` (#481)
+
+### Features
+
+- Add LSP20 Call Verification to LSP0-ERC725Account ([#511](https://github.com/lukso-network/lsp-smart-contracts/issues/511)) ([f0d1eb3](https://github.com/lukso-network/lsp-smart-contracts/commit/f0d1eb3e3f8fd5341b18fe66559e27548339f2ed)), closes [#488](https://github.com/lukso-network/lsp-smart-contracts/issues/488) [#498](https://github.com/lukso-network/lsp-smart-contracts/issues/498)
+- add call type permissions (`dsct`) per Allowed Calls ([#506](https://github.com/lukso-network/lsp-smart-contracts/issues/506)) ([e4ddb8b](https://github.com/lukso-network/lsp-smart-contracts/commit/e4ddb8bf9bd4385309545e922192e2276c4a3231))
+- mark `generateSalt` function as `public` in the LSP16 Universal Factory ([#499](https://github.com/lukso-network/lsp-smart-contracts/issues/499)) ([f05d1aa](https://github.com/lukso-network/lsp-smart-contracts/commit/f05d1aa3379c21605d3546da7c797b6d809a4ca1))
+- Add batchCalls function in LSP0 and LSP9 ([#476](https://github.com/lukso-network/lsp-smart-contracts/issues/476)) ([d360371](https://github.com/lukso-network/lsp-smart-contracts/commit/d360371559c4be4b009cf34ac2db3c4cbc64d545))
+
+### Bug Fixes
+
+- add check to ensure `data`'s offset is not pointing to itself ([#489](https://github.com/lukso-network/lsp-smart-contracts/issues/489)) ([733173e](https://github.com/lukso-network/lsp-smart-contracts/commit/733173ef5872f1d6d5b33be57b849fb05bfcdbfc))
+- export artifacts ([#487](https://github.com/lukso-network/lsp-smart-contracts/issues/487)) ([e8fc0b5](https://github.com/lukso-network/lsp-smart-contracts/commit/e8fc0b5cc1fdcc18f4d2d137c1990870b938c7e3))
+- require `SUPER_TRANSFERVALUE` permission for deploying contracts with value ([#505](https://github.com/lukso-network/lsp-smart-contracts/issues/505)) ([3efde24](https://github.com/lukso-network/lsp-smart-contracts/commit/3efde24d5425bd3d25465c19b85aa4e015832461))
+
+### build
+
+- change `CHANGEPERMISSIONS` to `EDITPERMISSIONS` ([#481](https://github.com/lukso-network/lsp-smart-contracts/issues/481)) ([16052dd](https://github.com/lukso-network/lsp-smart-contracts/commit/16052dd1bf484a7f36d38cb9298da6bd62f806d4))
+- change LSP5/6/10 Array length from `uint256` to `uint128` ([#482](https://github.com/lukso-network/lsp-smart-contracts/issues/482)) ([6bcfd4d](https://github.com/lukso-network/lsp-smart-contracts/commit/6bcfd4d60d66838f055f8100f6b66bafc9b61a61))
+- replace tuple value for LSP5/10 from `bytes8` -> `uint128` ([#486](https://github.com/lukso-network/lsp-smart-contracts/issues/486)) ([83a05db](https://github.com/lukso-network/lsp-smart-contracts/commit/83a05db89e394b8b99e5c0a887506805c859fd6f))
+
 ### [0.8.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.8.0...v0.8.1) (2023-02-21)
 
 ### Features
