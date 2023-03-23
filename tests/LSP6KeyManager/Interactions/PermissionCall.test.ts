@@ -425,7 +425,7 @@ export const shouldBehaveLikePermissionCall = (
 
     let targetContract: TargetContract;
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       addressCanMakeCallNoAllowedCalls = context.accounts[1];
@@ -727,7 +727,7 @@ export const shouldBehaveLikePermissionCall = (
         });
 
         describe("when signing with Ethereum Signed Message prefix", () => {
-          it("should retrieve the incorrect signer address and revert with `NoPermissionsSet` error", async () => {
+          it("should retrieve the incorrect signer address and revert with `InvalidRelayNonce` error", async () => {
             let newName = "New Name";
 
             let targetContractPayload =
@@ -784,9 +784,9 @@ export const shouldBehaveLikePermissionCall = (
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
-                "NoPermissionsSet"
+                "InvalidRelayNonce"
               )
-              .withArgs(incorrectSignerAddress);
+              .withArgs(incorrectSignerAddress, nonce, signature);
           });
         });
       });
@@ -918,7 +918,7 @@ export const shouldBehaveLikePermissionCall = (
         });
 
         describe("when signing tx with Ethereum Signed Message prefix", () => {
-          it("should retrieve the incorrect signer address and revert with `NoPermissionsSet` error", async () => {
+          it("should retrieve the incorrect signer address and revert with `InvalidRelayNonce` error", async () => {
             let newName = "Another name";
 
             let targetContractPayload =
@@ -977,9 +977,9 @@ export const shouldBehaveLikePermissionCall = (
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
-                "NoPermissionsSet"
+                "InvalidRelayNonce"
               )
-              .withArgs(incorrectSignerAddress);
+              .withArgs(incorrectSignerAddress, nonce, signature);
           });
         });
       });
