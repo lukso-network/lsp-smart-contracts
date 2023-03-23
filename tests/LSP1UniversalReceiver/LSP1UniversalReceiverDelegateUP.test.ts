@@ -1,3 +1,4 @@
+import { ethers } from "hardhat";
 import {
   LSP1UniversalReceiverDelegateUP,
   UniversalProfile,
@@ -8,10 +9,20 @@ import { setupProfileWithKeyManagerWithURD } from "../utils/fixtures";
 
 import {
   LSP1DelegateTestContext,
-  getNamedAccounts,
   shouldBehaveLikeLSP1Delegate,
   shouldInitializeLikeLSP1Delegate,
+  LSP1TestAccounts,
 } from "./LSP1UniversalReceiverDelegateUP.behaviour";
+
+async function getNamedAccounts(): Promise<LSP1TestAccounts> {
+  const [owner1, owner2, random, any] = await ethers.getSigners();
+  return {
+    owner1,
+    owner2,
+    random,
+    any,
+  };
+}
 
 describe("LSP1UniversalReceiverDelegateUP", () => {
   describe("when testing deployed contract", () => {
