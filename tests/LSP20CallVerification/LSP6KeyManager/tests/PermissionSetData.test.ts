@@ -212,10 +212,7 @@ export const shouldBehaveLikePermissionSetData = (
             "getData(bytes32[])"
           ](keys);
 
-          let expectedResult = Object.values(elements).map((value) =>
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
-          );
-          expect(fetchedResult).to.deep.equal(expectedResult);
+          expect(fetchedResult).to.deep.equal(values);
         });
 
         it("(should pass): adding 10 LSP12IssuedAssets", async () => {
@@ -307,10 +304,7 @@ export const shouldBehaveLikePermissionSetData = (
             "getData(bytes32[])"
           ](keys);
 
-          let expectedResult = Object.values(elements).map((value) =>
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
-          );
-          expect(fetchedResult).to.deep.equal(expectedResult);
+          expect(fetchedResult).to.deep.equal(values);
         });
 
         it("(should pass): adding 10 LSP12IssuedAssets", async () => {
