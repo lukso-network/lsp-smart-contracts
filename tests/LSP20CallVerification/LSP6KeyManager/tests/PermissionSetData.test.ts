@@ -23,7 +23,6 @@ import { setupKeyManager } from "../../../utils/fixtures";
 
 // helpers
 import {
-  generateKeysAndValues,
   getRandomAddresses,
   combinePermissions,
   encodeCompactBytesArray,
@@ -189,15 +188,21 @@ export const shouldBehaveLikePermissionSetData = (
     describe("when setting multiple keys", () => {
       describe("For UP owner", () => {
         it("(should pass): adding 5 singleton keys", async () => {
-          let elements = {
-            MyFirstKey: "aaaaaaaaaa",
-            MySecondKey: "bbbbbbbbbb",
-            MyThirdKey: "cccccccccc",
-            MyFourthKey: "dddddddddd",
-            MyFifthKey: "eeeeeeeeee",
-          };
+          const keys = [
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFirstKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyThirdKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFourthKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFifthKey")),
+          ];
 
-          let [keys, values] = generateKeysAndValues(elements);
+          const values = [
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("aaaaaaaaaa")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("bbbbbbbbbb")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("cccccccccc")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("dddddddddd")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("eeeeeeeeee")),
+          ];
 
           await context.universalProfile
             .connect(context.owner)
@@ -278,15 +283,21 @@ export const shouldBehaveLikePermissionSetData = (
 
       describe("For address that has permission SETDATA with AllowedERC725YDataKeys", () => {
         it("(should pass): adding 5 singleton keys", async () => {
-          let elements = {
-            MyFirstKey: "aaaaaaaaaa",
-            MySecondKey: "bbbbbbbbbb",
-            MyThirdKey: "cccccccccc",
-            MyFourthKey: "dddddddddd",
-            MyFifthKey: "eeeeeeeeee",
-          };
+          const keys = [
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFirstKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyThirdKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFourthKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFifthKey")),
+          ];
 
-          let [keys, values] = generateKeysAndValues(elements);
+          const values = [
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("aaaaaaaaaa")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("bbbbbbbbbb")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("cccccccccc")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("dddddddddd")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("eeeeeeeeee")),
+          ];
 
           await context.universalProfile
             .connect(canSetDataWithAllowedERC725YDataKeys)
@@ -365,15 +376,21 @@ export const shouldBehaveLikePermissionSetData = (
 
       describe("For address that has permission SETDATA without AllowedERC725YDataKeys", () => {
         it("(should revert): adding 5 singleton keys", async () => {
-          let elements = {
-            MyFirstKey: "aaaaaaaaaa",
-            MySecondKey: "bbbbbbbbbb",
-            MyThirdKey: "cccccccccc",
-            MyFourthKey: "dddddddddd",
-            MyFifthKey: "eeeeeeeeee",
-          };
+          const keys = [
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFirstKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyThirdKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFourthKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFifthKey")),
+          ];
 
-          let [keys, values] = generateKeysAndValues(elements);
+          const values = [
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("aaaaaaaaaa")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("bbbbbbbbbb")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("cccccccccc")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("dddddddddd")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("eeeeeeeeee")),
+          ];
 
           await expect(
             context.universalProfile
@@ -454,15 +471,21 @@ export const shouldBehaveLikePermissionSetData = (
 
       describe("For address that doesn't have permission SETDATA", () => {
         it("(should fail): adding 5 singleton keys", async () => {
-          let elements = {
-            MyFirstKey: "aaaaaaaaaa",
-            MySecondKey: "bbbbbbbbbb",
-            MyThirdKey: "cccccccccc",
-            MyFourthKey: "dddddddddd",
-            MyFifthKey: "eeeeeeeeee",
-          };
+          const keys = [
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFirstKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyThirdKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFourthKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFifthKey")),
+          ];
 
-          let [keys, values] = generateKeysAndValues(elements);
+          const values = [
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("aaaaaaaaaa")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("bbbbbbbbbb")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("cccccccccc")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("dddddddddd")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("eeeeeeeeee")),
+          ];
 
           await expect(
             context.universalProfile
