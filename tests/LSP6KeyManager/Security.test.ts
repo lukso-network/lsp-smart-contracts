@@ -9,7 +9,7 @@ import {
   TargetContract,
   TargetContract__factory,
   UniversalReceiverDelegateDataUpdater__factory,
-} from "../../../types";
+} from "../../types";
 
 // constants
 import {
@@ -20,11 +20,11 @@ import {
   LSP6_VERSION,
   PERMISSIONS,
   CALLTYPE,
-} from "../../../constants";
+} from "../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../utils/context";
+import { setupKeyManager } from "../utils/fixtures";
 
 // helpers
 import {
@@ -35,7 +35,7 @@ import {
   combineAllowedCalls,
   encodeCompactBytesArray,
   combineCallTypes,
-} from "../../utils/helpers";
+} from "../utils/helpers";
 
 export const testSecurityScenarios = (
   buildContext: () => Promise<LSP6TestContext>

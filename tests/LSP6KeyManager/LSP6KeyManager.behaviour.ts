@@ -1,38 +1,53 @@
 import { expect } from "chai";
 import { BigNumber } from "ethers";
-import { LSP6TestContext, LSP6InternalsTestContext } from "../utils/context";
 
+import { LSP6TestContext, LSP6InternalsTestContext } from "../utils/context";
 import { INTERFACE_IDS } from "../../constants";
 
 import {
+  // Admin
   shouldBehaveLikePermissionChangeOwner,
-  shouldBehaveLikePermissionChangeOrAddController,
   shouldBehaveLikePermissionChangeOrAddExtensions,
   shouldBehaveLikePermissionChangeOrAddURD,
-  shouldBehaveLikePermissionSetData,
+  shouldBehaveLikePermissionSign,
+
+  // Set Permission
+  shouldBehaveLikePermissionChangeOrAddController,
+  shouldBehaveLikeSettingAllowedCalls,
+
+  // Interactions
   shouldBehaveLikePermissionCall,
   shouldBehaveLikePermissionStaticCall,
   shouldBehaveLikePermissionDelegateCall,
   shouldBehaveLikePermissionDeploy,
   shouldBehaveLikePermissionTransferValue,
-  shouldBehaveLikePermissionSign,
   shouldBehaveLikeAllowedAddresses,
   shouldBehaveLikeAllowedFunctions,
   shouldBehaveLikeAllowedStandards,
-  shouldBehaveLikeAllowedERC725YDataKeys,
+
+  // Relay
   shouldBehaveLikeMultiChannelNonce,
   shouldBehaveLikeExecuteRelayCall,
+
+  // Batch
   shouldBehaveLikeBatchExecute,
+
+  // Reentrancy
+  testReentrancyScenarios,
+
+  // SetData
+  shouldBehaveLikePermissionSetData,
+  shouldBehaveLikeAllowedERC725YDataKeys,
+
+  // Others
   testSecurityScenarios,
   otherTestScenarios,
-  testReentrancyScenarios,
-} from "./tests";
 
-import {
+  // Internals
   testAllowedCallsInternals,
   testAllowedERC725YDataKeysInternals,
   testReadingPermissionsInternals,
-} from "./internals";
+} from "./index";
 
 export const shouldBehaveLikeLSP6 = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
@@ -41,7 +56,8 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionChangeOwner(buildContext);
   });
 
-  describe("CHANGE / ADD permissions", () => {
+  describe("Set Permissions", () => {
+    shouldBehaveLikeSettingAllowedCalls(buildContext);
     shouldBehaveLikePermissionChangeOrAddController(buildContext);
   });
 

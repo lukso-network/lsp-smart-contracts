@@ -1,18 +1,14 @@
 import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { TargetContract__factory, TargetContract } from "../../../types";
+import { TargetContract__factory, TargetContract } from "../../types";
 
 // constants
-import {
-  ALL_PERMISSIONS,
-  ERC725YDataKeys,
-  PERMISSIONS,
-} from "../../../constants";
+import { ALL_PERMISSIONS, ERC725YDataKeys, PERMISSIONS } from "../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../utils/context";
+import { setupKeyManager } from "../utils/fixtures";
 
 export const otherTestScenarios = (
   buildContext: () => Promise<LSP6TestContext>
@@ -115,7 +111,7 @@ export const otherTestScenarios = (
       );
     });
 
-    it("Should revert because of wrong operation type when caller has not ALL PERMISSIONS", async () => {
+    it("Should revert because of wrong operation type when caller has permission CALL", async () => {
       let targetPayload = targetContract.interface.encodeFunctionData(
         "setName",
         ["new name"]

@@ -1,5 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { BigNumber } from "ethers";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
@@ -27,8 +29,6 @@ import {
   LSP7MintableInit__factory,
   LSP7Mintable__factory,
 } from "../../../types";
-import { BigNumber } from "ethers";
-import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 export const shouldBehaveLikeBatchExecute = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
