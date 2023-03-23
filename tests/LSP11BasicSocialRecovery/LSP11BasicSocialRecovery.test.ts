@@ -1,4 +1,6 @@
+import { ethers } from "hardhat";
 import { expect } from "chai";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {
   LSP11BasicSocialRecovery__factory,
@@ -15,14 +17,54 @@ import {
 } from "./LSP11BasicSocialRecovery.behaviour";
 
 import {
-  grantPermissionViaKeyManager,
   setupProfileWithKeyManagerWithURD,
   deployProxy,
 } from "../utils/fixtures";
 
 import { combinePermissions } from "../utils/helpers";
 
-import { PERMISSIONS } from "../../constants";
+import { PERMISSIONS, ERC725YDataKeys } from "../../constants";
+
+/**
+ * Sets `permissions` for the `addressToGrant` on the `universalProfile`
+ * via `lsp6KeyManager`
+ */
+async function grantPermissionViaKeyManagerFixture(
+  EOA: SignerWithAddress,
+  universalProfile,
+  lsp6KeyManager,
+  addressToGrant,
+  permissions
+) {
+  const rawPermissionArrayLength = await universalProfile.callStatic[
+    "getData(bytes32)"
+  ](ERC725YDataKeys.LSP6["AddressPermissions[]"].length);
+
+  let permissionArrayLength = ethers.BigNumber.from(
+    rawPermissionArrayLength
+  ).toNumber();
+
+  const newPermissionArrayLength = permissionArrayLength + 1;
+  const newRawPermissionArrayLength = ethers.utils.hexZeroPad(
+    ethers.utils.hexValue(newPermissionArrayLength),
+    16
+  );
+
+  const payload = universalProfile.interface.encodeFunctionData(
+    "setData(bytes32[],bytes[])",
+    [
+      [
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
+          rawPermissionArrayLength.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          addressToGrant.substring(2),
+      ],
+      [newRawPermissionArrayLength, addressToGrant, permissions],
+    ]
+  );
+  await lsp6KeyManager.connect(EOA)["execute(bytes)"](payload);
+}
 
 describe("LSP11BasicSocialRecovery contract", () => {
   describe("When using LSP11 contract with constructor", () => {
@@ -50,7 +92,7 @@ describe("LSP11BasicSocialRecovery contract", () => {
         PERMISSIONS.EDITPERMISSIONS
       );
 
-      await grantPermissionViaKeyManager(
+      await grantPermissionViaKeyManagerFixture(
         accounts.owner,
         universalProfile,
         lsp6KeyManager,
@@ -125,7 +167,7 @@ describe("LSP11BasicSocialRecovery contract", () => {
         PERMISSIONS.EDITPERMISSIONS
       );
 
-      await grantPermissionViaKeyManager(
+      await grantPermissionViaKeyManagerFixture(
         accounts.owner,
         universalProfile,
         lsp6KeyManager,
