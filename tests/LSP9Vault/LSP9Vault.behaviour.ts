@@ -15,12 +15,7 @@ import {
 } from "../../types";
 
 // helpers
-import {
-  ARRAY_LENGTH,
-  generateKeysAndValues,
-  abiCoder,
-  combineAllowedCalls,
-} from "../utils/helpers";
+import { ARRAY_LENGTH, abiCoder, combineAllowedCalls } from "../utils/helpers";
 
 // fixtures
 import { callPayload } from "../utils/fixtures";
@@ -73,23 +68,35 @@ export const shouldBehaveLikeLSP9 = (
 
   describe("when testing setting data", () => {
     it("owner should be able to setData", async () => {
-      const [keys, values] = generateKeysAndValues("random");
+      const dataKey = ethers.utils.keccak256(
+        ethers.utils.toUtf8Bytes("some data key")
+      );
+      const dataValue = ethers.utils.hexlify(
+        ethers.utils.toUtf8Bytes("some value")
+      );
+
       await context.lsp9Vault
         .connect(context.accounts.owner)
-        ["setData(bytes32,bytes)"](keys[0], values[0]);
+        ["setData(bytes32,bytes)"](dataKey, dataValue);
 
       const result = await context.lsp9Vault.callStatic["getData(bytes32)"](
-        keys[0]
+        dataKey
       );
-      expect(result).to.equal(values[0]);
+      expect(result).to.equal(dataValue);
     });
 
     it("non-owner shouldn't be able to setData", async () => {
-      const [keys, values] = generateKeysAndValues("random");
+      const dataKey = ethers.utils.keccak256(
+        ethers.utils.toUtf8Bytes("some data key")
+      );
+      const dataValue = ethers.utils.hexlify(
+        ethers.utils.toUtf8Bytes("some value")
+      );
+
       await expect(
         context.lsp9Vault
           .connect(context.accounts.random)
-          ["setData(bytes32,bytes)"](keys[0], values[0])
+          ["setData(bytes32,bytes)"](dataKey, dataValue)
       ).to.be.revertedWith(
         "Only Owner or reentered Universal Receiver Delegate allowed"
       );
@@ -109,12 +116,17 @@ export const shouldBehaveLikeLSP9 = (
           lsp1UniversalReceiverDelegateVaultSetter.address
         );
 
-      const [keys, values] = generateKeysAndValues("random");
+      const dataKey = ethers.utils.keccak256(
+        ethers.utils.toUtf8Bytes("some data key")
+      );
+      const dataValue = ethers.utils.hexlify(
+        ethers.utils.toUtf8Bytes("some value")
+      );
 
       await expect(
         lsp1UniversalReceiverDelegateVaultSetter
           .connect(context.accounts.anyone)
-          .universalReceiver(context.lsp9Vault.address, keys[0], values[0])
+          .universalReceiver(context.lsp9Vault.address, dataKey, dataValue)
       ).to.be.revertedWith(
         "Only Owner or reentered Universal Receiver Delegate allowed"
       );
@@ -830,10 +842,16 @@ export const shouldBehaveLikeLSP9 = (
       });
 
       it("should allow friend to talk to the vault", async () => {
-        const [keys, values] = generateKeysAndValues("any");
+        const dataKey = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("some data key")
+        );
+        const dataValue = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("some value")
+        );
+
         const payload = context.lsp9Vault.interface.encodeFunctionData(
           "setData(bytes32,bytes)",
-          [keys[0], values[0]]
+          [dataKey, dataValue]
         );
         await context.lsp6KeyManager
           .connect(context.accounts.friend)
@@ -846,16 +864,22 @@ export const shouldBehaveLikeLSP9 = (
           );
 
         const res = await context.lsp9Vault.callStatic["getData(bytes32)"](
-          keys[0]
+          dataKey
         );
-        expect(res).to.equal(values[0]);
+        expect(res).to.equal(dataValue);
       });
 
       it("should fail when friend is interacting with other contracts", async () => {
-        const [keys, values] = generateKeysAndValues("any string");
+        const dataKey = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("some data key")
+        );
+        const dataValue = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("some value")
+        );
+
         const payload = context.universalProfile.interface.encodeFunctionData(
           "setData(bytes32,bytes)",
-          [keys[0], values[0]]
+          [dataKey, dataValue]
         );
 
         let disallowedAddress = ethers.utils.getAddress(
