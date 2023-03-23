@@ -73,8 +73,8 @@ export const shouldBehaveLikeAllowedAddresses = (
 
     const encodedAllowedCalls = combineAllowedCalls(
       [
-        combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
-        combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+        combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
+        combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
       ],
       [allowedEOA.address, allowedTargetContract.address],
       ["0xffffffff", "0xffffffff"],

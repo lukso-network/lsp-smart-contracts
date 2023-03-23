@@ -83,9 +83,9 @@ export const shouldBehaveLikePermissionStaticCall = (
       PERMISSIONS.STATICCALL,
       combineAllowedCalls(
         [
-          combineCallTypes(CALLTYPE.READ, CALLTYPE.VALUE),
-          combineCallTypes(CALLTYPE.READ, CALLTYPE.VALUE),
-          combineCallTypes(CALLTYPE.READ, CALLTYPE.VALUE),
+          combineCallTypes(CALLTYPE.STATICCALL, CALLTYPE.VALUE),
+          combineCallTypes(CALLTYPE.STATICCALL, CALLTYPE.VALUE),
+          combineCallTypes(CALLTYPE.STATICCALL, CALLTYPE.VALUE),
         ],
         [
           targetContract.address,
@@ -462,7 +462,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       const permissionValues = [
         PERMISSIONS.STATICCALL,
         combineAllowedCalls(
-          [CALLTYPE.READ, CALLTYPE.READ],
+          [CALLTYPE.STATICCALL, CALLTYPE.STATICCALL],
           [
             allowedTargetContracts[0].address,
             allowedTargetContracts[1].address,
@@ -794,7 +794,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       const permissionValues = [
         PERMISSIONS.SUPER_CALL,
         combineAllowedCalls(
-          [CALLTYPE.READ, CALLTYPE.READ],
+          [CALLTYPE.STATICCALL, CALLTYPE.STATICCALL],
           [
             allowedTargetContracts[0].address,
             allowedTargetContracts[1].address,
@@ -883,8 +883,8 @@ export const shouldBehaveLikePermissionStaticCall = (
         combinePermissions(PERMISSIONS.SUPER_CALL, PERMISSIONS.STATICCALL),
         combineAllowedCalls(
           [
-            combineCallTypes(CALLTYPE.READ, CALLTYPE.VALUE),
-            combineCallTypes(CALLTYPE.READ, CALLTYPE.VALUE),
+            combineCallTypes(CALLTYPE.STATICCALL, CALLTYPE.VALUE),
+            combineCallTypes(CALLTYPE.STATICCALL, CALLTYPE.VALUE),
           ],
           [
             allowedTargetContracts[0].address,

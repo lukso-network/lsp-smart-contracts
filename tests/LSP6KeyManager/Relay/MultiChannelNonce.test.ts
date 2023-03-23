@@ -54,13 +54,13 @@ export const shouldBehaveLikeMultiChannelNonce = (
       ALL_PERMISSIONS,
       PERMISSIONS.CALL,
       combineAllowedCalls(
-        [CALLTYPE.WRITE],
+        [CALLTYPE.CALL],
         [targetContract.address],
         ["0xffffffff"],
         ["0xffffffff"]
       ),
       combineAllowedCalls(
-        [CALLTYPE.WRITE],
+        [CALLTYPE.CALL],
         [targetContract.address],
         ["0xffffffff"],
         ["0xffffffff"]

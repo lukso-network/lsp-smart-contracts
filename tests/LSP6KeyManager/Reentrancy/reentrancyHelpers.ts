@@ -362,7 +362,7 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
     PERMISSIONS.CALL,
     combineAllowedCalls(
       // allow controller to call the 3 x addresses listed below
-      [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+      [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
       [
         reentrantContract.address,
         singleReentarncyRelayer.address,
@@ -374,7 +374,7 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
     PERMISSIONS.CALL,
     combineAllowedCalls(
       // allow controller to call the 3 x addresses listed below
-      [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+      [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
       [
         reentrantContract.address,
         singleReentarncyRelayer.address,

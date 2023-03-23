@@ -649,7 +649,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.EDITPERMISSIONS,
         combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -673,7 +673,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
         let value = combineAllowedCalls(
           // allow beneficiary to make a CALL to only function selectors 0xcafecafe and 0xf00df00d
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -703,7 +703,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
         let value = combineAllowedCalls(
           // allow beneficiary to make a CALL to only function selectors 0xcafecafe and 0xf00df00d
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -735,7 +735,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           zero32Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -767,7 +767,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           zero40Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -799,7 +799,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
         let value = combineAllowedCalls(
           // allow beneficiary to CALL only function selectors 0xcafecafe and 0xf00df00d
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -888,7 +888,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
         let value = combineAllowedCalls(
           // allow beneficiary to CALL only function selectors 0xcafecafe and 0xbeefbeef
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -918,7 +918,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
         let value = combineAllowedCalls(
           // allow beneficiary to CALL only function selectors 0xcafecafe and 0xbeefbeef
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -948,7 +948,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
         let value = combineAllowedCalls(
           // allow beneficiary to CALL only function selectors 0xcafecafe and 0xbeefbeef
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -980,7 +980,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           zero32Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1012,7 +1012,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           zero40Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1129,7 +1129,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         combineAllowedCalls(
           // allow beneficiary controller to CALL any functions
           // on any LSP7 or ERC20 contracts
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1152,7 +1152,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           beneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1191,7 +1191,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           invalidBeneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1233,7 +1233,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           zero32Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1272,7 +1272,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           zero40Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1310,7 +1310,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           newController.address.substr(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1408,7 +1408,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           newController.address.substr(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1440,7 +1440,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           beneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1479,7 +1479,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           invalidBeneficiary.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1511,7 +1511,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           zero32Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
@@ -1543,7 +1543,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           zero40Bytes.address.substring(2);
 
         let value = combineAllowedCalls(
-          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             "0xffffffffffffffffffffffffffffffffffffffff",
             "0xffffffffffffffffffffffffffffffffffffffff",
