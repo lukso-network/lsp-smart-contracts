@@ -37,12 +37,12 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
      * @dev The number of block that MUST pass before one is able to
      *  confirm renouncing ownership
      */
-    uint256 public constant RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY = 100;
+    uint256 public constant RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY = 200;
 
     /**
      * @dev The number of blocks during which one can renounce ownership
      */
-    uint256 public constant RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD = 100;
+    uint256 public constant RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD = 200;
 
     /**
      * @dev The block number saved when initiating the process of renouncing ownerhsip
@@ -64,12 +64,9 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     /**
      * @inheritdoc ILSP14Ownable2Step
      */
-    function transferOwnership(address newOwner)
-        public
-        virtual
-        override(OwnableUnset, ILSP14Ownable2Step)
-        onlyOwner
-    {
+    function transferOwnership(
+        address newOwner
+    ) public virtual override(OwnableUnset, ILSP14Ownable2Step) onlyOwner {
         _transferOwnership(newOwner);
 
         address currentOwner = owner();
