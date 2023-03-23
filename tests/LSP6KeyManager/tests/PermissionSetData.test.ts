@@ -645,16 +645,21 @@ export const shouldBehaveLikePermissionSetData = (
 
       describe("when sending value while setting data", async () => {
         it("should revert with Key Manager error `CannotSendValueToSetData`", async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
-          let elements = {
-            MyFirstKey: "aaaaaaaaaa",
-            MySecondKey: "bbbbbbbbbb",
-            MyThirdKey: "cccccccccc",
-            MyFourthKey: "dddddddddd",
-            MyFifthKey: "eeeeeeeeee",
-          };
+          const keys = [
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFirstKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyThirdKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFourthKey")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFifthKey")),
+          ];
 
-          let [keys, values] = generateKeysAndValues(elements);
+          const values = [
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("aaaaaaaaaa")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("bbbbbbbbbb")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("cccccccccc")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("dddddddddd")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("eeeeeeeeee")),
+          ];
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32[],bytes[])",
