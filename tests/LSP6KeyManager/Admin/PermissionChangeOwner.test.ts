@@ -162,34 +162,17 @@ export const shouldBehaveLikePermissionChangeOwner = (
           const recipient = context.accounts[8];
           const amount = ethers.utils.parseEther("3");
 
-          const recipientBalanceBefore = await provider.getBalance(
-            recipient.address
-          );
-          const accountBalanceBefore = await provider.getBalance(
-            context.universalProfile.address
-          );
-
           let payload = context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
             [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
           );
 
-          await context.keyManager
-            .connect(context.owner)
-            ["execute(bytes)"](payload);
-
-          const recipientBalanceAfter = await provider.getBalance(
-            recipient.address
+          await expect(
+            context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+          ).to.changeEtherBalances(
+            [context.universalProfile, recipient],
+            [`-${amount}`, amount]
           );
-          const accountBalanceAfter = await provider.getBalance(
-            context.universalProfile.address
-          );
-
-          // recipient balance should have gone up
-          expect(recipientBalanceAfter).to.be.gt(recipientBalanceBefore);
-
-          // account balance should have gone down
-          expect(accountBalanceAfter).to.be.lt(accountBalanceBefore);
         });
       });
 
@@ -384,32 +367,17 @@ export const shouldBehaveLikePermissionChangeOwner = (
           const recipient = context.accounts[3];
           const amount = ethers.utils.parseEther("3");
 
-          const recipientBalanceBefore = await provider.getBalance(
-            recipient.address
-          );
-          const accountBalanceBefore = await provider.getBalance(
-            context.universalProfile.address
-          );
-
           let payload = context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
             [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
           );
 
-          await newKeyManager.connect(context.owner)["execute(bytes)"](payload);
-
-          const recipientBalanceAfter = await provider.getBalance(
-            recipient.address
+          await expect(
+            newKeyManager.connect(context.owner)["execute(bytes)"](payload)
+          ).to.changeEtherBalances(
+            [recipient, context.universalProfile],
+            [amount, `-${amount}`]
           );
-          const accountBalanceAfter = await provider.getBalance(
-            context.universalProfile.address
-          );
-
-          // recipient balance should have gone up
-          expect(recipientBalanceAfter).to.be.gt(recipientBalanceBefore);
-
-          // account balance should have gone down
-          expect(accountBalanceAfter).to.be.lt(accountBalanceBefore);
         });
       });
     });
