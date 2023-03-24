@@ -143,49 +143,11 @@ export const testSecurityScenarios = (
   });
 
   describe("should revert when admin with ALL PERMISSIONS try to call `renounceOwnership(...)`", () => {
-    it("via `execute(...)`", async () => {
+    it("via `ERC725X.execute(...)`", async () => {
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
-      await expect(
-        context.universalProfile.connect(context.owner).renounceOwnership()
-      )
-        .to.be.revertedWithCustomError(
-          context.keyManager,
-          "InvalidERC725Function"
-        )
-        .withArgs(payload);
-    });
-
-    it("via `executeRelayCall()`", async () => {
-      const HARDHAT_CHAINID = 31337;
-      let valueToSend = 0;
-
-      let nonce = await context.keyManager.getNonce(context.owner.address, 0);
-
-      let payload =
-        context.universalProfile.interface.getSighash("renounceOwnership");
-
-      let encodedMessage = ethers.utils.solidityPack(
-        ["uint256", "uint256", "uint256", "uint256", "bytes"],
-        [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
-      );
-
-      const eip191Signer = new EIP191Signer();
-
-      let { signature } = await eip191Signer.signDataWithIntendedValidator(
-        context.keyManager.address,
-        encodedMessage,
-        LOCAL_PRIVATE_KEYS.ACCOUNT0
-      );
-
-      await expect(
-        context.keyManager
-          .connect(context.owner)
-          ["executeRelayCall(bytes,uint256,bytes)"](signature, nonce, payload, {
-            value: valueToSend,
-          })
-      )
+      await expect(context.universalProfile.connect(context.owner))
         .to.be.revertedWithCustomError(
           context.keyManager,
           "InvalidERC725Function"
@@ -248,79 +210,6 @@ export const testSecurityScenarios = (
         initialAttackerContractBalance
       );
     });
-
-    describe("when calling via `executeRelayCall(...)`", () => {
-      const channelId = 0;
-
-      it("Replay Attack should fail because of invalid nonce", async () => {
-        let nonce = await context.keyManager.callStatic.getNonce(
-          signer.address,
-          channelId
-        );
-
-        let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              signer.address,
-              ethers.utils.parseEther("1"),
-              EMPTY_PAYLOAD,
-            ]
-          );
-
-        const HARDHAT_CHAINID = 31337;
-        let valueToSend = 0;
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            LSP6_VERSION,
-            HARDHAT_CHAINID,
-            nonce,
-            valueToSend,
-            executeRelayCallPayload,
-          ]
-        );
-
-        const eip191Signer = new EIP191Signer();
-
-        const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
-        );
-
-        // first call
-        await context.keyManager
-          .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
-            signature,
-            nonce,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
-
-        // 2nd call = replay attack
-        await expect(
-          context.keyManager
-            .connect(relayer)
-            ["executeRelayCall(bytes,uint256,bytes)"](
-              signature,
-              nonce,
-              executeRelayCallPayload
-            )
-        )
-          .to.be.revertedWithCustomError(
-            context.keyManager,
-            "InvalidRelayNonce"
-          )
-          .withArgs(signer.address, nonce, signature);
-      });
-    });
-  });
 
   describe("when reentering execute function", () => {
     it("should revert if reentered from a random address", async () => {

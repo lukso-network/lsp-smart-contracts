@@ -28,12 +28,6 @@ import {
   testReentrancyScenarios,
 } from "./tests";
 
-import {
-  testAllowedCallsInternals,
-  testAllowedERC725YDataKeysInternals,
-  testReadingPermissionsInternals,
-} from "./internals";
-
 export const shouldBehaveLikeLSP6 = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
 ) => {
@@ -152,12 +146,4 @@ export const shouldInitializeLikeLSP6 = (
       expect(account).to.equal(context.universalProfile.address);
     });
   });
-};
-
-export const testLSP6InternalFunctions = (
-  buildContext: () => Promise<LSP6InternalsTestContext>
-) => {
-  testAllowedCallsInternals(buildContext);
-  testAllowedERC725YDataKeysInternals(buildContext);
-  testReadingPermissionsInternals(buildContext);
 };

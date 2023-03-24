@@ -26,7 +26,7 @@ import {
 } from "./reentrancyHelpers";
 import { LSP20ReentrantContract__factory } from "../../../../../types";
 
-export const testSingleExecuteToSingleExecute = (
+export const testERC725XExecuteToERC725XExecute = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
   buildReentrancyContext: (
     context: LSP6TestContext
