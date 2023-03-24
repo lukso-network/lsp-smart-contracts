@@ -14,6 +14,7 @@ import {
   // Set Permission
   shouldBehaveLikePermissionChangeOrAddController,
   shouldBehaveLikeSettingAllowedCalls,
+  shouldBehaveLikeSetAllowedERC725YDataKeys,
 
   // Interactions
   shouldBehaveLikePermissionCall,
@@ -57,8 +58,9 @@ export const shouldBehaveLikeLSP6 = (
   });
 
   describe("Set Permissions", () => {
-    shouldBehaveLikeSettingAllowedCalls(buildContext);
     shouldBehaveLikePermissionChangeOrAddController(buildContext);
+    shouldBehaveLikeSettingAllowedCalls(buildContext);
+    shouldBehaveLikeSetAllowedERC725YDataKeys(buildContext);
   });
 
   describe("CHANGE / ADD extensions", () => {
