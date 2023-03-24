@@ -7,12 +7,10 @@ import { buildReentrancyContext } from "./Reentrancy/reentrancyHelpers";
 
 // tests
 import { testSingleExecuteToSingleExecute } from "./Reentrancy/SingleExecuteToSingleExecute.test";
-import { testSingleExecuteRelayCallToSingleExecute } from "./Reentrancy/SingleExecuteRelayCallToSingleExecute.test";
 import { testSingleExecuteToSingleExecuteRelayCall } from "./Reentrancy/SingleExecuteToSingleExecuteRelayCall.test";
-import { testSingleExecuteRelayCallToSingleExecuteRelayCall } from "./Reentrancy/SingleExecuteRelayCallToSingleExecuteRelayCall.test";
 
 import { testBatchExecuteToSingleExecute } from "./Reentrancy/BatchExecuteToSingleExecute.test";
-import { testSingleExecuteToBatchExecuteRelayCall } from "./Reentrancy/SingleExecuteToBatchExecuteRelayCall.test";
+import { testERC725XExecuteToLSP6BatchExecuteRelayCall } from "./Reentrancy/ERC725XExecuteToLSP6BatchExecuteRelayCall.test";
 
 export const testReentrancyScenarios = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
@@ -21,22 +19,8 @@ export const testReentrancyScenarios = (
     testSingleExecuteToSingleExecute(buildContext, buildReentrancyContext);
   });
 
-  describe("first call through `executeRelayCall(bytes,uint256,bytes)`, second call through `execute(bytes)`", () => {
-    testSingleExecuteRelayCallToSingleExecute(
-      buildContext,
-      buildReentrancyContext
-    );
-  });
-
   describe("first call through `execute(bytes)`, second call through `executeRelayCall(bytes,uint256,bytes)`", () => {
     testSingleExecuteToSingleExecuteRelayCall(
-      buildContext,
-      buildReentrancyContext
-    );
-  });
-
-  describe("first call through `executeRelayCall(bytes,uint256,bytes)`, second call through `executeRelayCall(bytes,uint256,bytes)`", () => {
-    testSingleExecuteRelayCallToSingleExecuteRelayCall(
       buildContext,
       buildReentrancyContext
     );
@@ -47,8 +31,8 @@ export const testReentrancyScenarios = (
     testBatchExecuteToSingleExecute(buildContext, buildReentrancyContext);
   });
 
-  describe("first call through `execute(bytes)`, second call through `executeRelayCall(bytes[],uint256[],uint256[],bytes[])`", () => {
-    testSingleExecuteToBatchExecuteRelayCall(
+  describe("first call through `ERC725X.execute(bytes)`, second call through `LSP6.executeRelayCall(bytes[],uint256[],uint256[],bytes[])`", () => {
+    testERC725XExecuteToLSP6BatchExecuteRelayCall(
       buildContext,
       buildReentrancyContext
     );
