@@ -27,7 +27,7 @@ import {
   loadTestCase,
 } from "./reentrancyHelpers";
 
-export const testSingleExecuteToBatchExecuteRelayCall = (
+export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
   buildReentrancyContext: (
     context: LSP6TestContext
