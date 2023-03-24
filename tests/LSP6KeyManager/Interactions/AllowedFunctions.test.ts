@@ -351,10 +351,13 @@ export const shouldBehaveLikeAllowedFunctions = (
     let lsp7Contract: LSP7Mintable;
     let lsp8Contract: LSP8Mintable;
 
-    const tokenId =
+    const tokenIdToTransfer =
       "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
-    beforeEach(async () => {
+    const tokenIdToApprove =
+      "0xf00df00df00df00df00df00df00df00df00df00df00df00df00df00df00df00d";
+
+    before(async () => {
       context = await buildContext();
 
       addressCanCallOnlyTransferOnLSP8 = context.accounts[1];
@@ -373,9 +376,12 @@ export const shouldBehaveLikeAllowedFunctions = (
         .connect(context.accounts[0])
         .mint(context.universalProfile.address, 100, false, "0x");
 
-      await lsp8Contract
-        .connect(context.accounts[0])
-        .mint(context.universalProfile.address, tokenId, true, "0x");
+      // mint some NFTs for the UP
+      [tokenIdToTransfer, tokenIdToApprove].forEach(async (tokenId) => {
+        await lsp8Contract
+          .connect(context.accounts[0])
+          .mint(context.universalProfile.address, tokenId, true, "0x");
+      });
 
       await lsp7Contract
         .connect(context.accounts[0])
@@ -425,34 +431,13 @@ export const shouldBehaveLikeAllowedFunctions = (
     });
 
     describe("when caller can only call `transfer(...)` on LSP8 contracts only", () => {
-      it("should pass when calling `transfer(...)` on LSP8 contract", async () => {
-        const recipient = context.accounts[5].address;
-
-        let transferPayload = lsp8Contract.interface.encodeFunctionData(
-          "transfer",
-          [context.universalProfile.address, recipient, tokenId, true, "0x"]
-        );
-
-        let executePayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [OPERATION_TYPES.CALL, lsp8Contract.address, 0, transferPayload]
-          );
-
-        await context.keyManager
-          .connect(addressCanCallOnlyTransferOnLSP8)
-          ["execute(bytes)"](executePayload);
-
-        expect(await lsp8Contract.tokenOwnerOf(tokenId)).to.equal(recipient);
-      });
-
-      it("should revert when calling `authorizeOperator(...)` on LSP8 contract", async () => {
+      it("should revert with `NotAllowedCall` when calling `authorizeOperator(...)` on LSP8 contract", async () => {
         const operator = context.accounts[8].address;
 
         const authorizeOperatorPayload =
           lsp8Contract.interface.encodeFunctionData("authorizeOperator", [
             operator,
-            tokenId,
+            tokenIdToTransfer,
           ]);
 
         let executePayload =
@@ -477,6 +462,35 @@ export const shouldBehaveLikeAllowedFunctions = (
             lsp8Contract.address,
             lsp8Contract.interface.getSighash("authorizeOperator")
           );
+      });
+
+      it("should pass when calling `transfer(...)` on LSP8 contract", async () => {
+        const recipient = context.accounts[5].address;
+
+        let transferPayload = lsp8Contract.interface.encodeFunctionData(
+          "transfer",
+          [
+            context.universalProfile.address,
+            recipient,
+            tokenIdToTransfer,
+            true,
+            "0x",
+          ]
+        );
+
+        let executePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, lsp8Contract.address, 0, transferPayload]
+          );
+
+        await context.keyManager
+          .connect(addressCanCallOnlyTransferOnLSP8)
+          ["execute(bytes)"](executePayload);
+
+        expect(await lsp8Contract.tokenOwnerOf(tokenIdToTransfer)).to.equal(
+          recipient
+        );
       });
     });
 
@@ -510,6 +524,15 @@ export const shouldBehaveLikeAllowedFunctions = (
 
         it("should pass when calling `transfer(...)`", async () => {
           let recipient = context.accounts[4].address;
+
+          const previousUPTokenBalance = await lsp7Contract.balanceOf(
+            context.universalProfile.address
+          );
+
+          const previousRecipientTokenBalance = await lsp7Contract.balanceOf(
+            recipient
+          );
+
           const amount = 10;
 
           let transferPayload = lsp7Contract.interface.encodeFunctionData(
@@ -529,10 +552,15 @@ export const shouldBehaveLikeAllowedFunctions = (
             )
             ["execute(bytes)"](executePayload);
 
-          expect(await lsp7Contract.balanceOf(recipient)).to.equal(amount);
+          // CHECK that UP token balance has decreased
           expect(
             await lsp7Contract.balanceOf(context.universalProfile.address)
-          ).to.equal(90);
+          ).to.equal(previousUPTokenBalance.sub(amount));
+
+          // CHECK that recipient token balance has increased
+          expect(await lsp7Contract.balanceOf(recipient)).to.equal(
+            previousRecipientTokenBalance.add(amount)
+          );
         });
 
         it("should pass when calling `authorizeOperator(...)`", async () => {
@@ -600,42 +628,18 @@ export const shouldBehaveLikeAllowedFunctions = (
       });
 
       describe("when interacting lsp8 contract", async () => {
-        it("should pass when calling `authorizeOperator(...)`", async () => {
-          let recipient = context.accounts[4].address;
-
-          let authorizeOperatorPayload =
-            lsp8Contract.interface.encodeFunctionData("authorizeOperator", [
-              recipient,
-              tokenId,
-            ]);
-
-          let executePayload =
-            context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [
-                OPERATION_TYPES.CALL,
-                lsp8Contract.address,
-                0,
-                authorizeOperatorPayload,
-              ]
-            );
-
-          await context.keyManager
-            .connect(
-              addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
-            )
-            ["execute(bytes)"](executePayload);
-
-          expect(await lsp8Contract.isOperatorFor(recipient, tokenId)).to.be
-            .true;
-        });
-
         it("should revert when calling `transfer(...)`", async () => {
           let recipient = context.accounts[4].address;
 
           let transferPayload = lsp8Contract.interface.encodeFunctionData(
             "transfer",
-            [context.universalProfile.address, recipient, tokenId, true, "0x"]
+            [
+              context.universalProfile.address,
+              recipient,
+              tokenIdToTransfer,
+              true,
+              "0x",
+            ]
           );
 
           let executePayload =
@@ -660,10 +664,14 @@ export const shouldBehaveLikeAllowedFunctions = (
         });
 
         it("should revert when calling `mint(...)`", async () => {
+          const randomTokenId = ethers.utils.hexlify(
+            ethers.utils.randomBytes(32)
+          );
+
           let recipient = context.accounts[4].address;
           let mintPayload = lsp8Contract.interface.encodeFunctionData("mint", [
             recipient,
-            tokenId,
+            randomTokenId,
             true,
             "0x",
           ]);
@@ -687,6 +695,36 @@ export const shouldBehaveLikeAllowedFunctions = (
               lsp8Contract.address,
               lsp8Contract.interface.getSighash("mint")
             );
+        });
+
+        it("should pass when calling `authorizeOperator(...)`", async () => {
+          let recipient = context.accounts[4].address;
+
+          let authorizeOperatorPayload =
+            lsp8Contract.interface.encodeFunctionData("authorizeOperator", [
+              recipient,
+              tokenIdToApprove,
+            ]);
+
+          let executePayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp8Contract.address,
+                0,
+                authorizeOperatorPayload,
+              ]
+            );
+
+          await context.keyManager
+            .connect(
+              addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
+            )
+            ["execute(bytes)"](executePayload);
+
+          expect(await lsp8Contract.isOperatorFor(recipient, tokenIdToApprove))
+            .to.be.true;
         });
       });
     });
