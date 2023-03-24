@@ -7,6 +7,7 @@ export * from "./Admin/PermissionSign.test";
 // Set Permissions
 export * from "./SetPermissions/PermissionChangeAddController.test";
 export * from "./SetPermissions/SetAllowedCalls.test";
+export * from "./SetPermissions/SetAllowedERC725YDataKeys.test";
 
 // Interactions
 export * from "./Interactions/PermissionCall.test";
