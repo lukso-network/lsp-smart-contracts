@@ -25,13 +25,14 @@ import {
   shouldBehaveLikeAllowedAddresses,
   shouldBehaveLikeAllowedFunctions,
   shouldBehaveLikeAllowedStandards,
+  testInvalidExecutePayloads,
+
+  // Batch
+  shouldBehaveLikeBatchExecute,
 
   // Relay
   shouldBehaveLikeMultiChannelNonce,
   shouldBehaveLikeExecuteRelayCall,
-
-  // Batch
-  shouldBehaveLikeBatchExecute,
 
   // Reentrancy
   testReentrancyScenarios,
@@ -39,10 +40,6 @@ import {
   // SetData
   shouldBehaveLikePermissionSetData,
   shouldBehaveLikeAllowedERC725YDataKeys,
-
-  // Others
-  testSecurityScenarios,
-  otherTestScenarios,
 
   // Internals
   testAllowedCallsInternals,
@@ -75,6 +72,18 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionSetData(buildContext);
   });
 
+  describe("AllowedERC725YDataKeys", () => {
+    shouldBehaveLikeAllowedERC725YDataKeys(buildContext);
+  });
+
+  describe("Invalid Execute payloads", () => {
+    testInvalidExecutePayloads(buildContext);
+  });
+
+  describe("TRANSFERVALUE", () => {
+    shouldBehaveLikePermissionTransferValue(buildContext);
+  });
+
   describe("CALL", () => {
     shouldBehaveLikePermissionCall(buildContext);
   });
@@ -91,12 +100,8 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionDeploy(buildContext);
   });
 
-  describe("TRANSFERVALUE", () => {
-    shouldBehaveLikePermissionTransferValue(buildContext);
-  });
-
-  describe("SIGN (ERC1271)", () => {
-    shouldBehaveLikePermissionSign(buildContext);
+  describe("Batch `execute([])`", () => {
+    shouldBehaveLikeBatchExecute(buildContext);
   });
 
   describe("ALLOWED CALLS", () => {
@@ -105,32 +110,17 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikeAllowedStandards(buildContext);
   });
 
-  describe("AllowedERC725YDataKeys", () => {
-    shouldBehaveLikeAllowedERC725YDataKeys(buildContext);
-  });
-
-  describe("Multi Channel nonces", () => {
-    shouldBehaveLikeMultiChannelNonce(buildContext);
-  });
-
-  describe("Execute Relay Call", () => {
+  describe("Single + Batch Meta Transactions", () => {
     shouldBehaveLikeExecuteRelayCall(buildContext);
-  });
-
-  describe("batch execute", () => {
-    shouldBehaveLikeBatchExecute(buildContext);
-  });
-
-  describe("miscellaneous", () => {
-    otherTestScenarios(buildContext);
-  });
-
-  describe("Security", () => {
-    testSecurityScenarios(buildContext);
+    shouldBehaveLikeMultiChannelNonce(buildContext);
   });
 
   describe("Reentrancy", () => {
     testReentrancyScenarios(buildContext);
+  });
+
+  describe("SIGN (ERC1271)", () => {
+    shouldBehaveLikePermissionSign(buildContext);
   });
 };
 

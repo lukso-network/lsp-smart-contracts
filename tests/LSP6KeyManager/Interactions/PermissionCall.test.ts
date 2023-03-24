@@ -1127,4 +1127,82 @@ export const shouldBehaveLikePermissionCall = (
       });
     });
   });
+
+  describe("`execute(...)` edge cases", async () => {
+    let targetContract: TargetContract;
+    let addressWithNoPermissions: SignerWithAddress;
+
+    before(async () => {
+      context = await buildContext();
+
+      addressWithNoPermissions = context.accounts[1];
+
+      targetContract = await new TargetContract__factory(
+        context.accounts[0]
+      ).deploy();
+
+      const permissionKeys = [
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+      ];
+
+      const permissionValues = [ALL_PERMISSIONS];
+
+      await setupKeyManager(context, permissionKeys, permissionValues);
+    });
+
+    it("Should revert when caller has no permissions set", async () => {
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        ["New Contract Name"]
+      );
+
+      let executePayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]
+        );
+
+      await expect(
+        context.keyManager
+          .connect(addressWithNoPermissions)
+          ["execute(bytes)"](executePayload)
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet")
+        .withArgs(addressWithNoPermissions.address);
+    });
+
+    it("Should revert when caller calls the KeyManager through execute", async () => {
+      let lsp20VerifyCallPayload =
+        context.keyManager.interface.encodeFunctionData(
+          "lsp20VerifyCall",
+          [context.accounts[2].address, 0, "0xaabbccdd"] // random arguments
+        );
+
+      let executePayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            context.keyManager.address,
+            0,
+            lsp20VerifyCallPayload,
+          ]
+        );
+
+      await expect(
+        context.keyManager
+          .connect(context.owner)
+          ["execute(bytes)"](executePayload)
+      ).to.be.revertedWithCustomError(
+        context.keyManager,
+        "CallingKeyManagerNotAllowed"
+      );
+    });
+  });
 };

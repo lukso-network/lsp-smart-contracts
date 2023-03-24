@@ -1,33 +1,29 @@
 import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { TargetContract__factory, TargetContract } from "../../types";
+import { TargetContract__factory, TargetContract } from "../../../types";
 
 // constants
-import { ALL_PERMISSIONS, ERC725YDataKeys, PERMISSIONS } from "../../constants";
+import {
+  ALL_PERMISSIONS,
+  ERC725YDataKeys,
+  PERMISSIONS,
+} from "../../../constants";
 
 // setup
-import { LSP6TestContext } from "../utils/context";
-import { setupKeyManager } from "../utils/fixtures";
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
 
-export const otherTestScenarios = (
+export const testInvalidExecutePayloads = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
   let context: LSP6TestContext;
-
-  let superAdmin: SignerWithAddress,
-    superAdminNoSign: SignerWithAddress,
-    superAdminCustomPermissions: SignerWithAddress;
 
   let addressCanMakeCall: SignerWithAddress;
   let targetContract: TargetContract;
 
   before(async () => {
     context = await buildContext();
-
-    superAdmin = context.accounts[1];
-    superAdminNoSign = context.accounts[2];
-    superAdminCustomPermissions = context.accounts[3];
 
     addressCanMakeCall = context.accounts[4];
 

@@ -8,6 +8,7 @@ import {
   ERC725YDataKeys,
   PERMISSIONS,
   OPERATION_TYPES,
+  LSP6_VERSION,
 } from "../../../constants";
 
 import { LSP6KeyManager, LSP6KeyManager__factory } from "../../../types";
@@ -15,9 +16,8 @@ import { LSP6KeyManager, LSP6KeyManager__factory } from "../../../types";
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
-
-// helpers
-import { provider } from "../../utils/helpers";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
+import { LOCAL_PRIVATE_KEYS } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionChangeOwner = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
@@ -379,6 +379,65 @@ export const shouldBehaveLikePermissionChangeOwner = (
             [amount, `-${amount}`]
           );
         });
+      });
+    });
+  });
+
+  describe("when calling `renounceOwnership(...)` via the KeyManager", () => {
+    describe("when caller has ALL PERMISSIONS", () => {
+      it("should revert via `execute(...)`", async () => {
+        let payload =
+          context.universalProfile.interface.getSighash("renounceOwnership");
+
+        await expect(
+          context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "InvalidERC725Function"
+          )
+          .withArgs(payload);
+      });
+
+      it("should revert via `executeRelayCall()`", async () => {
+        const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
+
+        let nonce = await context.keyManager.getNonce(context.owner.address, 0);
+
+        let payload =
+          context.universalProfile.interface.getSighash("renounceOwnership");
+
+        let encodedMessage = ethers.utils.solidityPack(
+          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
+        );
+
+        const eip191Signer = new EIP191Signer();
+
+        let { signature } = await eip191Signer.signDataWithIntendedValidator(
+          context.keyManager.address,
+          encodedMessage,
+          LOCAL_PRIVATE_KEYS.ACCOUNT0
+        );
+
+        await expect(
+          context.keyManager
+            .connect(context.owner)
+            ["executeRelayCall(bytes,uint256,bytes)"](
+              signature,
+              nonce,
+              payload,
+              {
+                value: valueToSend,
+              }
+            )
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "InvalidERC725Function"
+          )
+          .withArgs(payload);
       });
     });
   });
