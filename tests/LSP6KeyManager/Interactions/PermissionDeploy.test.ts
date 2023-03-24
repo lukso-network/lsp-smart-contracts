@@ -39,7 +39,7 @@ export const shouldBehaveLikePermissionDeploy = (
     addressCanDeployAndSuperTransferValue: SignerWithAddress,
     addressCannotDeploy: SignerWithAddress;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext(ethers.utils.parseEther("100"));
 
     addressCanDeploy = context.accounts[1];
@@ -156,8 +156,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it("should be allowed to deploy a contract with CREATE2", async () => {
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      let salt =
-        "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+      let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute(uint256,address,uint256,bytes)",
@@ -199,8 +198,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const contractBytecodeToDeploy = upDeploymentTx.data;
       const fundingAmount = ethers.utils.parseEther("10");
 
-      let salt =
-        "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+      let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute(uint256,address,uint256,bytes)",
@@ -304,8 +302,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it("should be allowed to deploy a contract with CREATE2", async () => {
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      let salt =
-        "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+      let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute(uint256,address,uint256,bytes)",
@@ -347,8 +344,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const contractBytecodeToDeploy = upDeploymentTx.data;
       const fundingAmount = ethers.utils.parseEther("10");
 
-      let salt =
-        "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+      let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute(uint256,address,uint256,bytes)",
@@ -438,8 +434,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it("should be allowed to deploy a contract with CREATE2", async () => {
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      let salt =
-        "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+      let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute(uint256,address,uint256,bytes)",
@@ -483,8 +478,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const contractBytecodeToDeploy = upDeploymentTx.data;
       const fundingAmount = ethers.utils.parseEther("10");
 
-      let salt =
-        "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+      let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute(uint256,address,uint256,bytes)",
@@ -598,8 +592,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it("should be allowed to deploy a contract with CREATE2", async () => {
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      let salt =
-        "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+      let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute(uint256,address,uint256,bytes)",
@@ -643,8 +636,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const contractBytecodeToDeploy = upDeploymentTx.data;
       const fundingAmount = ethers.utils.parseEther("10");
 
-      let salt =
-        "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+      let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute(uint256,address,uint256,bytes)",
@@ -715,8 +707,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
       it("should revert when trying to deploy a contract via CREATE2", async () => {
         let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-        let salt =
-          "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+        let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
         let payload = context.universalProfile.interface.encodeFunctionData(
           "execute(uint256,address,uint256,bytes)",
@@ -861,8 +852,7 @@ export const shouldBehaveLikePermissionDeploy = (
         describe("when signing with Ethereum Signed Message", () => {
           it("should recover the wrong signer address and revert with `NoPermissionsSet`", async () => {
             let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-            let salt =
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+            let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
             let nonce = await context.keyManager.callStatic.getNonce(
               addressCannotDeploy.address,
@@ -923,8 +913,7 @@ export const shouldBehaveLikePermissionDeploy = (
         describe("when signing with EIP191Signer '\\x19\\x00'", () => {
           it("should revert with `NotAuthorised` with correct signer address but missing permission DEPLOY", async () => {
             let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-            let salt =
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+            let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
             let nonce = await context.keyManager.callStatic.getNonce(
               addressCannotDeploy.address,

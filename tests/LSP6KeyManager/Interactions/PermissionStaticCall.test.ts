@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { ethers } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {
@@ -31,7 +32,6 @@ import {
   combineCallTypes,
   combinePermissions,
 } from "../../utils/helpers";
-import { ethers } from "ethers";
 
 export const shouldBehaveLikePermissionStaticCall = (
   buildContext: () => Promise<LSP6TestContext>
