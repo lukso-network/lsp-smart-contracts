@@ -43,55 +43,55 @@ export const shouldBehaveLikeExecuteRelayCall = (
 ) => {
   let context: LSP6TestContext;
 
-  let signer: SignerWithAddress,
-    relayer: SignerWithAddress,
-    random: SignerWithAddress,
-    signerNoAllowedCalls: SignerWithAddress;
-
-  let targetContract: TargetContract;
-
-  before(async () => {
-    context = await buildContext(ethers.utils.parseEther("100"));
-
-    signer = context.accounts[1];
-    relayer = context.accounts[2];
-    signerNoAllowedCalls = context.accounts[3];
-    random = context.accounts[4];
-
-    targetContract = await new TargetContract__factory(
-      context.accounts[0]
-    ).deploy();
-
-    const permissionKeys = [
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        signer.address.substring(2),
-      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        signer.address.substring(2),
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        signerNoAllowedCalls.address.substring(2),
-    ];
-
-    const permissionsValues = [
-      ALL_PERMISSIONS,
-      combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
-      combineAllowedCalls(
-        [
-          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
-          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
-        ],
-        [random.address, targetContract.address],
-        ["0xffffffff", "0xffffffff"],
-        ["0xffffffff", "0xffffffff"]
-      ),
-      combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
-    ];
-
-    await setupKeyManager(context, permissionKeys, permissionsValues);
-  });
-
   describe("`executeRelayCall(..)`", () => {
+    let signer: SignerWithAddress,
+      relayer: SignerWithAddress,
+      random: SignerWithAddress,
+      signerNoAllowedCalls: SignerWithAddress;
+
+    let targetContract: TargetContract;
+
+    before(async () => {
+      context = await buildContext();
+
+      signer = context.accounts[1];
+      relayer = context.accounts[2];
+      signerNoAllowedCalls = context.accounts[3];
+      random = context.accounts[4];
+
+      targetContract = await new TargetContract__factory(
+        context.accounts[0]
+      ).deploy();
+
+      const permissionKeys = [
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          signer.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          signer.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          signerNoAllowedCalls.address.substring(2),
+      ];
+
+      const permissionsValues = [
+        ALL_PERMISSIONS,
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+        combineAllowedCalls(
+          [
+            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
+            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
+          ],
+          [random.address, targetContract.address],
+          ["0xffffffff", "0xffffffff"],
+          ["0xffffffff", "0xffffffff"]
+        ),
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+      ];
+
+      await setupKeyManager(context, permissionKeys, permissionsValues);
+    });
+
     describe("When testing signed message", () => {
       describe("When testing msg.value", () => {
         describe("When sending more than the signed msg.value", () => {
@@ -571,6 +571,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
     let tokenContract: LSP7Mintable;
 
     before(async () => {
+      context = await buildContext(ethers.utils.parseEther("10"));
+
       minter = context.accounts[1];
       tokenRecipient = context.accounts[2];
 
@@ -583,6 +585,15 @@ export const shouldBehaveLikeExecuteRelayCall = (
         context.universalProfile.address,
         false
       );
+
+      const permissionKeys = [
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+      ];
+
+      const permissionsValues = [ALL_PERMISSIONS];
+
+      await setupKeyManager(context, permissionKeys, permissionsValues);
     });
 
     it("should revert when there are not the same number of elements for each parameters", async () => {
