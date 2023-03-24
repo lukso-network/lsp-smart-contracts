@@ -1101,8 +1101,8 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
   });
 
-  describe("testing values set under `LSP5ReceivedAssets[]`", () => {
-    let context;
+  describe.only("testing values set under `LSP5ReceivedAssets[]`", () => {
+    let context: LSP1DelegateTestContext;
     let token: LSP7Tester;
 
     before(async () => {
@@ -1239,6 +1239,101 @@ export const shouldBehaveLikeLSP1Delegate = (
       });
     });
 
+    describe("when the Map value of LSP5Map is less than 20 bytes", () => {
+      before(async () => {
+        await token
+          .connect(context.accounts.owner1)
+          .mint(context.accounts.owner1.address, 100, true, "0x");
+
+        await token
+          .connect(context.accounts.owner1)
+          .transfer(
+            context.accounts.owner1.address,
+            context.universalProfile1.address,
+            10,
+            false,
+            "0x"
+          );
+
+        await context.universalProfile1
+          .connect(context.accounts.owner1)
+          ["setData(bytes32,bytes)"](
+            ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
+              token.address.substring(2),
+            "0xcafecafecafecafe"
+          );
+      });
+
+      it("it should revert silently", async () => {
+        const tokenTrasferCalldata = token.interface.encodeFunctionData(
+          "transfer",
+          [
+            context.universalProfile1.address,
+            context.accounts.owner1.address,
+            5,
+            true,
+            "0x",
+          ]
+        );
+
+        expect(
+          await context.universalProfile1
+            .connect(context.accounts.owner1)
+            ["execute(uint256,address,uint256,bytes)"](
+              0,
+              token.address,
+              0,
+              tokenTrasferCalldata
+            )
+        ).to.not.be.reverted;
+      });
+
+      it("it should emit UniversalReceiver event", async () => {
+        const tokenTrasferCalldata = token.interface.encodeFunctionData(
+          "transfer",
+          [
+            context.universalProfile1.address,
+            context.accounts.owner1.address,
+            5,
+            true,
+            "0x",
+          ]
+        );
+
+        const tokensSentBytes32Value = "0x" + "0".repeat(63) + 5;
+
+        const tokenTransferData = (
+          context.universalProfile1.address +
+          context.accounts.owner1.address.substring(2) +
+          tokensSentBytes32Value.substring(2)
+        ).toLocaleLowerCase();
+
+        const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
+          ["string", "bytes"],
+          ["LSP1: asset data corrupted", "0x"]
+        );
+
+        await expect(
+          context.universalProfile1
+            .connect(context.accounts.owner1)
+            ["execute(uint256,address,uint256,bytes)"](
+              0,
+              token.address,
+              0,
+              tokenTrasferCalldata
+            )
+        )
+          .to.emit(context.universalProfile1, "UniversalReceiver")
+          .withArgs(
+            token.address,
+            0,
+            LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
+            tokenTransferData,
+            lsp1ReturnedData
+          );
+      });
+    });
+
     afterEach(async () => {
       // cleanup adn reset the `LSP5ReceivedAssets[]` length value to 0
       // set the `LSP5ReceivedAssets[]` length value to the max(uint128)`
@@ -1251,6 +1346,99 @@ export const shouldBehaveLikeLSP1Delegate = (
       await context.lsp6KeyManager1
         .connect(context.accounts.owner1)
         ["execute(bytes)"](setDataPayload);
+    });
+  });
+
+  describe.only("testing values set under `LSP10ReceivedVaults[]`", () => {
+    let context: LSP1DelegateTestContext;
+    let vault: LSP9Vault;
+
+    before(async () => {
+      // start with a fresh empty context
+      context = await buildContext();
+
+      vault = await new LSP9Vault__factory(context.accounts.random).deploy(
+        context.accounts.owner1.address
+      );
+    });
+
+    describe("when the Map value of LSP10Map is less than 20 bytes", () => {
+      beforeEach(async () => {
+        await vault
+          .connect(context.accounts.owner1)
+          .transferOwnership(context.universalProfile1.address);
+
+        const acceptOwnershipCalldata =
+          vault.interface.encodeFunctionData("acceptOwnership");
+
+        await context.universalProfile1
+          .connect(context.accounts.owner1)
+          ["execute(uint256,address,uint256,bytes)"](
+            0,
+            vault.address,
+            0,
+            acceptOwnershipCalldata
+          );
+
+        await context.universalProfile1
+          .connect(context.accounts.owner1)
+          ["setData(bytes32,bytes)"](
+            ERC725YDataKeys.LSP10.LSP10VaultsMap + vault.address.substring(2),
+            "0xcafecafecafecafe"
+          );
+      });
+
+      it("it should revert silently", async () => {
+        const vaultTrasferCalldata = vault.interface.encodeFunctionData(
+          "transferOwnership",
+          [context.accounts.owner1.address]
+        );
+
+        await context.universalProfile1
+          .connect(context.accounts.owner1)
+          ["execute(uint256,address,uint256,bytes)"](
+            0,
+            vault.address,
+            0,
+            vaultTrasferCalldata
+          );
+
+        expect(await vault.connect(context.accounts.owner1).acceptOwnership())
+          .to.not.be.reverted;
+      });
+
+      it("it should emit UniversalReceiver event", async () => {
+        const vaultTrasferCalldata = vault.interface.encodeFunctionData(
+          "transferOwnership",
+          [context.accounts.owner1.address]
+        );
+
+        const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
+          ["string", "bytes"],
+          ["LSP1: asset data corrupted", "0x"]
+        );
+
+        await context.universalProfile1
+          .connect(context.accounts.owner1)
+          ["execute(uint256,address,uint256,bytes)"](
+            0,
+            vault.address,
+            0,
+            vaultTrasferCalldata
+          );
+
+        await expect(
+          await vault.connect(context.accounts.owner1).acceptOwnership()
+        )
+          .to.emit(context.universalProfile1, "UniversalReceiver")
+          .withArgs(
+            vault.address,
+            0,
+            LSP1_TYPE_IDS.LSP9OwnershipTransferred_SenderNotification,
+            "0x",
+            lsp1ReturnedData
+          );
+      });
     });
   });
 

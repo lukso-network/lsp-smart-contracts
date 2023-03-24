@@ -805,6 +805,140 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
   });
 
+  describe.only("testing values set under `LSP5ReceivedAssets[]`", () => {
+    let context: LSP1TestContext;
+    let token: LSP7Tester;
+
+    before(async () => {
+      // start with a fresh empty context
+      context = await buildContext();
+
+      token = await new LSP7Tester__factory(context.accounts.random).deploy(
+        "Example LSP7 token",
+        "EL7T",
+        context.accounts.random.address
+      );
+    });
+
+    describe("when the Map value of LSP5Map is less than 20 bytes", () => {
+      before(async () => {
+        await token
+          .connect(context.accounts.owner1)
+          .mint(context.accounts.owner1.address, 100, true, "0x");
+
+        await token
+          .connect(context.accounts.owner1)
+          .transfer(
+            context.accounts.owner1.address,
+            context.lsp9Vault1.address,
+            10,
+            false,
+            "0x"
+          );
+
+        const vaultSetDataCalldata =
+          context.lsp9Vault1.interface.encodeFunctionData(
+            "setData(bytes32,bytes)",
+            [
+              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
+                token.address.substring(2),
+              "0xcafecafecafecafe",
+            ]
+          );
+
+        await context.universalProfile
+          .connect(context.accounts.owner1)
+          ["execute(uint256,address,uint256,bytes)"](
+            0,
+            context.lsp9Vault1.address,
+            0,
+            vaultSetDataCalldata
+          );
+      });
+
+      it("it should revert silently", async () => {
+        const tokenTrasferCalldata = token.interface.encodeFunctionData(
+          "transfer",
+          [
+            context.lsp9Vault1.address,
+            context.accounts.owner1.address,
+            5,
+            true,
+            "0x",
+          ]
+        );
+
+        const vaultTokenTransferCalldata =
+          context.lsp9Vault1.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, token.address, 0, tokenTrasferCalldata]
+          );
+
+        expect(
+          await context.universalProfile
+            .connect(context.accounts.owner1)
+            ["execute(uint256,address,uint256,bytes)"](
+              0,
+              context.lsp9Vault1.address,
+              0,
+              vaultTokenTransferCalldata
+            )
+        ).to.not.be.reverted;
+      });
+
+      it("it should emit UniversalReceiver event", async () => {
+        const tokenTrasferCalldata = token.interface.encodeFunctionData(
+          "transfer",
+          [
+            context.lsp9Vault1.address,
+            context.accounts.owner1.address,
+            5,
+            true,
+            "0x",
+          ]
+        );
+
+        const vaultTokenTransferCalldata =
+          context.lsp9Vault1.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, token.address, 0, tokenTrasferCalldata]
+          );
+
+        const tokensSentBytes32Value = "0x" + "0".repeat(63) + 5;
+
+        const tokenTransferData = (
+          context.lsp9Vault1.address +
+          context.accounts.owner1.address.substring(2) +
+          tokensSentBytes32Value.substring(2)
+        ).toLocaleLowerCase();
+
+        const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
+          ["string", "bytes"],
+          ["LSP1: asset data corrupted", "0x"]
+        );
+
+        await expect(
+          context.universalProfile
+            .connect(context.accounts.owner1)
+            ["execute(uint256,address,uint256,bytes)"](
+              0,
+              context.lsp9Vault1.address,
+              0,
+              vaultTokenTransferCalldata
+            )
+        )
+          .to.emit(context.lsp9Vault1, "UniversalReceiver")
+          .withArgs(
+            token.address,
+            0,
+            LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
+            tokenTransferData,
+            lsp1ReturnedData
+          );
+      });
+    });
+  });
+
   describe("when testing LSP8-IdentifiableDigitalAsset", () => {
     let lsp8TokenA: LSP8Tester, lsp8TokenB: LSP8Tester, lsp8TokenC: LSP8Tester;
     before(async () => {
