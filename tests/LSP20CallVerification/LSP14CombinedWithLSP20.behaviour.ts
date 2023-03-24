@@ -436,7 +436,9 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
           .connect(context.deployParams.owner)
           .renounceOwnership();
 
-        await network.provider.send("hardhat_mine", ["0x62"]); // skip 98 blocks
+        await network.provider.send("hardhat_mine", [
+          ethers.utils.hexValue(98),
+        ]); // skip 98 blocks
 
         const renounceOwnershipSecond = context.contract
           .connect(context.deployParams.owner)
@@ -448,8 +450,8 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
             "NotInRenounceOwnershipInterval"
           )
           .withArgs(
-            (await renounceOwnershipOnce).blockNumber + 100,
-            (await renounceOwnershipOnce).blockNumber + 200
+            (await renounceOwnershipOnce).blockNumber + 200,
+            (await renounceOwnershipOnce).blockNumber + 400
           );
 
         expect(await context.contract.owner()).to.equal(
@@ -458,13 +460,19 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
       });
 
       describe("when called after the delay and before the confirmation period end", () => {
-        it("should have emitted a OwnershipTransferred event", async () => {
+        beforeEach(async () => {
+          // Call renounceOwnership for the first time
           await context.contract
             .connect(context.deployParams.owner)
             .renounceOwnership();
 
-          await network.provider.send("hardhat_mine", ["0x63"]); // skip 99 blocks
+          // Skip 199 block to reach the time where renouncing ownership can happen
+          await network.provider.send("hardhat_mine", [
+            ethers.utils.hexValue(199),
+          ]);
+        });
 
+        it("should have emitted a OwnershipTransferred event", async () => {
           await expect(
             context.contract
               .connect(context.deployParams.owner)
@@ -482,12 +490,6 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
         });
 
         it("should have emitted a OwnershipRenounced event", async () => {
-          await context.contract
-            .connect(context.deployParams.owner)
-            .renounceOwnership();
-
-          await network.provider.send("hardhat_mine", ["0x63"]); // skip 99 blocks
-
           await expect(
             context.contract
               .connect(context.deployParams.owner)
@@ -504,24 +506,12 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
             .connect(context.deployParams.owner)
             .renounceOwnership();
 
-          await network.provider.send("hardhat_mine", ["0x63"]); // skip 99 blocks
-
-          await context.contract
-            .connect(context.deployParams.owner)
-            .renounceOwnership();
-
           expect(await context.contract.owner()).to.equal(
             ethers.constants.AddressZero
           );
         });
 
         it("should have reset the `_renounceOwnershipStartedAt` state variable to zero", async () => {
-          await context.contract
-            .connect(context.deployParams.owner)
-            .renounceOwnership();
-
-          await network.provider.send("hardhat_mine", ["0x63"]); // skip 99 blocks
-
           await context.contract
             .connect(context.deployParams.owner)
             .renounceOwnership();
@@ -538,12 +528,6 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
 
         describe("currentOwner should not be able to interact with contract anymore after confirming", () => {
           it("`setData(...)`", async () => {
-            await context.contract
-              .connect(context.deployParams.owner)
-              .renounceOwnership();
-
-            await network.provider.send("hardhat_mine", ["0x63"]); // skip 99 blocks
-
             await context.contract
               .connect(context.deployParams.owner)
               .renounceOwnership();
@@ -568,12 +552,6 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
           });
 
           it("transfer LYX via `execute(...)`", async () => {
-            await context.contract
-              .connect(context.deployParams.owner)
-              .renounceOwnership();
-
-            await network.provider.send("hardhat_mine", ["0x63"]); // skip 99 blocks
-
             await context.contract
               .connect(context.deployParams.owner)
               .renounceOwnership();
@@ -605,7 +583,9 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
           .connect(context.deployParams.owner)
           .renounceOwnership();
 
-        await network.provider.send("hardhat_mine", ["0xc8"]); // skip 200 blocks
+        await network.provider.send("hardhat_mine", [
+          ethers.utils.hexValue(400),
+        ]); // skip 400 blocks
 
         let tx = await context.contract
           .connect(context.deployParams.owner)
@@ -636,7 +616,7 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
             .renounceOwnership();
 
           await network.provider.send("hardhat_mine", [
-            ethers.utils.hexValue(100),
+            ethers.utils.hexValue(200),
           ]);
 
           await context.contract
@@ -654,7 +634,7 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
             .renounceOwnership();
 
           await network.provider.send("hardhat_mine", [
-            ethers.utils.hexValue(100),
+            ethers.utils.hexValue(200),
           ]);
 
           await context.contract
