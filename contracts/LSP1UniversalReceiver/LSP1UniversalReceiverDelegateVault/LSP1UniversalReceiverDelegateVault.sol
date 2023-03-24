@@ -84,6 +84,8 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
             // if it's a token transfer (LSP7/LSP8)
             uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
             if (balance != 0) return "LSP1: full balance is not sent";
+            // if the returned data of lsp5 map is not encoded properly
+            if (notifierMapValue.length < 20) return "LSP1: asset data corrupted";
 
             (dataKeys, dataValues) = LSP5Utils.generateSentAssetKeys(
                 msg.sender,

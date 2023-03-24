@@ -42,6 +42,7 @@ import "../LSP1Errors.sol";
  */
 contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
     using ERC165Checker for address;
+    error LengthSmallerThan20Bytes(bytes value);
 
     /**
      * @inheritdoc ILSP1UniversalReceiver
@@ -86,6 +87,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             return _whenReceiving(typeId, notifier, notifierMapKey, interfaceID);
         } else {
             if (!isMapValueSet) return "LSP1: asset sent is not registered";
+            if (notifierMapValue.length < 20) return "LSP1: asset data corrupted";
 
             return _whenSending(typeId, notifier, notifierMapKey, notifierMapValue);
         }
