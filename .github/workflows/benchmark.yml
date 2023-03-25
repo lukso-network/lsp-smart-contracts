@@ -19,9 +19,6 @@ on:
 
 jobs:
   benchmark:
-    # Do not run when preparing a release and the branch name contains the term "prepare"
-    # (e.g: chore/prepare-release-x.x.x -> develop)
-    if: ${{ !contains(github.ref, "release") }}
     runs-on: ubuntu-latest
 
     steps:
