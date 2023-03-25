@@ -1,1 +1,6 @@
 contracts/LSP6KeyManager/LSP6Constants.sol
+artifacts
+cache
+types
+out
+lib
