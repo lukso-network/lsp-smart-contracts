@@ -80,28 +80,25 @@ export const shouldBehaveLikeMultiChannelNonce = (
   });
 
   describe("testing sequential nonces (channel = 0)", () => {
-    let channelId = 0;
-    let latestNonce;
-
-    beforeEach(async () => {
-      latestNonce = await context.keyManager.callStatic.getNonce(
-        signer.address,
-        channelId
-      );
-    });
+    const channelId = 0;
 
     [
-      { callNb: "First", newName: "Yamen", expectedNonce: latestNonce + 1 },
-      { callNb: "Second", newName: "Nour", expectedNonce: latestNonce + 1 },
-      { callNb: "Third", newName: "Huss", expectedNonce: latestNonce + 1 },
-      { callNb: "Fourth", newName: "Moussa", expectedNonce: latestNonce + 1 },
+      { callNb: "First", newName: "Yamen", expectedNonce: 1 },
+      { callNb: "Second", newName: "Nour", expectedNonce: 2 },
+      { callNb: "Third", newName: "Huss", expectedNonce: 3 },
+      { callNb: "Fourth", newName: "Moussa", expectedNonce: 4 },
     ].forEach(({ callNb, newName, expectedNonce }) => {
-      it(`${callNb} call > nonce should increment from ${latestNonce} to ${expectedNonce}`, async () => {
-        let targetContractPayload = targetContract.interface.encodeFunctionData(
-          "setName",
-          [newName]
+      // prettier-ignore
+      it(`${callNb} call > nonce should increment from ${expectedNonce - 1} to ${expectedNonce}`, async () => {
+        const latestNonce = await context.keyManager.callStatic.getNonce(
+          signer.address,
+          channelId
         );
-        let executeRelayCallPayload =
+
+        const targetContractPayload =
+          targetContract.interface.encodeFunctionData("setName", [newName]);
+
+        const executeRelayCallPayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
             [
@@ -115,7 +112,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
 
-        let encodedMessage = ethers.utils.solidityPack(
+        const encodedMessage = ethers.utils.solidityPack(
           ["uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
@@ -126,9 +123,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]
         );
 
-        let eip191Signer = new EIP191Signer();
+        const eip191Signer = new EIP191Signer();
 
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
+        const { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
@@ -141,8 +138,8 @@ export const shouldBehaveLikeMultiChannelNonce = (
           { value: valueToSend }
         );
 
-        let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await context.keyManager.callStatic.getNonce(
+        const fetchedName = await targetContract.callStatic.getName();
+        const nonceAfter = await context.keyManager.callStatic.getNonce(
           signer.address,
           0
         );
@@ -575,6 +572,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
     describe("channel 15", () => {
       let channelId = 15;
+
       it("First call > nonce should increment from 0 to 1", async () => {
         let nonceBefore = await context.keyManager.getNonce(
           signer.address,

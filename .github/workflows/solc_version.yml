@@ -2,7 +2,13 @@
 # with different Solidity 0.8.x versions
 name: Solidity Compiler Versions
 
-on: pull_request
+on:
+  pull_request:
+    types: [opened]
+
+    # compare gas diff only when editing Solidity smart contract code
+    paths:
+      - "contracts/**/*.sol"
 
 jobs:
   solc_version:

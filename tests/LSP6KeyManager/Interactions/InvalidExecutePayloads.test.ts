@@ -14,24 +14,16 @@ import {
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
-export const otherTestScenarios = (
+export const testInvalidExecutePayloads = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
   let context: LSP6TestContext;
-
-  let superAdmin: SignerWithAddress,
-    superAdminNoSign: SignerWithAddress,
-    superAdminCustomPermissions: SignerWithAddress;
 
   let addressCanMakeCall: SignerWithAddress;
   let targetContract: TargetContract;
 
   before(async () => {
     context = await buildContext();
-
-    superAdmin = context.accounts[1];
-    superAdminNoSign = context.accounts[2];
-    superAdminCustomPermissions = context.accounts[3];
 
     addressCanMakeCall = context.accounts[4];
 
@@ -115,7 +107,7 @@ export const otherTestScenarios = (
       );
     });
 
-    it("Should revert because of wrong operation type when caller has not ALL PERMISSIONS", async () => {
+    it("Should revert because of wrong operation type when caller has permission CALL", async () => {
       let targetPayload = targetContract.interface.encodeFunctionData(
         "setName",
         ["new name"]
