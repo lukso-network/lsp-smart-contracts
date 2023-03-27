@@ -8,9 +8,9 @@
 
 <!-- Keep the sub-header that suits the PR and remove the rest -->
 
-<!-- Changes that potentially causes other components to fail (changes in interfaceIds, function signatures, behavior, etc ..) ---> 
+<!-- Changes that potentially causes other components to fail (changes in interfaceIds, function signatures, behavior, etc ..) --->
 <!---
-## ⚠️ BREAKING CHANGES 
+## ⚠️ BREAKING CHANGES
 ---->
 
 <!---
