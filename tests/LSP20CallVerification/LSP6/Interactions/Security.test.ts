@@ -49,7 +49,6 @@ export const testSecurityScenarios = (
     context = await buildContext();
 
     signer = context.accounts[1];
-    relayer = context.accounts[2];
     addressWithNoPermissions = context.accounts[3];
 
     attacker = context.accounts[4];
