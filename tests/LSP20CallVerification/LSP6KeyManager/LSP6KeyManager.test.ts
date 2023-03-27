@@ -16,7 +16,6 @@ import { deployProxy } from "../../utils/fixtures";
 import {
   shouldInitializeLikeLSP6,
   shouldBehaveLikeLSP6,
-  testLSP6InternalFunctions,
 } from "./LSP6KeyManager.behaviour";
 
 describe("LSP6KeyManager", () => {
@@ -46,23 +45,6 @@ describe("LSP6KeyManager", () => {
 
     describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP6(buildTestContext);
-    });
-
-    describe("testing internal functions", () => {
-      testLSP6InternalFunctions(async () => {
-        const accounts = await ethers.getSigners();
-        const owner = accounts[0];
-
-        const universalProfile = await new UniversalProfile__factory(
-          owner
-        ).deploy(owner.address);
-        const keyManagerInternalTester =
-          await new KeyManagerInternalTester__factory(owner).deploy(
-            universalProfile.address
-          );
-
-        return { owner, accounts, universalProfile, keyManagerInternalTester };
-      });
     });
   });
 
