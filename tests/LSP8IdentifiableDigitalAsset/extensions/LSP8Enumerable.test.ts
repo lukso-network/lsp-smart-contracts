@@ -39,7 +39,7 @@ describe("LSP8Enumerable", () => {
     describe("when deploying the contract", () => {
       let context: LSP8EnumerableTestContext;
 
-      beforeEach(async () => {
+      before(async () => {
         context = await buildTestContext();
       });
 
@@ -91,7 +91,7 @@ describe("LSP8Enumerable", () => {
     describe("when deploying the contract as proxy", () => {
       let context: LSP8EnumerableTestContext;
 
-      beforeEach(async () => {
+      before(async () => {
         context = await buildTestContext();
       });
 
@@ -109,7 +109,6 @@ describe("LSP8Enumerable", () => {
 
       describe("when calling initialize more than once", () => {
         it("should revert", async () => {
-          await initializeProxy(context);
           await expect(initializeProxy(context)).to.be.revertedWith(
             "Initializable: contract is already initialized"
           );
