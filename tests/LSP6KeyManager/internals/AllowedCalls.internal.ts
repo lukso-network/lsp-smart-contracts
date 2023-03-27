@@ -28,6 +28,20 @@ import {
   combineCallTypes,
 } from "../../utils/helpers";
 
+async function teardownKeyManagerHelper(
+  context: LSP6InternalsTestContext,
+  permissionsKeys: string[]
+) {
+  const teardownPayload = context.universalProfile.interface.encodeFunctionData(
+    "setData(bytes32[],bytes[])",
+    [permissionsKeys, Array(permissionsKeys.length).fill("0x")]
+  );
+
+  await context.keyManagerInternalTester
+    .connect(context.owner)
+    ["execute(bytes)"](teardownPayload);
+}
+
 export const testAllowedCallsInternals = (
   buildContext: () => Promise<LSP6InternalsTestContext>
 ) => {
@@ -1150,17 +1164,3 @@ export const testAllowedCallsInternals = (
     });
   });
 };
-
-async function teardownKeyManagerHelper(
-  context: LSP6InternalsTestContext,
-  permissionsKeys: string[]
-) {
-  const teardownPayload = context.universalProfile.interface.encodeFunctionData(
-    "setData(bytes32[],bytes[])",
-    [permissionsKeys, Array(permissionsKeys.length).fill("0x")]
-  );
-
-  await context.keyManagerInternalTester
-    .connect(context.owner)
-    ["execute(bytes)"](teardownPayload);
-}

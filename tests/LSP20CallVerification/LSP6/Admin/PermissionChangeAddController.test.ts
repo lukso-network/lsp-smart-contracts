@@ -3178,9 +3178,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ];
 
           let values = [
+            combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
+            combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
-            combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
-            combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
             ethers.utils.hexlify(
               ethers.utils.toUtf8Bytes("Random data for not allowed value")
             ),
