@@ -3,13 +3,12 @@ import { ethers } from "hardhat";
 
 //types
 import { BigNumber, BytesLike } from "ethers";
-import { SingleReentrancyRelayer__factory } from "../../../../../types";
 
 // constants
-import { ERC725YDataKeys, OPERATION_TYPES } from "../../../../../constants";
+import { ALL_PERMISSIONS, ERC725YDataKeys } from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../../../utils/context";
+import { LSP6TestContext } from "../../../utils/context";
 
 // helpers
 import {
@@ -23,11 +22,11 @@ import {
   addUniversalReceiverDelegateTestCases,
   changeUniversalReceiverDelegateTestCases,
   // Functions
-  generateBatchRelayPayload,
   loadTestCase,
 } from "./reentrancyHelpers";
+import { LSP20ReentrantContract__factory } from "../../../../types";
 
-export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
+export const testERC725XExecuteToERC725XExecute = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
   buildReentrancyContext: (
     context: LSP6TestContext
@@ -35,46 +34,37 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
 ) => {
   let context: LSP6TestContext;
   let reentrancyContext: ReentrancyContext;
-  let executeCalldata: {
-    operationType: number;
-    to: string;
-    value: number;
-    data: BytesLike;
-  };
 
   before(async () => {
     context = await buildContext(ethers.utils.parseEther("10"));
     reentrancyContext = await buildReentrancyContext(context);
-
-    const reentrantCall =
-      new SingleReentrancyRelayer__factory().interface.encodeFunctionData(
-        "relayCallThatReenters",
-        [context.keyManager.address]
-      );
-
-    executeCalldata = {
-      operationType: OPERATION_TYPES.CALL,
-      to: reentrancyContext.batchReentarncyRelayer.address,
-      value: 0,
-      data: reentrantCall,
-    };
   });
 
   describe("when reentering and transferring value", () => {
+    let executeCalldata: {
+      operationType: number;
+      to: string;
+      value: number;
+      data: BytesLike;
+    };
+
     before(async () => {
-      await generateBatchRelayPayload(
-        context.universalProfile,
-        context.keyManager,
-        "TRANSFERVALUE",
-        reentrancyContext.batchReentarncyRelayer,
-        reentrancyContext.reentrantSigner,
-        reentrancyContext.newControllerAddress,
-        reentrancyContext.newURDAddress
-      );
+      const reentrantCall =
+        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+          "callThatReenters",
+          ["TRANSFERVALUE"]
+        );
+
+      executeCalldata = {
+        operationType: 0,
+        to: reentrancyContext.reentrantContract.address,
+        value: 0,
+        data: reentrantCall,
+      };
     });
 
     transferValueTestCases.NotAuthorised.forEach((testCase) => {
-      it(`should revert if the reentrant signer has the following permission set: PRESENT - ${
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${
         testCase.permissionsText
       }; MISSING - ${testCase.missingPermission}; AllowedCalls - ${
         testCase.allowedCalls ? "YES" : "NO"
@@ -83,8 +73,8 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
           "TRANSFERVALUE",
           testCase,
           context,
-          reentrancyContext.reentrantSigner.address,
-          reentrancyContext.batchReentarncyRelayer.address
+          reentrancyContext.reentrantContract.address,
+          reentrancyContext.reentrantContract.address
         );
 
         await expect(
@@ -99,19 +89,19 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
-            reentrancyContext.reentrantSigner.address,
+            reentrancyContext.reentrantContract.address,
             testCase.missingPermission
           );
       });
     });
 
-    it("should revert if the reentrant signer has the following permissions: REENTRANCY, TRANSFERVALUE & NO AllowedCalls", async () => {
+    it("should revert if the reentrant contract has the following permissions: REENTRANCY, TRANSFERVALUE & NO AllowedCalls", async () => {
       await loadTestCase(
         "TRANSFERVALUE",
         transferValueTestCases.NoCallsAllowed,
         context,
-        reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       await expect(
@@ -126,13 +116,13 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
       ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
     });
 
-    it("should pass if the reentrant signer has the following permissions: REENTRANCY, TRANSFERVALUE & AllowedCalls", async () => {
+    it("should pass if the reentrant contract has the following permissions: REENTRANCY, TRANSFERVALUE & AllowedCalls", async () => {
       await loadTestCase(
         "TRANSFERVALUE",
         transferValueTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       expect(
@@ -158,27 +148,37 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
 
       expect(
         await context.universalProfile.provider.getBalance(
-          reentrancyContext.batchReentarncyRelayer.address
+          reentrancyContext.reentrantContract.address
         )
       ).to.equal(ethers.utils.parseEther("1"));
     });
   });
 
   describe("when reentering and setting data", () => {
+    let executeCalldata: {
+      operationType: number;
+      to: string;
+      value: number;
+      data: BytesLike;
+    };
+
     before(async () => {
-      await generateBatchRelayPayload(
-        context.universalProfile,
-        context.keyManager,
-        "SETDATA",
-        reentrancyContext.batchReentarncyRelayer,
-        reentrancyContext.reentrantSigner,
-        reentrancyContext.newControllerAddress,
-        reentrancyContext.newURDAddress
-      );
+      const reentrantCall =
+        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+          "callThatReenters",
+          ["SETDATA"]
+        );
+
+      executeCalldata = {
+        operationType: 0,
+        to: reentrancyContext.reentrantContract.address,
+        value: 0,
+        data: reentrantCall,
+      };
     });
 
     setDataTestCases.NotAuthorised.forEach((testCase) => {
-      it(`should revert if the reentrant signer has the following permission set: PRESENT - ${
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${
         testCase.permissionsText
       }; MISSING - ${testCase.missingPermission}; AllowedERC725YDataKeys - ${
         testCase.allowedERC725YDataKeys ? "YES" : "NO"
@@ -187,8 +187,8 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
           "SETDATA",
           testCase,
           context,
-          reentrancyContext.reentrantSigner.address,
-          reentrancyContext.batchReentarncyRelayer.address
+          reentrancyContext.reentrantContract.address,
+          reentrancyContext.reentrantContract.address
         );
 
         await expect(
@@ -203,19 +203,19 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
-            reentrancyContext.reentrantSigner.address,
+            reentrancyContext.reentrantContract.address,
             testCase.missingPermission
           );
       });
     });
 
-    it("should revert if the reentrant signer has the following permissions: REENTRANCY, SETDATA & NO AllowedERC725YDataKeys", async () => {
+    it("should revert if the reentrant contract has the following permissions: REENTRANCY, SETDATA & NO AllowedERC725YDataKeys", async () => {
       await loadTestCase(
         "SETDATA",
         setDataTestCases.NoERC725YDataKeysAllowed,
         context,
-        reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       await expect(
@@ -233,13 +233,13 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
       );
     });
 
-    it("should pass if the reentrant signer has the following permissions: REENTRANCY, SETDATA & AllowedERC725YDataKeys", async () => {
+    it("should pass if the reentrant contract has the following permissions: REENTRANCY, SETDATA & AllowedERC725YDataKeys", async () => {
       await loadTestCase(
         "SETDATA",
         setDataTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       await context.universalProfile
@@ -265,26 +265,36 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
   });
 
   describe("when reentering and adding permissions", () => {
+    let executeCalldata: {
+      operationType: number;
+      to: string;
+      value: number;
+      data: BytesLike;
+    };
+
     before(async () => {
-      await generateBatchRelayPayload(
-        context.universalProfile,
-        context.keyManager,
-        "ADDCONTROLLER",
-        reentrancyContext.batchReentarncyRelayer,
-        reentrancyContext.reentrantSigner,
-        reentrancyContext.newControllerAddress,
-        reentrancyContext.newURDAddress
-      );
+      const reentrantCall =
+        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+          "callThatReenters",
+          ["ADDCONTROLLER"]
+        );
+
+      executeCalldata = {
+        operationType: 0,
+        to: reentrancyContext.reentrantContract.address,
+        value: 0,
+        data: reentrantCall,
+      };
     });
 
     addPermissionsTestCases.NotAuthorised.forEach((testCase) => {
-      it(`should revert if the reentrant signer has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
         await loadTestCase(
           "ADDCONTROLLER",
           testCase,
           context,
-          reentrancyContext.reentrantSigner.address,
-          reentrancyContext.batchReentarncyRelayer.address
+          reentrancyContext.reentrantContract.address,
+          reentrancyContext.reentrantContract.address
         );
 
         await expect(
@@ -299,19 +309,19 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
-            reentrancyContext.reentrantSigner.address,
+            reentrancyContext.reentrantContract.address,
             testCase.missingPermission
           );
       });
     });
 
-    it("should pass if the reentrant signer has the following permissions: REENTRANCY, ADDCONTROLLER", async () => {
+    it("should pass if the reentrant contract has the following permissions: REENTRANCY, ADDCONTROLLER", async () => {
       await loadTestCase(
         "ADDCONTROLLER",
         addPermissionsTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       await context.universalProfile
@@ -326,38 +336,46 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         reentrancyContext.newControllerAddress.substring(2);
-      const hardcodedPermissionValue =
-        "0x0000000000000000000000000000000000000000000000000000000000000010";
 
       expect(
         await context.universalProfile["getData(bytes32)"](
           hardcodedPermissionKey
         )
-      ).to.equal(hardcodedPermissionValue);
+      ).to.equal(ALL_PERMISSIONS);
     });
   });
 
   describe("when reentering and changing permissions", () => {
+    let executeCalldata: {
+      operationType: number;
+      to: string;
+      value: number;
+      data: BytesLike;
+    };
+
     before(async () => {
-      await generateBatchRelayPayload(
-        context.universalProfile,
-        context.keyManager,
-        "EDITPERMISSIONS",
-        reentrancyContext.batchReentarncyRelayer,
-        reentrancyContext.reentrantSigner,
-        reentrancyContext.newControllerAddress,
-        reentrancyContext.newURDAddress
-      );
+      const reentrantCall =
+        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+          "callThatReenters",
+          ["EDITPERMISSIONS"]
+        );
+
+      executeCalldata = {
+        operationType: 0,
+        to: reentrancyContext.reentrantContract.address,
+        value: 0,
+        data: reentrantCall,
+      };
     });
 
     editPermissionsTestCases.NotAuthorised.forEach((testCase) => {
-      it(`should revert if the reentrant signer has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
         await loadTestCase(
           "EDITPERMISSIONS",
           testCase,
           context,
-          reentrancyContext.reentrantSigner.address,
-          reentrancyContext.batchReentarncyRelayer.address
+          reentrancyContext.reentrantContract.address,
+          reentrancyContext.reentrantContract.address
         );
 
         await expect(
@@ -372,19 +390,19 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
-            reentrancyContext.reentrantSigner.address,
+            reentrancyContext.reentrantContract.address,
             testCase.missingPermission
           );
       });
     });
 
-    it("should pass if the reentrant signer has the following permissions: REENTRANCY, EDITPERMISSIONS", async () => {
+    it("should pass if the reentrant contract has the following permissions: REENTRANCY, EDITPERMISSIONS", async () => {
       await loadTestCase(
         "EDITPERMISSIONS",
         editPermissionsTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       await context.universalProfile
@@ -410,26 +428,36 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
   });
 
   describe("when reentering and adding URD", () => {
+    let executeCalldata: {
+      operationType: number;
+      to: string;
+      value: number;
+      data: BytesLike;
+    };
+
     before(async () => {
-      await generateBatchRelayPayload(
-        context.universalProfile,
-        context.keyManager,
-        "ADDUNIVERSALRECEIVERDELEGATE",
-        reentrancyContext.batchReentarncyRelayer,
-        reentrancyContext.reentrantSigner,
-        reentrancyContext.newControllerAddress,
-        reentrancyContext.newURDAddress
-      );
+      const reentrantCall =
+        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+          "callThatReenters",
+          ["ADDUNIVERSALRECEIVERDELEGATE"]
+        );
+
+      executeCalldata = {
+        operationType: 0,
+        to: reentrancyContext.reentrantContract.address,
+        value: 0,
+        data: reentrantCall,
+      };
     });
 
     addUniversalReceiverDelegateTestCases.NotAuthorised.forEach((testCase) => {
-      it(`should revert if the reentrant signer has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
         await loadTestCase(
           "ADDUNIVERSALRECEIVERDELEGATE",
           testCase,
           context,
-          reentrancyContext.reentrantSigner.address,
-          reentrancyContext.batchReentarncyRelayer.address
+          reentrancyContext.reentrantContract.address,
+          reentrancyContext.reentrantContract.address
         );
 
         await expect(
@@ -444,19 +472,19 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
-            reentrancyContext.reentrantSigner.address,
+            reentrancyContext.reentrantContract.address,
             testCase.missingPermission
           );
       });
     });
 
-    it("should pass if the reentrant signer has the following permissions: REENTRANCY, ADDUNIVERSALRECEIVERDELEGATE", async () => {
+    it("should pass if the reentrant contract has the following permissions: REENTRANCY, ADDUNIVERSALRECEIVERDELEGATE", async () => {
       await loadTestCase(
         "ADDUNIVERSALRECEIVERDELEGATE",
         addUniversalReceiverDelegateTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       await context.universalProfile
@@ -481,27 +509,37 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
   });
 
   describe("when reentering and changing URD", () => {
+    let executeCalldata: {
+      operationType: number;
+      to: string;
+      value: number;
+      data: BytesLike;
+    };
+
     before(async () => {
-      await generateBatchRelayPayload(
-        context.universalProfile,
-        context.keyManager,
-        "CHANGEUNIVERSALRECEIVERDELEGATE",
-        reentrancyContext.batchReentarncyRelayer,
-        reentrancyContext.reentrantSigner,
-        reentrancyContext.newControllerAddress,
-        reentrancyContext.newURDAddress
-      );
+      const reentrantCall =
+        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+          "callThatReenters",
+          ["CHANGEUNIVERSALRECEIVERDELEGATE"]
+        );
+
+      executeCalldata = {
+        operationType: 0,
+        to: reentrancyContext.reentrantContract.address,
+        value: 0,
+        data: reentrantCall,
+      };
     });
 
     changeUniversalReceiverDelegateTestCases.NotAuthorised.forEach(
       (testCase) => {
-        it(`should revert if the reentrant signer has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
+        it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
           await loadTestCase(
             "CHANGEUNIVERSALRECEIVERDELEGATE",
             testCase,
             context,
-            reentrancyContext.reentrantSigner.address,
-            reentrancyContext.batchReentarncyRelayer.address
+            reentrancyContext.reentrantContract.address,
+            reentrancyContext.reentrantContract.address
           );
 
           await expect(
@@ -516,20 +554,20 @@ export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
-              reentrancyContext.reentrantSigner.address,
+              reentrancyContext.reentrantContract.address,
               testCase.missingPermission
             );
         });
       }
     );
 
-    it("should pass if the reentrant signer has the following permissions: REENTRANCY, CHANGEUNIVERSALRECEIVERDELEGATE", async () => {
+    it("should pass if the reentrant contract has the following permissions: REENTRANCY, CHANGEUNIVERSALRECEIVERDELEGATE", async () => {
       await loadTestCase(
         "CHANGEUNIVERSALRECEIVERDELEGATE",
         changeUniversalReceiverDelegateTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       await context.universalProfile

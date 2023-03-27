@@ -3,13 +3,13 @@ import { ethers } from "hardhat";
 
 //types
 import { BigNumber, BytesLike } from "ethers";
-import { SingleReentrancyRelayer__factory } from "../../../../../types";
+import { SingleReentrancyRelayer__factory } from "../../../../types";
 
 // constants
-import { ERC725YDataKeys, OPERATION_TYPES } from "../../../../../constants";
+import { ERC725YDataKeys, OPERATION_TYPES } from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../../../utils/context";
+import { LSP6TestContext } from "../../../utils/context";
 
 // helpers
 import {
@@ -23,11 +23,11 @@ import {
   addUniversalReceiverDelegateTestCases,
   changeUniversalReceiverDelegateTestCases,
   // Functions
-  generateSingleRelayPayload,
+  generateBatchRelayPayload,
   loadTestCase,
 } from "./reentrancyHelpers";
 
-export const testERC725XExecuteToLSP6ExecuteRelayCall = (
+export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
   buildReentrancyContext: (
     context: LSP6TestContext
@@ -54,7 +54,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
 
     executeCalldata = {
       operationType: OPERATION_TYPES.CALL,
-      to: reentrancyContext.singleReentarncyRelayer.address,
+      to: reentrancyContext.batchReentarncyRelayer.address,
       value: 0,
       data: reentrantCall,
     };
@@ -62,11 +62,11 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
 
   describe("when reentering and transferring value", () => {
     before(async () => {
-      await generateSingleRelayPayload(
+      await generateBatchRelayPayload(
         context.universalProfile,
         context.keyManager,
         "TRANSFERVALUE",
-        reentrancyContext.singleReentarncyRelayer,
+        reentrancyContext.batchReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
         reentrancyContext.newURDAddress
@@ -84,7 +84,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address
+          reentrancyContext.batchReentarncyRelayer.address
         );
 
         await expect(
@@ -111,7 +111,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         transferValueTestCases.NoCallsAllowed,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address
       );
 
       await expect(
@@ -132,7 +132,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         transferValueTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address
       );
 
       expect(
@@ -158,7 +158,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
 
       expect(
         await context.universalProfile.provider.getBalance(
-          reentrancyContext.singleReentarncyRelayer.address
+          reentrancyContext.batchReentarncyRelayer.address
         )
       ).to.equal(ethers.utils.parseEther("1"));
     });
@@ -166,11 +166,11 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
 
   describe("when reentering and setting data", () => {
     before(async () => {
-      await generateSingleRelayPayload(
+      await generateBatchRelayPayload(
         context.universalProfile,
         context.keyManager,
         "SETDATA",
-        reentrancyContext.singleReentarncyRelayer,
+        reentrancyContext.batchReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
         reentrancyContext.newURDAddress
@@ -188,7 +188,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address
+          reentrancyContext.batchReentarncyRelayer.address
         );
 
         await expect(
@@ -215,7 +215,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         setDataTestCases.NoERC725YDataKeysAllowed,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address
       );
 
       await expect(
@@ -239,7 +239,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         setDataTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address
       );
 
       await context.universalProfile
@@ -266,11 +266,11 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
 
   describe("when reentering and adding permissions", () => {
     before(async () => {
-      await generateSingleRelayPayload(
+      await generateBatchRelayPayload(
         context.universalProfile,
         context.keyManager,
         "ADDCONTROLLER",
-        reentrancyContext.singleReentarncyRelayer,
+        reentrancyContext.batchReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
         reentrancyContext.newURDAddress
@@ -284,7 +284,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address
+          reentrancyContext.batchReentarncyRelayer.address
         );
 
         await expect(
@@ -311,7 +311,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         addPermissionsTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address
       );
 
       await context.universalProfile
@@ -339,11 +339,11 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
 
   describe("when reentering and changing permissions", () => {
     before(async () => {
-      await generateSingleRelayPayload(
+      await generateBatchRelayPayload(
         context.universalProfile,
         context.keyManager,
         "EDITPERMISSIONS",
-        reentrancyContext.singleReentarncyRelayer,
+        reentrancyContext.batchReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
         reentrancyContext.newURDAddress
@@ -357,7 +357,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address
+          reentrancyContext.batchReentarncyRelayer.address
         );
 
         await expect(
@@ -384,7 +384,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         editPermissionsTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address
       );
 
       await context.universalProfile
@@ -411,11 +411,11 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
 
   describe("when reentering and adding URD", () => {
     before(async () => {
-      await generateSingleRelayPayload(
+      await generateBatchRelayPayload(
         context.universalProfile,
         context.keyManager,
         "ADDUNIVERSALRECEIVERDELEGATE",
-        reentrancyContext.singleReentarncyRelayer,
+        reentrancyContext.batchReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
         reentrancyContext.newURDAddress
@@ -429,7 +429,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address
+          reentrancyContext.batchReentarncyRelayer.address
         );
 
         await expect(
@@ -456,7 +456,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         addUniversalReceiverDelegateTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address
       );
 
       await context.universalProfile
@@ -482,11 +482,11 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
 
   describe("when reentering and changing URD", () => {
     before(async () => {
-      await generateSingleRelayPayload(
+      await generateBatchRelayPayload(
         context.universalProfile,
         context.keyManager,
         "CHANGEUNIVERSALRECEIVERDELEGATE",
-        reentrancyContext.singleReentarncyRelayer,
+        reentrancyContext.batchReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
         reentrancyContext.newURDAddress
@@ -501,7 +501,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
             testCase,
             context,
             reentrancyContext.reentrantSigner.address,
-            reentrancyContext.singleReentarncyRelayer.address
+            reentrancyContext.batchReentarncyRelayer.address
           );
 
           await expect(
@@ -529,7 +529,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         changeUniversalReceiverDelegateTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address
       );
 
       await context.universalProfile

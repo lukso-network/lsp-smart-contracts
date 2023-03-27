@@ -5,10 +5,10 @@ import { ethers } from "hardhat";
 import { BigNumber, BytesLike } from "ethers";
 
 // constants
-import { ERC725YDataKeys } from "../../../../../constants";
+import { ERC725YDataKeys } from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../../../utils/context";
+import { LSP6TestContext } from "../../../utils/context";
 
 // helpers
 import {
@@ -25,7 +25,7 @@ import {
   loadTestCase,
 } from "./reentrancyHelpers";
 
-import { LSP20ReentrantContract__factory } from "../../../../../types";
+import { LSP20ReentrantContract__factory } from "../../../../types";
 import { Interface } from "ethers/lib/utils";
 
 export const testERC725XBatchExecuteToERC725XExecute = (

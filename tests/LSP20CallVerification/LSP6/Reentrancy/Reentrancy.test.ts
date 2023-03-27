@@ -3,14 +3,14 @@ import { BigNumber } from "ethers";
 
 // setup
 import { LSP6TestContext } from "../../../utils/context";
-import { buildReentrancyContext } from "./Reentrancy/reentrancyHelpers";
+import { buildReentrancyContext } from "./reentrancyHelpers";
 
 // tests
-import { testERC725XExecuteToERC725XExecute } from "./Reentrancy/ERC725XExecuteToERC725XExecute.test";
-import { testERC725XExecuteToLSP6ExecuteRelayCall } from "./Reentrancy/ERC725XExecuteToLSP6ExecuteRelayCall.test";
+import { testERC725XExecuteToERC725XExecute } from "./ERC725XExecuteToERC725XExecute.test";
+import { testERC725XExecuteToLSP6ExecuteRelayCall } from "./ERC725XExecuteToLSP6ExecuteRelayCall.test";
 
-import { testERC725XBatchExecuteToERC725XExecute } from "./Reentrancy/ERC725XBatchExecuteToERC725XExecute.test";
-import { testERC725XExecuteToLSP6BatchExecuteRelayCall } from "./Reentrancy/ERC725XExecuteToLSP6BatchExecuteRelayCall.test";
+import { testERC725XBatchExecuteToERC725XExecute } from "./ERC725XBatchExecuteToERC725XExecute.test";
+import { testERC725XExecuteToLSP6BatchExecuteRelayCall } from "./ERC725XExecuteToLSP6BatchExecuteRelayCall.test";
 
 export const testReentrancyScenarios = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>

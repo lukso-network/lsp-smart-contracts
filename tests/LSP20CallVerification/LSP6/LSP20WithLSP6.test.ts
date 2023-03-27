@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 
@@ -9,10 +8,7 @@ import {
 
 import { LSP6TestContext } from "../../utils/context";
 
-import {
-  shouldInitializeLikeLSP6,
-  shouldBehaveLikeLSP6,
-} from "./LSP6KeyManager.behaviour";
+import { shouldBehaveLikeLSP6 } from "./LSP20WithLSP6.behaviour";
 
 describe("LSP20 + LSP6 with constructor", () => {
   const buildTestContext = async (
@@ -34,9 +30,8 @@ describe("LSP20 + LSP6 with constructor", () => {
   };
 
   describe("when deploying the contract", () => {
-    describe("when initializing the contract", () => {
-      shouldInitializeLikeLSP6(buildTestContext);
-    });
+    // TODO: add tests to ensure LSP20 interface is registered.
+    // on LSP6 or LSP0?
   });
 
   describe("when testing deployed contract", () => {

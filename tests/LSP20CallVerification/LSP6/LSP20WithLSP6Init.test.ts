@@ -10,10 +10,7 @@ import {
 import { LSP6TestContext } from "../../utils/context";
 import { deployProxy } from "../../utils/fixtures";
 
-import {
-  shouldInitializeLikeLSP6,
-  shouldBehaveLikeLSP6,
-} from "./LSP6KeyManager.behaviour";
+import { shouldBehaveLikeLSP6 } from "./LSP20WithLSP6.behaviour";
 
 describe("LSP20 Init + LSP6 Init with proxy", () => {
   const buildProxyTestContext = async (
@@ -62,14 +59,6 @@ describe("LSP20 Init + LSP6 Init with proxy", () => {
 
   describe("when deploying the contract as proxy", () => {
     let context: LSP6TestContext;
-
-    describe("when initializing the contract", () => {
-      shouldInitializeLikeLSP6(async () => {
-        context = await buildProxyTestContext();
-        await initializeProxy(context);
-        return context;
-      });
-    });
 
     describe("when calling `initialize(...) more than once`", () => {
       it("should revert", async () => {
