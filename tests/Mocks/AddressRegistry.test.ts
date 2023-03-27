@@ -86,7 +86,7 @@ describe("Address Registry contracts", () => {
       account: UniversalProfile,
       owner: SignerWithAddress;
 
-    beforeEach(async () => {
+    before(async () => {
       owner = accounts[3];
       account = await new UniversalProfile__factory(owner).deploy(
         owner.address
