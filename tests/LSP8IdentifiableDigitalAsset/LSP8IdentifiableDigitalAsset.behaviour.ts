@@ -1853,7 +1853,7 @@ export const shouldInitializeLikeLSP8 = (
 ) => {
   let context: LSP8InitializeTestContext;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
   });
 
