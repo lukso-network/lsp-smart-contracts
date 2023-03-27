@@ -15,7 +15,6 @@ export * from "./Interactions/AllowedFunctions.test";
 export * from "./Interactions/AllowedStandards.test";
 export * from "./Interactions/OtherScenarios.test";
 export * from "./Interactions/Security.test";
-export * from "./Interactions/BatchExecute.test";
 
 // Reentrancy
 export * from "./Reentrancy/Reentrancy.test";

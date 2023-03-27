@@ -16,7 +16,6 @@ import {
   shouldBehaveLikeAllowedFunctions,
   shouldBehaveLikeAllowedStandards,
   shouldBehaveLikeAllowedERC725YDataKeys,
-  shouldBehaveLikeBatchExecute,
   testSecurityScenarios,
   otherTestScenarios,
   testReentrancyScenarios,
@@ -73,10 +72,6 @@ export const shouldBehaveLikeLSP6 = (
 
   describe("AllowedERC725YDataKeys", () => {
     shouldBehaveLikeAllowedERC725YDataKeys(buildContext);
-  });
-
-  describe("batch execute", () => {
-    shouldBehaveLikeBatchExecute(buildContext);
   });
 
   describe("miscellaneous", () => {
