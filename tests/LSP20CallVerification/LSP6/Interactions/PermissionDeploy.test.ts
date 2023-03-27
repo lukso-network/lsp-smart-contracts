@@ -29,7 +29,7 @@ export const shouldBehaveLikePermissionDeploy = (
   let addressCanDeploy: SignerWithAddress,
     addressCannotDeploy: SignerWithAddress;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
 
     addressCanDeploy = context.accounts[1];
@@ -87,8 +87,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it("should be allowed to deploy a contract TargetContract via CREATE2", async () => {
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      let salt =
-        "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+      let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let preComputedAddress = calculateCreate2(
         context.universalProfile.address,
