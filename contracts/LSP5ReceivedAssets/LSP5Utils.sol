@@ -83,15 +83,19 @@ library LSP5Utils {
             revert MaxLSP5ReceivedAssetsCountReached({notRegisteredAsset: asset});
         }
 
+        // store the number of received assets incremented by 1
         keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
         values[0] = bytes.concat(bytes16(oldArrayLength + 1));
 
+        // store the address of the asset under the element key in the array
         keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
             _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
             oldArrayLength
         );
         values[1] = bytes.concat(bytes20(asset));
 
+        // store the interfaceId and the location in the array of the asset
+        // under the LSP5ReceivedAssetMap key
         keys[2] = assetMapKey;
         values[2] = bytes.concat(interfaceID, bytes16(oldArrayLength));
     }
@@ -118,16 +122,22 @@ library LSP5Utils {
             });
         }
 
-        // Updating the number of the received assets
         uint128 oldArrayLength = uint128(bytes16(lsp5ReceivedAssetsCountValue));
+
+        // Updating the number of the received assets (decrementing by 1
         uint128 newArrayLength = oldArrayLength - 1;
 
+        // Identify where the asset is located in the LSP5ReceivedAssets[] array
+        // by extracting the index from the LSP5ReceivedAssetsMap data key
         uint128 index = extractIndexFromMap(assetInterfaceIdAndIndex);
+
+        // Generate the element key in the array of the asset
         bytes32 assetInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
             _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
             index
         );
 
+        // If the asset to remove is the last element in the array
         if (index == newArrayLength) {
             /**
              * We will be updating/removing 3 keys:
@@ -138,12 +148,15 @@ library LSP5Utils {
             keys = new bytes32[](3);
             values = new bytes[](3);
 
+            // store the number of received assets decremented by 1
             keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
             values[0] = bytes.concat(bytes16(newArrayLength));
 
+            // remove the address of the asset from the element key
             keys[1] = assetInArrayKey;
             values[1] = "";
 
+            // remove the interfaceId and the location in the array of the asset
             keys[2] = assetMapKey;
             values[2] = "";
 
@@ -161,9 +174,11 @@ library LSP5Utils {
             keys = new bytes32[](5);
             values = new bytes[](5);
 
+            // store the number of received assets decremented by 1
             keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
             values[0] = bytes.concat(bytes16(newArrayLength));
 
+            // remove the interfaceId and the location in the array of the asset
             keys[1] = assetMapKey;
             values[1] = "";
 
@@ -173,27 +188,37 @@ library LSP5Utils {
 
             // Generate all data Keys/values of the last element in Array to swap
             // with data Keys/values of the asset to remove
+
+            // Generate the element key of the last asset in the array
             bytes32 lastAssetInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
                 newArrayLength
             );
 
+            // Get the address of the asset from the element key of the last asset in the array
             bytes20 lastAssetInArrayAddress = bytes20(account.getData(lastAssetInArrayKey));
 
+            // Generate the map key of the last asset in the array
             bytes32 lastAssetInArrayMapKey = LSP2Utils.generateMappingKey(
                 _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX,
                 lastAssetInArrayAddress
             );
 
+            // Get the interfaceId and the location in the array of the last asset
             bytes memory lastAssetInterfaceIdAndIndex = account.getData(lastAssetInArrayMapKey);
             bytes memory interfaceID = BytesLib.slice(lastAssetInterfaceIdAndIndex, 0, 4);
 
+            // Set the address of the last asset instead of the asset to be sent
+            // under the element data key in the array
             keys[2] = assetInArrayKey;
             values[2] = bytes.concat(lastAssetInArrayAddress);
 
+            // Remove the address swapped from the last element data key in the array
             keys[3] = lastAssetInArrayKey;
             values[3] = "";
 
+            // Update the index and the interfaceId of the address swapped (last element in the array)
+            // to point to the new location in the LSP5ReceivedAssets array
             keys[4] = lastAssetInArrayMapKey;
             values[4] = bytes.concat(interfaceID, bytes16(index));
         }
