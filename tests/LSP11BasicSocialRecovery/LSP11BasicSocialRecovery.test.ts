@@ -112,7 +112,7 @@ describe("LSP11BasicSocialRecovery contract", () => {
     describe("When deploying the contract", () => {
       let context: LSP11TestContext;
 
-      beforeEach(async () => {
+      before(async () => {
         context = await buildTestContext();
       });
 
@@ -194,7 +194,7 @@ describe("LSP11BasicSocialRecovery contract", () => {
     describe("When deploying the contract as proxy", () => {
       let context: LSP11TestContext;
 
-      beforeEach(async () => {
+      before(async () => {
         context = await buildTestContext();
       });
 
@@ -213,8 +213,6 @@ describe("LSP11BasicSocialRecovery contract", () => {
 
       describe("When calling initialize more than once", () => {
         it("should revert", async () => {
-          await initializeProxy(context);
-
           await expect(initializeProxy(context)).to.be.revertedWith(
             "Initializable: contract is already initialized"
           );
