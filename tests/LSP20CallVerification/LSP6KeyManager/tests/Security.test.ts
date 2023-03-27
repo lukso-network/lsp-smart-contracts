@@ -31,7 +31,6 @@ import {
   provider,
   combinePermissions,
   EMPTY_PAYLOAD,
-  LOCAL_PRIVATE_KEYS,
   combineAllowedCalls,
   combineCallTypes,
   encodeCompactBytesArray,
@@ -147,7 +146,9 @@ export const testSecurityScenarios = (
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
-      await expect(context.universalProfile.connect(context.owner))
+      await expect(
+        context.universalProfile.connect(context.owner).renounceOwnership()
+      )
         .to.be.revertedWithCustomError(
           context.keyManager,
           "InvalidERC725Function"
@@ -210,6 +211,7 @@ export const testSecurityScenarios = (
         initialAttackerContractBalance
       );
     });
+  });
 
   describe("when reentering execute function", () => {
     it("should revert if reentered from a random address", async () => {
