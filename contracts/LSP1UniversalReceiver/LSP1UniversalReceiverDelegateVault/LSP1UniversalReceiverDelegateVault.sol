@@ -93,6 +93,8 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
                 notifierMapValue
             );
 
+            if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
+
             IERC725Y(msg.sender).setData(dataKeys, dataValues);
         }
     }
