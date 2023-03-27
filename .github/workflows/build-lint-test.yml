@@ -50,11 +50,13 @@ jobs:
             "lsp2",
             "lsp4",
             "lsp6",
+            "lsp6init",
             "lsp7",
             "lsp8",
             "lsp9",
             "lsp11",
             "lsp20",
+            "lsp20init",
             "universalfactory",
             "mocks",
           ]

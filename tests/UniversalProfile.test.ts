@@ -33,7 +33,7 @@ import { BigNumber } from "ethers";
 import {
   LSP14CombinedWithLSP20TestContext,
   shouldBehaveLikeLSP14CombinedWithLSP20,
-} from "./LSP20CallVerification/LSP14CombinedWithLSP20.behaviour";
+} from "./LSP20CallVerification/LSP20WithLSP14.behaviour";
 
 describe("UniversalProfile", () => {
   describe("when using UniversalProfile contract with constructor", () => {

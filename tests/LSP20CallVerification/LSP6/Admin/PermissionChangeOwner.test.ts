@@ -387,4 +387,20 @@ export const shouldBehaveLikePermissionChangeOwner = (
       });
     });
   });
+
+  describe("when calling `renounceOwnership(...)`", () => {
+    it("should revert even if caller has ALL PERMISSIONS`", async () => {
+      let payload =
+        context.universalProfile.interface.getSighash("renounceOwnership");
+
+      await expect(
+        context.universalProfile.connect(context.owner).renounceOwnership()
+      )
+        .to.be.revertedWithCustomError(
+          context.keyManager,
+          "InvalidERC725Function"
+        )
+        .withArgs(payload);
+    });
+  });
 };
