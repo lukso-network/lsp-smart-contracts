@@ -3,13 +3,13 @@ import { ethers } from "hardhat";
 
 //types
 import { BigNumber, BytesLike } from "ethers";
-import { SingleReentrancyRelayer__factory } from "../../../../../types";
+import { SingleReentrancyRelayer__factory } from "../../../../types";
 
 // constants
-import { ERC725YDataKeys, OPERATION_TYPES } from "../../../../../constants";
+import { ERC725YDataKeys, OPERATION_TYPES } from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../../../utils/context";
+import { LSP6TestContext } from "../../../utils/context";
 
 // helpers
 import {
@@ -27,7 +27,7 @@ import {
   loadTestCase,
 } from "./reentrancyHelpers";
 
-export const testSingleExecuteToBatchExecuteRelayCall = (
+export const testERC725XExecuteToLSP6BatchExecuteRelayCall = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
   buildReentrancyContext: (
     context: LSP6TestContext
