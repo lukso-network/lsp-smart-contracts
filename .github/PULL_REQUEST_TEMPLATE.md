@@ -57,12 +57,13 @@ Fixes #???? <!-- Fill in with issue number -->
 
 ### PR Checklist
 
-<!-- Before merging the pull request all of the following must be complete. -->
+<!-- Before merging the pull request, making sure you have run locally the following. -->
 <!-- Feel free to submit a PR or Draft PR even if some items are pending. -->
-<!-- Some of the items may not apply. -->
+<!-- (Some of the items may not apply.) -->
 
-- [ ] Tests
-- [ ] Documentation
-- [ ] Ran `npm run test`
+- [ ] Wrote Tests
+- [ ] Wrote Documentation
 - [ ] Ran `npm run linter`
 - [ ] Ran `npm run prettier`
+- [ ] Ran `npm run build`
+- [ ] Ran `npm run test`
