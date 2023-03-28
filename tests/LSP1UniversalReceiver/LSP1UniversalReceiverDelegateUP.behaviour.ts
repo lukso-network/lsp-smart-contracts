@@ -44,6 +44,7 @@ import {
   setupKeyManager,
 } from "../utils/fixtures";
 import { LSP6TestContext } from "../utils/context";
+import { Transaction } from "ethers";
 
 export type LSP1TestAccounts = {
   owner1: SignerWithAddress;
@@ -1717,7 +1718,7 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
   });
 
-  describe("testing values set under `LSP10ReceivedVaults[]`", () => {
+  describe.only("testing values set under `LSP10ReceivedVaults[]`", () => {
     let context: LSP1DelegateTestContext;
     let vault: LSP9Vault;
 
@@ -1731,7 +1732,9 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
 
     describe("when the Map value of LSP10Map is less than 20 bytes", () => {
-      beforeEach(async () => {
+      let acceptOwnershipTx: Transaction;
+
+      before(async () => {
         await vault
           .connect(context.accounts.owner1)
           .transferOwnership(context.universalProfile1.address);
@@ -1766,9 +1769,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           vault.address.toLowerCase(),
           "0xcafecafecafecafe",
         ]);
-      });
 
-      it("it should pass", async () => {
         const vaultTrasferCalldata = vault.interface.encodeFunctionData(
           "transferOwnership",
           [context.accounts.owner1.address]
@@ -1783,31 +1784,22 @@ export const shouldBehaveLikeLSP1Delegate = (
             vaultTrasferCalldata
           );
 
-        expect(await vault.connect(context.accounts.owner1).acceptOwnership())
-          .to.not.be.reverted;
+        acceptOwnershipTx = await vault
+          .connect(context.accounts.owner1)
+          .acceptOwnership();
+      });
+
+      it("it should pass", async () => {
+        expect(acceptOwnershipTx).to.not.be.reverted;
       });
 
       it("it should emit UniversalReceiver event", async () => {
-        const vaultTrasferCalldata = vault.interface.encodeFunctionData(
-          "transferOwnership",
-          [context.accounts.owner1.address]
-        );
-
         const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
           ["string", "bytes"],
           ["LSP1: asset data corrupted", "0x"]
         );
 
-        await context.universalProfile1
-          .connect(context.accounts.owner1)
-          ["execute(uint256,address,uint256,bytes)"](
-            0,
-            vault.address,
-            0,
-            vaultTrasferCalldata
-          );
-
-        await expect(vault.connect(context.accounts.owner1).acceptOwnership())
+        await expect(acceptOwnershipTx)
           .to.emit(context.universalProfile1, "UniversalReceiver")
           .withArgs(
             vault.address,
@@ -1819,22 +1811,6 @@ export const shouldBehaveLikeLSP1Delegate = (
       });
 
       it("shouldn't de-register the asset", async () => {
-        const vaultTrasferCalldata = vault.interface.encodeFunctionData(
-          "transferOwnership",
-          [context.accounts.owner1.address]
-        );
-
-        await context.universalProfile1
-          .connect(context.accounts.owner1)
-          ["execute(uint256,address,uint256,bytes)"](
-            0,
-            vault.address,
-            0,
-            vaultTrasferCalldata
-          );
-
-        await vault.connect(context.accounts.owner1).acceptOwnership();
-
         expect(
           await context.universalProfile1["getData(bytes32[])"]([
             ERC725YDataKeys.LSP10["LSP10Vaults[]"].length,
@@ -1850,7 +1826,9 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
 
     describe("when the Map value of LSP10Map is bigger than 20 bytes, (20 valid bytes + extra data)", () => {
-      beforeEach(async () => {
+      let acceptOwnershipTx: Transaction;
+
+      before(async () => {
         await vault
           .connect(context.accounts.owner1)
           .transferOwnership(context.universalProfile1.address);
@@ -1885,9 +1863,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           vault.address.toLowerCase(),
           "0x19331ad100000000000000000000000000000000cafecafe",
         ]);
-      });
 
-      it("it should pass", async () => {
         const vaultTrasferCalldata = vault.interface.encodeFunctionData(
           "transferOwnership",
           [context.accounts.owner1.address]
@@ -1902,31 +1878,22 @@ export const shouldBehaveLikeLSP1Delegate = (
             vaultTrasferCalldata
           );
 
-        expect(await vault.connect(context.accounts.owner1).acceptOwnership())
-          .to.not.be.reverted;
+        acceptOwnershipTx = await vault
+          .connect(context.accounts.owner1)
+          .acceptOwnership();
+      });
+
+      it("it should pass", async () => {
+        expect(acceptOwnershipTx).to.not.be.reverted;
       });
 
       it("it should emit UniversalReceiver event", async () => {
-        const vaultTrasferCalldata = vault.interface.encodeFunctionData(
-          "transferOwnership",
-          [context.accounts.owner1.address]
-        );
-
         const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
           ["bytes", "bytes"],
           ["0x", "0x"]
         );
 
-        await context.universalProfile1
-          .connect(context.accounts.owner1)
-          ["execute(uint256,address,uint256,bytes)"](
-            0,
-            vault.address,
-            0,
-            vaultTrasferCalldata
-          );
-
-        await expect(vault.connect(context.accounts.owner1).acceptOwnership())
+        await expect(acceptOwnershipTx)
           .to.emit(context.universalProfile1, "UniversalReceiver")
           .withArgs(
             vault.address,
@@ -1938,22 +1905,6 @@ export const shouldBehaveLikeLSP1Delegate = (
       });
 
       it("should de-register the asset properly", async () => {
-        const vaultTrasferCalldata = vault.interface.encodeFunctionData(
-          "transferOwnership",
-          [context.accounts.owner1.address]
-        );
-
-        await context.universalProfile1
-          .connect(context.accounts.owner1)
-          ["execute(uint256,address,uint256,bytes)"](
-            0,
-            vault.address,
-            0,
-            vaultTrasferCalldata
-          );
-
-        await vault.connect(context.accounts.owner1).acceptOwnership();
-
         expect(
           await context.universalProfile1["getData(bytes32[])"]([
             ERC725YDataKeys.LSP10["LSP10Vaults[]"].length,
@@ -1965,7 +1916,9 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
 
     describe("when the Map value of LSP5Map is equal to 20 invalid bytes", () => {
-      beforeEach(async () => {
+      let acceptOwnershipTx: Transaction;
+
+      before(async () => {
         await vault
           .connect(context.accounts.owner1)
           .transferOwnership(context.universalProfile1.address);
@@ -2000,22 +1953,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           vault.address.toLowerCase(),
           "0xcafecafecafecafecafecafecafecafecafecafe",
         ]);
-      });
 
-      afterEach(async () => {
-        await context.universalProfile1
-          .connect(context.accounts.owner1)
-          ["setData(bytes32[],bytes[])"](
-            [
-              ERC725YDataKeys.LSP10["LSP10Vaults[]"].length,
-              ERC725YDataKeys.LSP10["LSP10Vaults[]"].index + "0".repeat(32),
-              ERC725YDataKeys.LSP10.LSP10VaultsMap + vault.address.substring(2),
-            ],
-            ["0x", "0x", "0x"]
-          );
-      });
-
-      it("it should pass", async () => {
         const vaultTrasferCalldata = vault.interface.encodeFunctionData(
           "transferOwnership",
           [context.accounts.owner1.address]
@@ -2030,31 +1968,22 @@ export const shouldBehaveLikeLSP1Delegate = (
             vaultTrasferCalldata
           );
 
-        expect(await vault.connect(context.accounts.owner1).acceptOwnership())
-          .to.not.be.reverted;
+        acceptOwnershipTx = await vault
+          .connect(context.accounts.owner1)
+          .acceptOwnership();
+      });
+
+      it("it should pass", async () => {
+        expect(acceptOwnershipTx).to.not.be.reverted;
       });
 
       it("it should emit UniversalReceiver event", async () => {
-        const vaultTrasferCalldata = vault.interface.encodeFunctionData(
-          "transferOwnership",
-          [context.accounts.owner1.address]
-        );
-
         const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
           ["string", "bytes"],
           ["LSP1: asset data corrupted", "0x"]
         );
 
-        await context.universalProfile1
-          .connect(context.accounts.owner1)
-          ["execute(uint256,address,uint256,bytes)"](
-            0,
-            vault.address,
-            0,
-            vaultTrasferCalldata
-          );
-
-        await expect(vault.connect(context.accounts.owner1).acceptOwnership())
+        await expect(acceptOwnershipTx)
           .to.emit(context.universalProfile1, "UniversalReceiver")
           .withArgs(
             vault.address,
@@ -2066,22 +1995,6 @@ export const shouldBehaveLikeLSP1Delegate = (
       });
 
       it("shouldn't de-register the asset", async () => {
-        const vaultTrasferCalldata = vault.interface.encodeFunctionData(
-          "transferOwnership",
-          [context.accounts.owner1.address]
-        );
-
-        await context.universalProfile1
-          .connect(context.accounts.owner1)
-          ["execute(uint256,address,uint256,bytes)"](
-            0,
-            vault.address,
-            0,
-            vaultTrasferCalldata
-          );
-
-        await vault.connect(context.accounts.owner1).acceptOwnership();
-
         expect(
           await context.universalProfile1["getData(bytes32[])"]([
             ERC725YDataKeys.LSP10["LSP10Vaults[]"].length,
