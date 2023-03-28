@@ -28,7 +28,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
   let permissionsKeys: string[];
   let permissionsValues: string[];
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
 
     canChangeOwner = context.accounts[1];
@@ -94,7 +94,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
     });
 
     describe("when caller has ALL PERMISSIONS", () => {
-      beforeEach(async () => {
+      before(async () => {
         await context.universalProfile
           .connect(context.owner)
           .transferOwnership(newKeyManager.address);
@@ -184,7 +184,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
     });
 
     describe("when caller has only CHANGE0OWNER permission", () => {
-      beforeEach(async () => {
+      before(async () => {
         await context.universalProfile
           .connect(canChangeOwner)
           .transferOwnership(newKeyManager.address);
@@ -241,7 +241,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
   describe("when calling acceptOwnership(...) via the pending new KeyManager", () => {
     let newKeyManager: LSP6KeyManager;
 
-    beforeEach(async () => {
+    before(async () => {
       newKeyManager = await new LSP6KeyManager__factory(context.owner).deploy(
         context.universalProfile.address
       );
@@ -277,7 +277,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
   describe("after KeyManager has been upgraded via acceptOwnership(...)", () => {
     let oldKeyManager: LSP6KeyManager, newKeyManager: LSP6KeyManager;
 
-    beforeEach(async () => {
+    before(async () => {
       oldKeyManager = context.keyManager;
 
       newKeyManager = await new LSP6KeyManager__factory(context.owner).deploy(
@@ -294,12 +294,12 @@ export const shouldBehaveLikePermissionChangeOwner = (
         .connect(context.owner)
         ["execute(bytes)"](transferOwnershipPayload);
 
-      let claimOwnershipPayload =
+      let acceptOwnershipPayload =
         context.universalProfile.interface.getSighash("acceptOwnership");
 
       await newKeyManager
         .connect(context.owner)
-        ["execute(bytes)"](claimOwnershipPayload);
+        ["execute(bytes)"](acceptOwnershipPayload);
     });
 
     describe("old KeyManager should not be allowed to call onlyOwner functions anymore", () => {

@@ -26,8 +26,6 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
   let canChangeOwner: SignerWithAddress, cannotChangeOwner: SignerWithAddress;
 
-  let newKeyManager: LSP6KeyManager;
-
   let transferOwnershipPayload: string;
   let resetOwnershipPayload: string;
 
@@ -275,16 +273,17 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
   describe("when calling acceptOwnership(...) via the pending new KeyManager", () => {
     let pendingOwner: string;
+    let newKeyManager: LSP6KeyManager;
 
     before("`transferOwnership(...)` to new Key Manager", async () => {
-      await context.keyManager
+      await context.universalProfile
         .connect(context.owner)
-        ["execute(bytes)"](transferOwnershipPayload);
+        .transferOwnership(newKeyManager.address);
+
+      pendingOwner = await context.universalProfile.pendingOwner();
 
       let acceptOwnershipPayload =
         context.universalProfile.interface.getSighash("acceptOwnership");
-
-      pendingOwner = await context.universalProfile.pendingOwner();
 
       await newKeyManager
         .connect(context.owner)
@@ -300,85 +299,98 @@ export const shouldBehaveLikePermissionChangeOwner = (
       let newPendingOwner = await context.universalProfile.pendingOwner();
       expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
     });
+  });
 
-    describe("after KeyManager has been upgraded via acceptOwnership(...)", () => {
-      // to improve readability of tests
-      let oldKeyManager: LSP6KeyManager;
+  describe("after KeyManager has been upgraded via acceptOwnership(...)", () => {
+    // to improve readability of tests
+    let oldKeyManager: LSP6KeyManager, newKeyManager: LSP6KeyManager;
 
-      before(async () => {
-        oldKeyManager = context.keyManager;
+    before(async () => {
+      oldKeyManager = context.keyManager;
+
+      newKeyManager = await new LSP6KeyManager__factory(context.owner).deploy(
+        context.universalProfile.address
+      );
+
+      await context.universalProfile
+        .connect(context.owner)
+        .transferOwnership(newKeyManager.address);
+
+      let acceptOwnershipPayload =
+        context.universalProfile.interface.getSighash("acceptOwnership");
+
+      await newKeyManager
+        .connect(context.owner)
+        ["execute(bytes)"](acceptOwnershipPayload);
+    });
+
+    describe("old KeyManager should not be allowed to call onlyOwner functions anymore", () => {
+      it("should revert with error `NoPermissionsSet` when calling `setData(...)`", async () => {
+        const key =
+          "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+        const value = "0xabcd";
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32,bytes)",
+          [key, value]
+        );
+
+        await expect(
+          oldKeyManager.connect(context.owner)["execute(bytes)"](payload)
+        )
+          .to.be.revertedWithCustomError(newKeyManager, "NoPermissionsSet")
+          .withArgs(oldKeyManager.address);
       });
 
-      describe("old KeyManager should not be allowed to call onlyOwner functions anymore", () => {
-        it("should revert with error `NoPermissionsSet` when calling `setData(...)`", async () => {
-          const key =
-            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
-          const value = "0xabcd";
+      it("should revert with error `NoPermissionsSet` when calling `execute(...)`", async () => {
+        let recipient = context.accounts[3];
+        let amount = ethers.utils.parseEther("3");
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
+        );
 
-          await expect(
-            oldKeyManager.connect(context.owner)["execute(bytes)"](payload)
-          )
-            .to.be.revertedWithCustomError(newKeyManager, "NoPermissionsSet")
-            .withArgs(oldKeyManager.address);
-        });
+        await expect(
+          oldKeyManager.connect(context.owner)["execute(bytes)"](payload)
+        )
+          .to.be.revertedWithCustomError(newKeyManager, "NoPermissionsSet")
+          .withArgs(oldKeyManager.address);
+      });
+    });
 
-        it("should revert with error `NoPermissionsSet` when calling `execute(...)`", async () => {
-          let recipient = context.accounts[3];
-          let amount = ethers.utils.parseEther("3");
+    describe("new Key Manager should be allowed to call onlyOwner functions", () => {
+      it("setData(...)", async () => {
+        const key =
+          "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+        const value = "0xabcd";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
-          );
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32,bytes)",
+          [key, value]
+        );
 
-          await expect(
-            oldKeyManager.connect(context.owner)["execute(bytes)"](payload)
-          )
-            .to.be.revertedWithCustomError(newKeyManager, "NoPermissionsSet")
-            .withArgs(oldKeyManager.address);
-        });
+        await newKeyManager.connect(context.owner)["execute(bytes)"](payload);
+
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).to.equal(value);
       });
 
-      describe("new Key Manager should be allowed to call onlyOwner functions", () => {
-        it("setData(...)", async () => {
-          const key =
-            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
-          const value = "0xabcd";
+      it("execute(...) - LYX transfer", async () => {
+        const recipient = context.accounts[3];
+        const amount = ethers.utils.parseEther("3");
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
-            [key, value]
-          );
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
+        );
 
-          await newKeyManager.connect(context.owner)["execute(bytes)"](payload);
-
-          const result = await context.universalProfile["getData(bytes32)"](
-            key
-          );
-          expect(result).to.equal(value);
-        });
-
-        it("execute(...) - LYX transfer", async () => {
-          const recipient = context.accounts[3];
-          const amount = ethers.utils.parseEther("3");
-
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
-          );
-
-          await expect(
-            newKeyManager.connect(context.owner)["execute(bytes)"](payload)
-          ).to.changeEtherBalances(
-            [recipient, context.universalProfile],
-            [amount, `-${amount}`]
-          );
-        });
+        await expect(
+          newKeyManager.connect(context.owner)["execute(bytes)"](payload)
+        ).to.changeEtherBalances(
+          [recipient, context.universalProfile],
+          [amount, `-${amount}`]
+        );
       });
     });
   });
