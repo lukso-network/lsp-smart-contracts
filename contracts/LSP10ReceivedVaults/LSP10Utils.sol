@@ -130,11 +130,6 @@ library LSP10Utils {
             index
         );
 
-        // If the address at index doesn't match the notifier address, corrupted data
-        bytes20 addressAtIndex = bytes20(account.getData(vaultInArrayKey));
-        bytes20 notifier = bytes20(vaultMapKey << 96);
-        if (notifier != addressAtIndex) return (keys, values);
-
         if (index == newArrayLength) {
             /**
              * We will be updating/removing 3 keys:
