@@ -26,6 +26,8 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
   let canChangeOwner: SignerWithAddress, cannotChangeOwner: SignerWithAddress;
 
+  let newKeyManager: LSP6KeyManager;
+
   let transferOwnershipPayload: string;
   let resetOwnershipPayload: string;
 
@@ -85,7 +87,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
     });
   });
 
-  describe("when calling `transferOwnership(...)` with a new KeyManager as parameter", () => {
+  describe("when calling `transferOwnership(...)` with a new KeyManager address as parameter", () => {
     describe("when caller does not have permissions CHANGEOWNER", () => {
       it("should revert", async () => {
         await expect(
@@ -175,7 +177,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       });
 
       it("should override the pendingOwner when transferOwnership(...) is called twice", async () => {
-        let overridenPendingOwner = ethers.Wallet.createRandom().address; // TODO: use a different address (EOA)
+        let overridenPendingOwner = ethers.Wallet.createRandom().address;
 
         await context.keyManager
           .connect(context.owner)
@@ -195,9 +197,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
     });
 
     describe("when caller has only CHANGEOWNER permission", () => {
-      before("call `transferOwnership(...)`", async () => {
+      before("`transferOwnership(...)` to new KeyManager", async () => {
         await context.keyManager
-          .connect(context.owner)
+          .connect(canChangeOwner)
           ["execute(bytes)"](transferOwnershipPayload);
       });
 
@@ -206,6 +208,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           .connect(context.owner)
           ["execute(bytes)"](resetOwnershipPayload);
       });
+
       it("should have set newKeyManager as pendingOwner", async () => {
         let pendingOwner = await context.universalProfile.pendingOwner();
         expect(pendingOwner).to.equal(newKeyManager.address);
@@ -273,7 +276,6 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
   describe("when calling acceptOwnership(...) via the pending new KeyManager", () => {
     let pendingOwner: string;
-    let newKeyManager: LSP6KeyManager;
 
     before("`transferOwnership(...)` to new Key Manager", async () => {
       await context.universalProfile
@@ -303,25 +305,10 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
   describe("after KeyManager has been upgraded via acceptOwnership(...)", () => {
     // to improve readability of tests
-    let oldKeyManager: LSP6KeyManager, newKeyManager: LSP6KeyManager;
+    let oldKeyManager: LSP6KeyManager;
 
     before(async () => {
       oldKeyManager = context.keyManager;
-
-      newKeyManager = await new LSP6KeyManager__factory(context.owner).deploy(
-        context.universalProfile.address
-      );
-
-      await context.universalProfile
-        .connect(context.owner)
-        .transferOwnership(newKeyManager.address);
-
-      let acceptOwnershipPayload =
-        context.universalProfile.interface.getSighash("acceptOwnership");
-
-      await newKeyManager
-        .connect(context.owner)
-        ["execute(bytes)"](acceptOwnershipPayload);
     });
 
     describe("old KeyManager should not be allowed to call onlyOwner functions anymore", () => {
