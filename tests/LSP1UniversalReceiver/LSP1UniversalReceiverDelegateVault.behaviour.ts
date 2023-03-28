@@ -27,6 +27,7 @@ import {
   LSP1_TYPE_IDS,
 } from "../../constants";
 import { callPayload, getLSP5MapAndArrayKeysValue } from "../utils/fixtures";
+import { BigNumber, BytesLike, Transaction } from "ethers";
 
 export type LSP1TestAccounts = {
   owner1: SignerWithAddress;
@@ -808,6 +809,9 @@ export const shouldBehaveLikeLSP1Delegate = (
   describe("testing values set under `LSP5ReceivedAssets[]`", () => {
     let context: LSP1TestContext;
     let token: LSP7Tester;
+    let arrayKey: BytesLike;
+    let arrayIndexKey: BytesLike;
+    let assetMapKey: BytesLike;
 
     before(async () => {
       // start with a fresh empty context
@@ -818,10 +822,19 @@ export const shouldBehaveLikeLSP1Delegate = (
         "EL7T",
         context.accounts.random.address
       );
+
+      arrayKey = ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length;
+      arrayIndexKey =
+        ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index + "0".repeat(32);
+      assetMapKey =
+        ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap + token.address.substring(2);
     });
 
-    describe("when the Map value of LSP5Map is less than 20 bytes", () => {
-      beforeEach(async () => {
+    describe("when the Map value of LSP5ReceivedAssetsMap is less than 20 bytes", () => {
+      let tokenTransferTx: Transaction;
+      let balance: BigNumber;
+
+      before(async () => {
         await token
           .connect(context.accounts.owner1)
           .mint(context.lsp9Vault1.address, 100, true, "0x");
@@ -839,7 +852,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         await context.universalProfile
           .connect(context.accounts.owner1)
           ["execute(uint256,address,uint256,bytes)"](
-            0,
+            OPERATION_TYPES.CALL,
             context.lsp9Vault1.address,
             0,
             vaultSetDataCalldata
@@ -847,70 +860,50 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         expect(
           await context.lsp9Vault1["getData(bytes32[])"]([
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index + "0".repeat(32),
-            ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              token.address.substring(2),
+            arrayKey,
+            arrayIndexKey,
+            assetMapKey,
           ])
         ).to.deep.equal([
           "0x" + "00".repeat(15) + "01",
           token.address.toLowerCase(),
           "0xcafecafecafecafe",
         ]);
+
+        balance = await token.balanceOf(context.lsp9Vault1.address);
+
+        const tokenTransferCalldata = token.interface.encodeFunctionData(
+          "transfer",
+          [
+            context.lsp9Vault1.address,
+            context.accounts.owner1.address,
+            balance,
+            true,
+            "0x",
+          ]
+        );
+
+        const vaultTokenTransferCalldata =
+          context.lsp9Vault1.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, token.address, 0, tokenTransferCalldata]
+          );
+
+        tokenTransferTx = await context.universalProfile
+          .connect(context.accounts.owner1)
+          ["execute(uint256,address,uint256,bytes)"](
+            OPERATION_TYPES.CALL,
+            context.lsp9Vault1.address,
+            0,
+            vaultTokenTransferCalldata
+          );
       });
 
       it("it should pass", async () => {
-        const balance = await token.balanceOf(context.lsp9Vault1.address);
-
-        const tokenTrasferCalldata = token.interface.encodeFunctionData(
-          "transfer",
-          [
-            context.lsp9Vault1.address,
-            context.accounts.owner1.address,
-            balance,
-            true,
-            "0x",
-          ]
-        );
-
-        const vaultTokenTransferCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [0, token.address, 0, tokenTrasferCalldata]
-          );
-
-        expect(
-          await context.universalProfile
-            .connect(context.accounts.owner1)
-            ["execute(uint256,address,uint256,bytes)"](
-              0,
-              context.lsp9Vault1.address,
-              0,
-              vaultTokenTransferCalldata
-            )
-        ).to.not.be.reverted;
+        expect(tokenTransferTx).to.not.be.reverted;
       });
 
       it("it should emit UniversalReceiver event", async () => {
-        const balance = await token.balanceOf(context.lsp9Vault1.address);
-
-        const tokenTrasferCalldata = token.interface.encodeFunctionData(
-          "transfer",
-          [
-            context.lsp9Vault1.address,
-            context.accounts.owner1.address,
-            balance,
-            true,
-            "0x",
-          ]
-        );
-
-        const vaultTokenTransferCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [0, token.address, 0, tokenTrasferCalldata]
-          );
-
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(
           balance.toHexString(),
           32
@@ -920,23 +913,14 @@ export const shouldBehaveLikeLSP1Delegate = (
           context.lsp9Vault1.address +
           context.accounts.owner1.address.substring(2) +
           tokensSentBytes32Value.substring(2)
-        ).toLocaleLowerCase();
+        ).toLowerCase();
 
         const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
           ["string", "bytes"],
           ["LSP1: asset data corrupted", "0x"]
         );
 
-        await expect(
-          context.universalProfile
-            .connect(context.accounts.owner1)
-            ["execute(uint256,address,uint256,bytes)"](
-              0,
-              context.lsp9Vault1.address,
-              0,
-              vaultTokenTransferCalldata
-            )
-        )
+        await expect(tokenTransferTx)
           .to.emit(context.lsp9Vault1, "UniversalReceiver")
           .withArgs(
             token.address,
@@ -948,40 +932,11 @@ export const shouldBehaveLikeLSP1Delegate = (
       });
 
       it("shouldn't de-register the asset", async () => {
-        const balance = await token.balanceOf(context.lsp9Vault1.address);
-
-        const tokenTrasferCalldata = token.interface.encodeFunctionData(
-          "transfer",
-          [
-            context.lsp9Vault1.address,
-            context.accounts.owner1.address,
-            balance,
-            true,
-            "0x",
-          ]
-        );
-
-        const vaultTokenTransferCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [0, token.address, 0, tokenTrasferCalldata]
-          );
-
-        await context.universalProfile
-          .connect(context.accounts.owner1)
-          ["execute(uint256,address,uint256,bytes)"](
-            0,
-            context.lsp9Vault1.address,
-            0,
-            vaultTokenTransferCalldata
-          );
-
         expect(
           await context.lsp9Vault1["getData(bytes32[])"]([
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index + "0".repeat(32),
-            ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              token.address.substring(2),
+            arrayKey,
+            arrayIndexKey,
+            assetMapKey,
           ])
         ).to.deep.equal([
           "0x" + "00".repeat(15) + "01",
@@ -991,8 +946,11 @@ export const shouldBehaveLikeLSP1Delegate = (
       });
     });
 
-    describe("when the Map value of LSP5Map is bigger than 20 bytes, (20 valid bytes + extra data)", () => {
-      beforeEach(async () => {
+    describe("when the Map value of LSP5ReceivedAssetsMap is bigger than 20 bytes, (valid `(byte4,uint128)` tuple  + extra bytes)", () => {
+      let tokenTransferTx: Transaction;
+      let balance: BigNumber;
+
+      before(async () => {
         await token
           .connect(context.accounts.owner1)
           .mint(context.lsp9Vault1.address, 100, true, "0x");
@@ -1010,7 +968,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         await context.universalProfile
           .connect(context.accounts.owner1)
           ["execute(uint256,address,uint256,bytes)"](
-            0,
+            OPERATION_TYPES.CALL,
             context.lsp9Vault1.address,
             0,
             vaultSetDataCalldata
@@ -1018,70 +976,50 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         expect(
           await context.lsp9Vault1["getData(bytes32[])"]([
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index + "0".repeat(32),
-            ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              token.address.substring(2),
+            arrayKey,
+            arrayIndexKey,
+            assetMapKey,
           ])
         ).to.deep.equal([
           "0x" + "00".repeat(15) + "01",
           token.address.toLowerCase(),
           "0xda1f85e400000000000000000000000000000000cafecafe",
         ]);
+
+        balance = await token.balanceOf(context.lsp9Vault1.address);
+
+        const tokenTransferCalldata = token.interface.encodeFunctionData(
+          "transfer",
+          [
+            context.lsp9Vault1.address,
+            context.accounts.owner1.address,
+            balance,
+            true,
+            "0x",
+          ]
+        );
+
+        const vaultTokenTransferCalldata =
+          context.lsp9Vault1.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, token.address, 0, tokenTransferCalldata]
+          );
+
+        tokenTransferTx = await context.universalProfile
+          .connect(context.accounts.owner1)
+          ["execute(uint256,address,uint256,bytes)"](
+            OPERATION_TYPES.CALL,
+            context.lsp9Vault1.address,
+            0,
+            vaultTokenTransferCalldata
+          );
       });
 
       it("should pass", async () => {
-        const balance = await token.balanceOf(context.lsp9Vault1.address);
-
-        const tokenTrasferCalldata = token.interface.encodeFunctionData(
-          "transfer",
-          [
-            context.lsp9Vault1.address,
-            context.accounts.owner1.address,
-            balance,
-            true,
-            "0x",
-          ]
-        );
-
-        const vaultTokenTransferCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [0, token.address, 0, tokenTrasferCalldata]
-          );
-
-        expect(
-          await context.universalProfile
-            .connect(context.accounts.owner1)
-            ["execute(uint256,address,uint256,bytes)"](
-              0,
-              context.lsp9Vault1.address,
-              0,
-              vaultTokenTransferCalldata
-            )
-        ).to.not.be.reverted;
+        expect(tokenTransferTx).to.not.be.reverted;
       });
 
       it("should emit UniversalReceiver event", async () => {
-        const balance = await token.balanceOf(context.lsp9Vault1.address);
-
-        const tokenTrasferCalldata = token.interface.encodeFunctionData(
-          "transfer",
-          [
-            context.lsp9Vault1.address,
-            context.accounts.owner1.address,
-            balance,
-            true,
-            "0x",
-          ]
-        );
-
-        const vaultTokenTransferCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [0, token.address, 0, tokenTrasferCalldata]
-          );
-
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(
           balance.toHexString(),
           32
@@ -1091,23 +1029,14 @@ export const shouldBehaveLikeLSP1Delegate = (
           context.lsp9Vault1.address +
           context.accounts.owner1.address.substring(2) +
           tokensSentBytes32Value.substring(2)
-        ).toLocaleLowerCase();
+        ).toLowerCase();
 
         const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
           ["bytes", "bytes"],
           ["0x", "0x"]
         );
 
-        await expect(
-          context.universalProfile
-            .connect(context.accounts.owner1)
-            ["execute(uint256,address,uint256,bytes)"](
-              0,
-              context.lsp9Vault1.address,
-              0,
-              vaultTokenTransferCalldata
-            )
-        )
+        await expect(tokenTransferTx)
           .to.emit(context.lsp9Vault1, "UniversalReceiver")
           .withArgs(
             token.address,
@@ -1119,47 +1048,21 @@ export const shouldBehaveLikeLSP1Delegate = (
       });
 
       it("should de-register the asset properly", async () => {
-        const balance = await token.balanceOf(context.lsp9Vault1.address);
-
-        const tokenTrasferCalldata = token.interface.encodeFunctionData(
-          "transfer",
-          [
-            context.lsp9Vault1.address,
-            context.accounts.owner1.address,
-            balance,
-            true,
-            "0x",
-          ]
-        );
-
-        const vaultTokenTransferCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [0, token.address, 0, tokenTrasferCalldata]
-          );
-
-        await context.universalProfile
-          .connect(context.accounts.owner1)
-          ["execute(uint256,address,uint256,bytes)"](
-            0,
-            context.lsp9Vault1.address,
-            0,
-            vaultTokenTransferCalldata
-          );
-
         expect(
           await context.lsp9Vault1["getData(bytes32[])"]([
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index + "0".repeat(32),
-            ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              token.address.substring(2),
+            arrayKey,
+            arrayIndexKey,
+            assetMapKey,
           ])
         ).to.deep.equal(["0x" + "00".repeat(16), "0x", "0x"]);
       });
     });
 
-    describe("when the Map value of LSP5Map is equal to 20 invalid bytes", () => {
-      beforeEach(async () => {
+    describe("when the Map value of LSP5ReceivedAssetsMap is 20 random bytes", () => {
+      let tokenTransferTx: Transaction;
+      let balance: BigNumber;
+
+      before(async () => {
         await token
           .connect(context.accounts.owner1)
           .mint(context.lsp9Vault1.address, 100, true, "0x");
@@ -1177,7 +1080,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         await context.universalProfile
           .connect(context.accounts.owner1)
           ["execute(uint256,address,uint256,bytes)"](
-            0,
+            OPERATION_TYPES.CALL,
             context.lsp9Vault1.address,
             0,
             vaultSetDataCalldata
@@ -1185,96 +1088,50 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         expect(
           await context.lsp9Vault1["getData(bytes32[])"]([
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index + "0".repeat(32),
-            ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              token.address.substring(2),
+            arrayKey,
+            arrayIndexKey,
+            assetMapKey,
           ])
         ).to.deep.equal([
           "0x" + "00".repeat(15) + "01",
           token.address.toLowerCase(),
           "0xcafecafecafecafecafecafecafecafecafecafe",
         ]);
-      });
 
-      afterEach(async () => {
-        const vaultSetDataCalldata =
+        balance = await token.balanceOf(context.lsp9Vault1.address);
+
+        const tokenTransferCalldata = token.interface.encodeFunctionData(
+          "transfer",
+          [
+            context.lsp9Vault1.address,
+            context.accounts.owner1.address,
+            balance,
+            true,
+            "0x",
+          ]
+        );
+
+        const vaultTokenTransferCalldata =
           context.lsp9Vault1.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [
-              [
-                ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
-                ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-                  "0".repeat(32),
-                ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-                  token.address.substring(2),
-              ],
-              ["0x", "0x", "0x"],
-            ]
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, token.address, 0, tokenTransferCalldata]
           );
 
-        await context.universalProfile
+        tokenTransferTx = await context.universalProfile
           .connect(context.accounts.owner1)
           ["execute(uint256,address,uint256,bytes)"](
-            0,
+            OPERATION_TYPES.CALL,
             context.lsp9Vault1.address,
             0,
-            vaultSetDataCalldata
+            vaultTokenTransferCalldata
           );
       });
 
       it("should pass", async () => {
-        const balance = await token.balanceOf(context.lsp9Vault1.address);
-
-        const tokenTrasferCalldata = token.interface.encodeFunctionData(
-          "transfer",
-          [
-            context.lsp9Vault1.address,
-            context.accounts.owner1.address,
-            balance,
-            true,
-            "0x",
-          ]
-        );
-
-        const vaultTokenTransferCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [0, token.address, 0, tokenTrasferCalldata]
-          );
-
-        expect(
-          await context.universalProfile
-            .connect(context.accounts.owner1)
-            ["execute(uint256,address,uint256,bytes)"](
-              0,
-              context.lsp9Vault1.address,
-              0,
-              vaultTokenTransferCalldata
-            )
-        ).to.not.be.reverted;
+        expect(tokenTransferTx).to.not.be.reverted;
       });
 
       it("should emit UniversalReceiver event", async () => {
-        const balance = await token.balanceOf(context.lsp9Vault1.address);
-
-        const tokenTrasferCalldata = token.interface.encodeFunctionData(
-          "transfer",
-          [
-            context.lsp9Vault1.address,
-            context.accounts.owner1.address,
-            balance,
-            true,
-            "0x",
-          ]
-        );
-
-        const vaultTokenTransferCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [0, token.address, 0, tokenTrasferCalldata]
-          );
-
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(
           balance.toHexString(),
           32
@@ -1284,23 +1141,14 @@ export const shouldBehaveLikeLSP1Delegate = (
           context.lsp9Vault1.address +
           context.accounts.owner1.address.substring(2) +
           tokensSentBytes32Value.substring(2)
-        ).toLocaleLowerCase();
+        ).toLowerCase();
 
         const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
           ["string", "bytes"],
           ["LSP1: asset data corrupted", "0x"]
         );
 
-        await expect(
-          context.universalProfile
-            .connect(context.accounts.owner1)
-            ["execute(uint256,address,uint256,bytes)"](
-              0,
-              context.lsp9Vault1.address,
-              0,
-              vaultTokenTransferCalldata
-            )
-        )
+        await expect(tokenTransferTx)
           .to.emit(context.lsp9Vault1, "UniversalReceiver")
           .withArgs(
             token.address,
@@ -1312,40 +1160,11 @@ export const shouldBehaveLikeLSP1Delegate = (
       });
 
       it("shouldn't de-register the asset", async () => {
-        const balance = await token.balanceOf(context.lsp9Vault1.address);
-
-        const tokenTrasferCalldata = token.interface.encodeFunctionData(
-          "transfer",
-          [
-            context.lsp9Vault1.address,
-            context.accounts.owner1.address,
-            balance,
-            true,
-            "0x",
-          ]
-        );
-
-        const vaultTokenTransferCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [0, token.address, 0, tokenTrasferCalldata]
-          );
-
-        await context.universalProfile
-          .connect(context.accounts.owner1)
-          ["execute(uint256,address,uint256,bytes)"](
-            0,
-            context.lsp9Vault1.address,
-            0,
-            vaultTokenTransferCalldata
-          );
-
         expect(
           await context.lsp9Vault1["getData(bytes32[])"]([
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index + "0".repeat(32),
-            ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              token.address.substring(2),
+            arrayKey,
+            arrayIndexKey,
+            assetMapKey,
           ])
         ).to.deep.equal([
           "0x" + "00".repeat(15) + "01",
