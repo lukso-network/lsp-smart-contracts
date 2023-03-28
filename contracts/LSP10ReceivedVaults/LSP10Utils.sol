@@ -130,9 +130,6 @@ library LSP10Utils {
             index
         );
 
-        // If index is bigger than the array length, out of bounds
-        if (index > newArrayLength) return (keys, values);
-
         // If the address at index doesn't match the notifier address, corrupted data
         bytes20 addressAtIndex = bytes20(account.getData(vaultInArrayKey));
         bytes20 notifier = bytes20(vaultMapKey << 96);
@@ -159,7 +156,7 @@ library LSP10Utils {
 
             // Swapping last element in ArrayKey with the element in ArrayKey to remove || {Swap and pop} method;
             // check https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/structs/EnumerableSet.sol#L80
-        } else {
+        } else if (index < newArrayLength) {
             /**
              * We will be updating/removing 5 keys:
              * - Keys[0]: [Update] The arrayLengthKey to contain the new number of the received vaults
@@ -199,6 +196,9 @@ library LSP10Utils {
 
             keys[4] = lastVaultInArrayMapKey;
             values[4] = bytes.concat(_INTERFACEID_LSP9, bytes16(index));
+        } else {
+            // If index is bigger than the array length, out of bounds
+            return (keys, values);
         }
     }
 

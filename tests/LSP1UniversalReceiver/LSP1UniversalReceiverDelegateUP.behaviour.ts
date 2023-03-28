@@ -1807,9 +1807,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             vaultTrasferCalldata
           );
 
-        await expect(
-          await vault.connect(context.accounts.owner1).acceptOwnership()
-        )
+        await expect(vault.connect(context.accounts.owner1).acceptOwnership())
           .to.emit(context.universalProfile1, "UniversalReceiver")
           .withArgs(
             vault.address,
@@ -1928,9 +1926,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             vaultTrasferCalldata
           );
 
-        await expect(
-          await vault.connect(context.accounts.owner1).acceptOwnership()
-        )
+        await expect(vault.connect(context.accounts.owner1).acceptOwnership())
           .to.emit(context.universalProfile1, "UniversalReceiver")
           .withArgs(
             vault.address,
@@ -2058,9 +2054,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             vaultTrasferCalldata
           );
 
-        await expect(
-          await vault.connect(context.accounts.owner1).acceptOwnership()
-        )
+        await expect(vault.connect(context.accounts.owner1).acceptOwnership())
           .to.emit(context.universalProfile1, "UniversalReceiver")
           .withArgs(
             vault.address,
