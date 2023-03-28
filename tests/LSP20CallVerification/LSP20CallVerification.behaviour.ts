@@ -48,7 +48,7 @@ export const shouldBehaveLikeLSP20 = (
 
   describe("when testing lsp20 integration", () => {
     describe("when owner is an EOA", () => {
-      describe("when calling setData", () => {
+      describe("when calling `setData(bytes32,bytes)`", () => {
         const dataKey = ethers.utils.keccak256(
           ethers.utils.toUtf8Bytes("RandomKey1")
         );
@@ -77,7 +77,8 @@ export const shouldBehaveLikeLSP20 = (
             .withArgs(false, "0x");
         });
       });
-      describe("when calling setData array", () => {
+
+      describe("when calling `setData(bytes32[],bytes[])` array", () => {
         const dataKey = ethers.utils.keccak256(
           ethers.utils.toUtf8Bytes("RandomKey2")
         );
@@ -107,7 +108,7 @@ export const shouldBehaveLikeLSP20 = (
         });
       });
 
-      describe("when calling execute", () => {
+      describe("when calling `execute(...)`", () => {
         it("should pass when owner calls", async () => {
           const executeParams = {
             operation: OPERATION_TYPES.CALL,
@@ -160,7 +161,8 @@ export const shouldBehaveLikeLSP20 = (
             .withArgs(false, "0x");
         });
       });
-      describe("when calling execute Array", () => {
+
+      describe("when calling `execute([],[],[],[])` Array", () => {
         it("should pass when the owner is calling", async () => {
           const operationsType = [OPERATION_TYPES.CALL];
           const recipients = [context.accounts[1].address];
@@ -210,7 +212,7 @@ export const shouldBehaveLikeLSP20 = (
         });
       });
 
-      describe("when calling transferOwnership", () => {
+      describe("when calling `transferOwnership(...)`", () => {
         it("should pass when the owner is calling", async () => {
           const newOwner = context.accounts[1].address;
 
@@ -237,7 +239,7 @@ export const shouldBehaveLikeLSP20 = (
         });
       });
 
-      describe("when calling renounceOwnership", () => {
+      describe("when calling `renounceOwnership`", () => {
         it("should pass when the owner is calling", async () => {
           await network.provider.send("hardhat_mine", [
             ethers.utils.hexValue(500),
@@ -272,6 +274,7 @@ export const shouldBehaveLikeLSP20 = (
     describe("when the owner is a contract", () => {
       describe("that doesn't implement the verifyCall function", () => {
         let ownerContract: NotImplementingVerifyCall;
+
         before("deploying a new owner", async () => {
           ownerContract = await new NotImplementingVerifyCall__factory(
             context.deployParams.owner
@@ -284,6 +287,16 @@ export const shouldBehaveLikeLSP20 = (
           await ownerContract
             .connect(context.deployParams.owner)
             .acceptOwnership(context.universalProfile.address);
+        });
+
+        after("reverting to previous owner", async () => {
+          await ownerContract
+            .connect(context.deployParams.owner)
+            .transferOwnership(context.deployParams.owner.address);
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .acceptOwnership();
         });
 
         it("should revert when calling LSP0 function", async () => {
@@ -304,19 +317,11 @@ export const shouldBehaveLikeLSP20 = (
             )
             .withArgs(false);
         });
-
-        after("reverting to previous owner", async () => {
-          await ownerContract
-            .connect(context.deployParams.owner)
-            .transferOwnership(context.deployParams.owner.address);
-
-          await context.universalProfile
-            .connect(context.deployParams.owner)
-            .acceptOwnership();
-        });
       });
+
       describe("that implement the fallback function that doesn't return anything", () => {
         let ownerContract: ImplementingFallback;
+
         before("deploying a new owner", async () => {
           ownerContract = await new ImplementingFallback__factory(
             context.deployParams.owner
@@ -327,6 +332,16 @@ export const shouldBehaveLikeLSP20 = (
             .transferOwnership(ownerContract.address);
 
           await ownerContract.acceptOwnership(context.universalProfile.address);
+        });
+
+        after("reverting to previous owner", async () => {
+          await ownerContract
+            .connect(context.deployParams.owner)
+            .transferOwnership(context.deployParams.owner.address);
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .acceptOwnership();
         });
 
         it("should revert when calling LSP0 function", async () => {
@@ -347,19 +362,11 @@ export const shouldBehaveLikeLSP20 = (
             )
             .withArgs(false, "0x");
         });
-
-        after("reverting to previous owner", async () => {
-          await ownerContract
-            .connect(context.deployParams.owner)
-            .transferOwnership(context.deployParams.owner.address);
-
-          await context.universalProfile
-            .connect(context.deployParams.owner)
-            .acceptOwnership();
-        });
       });
+
       describe("that implement the fallback that return the magicValue", () => {
         let ownerContract: FallbackReturnMagicValue;
+
         before("deploying a new owner", async () => {
           ownerContract = await new FallbackReturnMagicValue__factory(
             context.deployParams.owner
@@ -370,6 +377,16 @@ export const shouldBehaveLikeLSP20 = (
             .transferOwnership(ownerContract.address);
 
           await ownerContract.acceptOwnership(context.universalProfile.address);
+        });
+
+        after("reverting to previous owner", async () => {
+          await ownerContract
+            .connect(context.deployParams.owner)
+            .transferOwnership(context.deployParams.owner.address);
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .acceptOwnership();
         });
 
         it("should pass when calling LSP0 function", async () => {
@@ -385,19 +402,11 @@ export const shouldBehaveLikeLSP20 = (
             )
           ).to.emit(ownerContract, "FallbackCalled");
         });
-
-        after("reverting to previous owner", async () => {
-          await ownerContract
-            .connect(context.deployParams.owner)
-            .transferOwnership(context.deployParams.owner.address);
-
-          await context.universalProfile
-            .connect(context.deployParams.owner)
-            .acceptOwnership();
-        });
       });
+
       describe("that implements verifyCall but return an expanded bytes32 value", () => {
         let ownerContract: FirstCallReturnExpandedInvalidValue;
+
         before("deploying a new owner", async () => {
           ownerContract =
             await new FirstCallReturnExpandedInvalidValue__factory(
@@ -409,6 +418,16 @@ export const shouldBehaveLikeLSP20 = (
             .transferOwnership(ownerContract.address);
 
           await ownerContract.acceptOwnership(context.universalProfile.address);
+        });
+
+        after("reverting to previous owner", async () => {
+          await ownerContract
+            .connect(context.deployParams.owner)
+            .transferOwnership(context.deployParams.owner.address);
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .acceptOwnership();
         });
 
         it("should revert when calling `setData(bytes32,bytes)`", async () => {
@@ -427,19 +446,11 @@ export const shouldBehaveLikeLSP20 = (
             "LSP20InvalidMagicValue"
           );
         });
-
-        after("reverting to previous owner", async () => {
-          await ownerContract
-            .connect(context.deployParams.owner)
-            .transferOwnership(context.deployParams.owner.address);
-
-          await context.universalProfile
-            .connect(context.deployParams.owner)
-            .acceptOwnership();
-        });
       });
+
       describe("that implements verifyCall but doesn't return magic value", () => {
         let ownerContract: FirstCallReturnInvalidMagicValue;
+
         before("deploying a new owner", async () => {
           ownerContract = await new FirstCallReturnInvalidMagicValue__factory(
             context.deployParams.owner
@@ -450,6 +461,16 @@ export const shouldBehaveLikeLSP20 = (
             .transferOwnership(ownerContract.address);
 
           await ownerContract.acceptOwnership(context.universalProfile.address);
+        });
+
+        after("reverting to previous owner", async () => {
+          await ownerContract
+            .connect(context.deployParams.owner)
+            .transferOwnership(context.deployParams.owner.address);
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .acceptOwnership();
         });
 
         it("should revert when calling `setData(bytes32,bytes)`", async () => {
@@ -470,20 +491,12 @@ export const shouldBehaveLikeLSP20 = (
             )
             .withArgs(false, "0xaabbccdd" + "0".repeat(56));
         });
-
-        after("reverting to previous owner", async () => {
-          await ownerContract
-            .connect(context.deployParams.owner)
-            .transferOwnership(context.deployParams.owner.address);
-
-          await context.universalProfile
-            .connect(context.deployParams.owner)
-            .acceptOwnership();
-        });
       });
+
       describe("that implements verifyCall that returns a valid magicValue but doesn't invoke verifyCallResult", () => {
         let firstCallReturnMagicValueContract: FirstCallReturnMagicValue;
         let newUniversalProfile: UniversalProfile;
+
         before(async () => {
           firstCallReturnMagicValueContract =
             await new FirstCallReturnMagicValue__factory(
@@ -515,6 +528,7 @@ export const shouldBehaveLikeLSP20 = (
       describe("that implements verifyCall and verifyCallResult and both return magic value", () => {
         let bothCallReturnMagicValueContract: BothCallReturnMagicValue;
         let newUniversalProfile: UniversalProfile;
+
         before(async () => {
           bothCallReturnMagicValueContract =
             await new BothCallReturnMagicValue__factory(
@@ -546,6 +560,7 @@ export const shouldBehaveLikeLSP20 = (
       describe("that implements verifyCallResult but return invalid magicValue", () => {
         let secondCallReturnFailureContract: SecondCallReturnFailureValue;
         let newUniversalProfile: UniversalProfile;
+
         before(async () => {
           secondCallReturnFailureContract =
             await new SecondCallReturnFailureValue__factory(

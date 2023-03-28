@@ -46,6 +46,15 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         return allowedERC725YDataKeysCompacted.isCompactBytesArrayOfAllowedERC725YDataKeys();
     }
 
+    function verifyCanSetData(
+        address controller,
+        bytes32 permissions,
+        bytes32[] memory inputDataKeys,
+        bytes[] memory inputDataValues
+    ) public view {
+        super._verifyCanSetData(_target, controller, permissions, inputDataKeys, inputDataValues);
+    }
+
     function verifyAllowedERC725YSingleKey(
         address from,
         bytes32 inputKey,

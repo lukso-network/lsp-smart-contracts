@@ -3,6 +3,7 @@ pragma solidity ^0.8.5;
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
+import {ERC725Y_DataKeysValuesLengthMismatch} from "@erc725/smart-contracts/contracts/errors.sol";
 
 // libraries
 import {GasLib} from "../../Utils/GasLib.sol";
@@ -87,18 +88,25 @@ abstract contract LSP6SetDataModule {
     /**
      * @dev verify if the `controllerAddress` has the permissions required to set an array of data keys on the ERC725Y storage of the `controlledContract`.
      * @param controlledContract the address of the ERC725Y contract where the data key is set.
-     * @param controllerAddress the address of the controller who wants to set the data key.
-     * @param controllerPermissions the permissions of the controller address.
+     * @param controller the address of the controller who wants to set the data key.
+     * @param permissions the permissions of the controller address.
      * @param inputDataKeys an array of data keys to set on the `controlledContract`.
      * @param inputDataValues an array of data values to set for the `inputDataKeys`.
      */
     function _verifyCanSetData(
         address controlledContract,
-        address controllerAddress,
-        bytes32 controllerPermissions,
+        address controller,
+        bytes32 permissions,
         bytes32[] memory inputDataKeys,
         bytes[] memory inputDataValues
     ) internal view virtual {
+        if (inputDataKeys.length != inputDataValues.length) {
+            revert ERC725Y_DataKeysValuesLengthMismatch(
+                inputDataKeys.length,
+                inputDataValues.length
+            );
+        }
+
         bool isSettingERC725YKeys;
         bool[] memory validatedInputDataKeys = new bool[](inputDataKeys.length);
 
@@ -116,7 +124,7 @@ abstract contract LSP6SetDataModule {
                 isSettingERC725YKeys = true;
             } else {
                 // CHECK the required permissions if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
-                _requirePermissions(controllerAddress, controllerPermissions, requiredPermission);
+                _requirePermissions(controller, permissions, requiredPermission);
                 validatedInputDataKeys[ii] = true;
             }
 
@@ -126,14 +134,14 @@ abstract contract LSP6SetDataModule {
         // CHECK if allowed to set one (or multiple) ERC725Y Data Keys
         if (isSettingERC725YKeys) {
             // Skip if caller has SUPER permissions
-            if (controllerPermissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
+            if (permissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
 
-            _requirePermissions(controllerAddress, controllerPermissions, _PERMISSION_SETDATA);
+            _requirePermissions(controller, permissions, _PERMISSION_SETDATA);
 
             _verifyAllowedERC725YDataKeys(
-                controllerAddress,
+                controller,
                 inputDataKeys,
-                ERC725Y(controlledContract).getAllowedERC725YDataKeysFor(controllerAddress),
+                ERC725Y(controlledContract).getAllowedERC725YDataKeysFor(controller),
                 validatedInputDataKeys
             );
         }
