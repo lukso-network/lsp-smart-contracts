@@ -1,38 +1,52 @@
 import { expect } from "chai";
 import { BigNumber } from "ethers";
-import { LSP6TestContext, LSP6InternalsTestContext } from "../utils/context";
 
+import { LSP6TestContext, LSP6InternalsTestContext } from "../utils/context";
 import { INTERFACE_IDS } from "../../constants";
 
 import {
+  // Admin
   shouldBehaveLikePermissionChangeOwner,
-  shouldBehaveLikePermissionChangeOrAddController,
   shouldBehaveLikePermissionChangeOrAddExtensions,
   shouldBehaveLikePermissionChangeOrAddURD,
-  shouldBehaveLikePermissionSetData,
+  shouldBehaveLikePermissionSign,
+
+  // Set Permission
+  shouldBehaveLikePermissionChangeOrAddController,
+  shouldBehaveLikeSettingAllowedCalls,
+  shouldBehaveLikeSetAllowedERC725YDataKeys,
+
+  // Interactions
   shouldBehaveLikePermissionCall,
   shouldBehaveLikePermissionStaticCall,
   shouldBehaveLikePermissionDelegateCall,
   shouldBehaveLikePermissionDeploy,
   shouldBehaveLikePermissionTransferValue,
-  shouldBehaveLikePermissionSign,
   shouldBehaveLikeAllowedAddresses,
   shouldBehaveLikeAllowedFunctions,
   shouldBehaveLikeAllowedStandards,
-  shouldBehaveLikeAllowedERC725YDataKeys,
+  testInvalidExecutePayloads,
+
+  // Batch
+  shouldBehaveLikeBatchExecute,
+
+  // Relay
   shouldBehaveLikeMultiChannelNonce,
   shouldBehaveLikeExecuteRelayCall,
-  shouldBehaveLikeBatchExecute,
-  testSecurityScenarios,
-  otherTestScenarios,
-  testReentrancyScenarios,
-} from "./tests";
 
-import {
+  // Reentrancy
+  testReentrancyScenarios,
+
+  // SetData
+  shouldBehaveLikePermissionSetData,
+  shouldBehaveLikeAllowedERC725YDataKeys,
+
+  // Internals
   testAllowedCallsInternals,
   testAllowedERC725YDataKeysInternals,
   testReadingPermissionsInternals,
-} from "./internals";
+  testSetDataInternals,
+} from "./index";
 
 export const shouldBehaveLikeLSP6 = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
@@ -41,8 +55,10 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionChangeOwner(buildContext);
   });
 
-  describe("CHANGE / ADD permissions", () => {
+  describe("Set Permissions", () => {
     shouldBehaveLikePermissionChangeOrAddController(buildContext);
+    shouldBehaveLikeSettingAllowedCalls(buildContext);
+    shouldBehaveLikeSetAllowedERC725YDataKeys(buildContext);
   });
 
   describe("CHANGE / ADD extensions", () => {
@@ -55,6 +71,18 @@ export const shouldBehaveLikeLSP6 = (
 
   describe("SETDATA", () => {
     shouldBehaveLikePermissionSetData(buildContext);
+  });
+
+  describe("AllowedERC725YDataKeys", () => {
+    shouldBehaveLikeAllowedERC725YDataKeys(buildContext);
+  });
+
+  describe("Invalid Execute payloads", () => {
+    testInvalidExecutePayloads(buildContext);
+  });
+
+  describe("TRANSFERVALUE", () => {
+    shouldBehaveLikePermissionTransferValue(buildContext);
   });
 
   describe("CALL", () => {
@@ -73,12 +101,8 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionDeploy(buildContext);
   });
 
-  describe("TRANSFERVALUE", () => {
-    shouldBehaveLikePermissionTransferValue(buildContext);
-  });
-
-  describe("SIGN (ERC1271)", () => {
-    shouldBehaveLikePermissionSign(buildContext);
+  describe("Batch `execute([])`", () => {
+    shouldBehaveLikeBatchExecute(buildContext);
   });
 
   describe("ALLOWED CALLS", () => {
@@ -87,32 +111,17 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikeAllowedStandards(buildContext);
   });
 
-  describe("AllowedERC725YDataKeys", () => {
-    shouldBehaveLikeAllowedERC725YDataKeys(buildContext);
-  });
-
-  describe("Multi Channel nonces", () => {
-    shouldBehaveLikeMultiChannelNonce(buildContext);
-  });
-
-  describe("Execute Relay Call", () => {
+  describe("Single + Batch Meta Transactions", () => {
     shouldBehaveLikeExecuteRelayCall(buildContext);
-  });
-
-  describe("batch execute", () => {
-    shouldBehaveLikeBatchExecute(buildContext);
-  });
-
-  describe("miscellaneous", () => {
-    otherTestScenarios(buildContext);
-  });
-
-  describe("Security", () => {
-    testSecurityScenarios(buildContext);
+    shouldBehaveLikeMultiChannelNonce(buildContext);
   });
 
   describe("Reentrancy", () => {
     testReentrancyScenarios(buildContext);
+  });
+
+  describe("SIGN (ERC1271)", () => {
+    shouldBehaveLikePermissionSign(buildContext);
   });
 };
 
@@ -160,4 +169,5 @@ export const testLSP6InternalFunctions = (
   testAllowedCallsInternals(buildContext);
   testAllowedERC725YDataKeysInternals(buildContext);
   testReadingPermissionsInternals(buildContext);
+  testSetDataInternals(buildContext);
 };
