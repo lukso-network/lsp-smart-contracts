@@ -167,9 +167,6 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
              * `generateSentAssetKeys(...)` returns empty arrays in the following cases:
              * - the index returned from the data key `notifierMapKey` is bigger than
              * the length of the `LSP5ReceivedAssets[]`, meaning, index is out of bounds.
-             * - the address used to construct the `notifierMapKey` data key is different
-             * than the address retrieved from the `LSP5ReceivedAssets[index]` data key. The index
-             * is uint128(notifierMapValue[4:])
              */
             if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
 
@@ -186,9 +183,6 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
              * `generateSentAssetKeys(...)` returns empty arrays in the following cases:
              * - the index returned from the data key `notifierMapKey` is bigger than
              * the length of the `LSP10Vaults[]`, meaning, index is out of bounds.
-             * - the address used to construct the `notifierMapKey` data key is different
-             * than the address retrieved from the `LSP10Vaults[index]` data key. The index
-             * is uint128(notifierMapValue[4:])
              */
             if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
 
