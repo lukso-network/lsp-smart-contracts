@@ -7,7 +7,7 @@ body:
   - attributes:
       value: |
         Please check the [issues tab](https://github.com/lukso-network/lsp-smart-contracts/issues) to avoid duplicates.
-        Remember, this is not a place to ask for help debugging code. For that, we welcome you in the [LUKSO's discord server](https://discord.com/channels/359064931246538762/585786253992132609)!
+        Remember, this is not a place to ask for help debugging code. For that, we welcome you in [LUKSO's discord server](https://discord.com/channels/359064931246538762/585786253992132609)!
         Thanks for taking the time to fill out this bug report!
     type: markdown
   - attributes:
