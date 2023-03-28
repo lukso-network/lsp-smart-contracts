@@ -27,23 +27,21 @@ jobs:
           python-version: 3.8
 
       - name: Install node dependencies
-        run: |
-          npm ci
+        run: npm ci
 
       - name: Install pip3
         run: python -m pip install --upgrade pip
 
       - name: Install mythx CLI
-        run: |
-          pip3 install mythx-cli
+        run: pip3 install mythx-cli
 
       - name: Install solc-select
         run: pip3 install solc-select
 
-      - name: Use Solidity compiler 0.8.7
+      - name: Use Solidity compiler 0.8.15
         run: |
-          solc-select install 0.8.7
-          solc-select use 0.8.7
+          solc-select install 0.8.15
+          solc-select use 0.8.15
 
       - name: Submit contracts to Mythx
         # use configs from .mythx.yml
