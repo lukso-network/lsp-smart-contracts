@@ -130,7 +130,8 @@ library LSP10Utils {
         uint128 newArrayLength = oldArrayLength - 1;
 
         // Identify where the vault is located in the LSP10Vaults[] array
-        // by extracting the index from the LSP10VaultsMap data key
+        // by extracting the index from the tuple value `(bytes4,uint128)`
+        // fetched under the LSP10VaultsMap data key
         uint128 index = extractIndexFromMap(vaultInterfaceIdAndIndex);
 
         // Generate the element key in the array of the vault

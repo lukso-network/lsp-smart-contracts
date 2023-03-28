@@ -127,8 +127,9 @@ library LSP5Utils {
         // Updating the number of the received assets (decrementing by 1
         uint128 newArrayLength = oldArrayLength - 1;
 
-        // Identify where the asset is located in the LSP5ReceivedAssets[] array
-        // by extracting the index from the LSP5ReceivedAssetsMap data key
+        // Identify where the vault is located in the LSP5ReceivedAssets[] array
+        // by extracting the index from the tuple value `(bytes4,uint128)`
+        // fetched under the LSP5ReceivedAssetsMap data key
         uint128 index = extractIndexFromMap(assetInterfaceIdAndIndex);
 
         // Generate the element key in the array of the asset
