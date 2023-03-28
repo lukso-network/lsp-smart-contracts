@@ -66,13 +66,13 @@ import {NoExtensionFoundForFunctionSelector} from "../LSP17ContractExtension/LSP
  * - Validating signatures using ERC1271
  *   https://eips.ethereum.org/EIPS/eip-1271
  *
- * - Unified notification and reaction system using LSP1
+ * - Receiving notification and react on them using LSP1
  *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md
  *
- * - Secure ownership management system using LSP14
+ * - Secure ownership management using LSP14
  *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-14-Ownable2Step.md
  *
- * - Extending the account with new functions and interfaceIds for future standards using LSP17
+ * - Extending the account with new functions and interfaceIds of future standards using LSP17
  *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-17-ContractExtension.md
  *
  * - Verifying calls on the owner to allow unified and standard interaction with the account using LSP20
@@ -153,13 +153,12 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @notice Allows a caller to batch different function calls in one call.
-     *
-     * @dev Perform a delegatecall on self, to call different functions with preserving the context
+     * @dev Allows a caller to batch different function calls in one call.
+     * Perform a delegatecall on self, to call different functions with preserving the context
      * It is not possible to send value along the functions call due to the use of delegatecall.
      *
-     * @param data An array of the ABI encoding of a function to be called on the contract.
-     * @return results An array containing the return values of the executed functions.
+     * @param data An array of ABI encoded function calls to be called on the contract.
+     * @return results An array of values returned by the executed functions.
      */
     function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
         results = new bytes[](data.length);

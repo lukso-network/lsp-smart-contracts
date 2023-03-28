@@ -23,13 +23,13 @@ import {LSP0ERC725AccountInitAbstract} from "./LSP0ERC725AccountInitAbstract.sol
  * - Validating signatures using ERC1271
  *   https://eips.ethereum.org/EIPS/eip-1271
  *
- * - Unified notification and reaction system using LSP1
+ * - Receiving notification and react on them using LSP1
  *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md
  *
- * - Secure ownership management system using LSP14
+ * - Secure ownership management using LSP14
  *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-14-Ownable2Step.md
  *
- * - Extending the account with new functions and interfaceIds for future standards using LSP17
+ * - Extending the account with new functions and interfaceIds of future standards using LSP17
  *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-17-ContractExtension.md
  *
  * - Verifying calls on the owner to allow unified and standard interaction with the account using LSP20
@@ -44,7 +44,7 @@ contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract {
     }
 
     /**
-     * @notice Sets the owner of the contract
+     * @dev Sets the owner of the contract
      * @param newOwner the owner of the contract
      */
     function initialize(address newOwner) external payable virtual initializer {

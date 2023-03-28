@@ -24,13 +24,13 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
  * - Validating signatures using ERC1271
  *   https://eips.ethereum.org/EIPS/eip-1271
  *
- * - Unified notification and reaction system using LSP1
+ * - Receiving notification and react on them using LSP1
  *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md
  *
- * - Secure ownership management system using LSP14
+ * - Secure ownership management using LSP14
  *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-14-Ownable2Step.md
  *
- * - Extending the account with new functions and interfaceIds for future standards using LSP17
+ * - Extending the account with new functions and interfaceIds of future standards using LSP17
  *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-17-ContractExtension.md
  *
  * - Verifying calls on the owner to allow unified and standard interaction with the account using LSP20
@@ -38,8 +38,8 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
  */
 contract LSP0ERC725Account is LSP0ERC725AccountCore {
     /**
-     * @notice Sets the owner of the contract on deployment and allows funding.
-     * @dev Emits the ValueReceived event if native tokens were received.
+     * @dev Sets the owner of the contract on deployment and allows funding.
+     * Emits the ValueReceived event if native tokens were received.
      * @param newOwner The owner of the contract.
      */
     constructor(address newOwner) payable {
