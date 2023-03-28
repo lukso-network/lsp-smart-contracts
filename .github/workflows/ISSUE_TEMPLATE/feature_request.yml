@@ -8,7 +8,7 @@ body:
       value: |
         Please check the [issues tab](https://github.com/lukso-network/lsp-smart-contracts/issues) to avoid duplicates.
         Make sure that you have reviewed the Contributor Guidelines.
-        Thanks for taking the time to fill out this bug report!
+        Thanks for taking the time to provide feedback!
     type: markdown
   - attributes:
       label: "Describe the desired feature:"
