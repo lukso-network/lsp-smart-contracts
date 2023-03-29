@@ -32,7 +32,7 @@ import { provider } from "./utils/helpers";
 import { BigNumber } from "ethers";
 import {
   LSP14CombinedWithLSP20TestContext,
-  shouldBehaveLikeLSP14CombinedWithLSP20,
+  shouldBehaveLikeLSP14WithLSP20,
 } from "./LSP20CallVerification/LSP20WithLSP14.behaviour";
 
 describe("UniversalProfile", () => {
@@ -68,7 +68,7 @@ describe("UniversalProfile", () => {
       return { accounts, lsp1Implementation, lsp1Checker };
     };
 
-    const buildLSP14CombinedWithLSP20TestContext = async (
+    const buildLSP14WithLSP20TestContext = async (
       initialFunding?: number | BigNumber
     ): Promise<LSP14CombinedWithLSP20TestContext> => {
       const accounts = await ethers.getSigners();
@@ -147,9 +147,7 @@ describe("UniversalProfile", () => {
     describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP3(buildLSP3TestContext);
       shouldBehaveLikeLSP1(buildLSP1TestContext);
-      shouldBehaveLikeLSP14CombinedWithLSP20(
-        buildLSP14CombinedWithLSP20TestContext
-      );
+      shouldBehaveLikeLSP14WithLSP20(buildLSP14WithLSP20TestContext);
       shouldBehaveLikeLSP17(buildLSP17TestContext);
       shouldBehaveLikeLSP20(buildLSP20TestContext);
     });
@@ -211,7 +209,7 @@ describe("UniversalProfile", () => {
       return { accounts, lsp1Implementation, lsp1Checker };
     };
 
-    const buildLSP14CombinedWithLSP20TestContext = async (
+    const buildLSP14WithLSP20TestContext = async (
       initialFunding?: number | BigNumber
     ): Promise<LSP14CombinedWithLSP20TestContext> => {
       const deployParams = {
@@ -337,10 +335,11 @@ describe("UniversalProfile", () => {
         return lsp1Context;
       });
 
-      shouldBehaveLikeLSP14CombinedWithLSP20(
+      shouldBehaveLikeLSP14WithLSP20(
         async (initialFunding?: number | BigNumber) => {
-          let claimOwnershipContext =
-            await buildLSP14CombinedWithLSP20TestContext(initialFunding);
+          let claimOwnershipContext = await buildLSP14WithLSP20TestContext(
+            initialFunding
+          );
 
           await initializeProxy({
             accounts: claimOwnershipContext.accounts,
