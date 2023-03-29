@@ -19,6 +19,21 @@ import {
   encodeCompactBytesArray,
 } from "../../utils/helpers";
 
+async function setupPermissions(
+  context: LSP6TestContext,
+  permissionsKeys: string[],
+  permissionValues: string[]
+) {
+  const setupPayload = context.universalProfile.interface.encodeFunctionData(
+    "setData(bytes32[],bytes[])",
+    [permissionsKeys, permissionValues]
+  );
+
+  await context.keyManager
+    .connect(context.owner)
+    ["execute(bytes)"](setupPayload);
+}
+
 /**
  * @dev fixture to reset all the permissions to 0x
  */
@@ -34,21 +49,6 @@ async function resetPermissions(
   await context.keyManager
     .connect(context.owner)
     ["execute(bytes)"](teardownPayload);
-}
-
-async function setupPermissions(
-  context: LSP6TestContext,
-  permissionsKeys: string[],
-  permissionValues: string[]
-) {
-  const setupPayload = context.universalProfile.interface.encodeFunctionData(
-    "setData(bytes32[],bytes[])",
-    [permissionsKeys, permissionValues]
-  );
-
-  await context.keyManager
-    .connect(context.owner)
-    ["execute(bytes)"](setupPayload);
 }
 
 export const shouldBehaveLikePermissionChangeOrAddController = (
@@ -75,7 +75,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
     );
   });
 
-  describe("setting permissions keys (CHANGE vs ADD Permissions)", () => {
+  describe("setting permissions keys (EDIT vs ADD Permissions)", () => {
     // this data key is hardcoded to be removed in teardown
     const permissionArrayIndexToAdd =
       ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
@@ -196,7 +196,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           expect(result).to.equal(PERMISSIONS.SETDATA);
         });
 
-        it("should be allowed to CHANGE a permission", async () => {
+        it("should be allowed to EDIT a permission", async () => {
           let key =
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressToEditPermissions.address.substring(2);
@@ -521,7 +521,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           expect(result).to.equal(value);
         });
 
-        it("should not be allowed to CHANGE a permission", async () => {
+        it("should not be allowed to EDIT a permission", async () => {
           let key =
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressToEditPermissions.address.substring(2);

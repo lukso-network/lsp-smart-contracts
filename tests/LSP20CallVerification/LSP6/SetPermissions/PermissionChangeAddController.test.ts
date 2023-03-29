@@ -19,12 +19,66 @@ import {
   encodeCompactBytesArray,
 } from "../../../utils/helpers";
 
+async function setupPermissions(
+  context: LSP6TestContext,
+  permissionsKeys: string[],
+  permissionValues: string[]
+) {
+  await context.universalProfile
+    .connect(context.owner)
+    ["setData(bytes32[],bytes[])"](permissionsKeys, permissionValues);
+}
+
+/**
+ * @dev fixture to reset all the permissions to 0x
+ */
+async function resetPermissions(
+  context: LSP6TestContext,
+  permissionsKeys: string[]
+) {
+  await context.universalProfile
+    .connect(context.owner)
+    ["setData(bytes32[],bytes[])"](
+      permissionsKeys,
+      Array(permissionsKeys.length).fill("0x")
+    );
+}
+
 export const shouldBehaveLikePermissionChangeOrAddController = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
   let context: LSP6TestContext;
 
-  describe("setting permissions keys (CHANGE vs ADD Permissions)", () => {
+  let permissionKeys: string[] = [];
+  let permissionValues: string[] = [];
+
+  let permissionArrayKeys: string[] = [];
+  let permissionArrayValues: string[] = [];
+
+  before("setup", async () => {
+    context = await buildContext();
+
+    await setupKeyManager(
+      context,
+      [
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+      ],
+      [ALL_PERMISSIONS]
+    );
+  });
+
+  describe("setting permissions keys (EDIT vs ADD Permissions)", () => {
+    // this data key is hardcoded to be removed in teardown
+    const permissionArrayIndexToAdd =
+      ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
+      "00000000000000000000000000000006";
+
+    // this data key is hardcoded for readability
+    const permissionArrayIndexToEdit =
+      ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
+      "00000000000000000000000000000004";
+
     let canOnlyAddController: SignerWithAddress,
       canOnlyEditPermissions: SignerWithAddress,
       canOnlySetData: SignerWithAddress,
@@ -32,21 +86,14 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
       addressToEditPermissions: SignerWithAddress,
       addressWithZeroHexPermissions: SignerWithAddress;
 
-    let permissionArrayKeys: string[] = [];
-    let permissionArrayValues: string[] = [];
-
-    beforeEach(async () => {
-      context = await buildContext();
-
+    before("prepare permissions data keys", async () => {
       canOnlyAddController = context.accounts[1];
       canOnlyEditPermissions = context.accounts[2];
       canOnlySetData = context.accounts[3];
       addressToEditPermissions = context.accounts[4];
       addressWithZeroHexPermissions = context.accounts[5];
 
-      let permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+      permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -59,8 +106,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           addressWithZeroHexPermissions.address.substring(2),
       ];
 
-      let permissionValues = [
-        ALL_PERMISSIONS,
+      permissionValues = [
         PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.EDITPERMISSIONS,
         PERMISSIONS.SETDATA,
@@ -95,15 +141,33 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
         addressToEditPermissions.address,
         addressWithZeroHexPermissions.address,
       ];
-
-      permissionKeys = permissionKeys.concat(permissionArrayKeys);
-      permissionValues = permissionValues.concat(permissionArrayValues);
-
-      await setupKeyManager(context, permissionKeys, permissionValues);
     });
 
     describe("when setting one permission key", () => {
       describe("when caller is an address with ALL PERMISSIONS", () => {
+        // ----------------------
+        // because we are editing ther permissions of a controller,
+        // we need to setup + teardown for each describe blocks
+        // related to each controller making the change
+        before("setup permissions", async () => {
+          await setupPermissions(context, permissionKeys, permissionValues);
+
+          // setup AddressPermissions[]
+          await setupPermissions(
+            context,
+            permissionArrayKeys,
+            permissionArrayValues
+          );
+        });
+
+        after("reset permissions", async () => {
+          await resetPermissions(context, [
+            ...permissionKeys,
+            ...permissionArrayKeys,
+            permissionArrayIndexToAdd,
+          ]);
+        });
+
         it("should be allowed to ADD a permission", async () => {
           let newController = ethers.Wallet.createRandom();
 
@@ -354,7 +418,32 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
       });
 
       describe("when caller is an address with permission ADDCONTROLLER", () => {
-        it("should be allowed to ADD a permission", async () => {
+        // ----------------------
+        // because we are editing ther permissions of a controller,
+        // we need to setup + teardown for each describe blocks
+        // related to each controller making the change
+        before("setup permissions", async () => {
+          // setup AddressPersmissions:Permissions:<controllers>
+          await setupPermissions(context, permissionKeys, permissionValues);
+
+          // setup AddressPermissions[]
+          await setupPermissions(
+            context,
+            permissionArrayKeys,
+            permissionArrayValues
+          );
+        });
+
+        after("reset permissions", async () => {
+          // teardown in one batch `setData(bytes32[])` for efficiency
+          await resetPermissions(context, [
+            ...permissionKeys,
+            ...permissionArrayKeys,
+            permissionArrayIndexToAdd,
+          ]);
+        });
+
+        it("should be allowed to ADD a new controller", async () => {
           let newController = ethers.Wallet.createRandom();
 
           let key =
@@ -372,7 +461,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           expect(result).to.equal(value);
         });
 
-        it("should not be allowed to CHANGE a permission", async () => {
+        it("should not be allowed to EDIT a permission", async () => {
           let key =
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressToEditPermissions.address.substring(2);
@@ -572,7 +661,31 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
       });
 
       describe("when caller is an address with permission EDITPERMISSIONS", () => {
-        it("should not be allowed to ADD a permission", async () => {
+        // ----------------------
+        // because we are editing ther permissions of a controller,
+        // we need to setup + teardown for each describe blocks
+        // related to each controller making the change
+        before("setup permissions", async () => {
+          // setup AddressPersmissions:Permissions:<controllers>
+          await setupPermissions(context, permissionKeys, permissionValues);
+
+          // setup AddressPermissions[]
+          await setupPermissions(
+            context,
+            permissionArrayKeys,
+            permissionArrayValues
+          );
+        });
+
+        after("reset permissions", async () => {
+          await resetPermissions(context, [
+            ...permissionKeys,
+            ...permissionArrayKeys,
+            permissionArrayIndexToAdd,
+          ]);
+        });
+
+        it("should not be allowed to ADD a new controller", async () => {
           let newController = ethers.Wallet.createRandom();
 
           let key =
@@ -803,6 +916,30 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
       });
 
       describe("when caller is an address with permission SETDATA", () => {
+        // ----------------------
+        // because we are editing ther permissions of a controller,
+        // we need to setup + teardown for each describe blocks
+        // related to each controller making the change
+        before("setup permissions", async () => {
+          // setup AddressPersmissions:Permissions:<controllers>
+          await setupPermissions(context, permissionKeys, permissionValues);
+
+          // setup AddressPermissions[]
+          await setupPermissions(
+            context,
+            permissionArrayKeys,
+            permissionArrayValues
+          );
+        });
+
+        after("reset permissions", async () => {
+          await resetPermissions(context, [
+            ...permissionKeys,
+            ...permissionArrayKeys,
+            permissionArrayIndexToAdd,
+          ]);
+        });
+
         it("should not be allowed to ADD a permission", async () => {
           let newController = ethers.Wallet.createRandom();
 
@@ -990,11 +1127,6 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           });
         });
       });
-
-      /**
-       *  @todo should test that an address with only the permission SETDATA
-       * cannot add or edit permissions
-       */
     });
   });
 
@@ -1010,17 +1142,16 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
       ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Third Key")),
     ];
 
-    beforeEach(async () => {
-      context = await buildContext();
+    let permissionKeys: string[];
+    let permissionValues: string[];
 
+    before(async () => {
       canSetDataAndAddController = context.accounts[1];
       canSetDataAndEditPermissions = context.accounts[2];
 
       addressesToEditPermissions = [context.accounts[3], context.accounts[4]];
 
-      const permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+      permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canSetDataAndAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
@@ -1036,8 +1167,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
         ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
       ];
 
-      const permissionValues = [
-        ALL_PERMISSIONS,
+      permissionValues = [
         combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.ADDCONTROLLER),
         encodeCompactBytesArray(allowedERC725YDataKeys),
         combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.EDITPERMISSIONS),
@@ -1048,12 +1178,18 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
         // AddressPermissions[].length
         ethers.utils.hexZeroPad(ethers.utils.hexlify(5), 16),
       ];
-
-      await setupKeyManager(context, permissionKeys, permissionValues);
     });
 
     describe("when setting multiple keys", () => {
       describe("when caller is an address with ALL PERMISSIONS", () => {
+        before("setup permissions", async () => {
+          await setupPermissions(context, permissionKeys, permissionValues);
+        });
+
+        after("reset permissions", async () => {
+          await resetPermissions(context, permissionKeys);
+        });
+
         it("(should pass): 2 x keys + add 2 x new permissions", async () => {
           let newControllerKeyOne = ethers.Wallet.createRandom();
           let newControllerKeyTwo = ethers.Wallet.createRandom();
@@ -1143,77 +1279,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
       });
 
       describe("when caller is an address with permission SETDATA + ADDCONTROLLER + 3x Allowed ERC725Y data keys", () => {
-        it("(should pass): 2 x allowed data keys + add 2 x new controllers", async () => {
-          let newControllerKeyOne = ethers.Wallet.createRandom();
-          let newControllerKeyTwo = ethers.Wallet.createRandom();
-
-          let keys = [
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Second Key")),
-            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              newControllerKeyOne.address.substr(2),
-            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              newControllerKeyTwo.address.substr(2),
-          ];
-
-          let values = [
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-            PERMISSIONS.SETDATA,
-            PERMISSIONS.SETDATA,
-          ];
-
-          await context.universalProfile
-            .connect(canSetDataAndAddController)
-            ["setData(bytes32[],bytes[])"](keys, values);
-
-          expect(
-            await context.universalProfile["getData(bytes32[])"](keys)
-          ).to.deep.equal(values);
+        before("setup permissions", async () => {
+          await setupPermissions(context, permissionKeys, permissionValues);
         });
 
-        it("(should pass): 2 x allowed data keys + add 2 x new controllers + increment AddressPermissions[].length by +2", async () => {
-          const currentPermissionsArrayLength = await context.universalProfile[
-            "getData(bytes32)"
-          ](ERC725YDataKeys.LSP6["AddressPermissions[]"].length);
-
-          const newPermissionsArrayLength = ethers.BigNumber.from(
-            currentPermissionsArrayLength
-          )
-            .add(1)
-            .toNumber();
-
-          let newControllerKeyOne = ethers.Wallet.createRandom();
-          let newControllerKeyTwo = ethers.Wallet.createRandom();
-
-          let keys = [
-            allowedERC725YDataKeys[0],
-            allowedERC725YDataKeys[1],
-            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              newControllerKeyOne.address.substr(2),
-            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              newControllerKeyTwo.address.substr(2),
-            ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-          ];
-
-          let values = [
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-            PERMISSIONS.SETDATA,
-            PERMISSIONS.SETDATA,
-            ethers.utils.hexZeroPad(
-              ethers.utils.hexlify(newPermissionsArrayLength),
-              16
-            ),
-          ];
-
-          await context.universalProfile
-            .connect(canSetDataAndAddController)
-            ["setData(bytes32[],bytes[])"](keys, values);
-
-          expect(
-            await context.universalProfile["getData(bytes32[])"](keys)
-          ).to.deep.equal(values);
+        after("reset permissions", async () => {
+          await resetPermissions(context, permissionKeys);
         });
 
         it("(should fail): 2 x allowed data keys + add 2 x new controllers + decrement AddressPermissions[].length by -1", async () => {
@@ -1329,11 +1400,6 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             PERMISSIONS.SETDATA,
           ];
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [dataKeys, dataValues]
-          );
-
           await expect(
             context.universalProfile
               .connect(canSetDataAndAddController)
@@ -1348,30 +1414,29 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               NotAllowedERC725YDataKey
             );
         });
-      });
 
-      describe("when caller is an address with permission SETDATA + EDITPERMISSIONS + 3x Allowed ERC725Y data keys", () => {
-        it("(should pass): 2 x allowed data keys + remove 2 x addresses with permissions + decrement AddressPermissions[].length by -2", async () => {
+        it("(should pass): 2 x allowed data keys + add 2 x new controllers", async () => {
+          let newControllerKeyOne = ethers.Wallet.createRandom();
+          let newControllerKeyTwo = ethers.Wallet.createRandom();
+
           let keys = [
-            allowedERC725YDataKeys[0],
-            allowedERC725YDataKeys[1],
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Second Key")),
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              addressesToEditPermissions[0].address.substring(2),
+              newControllerKeyOne.address.substr(2),
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              addressesToEditPermissions[1].address.substring(2),
-            ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+              newControllerKeyTwo.address.substr(2),
           ];
 
           let values = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-            "0x0000000000000000000000000000000000000000000000000000000000000000",
-            "0x0000000000000000000000000000000000000000000000000000000000000000",
-            ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 16),
+            PERMISSIONS.SETDATA,
+            PERMISSIONS.SETDATA,
           ];
 
           await context.universalProfile
-            .connect(canSetDataAndEditPermissions)
+            .connect(canSetDataAndAddController)
             ["setData(bytes32[],bytes[])"](keys, values);
 
           expect(
@@ -1379,30 +1444,58 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ).to.deep.equal(values);
         });
 
-        it("(should pass): 2 x allowed data keys + edit permissions of 2 x existing controllers", async () => {
+        it("(should pass): 2 x allowed data keys + add 2 x new controllers + increment AddressPermissions[].length by +2", async () => {
+          const currentPermissionsArrayLength = await context.universalProfile[
+            "getData(bytes32)"
+          ](ERC725YDataKeys.LSP6["AddressPermissions[]"].length);
+
+          const newPermissionsArrayLength = ethers.BigNumber.from(
+            currentPermissionsArrayLength
+          )
+            .add(1)
+            .toNumber();
+
+          let newControllerKeyOne = ethers.Wallet.createRandom();
+          let newControllerKeyTwo = ethers.Wallet.createRandom();
+
           let keys = [
             allowedERC725YDataKeys[0],
             allowedERC725YDataKeys[1],
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              addressesToEditPermissions[0].address.substring(2),
+              newControllerKeyOne.address.substr(2),
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              addressesToEditPermissions[1].address.substring(2),
+              newControllerKeyTwo.address.substr(2),
+            ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
           ];
 
           let values = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-            combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
-            combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
+            PERMISSIONS.SETDATA,
+            PERMISSIONS.SETDATA,
+            ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(newPermissionsArrayLength),
+              16
+            ),
           ];
 
           await context.universalProfile
-            .connect(canSetDataAndEditPermissions)
+            .connect(canSetDataAndAddController)
             ["setData(bytes32[],bytes[])"](keys, values);
 
           expect(
             await context.universalProfile["getData(bytes32[])"](keys)
           ).to.deep.equal(values);
+        });
+      });
+
+      describe("when caller is an address with permission SETDATA + EDITPERMISSIONS + 3x Allowed ERC725Y data keys", () => {
+        before("setup permissions", async () => {
+          await setupPermissions(context, permissionKeys, permissionValues);
+        });
+
+        after("reset permissions", async () => {
+          await resetPermissions(context, permissionKeys);
         });
 
         it("(should fail): 2 x allowed data keys + add 2 x new controllers", async () => {
@@ -1528,6 +1621,60 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               canSetDataAndEditPermissions.address,
               NotAllowedERC725YDataKey
             );
+        });
+
+        it("(should pass): 2 x allowed data keys + edit permissions of 2 x existing controllers", async () => {
+          let keys = [
+            allowedERC725YDataKeys[0],
+            allowedERC725YDataKeys[1],
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+              addressesToEditPermissions[0].address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+              addressesToEditPermissions[1].address.substring(2),
+          ];
+
+          let values = [
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
+            combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
+            combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
+          ];
+
+          await context.universalProfile
+            .connect(canSetDataAndEditPermissions)
+            ["setData(bytes32[],bytes[])"](keys, values);
+
+          expect(
+            await context.universalProfile["getData(bytes32[])"](keys)
+          ).to.deep.equal(values);
+        });
+
+        it("(should pass): 2 x allowed data keys + remove 2 x addresses with permissions + decrement AddressPermissions[].length by -2", async () => {
+          let keys = [
+            allowedERC725YDataKeys[0],
+            allowedERC725YDataKeys[1],
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+              addressesToEditPermissions[0].address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+              addressesToEditPermissions[1].address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+          ];
+
+          let values = [
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
+            ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 16),
+          ];
+
+          await context.universalProfile
+            .connect(canSetDataAndEditPermissions)
+            ["setData(bytes32[],bytes[])"](keys, values);
+
+          expect(
+            await context.universalProfile["getData(bytes32[])"](keys)
+          ).to.deep.equal(values);
         });
       });
     });
