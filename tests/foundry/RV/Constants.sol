@@ -1,0 +1,13 @@
+// SPDX-License-Identifier: Apache-2.0
+pragma solidity ^0.8.0;
+
+address constant TEST_CONTRACT_ADDRESS = 0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496;
+address constant CHEATCODE_CONTRACT_ADDRESS = 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D;
+address constant ACCOUNT_ADDRESS = 0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f;
+address constant KEY_MANAGER_ADDRESS = 0x2e234DAe75C793f67A35089C9d99245E1C58470b;
+
+uint256 constant MAX_UINT256 = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
+bytes32 constant ALL_PERMISSIONS = bytes32(MAX_UINT256);
+bytes4 constant LSP0_EXECUTE_SELECTOR = bytes4(keccak256("execute(uint256,address,uint256,bytes)"));
+
+uint256 constant SECP256K1_CURVE_ORDER = 115792089237316195423570985008687907852837564279074904382605163141518161494337;
