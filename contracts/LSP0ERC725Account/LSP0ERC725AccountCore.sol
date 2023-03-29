@@ -13,7 +13,7 @@ import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165C
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
-import {GasLib} from "../Utils/GasLib.sol";
+import {GasUtils} from "../Utils/GasUtils.sol";
 
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
@@ -114,7 +114,7 @@ abstract contract LSP0ERC725AccountCore is
      */
     function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
         results = new bytes[](data.length);
-        for (uint256 i; i < data.length; i = GasLib.uncheckedIncrement(i)) {
+        for (uint256 i; i < data.length; i = GasUtils.uncheckedIncrement(i)) {
             (bool success, bytes memory result) = address(this).delegatecall(data[i]);
 
             if (!success) {
