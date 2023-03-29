@@ -1650,6 +1650,10 @@ ${UniversalProfileExecuteTable}
 
 ${UniversalProfileSetDataTable}
 
+### 🗄️ \`Tokens\` scenarios
+
+${UniversalProfileTokensTable}
+
 
 
 ## 📝 Notes
