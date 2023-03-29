@@ -84,12 +84,22 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
             // if it's a token transfer (LSP7/LSP8)
             uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
             if (balance != 0) return "LSP1: full balance is not sent";
+            // if the value under the `LSP5ReceivedAssetsMap:<asset-address>`
+            // is not a valid tuple as `(bytes4,uint128)`
+            if (notifierMapValue.length < 20) return "LSP1: asset data corrupted";
 
             (dataKeys, dataValues) = LSP5Utils.generateSentAssetKeys(
                 msg.sender,
                 notifierMapKey,
                 notifierMapValue
             );
+
+            /**
+             * `generateSentAssetKeys(...)` returns empty arrays in the following cases:
+             * - the index returned from the data key `notifierMapKey` is bigger than
+             * the length of the `LSP5ReceivedAssets[]`, meaning, index is out of bounds.
+             */
+            if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
 
             IERC725Y(msg.sender).setData(dataKeys, dataValues);
         }

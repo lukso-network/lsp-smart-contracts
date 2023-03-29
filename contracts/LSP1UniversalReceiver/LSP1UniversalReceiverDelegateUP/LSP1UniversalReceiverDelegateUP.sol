@@ -86,6 +86,9 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             return _whenReceiving(typeId, notifier, notifierMapKey, interfaceID);
         } else {
             if (!isMapValueSet) return "LSP1: asset sent is not registered";
+            // if the value under the `LSP5ReceivedAssetsMap:<asset-address>` or `LSP10VaultsMap:<vault-address>`
+            // is not a valid tuple as `(bytes4,uint128)`
+            if (notifierMapValue.length < 20) return "LSP1: asset data corrupted";
 
             return _whenSending(typeId, notifier, notifierMapKey, notifierMapValue);
         }
@@ -160,6 +163,13 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
                 notifierMapValue
             );
 
+            /**
+             * `generateSentAssetKeys(...)` returns empty arrays in the following cases:
+             * - the index returned from the data key `notifierMapKey` is bigger than
+             * the length of the `LSP5ReceivedAssets[]`, meaning, index is out of bounds.
+             */
+            if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
+
             IERC725Y(msg.sender).setData(dataKeys, dataValues);
             return "";
         } else {
@@ -168,6 +178,13 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
                 notifierMapKey,
                 notifierMapValue
             );
+
+            /**
+             * `generateSentAssetKeys(...)` returns empty arrays in the following cases:
+             * - the index returned from the data key `notifierMapKey` is bigger than
+             * the length of the `LSP10Vaults[]`, meaning, index is out of bounds.
+             */
+            if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
 
             IERC725Y(msg.sender).setData(dataKeys, dataValues);
             return "";

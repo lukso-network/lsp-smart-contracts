@@ -151,7 +151,7 @@ library LSP10Utils {
 
             // Swapping last element in ArrayKey with the element in ArrayKey to remove || {Swap and pop} method;
             // check https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/structs/EnumerableSet.sol#L80
-        } else {
+        } else if (index < newArrayLength) {
             /**
              * We will be updating/removing 5 keys:
              * - Keys[0]: [Update] The arrayLengthKey to contain the new number of the received vaults
@@ -191,6 +191,9 @@ library LSP10Utils {
 
             keys[4] = lastVaultInArrayMapKey;
             values[4] = bytes.concat(_INTERFACEID_LSP9, bytes16(index));
+        } else {
+            // If index is bigger than the array length, out of bounds
+            return (keys, values);
         }
     }
 
