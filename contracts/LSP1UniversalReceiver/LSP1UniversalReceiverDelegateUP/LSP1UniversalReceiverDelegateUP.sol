@@ -124,6 +124,9 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             // If the mapValue is not set, we assume that all other data keys relevant to the asset/vault
             // are not registered in the account, we cannot remove non-existing data keys for the asset being sent
             if (!isMapValueSet) return "LSP1: asset sent is not registered";
+            // if the value under the `LSP5ReceivedAssetsMap:<asset-address>` or `LSP10VaultsMap:<vault-address>`
+            // is not a valid tuple as `(bytes4,uint128)`
+            if (notifierMapValue.length < 20) return "LSP1: asset data corrupted";
 
             return _whenSending(typeId, notifier, notifierMapKey, notifierMapValue);
         }
@@ -200,6 +203,13 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
                 notifierMapValue
             );
 
+            /**
+             * `generateSentAssetKeys(...)` returns empty arrays in the following cases:
+             * - the index returned from the data key `notifierMapKey` is bigger than
+             * the length of the `LSP5ReceivedAssets[]`, meaning, index is out of bounds.
+             */
+            if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
+
             // Set the LSP5 generated data keys on the account
             IERC725Y(msg.sender).setData(dataKeys, dataValues);
             return "";
@@ -209,6 +219,13 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
                 notifierMapKey,
                 notifierMapValue
             );
+
+            /**
+             * `generateSentAssetKeys(...)` returns empty arrays in the following cases:
+             * - the index returned from the data key `notifierMapKey` is bigger than
+             * the length of the `LSP10Vaults[]`, meaning, index is out of bounds.
+             */
+            if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
 
             // Set the LSP10 generated data keys on the account
             IERC725Y(msg.sender).setData(dataKeys, dataValues);

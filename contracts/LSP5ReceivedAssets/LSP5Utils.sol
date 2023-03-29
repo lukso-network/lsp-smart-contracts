@@ -163,7 +163,7 @@ library LSP5Utils {
 
             // Swapping last element in ArrayKey with the element in ArrayKey to remove || {Swap and pop} method;
             // check https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/structs/EnumerableSet.sol#L80
-        } else {
+        } else if (index < newArrayLength) {
             /**
              * We will be updating/removing 5 keys:
              * - Keys[0]: [Update] The arrayLengthKey to contain the new number of the received assets
@@ -222,6 +222,9 @@ library LSP5Utils {
             // to point to the new location in the LSP5ReceivedAssets array
             keys[4] = lastAssetInArrayMapKey;
             values[4] = bytes.concat(interfaceID, bytes16(index));
+        } else {
+            // If index is bigger than the array length, out of bounds
+            return (keys, values);
         }
     }
 

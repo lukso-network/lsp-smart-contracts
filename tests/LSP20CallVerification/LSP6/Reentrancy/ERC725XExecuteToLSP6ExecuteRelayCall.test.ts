@@ -3,16 +3,13 @@ import { ethers } from "hardhat";
 
 //types
 import { BigNumber, BytesLike } from "ethers";
-import {
-  SingleReentrancyRelayer__factory,
-  UniversalProfile__factory,
-} from "../../../../../types";
+import { SingleReentrancyRelayer__factory } from "../../../../types";
 
 // constants
-import { ERC725YDataKeys } from "../../../../../constants";
+import { ERC725YDataKeys, OPERATION_TYPES } from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../../../utils/context";
+import { LSP6TestContext } from "../../../utils/context";
 
 // helpers
 import {
@@ -26,12 +23,11 @@ import {
   addUniversalReceiverDelegateTestCases,
   changeUniversalReceiverDelegateTestCases,
   // Functions
-  generateRelayCall,
   generateSingleRelayPayload,
   loadTestCase,
 } from "./reentrancyHelpers";
 
-export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
+export const testERC725XExecuteToLSP6ExecuteRelayCall = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
   buildReentrancyContext: (
     context: LSP6TestContext
@@ -39,43 +35,33 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 ) => {
   let context: LSP6TestContext;
   let reentrancyContext: ReentrancyContext;
-  let executePayload: BytesLike;
+  let executeCalldata: {
+    operationType: number;
+    to: string;
+    value: number;
+    data: BytesLike;
+  };
 
   before(async () => {
     context = await buildContext(ethers.utils.parseEther("10"));
     reentrancyContext = await buildReentrancyContext(context);
 
-    const reentrantCallPayload =
+    const reentrantCall =
       new SingleReentrancyRelayer__factory().interface.encodeFunctionData(
         "relayCallThatReenters",
         [context.keyManager.address]
       );
-    executePayload =
-      new UniversalProfile__factory().interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
-        [
-          0,
-          reentrancyContext.singleReentarncyRelayer.address,
-          0,
-          reentrantCallPayload,
-        ]
-      );
+
+    executeCalldata = {
+      operationType: OPERATION_TYPES.CALL,
+      to: reentrancyContext.singleReentarncyRelayer.address,
+      value: 0,
+      data: reentrantCall,
+    };
   });
 
   describe("when reentering and transferring value", () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      payload: BytesLike;
-    };
-
     before(async () => {
-      relayCallParams = await generateRelayCall(
-        context.keyManager,
-        executePayload,
-        reentrancyContext.signer
-      );
-
       await generateSingleRelayPayload(
         context.universalProfile,
         context.keyManager,
@@ -102,12 +88,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         );
 
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
-              relayCallParams.signature,
-              relayCallParams.nonce,
-              relayCallParams.payload
+            ["execute(uint256,address,uint256,bytes)"](
+              executeCalldata.operationType,
+              executeCalldata.to,
+              executeCalldata.value,
+              executeCalldata.data
             )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
@@ -128,12 +115,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       );
 
       await expect(
-        context.keyManager
+        context.universalProfile
           .connect(reentrancyContext.caller)
-          ["executeRelayCall(bytes,uint256,bytes)"](
-            relayCallParams.signature,
-            relayCallParams.nonce,
-            relayCallParams.payload
+          ["execute(uint256,address,uint256,bytes)"](
+            executeCalldata.operationType,
+            executeCalldata.to,
+            executeCalldata.value,
+            executeCalldata.data
           )
       ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
     });
@@ -153,12 +141,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         )
       ).to.equal(ethers.utils.parseEther("10"));
 
-      await context.keyManager
+      await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
-          relayCallParams.signature,
-          relayCallParams.nonce,
-          relayCallParams.payload
+        ["execute(uint256,address,uint256,bytes)"](
+          executeCalldata.operationType,
+          executeCalldata.to,
+          executeCalldata.value,
+          executeCalldata.data
         );
 
       expect(
@@ -176,19 +165,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
   });
 
   describe("when reentering and setting data", () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      payload: BytesLike;
-    };
-
     before(async () => {
-      relayCallParams = await generateRelayCall(
-        context.keyManager,
-        executePayload,
-        reentrancyContext.signer
-      );
-
       await generateSingleRelayPayload(
         context.universalProfile,
         context.keyManager,
@@ -215,12 +192,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         );
 
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
-              relayCallParams.signature,
-              relayCallParams.nonce,
-              relayCallParams.payload
+            ["execute(uint256,address,uint256,bytes)"](
+              executeCalldata.operationType,
+              executeCalldata.to,
+              executeCalldata.value,
+              executeCalldata.data
             )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
@@ -241,12 +219,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       );
 
       await expect(
-        context.keyManager
+        context.universalProfile
           .connect(reentrancyContext.caller)
-          ["executeRelayCall(bytes,uint256,bytes)"](
-            relayCallParams.signature,
-            relayCallParams.nonce,
-            relayCallParams.payload
+          ["execute(uint256,address,uint256,bytes)"](
+            executeCalldata.operationType,
+            executeCalldata.to,
+            executeCalldata.value,
+            executeCalldata.data
           )
       ).to.be.revertedWithCustomError(
         context.keyManager,
@@ -263,12 +242,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         reentrancyContext.singleReentarncyRelayer.address
       );
 
-      await context.keyManager
+      await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
-          relayCallParams.signature,
-          relayCallParams.nonce,
-          relayCallParams.payload
+        ["execute(uint256,address,uint256,bytes)"](
+          executeCalldata.operationType,
+          executeCalldata.to,
+          executeCalldata.value,
+          executeCalldata.data
         );
 
       const hardcodedKey = ethers.utils.keccak256(
@@ -285,19 +265,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
   });
 
   describe("when reentering and adding permissions", () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      payload: BytesLike;
-    };
-
     before(async () => {
-      relayCallParams = await generateRelayCall(
-        context.keyManager,
-        executePayload,
-        reentrancyContext.signer
-      );
-
       await generateSingleRelayPayload(
         context.universalProfile,
         context.keyManager,
@@ -320,12 +288,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         );
 
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
-              relayCallParams.signature,
-              relayCallParams.nonce,
-              relayCallParams.payload
+            ["execute(uint256,address,uint256,bytes)"](
+              executeCalldata.operationType,
+              executeCalldata.to,
+              executeCalldata.value,
+              executeCalldata.data
             )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
@@ -345,12 +314,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         reentrancyContext.singleReentarncyRelayer.address
       );
 
-      await context.keyManager
+      await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
-          relayCallParams.signature,
-          relayCallParams.nonce,
-          relayCallParams.payload
+        ["execute(uint256,address,uint256,bytes)"](
+          executeCalldata.operationType,
+          executeCalldata.to,
+          executeCalldata.value,
+          executeCalldata.data
         );
 
       const hardcodedPermissionKey =
@@ -368,19 +338,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
   });
 
   describe("when reentering and changing permissions", () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      payload: BytesLike;
-    };
-
     before(async () => {
-      relayCallParams = await generateRelayCall(
-        context.keyManager,
-        executePayload,
-        reentrancyContext.signer
-      );
-
       await generateSingleRelayPayload(
         context.universalProfile,
         context.keyManager,
@@ -403,12 +361,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         );
 
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
-              relayCallParams.signature,
-              relayCallParams.nonce,
-              relayCallParams.payload
+            ["execute(uint256,address,uint256,bytes)"](
+              executeCalldata.operationType,
+              executeCalldata.to,
+              executeCalldata.value,
+              executeCalldata.data
             )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
@@ -428,12 +387,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         reentrancyContext.singleReentarncyRelayer.address
       );
 
-      await context.keyManager
+      await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
-          relayCallParams.signature,
-          relayCallParams.nonce,
-          relayCallParams.payload
+        ["execute(uint256,address,uint256,bytes)"](
+          executeCalldata.operationType,
+          executeCalldata.to,
+          executeCalldata.value,
+          executeCalldata.data
         );
 
       const hardcodedPermissionKey =
@@ -450,19 +410,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
   });
 
   describe("when reentering and adding URD", () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      payload: BytesLike;
-    };
-
     before(async () => {
-      relayCallParams = await generateRelayCall(
-        context.keyManager,
-        executePayload,
-        reentrancyContext.signer
-      );
-
       await generateSingleRelayPayload(
         context.universalProfile,
         context.keyManager,
@@ -485,12 +433,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         );
 
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
-              relayCallParams.signature,
-              relayCallParams.nonce,
-              relayCallParams.payload
+            ["execute(uint256,address,uint256,bytes)"](
+              executeCalldata.operationType,
+              executeCalldata.to,
+              executeCalldata.value,
+              executeCalldata.data
             )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
@@ -510,12 +459,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         reentrancyContext.singleReentarncyRelayer.address
       );
 
-      await context.keyManager
+      await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
-          relayCallParams.signature,
-          relayCallParams.nonce,
-          relayCallParams.payload
+        ["execute(uint256,address,uint256,bytes)"](
+          executeCalldata.operationType,
+          executeCalldata.to,
+          executeCalldata.value,
+          executeCalldata.data
         );
 
       const hardcodedLSP1Key =
@@ -531,19 +481,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
   });
 
   describe("when reentering and changing URD", () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      payload: BytesLike;
-    };
-
     before(async () => {
-      relayCallParams = await generateRelayCall(
-        context.keyManager,
-        executePayload,
-        reentrancyContext.signer
-      );
-
       await generateSingleRelayPayload(
         context.universalProfile,
         context.keyManager,
@@ -567,12 +505,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
           );
 
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(reentrancyContext.caller)
-              ["executeRelayCall(bytes,uint256,bytes)"](
-                relayCallParams.signature,
-                relayCallParams.nonce,
-                relayCallParams.payload
+              ["execute(uint256,address,uint256,bytes)"](
+                executeCalldata.operationType,
+                executeCalldata.to,
+                executeCalldata.value,
+                executeCalldata.data
               )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
@@ -593,12 +532,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         reentrancyContext.singleReentarncyRelayer.address
       );
 
-      await context.keyManager
+      await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
-          relayCallParams.signature,
-          relayCallParams.nonce,
-          relayCallParams.payload
+        ["execute(uint256,address,uint256,bytes)"](
+          executeCalldata.operationType,
+          executeCalldata.to,
+          executeCalldata.value,
+          executeCalldata.data
         );
 
       const hardcodedLSP1Key =
