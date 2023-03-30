@@ -403,7 +403,7 @@ export const shouldBehaveLikePermissionCall = (
 
     let targetContract: TargetContract;
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       addressCanMakeCallNoAllowedCalls = context.accounts[1];
