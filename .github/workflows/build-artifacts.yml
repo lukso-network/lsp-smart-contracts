@@ -30,37 +30,26 @@ jobs:
 
       # Android artifacts
 
-      # TODO: disabled until Web3j issue solved with `gradle build`
-      # see: https://github.com/web3j/web3j/issues/1855
+      - name: Set up our JDK environment
+        uses: actions/setup-java@v3
+        with:
+          java-version: "11"
+          distribution: "adopt"
 
-      # - name: Install Web3j
-      #   run: curl -L get.web3j.io | sh && source $HOME/.web3j/source.sh
+      - name: Install Web3j
+        run: curl -L get.web3j.io | sh && source $HOME/.web3j/source.sh
 
-      # - name: Generate Smart Contracts ABI + Binaries
-      #   run: npx ts-node ./scripts/ci/android-artifacts.ts
+      - name: Generate Smart Contracts ABI + Binaries
+        run: npx ts-node ./scripts/ci/android-artifacts.ts
 
-      # - name: Generate Java wrappers
-      #   run: |
-      #     for FILE in *;
-      #     for file in ./android/; do
-      #         web3j generate solidity \
-      #             --abiFile="$file.abi" \
-      #             --binFile="$file.bin" \
-      #             -o ./scripts/java/src/main/java/network/lukso/up/contracts \
-      #             -p network.lukso.up.contracts
-      #     done
+      - name: Generate Java wrappers
+        run: sh ./scripts/ci/generate-java-wrapper.sh
 
-      # - name: Set up our JDK environment
-      #   uses: actions/setup-java@v3
-      #   with:
-      #     java-version: "11"
-      #     distribution: "adopt"
-
-      # - name: Build jar
-      #   working-directory: ./scripts/java
-      #   run: |
-      #     chmod +x build.gradle
-      #     gradle build
+      - name: Build jar
+        working-directory: ./scripts/java
+        run: |
+          chmod +x build.gradle
+          gradle build
 
       # iOS artifacts
       - name: Generate iOS artifacts
