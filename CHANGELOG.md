@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.2](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.8.1...v0.8.2) (2023-03-30)
+
+### Bug Fixes
+
+- Fix artifacts exports for 0.8.1 (PR #487) (also PR #541)
+- Fix package.json (PR #543)
+
 ### [0.8.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.8.0...v0.8.1) (2023-02-21)
 
 ### Features
