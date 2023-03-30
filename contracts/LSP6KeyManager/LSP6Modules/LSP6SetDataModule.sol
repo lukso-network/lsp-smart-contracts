@@ -6,7 +6,7 @@ import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC725Y_DataKeysValuesLengthMismatch} from "@erc725/smart-contracts/contracts/errors.sol";
 
 // libraries
-import {GasLib} from "../../Utils/GasLib.sol";
+import {GasUtils} from "../../Utils/GasUtils.sol";
 import {LSP6Utils} from "../LSP6Utils.sol";
 
 // constants
@@ -128,7 +128,7 @@ abstract contract LSP6SetDataModule {
                 validatedInputDataKeys[ii] = true;
             }
 
-            ii = GasLib.uncheckedIncrement(ii);
+            ii = GasUtils.uncheckedIncrement(ii);
         } while (ii < inputDataKeys.length);
 
         // CHECK if allowed to set one (or multiple) ERC725Y Data Keys
@@ -591,7 +591,7 @@ abstract contract LSP6SetDataModule {
              * Iterate over the `inputDataKeys` to check them against the allowed data keys.
              * This until we have validated them all.
              */
-            for (uint256 ii; ii < inputKeysLength; ii = GasLib.uncheckedIncrement(ii)) {
+            for (uint256 ii; ii < inputKeysLength; ii = GasUtils.uncheckedIncrement(ii)) {
                 // if the input data key has been marked as allowed previously,
                 // SKIP it and move to the next input data key.
                 if (validatedInputKeys[ii]) continue;
@@ -601,7 +601,7 @@ abstract contract LSP6SetDataModule {
                     // if the input data key is allowed, mark it as allowed
                     // and increment the number of allowed keys found.
                     validatedInputKeys[ii] = true;
-                    allowedKeysFound = GasLib.uncheckedIncrement(allowedKeysFound);
+                    allowedKeysFound = GasUtils.uncheckedIncrement(allowedKeysFound);
 
                     // Continue checking until all the inputKeys` have been found.
                     if (allowedKeysFound == inputKeysLength) return;
@@ -615,7 +615,7 @@ abstract contract LSP6SetDataModule {
         }
 
         // if we did not find all the input data keys, search for the first not allowed data key to revert.
-        for (uint256 jj; jj < inputKeysLength; jj = GasLib.uncheckedIncrement(jj)) {
+        for (uint256 jj; jj < inputKeysLength; jj = GasUtils.uncheckedIncrement(jj)) {
             if (!validatedInputKeys[jj]) {
                 revert NotAllowedERC725YDataKey(controllerAddress, inputDataKeys[jj]);
             }
