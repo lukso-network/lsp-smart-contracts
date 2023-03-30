@@ -44,7 +44,8 @@ describe("LSP4Compatibility", () => {
 
   describe("when using LSP4Compatibility", () => {
     let context: LSP4CompatibilityTestContext;
-    beforeEach(async () => {
+
+    before(async () => {
       context = await buildTestContext();
     });
 

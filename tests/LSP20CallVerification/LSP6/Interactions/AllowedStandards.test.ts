@@ -305,7 +305,7 @@ export const shouldBehaveLikeAllowedStandards = (
       let lsp7TokenB: LSP7Mintable;
       let lsp7TokenC: LSP7Mintable;
 
-      beforeEach(async () => {
+      before(async () => {
         lsp7TokenA = await new LSP7Mintable__factory(
           context.accounts[0]
         ).deploy("LSP7 Token A", "TKNA", context.accounts[0].address, false);

@@ -209,10 +209,13 @@ export const shouldBehaveLikeAllowedFunctions = (
     let lsp7Contract: LSP7Mintable;
     let lsp8Contract: LSP8Mintable;
 
-    const tokenId =
+    const tokenIdToTransfer =
       "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
-    beforeEach(async () => {
+    const tokenIdToApprove =
+      "0xf00df00df00df00df00df00df00df00df00df00df00df00df00df00df00df00d";
+
+    before(async () => {
       context = await buildContext();
 
       addressCanCallOnlyTransferOnLSP8 = context.accounts[1];
@@ -231,9 +234,12 @@ export const shouldBehaveLikeAllowedFunctions = (
         .connect(context.accounts[0])
         .mint(context.universalProfile.address, 100, false, "0x");
 
-      await lsp8Contract
-        .connect(context.accounts[0])
-        .mint(context.universalProfile.address, tokenId, true, "0x");
+      // mint some NFTs for the UP
+      [tokenIdToTransfer, tokenIdToApprove].forEach(async (tokenId) => {
+        await lsp8Contract
+          .connect(context.accounts[0])
+          .mint(context.universalProfile.address, tokenId, true, "0x");
+      });
 
       await lsp7Contract
         .connect(context.accounts[0])
@@ -288,7 +294,13 @@ export const shouldBehaveLikeAllowedFunctions = (
 
         let transferPayload = lsp8Contract.interface.encodeFunctionData(
           "transfer",
-          [context.universalProfile.address, recipient, tokenId, true, "0x"]
+          [
+            context.universalProfile.address,
+            recipient,
+            tokenIdToTransfer,
+            true,
+            "0x",
+          ]
         );
 
         await context.universalProfile
@@ -300,7 +312,9 @@ export const shouldBehaveLikeAllowedFunctions = (
             transferPayload
           );
 
-        expect(await lsp8Contract.tokenOwnerOf(tokenId)).to.equal(recipient);
+        expect(await lsp8Contract.tokenOwnerOf(tokenIdToTransfer)).to.equal(
+          recipient
+        );
       });
 
       it("should revert when calling `authorizeOperator(...)` on LSP8 contract", async () => {
@@ -309,7 +323,7 @@ export const shouldBehaveLikeAllowedFunctions = (
         const authorizeOperatorPayload =
           lsp8Contract.interface.encodeFunctionData("authorizeOperator", [
             operator,
-            tokenId,
+            tokenIdToApprove,
           ]);
 
         await expect(
@@ -360,6 +374,15 @@ export const shouldBehaveLikeAllowedFunctions = (
 
         it("should pass when calling `transfer(...)`", async () => {
           let recipient = context.accounts[4].address;
+
+          const previousUPTokenBalance = await lsp7Contract.balanceOf(
+            context.universalProfile.address
+          );
+
+          const previousRecipientTokenBalance = await lsp7Contract.balanceOf(
+            recipient
+          );
+
           const amount = 10;
 
           let transferPayload = lsp7Contract.interface.encodeFunctionData(
@@ -378,10 +401,15 @@ export const shouldBehaveLikeAllowedFunctions = (
               transferPayload
             );
 
-          expect(await lsp7Contract.balanceOf(recipient)).to.equal(amount);
+          // CHECK that UP token balance has decreased
           expect(
             await lsp7Contract.balanceOf(context.universalProfile.address)
-          ).to.equal(90);
+          ).to.equal(previousUPTokenBalance.sub(amount));
+
+          // CHECK that recipient token balance has increased
+          expect(await lsp7Contract.balanceOf(recipient)).to.equal(
+            previousRecipientTokenBalance.add(amount)
+          );
         });
 
         it("should pass when calling `authorizeOperator(...)`", async () => {
@@ -449,7 +477,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           let authorizeOperatorPayload =
             lsp8Contract.interface.encodeFunctionData("authorizeOperator", [
               recipient,
-              tokenId,
+              tokenIdToApprove,
             ]);
 
           await context.universalProfile
@@ -463,8 +491,8 @@ export const shouldBehaveLikeAllowedFunctions = (
               authorizeOperatorPayload
             );
 
-          expect(await lsp8Contract.isOperatorFor(recipient, tokenId)).to.be
-            .true;
+          expect(await lsp8Contract.isOperatorFor(recipient, tokenIdToApprove))
+            .to.be.true;
         });
 
         it("should revert when calling `transfer(...)`", async () => {
@@ -472,7 +500,13 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let transferPayload = lsp8Contract.interface.encodeFunctionData(
             "transfer",
-            [context.universalProfile.address, recipient, tokenId, true, "0x"]
+            [
+              context.universalProfile.address,
+              recipient,
+              tokenIdToTransfer,
+              true,
+              "0x",
+            ]
           );
 
           await expect(
@@ -496,10 +530,14 @@ export const shouldBehaveLikeAllowedFunctions = (
         });
 
         it("should revert when calling `mint(...)`", async () => {
+          const randomTokenId = ethers.utils.hexlify(
+            ethers.utils.randomBytes(32)
+          );
+
           let recipient = context.accounts[4].address;
           let mintPayload = lsp8Contract.interface.encodeFunctionData("mint", [
             recipient,
-            tokenId,
+            randomTokenId,
             true,
             "0x",
           ]);
