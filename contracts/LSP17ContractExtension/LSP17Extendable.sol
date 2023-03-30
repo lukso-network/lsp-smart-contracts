@@ -54,13 +54,18 @@ abstract contract LSP17Extendable is ERC165 {
     function _getExtension(bytes4 functionSelector) internal view virtual returns (address);
 
     /**
-     * @dev Forwards the call to an extension mapped to a function selector. If no extension address
-     * is mapped to the function selector (address(0)), then revert.
+     * @dev Forwards the call to an extension mapped to a function selector.
      *
-     * The call to the extension is appended with bytes20 (msg.sender) and bytes32 (msg.value).
-     * Returns the return value on success and revert in case of failure.
+     * Calls {_getExtension} to get the address of the extension mapped to the function selector being
+     * called on the account. If there is no extension, the address(0) will be returned.
      *
-     * As the function uses assembly {return()/revert()} to terminate the call, it cannot be
+     * Reverts if there is no extension for the function being called.
+     *
+     * If there is an extension for the function selector being called, it calls the extension with the
+     * CALL opcode, passing the {msg.data} appended with the 20 bytes of the {msg.sender} and
+     * 32 bytes of the {msg.value}
+     *
+     * Because the function uses assembly {return()/revert()} to terminate the call, it cannot be
      * called before other codes in fallback().
      *
      * Otherwise, the codes after _fallbackLSP17Extendable() may never be reached.
