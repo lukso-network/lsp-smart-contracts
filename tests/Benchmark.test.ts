@@ -317,7 +317,7 @@ describe("⛽📊 Gas Benchmark", () => {
         UniversalProfileExecuteTable = getMarkdownTable({
           table: {
             head: ["`execute` scenarios - 👑 UP Owner", "⛽ Gas Usage"],
-            body: setDataUP,
+            body: executeUP,
           },
           alignment: [Align.Left, Align.Center],
         });
@@ -764,7 +764,7 @@ describe("⛽📊 Gas Benchmark", () => {
         UniversalProfileTokensTable = getMarkdownTable({
           table: {
             head: ["`Tokens` scenarios - 👑 UP Owner", "⛽ Gas Usage"],
-            body: setDataUP,
+            body: tokensUP,
           },
           alignment: [Align.Left, Align.Center],
         });
@@ -1642,7 +1642,6 @@ describe("⛽📊 Gas Benchmark", () => {
 This document contains the gas usage for common interactions and scenarios when using UniversalProfile smart contracts.
 
 ### 🔀 \`execute\` scenarios
-
 
 ${UniversalProfileExecuteTable}
 
