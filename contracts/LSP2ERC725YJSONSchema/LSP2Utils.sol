@@ -147,7 +147,7 @@ library LSP2Utils {
     /**
      * @dev Generate a data key of keyType MappingWithGrouping
      * <bytes6keyPrefix>:<bytes4mapPrefix>:<bytes2(0)>:<subMapKey>
-     * @param keyPrefix Used for the first part (bytes6) of the data key of keyType MappingWithGrouping
+     * @param keyPrefix the first part of the data key of keyType MappingWithGrouping
      * @param mapPrefix Used for the second part (bytes4) of the data key of keyType MappingWithGrouping
      * @param subMapKey Used for the last part (bytes20) of the data key of keyType MappingWithGrouping
      */
