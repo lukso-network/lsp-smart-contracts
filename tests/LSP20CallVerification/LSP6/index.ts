@@ -1,8 +1,12 @@
 // Admin
 export * from "./Admin/PermissionChangeOwner.test";
-export * from "./Admin/PermissionChangeAddController.test";
 export * from "./Admin/PermissionChangeAddExtensions.test";
 export * from "./Admin/PermissionChangeAddURD.test";
+
+// Set Permissions
+export * from "./SetPermissions/PermissionChangeAddController.test";
+export * from "./SetPermissions/SetAllowedCalls.test";
+export * from "./SetPermissions/SetAllowedERC725YDataKeys.test";
 
 // Interactions
 export * from "./Interactions/PermissionCall.test";

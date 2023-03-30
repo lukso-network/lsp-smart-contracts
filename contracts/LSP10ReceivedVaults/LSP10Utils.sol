@@ -83,12 +83,16 @@ library LSP10Utils {
 
         uint128 newArrayLength = oldArrayLength + 1;
 
+        // store the number of received vaults incremented by 1
         keys[0] = _LSP10_VAULTS_ARRAY_KEY;
         values[0] = bytes.concat(bytes16(newArrayLength));
 
+        // store the address of the vault under the element key in the array
         keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(_LSP10_VAULTS_ARRAY_KEY, oldArrayLength);
         values[1] = bytes.concat(bytes20(vault));
 
+        // store the interfaceId and the location in the array of the asset
+        // under the LSP5ReceivedAssetMap key
         keys[2] = vaultMapKey;
         values[2] = bytes.concat(_INTERFACEID_LSP9, bytes16(oldArrayLength));
     }
@@ -122,14 +126,21 @@ library LSP10Utils {
             revert VaultIndexSuperiorToUint128(oldArrayLength);
         }
 
+        // Updating the number of the received vaults (decrementing by 1
         uint128 newArrayLength = oldArrayLength - 1;
 
+        // Identify where the vault is located in the LSP10Vaults[] array
+        // by extracting the index from the tuple value `(bytes4,uint128)`
+        // fetched under the LSP10VaultsMap data key
         uint128 index = extractIndexFromMap(vaultInterfaceIdAndIndex);
+
+        // Generate the element key in the array of the vault
         bytes32 vaultInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
             _LSP10_VAULTS_ARRAY_KEY,
             index
         );
 
+        // If the asset to remove is the last element in the array
         if (index == newArrayLength) {
             /**
              * We will be updating/removing 3 keys:
@@ -140,18 +151,21 @@ library LSP10Utils {
             keys = new bytes32[](3);
             values = new bytes[](3);
 
+            // store the number of received vaults decremented by 1
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
             values[0] = bytes.concat(bytes16(newArrayLength));
 
+            // remove the address of the vault from the element key
             keys[1] = vaultInArrayKey;
             values[1] = "";
 
+            // remove the interfaceId and the location in the array of the vault
             keys[2] = vaultMapKey;
             values[2] = "";
 
             // Swapping last element in ArrayKey with the element in ArrayKey to remove || {Swap and pop} method;
             // check https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/structs/EnumerableSet.sol#L80
-        } else {
+        } else if (index < newArrayLength) {
             /**
              * We will be updating/removing 5 keys:
              * - Keys[0]: [Update] The arrayLengthKey to contain the new number of the received vaults
@@ -163,34 +177,48 @@ library LSP10Utils {
             keys = new bytes32[](5);
             values = new bytes[](5);
 
+            // store the number of received vaults decremented by 1
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
             values[0] = bytes.concat(bytes16(newArrayLength));
 
+            // remove the interfaceId and the location in the array of the vault
             keys[1] = vaultMapKey;
             values[1] = "";
 
             // Generate all data Keys/values of the last element in Array to swap
             // with data Keys/values of the vault to remove
+
+            // Generate the element key of the last vault in the array
             bytes32 lastVaultInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP10_VAULTS_ARRAY_KEY,
                 newArrayLength
             );
 
+            // Get the address of the vault from the element key of the last vault in the array
             bytes20 lastVaultInArrayAddress = bytes20(account.getData(lastVaultInArrayKey));
 
+            // Generate the map key of the last vault in the array
             bytes32 lastVaultInArrayMapKey = LSP2Utils.generateMappingKey(
                 _LSP10_VAULTS_MAP_KEY_PREFIX,
                 lastVaultInArrayAddress
             );
 
+            // Set the address of the last vault instead of the asset to be sent
+            // under the element data key in the array
             keys[2] = vaultInArrayKey;
             values[2] = bytes.concat(lastVaultInArrayAddress);
 
+            // Remove the address swapped (last vault in the array) from the last element data key in the array
             keys[3] = lastVaultInArrayKey;
             values[3] = "";
 
+            // Update the index and the interfaceId of the address swapped (last vault in the array)
+            // to point to the new location in the LSP10Vaults array
             keys[4] = lastVaultInArrayMapKey;
             values[4] = bytes.concat(_INTERFACEID_LSP9, bytes16(index));
+        } else {
+            // If index is bigger than the array length, out of bounds
+            return (keys, values);
         }
     }
 
