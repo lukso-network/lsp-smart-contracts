@@ -194,7 +194,7 @@ contract LSP9VaultCore is
      *
      * Emits a {DataChanged} event.
      */
-    function setData(bytes32 dataKey, bytes memory dataValue) public virtual override {
+    function setData(bytes32 dataKey, bytes memory dataValue) public payable virtual override {
         bool isURD = _validateAndIdentifyCaller();
         if (isURD) {
             if (
@@ -216,7 +216,12 @@ contract LSP9VaultCore is
      *
      * Emits a {DataChanged} event.
      */
-    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues) public virtual override {
+    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues)
+        public
+        payable
+        virtual
+        override
+    {
         bool isURD = _validateAndIdentifyCaller();
         if (dataKeys.length != dataValues.length) {
             revert ERC725Y_DataKeysValuesLengthMismatch(dataKeys.length, dataValues.length);
