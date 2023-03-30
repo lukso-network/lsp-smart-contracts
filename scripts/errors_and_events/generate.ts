@@ -21,9 +21,9 @@ export type Event = {
 const removeSpacesAround = (text: string): string => {
   let leftIndex = 0;
   let rightIndex = text.length - 1;
-  while (text[leftIndex] == " " || text[rightIndex] == " ") {
-    if (text[leftIndex] == " ") leftIndex++;
-    if (text[rightIndex] == " ") rightIndex--;
+  while (text[leftIndex] === " " || text[rightIndex] === " ") {
+    if (text[leftIndex] === " ") leftIndex++;
+    if (text[rightIndex] === " ") rightIndex--;
   }
 
   return text.substring(leftIndex, rightIndex + 1);
@@ -33,7 +33,7 @@ const removeParameterName = (text: string): string => {
   const openParenthesesIndex = text.indexOf("(");
   const closeParenthesesIndex = text.indexOf(")");
 
-  if (closeParenthesesIndex == -1) return text;
+  if (closeParenthesesIndex === -1) return text;
 
   const parameters = text
     .substring(openParenthesesIndex + 1, closeParenthesesIndex)
@@ -80,19 +80,23 @@ const formatNatspec = (text: string): Message => {
   };
 };
 
-const extractErrorsFromlist = (): [string[], string[]] => {
+const extractErrorsFromList = (): [string[], string[]] => {
   const errors: string[] = [];
   const errorsNatspec: string[] = [];
 
-  for (let i = 0; i < list.length; i++) {
-    const allFileContents: string = fs.readFileSync(list[i], "utf-8");
+  for (let fileIndex = 0; fileIndex < list.length; fileIndex++) {
+    const allFileContents: string = fs.readFileSync(list[fileIndex], "utf-8");
     const fileContentByLines: string[] = allFileContents.split(/\r?\n/);
 
     let multiLineError = false;
 
-    for (let j = 0; j < fileContentByLines.length; j++) {
+    for (
+      let lineIndex = 0;
+      lineIndex < fileContentByLines.length;
+      lineIndex++
+    ) {
       // get current line
-      const line = fileContentByLines[j];
+      const line = fileContentByLines[lineIndex];
 
       // skip comments
       if (line.includes("*") || line.includes("//")) continue;
@@ -104,12 +108,13 @@ const extractErrorsFromlist = (): [string[], string[]] => {
         errors.push(error);
 
         // get and push the naspec if exists
-        const previousLine = fileContentByLines[j - 1];
+        const previousLine = fileContentByLines[lineIndex - 1];
         let natspec = "";
         let k = 1;
         if (previousLine.includes("*/")) {
           while (!natspec.includes("/**")) {
-            natspec = removeSpacesAround(fileContentByLines[j - k]) + natspec;
+            natspec =
+              removeSpacesAround(fileContentByLines[lineIndex - k]) + natspec;
             k++;
           }
         }
@@ -134,19 +139,23 @@ const extractErrorsFromlist = (): [string[], string[]] => {
   return [errors, errorsNatspec];
 };
 
-const extractEventsFromlist = (): [string[], string[]] => {
+const extractEventsFromList = (): [string[], string[]] => {
   const events: string[] = [];
   const eventsNatspec: string[] = [];
 
-  for (let i = 0; i < list.length; i++) {
-    const allFileContents = fs.readFileSync(list[i], "utf-8");
+  for (let fileIndex = 0; fileIndex < list.length; fileIndex++) {
+    const allFileContents = fs.readFileSync(list[fileIndex], "utf-8");
     const fileContentByLines: string[] = allFileContents.split(/\r?\n/);
 
     let multiLineEvent = false;
 
-    for (let j = 0; j < fileContentByLines.length; j++) {
+    for (
+      let lineIndex = 0;
+      lineIndex < fileContentByLines.length;
+      lineIndex++
+    ) {
       // get current line
-      const line = fileContentByLines[j];
+      const line = fileContentByLines[lineIndex];
 
       // skip comments
       if (line.includes("*") || line.includes("//")) continue;
@@ -158,12 +167,13 @@ const extractEventsFromlist = (): [string[], string[]] => {
         events.push(event);
 
         // get and push the naspec if exists
-        const previousLine = fileContentByLines[j - 1];
+        const previousLine = fileContentByLines[lineIndex - 1];
         let natspec = "";
         let k = 1;
         if (previousLine.includes("*/")) {
           while (!natspec.includes("/**")) {
-            natspec = removeSpacesAround(fileContentByLines[j - k]) + natspec;
+            natspec =
+              removeSpacesAround(fileContentByLines[lineIndex - k]) + natspec;
             k++;
           }
         }
@@ -189,7 +199,7 @@ const extractEventsFromlist = (): [string[], string[]] => {
 };
 
 export const generateErrors = (): Record<string, Error> => {
-  const [extractedErrors, extractedErrorsnatspec] = extractErrorsFromlist();
+  const [extractedErrors, extractedErrorsnatspec] = extractErrorsFromList();
   const errors: Record<string, Error> = {};
 
   for (let i = 0; i < extractedErrors.length; i++) {
@@ -217,7 +227,7 @@ export const generateErrors = (): Record<string, Error> => {
 };
 
 export const generateEvents = (): Record<string, Event> => {
-  const [extractedEvents, extractedEventsNatspec] = extractEventsFromlist();
+  const [extractedEvents, extractedEventsNatspec] = extractEventsFromList();
   const events: Record<string, Event> = {};
 
   for (let i = 0; i < extractedEvents.length; i++) {
@@ -245,14 +255,11 @@ console.log(generateErrors());
 console.log(generateEvents());
 
 const exportErrorsToFile = () => {
-  var jsonErrors = JSON.stringify(generateErrors());
+  const jsonErrors = JSON.stringify(generateErrors());
   fs.writeFile("Errors.json", jsonErrors, "utf8", () => {});
 };
 
 const exportEventsToFile = () => {
-  var jsonEvents = JSON.stringify(generateEvents());
+  const jsonEvents = JSON.stringify(generateEvents());
   fs.writeFile("Events.json", jsonEvents, "utf8", () => {});
 };
-
-// const used = process.memoryUsage().heapUsed / 1024 / 1024;
-// console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
