@@ -3,7 +3,6 @@ pragma solidity ^0.8.5;
 
 /**
  * @title GasUtils - A library for optimizing gas usage in Solidity
- * @dev This library contains utility functions for optimizing gas usage when working with Solidity
  */
 library GasUtils {
     /**
