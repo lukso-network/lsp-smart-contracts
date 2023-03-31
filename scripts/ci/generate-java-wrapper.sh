@@ -13,5 +13,6 @@ for abi_file in ./android/abi/*; do
 done
 
 # Build jar
+cd scripts/java
 chmod +x build.gradle
 gradle build
