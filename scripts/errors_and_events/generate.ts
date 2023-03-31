@@ -1,6 +1,7 @@
 import fs from "fs";
 import { ethers } from "ethers";
 import { list } from "./files";
+import { exec } from "child_process";
 
 export type Message = {
   dev: string;
@@ -19,14 +20,16 @@ export type Event = {
 };
 
 const removeSpacesAround = (text: string): string => {
-  let leftIndex = 0;
-  let rightIndex = text.length - 1;
-  while (text[leftIndex] === " " || text[rightIndex] === " ") {
-    if (text[leftIndex] === " ") leftIndex++;
-    if (text[rightIndex] === " ") rightIndex--;
-  }
+  if (text) {
+    let leftIndex = 0;
+    let rightIndex = text.length - 1;
+    while (text[leftIndex] === " " || text[rightIndex] === " ") {
+      if (text[leftIndex] === " ") leftIndex++;
+      if (text[rightIndex] === " ") rightIndex--;
+    }
 
-  return text.substring(leftIndex, rightIndex + 1);
+    return text.substring(leftIndex, rightIndex + 1);
+  } else return text;
 };
 
 const removeParameterName = (text: string): string => {
@@ -88,8 +91,6 @@ const extractErrorsFromList = (): [string[], string[]] => {
     const allFileContents: string = fs.readFileSync(list[fileIndex], "utf-8");
     const fileContentByLines: string[] = allFileContents.split(/\r?\n/);
 
-    let multiLineError = false;
-
     for (
       let lineIndex = 0;
       lineIndex < fileContentByLines.length;
@@ -101,37 +102,31 @@ const extractErrorsFromList = (): [string[], string[]] => {
       // skip comments
       if (line.includes("*") || line.includes("//")) continue;
 
-      // error declarations
+      // error found
       if (line.includes("error")) {
-        // push the current line and keep only the types for parameters
-        const error = removeParameterName(removeSpacesAround(line));
-        errors.push(error);
-
         // get and push the naspec if exists
-        const previousLine = fileContentByLines[lineIndex - 1];
-        let natspec = "";
-        let k = 1;
-        if (previousLine.includes("*/")) {
-          while (!natspec.includes("/**")) {
+        let natspec = removeSpacesAround(fileContentByLines[lineIndex - 1]);
+        if (natspec.includes("*/")) {
+          let k = 1;
+          while (!natspec.includes("/**"))
             natspec =
-              removeSpacesAround(fileContentByLines[lineIndex - k]) + natspec;
-            k++;
-          }
-        }
-        errorsNatspec.push(natspec);
+              removeSpacesAround(fileContentByLines[lineIndex - ++k]) + natspec;
+        } else natspec = "";
 
-        // if the line doesn't contain a ; it means that the error is spread ove multiple lines
-        if (!line.includes(";")) multiLineError = true;
-        continue;
-      } else if (multiLineError) {
-        errors[errors.length - 1] += line;
+        let error: string;
+        // if it is a single-line error
         if (line.includes(";")) {
-          multiLineError = false;
-          errors[errors.length - 1] = removeParameterName(
-            errors[errors.length - 1]
-          );
+          error = removeSpacesAround(line);
         }
-        continue;
+        // if it is a multi-line error
+        else {
+          error = removeSpacesAround(line);
+          while (!error.includes(";"))
+            error += removeSpacesAround(fileContentByLines[++lineIndex]);
+        }
+
+        errors.push(removeParameterName(error));
+        errorsNatspec.push(natspec);
       }
     }
   }
@@ -147,8 +142,6 @@ const extractEventsFromList = (): [string[], string[]] => {
     const allFileContents = fs.readFileSync(list[fileIndex], "utf-8");
     const fileContentByLines: string[] = allFileContents.split(/\r?\n/);
 
-    let multiLineEvent = false;
-
     for (
       let lineIndex = 0;
       lineIndex < fileContentByLines.length;
@@ -160,37 +153,31 @@ const extractEventsFromList = (): [string[], string[]] => {
       // skip comments
       if (line.includes("*") || line.includes("//")) continue;
 
-      // event declarations
+      // event found
       if (line.includes("event")) {
-        // push the current line and keep only the types for parameters
-        const event = removeParameterName(removeSpacesAround(line));
-        events.push(event);
-
         // get and push the naspec if exists
-        const previousLine = fileContentByLines[lineIndex - 1];
-        let natspec = "";
-        let k = 1;
-        if (previousLine.includes("*/")) {
-          while (!natspec.includes("/**")) {
+        let natspec = removeSpacesAround(fileContentByLines[lineIndex - 1]);
+        if (natspec.includes("*/")) {
+          let k = 1;
+          while (!natspec.includes("/**"))
             natspec =
-              removeSpacesAround(fileContentByLines[lineIndex - k]) + natspec;
-            k++;
-          }
-        }
-        eventsNatspec.push(natspec);
+              removeSpacesAround(fileContentByLines[lineIndex - ++k]) + natspec;
+        } else natspec = "";
 
-        // if the line doesn't contain a ; it means that the error is spread ove multiple lines
-        if (!line.includes(";")) multiLineEvent = true;
-        continue;
-      } else if (multiLineEvent) {
-        events[events.length - 1] += line;
+        let event: string;
+        // if it is a single-line event
         if (line.includes(";")) {
-          multiLineEvent = false;
-          events[events.length - 1] = removeParameterName(
-            events[events.length - 1]
-          );
+          event = removeSpacesAround(line);
         }
-        continue;
+        // if it is a multi-line event
+        else {
+          event = removeSpacesAround(line);
+          while (!event.includes(";"))
+            event += removeSpacesAround(fileContentByLines[++lineIndex]);
+        }
+
+        events.push(removeParameterName(event));
+        eventsNatspec.push(natspec);
       }
     }
   }
@@ -251,15 +238,19 @@ export const generateEvents = (): Record<string, Event> => {
   return events;
 };
 
-console.log(generateErrors());
-console.log(generateEvents());
-
 const exportErrorsToFile = () => {
   const jsonErrors = JSON.stringify(generateErrors());
-  fs.writeFile("Errors.json", jsonErrors, "utf8", () => {});
+  fs.writeFile("Errors.json", jsonErrors, "utf8", () => {
+    exec("npx prettier --write ./Errors.json");
+  });
 };
 
 const exportEventsToFile = () => {
   const jsonEvents = JSON.stringify(generateEvents());
-  fs.writeFile("Events.json", jsonEvents, "utf8", () => {});
+  fs.writeFile("Events.json", jsonEvents, "utf8", () => {
+    exec("npx prettier --write ./Events.json");
+  });
 };
+
+exportErrorsToFile();
+exportEventsToFile();
