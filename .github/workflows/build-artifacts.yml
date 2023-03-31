@@ -29,7 +29,6 @@ jobs:
         run: npm ci
 
       # Android artifacts
-
       - name: Set up our JDK environment
         uses: actions/setup-java@v3
         with:
@@ -43,7 +42,7 @@ jobs:
         run: npx ts-node ./scripts/ci/android-artifacts.ts
 
       - name: Generate Java wrappers
-        run: sh ./scripts/ci/generate-java-wrapper.sh
+        run: ./scripts/ci/generate-java-wrapper.sh
 
       - name: Build jar
         working-directory: ./scripts/java

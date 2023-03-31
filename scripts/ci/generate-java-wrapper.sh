@@ -1,10 +1,8 @@
-abi_dir=( ./android/abi/* )
-bin_dir=( ./android/bin/* )
-n=${#abi_dir[@]}               # assume they're the same length
-for (( i = 0; i < n; i++ )); do
-    abi_file="${abi_dir[i]}"
-    bin_file="${bin_dir[i]}"
-    
+#!/usr/bin/env sh
+
+for abi_file in ./android/abi/*; do
+    bin_file="./android/bin/$(basename $abi_file .abi).bin"
+
     web3j generate solidity \
         --abiFile="$abi_file" \
         --binFile="$bin_file" \
