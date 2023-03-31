@@ -1,3 +1,5 @@
+// This script generates the ABI + Binaries of the `@lukso/lsp-smart-contracts`
+// so that the Java wrappers for Android can be generated using Web3j
 const fs = require("fs");
 const hre = require("hardhat");
 const { exec } = require("child_process");
