@@ -58,7 +58,7 @@
     "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
     "clean": "hardhat clean && rm -rf module common",
     "build": "hardhat compile",
-    "build:tsc": "npx ts-node ./scripts/errors_and_events/generate.ts && tsc --project tsconfig.cjs.json && tsc --project tsconfig.module.json",
+    "build:tsc": "tsc --project tsconfig.cjs.json && tsc --project tsconfig.module.json",
     "build:android": "ts-node ./scripts/ci/android-artifacts.ts && ./scripts/ci/generate-java-wrapper.sh",
     "build:ios": "mkdir ios && ts-node ./scripts/ci/ios-artifacts.ts",
     "package": "hardhat prepare-package",
@@ -68,7 +68,8 @@
     "generate-types:ethers": "typechain --target=ethers-v5 'artifacts/**/*.json'",
     "remixd": "remixd -s . --remix-ide",
     "linter": "solhint 'contracts/**/*.sol'",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "docs": "npx ts-node scripts/ci/generate-docs.ts && npx ts-node scripts/ci/parse-docs.ts"
   },
   "repository": {
     "type": "git",

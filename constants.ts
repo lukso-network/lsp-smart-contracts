@@ -3,8 +3,10 @@
  * @see https://github.com/lukso-network/LIPs/tree/main/LSPs
  */
 
-import generatedErrors from "./Errors.json";
-import generatedEvents from "./Events.json";
+import generatedErrors from "./docs/Errors.json";
+import generatedEvents from "./docs/Events.json";
+import generatedMethods from "./docs/Methods.json";
+import generatedContracts from "./docs/Contracts.json";
 
 // ERC165
 // ---------
@@ -311,6 +313,7 @@ export const LSP1_TYPE_IDS = {
     "0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c",
 };
 
-export const Errors = generatedErrors;
-
-export const Events = generatedEvents;
+export const ERRORS = generatedErrors;
+export const EVENTS = generatedEvents;
+export const METHODS = generatedMethods;
+export const CONTRACTS = generatedContracts;
