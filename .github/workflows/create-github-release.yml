@@ -37,7 +37,7 @@ jobs:
         with:
           workflow: build-artifacts.yml
           workflow_conclusion: success
-          name: upcontracts.jar
+          name: lspsmartcontracts.jar
           path: java/build/libs
           branch: main
           event: push
@@ -47,7 +47,7 @@ jobs:
         with:
           workflow: build-artifacts.yml
           workflow_conclusion: success
-          name: UPContractsAbi.swift
+          name: LSPSmartContracts.swift
           path: ios
           branch: main
           event: push
@@ -72,7 +72,7 @@ jobs:
 
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "ios/UPContractsAbi.swift"
+          artifacts: "ios/LSPSmartContracts.swift"
           bodyFile: "RELEASENOTES.md"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.APP_VERSION }}
