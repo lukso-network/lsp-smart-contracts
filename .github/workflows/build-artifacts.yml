@@ -55,7 +55,7 @@ jobs:
 
       - name: Upload Android Artifact
         uses: actions/upload-artifact@v2
-        if: github.event_name == 'push'  && steps.check.outputs.changed == 'true'
+        if: github.event_name == 'push' && steps.check.outputs.changed == 'true'
         with:
           name: lspsmartcontracts.jar
           path: java/build/libs/lspsmartcontracts.jar
