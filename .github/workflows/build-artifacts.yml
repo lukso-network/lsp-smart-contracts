@@ -50,8 +50,8 @@ jobs:
         uses: actions/upload-artifact@v2
         if: github.event_name == 'push' && steps.check.outputs.changed == 'true'
         with:
-          name: UPContractsAbi.swift
-          path: ios/UPContractsAbi.swift
+          name: LSPSmartContracts.swift
+          path: ios/LSPSmartContracts.swift
 
       - name: Upload Android Artifact
         uses: actions/upload-artifact@v2
