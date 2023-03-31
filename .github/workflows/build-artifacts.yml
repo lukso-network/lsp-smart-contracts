@@ -57,8 +57,8 @@ jobs:
         uses: actions/upload-artifact@v2
         if: github.event_name == 'push'  && steps.check.outputs.changed == 'true'
         with:
-          name: upcontracts.jar
-          path: java/build/libs/upcontracts.jar
+          name: lspsmartcontracts.jar
+          path: java/build/libs/lspsmartcontracts.jar
 
       # Trigger Release
       - name: Repository Dispatch

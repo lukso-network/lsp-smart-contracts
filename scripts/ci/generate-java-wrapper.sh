@@ -12,8 +12,8 @@ for abi_file in ./android/abi/*; do
     web3j generate solidity \
         --abiFile="$abi_file" \
         --binFile="$bin_file" \
-        -o ./scripts/java/src/main/java/network/lukso/up/contracts \
-        -p network.lukso.up.contracts
+        -o ./scripts/java/src/main/java \
+        -p network.lukso.lsp.smartcontracts
 done
 
 # Build jar
