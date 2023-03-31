@@ -35,7 +35,8 @@ import {
     OPERATION_1_CREATE,
     OPERATION_2_CREATE2,
     OPERATION_3_STATICCALL,
-    OPERATION_4_DELEGATECALL
+    OPERATION_4_DELEGATECALL,
+    EXECUTE_SELECTOR
 } from "@erc725/smart-contracts/contracts/constants.sol";
 
 // errors
@@ -53,6 +54,96 @@ import {
 abstract contract LSP6ExecuteModule {
     using ERC165Checker for address;
     using LSP6Utils for *;
+
+    function _verifyCanBatchExecute(
+        address controlledContract,
+        address controller,
+        bytes32 permissions,
+        bytes calldata batchPayload
+    ) internal view virtual {
+        (
+            uint256[] memory operationTypes,
+            address[] memory callees,
+            uint256[] memory values,
+            bytes[] memory datas
+        ) = abi.decode(batchPayload[4:], (uint256[], address[], uint256[], bytes[]));
+
+        if (
+            operationTypes.length != callees.length ||
+            callees.length != values.length ||
+            values.length != datas.length
+        ) revert("Length missmatch");
+
+        for (uint256 i = 0; i < operationTypes.length; i++) {
+            bytes memory singlePayload = abi.encodeWithSelector(
+                EXECUTE_SELECTOR,
+                operationTypes[i],
+                callees[i],
+                values[i],
+                datas[i]
+            );
+
+            // CHECK the offset of `data` is not pointing to the previous parameters
+            if (
+                bytes32(singlePayload[100:132]) !=
+                0x0000000000000000000000000000000000000000000000000000000000000080
+            ) {
+                revert InvalidPayload(singlePayload);
+            }
+
+            // MUST be one of the ERC725X operation types.
+            uint256 operationType = operationTypes[i];
+
+            address to = callees[i];
+
+            // if to is the KeyManager address revert
+            if (to == address(this)) {
+                revert CallingKeyManagerNotAllowed();
+            }
+
+            // Future versions of the KeyManager willing to allow LSP0 to call the KeyManager
+            // may need to implement this check to avoid inconsistent state of reentrancy
+            // that may lead to lock the use of the KeyManager
+
+            // Check to restrict controllers with execute permissions to call lsp20 functions
+            // to avoid setting the reentrancy guard to a non-valid state
+
+            // if (payload.length >= 168 && to == address(this)) {
+            //     if (
+            //         bytes4(payload[164:168]) == ILSP20.lsp20VerifyCall.selector ||
+            //         bytes4(payload[164:168]) == ILSP20.lsp20VerifyCallResult.selector
+            //     ) {
+            //         revert CallingLSP20FunctionsOnLSP6NotAllowed();
+            //     }
+            // }
+
+            // if it is a message call
+            if (operationType == OPERATION_0_CALL) {
+                return _verifyCanCall(controlledContract, controller, permissions, payload);
+            }
+
+            // if it is a contract creation
+            if (operationType == OPERATION_1_CREATE || operationType == OPERATION_2_CREATE2) {
+                // required to check for permission TRANSFERVALUE if we are funding
+                // the contract on deployment via a payable constructor
+                bool isFundingContract = values[i] != 0;
+
+                return _verifyCanDeployContract(controller, permissions, isFundingContract);
+            }
+
+            // if it is a STATICALL
+            // we do not check for TRANSFERVALUE permission,
+            // as ERC725X will revert if a value is provided with operation type STATICCALL.
+            if (operationType == OPERATION_3_STATICCALL) {
+                return _verifyCanStaticCall(controlledContract, controller, permissions, payload);
+            }
+
+            // DELEGATECALL is disallowed by default on the Key Manager.
+            if (operationType == OPERATION_4_DELEGATECALL) {
+                revert DelegateCallDisallowedViaKeyManager();
+            }
+        }
+    }
 
     /**
      * @dev verify if `controllerAddress` has the required permissions to interact with other addresses using the controlledContract.

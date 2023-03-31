@@ -43,7 +43,8 @@ import {
 import {
     SETDATA_SELECTOR,
     SETDATA_ARRAY_SELECTOR,
-    EXECUTE_SELECTOR
+    EXECUTE_SELECTOR,
+    EXECUTE_ARRAY_SELECTOR
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_ERC1271,
@@ -394,6 +395,10 @@ abstract contract LSP6KeyManagerCore is
             // ERC725X.execute(uint256,address,uint256,bytes)
         } else if (erc725Function == EXECUTE_SELECTOR) {
             LSP6ExecuteModule._verifyCanExecute(_target, from, permissions, payload);
+
+            // ERC725X.execute(uint256,address,uint256,bytes)
+        } else if (erc725Function == EXECUTE_ARRAY_SELECTOR) {
+            LSP6ExecuteModule._verifyCanBatchExecute(_target, from, permissions, payload);
         } else if (
             erc725Function == ILSP14Ownable2Step.transferOwnership.selector ||
             erc725Function == ILSP14Ownable2Step.acceptOwnership.selector
