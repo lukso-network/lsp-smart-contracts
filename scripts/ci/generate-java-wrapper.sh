@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
-source $HOME/.web3j/source.sh
+
+# Exit on error (with shell)
+set -e
+
+. $HOME/.web3j/source.sh
 
 # Generate Java wrappers
 for abi_file in ./android/abi/*; do
