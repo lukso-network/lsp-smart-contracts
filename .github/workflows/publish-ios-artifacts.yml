@@ -17,7 +17,7 @@ jobs:
         with:
           workflow: build-artifacts.yml
           workflow_conclusion: success
-          name: UPContractsAbi.swift
+          name: LSPSmartContracts.swift
           path: ios
           branch: main
           event: push
@@ -33,7 +33,7 @@ jobs:
             git push origin --delete abi-update-release
           fi
           git checkout -b abi-update-release
-          cp ../ios/UPContractsAbi.swift Sources/UniversalProfile/UPContractsAbi.swift
+          cp ../ios/LSPSmartContracts.swift Sources/UniversalProfile/LSPSmartContracts.swift
           git add .
           current_version=$(git describe --tags --abbrev=0)
           git commit -m "ci: automatic publish of new contracts ABIs ($current_version) from lukso-network/lsp-smart-contracts"
