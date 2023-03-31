@@ -185,7 +185,7 @@ const extractEventsFromList = (): [string[], string[]] => {
   return [events, eventsNatspec];
 };
 
-export const generateErrors = (): Record<string, Error> => {
+const generateErrors = (): Record<string, Error> => {
   const [extractedErrors, extractedErrorsnatspec] = extractErrorsFromList();
   const errors: Record<string, Error> = {};
 
@@ -213,7 +213,7 @@ export const generateErrors = (): Record<string, Error> => {
   return errors;
 };
 
-export const generateEvents = (): Record<string, Event> => {
+const generateEvents = (): Record<string, Event> => {
   const [extractedEvents, extractedEventsNatspec] = extractEventsFromList();
   const events: Record<string, Event> = {};
 

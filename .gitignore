@@ -153,3 +153,8 @@ benchmark.md
 # Exclude build output folders
 /common
 /module
+
+# Exclude solidity auto-generated Errors and Events
+/Errors.json
+/Events.json
+

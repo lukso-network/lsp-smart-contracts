@@ -57,7 +57,7 @@
     "test:universalfactory": "hardhat test --no-compile tests/LSP16UniversalFactory/LSP16UniversalFactory.test.ts",
     "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
     "build": "hardhat compile",
-    "build:tsc": "tsc --project tsconfig.cjs.json && tsc --project tsconfig.module.json",
+    "build:tsc": "npx ts-node ./scripts/errors_and_events/generate.ts && tsc --project tsconfig.cjs.json && tsc --project tsconfig.module.json",
     "package": "hardhat prepare-package",
     "release": "run-s clean build package && standard-version",
     "clean": "hardhat clean && rm -rf module common",

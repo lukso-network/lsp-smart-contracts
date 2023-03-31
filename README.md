@@ -72,7 +72,7 @@ import {
   PERMISSIONS,
   ALL_PERMISSIONS,
   Errors,
-  EventSignatures,
+  Events,
 } from "@lukso/lsp-smart-contracts";
 ```
 
