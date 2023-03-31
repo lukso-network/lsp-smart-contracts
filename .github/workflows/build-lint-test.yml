@@ -29,7 +29,9 @@ jobs:
 
       # This will also generate the Typechain types used by the Chai tests
       - name: 🏗️ Build contract artifacts
-        run: npm run build --if-present
+        run: |
+          npm run build --if-present
+          npm run build:tsc
 
       - name: 📤 cache dependencies + build
         uses: actions/cache@v2
@@ -38,6 +40,7 @@ jobs:
             artifacts
             node_modules
             types
+            docs
           key: ${{ github.run_id }}
 
   test-suites:

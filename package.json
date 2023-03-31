@@ -58,7 +58,7 @@
     "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
     "clean": "hardhat clean && rm -rf module common",
     "build": "hardhat compile",
-    "build:tsc": "tsc --project tsconfig.cjs.json && tsc --project tsconfig.module.json",
+    "build:tsc": "npm run docs tsc --project tsconfig.cjs.json && tsc --project tsconfig.module.json",
     "build:android": "ts-node ./scripts/ci/android-artifacts.ts && ./scripts/ci/generate-java-wrapper.sh",
     "build:ios": "mkdir ios && ts-node ./scripts/ci/ios-artifacts.ts",
     "package": "hardhat prepare-package",
