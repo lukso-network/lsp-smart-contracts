@@ -38,23 +38,12 @@ jobs:
       - name: Install Web3j
         run: curl -L get.web3j.io | sh
 
-      - name: Generate Smart Contracts ABI + Binaries
-        run: ./node_modules/.bin/ts-node ./scripts/ci/android-artifacts.ts
-
-      - name: Generate Java wrappers
-        run: source $HOME/.web3j/source.sh && ./scripts/ci/generate-java-wrapper.sh
-
-      - name: Build jar
-        working-directory: ./scripts/java
-        run: |
-          chmod +x build.gradle
-          gradle build
+      - name: Generate Android artifacts
+        run: npm run build:android
 
       # iOS artifacts
       - name: Generate iOS artifacts
-        run: |
-          mkdir ios
-          npx ts-node ./scripts/ci/ios-artifacts.ts
+        run: npm run build:ios
 
       # Upload Artifacts
       - name: Upload iOS Artifact
