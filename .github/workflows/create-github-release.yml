@@ -32,17 +32,15 @@ jobs:
           git tag -a ${{ env.APP_VERSION }} -m "Release Version ${{ env.APP_VERSION }}"
           git push --set-upstream origin develop tag ${{ env.APP_VERSION }}
 
-      # https://app.clickup.com/t/862j8da4t
-      #
-      # - name: Download Android artifact
-      #   uses: dawidd6/action-download-artifact@v2
-      #   with:
-      #     workflow: build-artifacts.yml
-      #     workflow_conclusion: success
-      #     name: upcontracts.jar
-      #     path: java/build/libs
-      #     branch: main
-      #     event: push
+      - name: Download Android artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: build-artifacts.yml
+          workflow_conclusion: success
+          name: upcontracts.jar
+          path: java/build/libs
+          branch: main
+          event: push
 
       - name: Download iOS artifact
         uses: dawidd6/action-download-artifact@v2
