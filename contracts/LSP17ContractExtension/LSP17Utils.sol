@@ -10,11 +10,10 @@ library LSP17Utils {
      * the parametersLength with offset with an additional of 52 bytes supposed msg.sender
      * and msg.value appended is equal to the msgDataLength
      */
-    function isExtension(uint256 parametersLengthWithOffset, uint256 msgDataLength)
-        internal
-        pure
-        returns (bool)
-    {
+    function isExtension(
+        uint256 parametersLengthWithOffset,
+        uint256 msgDataLength
+    ) internal pure returns (bool) {
         return (parametersLengthWithOffset + 52) == msgDataLength;
     }
 }

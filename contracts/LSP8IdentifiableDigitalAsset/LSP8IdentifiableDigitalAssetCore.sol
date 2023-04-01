@@ -152,12 +152,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
      * @dev verifies if the `caller` is operator or owner for the `tokenId`
      * @return true if `caller` is either operator or owner
      */
-    function _isOperatorOrOwner(address caller, bytes32 tokenId)
-        internal
-        view
-        virtual
-        returns (bool)
-    {
+    function _isOperatorOrOwner(
+        address caller,
+        bytes32 tokenId
+    ) internal view virtual returns (bool) {
         address tokenOwner = tokenOwnerOf(tokenId);
 
         return (caller == tokenOwner || _operators[tokenId].contains(caller));
@@ -390,11 +388,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
      * - When `to` is zero, ``from``'s `tokenId` will be burned.
      * - `from` and `to` are never both zero.
      */
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        bytes32 tokenId
-    ) internal virtual {}
+    function _beforeTokenTransfer(address from, address to, bytes32 tokenId) internal virtual {}
 
     /**
      * @dev An attempt is made to notify the token sender about the `tokenId` changing owners using

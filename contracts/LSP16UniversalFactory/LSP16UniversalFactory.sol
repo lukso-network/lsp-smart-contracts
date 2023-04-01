@@ -93,12 +93,10 @@ contract LSP16UniversalFactory {
      * Using the same `byteCode` and salt multiple time will revert, since
      * the contract cannot be deployed twice at the same address.
      */
-    function deployCreate2(bytes calldata byteCode, bytes32 providedSalt)
-        public
-        payable
-        virtual
-        returns (address)
-    {
+    function deployCreate2(
+        bytes calldata byteCode,
+        bytes32 providedSalt
+    ) public payable virtual returns (address) {
         bytes32 generatedSalt = generateSalt(false, _EMPTY_BYTE, providedSalt);
         address contractCreated = Create2.deploy(msg.value, generatedSalt, byteCode);
         emit ContractCreated(contractCreated, providedSalt, false, _EMPTY_BYTE);
@@ -158,11 +156,10 @@ contract LSP16UniversalFactory {
      * Using the same `baseContract` and salt multiple time will revert, since
      * the clones cannot be deployed twice at the same address.
      */
-    function deployCreate2Proxy(address baseContract, bytes32 providedSalt)
-        public
-        virtual
-        returns (address)
-    {
+    function deployCreate2Proxy(
+        address baseContract,
+        bytes32 providedSalt
+    ) public virtual returns (address) {
         bytes32 generatedSalt = generateSalt(false, _EMPTY_BYTE, providedSalt);
 
         address proxy = Clones.cloneDeterministic(baseContract, generatedSalt);

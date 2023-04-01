@@ -77,10 +77,10 @@ const main = () => {
   fs.writeFileSync("docs/Methods.json", JSON.stringify(METHODS), "utf8");
   fs.writeFileSync("docs/Contracts.json", JSON.stringify(CONTRACTS), "utf8");
   if (fs.existsSync("userdocs")) {
-  fs.rmSync("userdocs", { recursive: true });
+    fs.rmSync("userdocs", { recursive: true });
   }
   if (fs.existsSync("devdocs")) {
-  fs.rmSync("devdocs", { recursive: true });
+    fs.rmSync("devdocs", { recursive: true });
   }
 };
 

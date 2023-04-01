@@ -12,11 +12,7 @@ contract ReentrantContract {
     event ValueReceived(uint256);
     mapping(string => bytes) private _payloads;
 
-    constructor(
-        address newControllerAddress,
-        bytes32 newURDTypeId,
-        address newURDAddress
-    ) {
+    constructor(address newControllerAddress, bytes32 newURDTypeId, address newURDAddress) {
         _payloads["TRANSFERVALUE"] = abi.encodeWithSignature(
             "execute(uint256,address,uint256,bytes)",
             0,
@@ -79,10 +75,10 @@ contract ReentrantContract {
         emit ValueReceived(msg.value);
     }
 
-    function callThatReenters(address keyManagerAddress, string memory payloadType)
-        external
-        returns (bytes memory)
-    {
+    function callThatReenters(
+        address keyManagerAddress,
+        string memory payloadType
+    ) external returns (bytes memory) {
         return ILSP6KeyManager(keyManagerAddress).execute(_payloads[payloadType]);
     }
 }

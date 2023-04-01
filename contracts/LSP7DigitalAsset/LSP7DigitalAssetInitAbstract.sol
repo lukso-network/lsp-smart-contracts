@@ -36,13 +36,9 @@ abstract contract LSP7DigitalAssetInitAbstract is
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(IERC165, ERC725YCore)
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(IERC165, ERC725YCore) returns (bool) {
         return interfaceId == _INTERFACEID_LSP7 || super.supportsInterface(interfaceId);
     }
 }
