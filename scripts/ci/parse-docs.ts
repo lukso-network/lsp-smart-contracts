@@ -71,13 +71,17 @@ const main = () => {
     CONTRACTS[contract] = contractDocs;
   });
 
-  fs.mkdirSync("docs");
+  fs.mkdirSync("docs", { recursive: true });
   fs.writeFileSync("docs/Events.json", JSON.stringify(EVENTS), "utf8");
   fs.writeFileSync("docs/Errors.json", JSON.stringify(ERRORS), "utf8");
   fs.writeFileSync("docs/Methods.json", JSON.stringify(METHODS), "utf8");
   fs.writeFileSync("docs/Contracts.json", JSON.stringify(CONTRACTS), "utf8");
-  fs.rmdirSync("userdocs", { recursive: true });
-  fs.rmdirSync("devdocs", { recursive: true });
+  if (fs.existsSync("userdocs")) {
+  fs.rmSync("userdocs", { recursive: true });
+  }
+  if (fs.existsSync("devdocs")) {
+  fs.rmSync("devdocs", { recursive: true });
+  }
 };
 
 main();
