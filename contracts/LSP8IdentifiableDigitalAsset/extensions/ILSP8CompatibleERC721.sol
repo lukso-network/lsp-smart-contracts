@@ -42,7 +42,11 @@ interface ILSP8CompatibleERC721 is ILSP8IdentifiableDigitalAsset {
      * @param to The receiving address
      * @param tokenId The tokenId to transfer
      */
-    function transferFrom(address from, address to, uint256 tokenId) external;
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) external;
 
     /**
      * @dev Compatible with ERC721 transferFrom.
@@ -50,7 +54,11 @@ interface ILSP8CompatibleERC721 is ILSP8IdentifiableDigitalAsset {
      * @param to The receiving address
      * @param tokenId The tokenId to transfer
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId) external;
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) external;
 
     /**
      * @dev Compatible with ERC721 safeTransferFrom.

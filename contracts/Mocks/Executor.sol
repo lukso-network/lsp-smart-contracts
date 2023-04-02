@@ -47,10 +47,10 @@ contract Executor {
         return _keyManager.execute(erc725Payload);
     }
 
-    function setComputedKeyFromParams(
-        bytes32 _key,
-        bytes memory _value
-    ) public returns (bytes memory) {
+    function setComputedKeyFromParams(bytes32 _key, bytes memory _value)
+        public
+        returns (bytes memory)
+    {
         bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, _key, _value);
 
         return _keyManager.execute(erc725Payload);
@@ -117,10 +117,10 @@ contract Executor {
         return success;
     }
 
-    function setComputedKeyFromParamsRawCall(
-        bytes32 _key,
-        bytes memory _value
-    ) public returns (bool) {
+    function setComputedKeyFromParamsRawCall(bytes32 _key, bytes memory _value)
+        public
+        returns (bool)
+    {
         bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, _key, _value);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(

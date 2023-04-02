@@ -17,7 +17,11 @@ contract LSP20ReentrantContract {
     bytes32 private _newURDTypeId;
     address private _newURDAddress;
 
-    constructor(address _newControllerAddress_, bytes32 _newURDTypeId_, address _newURDAddress_) {
+    constructor(
+        address _newControllerAddress_,
+        bytes32 _newURDTypeId_,
+        address _newURDAddress_
+    ) {
         _newControllerAddress = _newControllerAddress_;
         _newURDTypeId = _newURDTypeId_;
         _newURDAddress = _newURDAddress_;

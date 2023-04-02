@@ -8,10 +8,11 @@ import {ILSP1UniversalReceiver} from "../../LSP1UniversalReceiver/ILSP1Universal
  * @dev This contract is used only for testing purposes
  */
 contract UniversalReceiverTester {
-    function callImplementationAndReturn(
-        address target,
-        bytes32 typeId
-    ) external payable returns (bytes memory) {
+    function callImplementationAndReturn(address target, bytes32 typeId)
+        external
+        payable
+        returns (bytes memory)
+    {
         return ILSP1UniversalReceiver(target).universalReceiver(typeId, "");
     }
 

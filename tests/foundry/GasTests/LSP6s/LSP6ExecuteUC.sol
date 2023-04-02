@@ -16,15 +16,19 @@ contract LSP6ExecuteUnrestrictedController is LSP6KeyManager {
         return _execute(msg.value, payload);
     }
 
-    function transferTokensToRandomUP(
-        bytes calldata payload
-    ) public payable returns (bytes memory) {
+    function transferTokensToRandomUP(bytes calldata payload)
+        public
+        payable
+        returns (bytes memory)
+    {
         return _execute(msg.value, payload);
     }
 
-    function transferTokensToRandomEOA(
-        bytes calldata payload
-    ) public payable returns (bytes memory) {
+    function transferTokensToRandomEOA(bytes calldata payload)
+        public
+        payable
+        returns (bytes memory)
+    {
         return _execute(msg.value, payload);
     }
 

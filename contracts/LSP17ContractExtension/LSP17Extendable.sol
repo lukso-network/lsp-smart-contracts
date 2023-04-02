@@ -33,9 +33,12 @@ abstract contract LSP17Extendable is ERC165 {
      * supported by reading whether the interfaceId queried is supported in the `supportsInterface`
      * extension if the extension is set, if not it returns false.
      */
-    function _supportsInterfaceInERC165Extension(
-        bytes4 interfaceId
-    ) internal view virtual returns (bool) {
+    function _supportsInterfaceInERC165Extension(bytes4 interfaceId)
+        internal
+        view
+        virtual
+        returns (bool)
+    {
         address erc165Extension = _getExtension(ERC165.supportsInterface.selector);
         if (erc165Extension == address(0)) return false;
 

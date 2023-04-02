@@ -25,7 +25,11 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
      * @param symbol_ The symbol of the token
      * @param newOwner_ The owner of the token contract
      */
-    constructor(string memory name_, string memory symbol_, address newOwner_) ERC725Y(newOwner_) {
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        address newOwner_
+    ) ERC725Y(newOwner_) {
         // set key SupportedStandards:LSP4DigitalAsset
         super._setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
 

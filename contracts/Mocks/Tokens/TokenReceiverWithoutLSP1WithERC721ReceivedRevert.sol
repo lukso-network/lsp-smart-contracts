@@ -15,9 +15,9 @@ contract TokenReceiverWithoutLSP1WithERC721ReceivedRevert is ERC721Holder {
     fallback() external payable {}
 
     function onERC721Received(
-        address /* operator */,
-        address /* from */,
-        uint256 /* tokenId */,
+        address, /* operator */
+        address, /* from */
+        uint256, /* tokenId */
         bytes memory /* data */
     ) public pure override returns (bytes4) {
         revert("TokenReceiverWithLSP1WithERC721ReceivedRevert: transfer rejected");

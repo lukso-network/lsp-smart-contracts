@@ -32,9 +32,11 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         super._verifyAllowedCall(_target, _sender, _payload);
     }
 
-    function isCompactBytesArrayOfAllowedCalls(
-        bytes memory allowedCallsCompacted
-    ) public pure returns (bool) {
+    function isCompactBytesArrayOfAllowedCalls(bytes memory allowedCallsCompacted)
+        public
+        pure
+        returns (bool)
+    {
         return allowedCallsCompacted.isCompactBytesArrayOfAllowedCalls();
     }
 
@@ -77,10 +79,11 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         return true;
     }
 
-    function hasPermission(
-        bytes32 _addressPermission,
-        bytes32 _permissions
-    ) public pure returns (bool) {
+    function hasPermission(bytes32 _addressPermission, bytes32 _permissions)
+        public
+        pure
+        returns (bool)
+    {
         return _addressPermission.hasPermission(_permissions);
     }
 }

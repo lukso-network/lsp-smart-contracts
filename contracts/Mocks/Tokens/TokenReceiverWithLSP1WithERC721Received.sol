@@ -26,10 +26,12 @@ contract TokenReceiverWithLSP1WithERC721Received is
 
     fallback() external payable {}
 
-    function universalReceiver(
-        bytes32 typeId,
-        bytes memory data
-    ) external payable override returns (bytes memory returnValue) {
+    function universalReceiver(bytes32 typeId, bytes memory data)
+        external
+        payable
+        override
+        returns (bytes memory returnValue)
+    {
         emit UniversalReceiverCalled(typeId, data);
 
         return "thanks for calling";

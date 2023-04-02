@@ -34,9 +34,13 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view virtual override(IERC165, ERC725YCore) returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(IERC165, ERC725YCore)
+        returns (bool)
+    {
         return interfaceId == _INTERFACEID_LSP8 || super.supportsInterface(interfaceId);
     }
 }

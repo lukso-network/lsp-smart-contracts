@@ -69,6 +69,7 @@
     "remixd": "remixd -s . --remix-ide",
     "linter": "solhint 'contracts/**/*.sol'",
     "prettier": "prettier --write .",
+    "prettier:check": "prettier --check .",
     "docs": "npx ts-node scripts/ci/generate-docs.ts && npx ts-node scripts/ci/parse-docs.ts"
   },
   "repository": {

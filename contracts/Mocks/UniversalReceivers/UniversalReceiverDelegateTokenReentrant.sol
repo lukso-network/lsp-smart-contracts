@@ -31,10 +31,12 @@ contract UniversalReceiverDelegateTokenReentrant is ERC165Storage {
         _registerInterface(_INTERFACEID_LSP1);
     }
 
-    function universalReceiver(
-        bytes32 typeId,
-        bytes memory data
-    ) public payable virtual returns (bytes memory result) {
+    function universalReceiver(bytes32 typeId, bytes memory data)
+        public
+        payable
+        virtual
+        returns (bytes memory result)
+    {
         address sender = address(bytes20(msg.data[msg.data.length - 52:]));
         if (typeId == _TYPEID_LSP7_TOKENSRECIPIENT || typeId == _TYPEID_LSP8_TOKENSRECIPIENT) {
             // if the optional data field when minting/transferring is existing, re-execute the data on token contract

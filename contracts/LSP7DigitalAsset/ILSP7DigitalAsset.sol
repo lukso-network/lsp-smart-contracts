@@ -126,10 +126,10 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
      * operator.
      */
-    function authorizedAmountFor(
-        address operator,
-        address tokenOwner
-    ) external view returns (uint256);
+    function authorizedAmountFor(address operator, address tokenOwner)
+        external
+        view
+        returns (uint256);
 
     // --- Transfer functionality
 

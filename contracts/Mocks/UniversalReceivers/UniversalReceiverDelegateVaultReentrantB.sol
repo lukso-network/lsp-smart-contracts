@@ -20,7 +20,7 @@ contract UniversalReceiverDelegateVaultReentrantB is ERC165Storage {
     }
 
     function universalReceiver(
-        bytes32 /* typeId */,
+        bytes32, /* typeId */
         bytes memory data
     ) external returns (bytes memory) {
         bytes32[] memory keys = new bytes32[](1);

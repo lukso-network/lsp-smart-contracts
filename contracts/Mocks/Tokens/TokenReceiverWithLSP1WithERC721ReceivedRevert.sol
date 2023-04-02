@@ -26,19 +26,21 @@ contract TokenReceiverWithLSP1WithERC721ReceivedRevert is
 
     fallback() external payable {}
 
-    function universalReceiver(
-        bytes32 typeId,
-        bytes memory data
-    ) external payable override returns (bytes memory returnValue) {
+    function universalReceiver(bytes32 typeId, bytes memory data)
+        external
+        payable
+        override
+        returns (bytes memory returnValue)
+    {
         emit UniversalReceiverCalled(typeId, data);
 
         return "thanks for calling";
     }
 
     function onERC721Received(
-        address /* operator */,
-        address /* from */,
-        uint256 /* tokenId */,
+        address, /* operator */
+        address, /* from */
+        uint256, /* tokenId */
         bytes memory /* data */
     ) public pure override returns (bytes4) {
         revert("TokenReceiverWithLSP1WithERC721ReceivedRevert: transfer rejected");

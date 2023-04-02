@@ -13,7 +13,11 @@ import {
 } from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 
 contract LSP4CompatibilityTester is ERC725Y, LSP4Compatibility {
-    constructor(string memory name, string memory symbol, address newOwner) ERC725Y(newOwner) {
+    constructor(
+        string memory name,
+        string memory symbol,
+        address newOwner
+    ) ERC725Y(newOwner) {
         _setData(_LSP4_TOKEN_NAME_KEY, bytes(name));
         _setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol));
     }

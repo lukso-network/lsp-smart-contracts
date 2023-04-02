@@ -22,7 +22,7 @@ contract SignatureValidator is IERC1271, ERC165Storage {
      * @notice Verifies that the signer is the owner of the signing contract.
      */
     function isValidSignature(
-        bytes32 /* messageHash */,
+        bytes32, /* messageHash */
         bytes calldata /* signature */
     ) external pure override returns (bytes4) {
         // always return true (just for testing)

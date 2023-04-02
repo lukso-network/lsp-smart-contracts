@@ -219,10 +219,11 @@ contract CalculateERCInterfaces {
  * @dev Used for testing
  */
 contract CheckInterface {
-    function supportsERC165InterfaceUnchecked(
-        address _address,
-        bytes4 interfaceId
-    ) public view returns (bool) {
+    function supportsERC165InterfaceUnchecked(address _address, bytes4 interfaceId)
+        public
+        view
+        returns (bool)
+    {
         return ERC165Checker.supportsERC165InterfaceUnchecked(_address, interfaceId);
     }
 }

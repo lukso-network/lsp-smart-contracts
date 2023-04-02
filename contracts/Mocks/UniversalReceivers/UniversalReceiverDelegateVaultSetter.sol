@@ -19,7 +19,11 @@ contract UniversalReceiverDelegateVaultSetter is ERC165Storage {
         _registerInterface(_INTERFACEID_LSP1);
     }
 
-    function universalReceiver(address vaultadd, bytes32 key, bytes memory value) external {
+    function universalReceiver(
+        address vaultadd,
+        bytes32 key,
+        bytes memory value
+    ) external {
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
 

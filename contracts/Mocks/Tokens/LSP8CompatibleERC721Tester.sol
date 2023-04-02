@@ -23,7 +23,11 @@ contract LSP8CompatibleERC721Tester is LSP8CompatibleERC721 {
         _setData(_LSP4_METADATA_KEY, tokenURIValue_);
     }
 
-    function mint(address to, uint256 tokenId, bytes calldata data) public {
+    function mint(
+        address to,
+        uint256 tokenId,
+        bytes calldata data
+    ) public {
         // using allowNonLSP1Recipient=true so we can send to EOA in test
         _mint(to, bytes32(tokenId), true, data);
     }

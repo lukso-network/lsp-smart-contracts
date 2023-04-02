@@ -29,10 +29,11 @@ contract UniversalReceiverDelegateVaultMalicious is ERC165Storage {
         _registerInterface(_INTERFACEID_LSP1);
     }
 
-    function universalReceiver(
-        bytes32 typeId,
-        bytes memory data
-    ) public virtual returns (bytes memory) {
+    function universalReceiver(bytes32 typeId, bytes memory data)
+        public
+        virtual
+        returns (bytes memory)
+    {
         if (typeId == keccak256(abi.encodePacked("setData"))) {
             if (data[0] == 0x00) {
                 IERC725Y(msg.sender).setData(

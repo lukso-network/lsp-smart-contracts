@@ -14,7 +14,11 @@ abstract contract LSP7Burnable is LSP7DigitalAssetCore {
      *
      * See internal _burn function for more details
      */
-    function burn(address from, uint256 amount, bytes memory data) public {
+    function burn(
+        address from,
+        uint256 amount,
+        bytes memory data
+    ) public {
         _burn(from, amount, data);
     }
 }

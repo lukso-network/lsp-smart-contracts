@@ -29,8 +29,8 @@ interface ILSP1UniversalReceiver {
      *
      * Emits a {UniversalReceiver} event
      */
-    function universalReceiver(
-        bytes32 typeId,
-        bytes calldata data
-    ) external payable returns (bytes memory);
+    function universalReceiver(bytes32 typeId, bytes calldata data)
+        external
+        payable
+        returns (bytes memory);
 }
