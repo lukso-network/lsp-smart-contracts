@@ -157,6 +157,57 @@ export async function setupProfileWithKeyManagerWithURD(
 }
 
 /**
+ * Sets the permissions for a LSP11 Social Recovery contract
+ * on a `universalProfile` via `lsp6KeyManager`
+ */
+export async function grantPermissionViaKeyManagerFixture(
+  EOA: SignerWithAddress,
+  universalProfile,
+  lsp6KeyManager,
+  addressToGrant
+) {
+  const rawPermissionArrayLength = await universalProfile.callStatic[
+    "getData(bytes32)"
+  ](ERC725YDataKeys.LSP6["AddressPermissions[]"].length);
+
+  let permissionArrayLength = ethers.BigNumber.from(
+    rawPermissionArrayLength
+  ).toNumber();
+
+  const newPermissionArrayLength = permissionArrayLength + 1;
+  const newRawPermissionArrayLength = ethers.utils.hexZeroPad(
+    ethers.utils.hexValue(newPermissionArrayLength),
+    16
+  );
+
+  // TODO: does the LSP11 contract still need both of these permissions?
+  // or only the ADDCONTROLLER is enough?
+  const lsp11SocialRecoveryPermissions = combinePermissions(
+    PERMISSIONS.ADDCONTROLLER,
+    PERMISSIONS.EDITPERMISSIONS
+  );
+
+  const payload = universalProfile.interface.encodeFunctionData(
+    "setData(bytes32[],bytes[])",
+    [
+      [
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
+          rawPermissionArrayLength.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          addressToGrant.substring(2),
+      ],
+      [
+        newRawPermissionArrayLength,
+        addressToGrant,
+        lsp11SocialRecoveryPermissions,
+      ],
+    ]
+  );
+  await lsp6KeyManager.connect(EOA)["execute(bytes)"](payload);
+}
+
+/**
  * Returns the payload of Call operation with 0 value
  */
 export function callPayload(from: any, to: string, abi: string) {
