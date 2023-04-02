@@ -160,7 +160,7 @@ export async function setupProfileWithKeyManagerWithURD(
  * Sets the permissions for a LSP11 Social Recovery contract
  * on a `universalProfile` via `lsp6KeyManager`
  */
-export async function grantPermissionViaKeyManagerFixture(
+export async function grantLSP11PermissionViaKeyManager(
   EOA: SignerWithAddress,
   universalProfile,
   lsp6KeyManager,
@@ -180,12 +180,10 @@ export async function grantPermissionViaKeyManagerFixture(
     16
   );
 
-  // TODO: does the LSP11 contract still need both of these permissions?
-  // or only the ADDCONTROLLER is enough?
-  const lsp11SocialRecoveryPermissions = combinePermissions(
-    PERMISSIONS.ADDCONTROLLER,
-    PERMISSIONS.EDITPERMISSIONS
-  );
+  // if the main controller lost access to its UP and don't have any new permission
+  // the social recovery contract only needs the permission ADDCONTROLLER
+  // to add a new controller key with some new permissions
+  const lsp11SocialRecoveryPermissions = PERMISSIONS.ADDCONTROLLER;
 
   const payload = universalProfile.interface.encodeFunctionData(
     "setData(bytes32[],bytes[])",

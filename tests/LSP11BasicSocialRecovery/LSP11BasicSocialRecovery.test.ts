@@ -13,7 +13,7 @@ import {
 
 import {
   setupProfileWithKeyManagerWithURD,
-  grantPermissionViaKeyManagerFixture,
+  grantLSP11PermissionViaKeyManager,
 } from "../utils/fixtures";
 
 describe("LSP11BasicSocialRecovery with constructor", () => {
@@ -38,7 +38,7 @@ describe("LSP11BasicSocialRecovery with constructor", () => {
         deployParams.target.address
       );
 
-    await grantPermissionViaKeyManagerFixture(
+    await grantLSP11PermissionViaKeyManager(
       accounts.owner,
       universalProfile,
       lsp6KeyManager,

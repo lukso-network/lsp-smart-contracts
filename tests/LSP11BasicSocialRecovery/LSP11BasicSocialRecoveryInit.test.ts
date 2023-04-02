@@ -16,7 +16,7 @@ import {
 import {
   setupProfileWithKeyManagerWithURD,
   deployProxy,
-  grantPermissionViaKeyManagerFixture,
+  grantLSP11PermissionViaKeyManager,
 } from "../utils/fixtures";
 
 describe("LSP11BasicSocialRecoveryInit with proxy", () => {
@@ -45,7 +45,7 @@ describe("LSP11BasicSocialRecoveryInit with proxy", () => {
       lsp11BasicSocialRecoveryProxy
     );
 
-    await grantPermissionViaKeyManagerFixture(
+    await grantLSP11PermissionViaKeyManager(
       accounts.owner,
       universalProfile,
       lsp6KeyManager,
