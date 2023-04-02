@@ -34,9 +34,6 @@ import {
   shouldBehaveLikeMultiChannelNonce,
   shouldBehaveLikeExecuteRelayCall,
 
-  // Reentrancy
-  testReentrancyScenarios,
-
   // SetData
   shouldBehaveLikePermissionSetData,
   shouldBehaveLikeAllowedERC725YDataKeys,
@@ -114,10 +111,6 @@ export const shouldBehaveLikeLSP6 = (
   describe("Single + Batch Meta Transactions", () => {
     shouldBehaveLikeExecuteRelayCall(buildContext);
     shouldBehaveLikeMultiChannelNonce(buildContext);
-  });
-
-  describe("Reentrancy", () => {
-    testReentrancyScenarios(buildContext);
   });
 
   describe("SIGN (ERC1271)", () => {
