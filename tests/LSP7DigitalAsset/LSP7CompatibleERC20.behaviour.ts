@@ -5,7 +5,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumber, ContractTransaction } from "ethers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
 
-import { INTERFACE_IDS, SupportedStandards } from "../../../constants";
+import { INTERFACE_IDS, SupportedStandards } from "../../constants";
 import {
   CheckInterface__factory,
   LSP7CompatibleERC20,
@@ -14,8 +14,8 @@ import {
   TokenReceiverWithLSP1__factory,
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
-} from "../../../types";
-import { ERC725YDataKeys } from "../../../constants";
+} from "../../types";
+import { ERC725YDataKeys } from "../../constants";
 
 type LSP7CompatibleERC20TestAccounts = {
   owner: SignerWithAddress;

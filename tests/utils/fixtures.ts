@@ -157,6 +157,55 @@ export async function setupProfileWithKeyManagerWithURD(
 }
 
 /**
+ * Sets the permissions for a LSP11 Social Recovery contract
+ * on a `universalProfile` via `lsp6KeyManager`
+ */
+export async function grantLSP11PermissionViaKeyManager(
+  EOA: SignerWithAddress,
+  universalProfile,
+  lsp6KeyManager,
+  addressToGrant
+) {
+  const rawPermissionArrayLength = await universalProfile.callStatic[
+    "getData(bytes32)"
+  ](ERC725YDataKeys.LSP6["AddressPermissions[]"].length);
+
+  let permissionArrayLength = ethers.BigNumber.from(
+    rawPermissionArrayLength
+  ).toNumber();
+
+  const newPermissionArrayLength = permissionArrayLength + 1;
+  const newRawPermissionArrayLength = ethers.utils.hexZeroPad(
+    ethers.utils.hexValue(newPermissionArrayLength),
+    16
+  );
+
+  // if the main controller lost access to its UP and don't have any new permission
+  // the social recovery contract only needs the permission ADDCONTROLLER
+  // to add a new controller key with some new permissions
+  const lsp11SocialRecoveryPermissions = PERMISSIONS.ADDCONTROLLER;
+
+  const payload = universalProfile.interface.encodeFunctionData(
+    "setData(bytes32[],bytes[])",
+    [
+      [
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
+          rawPermissionArrayLength.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          addressToGrant.substring(2),
+      ],
+      [
+        newRawPermissionArrayLength,
+        addressToGrant,
+        lsp11SocialRecoveryPermissions,
+      ],
+    ]
+  );
+  await lsp6KeyManager.connect(EOA)["execute(bytes)"](payload);
+}
+
+/**
  * Returns the payload of Call operation with 0 value
  */
 export function callPayload(from: any, to: string, abi: string) {

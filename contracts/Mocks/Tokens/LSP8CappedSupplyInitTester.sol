@@ -12,13 +12,13 @@ import {
 
 contract LSP8CappedSupplyInitTester is LSP8CappedSupplyInitAbstract {
     function initialize(
-        string memory name,
-        string memory symbol,
-        address newOwner,
-        uint256 tokenSupplyCap
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 tokenSupplyCap_
     ) public virtual initializer {
-        LSP8IdentifiableDigitalAssetInitAbstract._initialize(name, symbol, newOwner);
-        LSP8CappedSupplyInitAbstract._initialize(tokenSupplyCap);
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_);
+        LSP8CappedSupplyInitAbstract._initialize(tokenSupplyCap_);
     }
 
     function mint(address to, bytes32 tokenId) public {

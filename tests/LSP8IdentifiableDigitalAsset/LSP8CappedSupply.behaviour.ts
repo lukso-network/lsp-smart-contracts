@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { expect } from "chai";
-import { LSP8CappedSupplyTester } from "../../../types";
+import { LSP8CappedSupplyTester } from "../../types";
 
 import type { BigNumber, BytesLike } from "ethers";
 

@@ -22,14 +22,14 @@ contract LSP8CompatibleERC721InitTester is LSP8CompatibleERC721InitAbstract {
     }
 
     function initialize(
-        string memory name,
-        string memory symbol,
-        address newOwner,
-        bytes memory tokenURIValue
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        bytes memory tokenURIValue_
     ) public virtual initializer {
-        LSP8CompatibleERC721InitAbstract._initialize(name, symbol, newOwner);
+        LSP8CompatibleERC721InitAbstract._initialize(name_, symbol_, newOwner_);
 
-        _setData(_LSP4_METADATA_KEY, tokenURIValue);
+        _setData(_LSP4_METADATA_KEY, tokenURIValue_);
     }
 
     function mint(

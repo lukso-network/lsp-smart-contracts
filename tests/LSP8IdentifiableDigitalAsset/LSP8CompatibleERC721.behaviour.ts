@@ -20,13 +20,13 @@ import {
   TokenReceiverWithoutLSP1WithERC721ReceivedInvalid__factory,
   TokenReceiverWithoutLSP1WithERC721Received,
   TokenReceiverWithoutLSP1WithERC721Received__factory,
-} from "../../../types";
-import { tokenIdAsBytes32 } from "../../utils/tokens";
+} from "../../types";
+import { tokenIdAsBytes32 } from "../utils/tokens";
 import {
   ERC725YDataKeys,
   INTERFACE_IDS,
   SupportedStandards,
-} from "../../../constants";
+} from "../../constants";
 
 import type { BytesLike, Contract } from "ethers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
