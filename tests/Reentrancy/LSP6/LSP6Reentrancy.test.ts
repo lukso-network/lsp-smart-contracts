@@ -42,7 +42,7 @@ import {
 
 import { setupKeyManager } from "../../utils/fixtures";
 
-export const testReentrancyScenarios = (
+export const shouldBehaveLikeLSP6ReentrancyScenarios = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
 ) => {
   describe("Basic Reentrancy Scenarios", () => {

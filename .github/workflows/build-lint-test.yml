@@ -63,6 +63,8 @@ jobs:
             "lsp20",
             "lsp20init",
             "universalfactory",
+            "reentrancy",
+            "reentrancyinit",
             "mocks",
           ]
 
