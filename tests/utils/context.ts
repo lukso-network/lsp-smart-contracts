@@ -20,10 +20,3 @@ export type LSP6InternalsTestContext = {
   universalProfile: UniversalProfile;
   keyManagerInternalTester: KeyManagerInternalTester;
 };
-
-export type UniversalProfileContext = {
-  accounts: SignerWithAddress[];
-  owner: SignerWithAddress;
-  universalProfile: UniversalProfile;
-  initialFunding?: BigNumber;
-};

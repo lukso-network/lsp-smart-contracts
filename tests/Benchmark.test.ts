@@ -23,7 +23,6 @@ import {
   CALLTYPE,
 } from "../constants";
 import { LSP6TestContext } from "./utils/context";
-import { UniversalProfileContext } from "./utils/context";
 import {
   setupKeyManager,
   setupProfileWithKeyManagerWithURD,
@@ -35,6 +34,17 @@ import {
 } from "./utils/helpers";
 import { BigNumber } from "ethers";
 import { token } from "../types/@openzeppelin/contracts";
+
+export type UniversalProfileContext = {
+  accounts: SignerWithAddress[];
+  owner: SignerWithAddress;
+  universalProfile: UniversalProfile;
+  initialFunding?: BigNumber;
+};
+
+function generateRandomData(length) {
+  return ethers.utils.hexlify(ethers.utils.randomBytes(length));
+}
 
 const buildLSP6TestContext = async (
   initialFunding?: BigNumber
@@ -91,7 +101,8 @@ describe("⛽📊 Gas Benchmark", () => {
             ethers.utils.parseEther("50")
           );
         });
-        it("Sending LYX from UP to EOA without data", async () => {
+
+        it("Transfer 1 LYX to an EOA without data", async () => {
           const tx = await context.universalProfile
             .connect(context.owner)
             ["execute(uint256,address,uint256,bytes)"](
@@ -104,12 +115,12 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           executeUP.push([
-            "transfer LYX from UP to an EOA without data",
+            "Transfer 1 LYX to an EOA without data",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Sending LYX from UP to UP without data", async () => {
+        it("Transfer 1 LYX to a UP without data", async () => {
           const tx = await context.universalProfile
             .connect(context.owner)
             ["execute(uint256,address,uint256,bytes)"](
@@ -122,44 +133,43 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           executeUP.push([
-            "transfer LYX from UP to an UP without data",
+            "Transfer 1 LYX to a UP without data",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Sending LYX from UP to EOA with random data 256 bytes", async () => {
+        it("Transfer 1 LYX to an EOA with 256 bytes of data", async () => {
           const tx = await context.universalProfile
             .connect(context.owner)
             ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.accounts[1].address,
               ethers.utils.parseEther("1"),
-              ethers.utils.hexlify(ethers.utils.randomBytes(256))
+              generateRandomData(256)
             );
 
           const receipt = await tx.wait();
 
           executeUP.push([
-            "transfer LYX from UP to an EOA with 256 bytes data",
+            "Transfer 1 LYX to an EOA with 256 bytes of data",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Sending LYX from UP to UP with random data 256 bytes prefixed with 4 zeros", async () => {
+        it("Transfer 1 LYX to a UP with 256 bytes of data", async () => {
           const tx = await context.universalProfile
             .connect(context.owner)
             ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.universalProfile.address,
               ethers.utils.parseEther("1"),
-              "0x00000000" +
-                ethers.utils.hexlify(ethers.utils.randomBytes(252)).substr(2)
+              ethers.utils.hexConcat(["0x00000000", generateRandomData(252)])
             );
 
           const receipt = await tx.wait();
 
           executeUP.push([
-            "transfer LYX from UP to an UP with 256 bytes",
+            "Transfer 1 LYX to a UP with 256 bytes of data",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
@@ -167,6 +177,7 @@ describe("⛽📊 Gas Benchmark", () => {
 
       describe("execute Array", () => {
         let universalProfile1, universalProfile2, universalProfile3;
+
         before(async () => {
           context = await buildUniversalProfileContext(
             ethers.utils.parseEther("50")
@@ -184,7 +195,8 @@ describe("⛽📊 Gas Benchmark", () => {
             context.owner
           ).deploy(context.accounts[4].address);
         });
-        it("Sending LYX from UP to 3x EOA without data", async () => {
+
+        it("Transfer 0.1 LYX to 3x EOA without data", async () => {
           const tx = await context.universalProfile
             .connect(context.owner)
             ["execute(uint256[],address[],uint256[],bytes[])"](
@@ -209,12 +221,12 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           executeUP.push([
-            "transfer LYX from UP to 3x EOA without data",
+            "Transfer 0.1 LYX to 3x EOA without data",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Sending LYX from UP to 3 UP without data", async () => {
+        it("Transfer 0.1 LYX to 3x UP without data", async () => {
           const tx = await context.universalProfile
             .connect(context.owner)
             ["execute(uint256[],address[],uint256[],bytes[])"](
@@ -239,12 +251,12 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           executeUP.push([
-            "transfer LYX from UP to 3x UP without data",
+            "Transfer 0.1 LYX to 3x UP without data",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Sending LYX from UP to EOA with random data 256 bytes", async () => {
+        it("Transfer 0.1 LYX to 3x EOA with 256 bytes of data", async () => {
           const tx = await context.universalProfile
             .connect(context.owner)
             ["execute(uint256[],address[],uint256[],bytes[])"](
@@ -264,24 +276,25 @@ describe("⛽📊 Gas Benchmark", () => {
                 ethers.utils.parseEther("0.1"),
               ],
               [
-                ethers.utils.hexlify(ethers.utils.randomBytes(256)),
-                ethers.utils.hexlify(ethers.utils.randomBytes(256)),
-                ethers.utils.hexlify(ethers.utils.randomBytes(256)),
+                generateRandomData(256),
+                generateRandomData(256),
+                generateRandomData(256),
               ]
             );
 
           const receipt = await tx.wait();
 
           executeUP.push([
-            "transfer LYX from UP to 3x EOA with 256 bytes data",
+            "Transfer 0.1 LYX to 3x EOA with 256 bytes of data",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Sending LYX from UP to UP with random data 256 bytes prefixed with 4 zeros", async () => {
-          const random256BytesData =
-            "0x00000000" +
-            ethers.utils.hexlify(ethers.utils.randomBytes(252)).substr(2);
+        it("Transfer 0.1 LYX to 3x UP with 256 bytes of data", async () => {
+          const random256BytesData = ethers.utils.hexConcat([
+            "0x00000000",
+            generateRandomData(252),
+          ]);
 
           const tx = await context.universalProfile
             .connect(context.owner)
@@ -307,7 +320,7 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           executeUP.push([
-            "transfer LYX from UP to 3x UP with 256 bytes data",
+            "Transfer 0.1 LYX to 3x EOA with 256 bytes of data",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
@@ -331,9 +344,10 @@ describe("⛽📊 Gas Benchmark", () => {
             ethers.utils.parseEther("50")
           );
         });
-        it("setting data of length 20 bytes", async () => {
+
+        it("Set a 20 bytes long value", async () => {
           let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
-          let value = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+          let value = generateRandomData(20);
 
           const tx = await context.universalProfile["setData(bytes32,bytes)"](
             key,
@@ -343,16 +357,16 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "setting data of length 20 bytes",
+            "Set a 20 bytes long value",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("setting data of length 60 bytes", async () => {
+        it("Set a 60 bytes long value", async () => {
           let key = ethers.utils.keccak256(
             ethers.utils.toUtf8Bytes("My Other Key")
           );
-          let value = ethers.utils.hexlify(ethers.utils.randomBytes(60));
+          let value = generateRandomData(60);
 
           const tx = await context.universalProfile["setData(bytes32,bytes)"](
             key,
@@ -362,16 +376,16 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "setting data of length 60 bytes",
+            "Set a 60 bytes long value",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("setting data of length 160 bytes", async () => {
+        it("Set a 160 bytes long value", async () => {
           let key = ethers.utils.keccak256(
             ethers.utils.toUtf8Bytes("My Third Key")
           );
-          let value = ethers.utils.hexlify(ethers.utils.randomBytes(160));
+          let value = generateRandomData(160);
 
           const tx = await context.universalProfile["setData(bytes32,bytes)"](
             key,
@@ -381,16 +395,16 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "setting data of length 160 bytes",
+            "Set a 160 bytes long value",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("setting data of length 300 bytes", async () => {
+        it("Set a 300 bytes long value", async () => {
           let key = ethers.utils.keccak256(
             ethers.utils.toUtf8Bytes("My Fourth Key")
           );
-          let value = ethers.utils.hexlify(ethers.utils.randomBytes(300));
+          let value = generateRandomData(300);
 
           const tx = await context.universalProfile["setData(bytes32,bytes)"](
             key,
@@ -400,16 +414,16 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "setting data of length 300 bytes",
+            "Set a 300 bytes long value",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("setting data of length 600 bytes", async () => {
+        it("Set a 600 bytes long value", async () => {
           let key = ethers.utils.keccak256(
             ethers.utils.toUtf8Bytes("My Fifth Key")
           );
-          let value = ethers.utils.hexlify(ethers.utils.randomBytes(600));
+          let value = generateRandomData(600);
 
           const tx = await context.universalProfile["setData(bytes32,bytes)"](
             key,
@@ -419,17 +433,17 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "setting data of length 600 bytes",
+            "Set a 600 bytes long value",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("changing the value of a data key already set", async () => {
+        it("Change the value of a data key already set", async () => {
           let key = ethers.utils.keccak256(
             ethers.utils.toUtf8Bytes("My Fifth Key")
           );
-          let value1 = ethers.utils.hexlify(ethers.utils.randomBytes(20));
-          let value2 = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+          let value1 = generateRandomData(20);
+          let value2 = generateRandomData(20);
 
           await context.universalProfile["setData(bytes32,bytes)"](key, value1);
 
@@ -441,16 +455,16 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "changing the value of a data key already set",
+            "Change the value of a data key already set",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("removing a data key already set", async () => {
+        it("Remove the value of a data key already set", async () => {
           let key = ethers.utils.keccak256(
             ethers.utils.toUtf8Bytes("My Fifth Key")
           );
-          let value = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+          let value = generateRandomData(20);
 
           await context.universalProfile["setData(bytes32,bytes)"](key, value);
 
@@ -462,7 +476,7 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "removing a data key already set",
+            "Remove the value of a data key already set",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
@@ -474,12 +488,13 @@ describe("⛽📊 Gas Benchmark", () => {
             ethers.utils.parseEther("50")
           );
         });
-        it("setting two keys with data of length 20 bytes", async () => {
+
+        it("Set 2 data keys of 20 bytes long value", async () => {
           let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key1"));
-          let value1 = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+          let value1 = generateRandomData(20);
 
           let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key2"));
-          let value2 = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+          let value2 = generateRandomData(20);
 
           const tx = await context.universalProfile[
             "setData(bytes32[],bytes[])"
@@ -488,17 +503,17 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "setting 2 keys with data of length 20 bytes",
+            "Set 2 data keys of 20 bytes long value",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("setting two keys with data of length 100 bytes", async () => {
+        it("Set 2 data keys of 100 bytes long value", async () => {
           let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key3"));
-          let value1 = ethers.utils.hexlify(ethers.utils.randomBytes(100));
+          let value1 = generateRandomData(100);
 
           let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key4"));
-          let value2 = ethers.utils.hexlify(ethers.utils.randomBytes(100));
+          let value2 = generateRandomData(100);
 
           const tx = await context.universalProfile[
             "setData(bytes32[],bytes[])"
@@ -507,20 +522,20 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "setting 2 keys with data of length 100 bytes",
+            "Set 2 data keys of 100 bytes long value",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("setting three keys with data of length 20 bytes", async () => {
+        it("Set 3 data keys of 20 bytes long value", async () => {
           let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key5"));
-          let value1 = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+          let value1 = generateRandomData(20);
 
           let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key6"));
-          let value2 = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+          let value2 = generateRandomData(20);
 
           let key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key7"));
-          let value3 = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+          let value3 = generateRandomData(20);
 
           const tx = await context.universalProfile[
             "setData(bytes32[],bytes[])"
@@ -529,20 +544,20 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "setting 3 keys with data of length 20 bytes",
+            "Set 3 data keys of 20 bytes long value",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("changing the value of three keys already set length 20 bytes", async () => {
+        it("Change the value of three data keys already set of 20 bytes long value", async () => {
           let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key8"));
-          let value1 = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+          let value1 = generateRandomData(20);
 
           let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key9"));
-          let value2 = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+          let value2 = generateRandomData(20);
 
           let key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key10"));
-          let value3 = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+          let value3 = generateRandomData(20);
 
           await context.universalProfile["setData(bytes32[],bytes[])"](
             [key1, key2, key3],
@@ -556,20 +571,20 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "changing the value of three keys already set length 20 bytes",
+            "Change the value of three data keys already set of 20 bytes long value",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("removing the value of three keys already set", async () => {
+        it("Remove the value of three data keys already set", async () => {
           let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key11"));
-          let value1 = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+          let value1 = generateRandomData(20);
 
           let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key12"));
-          let value2 = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+          let value2 = generateRandomData(20);
 
           let key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key13"));
-          let value3 = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+          let value3 = generateRandomData(20);
 
           await context.universalProfile["setData(bytes32[],bytes[])"](
             [key1, key2, key3],
@@ -583,7 +598,7 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "removing the value of three keys already set",
+            "Remove the value of three data keys already set",
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
@@ -604,6 +619,7 @@ describe("⛽📊 Gas Benchmark", () => {
       let lsp7Token: LSP7Mintable;
       let lsp8Token: LSP8Mintable;
       let universalProfile1;
+
       before(async () => {
         context = await buildUniversalProfileContext(
           ethers.utils.parseEther("50")
@@ -698,6 +714,7 @@ describe("⛽📊 Gas Benchmark", () => {
           "0x0000000000000000000000000000000000000000000000000000000000000003",
           "0x0000000000000000000000000000000000000000000000000000000000000004",
         ];
+
         it("when minting LSP8Token to a UP without data", async () => {
           const tx = await lsp8Token.mint(
             context.universalProfile.address,
@@ -1638,8 +1655,6 @@ describe("⛽📊 Gas Benchmark", () => {
 
 <details>
 <summary>⛽📊 See Gas Benchmark report of Using UniversalProfile owned by an EOA</summary>
-
-This document contains the gas usage for common interactions and scenarios when using UniversalProfile smart contracts.
 
 ### 🔀 \`execute\` scenarios
 
