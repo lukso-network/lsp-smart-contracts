@@ -2,7 +2,7 @@
 import { BigNumber } from "ethers";
 
 // setup
-import { LSP6TestContext } from "../../../utils/context";
+import { LSP6TestContext } from "../../utils/context";
 import { buildReentrancyContext } from "./reentrancyHelpers";
 
 // tests
@@ -12,7 +12,7 @@ import { testERC725XExecuteToLSP6ExecuteRelayCall } from "./ERC725XExecuteToLSP6
 import { testERC725XBatchExecuteToERC725XExecute } from "./ERC725XBatchExecuteToERC725XExecute.test";
 import { testERC725XExecuteToLSP6BatchExecuteRelayCall } from "./ERC725XExecuteToLSP6BatchExecuteRelayCall.test";
 
-export const testReentrancyScenarios = (
+export const shouldBehaveLikeLSP20WithLSP6ReentrancyScenarios = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
 ) => {
   describe("first call through `execute(bytes)`, second call through `execute(bytes)`", () => {

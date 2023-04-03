@@ -27,9 +27,6 @@ export * from "./Interactions/BatchExecute.test";
 export * from "./Relay/MultiChannelNonce.test";
 export * from "./Relay/ExecuteRelayCall.test";
 
-// Reentrancy
-export * from "./Reentrancy/Reentrancy.test";
-
 // Set Data
 export * from "./SetData/PermissionSetData.test";
 export * from "./SetData/AllowedERC725YDataKeys.test";
