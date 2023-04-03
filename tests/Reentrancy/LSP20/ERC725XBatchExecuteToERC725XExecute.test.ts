@@ -5,7 +5,7 @@ import { ethers } from "hardhat";
 import { BigNumber, BytesLike } from "ethers";
 
 // constants
-import { ERC725YDataKeys } from "../../../constants";
+import { ALL_PERMISSIONS, ERC725YDataKeys } from "../../../constants";
 
 // setup
 import { LSP6TestContext } from "../../utils/context";
@@ -302,8 +302,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         reentrancyContext.newControllerAddress.substring(2);
-      const hardcodedPermissionValue =
-        "0x0000000000000000000000000000000000000000000000000000000000000010";
+      const hardcodedPermissionValue = ALL_PERMISSIONS;
 
       expect(
         await context.universalProfile["getData(bytes32)"](

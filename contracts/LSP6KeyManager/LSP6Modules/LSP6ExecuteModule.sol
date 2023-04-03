@@ -85,7 +85,7 @@ abstract contract LSP6ExecuteModule {
 
             // CHECK the offset of `data` is not pointing to the previous parameters
             if (
-                bytes32(singlePayload[100:132]) !=
+                bytes32(BytesLib.slice(singlePayload, 100, 32)) !=
                 0x0000000000000000000000000000000000000000000000000000000000000080
             ) {
                 revert InvalidPayload(singlePayload);
@@ -119,7 +119,13 @@ abstract contract LSP6ExecuteModule {
 
             // if it is a message call
             if (operationType == OPERATION_0_CALL) {
-                return _verifyCanCall(controlledContract, controller, permissions, payload);
+                return
+                    _verifyCanCallMemory(
+                        controlledContract,
+                        controller,
+                        permissions,
+                        singlePayload
+                    );
             }
 
             // if it is a contract creation
@@ -135,7 +141,13 @@ abstract contract LSP6ExecuteModule {
             // we do not check for TRANSFERVALUE permission,
             // as ERC725X will revert if a value is provided with operation type STATICCALL.
             if (operationType == OPERATION_3_STATICCALL) {
-                return _verifyCanStaticCall(controlledContract, controller, permissions, payload);
+                return
+                    _verifyCanStaticCallMemory(
+                        controlledContract,
+                        controller,
+                        permissions,
+                        singlePayload
+                    );
             }
 
             // DELEGATECALL is disallowed by default on the Key Manager.
@@ -234,6 +246,22 @@ abstract contract LSP6ExecuteModule {
         }
     }
 
+    function _verifyCanStaticCallMemory(
+        address controlledContract,
+        address controller,
+        bytes32 permissions,
+        bytes memory payload
+    ) internal view virtual {
+        bool hasSuperStaticCall = permissions.hasPermission(_PERMISSION_SUPER_STATICCALL);
+
+        // Skip if caller has SUPER permission for static calls
+        if (hasSuperStaticCall) return;
+
+        _requirePermissions(controller, permissions, _PERMISSION_STATICCALL);
+
+        _verifyAllowedCallMemory(controlledContract, controller, payload);
+    }
+
     function _verifyCanStaticCall(
         address controlledContract,
         address controller,
@@ -248,6 +276,56 @@ abstract contract LSP6ExecuteModule {
         _requirePermissions(controller, permissions, _PERMISSION_STATICCALL);
 
         _verifyAllowedCall(controlledContract, controller, payload);
+    }
+
+    function _verifyCanCallMemory(
+        address controlledContract,
+        address controller,
+        bytes32 permissions,
+        bytes memory payload
+    ) internal view virtual {
+        bool isTransferringValue = uint256(bytes32(BytesLib.slice(payload, 68, 32))) != 0;
+
+        bool hasSuperTransferValue = permissions.hasPermission(_PERMISSION_SUPER_TRANSFERVALUE);
+
+        // all the parameters are abi-encoded (padded to 32 bytes words)
+        //
+        //    4 (ERC725X.execute selector)
+        // + 32 (uint256 operationType)
+        // + 32 (address to/target)
+        // + 32 (uint256 value)
+        // + 32 (`data` offset)
+        // + 32 (`data` length)
+        // --------------------
+        // = 164 bytes in total
+        bool isCallDataPresent = payload.length > 164;
+
+        bool hasSuperCall = permissions.hasPermission(_PERMISSION_SUPER_CALL);
+
+        if (isTransferringValue && !hasSuperTransferValue) {
+            _requirePermissions(controller, permissions, _PERMISSION_TRANSFERVALUE);
+        }
+
+        // CHECK if we are doing an empty call, as the receive() or fallback() function
+        // of the controlledContract could run some code.
+        if (!hasSuperCall && !isCallDataPresent && !isTransferringValue) {
+            _requirePermissions(controller, permissions, _PERMISSION_CALL);
+        }
+
+        if (isCallDataPresent && !hasSuperCall) {
+            _requirePermissions(controller, permissions, _PERMISSION_CALL);
+        }
+
+        // Skip if caller has SUPER permissions for external calls, with or without calldata (empty calls)
+        if (hasSuperCall && !isTransferringValue) return;
+
+        // Skip if caller has SUPER permission for value transfers
+        if (hasSuperTransferValue && !isCallDataPresent && isTransferringValue) return;
+
+        // Skip if both SUPER permissions are present
+        if (hasSuperCall && hasSuperTransferValue) return;
+
+        _verifyAllowedCallMemory(controlledContract, controller, payload);
     }
 
     function _verifyCanCall(
@@ -298,6 +376,66 @@ abstract contract LSP6ExecuteModule {
         if (hasSuperCall && hasSuperTransferValue) return;
 
         _verifyAllowedCall(controlledContract, controller, payload);
+    }
+
+    function _verifyAllowedCallMemory(
+        address controlledContract,
+        address controllerAddress,
+        bytes memory payload
+    ) internal view virtual {
+        (
+            uint256 operationType,
+            address to,
+            uint256 value,
+            bytes4 selector
+        ) = _extractExecuteParametersMemory(payload);
+
+        // CHECK for ALLOWED CALLS
+        bytes memory allowedCalls = ERC725Y(controlledContract).getAllowedCallsFor(
+            controllerAddress
+        );
+
+        if (allowedCalls.length == 0) {
+            revert NoCallsAllowed(controllerAddress);
+        }
+
+        bytes4 requiredCallTypes = _extractCallType(operationType, selector, value);
+
+        for (uint256 ii; ii < allowedCalls.length; ii += 34) {
+            /// @dev structure of an AllowedCall
+            //
+            /// AllowedCall = 0x00200000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
+            ///
+            ///                                     0020 = hex for '32' bytes long
+            ///                                 0000000n = call type(s)
+            /// cafecafecafecafecafecafecafecafecafecafe = address
+            ///                                 5a5a5a5a = standard
+            ///                                 f1f1f1f1 = function
+
+            // CHECK that we can extract an AllowedCall
+            if (ii + 34 > allowedCalls.length) {
+                revert InvalidEncodedAllowedCalls(allowedCalls);
+            }
+
+            // extract one AllowedCall at a time
+            bytes memory allowedCall = BytesLib.slice(allowedCalls, ii + 2, 32);
+
+            // 0xxxxxxxxxffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            // (excluding the callTypes) not allowed
+            // as equivalent to whitelisting any call (= SUPER permission)
+            if (bytes28(bytes32(allowedCall) << 32) == bytes28(type(uint224).max)) {
+                revert InvalidWhitelistedCall(controllerAddress);
+            }
+
+            if (
+                _isAllowedCallType(allowedCall, requiredCallTypes) &&
+                _isAllowedAddress(allowedCall, to) &&
+                _isAllowedStandard(allowedCall, to) &&
+                _isAllowedFunction(allowedCall, selector)
+            ) return;
+        }
+
+        revert NotAllowedCall(controllerAddress, to, selector);
     }
 
     function _verifyAllowedCall(
@@ -394,6 +532,28 @@ abstract contract LSP6ExecuteModule {
         }
 
         return requiredCallTypes;
+    }
+
+    function _extractExecuteParametersMemory(bytes memory executeCalldata)
+        internal
+        pure
+        returns (
+            uint256,
+            address,
+            uint256,
+            bytes4
+        )
+    {
+        uint256 operationType = uint256(bytes32(BytesLib.slice(executeCalldata, 4, 32)));
+        address to = address(bytes20(BytesLib.slice(executeCalldata, 48, 20)));
+        uint256 value = uint256(bytes32(BytesLib.slice(executeCalldata, 68, 32)));
+
+        // CHECK if there is at least a 4 bytes function selector
+        bytes4 selector = executeCalldata.length >= 168
+            ? bytes4(BytesLib.slice(executeCalldata, 164, 4))
+            : bytes4(0);
+
+        return (operationType, to, value, selector);
     }
 
     function _extractExecuteParameters(bytes calldata executeCalldata)
