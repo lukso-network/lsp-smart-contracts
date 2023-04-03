@@ -6,17 +6,17 @@ import {
   UniversalProfile,
   LSP6KeyManager,
   UniversalReceiverDelegateTokenReentrant__factory,
-} from "../../../types";
+} from "../../types";
 
-import { setupProfileWithKeyManagerWithURD } from "../../utils/fixtures";
+import { setupProfileWithKeyManagerWithURD } from "../utils/fixtures";
 
 import {
   PERMISSIONS,
   ERC725YDataKeys,
   OPERATION_TYPES,
   CALLTYPE,
-} from "../../../constants";
-import { combineAllowedCalls, combinePermissions } from "../../utils/helpers";
+} from "../../constants";
+import { combineAllowedCalls, combinePermissions } from "../utils/helpers";
 
 export type LSP8MintableTestAccounts = {
   owner: SignerWithAddress;

@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { expect } from "chai";
 
-import { LSP8EnumerableTester } from "../../../types";
+import { LSP8EnumerableTester } from "../../types";
 
 export type LSP8EnumerableTestAccounts = {
   owner: SignerWithAddress;
