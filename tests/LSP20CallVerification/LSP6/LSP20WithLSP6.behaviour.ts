@@ -2,11 +2,17 @@ import { BigNumber } from "ethers";
 import { LSP6TestContext } from "../../utils/context";
 
 import {
+  // Admin
   shouldBehaveLikePermissionChangeOwner,
-  shouldBehaveLikePermissionChangeOrAddController,
   shouldBehaveLikePermissionChangeOrAddExtensions,
   shouldBehaveLikePermissionChangeOrAddURD,
-  shouldBehaveLikePermissionSetData,
+
+  // Set Permissions
+  shouldBehaveLikePermissionChangeOrAddController,
+  shouldBehaveLikeSetAllowedCalls,
+  shouldBehaveLikeSetAllowedERC725YDataKeys,
+
+  // Interactions
   shouldBehaveLikePermissionCall,
   shouldBehaveLikePermissionStaticCall,
   shouldBehaveLikePermissionDelegateCall,
@@ -15,7 +21,12 @@ import {
   shouldBehaveLikeAllowedAddresses,
   shouldBehaveLikeAllowedFunctions,
   shouldBehaveLikeAllowedStandards,
+
+  // Set Data
   shouldBehaveLikeAllowedERC725YDataKeys,
+  shouldBehaveLikePermissionSetData,
+
+  // other scenarios
   testSecurityScenarios,
   otherTestScenarios,
   testReentrancyScenarios,
@@ -28,8 +39,10 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionChangeOwner(buildContext);
   });
 
-  describe("CHANGE / ADD permissions", () => {
+  describe("Set Permissions", () => {
     shouldBehaveLikePermissionChangeOrAddController(buildContext);
+    shouldBehaveLikeSetAllowedCalls(buildContext);
+    shouldBehaveLikeSetAllowedERC725YDataKeys(buildContext);
   });
 
   describe("CHANGE / ADD extensions", () => {
@@ -42,6 +55,10 @@ export const shouldBehaveLikeLSP6 = (
 
   describe("SETDATA", () => {
     shouldBehaveLikePermissionSetData(buildContext);
+  });
+
+  describe("AllowedERC725YDataKeys", () => {
+    shouldBehaveLikeAllowedERC725YDataKeys(buildContext);
   });
 
   describe("CALL", () => {
@@ -68,10 +85,6 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikeAllowedAddresses(buildContext);
     shouldBehaveLikeAllowedFunctions(buildContext);
     shouldBehaveLikeAllowedStandards(buildContext);
-  });
-
-  describe("AllowedERC725YDataKeys", () => {
-    shouldBehaveLikeAllowedERC725YDataKeys(buildContext);
   });
 
   describe("miscellaneous", () => {

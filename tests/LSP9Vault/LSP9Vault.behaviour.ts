@@ -1000,7 +1000,7 @@ export const shouldInitializeLikeLSP9 = (
 ) => {
   let context: LSP9InitializeTestContext;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
   });
 

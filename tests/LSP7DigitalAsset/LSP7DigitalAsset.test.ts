@@ -82,7 +82,7 @@ describe("LSP7", () => {
       describe("once the contract was deployed", () => {
         let context: LSP7TestContext;
 
-        beforeEach(async () => {
+        before(async () => {
           context = await buildTestContext();
         });
 
@@ -160,7 +160,7 @@ describe("LSP7", () => {
     describe("when deploying the contract as proxy", () => {
       let context: LSP7TestContext;
 
-      beforeEach(async () => {
+      before(async () => {
         context = await buildTestContext();
       });
 
@@ -190,8 +190,6 @@ describe("LSP7", () => {
 
       describe("when calling initialize more than once", () => {
         it("should revert", async () => {
-          await initializeProxy(context);
-
           await expect(initializeProxy(context)).to.be.revertedWith(
             "Initializable: contract is already initialized"
           );
