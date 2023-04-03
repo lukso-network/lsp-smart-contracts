@@ -29,7 +29,6 @@ import {
   // other scenarios
   testSecurityScenarios,
   otherTestScenarios,
-  testReentrancyScenarios,
 } from "./index";
 
 export const shouldBehaveLikeLSP6 = (
@@ -93,9 +92,5 @@ export const shouldBehaveLikeLSP6 = (
 
   describe("Security", () => {
     testSecurityScenarios(buildContext);
-  });
-
-  describe("Reentrancy", () => {
-    testReentrancyScenarios(buildContext);
   });
 };

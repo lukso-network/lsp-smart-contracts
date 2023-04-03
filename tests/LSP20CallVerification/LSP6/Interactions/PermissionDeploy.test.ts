@@ -2,7 +2,6 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { calculateCreate2 } from "eth-create2-calculator";
-import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 import { TargetContract__factory } from "../../../../types";
 

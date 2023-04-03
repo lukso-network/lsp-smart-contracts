@@ -3,6 +3,8 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 
+import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
+
 import "../../../contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 contract LSP2UtilsTests is Test {
@@ -115,6 +117,23 @@ contract LSP2UtilsTests is Test {
         );
 
         LSP2Utils.isCompactBytesArray(data);
+    }
+
+    function testShouldConcatenateMappingWithGroupingKey(
+        bytes6 keyPrefix,
+        bytes4 mapPrefix,
+        bytes20 subMapKey
+    ) public {
+        bytes32 lsp2Generated = LSP2Utils.generateMappingWithGroupingKey(
+            keyPrefix,
+            mapPrefix,
+            subMapKey
+        );
+
+        assertEq32(
+            bytes32(abi.encodePacked(keyPrefix, mapPrefix, bytes2(0), subMapKey)),
+            lsp2Generated
+        );
     }
 
     function _generateRandomBytes(uint256 length) private view returns (bytes memory) {
