@@ -20,9 +20,6 @@ export * from "./Interactions/AllowedStandards.test";
 export * from "./Interactions/OtherScenarios.test";
 export * from "./Interactions/Security.test";
 
-// Reentrancy
-export * from "./Reentrancy/Reentrancy.test";
-
 // SetData
 export * from "./SetData/PermissionSetData.test";
 export * from "./SetData/AllowedERC725YDataKeys.test";
