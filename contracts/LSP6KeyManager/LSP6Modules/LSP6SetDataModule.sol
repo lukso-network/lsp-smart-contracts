@@ -471,7 +471,6 @@ abstract contract LSP6SetDataModule {
                 allowedKey := and(memoryAt, mask)
             }
 
-            // voila you found the key ;)
             if (allowedKey == (inputDataKey & mask)) return;
 
             // move the pointer to the index of the next allowed data key

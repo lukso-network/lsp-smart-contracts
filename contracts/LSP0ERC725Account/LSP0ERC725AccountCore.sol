@@ -3,6 +3,7 @@ pragma solidity ^0.8.4;
 
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
+import {ILSP0ERC725Account} from "./ILSP0ERC725Account.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import {ILSP20CallVerification} from "../LSP20CallVerification/ILSP20CallVerification.sol";
 
@@ -79,10 +80,10 @@ import {NoExtensionFoundForFunctionSelector} from "../LSP17ContractExtension/LSP
  *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-20-CallVerification.md
  */
 abstract contract LSP0ERC725AccountCore is
+    IERC1271,
+    ILSP0ERC725Account,
     ERC725XCore,
     ERC725YCore,
-    IERC1271,
-    ILSP1UniversalReceiver,
     LSP14Ownable2Step,
     LSP17Extendable,
     LSP20CallVerification
@@ -92,14 +93,7 @@ abstract contract LSP0ERC725AccountCore is
     using Address for address;
 
     /**
-     * @notice Emitted when receiving native tokens
-     * @param sender The address of the sender
-     * @param value The amount of native tokens received
-     */
-    event ValueReceived(address indexed sender, uint256 indexed value);
-
-    /**
-     * @dev Emits an event when receiving native tokens
+     * @dev Emits a `ValueReceived` event when receiving native tokens.
      *
      * Executed:
      *     - when receiving some native tokens without any additional data.
@@ -119,7 +113,7 @@ abstract contract LSP0ERC725AccountCore is
      * extension address mapped to the function being called.
      *
      * @dev This function:
-     * - Emits {ValueReceived} event when receiving native tokens
+     * - Emits a {ValueReceived} event when receiving native tokens
      *
      * - Returns if the data sent to this function is of length less than 4 bytes (not a function selector)
      *
@@ -202,7 +196,7 @@ abstract contract LSP0ERC725AccountCore is
      *
      * Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4
      * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2
-     * Emits a {ValueReceived} event, when receives native token
+     * Emits a {ValueReceived} event when receiving native tokens.
      */
     function execute(
         uint256 operationType,
@@ -255,7 +249,7 @@ abstract contract LSP0ERC725AccountCore is
      *
      * Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4 (each iteration)
      * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2 (each iteration)
-     * Emits a {ValueReceived} event, when receives native token
+     * Emits a {ValueReceived} event when receiving native tokens.
      */
     function execute(
         uint256[] memory operationsType,
@@ -300,7 +294,7 @@ abstract contract LSP0ERC725AccountCore is
      * - MUST pass when called by the owner or by an authorised address that pass the verification check performed
      * on the owner accordinng to LSP20 - CallVerification specification
      *
-     * Emits a {ValueReceived} event, when receives native token.
+     * Emits a {ValueReceived} event when receiving native tokens.
      * Emits a {DataChanged} event.
      */
     function setData(bytes32 dataKey, bytes memory dataValue) public payable virtual override {
@@ -339,15 +333,13 @@ abstract contract LSP0ERC725AccountCore is
      * - MUST pass when called by the owner or by an authorised address that pass the verification check performed
      * on the owner accordinng to LSP20 - CallVerification specification
      *
-     * Emits a {ValueReceived} event, when receives native token.
+     * Emits a {ValueReceived} event when receiving native tokens.
      * Emits a {DataChanged} event. (on each iteration of setting data)
      */
-    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues)
-        public
-        payable
-        virtual
-        override
-    {
+    function setData(
+        bytes32[] memory dataKeys,
+        bytes[] memory dataValues
+    ) public payable virtual override {
         if (msg.value != 0) {
             emit ValueReceived(msg.sender, msg.value);
         }
@@ -389,7 +381,7 @@ abstract contract LSP0ERC725AccountCore is
      * The reaction is achieved by having two external contracts (UniversalReceiverDelegates) that react on the whole transaction
      * and on the specific typeId, respectively.
      *
-     * The notification is achieved by emitting an event on the call with the function parameters, call options, and the
+     * The notification is achieved by emitting a {UniversalReceiver} event on the call with the function parameters, call options, and the
      * response of the UniversalReceiverDelegates (URD) contract.
      *
      * @dev The function performs the following steps:
@@ -411,7 +403,7 @@ abstract contract LSP0ERC725AccountCore is
      *      - If yes, call this address with the typeId and data (params), along with additional calldata consisting
      *        of 20 bytes of {msg.sender} and 32 bytes of {msg.value}. If not, continue the execution of the function.
      *
-     * - Emits {UniversalReceiver} event.
+     * - Emits a {UniversalReceiver} event.
      *
      * @param typeId The type of call received.
      * @param receivedData The data received.
@@ -419,12 +411,10 @@ abstract contract LSP0ERC725AccountCore is
      * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call
      * and the LSP1TypeIdDelegate call.
      */
-    function universalReceiver(bytes32 typeId, bytes calldata receivedData)
-        public
-        payable
-        virtual
-        returns (bytes memory returnedValues)
-    {
+    function universalReceiver(
+        bytes32 typeId,
+        bytes calldata receivedData
+    ) public payable virtual returns (bytes memory returnedValues) {
         if (msg.value != 0) {
             emit ValueReceived(msg.sender, msg.value);
         }
@@ -499,11 +489,9 @@ abstract contract LSP0ERC725AccountCore is
      *
      * - pending owner cannot accept ownership in the same tx via the LSP1 hook.
      */
-    function transferOwnership(address _pendingOwner)
-        public
-        virtual
-        override(LSP14Ownable2Step, OwnableUnset)
-    {
+    function transferOwnership(
+        address _pendingOwner
+    ) public virtual override(LSP14Ownable2Step, OwnableUnset) {
         address currentOwner = owner();
 
         // If the caller is the owner perform transferOwnership directly
@@ -628,13 +616,9 @@ abstract contract LSP0ERC725AccountCore is
      * `supportsInterface` extension according to LSP17, and checks if the extension
      * implements the interface defined by `interfaceId`.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC725XCore, ERC725YCore, LSP17Extendable)
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC725XCore, ERC725YCore, LSP17Extendable) returns (bool) {
         return
             interfaceId == _INTERFACEID_ERC1271 ||
             interfaceId == _INTERFACEID_LSP0 ||
@@ -670,12 +654,10 @@ abstract contract LSP0ERC725AccountCore is
      *
      * @return magicValue A bytes4 value that indicates if the signature is valid or not.
      */
-    function isValidSignature(bytes32 dataHash, bytes memory signature)
-        public
-        view
-        virtual
-        returns (bytes4 magicValue)
-    {
+    function isValidSignature(
+        bytes32 dataHash,
+        bytes memory signature
+    ) public view virtual returns (bytes4 magicValue) {
         address _owner = owner();
 
         // If owner is a contract
@@ -765,13 +747,9 @@ abstract contract LSP0ERC725AccountCore is
      *
      * If no extension is stored, returns the address(0)
      */
-    function _getExtension(bytes4 functionSelector)
-        internal
-        view
-        virtual
-        override
-        returns (address)
-    {
+    function _getExtension(
+        bytes4 functionSelector
+    ) internal view virtual override returns (address) {
         // Generate the data key relevant for the functionSelector being called
         bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
             _LSP17_EXTENSION_PREFIX,
@@ -785,8 +763,8 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @dev This function overrides the {ERC725YCore} internal {_setData} function to optimize gas usage by emitting the
-     * {DataChanged} event with only the first 256 bytes of {dataValue}.
+     * @dev This function overrides the {ERC725YCore} internal {_setData} function to optimize gas usage by
+     * emitting the {DataChanged} event with only the first 256 bytes of {dataValue}.
      *
      * @param dataKey The key to store the data value under.
      * @param dataValue The data value to be stored.
