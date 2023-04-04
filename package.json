@@ -102,6 +102,7 @@
     "solidity-bytes-utils": "0.8.0"
   },
   "devDependencies": {
+    "@defi-wonderland/smock": "^2.3.4",
     "@erc725/erc725.js": "0.8.0",
     "@lukso/eip191-signer.js": "^0.2.0",
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
