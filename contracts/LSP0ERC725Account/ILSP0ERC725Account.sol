@@ -44,6 +44,13 @@ import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
  */
 interface ILSP0ERC725Account {
     /**
+     * @notice Emitted when receiving native tokens
+     * @param sender The address of the sender
+     * @param value The amount of native tokens received
+     */
+    event ValueReceived(address indexed sender, uint256 indexed value);
+
+    /**
      * @dev Allows a caller to batch different function calls in one call.
      * Perform a delegatecall on self, to call different functions with preserving the context
      * It is not possible to send value along the functions call due to the use of delegatecall.
