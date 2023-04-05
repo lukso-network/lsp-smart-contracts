@@ -1,4 +1,6 @@
 import { expect } from "chai";
+import "@nomiclabs/hardhat-ethers";
+import "@nomicfoundation/hardhat-chai-matchers";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { encodeData, ERC725JSONSchema } from "@erc725/erc725.js";

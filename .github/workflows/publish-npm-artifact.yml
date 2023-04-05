@@ -11,28 +11,28 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Use Node.js '16.15.0'
-        uses: actions/setup-node@v2
+      - name: Use Node.js '16.19.x'
+        uses: actions/setup-node@v3
         with:
-          node-version: "16.15.0"
+          node-version: "16.19.x"
           registry-url: "https://registry.npmjs.org"
           scope: "@lukso"
-          cache: "npm"
+          cache: "yarn"
 
       - name: Install
         run: |
-          npm ci
+          yarn
 
       # This will also generate the Typechain types used by the Chai tests
       - name: Build and Test
         run: |
-          npm run build --if-present
-          npm run test
+          yarn build
+          yarn test
 
       - name: Publish
         run: |
-          npm run build:js
-          npm run package
-          npm publish --access public
+          yarn build:js
+          yarn package
+          yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}

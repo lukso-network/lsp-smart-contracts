@@ -19,14 +19,14 @@ jobs:
         uses: EndBug/version-check@v1
         id: check
 
-      - name: Use Node.js '16.15.0'
-        uses: actions/setup-node@v2
+      - name: Use Node.js '16.19.x'
+        uses: actions/setup-node@v3
         with:
-          node-version: "16.15.0"
-          cache: "npm"
+          node-version: "16.19.x"
+          cache: "yarn"
 
       - name: Install Dependencies
-        run: npm ci
+        run: yarn
 
       # Android artifacts
       - name: Set up our JDK environment
@@ -39,11 +39,11 @@ jobs:
         run: curl -L get.web3j.io | sh
 
       - name: Generate Android artifacts
-        run: npm run build:android
+        run: yarn build:android
 
       # iOS artifacts
       - name: Generate iOS artifacts
-        run: npm run build:ios
+        run: yarn build:ios
 
       # Upload Artifacts
       - name: Upload iOS Artifact

@@ -12,34 +12,44 @@ jobs:
       - uses: actions/checkout@v3
 
       # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-      - name: Use Node.js '16.15.0'
-        uses: actions/setup-node@v2
+      - name: Use Node.js '16.19.x'
+        uses: actions/setup-node@v3
         with:
-          node-version: "16.15.0"
-          cache: "npm"
+          node-version: "16.19.x"
+          cache: "yarn"
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: yarn
 
       - name: 🔍 Run Solidity Linter
-        run: npm run linter
+        run: yarn linter
 
       - name: 🎨 Check Prettier Style
-        run: npx prettier --check .
+        run: yarn format:check
 
       # This will also generate the Typechain types used by the Chai tests
       - name: 🏗️ Build contract artifacts
-        run: npm run build --if-present
+        run: |
+          yarn build
+          yarn build:js
+          yarn pack
+          tar tfz package.tgz
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./package.tgz
 
       - name: 📤 cache dependencies + build
-        uses: actions/cache@v2
+        uses: actions/cache/save@v3
         with:
           path: |
             artifacts
             node_modules
             types
             contracts.ts
-          key: ${{ github.run_id }}
+            .yarn/install-state.gz
+          key: lint-${{ github.run_id }}
 
   test-suites:
     strategy:
@@ -75,25 +85,21 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: 📥 restore cache
-        uses: actions/cache@v2
-        id: "build-cache"
+        uses: actions/cache/restore@v3
         with:
           path: |
             artifacts
             node_modules
             types
             contracts.ts
-          key: ${{ github.run_id }}
+            .yarn/install-state.gz
+          key: lint-${{ github.run_id }}
 
       - name: Use Node.js v16
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "16.x"
-          cache: "npm"
-
-      - name: Install dependencies
-        if: steps.build-cache.outputs.cache-hit != 'true'
-        run: npm ci
+          cache: "yarn"
 
       - name: 🧪 run tests
-        run: npm run test:${{ matrix.lsp }}
+        run: yarn test:${{ matrix.lsp }}

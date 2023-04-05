@@ -33,7 +33,9 @@ describe("LSP20 Init + LSP6 Init with proxy", () => {
   const initializeProxy = async (context: LSP6TestContext) => {
     await context.universalProfile["initialize(address)"](
       context.owner.address,
-      { value: context.initialFunding }
+      {
+        value: context.initialFunding,
+      }
     );
 
     await context.keyManager["initialize(address)"](

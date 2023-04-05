@@ -19,7 +19,9 @@ describe("LSP20 + LSP6 with constructor", () => {
 
     const universalProfile = await new UniversalProfile__factory(owner).deploy(
       owner.address,
-      { value: initialFunding }
+      {
+        value: initialFunding,
+      }
     );
 
     const keyManager = await new LSP6KeyManager__factory(owner).deploy(

@@ -5,9 +5,11 @@
 /out
 /lib
 /coverage
+.yarn
 /dist
 /devdocs
 /userdocs
 /common
 /package
 /module
+/contracts.ts

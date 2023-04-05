@@ -39,7 +39,9 @@ describe("LSP9Vault with constructor", () => {
     };
     const lsp9Vault = await new LSP9Vault__factory(accounts.owner).deploy(
       deployParams.newOwner,
-      { value: initialFunding }
+      {
+        value: initialFunding,
+      }
     );
 
     const [UP1, KM1, lsp1universalReceiverDelegateUP] =
@@ -65,7 +67,9 @@ describe("LSP9Vault with constructor", () => {
 
     const lsp9Vault = await new LSP9Vault__factory(accounts[0]).deploy(
       deployParams.owner.address,
-      { value: initialFunding }
+      {
+        value: initialFunding,
+      }
     );
 
     const onlyOwnerRevertString =

@@ -66,7 +66,9 @@ describe("UniversalProfileInit with proxy", () => {
   const initializeProxy = async (context: LSP3TestContext) => {
     return context.universalProfile["initialize(address)"](
       context.deployParams.owner.address,
-      { value: context.deployParams.initialFunding }
+      {
+        value: context.deployParams.initialFunding,
+      }
     );
   };
 

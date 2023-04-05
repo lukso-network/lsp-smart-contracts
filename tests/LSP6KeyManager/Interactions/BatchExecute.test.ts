@@ -442,7 +442,9 @@ export const shouldBehaveLikeBatchExecute = (
               ["execute(uint256[],bytes[])"](
                 [0, 0],
                 [firstSetDataPayload, secondSetDataPayload],
-                { value: amountToFund }
+                {
+                  value: amountToFund,
+                }
               )
           )
             .to.be.revertedWithCustomError(
@@ -499,7 +501,9 @@ export const shouldBehaveLikeBatchExecute = (
               ["execute(uint256[],bytes[])"](
                 [1, 1],
                 [firstSetDataPayload, secondSetDataPayload],
-                { value: amountToFund }
+                {
+                  value: amountToFund,
+                }
               )
           ).to.be.revertedWithCustomError(
             context.keyManager,

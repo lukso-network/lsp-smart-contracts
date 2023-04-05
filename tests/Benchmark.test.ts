@@ -54,7 +54,9 @@ const buildLSP6TestContext = async (
 
   const universalProfile = await new UniversalProfile__factory(owner).deploy(
     owner.address,
-    { value: initialFunding }
+    {
+      value: initialFunding,
+    }
   );
   const keyManager = await new LSP6KeyManager__factory(owner).deploy(
     universalProfile.address
@@ -71,7 +73,9 @@ const buildUniversalProfileContext = async (
 
   const universalProfile = await new UniversalProfile__factory(owner).deploy(
     owner.address,
-    { value: initialFunding }
+    {
+      value: initialFunding,
+    }
   );
 
   return { accounts, owner, universalProfile };

@@ -63,7 +63,7 @@ Fixes #???? <!-- Fill in with issue number -->
 
 - [ ] Wrote Tests
 - [ ] Wrote Documentation
-- [ ] Ran `npm run linter`
-- [ ] Ran `npm run prettier`
-- [ ] Ran `npm run build`
-- [ ] Ran `npm run test`
+- [ ] Ran `yarn linter`
+- [ ] Ran `yarn format`
+- [ ] Ran `yarn build`
+- [ ] Ran `yarn test`

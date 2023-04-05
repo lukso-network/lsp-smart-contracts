@@ -15,11 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Node.js '16.15.0'
-        uses: actions/setup-node@v2
+      - name: Setup Node.js '16.19.x'
+        uses: actions/setup-node@v3
         with:
-          node-version: "16.15.0"
-          cache: "npm"
+          node-version: "16.19.x"
+          cache: "yarn"
 
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
@@ -27,7 +27,7 @@ jobs:
           python-version: 3.8
 
       - name: Install node dependencies
-        run: npm ci
+        run: yarn
 
       - name: Install pip3
         run: python -m pip install --upgrade pip

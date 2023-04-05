@@ -89,7 +89,9 @@ describe("LSP9VaultInit with proxy", () => {
   const initializeProxy = async (context: LSP9TestContext) => {
     return context.lsp9Vault["initialize(address)"](
       context.deployParams.newOwner,
-      { value: context.deployParams.initialFunding }
+      {
+        value: context.deployParams.initialFunding,
+      }
     );
   };
 

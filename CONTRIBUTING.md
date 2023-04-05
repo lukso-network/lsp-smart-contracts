@@ -19,8 +19,8 @@ $ git clone --recurse-submodules https://github.com/lukso-network/lsp-smart-cont
 Run the linter and prettier from the _lsp-smart-contracts_ project root:
 
 ```bash
-npm run linter
-npm run prettier
+yarn linter
+yarn format
 ```
 
 The linter is configured to check your code for adherence to our guidelines defined in `.solcover.js`.
@@ -31,7 +31,7 @@ The script above will prettify the smart contracts, tests and other files accord
 Chai contract tests are defined under the tests directory. To run all the tests, run:
 
 ```bash
-$ npm test
+$ yarn test
 ```
 
 ## **Commits and PRs**

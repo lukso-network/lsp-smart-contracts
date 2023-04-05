@@ -551,7 +551,9 @@ describe("UniversalFactory contract", () => {
             initializeCallData,
             1,
             2,
-            { value: 2 }
+            {
+              value: 2,
+            }
           )
         ).to.be.revertedWithCustomError(
           context.universalFactory,

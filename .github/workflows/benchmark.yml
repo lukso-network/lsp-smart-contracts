@@ -24,20 +24,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Use Node.js '16.15.0'
-        uses: actions/setup-node@v2
+      - name: Use Node.js '16.19.x'
+        uses: actions/setup-node@v3
         with:
-          node-version: "16.15.0"
-          cache: "npm"
+          node-version: "16.19.x"
+          cache: "yarn"
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: yarn
 
       - name: 🏗️ Build contract artifacts
-        run: npm run build --if-present
+        run: yarn build
 
       - name: 🧪 Run Benchmark tests
-        run: npm run test:benchmark
+        run: yarn test:benchmark
 
       - name: 📊 Generate Benchmark Report
         uses: peter-evans/create-or-update-comment@v2
