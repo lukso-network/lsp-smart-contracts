@@ -1,11 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import {
-  encodeData,
-  flattenEncodedData,
-  ERC725JSONSchema,
-} from "@erc725/erc725.js";
+import { encodeData, ERC725JSONSchema } from "@erc725/erc725.js";
 
 import { ExecutorLSP20, ExecutorLSP20__factory } from "../../../../types";
 
@@ -218,18 +214,11 @@ export const shouldBehaveLikePermissionSetData = (
         it("(should pass): adding 10 LSP12IssuedAssets", async () => {
           let lsp12IssuedAssets = getRandomAddresses(10);
 
-          const data = { "LSP12IssuedAssets[]": lsp12IssuedAssets };
+          const data = [
+            { keyName: "LSP12IssuedAssets[]", value: lsp12IssuedAssets },
+          ];
 
-          const encodedData = encodeData(data, BasicUPSetup_Schema);
-          const flattenedEncodedData = flattenEncodedData(encodedData);
-
-          let keys = [];
-          let values = [];
-
-          flattenedEncodedData.map((data) => {
-            keys.push(data.key);
-            values.push(data.value);
-          });
+          const { keys, values } = encodeData(data, BasicUPSetup_Schema);
 
           await context.universalProfile
             .connect(context.owner)
@@ -242,30 +231,32 @@ export const shouldBehaveLikePermissionSetData = (
         });
 
         it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
-          const basicUPSetup = {
-            LSP3Profile: {
-              hashFunction: "keccak256(utf8)",
-              hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
-              url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
+          const basicUPSetup = [
+            {
+              keyName: "LSP3Profile",
+              value: {
+                hashFunction: "keccak256(utf8)",
+                hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
+                url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
+              },
             },
-            "LSP12IssuedAssets[]": [
-              "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
-              "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
-            ],
-            LSP1UniversalReceiverDelegate:
-              "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
-          };
+            {
+              keyName: "LSP12IssuedAssets[]",
+              value: [
+                "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
+                "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
+              ],
+            },
+            {
+              keyName: "LSP1UniversalReceiverDelegate",
+              value: "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
+            },
+          ];
 
-          let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
-          let flattenedEncodedData = flattenEncodedData(encodedData);
-
-          let keys = [];
-          let values = [];
-
-          flattenedEncodedData.map((data) => {
-            keys.push(data.key);
-            values.push(data.value);
-          });
+          const { keys, values } = encodeData(
+            basicUPSetup,
+            BasicUPSetup_Schema
+          );
 
           await context.universalProfile
             .connect(context.owner)
@@ -310,18 +301,11 @@ export const shouldBehaveLikePermissionSetData = (
         it("(should pass): adding 10 LSP12IssuedAssets", async () => {
           let lsp12IssuedAssets = getRandomAddresses(10);
 
-          const data = { "LSP12IssuedAssets[]": lsp12IssuedAssets };
+          const data = [
+            { keyName: "LSP12IssuedAssets[]", value: lsp12IssuedAssets },
+          ];
 
-          const encodedData = encodeData(data, BasicUPSetup_Schema);
-          const flattenedEncodedData = flattenEncodedData(encodedData);
-
-          let keys = [];
-          let values = [];
-
-          flattenedEncodedData.map((data) => {
-            keys.push(data.key);
-            values.push(data.value);
-          });
+          const { keys, values } = encodeData(data, BasicUPSetup_Schema);
 
           await context.universalProfile
             .connect(canSetDataWithAllowedERC725YDataKeys)
@@ -334,28 +318,28 @@ export const shouldBehaveLikePermissionSetData = (
         });
 
         it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]`)", async () => {
-          const basicUPSetup = {
-            LSP3Profile: {
-              hashFunction: "keccak256(utf8)",
-              hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
-              url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
+          const basicUPSetup = [
+            {
+              keyName: "LSP3Profile",
+              value: {
+                hashFunction: "keccak256(utf8)",
+                hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
+                url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
+              },
             },
-            "LSP12IssuedAssets[]": [
-              "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
-              "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
-            ],
-          };
+            {
+              keyName: "LSP12IssuedAssets[]",
+              value: [
+                "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
+                "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
+              ],
+            },
+          ];
 
-          let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
-          let flattenedEncodedData = flattenEncodedData(encodedData);
-
-          let keys = [];
-          let values = [];
-
-          flattenedEncodedData.map((data) => {
-            keys.push(data.key);
-            values.push(data.value);
-          });
+          const { keys, values } = encodeData(
+            basicUPSetup,
+            BasicUPSetup_Schema
+          );
 
           await context.universalProfile
             .connect(canSetDataWithAllowedERC725YDataKeys)
@@ -401,18 +385,11 @@ export const shouldBehaveLikePermissionSetData = (
         it("(should revert): adding 10 LSP12IssuedAssets", async () => {
           let lsp12IssuedAssets = getRandomAddresses(10);
 
-          const data = { "LSP12IssuedAssets[]": lsp12IssuedAssets };
+          const data = [
+            { keyName: "LSP12IssuedAssets[]", value: lsp12IssuedAssets },
+          ];
 
-          const encodedData = encodeData(data, BasicUPSetup_Schema);
-          const flattenedEncodedData = flattenEncodedData(encodedData);
-
-          let keys = [];
-          let values = [];
-
-          flattenedEncodedData.map((data) => {
-            keys.push(data.key);
-            values.push(data.value);
-          });
+          const { keys, values } = encodeData(data, BasicUPSetup_Schema);
 
           await expect(
             context.universalProfile
@@ -427,28 +404,25 @@ export const shouldBehaveLikePermissionSetData = (
         });
 
         it("(should revert): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]`)", async () => {
-          const basicUPSetup = {
-            LSP3Profile: {
-              hashFunction: "keccak256(utf8)",
-              hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
-              url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
+          const basicUPSetup = [
+            {
+              keyName: "LSP3Profile",
+              value: {
+                hashFunction: "keccak256(utf8)",
+                hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
+                url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
+              },
             },
-            "LSP12IssuedAssets[]": [
-              "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
-              "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
-            ],
-          };
+            {
+              keyName: "LSP12IssuedAssets[]",
+              value: [
+                "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
+                "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
+              ],
+            },
+          ];
 
-          let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
-          let flattenedEncodedData = flattenEncodedData(encodedData);
-
-          let keys = [];
-          let values = [];
-
-          flattenedEncodedData.map((data) => {
-            keys.push(data.key);
-            values.push(data.value);
-          });
+          let { keys, values } = encodeData(basicUPSetup, BasicUPSetup_Schema);
 
           await expect(
             context.universalProfile
@@ -493,18 +467,11 @@ export const shouldBehaveLikePermissionSetData = (
         it("(should fail): adding 10 LSP12IssuedAssets", async () => {
           let lsp12IssuedAssets = getRandomAddresses(10);
 
-          const data = { "LSP12IssuedAssets[]": lsp12IssuedAssets };
+          const data = [
+            { keyName: "LSP12IssuedAssets[]", value: lsp12IssuedAssets },
+          ];
 
-          const encodedData = encodeData(data, BasicUPSetup_Schema);
-          const flattenedEncodedData = flattenEncodedData(encodedData);
-
-          let keys = [];
-          let values = [];
-
-          flattenedEncodedData.map((data) => {
-            keys.push(data.key);
-            values.push(data.value);
-          });
+          const { keys, values } = encodeData(data, BasicUPSetup_Schema);
 
           await expect(
             context.universalProfile
@@ -516,29 +483,25 @@ export const shouldBehaveLikePermissionSetData = (
         });
 
         it("(should fail): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]`)", async () => {
-          const basicUPSetup = {
-            LSP3Profile: {
-              hashFunction: "keccak256(utf8)",
-              hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
-              url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
+          const basicUPSetup = [
+            {
+              keyName: "LSP3Profile",
+              value: {
+                hashFunction: "keccak256(utf8)",
+                hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
+                url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
+              },
             },
-            "LSP12IssuedAssets[]": [
-              "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
-              "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
-            ],
-          };
+            {
+              keyName: "LSP12IssuedAssets[]",
+              value: [
+                "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
+                "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
+              ],
+            },
+          ];
 
-          let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
-          let flattenedEncodedData = flattenEncodedData(encodedData);
-
-          let keys = [];
-          let values = [];
-
-          flattenedEncodedData.map((data) => {
-            keys.push(data.key);
-            values.push(data.value);
-          });
-
+          let { keys, values } = encodeData(basicUPSetup, BasicUPSetup_Schema);
           await expect(
             context.universalProfile
               .connect(cannotSetData)
