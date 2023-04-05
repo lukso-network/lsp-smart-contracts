@@ -71,8 +71,11 @@ import {
   ERC725YDataKeys,
   PERMISSIONS,
   ALL_PERMISSIONS,
-  Errors,
-  EventSignatures,
+  ErrorSelectors,
+  EventSigHashes,
+  FunctionSelectors,
+  ContractsDocs,
+  StateVariables,
 } from "@lukso/lsp-smart-contracts";
 ```
 

@@ -38,6 +38,7 @@ jobs:
             artifacts
             node_modules 
             types
+            contracts.ts
           key: ${{ github.run_id }}
 
   deploy-verify:
@@ -74,6 +75,7 @@ jobs:
             artifacts
             node_modules 
             types
+            contracts.ts
           key: ${{ github.run_id }}
 
       - name: Use Node.js v16
