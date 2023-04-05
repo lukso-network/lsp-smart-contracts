@@ -33,7 +33,6 @@ import {
   encodeCompactBytesArray,
 } from "./utils/helpers";
 import { BigNumber } from "ethers";
-import { token } from "../types/@openzeppelin/contracts";
 
 export type UniversalProfileContext = {
   accounts: SignerWithAddress[];
@@ -82,7 +81,11 @@ let UniversalProfileExecuteTable;
 let UniversalProfileTokensTable;
 
 let mainControllerExecuteTable;
+let mainControllerBatchExecuteTable;
+let mainControllerBatchCallsTable;
 let restrictedControllerExecuteTable;
+let restrictedControllerBatchExecuteTable;
+let restrictedControllerBatchCallsTable;
 
 let mainControllerSetDataTable;
 let restrictedControllerSetDataTable;
@@ -817,7 +820,7 @@ describe("⛽📊 Gas Benchmark", () => {
           let deployedContracts = await setupProfileWithKeyManagerWithURD(
             context.accounts[2]
           );
-          aliceUP = deployedContracts[0] as UniversalProfile;
+          aliceUP = deployedContracts[0];
 
           // the function `setupKeyManager` gives ALL PERMISSIONS
           // to the owner as the first data key
@@ -1032,7 +1035,7 @@ describe("⛽📊 Gas Benchmark", () => {
           let deployedContracts = await setupProfileWithKeyManagerWithURD(
             context.accounts[2]
           );
-          aliceUP = deployedContracts[0] as UniversalProfile;
+          aliceUP = deployedContracts[0];
 
           // LYX transfer scenarios
           canTransferValueToOneAddress = context.accounts[1];
@@ -1252,6 +1255,928 @@ describe("⛽📊 Gas Benchmark", () => {
             },
             alignment: [Align.Left, Align.Center],
           });
+        });
+      });
+    });
+
+    describe("execute(uint256[],address[],uint256[],bytes[]) via Key Manager", () => {
+      describe("main controller (this browser extension)", () => {
+        let casesBatchExecuteMainController: Row[] = [];
+
+        let context: LSP6TestContext;
+
+        let recipientEOA: SignerWithAddress;
+        // setup Alice's Universal Profile as a recipient of LYX and tokens transactions
+        let aliceUP: UniversalProfile;
+
+        let lsp7MetaCoin: LSP7Mintable;
+        let lsp8MetaNFT: LSP8Mintable;
+
+        let nftList: string[] = [
+          "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "0x0000000000000000000000000000000000000000000000000000000000000002",
+          "0x0000000000000000000000000000000000000000000000000000000000000003",
+          "0x0000000000000000000000000000000000000000000000000000000000000004",
+        ];
+
+        before(async () => {
+          context = await buildLSP6TestContext(ethers.utils.parseEther("50"));
+
+          recipientEOA = context.accounts[1];
+          let deployedContracts = await setupProfileWithKeyManagerWithURD(
+            context.accounts[2]
+          );
+          aliceUP = deployedContracts[0];
+
+          // the function `setupKeyManager` gives ALL PERMISSIONS
+          // to the owner as the first data key
+          await setupKeyManager(context, [], []);
+
+          // deploy a LSP7 token
+          lsp7MetaCoin = await new LSP7Mintable__factory(context.owner).deploy(
+            "MetaCoin",
+            "MTC",
+            context.owner.address,
+            false
+          );
+
+          // deploy a LSP8 NFT
+          lsp8MetaNFT = await new LSP8Mintable__factory(context.owner).deploy(
+            "MetaNFT",
+            "MNF",
+            context.owner.address
+          );
+
+          // mint some tokens to the UP
+          await lsp7MetaCoin.mint(
+            context.universalProfile.address,
+            1000,
+            false,
+            "0x"
+          );
+
+          // mint some NFTs to the UP
+          nftList.forEach(async (nft) => {
+            await lsp8MetaNFT.mint(
+              context.universalProfile.address,
+              nft,
+              false,
+              "0x"
+            );
+          });
+        });
+
+        after(async () => {
+          mainControllerBatchExecuteTable = getMarkdownTable({
+            table: {
+              head: [
+                "`execute(uint256[],address[],uint256[],bytes[])` scenarios - 👑 main controller",
+                "⛽ Gas Usage",
+              ],
+              body: casesBatchExecuteMainController,
+            },
+            alignment: [Align.Left, Align.Center],
+          });
+        });
+
+        it("transfer LYX to both an UP and to an EOA (no data)", async () => {
+          const lyxAmount = ethers.utils.parseEther("3");
+
+          const tx = await context.universalProfile
+            .connect(context.owner)
+            ["execute(uint256[],address[],uint256[],bytes[])"](
+              [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
+              [aliceUP.address, recipientEOA.address],
+              [lyxAmount, lyxAmount],
+              ["0x", "0x"]
+            );
+          const receipt = await tx.wait();
+
+          casesBatchExecuteMainController.push([
+            "transfer LYX to both an UP and to an EOA (no data)",
+            receipt.gasUsed.toNumber().toString(),
+          ]);
+        });
+
+        it("transfer tokens (LSP7) to both an UP and to an EOA (no data)", async () => {
+          const tokenAmountUP = 100;
+          const tokenAmountEOA = 100;
+
+          const tx = await context.universalProfile
+            .connect(context.owner)
+            ["execute(uint256[],address[],uint256[],bytes[])"](
+              [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
+              [lsp7MetaCoin.address, lsp7MetaCoin.address],
+              [0, 0],
+              [
+                lsp7MetaCoin.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  recipientEOA.address,
+                  tokenAmountEOA,
+                  true,
+                  "0x",
+                ]),
+                lsp7MetaCoin.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  aliceUP.address,
+                  tokenAmountUP,
+                  true,
+                  "0x",
+                ]),
+              ]
+            );
+
+          const receipt = await tx.wait();
+
+          casesBatchExecuteMainController.push([
+            "transfer tokens (LSP7) to both an UP and to an EOA (no data)",
+            receipt.gasUsed.toNumber().toString(),
+          ]);
+        });
+
+        it("transfer NFTs (LSP8) to both an UP and to an EOA (no data)", async () => {
+          const nftIdEOA = nftList[0];
+          const nftIdUP = nftList[1];
+
+          const tx = await context.universalProfile
+            .connect(context.owner)
+            ["execute(uint256[],address[],uint256[],bytes[])"](
+              [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
+              [lsp8MetaNFT.address, lsp8MetaNFT.address],
+              [0, 0],
+              [
+                lsp8MetaNFT.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  recipientEOA.address,
+                  nftIdEOA,
+                  true,
+                  "0x",
+                ]),
+                lsp8MetaNFT.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  aliceUP.address,
+                  nftIdUP,
+                  false,
+                  "0x",
+                ]),
+              ]
+            );
+          const receipt = await tx.wait();
+
+          casesBatchExecuteMainController.push([
+            "transfer NFTs (LSP8) to both an UP and to an EOA (no data)",
+            receipt.gasUsed.toNumber().toString(),
+          ]);
+        });
+      });
+
+      describe("controllers with some restrictions", () => {
+        let casesBatchExecuteRestrictedController: Row[] = [];
+        let context: LSP6TestContext;
+
+        let recipientEOA: SignerWithAddress;
+        // setup Alice's Universal Profile as a recipient of LYX and tokens transactions
+        let aliceUP: UniversalProfile;
+
+        let canTransferValueToTwoAddresses: SignerWithAddress,
+          canTransferTwoTokens: SignerWithAddress,
+          canTransferTwoNFTs: SignerWithAddress;
+
+        let allowedEOA: string;
+        let allowedUP: string;
+
+        let lsp7MetaCoin: LSP7Mintable, lsp7LyxDai: LSP7Mintable;
+        let lsp8MetaNFT: LSP8Mintable, lsp8LyxPunks: LSP8Mintable;
+
+        const metaNFTList: string[] = [
+          "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "0x0000000000000000000000000000000000000000000000000000000000000002",
+          "0x0000000000000000000000000000000000000000000000000000000000000003",
+          "0x0000000000000000000000000000000000000000000000000000000000000004",
+        ];
+
+        const lyxPunksList: string[] = [
+          "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+          "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+          "0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead",
+          "0xf00df00df00df00df00df00df00df00df00df00df00df00df00df00df00df00d",
+        ];
+
+        before(async () => {
+          context = await buildLSP6TestContext(ethers.utils.parseEther("50"));
+
+          recipientEOA = context.accounts[1];
+
+          let deployedContracts = await setupProfileWithKeyManagerWithURD(
+            context.accounts[2]
+          );
+          aliceUP = deployedContracts[0];
+
+          // LYX transfer scenarios
+          canTransferValueToTwoAddresses = context.accounts[1];
+          allowedEOA = context.accounts[2].address;
+          allowedUP = context.accounts[3].address;
+
+          // LSP7 token transfer scenarios
+          canTransferTwoTokens = context.accounts[4];
+
+          lsp7MetaCoin = await new LSP7Mintable__factory(context.owner).deploy(
+            "MetaCoin",
+            "MTC",
+            context.owner.address,
+            false
+          );
+
+          lsp7LyxDai = await new LSP7Mintable__factory(context.owner).deploy(
+            "LyxDai",
+            "LDAI",
+            context.owner.address,
+            false
+          );
+
+          [lsp7MetaCoin, lsp7LyxDai].forEach(async (token) => {
+            await token.mint(
+              context.universalProfile.address,
+              1000,
+              false,
+              "0x"
+            );
+          });
+
+          // LSP8 NFT transfer scenarios
+          canTransferTwoNFTs = context.accounts[5];
+
+          lsp8MetaNFT = await new LSP8Mintable__factory(context.owner).deploy(
+            "MetaNFT",
+            "MNF",
+            context.owner.address
+          );
+
+          lsp8LyxPunks = await new LSP8Mintable__factory(context.owner).deploy(
+            "LyxPunks",
+            "LPK",
+            context.owner.address
+          );
+
+          [
+            { contract: lsp8MetaNFT, tokenIds: metaNFTList },
+            { contract: lsp8LyxPunks, tokenIds: lyxPunksList },
+          ].forEach(async (nftContract) => {
+            // mint some NFTs to the UP
+            nftContract.tokenIds.forEach(async (nft) => {
+              await nftContract.contract.mint(
+                context.universalProfile.address,
+                nft,
+                false,
+                "0x"
+              );
+            });
+          });
+
+          await setupKeyManager(
+            context,
+            [
+              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+                canTransferValueToTwoAddresses.address.substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+                canTransferTwoTokens.address.substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+                canTransferTwoNFTs.address.substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+                canTransferValueToTwoAddresses.address.substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+                canTransferTwoTokens.address.substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+                canTransferTwoNFTs.address.substring(2),
+            ],
+            [
+              PERMISSIONS.TRANSFERVALUE,
+              PERMISSIONS.CALL,
+              PERMISSIONS.CALL,
+              combineAllowedCalls(
+                [CALLTYPE.VALUE, CALLTYPE.VALUE],
+                [allowedEOA, allowedUP],
+                ["0xffffffff", "0xffffffff"],
+                ["0xffffffff", "0xffffffff"]
+              ),
+              combineAllowedCalls(
+                [CALLTYPE.CALL, CALLTYPE.CALL],
+                [lsp7MetaCoin.address, lsp7LyxDai.address],
+                [
+                  INTERFACE_IDS.LSP7DigitalAsset,
+                  INTERFACE_IDS.LSP7DigitalAsset,
+                ],
+                ["0xffffffff", "0xffffffff"]
+              ),
+              combineAllowedCalls(
+                [CALLTYPE.CALL, CALLTYPE.CALL],
+                [lsp8MetaNFT.address, lsp8LyxPunks.address],
+                [
+                  INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
+                  INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
+                ],
+                ["0xffffffff", "0xffffffff"]
+              ),
+            ]
+          );
+        });
+
+        after(async () => {
+          restrictedControllerBatchExecuteTable = getMarkdownTable({
+            table: {
+              head: [
+                "`execute(uint256[],address[],uint256[],bytes[])` scenarios - 🛃 restricted controller",
+                "⛽ Gas Usage",
+              ],
+              body: casesBatchExecuteRestrictedController,
+            },
+            alignment: [Align.Left, Align.Center],
+          });
+        });
+
+        it("transfer some LYX to both an EOA and to an UP - restricted to 2 x allowed addresses only (TRANSFERVALUE + 1x AllowedCalls)", async () => {
+          const lyxAmount = 10;
+
+          const tx = await context.universalProfile
+            .connect(canTransferValueToTwoAddresses)
+            ["execute(uint256[],address[],uint256[],bytes[])"](
+              [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
+              [allowedEOA, allowedUP],
+              [lyxAmount, lyxAmount],
+              ["0x", "0x"]
+            );
+          const receipt = await tx.wait();
+
+          casesBatchExecuteRestrictedController.push([
+            "transfer some LYX to both an EOA and to an UP - restricted to 2 x allowed addresses only (TRANSFERVALUE + 1x AllowedCalls)",
+            receipt.gasUsed.toNumber().toString(),
+          ]);
+        });
+
+        it("transfers some tokens (LSP7) to both an EOA and to an UP - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
+          const metaCoinAmount = 100;
+          const daiAmount = 100;
+
+          const tx = await context.universalProfile
+            .connect(canTransferTwoTokens)
+            ["execute(uint256[],address[],uint256[],bytes[])"](
+              [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
+              [lsp7MetaCoin.address, lsp7LyxDai.address],
+              [0, 0],
+              [
+                lsp7MetaCoin.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  recipientEOA.address,
+                  metaCoinAmount,
+                  true,
+                  "0x",
+                ]),
+                lsp7LyxDai.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  aliceUP.address,
+                  daiAmount,
+                  true,
+                  "0x",
+                ]),
+              ]
+            );
+          const receipt = await tx.wait();
+
+          casesBatchExecuteRestrictedController.push([
+            "transfers some tokens (LSP7) to both an EOA and to an UP - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)",
+            receipt.gasUsed.toNumber().toString(),
+          ]);
+        });
+
+        it("transfers a NFT (LSP8) to both an EOA and to an UP - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
+          const metaNFTId = metaNFTList[0];
+          const lyxPunksNFTId = lyxPunksList[0];
+
+          const tx = await context.universalProfile
+            .connect(canTransferTwoNFTs)
+            ["execute(uint256[],address[],uint256[],bytes[])"](
+              [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
+              [lsp8MetaNFT.address, lsp8LyxPunks.address],
+              [0, 0],
+              [
+                lsp8MetaNFT.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  recipientEOA.address,
+                  metaNFTId,
+                  true,
+                  "0x",
+                ]),
+                lsp8LyxPunks.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  aliceUP.address,
+                  lyxPunksNFTId,
+                  false,
+                  "0x",
+                ]),
+              ]
+            );
+          const receipt = await tx.wait();
+
+          casesBatchExecuteRestrictedController.push([
+            "transfers a NFT (LSP8) to both an EOA and to an UP - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)",
+            receipt.gasUsed.toNumber().toString(),
+          ]);
+        });
+      });
+    });
+
+    describe("`batchCalls(...)` via Key Manager", () => {
+      describe("main controller (this browser extension)", () => {
+        let casesBatchCallsMainController: Row[] = [];
+
+        let context: LSP6TestContext;
+
+        let recipientEOA: SignerWithAddress;
+        // setup Alice's Universal Profile as a recipient of LYX and tokens transactions
+        let aliceUP: UniversalProfile;
+
+        let lsp7MetaCoin: LSP7Mintable;
+        let lsp8MetaNFT: LSP8Mintable;
+
+        let nftList: string[] = [
+          "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "0x0000000000000000000000000000000000000000000000000000000000000002",
+          "0x0000000000000000000000000000000000000000000000000000000000000003",
+          "0x0000000000000000000000000000000000000000000000000000000000000004",
+        ];
+
+        before(async () => {
+          context = await buildLSP6TestContext(ethers.utils.parseEther("50"));
+
+          recipientEOA = context.accounts[1];
+          let deployedContracts = await setupProfileWithKeyManagerWithURD(
+            context.accounts[2]
+          );
+          aliceUP = deployedContracts[0];
+
+          // the function `setupKeyManager` gives ALL PERMISSIONS
+          // to the owner as the first data key
+          await setupKeyManager(context, [], []);
+
+          // deploy a LSP7 token
+          lsp7MetaCoin = await new LSP7Mintable__factory(context.owner).deploy(
+            "MetaCoin",
+            "MTC",
+            context.owner.address,
+            false
+          );
+
+          // deploy a LSP8 NFT
+          lsp8MetaNFT = await new LSP8Mintable__factory(context.owner).deploy(
+            "MetaNFT",
+            "MNF",
+            context.owner.address
+          );
+
+          // mint some tokens to the UP
+          await lsp7MetaCoin.mint(
+            context.universalProfile.address,
+            1000,
+            false,
+            "0x"
+          );
+
+          // mint some NFTs to the UP
+          nftList.forEach(async (nft) => {
+            await lsp8MetaNFT.mint(
+              context.universalProfile.address,
+              nft,
+              false,
+              "0x"
+            );
+          });
+        });
+
+        after(async () => {
+          mainControllerBatchCallsTable = getMarkdownTable({
+            table: {
+              head: [
+                "`batchCalls` scenarios - 👑 main controller",
+                "⛽ Gas Usage",
+              ],
+              body: casesBatchCallsMainController,
+            },
+            alignment: [Align.Left, Align.Center],
+          });
+        });
+
+        it("transfer LYX to both an UP and to an EOA (no data)", async () => {
+          const lyxAmount = ethers.utils.parseEther("3");
+
+          const EOACalldata =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, recipientEOA.address, lyxAmount, "0x"]
+            );
+          const UPCalldata =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, aliceUP.address, lyxAmount, "0x"]
+            );
+
+          const tx = await context.universalProfile
+            .connect(context.owner)
+            .batchCalls([EOACalldata, UPCalldata]);
+
+          const receipt = await tx.wait();
+
+          casesBatchCallsMainController.push([
+            "transfer LYX to both an UP and to an EOA (no data)",
+            receipt.gasUsed.toNumber().toString(),
+          ]);
+        });
+
+        it("transfer tokens (LSP7) to both an UP and to an EOA (no data)", async () => {
+          const tokenAmount = 100;
+
+          const EOACalldata =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp7MetaCoin.address,
+                0,
+                lsp7MetaCoin.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  recipientEOA.address,
+                  tokenAmount,
+                  true,
+                  "0x",
+                ]),
+              ]
+            );
+          const UPCalldata =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp7MetaCoin.address,
+                0,
+                lsp7MetaCoin.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  aliceUP.address,
+                  tokenAmount,
+                  true,
+                  "0x",
+                ]),
+              ]
+            );
+
+          const tx = await context.universalProfile
+            .connect(context.owner)
+            .batchCalls([EOACalldata, UPCalldata]);
+
+          const receipt = await tx.wait();
+
+          casesBatchCallsMainController.push([
+            "transfer tokens (LSP7) to both an UP and to an EOA (no data)",
+            receipt.gasUsed.toNumber().toString(),
+          ]);
+        });
+
+        it("transfer NFTs (LSP8) to both an UP and to an EOA (no data)", async () => {
+          const nftIdEOA = nftList[0];
+          const nftIdUP = nftList[1];
+
+          const EOACalldata =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp8MetaNFT.address,
+                0,
+                lsp8MetaNFT.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  recipientEOA.address,
+                  nftIdEOA,
+                  true,
+                  "0x",
+                ]),
+              ]
+            );
+          const UPCalldata =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp8MetaNFT.address,
+                0,
+                lsp8MetaNFT.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  aliceUP.address,
+                  nftIdUP,
+                  false,
+                  "0x",
+                ]),
+              ]
+            );
+
+          const tx = await context.universalProfile
+            .connect(context.owner)
+            .batchCalls([EOACalldata, UPCalldata]);
+
+          const receipt = await tx.wait();
+
+          casesBatchCallsMainController.push([
+            "transfer NFTs (LSP8) to both an UP and to an EOA (no data)",
+            receipt.gasUsed.toNumber().toString(),
+          ]);
+        });
+      });
+
+      describe("controllers with some restrictions", () => {
+        let casesBatchCallsRestrictedController: Row[] = [];
+        let context: LSP6TestContext;
+
+        let recipientEOA: SignerWithAddress;
+        // setup Alice's Universal Profile as a recipient of LYX and tokens transactions
+        let aliceUP: UniversalProfile;
+
+        let canTransferValueToTwoAddresses: SignerWithAddress,
+          canTransferTwoTokens: SignerWithAddress,
+          canTransferTwoNFTs: SignerWithAddress;
+
+        let allowedEOA: string;
+        let allowedUP: string;
+
+        let lsp7MetaCoin: LSP7Mintable, lsp7LyxDai: LSP7Mintable;
+        let lsp8MetaNFT: LSP8Mintable, lsp8LyxPunks: LSP8Mintable;
+
+        const metaNFTList: string[] = [
+          "0x0000000000000000000000000000000000000000000000000000000000000001",
+          "0x0000000000000000000000000000000000000000000000000000000000000002",
+          "0x0000000000000000000000000000000000000000000000000000000000000003",
+          "0x0000000000000000000000000000000000000000000000000000000000000004",
+        ];
+
+        const lyxPunksList: string[] = [
+          "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+          "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+          "0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead",
+          "0xf00df00df00df00df00df00df00df00df00df00df00df00df00df00df00df00d",
+        ];
+
+        before(async () => {
+          context = await buildLSP6TestContext(ethers.utils.parseEther("50"));
+
+          recipientEOA = context.accounts[1];
+
+          let deployedContracts = await setupProfileWithKeyManagerWithURD(
+            context.accounts[2]
+          );
+          aliceUP = deployedContracts[0];
+
+          // LYX transfer scenarios
+          canTransferValueToTwoAddresses = context.accounts[1];
+          allowedEOA = context.accounts[2].address;
+          allowedUP = context.accounts[3].address;
+
+          // LSP7 token transfer scenarios
+          canTransferTwoTokens = context.accounts[4];
+
+          lsp7MetaCoin = await new LSP7Mintable__factory(context.owner).deploy(
+            "MetaCoin",
+            "MTC",
+            context.owner.address,
+            false
+          );
+
+          lsp7LyxDai = await new LSP7Mintable__factory(context.owner).deploy(
+            "LyxDai",
+            "LDAI",
+            context.owner.address,
+            false
+          );
+
+          [lsp7MetaCoin, lsp7LyxDai].forEach(async (token) => {
+            await token.mint(
+              context.universalProfile.address,
+              1000,
+              false,
+              "0x"
+            );
+          });
+
+          // LSP8 NFT transfer scenarios
+          canTransferTwoNFTs = context.accounts[5];
+
+          lsp8MetaNFT = await new LSP8Mintable__factory(context.owner).deploy(
+            "MetaNFT",
+            "MNF",
+            context.owner.address
+          );
+
+          lsp8LyxPunks = await new LSP8Mintable__factory(context.owner).deploy(
+            "LyxPunks",
+            "LPK",
+            context.owner.address
+          );
+
+          [
+            { contract: lsp8MetaNFT, tokenIds: metaNFTList },
+            { contract: lsp8LyxPunks, tokenIds: lyxPunksList },
+          ].forEach(async (nftContract) => {
+            // mint some NFTs to the UP
+            nftContract.tokenIds.forEach(async (nft) => {
+              await nftContract.contract.mint(
+                context.universalProfile.address,
+                nft,
+                false,
+                "0x"
+              );
+            });
+          });
+
+          await setupKeyManager(
+            context,
+            [
+              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+                canTransferValueToTwoAddresses.address.substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+                canTransferTwoTokens.address.substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+                canTransferTwoNFTs.address.substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+                canTransferValueToTwoAddresses.address.substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+                canTransferTwoTokens.address.substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+                canTransferTwoNFTs.address.substring(2),
+            ],
+            [
+              PERMISSIONS.TRANSFERVALUE,
+              PERMISSIONS.CALL,
+              PERMISSIONS.CALL,
+              combineAllowedCalls(
+                [CALLTYPE.VALUE, CALLTYPE.VALUE],
+                [allowedEOA, allowedUP],
+                ["0xffffffff", "0xffffffff"],
+                ["0xffffffff", "0xffffffff"]
+              ),
+              combineAllowedCalls(
+                [CALLTYPE.CALL, CALLTYPE.CALL],
+                [lsp7MetaCoin.address, lsp7LyxDai.address],
+                [
+                  INTERFACE_IDS.LSP7DigitalAsset,
+                  INTERFACE_IDS.LSP7DigitalAsset,
+                ],
+                ["0xffffffff", "0xffffffff"]
+              ),
+              combineAllowedCalls(
+                [CALLTYPE.CALL, CALLTYPE.CALL],
+                [lsp8MetaNFT.address, lsp8LyxPunks.address],
+                [
+                  INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
+                  INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
+                ],
+                ["0xffffffff", "0xffffffff"]
+              ),
+            ]
+          );
+        });
+
+        after(async () => {
+          restrictedControllerBatchCallsTable = getMarkdownTable({
+            table: {
+              head: [
+                "`batchCalls` scenarios - 🛃 restricted controller",
+                "⛽ Gas Usage",
+              ],
+              body: casesBatchCallsRestrictedController,
+            },
+            alignment: [Align.Left, Align.Center],
+          });
+        });
+
+        it("transfer some LYX to both an EOA and to an UP - restricted to 2 x allowed addresses only (TRANSFERVALUE + 1x AllowedCalls)", async () => {
+          const lyxAmount = 10;
+
+          const EOACalldata =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, allowedEOA, lyxAmount, "0x"]
+            );
+
+          const UPCalldata =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, allowedUP, lyxAmount, "0x"]
+            );
+
+          const tx = await context.universalProfile
+            .connect(canTransferValueToTwoAddresses)
+            .batchCalls([EOACalldata, UPCalldata]);
+          const receipt = await tx.wait();
+
+          casesBatchCallsRestrictedController.push([
+            "transfer some LYX to both an EOA and to an UP - restricted to 2 x allowed addresses only (TRANSFERVALUE + 1x AllowedCalls)",
+            receipt.gasUsed.toNumber().toString(),
+          ]);
+        });
+
+        it("transfers some tokens (LSP7) to both an EOA and to an UP - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
+          const metaCoinAmount = 100;
+          const daiAmount = 100;
+
+          const EOACalldata =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp7MetaCoin.address,
+                0,
+                lsp7MetaCoin.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  recipientEOA.address,
+                  metaCoinAmount,
+                  true,
+                  "0x",
+                ]),
+              ]
+            );
+
+          const UPCalldata =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp7LyxDai.address,
+                0,
+                lsp7LyxDai.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  aliceUP.address,
+                  daiAmount,
+                  true,
+                  "0x",
+                ]),
+              ]
+            );
+
+          const tx = await context.universalProfile
+            .connect(canTransferTwoTokens)
+            .batchCalls([EOACalldata, UPCalldata]);
+
+          const receipt = await tx.wait();
+
+          casesBatchCallsRestrictedController.push([
+            "transfers some tokens (LSP7) to both an EOA and to an UP - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)",
+            receipt.gasUsed.toNumber().toString(),
+          ]);
+        });
+
+        it("transfers a NFT (LSP8) to both an EOA and to an UP - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
+          const metaNFTId = metaNFTList[0];
+          const lyxPunksNFTId = lyxPunksList[0];
+
+          const EOACalldata =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp8MetaNFT.address,
+                0,
+                lsp8MetaNFT.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  recipientEOA.address,
+                  metaNFTId,
+                  true,
+                  "0x",
+                ]),
+              ]
+            );
+
+          const UPCalldata =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp8LyxPunks.address,
+                0,
+                lsp8LyxPunks.interface.encodeFunctionData("transfer", [
+                  context.universalProfile.address,
+                  aliceUP.address,
+                  lyxPunksNFTId,
+                  false,
+                  "0x",
+                ]),
+              ]
+            );
+
+          const tx = await context.universalProfile
+            .connect(canTransferTwoNFTs)
+            .batchCalls([EOACalldata, UPCalldata]);
+
+          const receipt = await tx.wait();
+
+          casesBatchCallsRestrictedController.push([
+            "transfers a NFT (LSP8) to both an EOA and to an UP - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)",
+            receipt.gasUsed.toNumber().toString(),
+          ]);
         });
       });
     });
@@ -1683,7 +2608,7 @@ ${UniversalProfileTokensTable}
 
 This document contains the gas usage for common interactions and scenarios when using UniversalProfile smart contracts.
 
-### 🔀 \`execute\` scenarios
+### 🔀 \`execute(uint256,address,uint256,bytes)\` scenarios
 
 #### 👑 unrestricted controller
 
@@ -1692,6 +2617,26 @@ ${mainControllerExecuteTable}
 #### 🛃 restricted controller
 
 ${restrictedControllerExecuteTable}
+
+### 🔀 \`execute(uint256[],address[],uint256[],bytes[])\` scenarios
+
+#### 👑 unrestricted controller
+
+${mainControllerBatchExecuteTable}
+
+#### 🛃 restricted controller
+
+${restrictedControllerBatchExecuteTable}
+
+### 🔀 \`batchCalls\` scenarios
+
+#### 👑 unrestricted controller
+
+${mainControllerBatchCallsTable}
+
+#### 🛃 restricted controller
+
+${restrictedControllerBatchCallsTable}
 
 ### 🗄️ \`setData\` scenarios
 

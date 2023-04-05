@@ -2,8 +2,11 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {
+  LSP1UniversalReceiverDelegateUP,
   LSP1UniversalReceiverDelegateUP__factory,
+  LSP6KeyManager,
   LSP6KeyManager__factory,
+  UniversalProfile,
   UniversalProfile__factory,
 } from "../../types";
 
@@ -106,7 +109,9 @@ export async function setupKeyManagerHelper(
  */
 export async function setupProfileWithKeyManagerWithURD(
   EOA: SignerWithAddress
-) {
+): Promise<
+  [UniversalProfile, LSP6KeyManager, LSP1UniversalReceiverDelegateUP]
+> {
   const universalProfile = await new UniversalProfile__factory(EOA).deploy(
     EOA.address
   );
