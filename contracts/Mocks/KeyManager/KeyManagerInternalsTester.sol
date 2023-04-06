@@ -29,7 +29,12 @@ contract KeyManagerInternalTester is LSP6KeyManager {
     }
 
     function verifyAllowedCall(address _sender, bytes calldata _payload) public view {
-        super._verifyAllowedCall(_target, _sender, _payload);
+        (uint256 operationType, address callee, uint256 value, bytes memory data) = abi.decode(
+            _payload[4:],
+            (uint256, address, uint256, bytes)
+        );
+
+        super._verifyAllowedCall(_target, _sender, operationType, callee, value, bytes4(data));
     }
 
     function isCompactBytesArrayOfAllowedCalls(bytes memory allowedCallsCompacted)

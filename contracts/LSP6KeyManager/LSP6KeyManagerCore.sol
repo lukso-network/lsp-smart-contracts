@@ -36,7 +36,8 @@ import {
     InvalidERC725Function,
     NotAuthorised,
     CallerIsNotTheTarget,
-    CannotSendValueToSetData
+    CannotSendValueToSetData,
+    ERC725XBatchExecuteArrayParamsLengthMissmatch
 } from "./LSP6Errors.sol";
 
 // constants
@@ -394,11 +395,55 @@ abstract contract LSP6KeyManagerCore is
 
             // ERC725X.execute(uint256,address,uint256,bytes)
         } else if (erc725Function == EXECUTE_SELECTOR) {
-            LSP6ExecuteModule._verifyCanExecute(_target, from, permissions, payload);
+            // CHECK the offset of `data` is not pointing to the previous parameters
+            if (
+                bytes32(payload[100:132]) !=
+                0x0000000000000000000000000000000000000000000000000000000000000080
+            ) {
+                revert InvalidPayload(payload);
+            }
+
+            (uint256 operationType, address callee, uint256 value, bytes memory data) = abi.decode(
+                payload[4:],
+                (uint256, address, uint256, bytes)
+            );
+
+            LSP6ExecuteModule._verifyCanExecute(
+                _target,
+                from,
+                permissions,
+                operationType,
+                callee,
+                value,
+                data
+            );
 
             // ERC725X.execute(uint256,address,uint256,bytes)
         } else if (erc725Function == EXECUTE_ARRAY_SELECTOR) {
-            LSP6ExecuteModule._verifyCanBatchExecute(_target, from, permissions, payload);
+            (
+                uint256[] memory operationTypes,
+                address[] memory callees,
+                uint256[] memory values,
+                bytes[] memory datas
+            ) = abi.decode(payload[4:], (uint256[], address[], uint256[], bytes[]));
+
+            if (
+                operationTypes.length != callees.length ||
+                callees.length != values.length ||
+                values.length != datas.length
+            ) revert ERC725XBatchExecuteArrayParamsLengthMissmatch();
+
+            for (uint256 i = 0; i < operationTypes.length; i++) {
+                _verifyCanExecute(
+                    _target,
+                    from,
+                    permissions,
+                    operationTypes[i],
+                    callees[i],
+                    values[i],
+                    datas[i]
+                );
+            }
         } else if (
             erc725Function == ILSP14Ownable2Step.transferOwnership.selector ||
             erc725Function == ILSP14Ownable2Step.acceptOwnership.selector
