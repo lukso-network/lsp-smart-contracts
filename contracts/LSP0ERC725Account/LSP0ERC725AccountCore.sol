@@ -3,6 +3,7 @@ pragma solidity ^0.8.4;
 
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
+import {ILSP0ERC725Account} from "./ILSP0ERC725Account.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import {ILSP20CallVerification} from "../LSP20CallVerification/ILSP20CallVerification.sol";
 
@@ -82,6 +83,7 @@ abstract contract LSP0ERC725AccountCore is
     ERC725XCore,
     ERC725YCore,
     IERC1271,
+    ILSP0ERC725Account,
     ILSP1UniversalReceiver,
     LSP14Ownable2Step,
     LSP17Extendable,
@@ -92,14 +94,7 @@ abstract contract LSP0ERC725AccountCore is
     using Address for address;
 
     /**
-     * @notice Emitted when receiving native tokens
-     * @param sender The address of the sender
-     * @param value The amount of native tokens received
-     */
-    event ValueReceived(address indexed sender, uint256 indexed value);
-
-    /**
-     * @dev Emits an event when receiving native tokens
+     * @dev Emits a `ValueReceived` event when receiving native tokens.
      *
      * Executed:
      *     - when receiving some native tokens without any additional data.
@@ -119,7 +114,7 @@ abstract contract LSP0ERC725AccountCore is
      * extension address mapped to the function being called.
      *
      * @dev This function:
-     * - Emits {ValueReceived} event when receiving native tokens
+     * - Emits a {ValueReceived} event when receiving native tokens
      *
      * - Returns if the data sent to this function is of length less than 4 bytes (not a function selector)
      *
@@ -202,7 +197,7 @@ abstract contract LSP0ERC725AccountCore is
      *
      * Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4
      * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2
-     * Emits a {ValueReceived} event, when receives native token
+     * Emits a {ValueReceived} event when receiving native tokens.
      */
     function execute(
         uint256 operationType,
@@ -255,7 +250,7 @@ abstract contract LSP0ERC725AccountCore is
      *
      * Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4 (each iteration)
      * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2 (each iteration)
-     * Emits a {ValueReceived} event, when receives native token
+     * Emits a {ValueReceived} event when receiving native tokens.
      */
     function execute(
         uint256[] memory operationsType,
@@ -300,7 +295,7 @@ abstract contract LSP0ERC725AccountCore is
      * - MUST pass when called by the owner or by an authorised address that pass the verification check performed
      * on the owner accordinng to LSP20 - CallVerification specification
      *
-     * Emits a {ValueReceived} event, when receives native token.
+     * Emits a {ValueReceived} event when receiving native tokens.
      * Emits a {DataChanged} event.
      */
     function setData(bytes32 dataKey, bytes memory dataValue) public payable virtual override {
@@ -339,7 +334,7 @@ abstract contract LSP0ERC725AccountCore is
      * - MUST pass when called by the owner or by an authorised address that pass the verification check performed
      * on the owner accordinng to LSP20 - CallVerification specification
      *
-     * Emits a {ValueReceived} event, when receives native token.
+     * Emits a {ValueReceived} event when receiving native tokens.
      * Emits a {DataChanged} event. (on each iteration of setting data)
      */
     function setData(bytes32[] memory dataKeys, bytes[] memory dataValues)
@@ -389,7 +384,7 @@ abstract contract LSP0ERC725AccountCore is
      * The reaction is achieved by having two external contracts (UniversalReceiverDelegates) that react on the whole transaction
      * and on the specific typeId, respectively.
      *
-     * The notification is achieved by emitting an event on the call with the function parameters, call options, and the
+     * The notification is achieved by emitting a {UniversalReceiver} event on the call with the function parameters, call options, and the
      * response of the UniversalReceiverDelegates (URD) contract.
      *
      * @dev The function performs the following steps:
@@ -411,7 +406,7 @@ abstract contract LSP0ERC725AccountCore is
      *      - If yes, call this address with the typeId and data (params), along with additional calldata consisting
      *        of 20 bytes of {msg.sender} and 32 bytes of {msg.value}. If not, continue the execution of the function.
      *
-     * - Emits {UniversalReceiver} event.
+     * - Emits a {UniversalReceiver} event.
      *
      * @param typeId The type of call received.
      * @param receivedData The data received.
@@ -785,8 +780,8 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @dev This function overrides the {ERC725YCore} internal {_setData} function to optimize gas usage by emitting the
-     * {DataChanged} event with only the first 256 bytes of {dataValue}.
+     * @dev This function overrides the {ERC725YCore} internal {_setData} function to optimize gas usage by
+     * emitting the {DataChanged} event with only the first 256 bytes of {dataValue}.
      *
      * @param dataKey The key to store the data value under.
      * @param dataValue The data value to be stored.
