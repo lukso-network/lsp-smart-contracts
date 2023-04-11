@@ -39,15 +39,17 @@ import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
  *
  * - Verifying calls on the owner to allow unified and standard interaction with the account using LSP20
  *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-20-CallVerification.md
+ *
+ * This interface implicitly inherits: IERC165, IERC725X, IERC725Y, IERC1271, ILSP1UniversalReceiver, ILSP14Ownable2Step
  */
-interface ILSP0ERC725Account is
-    IERC165,
-    IERC725X,
-    IERC725Y,
-    IERC1271,
-    ILSP1UniversalReceiver,
-    ILSP14Ownable2Step
-{
+interface ILSP0ERC725Account {
+    /**
+     * @notice Emitted when receiving native tokens
+     * @param sender The address of the sender
+     * @param value The amount of native tokens received
+     */
+    event ValueReceived(address indexed sender, uint256 indexed value);
+
     /**
      * @dev Allows a caller to batch different function calls in one call.
      * Perform a delegatecall on self, to call different functions with preserving the context
