@@ -2,8 +2,6 @@ name: Foundry tests & Report gas diff
 
 on:
   pull_request:
-    types: [opened]
-
     # compare gas diff only when editing Solidity smart contract code
     paths:
       - "contracts/**/*.sol"
