@@ -3,6 +3,7 @@ pragma solidity ^0.8.4;
 
 // interfaces
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import {ILSP9Vault} from "./ILSP9Vault.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -58,19 +59,13 @@ contract LSP9VaultCore is
     ERC725YCore,
     LSP14Ownable2Step,
     LSP17Extendable,
-    ILSP1UniversalReceiver
+    ILSP1UniversalReceiver,
+    ILSP9Vault
 {
     using ERC165Checker for address;
     using LSP1Utils for address;
 
     address private _reentrantDelegate;
-
-    /**
-     * @notice Emitted when receiving native tokens
-     * @param sender The address of the sender
-     * @param value The amount of native tokens received
-     */
-    event ValueReceived(address indexed sender, uint256 indexed value);
 
     /**
      * @dev Emits an event when receiving native tokens
