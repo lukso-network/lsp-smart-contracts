@@ -36,9 +36,9 @@ import {
     InvalidERC725Function,
     NotAuthorised,
     CallerIsNotTheTarget,
-    CannotSendValueToSetData,
-    ERC725XBatchExecuteArrayParamsLengthMissmatch
+    CannotSendValueToSetData
 } from "./LSP6Errors.sol";
+import "@erc725/smart-contracts/contracts/errors.sol";
 
 // constants
 import {
@@ -391,6 +391,9 @@ abstract contract LSP6KeyManagerCore is
                 (bytes32[], bytes[])
             );
 
+            if (inputKeys.length != inputValues.length)
+                revert ERC725Y_DataKeysValuesLengthMismatch(inputKeys.length, inputValues.length);
+
             LSP6SetDataModule._verifyCanSetData(_target, from, permissions, inputKeys, inputValues);
 
             // ERC725X.execute(uint256,address,uint256,bytes)
@@ -403,7 +406,7 @@ abstract contract LSP6KeyManagerCore is
                 revert InvalidPayload(payload);
             }
 
-            (uint256 operationType, address callee, uint256 value, bytes memory data) = abi.decode(
+            (uint256 operationType, address to, uint256 value, bytes memory data) = abi.decode(
                 payload[4:],
                 (uint256, address, uint256, bytes)
             );
@@ -413,7 +416,7 @@ abstract contract LSP6KeyManagerCore is
                 from,
                 permissions,
                 operationType,
-                callee,
+                to,
                 value,
                 data
             );
@@ -431,7 +434,7 @@ abstract contract LSP6KeyManagerCore is
                 operationTypes.length != callees.length ||
                 callees.length != values.length ||
                 values.length != datas.length
-            ) revert ERC725XBatchExecuteArrayParamsLengthMissmatch();
+            ) revert ERC725X_ExecuteParametersLengthMismatch();
 
             for (uint256 i = 0; i < operationTypes.length; i++) {
                 _verifyCanExecute(

@@ -65,12 +65,12 @@ abstract contract LSP6ExecuteModule {
         address controller,
         bytes32 permissions,
         uint256 operationType,
-        address callee,
+        address to,
         uint256 value,
         bytes memory data
     ) internal view virtual {
         // if to is the KeyManager address revert
-        if (callee == address(this)) {
+        if (to == address(this)) {
             revert CallingKeyManagerNotAllowed();
         }
 
@@ -98,7 +98,7 @@ abstract contract LSP6ExecuteModule {
                     controller,
                     permissions,
                     operationType,
-                    callee,
+                    to,
                     value,
                     data
                 );
@@ -123,7 +123,7 @@ abstract contract LSP6ExecuteModule {
                     controller,
                     permissions,
                     operationType,
-                    callee,
+                    to,
                     value,
                     data
                 );

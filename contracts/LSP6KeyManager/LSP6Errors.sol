@@ -158,9 +158,3 @@ error CannotSendValueToSetData();
  * @dev reverts when calling the KeyManager through execute(..)
  */
 error CallingKeyManagerNotAllowed();
-
-/**
- * @dev reverts when the parameters of `ERC725X.execute(uint256[],address[],uint256[],bytes[])`
- * have diferent lengths
- */
-error ERC725XBatchExecuteArrayParamsLengthMissmatch();
