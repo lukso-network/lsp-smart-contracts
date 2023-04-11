@@ -11,6 +11,12 @@ interface ILSP6KeyManager is
     IERC1271
     /* is ERC165 */
 {
+    /**
+     * @dev Emitted when a calldata payload that includes `selector` and `value` as msg.value was verified for `signer`
+     * @param signer the address of the controller that executed the calldata payload.
+     * @param value the amount of native token to be transferred in the calldata payload.
+     * @param selector the bytes4 function of the function to run in the calldata payload.
+     */
     event VerifiedCall(address indexed signer, uint256 indexed value, bytes4 indexed selector);
 
     /**
