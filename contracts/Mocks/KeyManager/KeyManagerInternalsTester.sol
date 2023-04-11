@@ -28,13 +28,14 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         return ERC725Y(_target).getAllowedERC725YDataKeysFor(_address);
     }
 
-    function verifyAllowedCall(address _sender, bytes calldata _payload) public view {
-        (uint256 operationType, address callee, uint256 value, bytes memory data) = abi.decode(
-            _payload[4:],
-            (uint256, address, uint256, bytes)
-        );
-
-        super._verifyAllowedCall(_target, _sender, operationType, callee, value, bytes4(data));
+    function verifyAllowedCall(
+        address _sender,
+        uint256 operationType,
+        address to,
+        uint256 value,
+        bytes memory data
+    ) public view {
+        super._verifyAllowedCall(_target, _sender, operationType, to, value, bytes4(data));
     }
 
     function isCompactBytesArrayOfAllowedCalls(bytes memory allowedCallsCompacted)
