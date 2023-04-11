@@ -106,6 +106,11 @@ const config: HardhatUserConfig = {
          */
         runs: 1000,
       },
+      outputSelection: {
+        "*": {
+          "*": ["storageLayout"],
+        },
+      },
     },
   },
   packager: {

@@ -46,6 +46,24 @@ export const ERC1271_VALUES = {
   FAIL_VALUE: "0xffffffff",
 };
 
+// LSP20
+// ----------
+
+/**
+ * @dev values returned by the `lsp20VerifyCall` and `lsp20VerifyCallResult` functions of the LSP20 standard.
+ * Can be used to check if a calldata payload was check and verified.
+ */
+export const LSP20_MAGIC_VALUES = {
+  VERIFY_CALL: {
+    // bytes3(keccak256("lsp20VerifyCall(address,uint256,bytes)")) + "0x01"
+    WITH_POST_VERIFICATION: "0x9bf04b01",
+    // bytes3(keccak256("lsp20VerifyCall(address,uint256,bytes)")) + "0x00"
+    NO_POST_VERIFICATION: "0x9bf04b00",
+  },
+  // bytes4(keccak256("lsp20VerifyCallResult(bytes32,bytes)"))
+  VERIFY_CALL_RESULT: "0xd3fc45d3",
+};
+
 // ERC725X
 // ----------
 
