@@ -1,0 +1,12 @@
+{
+  "compilationOptions": {
+    "preferredConfigPath": "./tsconfig.module.json"
+  },
+  "entries": [
+    {
+      "filePath": "constants.ts",
+      "outFile": "dist/constants.d.ts",
+      "failOnClass": true
+    }
+  ]
+}

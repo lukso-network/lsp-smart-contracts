@@ -1,9 +1,11 @@
 {
   "extends": "./tsconfig",
   "compilerOptions": {
-    "module": "ES2015",
+    "module": "esNext",
+    "target": "esNext",
     "outDir": "module",
-    "declaration": true
+    "declaration": true,
+    "skipLibCheck": false
   },
   "files": ["./constants.ts"]
 }
