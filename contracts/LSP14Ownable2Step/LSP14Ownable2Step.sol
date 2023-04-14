@@ -152,7 +152,10 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         uint256 confirmationPeriodEnd = confirmationPeriodStart +
             RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD;
 
-        if (currentBlock > confirmationPeriodEnd) {
+        bool isNewNetwork = currentBlock <
+            RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY + RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD;
+
+        if (currentBlock > confirmationPeriodEnd || isNewNetwork) {
             _renounceOwnershipStartedAt = currentBlock;
             delete _pendingOwner;
             emit RenounceOwnershipStarted();
