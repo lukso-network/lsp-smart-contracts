@@ -59,6 +59,11 @@ describe("Calculate LSP interfaces", () => {
     expect(result).to.equal(INTERFACE_IDS.LSP9Vault);
   });
 
+  it("LSP11", async () => {
+    const result = await contract.callStatic.calculateInterfaceLSP11();
+    expect(result).to.equal(INTERFACE_IDS.LSP11BasicSocialRecovery);
+  });
+
   it("LSP14", async () => {
     const result = await contract.calculateInterfaceLSP14();
     expect(result).to.equal(INTERFACE_IDS.LSP14Ownable2Step);
@@ -74,9 +79,14 @@ describe("Calculate LSP interfaces", () => {
     expect(result).to.equal(INTERFACE_IDS.LSP17Extension);
   });
 
-  it("LSP11", async () => {
-    const result = await contract.callStatic.calculateInterfaceLSP11();
-    expect(result).to.equal(INTERFACE_IDS.LSP11BasicSocialRecovery);
+  it("LSP20CallVerification", async () => {
+    const result = await contract.calculateInterfaceLSP20CallVerification();
+    expect(result).to.equal(INTERFACE_IDS.LSP20CallVerification);
+  });
+
+  it("LSP20CallVerifier", async () => {
+    const result = await contract.calculateInterfaceLSP20CallVerifier();
+    expect(result).to.equal(INTERFACE_IDS.LSP20CallVerifier);
   });
 });
 
