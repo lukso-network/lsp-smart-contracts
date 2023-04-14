@@ -609,4 +609,37 @@ export const shouldBehaveLikeLSP14 = (
       });
     });
   });
+
+  describe.only("should be able to have 2-step `renoucneOwnership()` on a fresh blockchain", () => {
+    before(async () => {
+      context = await buildContext();
+
+      // Skip 1 block
+      // Simulate real blockchain
+      // You would never be able to deploy a contract and initiate `renounceOwnership(..)`
+      // in the block 0
+      await network.provider.send("hardhat_mine", [ethers.utils.hexValue(1)]);
+    });
+
+    it("should instantiate the renounceOwnership process correctly", async () => {
+      const renounceOwnershipTx = await context.contract
+        .connect(context.deployParams.owner)
+        .renounceOwnership();
+
+      await renounceOwnershipTx.wait();
+
+      const _renounceOwnershipStartedAtAfter = await provider.getStorageAt(
+        context.contract.address,
+        2
+      );
+
+      expect(
+        ethers.BigNumber.from(_renounceOwnershipStartedAtAfter).toNumber()
+      ).to.equal(renounceOwnershipTx.blockNumber);
+
+      expect(await context.contract.owner()).to.equal(
+        context.deployParams.owner.address
+      );
+    });
+  });
 };
