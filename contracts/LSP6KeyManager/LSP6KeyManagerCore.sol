@@ -89,45 +89,6 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @inheritdoc ILSP20
-     */
-    function lsp20VerifyCall(
-        address caller,
-        uint256 msgValue,
-        bytes calldata data
-    ) external returns (bytes4) {
-        if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
-
-        bool isSetData = false;
-        if (bytes4(data) == SETDATA_SELECTOR || bytes4(data) == SETDATA_ARRAY_SELECTOR) {
-            isSetData = true;
-        }
-
-        _nonReentrantBefore(isSetData, caller);
-
-        _verifyPermissions(caller, msgValue, data);
-        emit VerifiedCall(msg.sender, msgValue, bytes4(data));
-
-        // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
-        return
-            isSetData
-                ? bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"00"))
-                : bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"01"));
-    }
-
-    /**
-     * @inheritdoc ILSP20
-     */
-    function lsp20VerifyCallResult(
-        bytes32, /*callHash*/
-        bytes memory /*result*/
-    ) external returns (bytes4) {
-        if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
-        _nonReentrantAfter();
-        return ILSP20.lsp20VerifyCallResult.selector;
-    }
-
-    /**
      * @dev See {IERC165-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
@@ -244,6 +205,45 @@ abstract contract LSP6KeyManagerCore is
         }
 
         return results;
+    }
+
+    /**
+     * @inheritdoc ILSP20
+     */
+    function lsp20VerifyCall(
+        address caller,
+        uint256 msgValue,
+        bytes calldata data
+    ) external returns (bytes4) {
+        if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
+
+        bool isSetData = false;
+        if (bytes4(data) == SETDATA_SELECTOR || bytes4(data) == SETDATA_ARRAY_SELECTOR) {
+            isSetData = true;
+        }
+
+        _nonReentrantBefore(isSetData, caller);
+
+        _verifyPermissions(caller, msgValue, data);
+        emit VerifiedCall(msg.sender, msgValue, bytes4(data));
+
+        // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
+        return
+            isSetData
+                ? bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"00"))
+                : bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"01"));
+    }
+
+    /**
+     * @inheritdoc ILSP20
+     */
+    function lsp20VerifyCallResult(
+        bytes32, /*callHash*/
+        bytes memory /*result*/
+    ) external returns (bytes4) {
+        if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
+        _nonReentrantAfter();
+        return ILSP20.lsp20VerifyCallResult.selector;
     }
 
     function _execute(uint256 msgValue, bytes calldata payload)

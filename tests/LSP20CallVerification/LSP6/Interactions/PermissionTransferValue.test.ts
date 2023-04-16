@@ -2,11 +2,11 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumber } from "ethers";
+import { FakeContract, smock } from "@defi-wonderland/smock";
+
 import {
   ExecutorLSP20,
   ExecutorLSP20__factory,
-  FallbackContract,
-  FallbackContract__factory,
   LSP7Mintable,
   LSP7Mintable__factory,
   TargetContract__factory,
@@ -35,10 +35,7 @@ import {
   combinePermissions,
   combineAllowedCalls,
   combineCallTypes,
-  LOCAL_PRIVATE_KEYS,
 } from "../../../utils/helpers";
-
-const universalProfileInterface = UniversalProfile__factory.createInterface();
 
 export const shouldBehaveLikePermissionTransferValue = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
@@ -551,7 +548,7 @@ export const shouldBehaveLikePermissionTransferValue = (
     let targetContract: TargetPayableContract;
 
     let lyxRecipientEOA: string;
-    let lyxRecipientContract: FallbackContract;
+    let lyxRecipientContract: FakeContract;
 
     const recipientsEOA: string[] = [
       ethers.Wallet.createRandom().address,
@@ -581,10 +578,14 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       lyxRecipientEOA = ethers.Wallet.createRandom().address;
 
-      // this contract as a payable fallback function and can receive native tokens
-      lyxRecipientContract = await new FallbackContract__factory(
-        context.accounts[0]
-      ).deploy();
+      // this contract has a payable fallback function and can receive native tokens
+      lyxRecipientContract = await smock.fake([
+        {
+          stateMutability: "payable",
+          type: "fallback",
+        },
+      ]);
+      lyxRecipientContract.fallback.returns();
 
       await lsp7Token
         .connect(context.accounts[0])

@@ -1,5 +1,7 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
+import { FakeContract, smock } from "@defi-wonderland/smock";
+
 import {
   LSP1UniversalReceiverDelegateUP__factory,
   LSP16UniversalFactory,
@@ -11,8 +13,6 @@ import {
   UniversalProfile__factory,
   PayableContract,
   PayableContract__factory,
-  FallbackContract,
-  FallbackContract__factory,
   ImplementationTester,
   ImplementationTester__factory,
   FallbackInitializer,
@@ -27,7 +27,6 @@ import { provider, AddressOffset } from "../utils/helpers";
 
 import { bytecode as UniversalProfileBytecode } from "../../artifacts/contracts/UniversalProfile.sol/UniversalProfile.json";
 import { bytecode as LSP6KeyManagerBytecode } from "../../artifacts/contracts/LSP6KeyManager/LSP6KeyManager.sol/LSP6KeyManager.json";
-import { bytecode as PayableContractBytecode } from "../../artifacts/contracts/Mocks/PayableContract.sol/PayableContract.json";
 import { bytecode as ImplementationTesterBytecode } from "../../artifacts/contracts/Mocks/ImplementationTester.sol/ImplementationTester.json";
 import { bytecode as FallbackInitializerBytecode } from "../../artifacts/contracts/Mocks/FallbackInitializer.sol/FallbackInitializer.json";
 
@@ -67,7 +66,7 @@ describe("UniversalFactory contract", () => {
     let universalProfileBaseContract: UniversalProfileInit;
     let universalReceiverDelegate: LSP1UniversalReceiverDelegateUP;
     let payableContract: PayableContract;
-    let fallbackContract: FallbackContract;
+    let fallbackContract: FakeContract;
     let implementationTester: ImplementationTester;
     let fallbackInitializer: FallbackInitializer;
 
@@ -91,9 +90,13 @@ describe("UniversalFactory contract", () => {
         context.accounts.random
       ).deploy();
 
-      fallbackContract = await new FallbackContract__factory(
-        context.accounts.random
-      ).deploy();
+      fallbackContract = await smock.fake([
+        {
+          stateMutability: "payable",
+          type: "fallback",
+        },
+      ]);
+      fallbackContract.fallback.returns();
 
       implementationTester = await new ImplementationTester__factory(
         context.accounts.random
@@ -280,14 +283,11 @@ describe("UniversalFactory contract", () => {
       it("should pass when sending value while deploying a payable non-initializable contract", async () => {
         let salt = ethers.utils.solidityKeccak256(["string"], ["OtherSalt"]);
 
-        // imported
-        PayableContractBytecode;
-
         const valueSent = 100;
 
         const contractCreated =
           await context.universalFactory.callStatic.deployCreate2(
-            PayableContractBytecode,
+            PayableContract__factory.bytecode,
             salt,
             {
               value: 100,
@@ -295,7 +295,7 @@ describe("UniversalFactory contract", () => {
           );
 
         await context.universalFactory.deployCreate2(
-          PayableContractBytecode,
+          PayableContract__factory.bytecode,
           salt,
           {
             value: valueSent,
@@ -344,7 +344,7 @@ describe("UniversalFactory contract", () => {
 
         let bytecodeHash = ethers.utils.solidityKeccak256(
           ["bytes"],
-          [ImplementationTesterBytecode]
+          [ImplementationTester__factory.bytecode]
         );
 
         const calulcatedAddress = await context.universalFactory.computeAddress(
@@ -599,7 +599,7 @@ describe("UniversalFactory contract", () => {
         const contractCreated = await context.universalFactory
           .connect(context.accounts.deployer1)
           .callStatic.deployCreate2AndInitialize(
-            PayableContractBytecode,
+            PayableContract__factory.bytecode,
             salt,
             PayableTrueCalldata,
             valueSentToConstructor,
@@ -610,7 +610,7 @@ describe("UniversalFactory contract", () => {
         await context.universalFactory
           .connect(context.accounts.deployer1)
           .deployCreate2AndInitialize(
-            PayableContractBytecode,
+            PayableContract__factory.bytecode,
             salt,
             PayableTrueCalldata,
             valueSentToConstructor,

@@ -18,6 +18,7 @@ import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-packager";
 import "hardhat-contract-sizer";
 import "hardhat-deploy";
+import "./scripts/ci/docs-generate";
 
 // Typescript types for web3.js
 import "@nomiclabs/hardhat-web3";
@@ -30,7 +31,7 @@ import "@nomiclabs/hardhat-web3";
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
 function getL16ChainConfig(): NetworkUserConfig {
-  const config = {
+  const config: NetworkUserConfig = {
     live: true,
     url: "https://rpc.l16.lukso.network",
     chainId: 2828,
@@ -105,6 +106,11 @@ const config: HardhatUserConfig = {
          * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
          */
         runs: 1000,
+      },
+      outputSelection: {
+        "*": {
+          "*": ["storageLayout"],
+        },
       },
     },
   },
