@@ -30,12 +30,12 @@ error InvalidValueSum();
  * - non-initializable (normal deployment)
  * - initializable (external call after deployment, e.g: proxy contracts)
  *
- * The `providedSalt` parameter given by the deployer is not used directly as the salt by the CREATE2 opcode. 
+ * The `providedSalt` parameter given by the deployer is not used directly as the salt by the CREATE2 opcode.
  * Instead, it is used along with these parameters:
- *  - `initializable` boolean 
+ *  - `initializable` boolean
  *  - `initializeCalldata` (when the contract is initializable and `initializable` is set to `true`).
- * These three parameters are concatenated together and hashed to generate the final salt for CREATE2. 
- * 
+ * These three parameters are concatenated together and hashed to generate the final salt for CREATE2.
+ *
  * See {generateSalt} function for more details.
  *
  * The constructor and `initializeCalldata` MUST NOT include any network-specific parameters (e.g: chain-id,
@@ -84,10 +84,10 @@ contract LSP16UniversalFactory {
      *
      * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is
      * used along with these parameters:
-     *  - `initializable` boolean 
+     *  - `initializable` boolean
      *  - `initializeCalldata` (when the contract is initializable and `initializable` is set to `true`).
-     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2. 
-     * 
+     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2.
+     *
      * See {generateSalt} function for more details.
      *
      * Using the same `byteCode` and `providedSalt` multiple times will revert, as the contract cannot be deployed
@@ -103,10 +103,12 @@ contract LSP16UniversalFactory {
      *
      * @return The address of the deployed contract
      */
-    function deployCreate2(
-        bytes calldata byteCode,
-        bytes32 providedSalt
-    ) public payable virtual returns (address) {
+    function deployCreate2(bytes calldata byteCode, bytes32 providedSalt)
+        public
+        payable
+        virtual
+        returns (address)
+    {
         bytes32 generatedSalt = generateSalt(false, _EMPTY_BYTE, providedSalt);
         address contractCreated = Create2.deploy(msg.value, generatedSalt, byteCode);
         emit ContractCreated(contractCreated, providedSalt, false, _EMPTY_BYTE);
@@ -124,10 +126,10 @@ contract LSP16UniversalFactory {
      *
      * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is
      * used along with these parameters:
-     *  - `initializable` boolean 
+     *  - `initializable` boolean
      *  - `initializeCalldata` (when the contract is initializable and `initializable` is set to `true`).
-     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2. 
-     * 
+     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2.
+     *
      * See {generateSalt} function for more details.
      *
      * Using the same `byteCode`, `providedSalt` and `initializeCalldata` multiple times will revert, as the
@@ -175,16 +177,16 @@ contract LSP16UniversalFactory {
      * can be known in advance via the {computeERC1167Address} function.
      *
      * This function deploys contracts without initialization (external call after deployment). When examining
-     * the event or computing the address, the `initializable` boolean for this function is set to `false` 
+     * the event or computing the address, the `initializable` boolean for this function is set to `false`
      * and `EMPTY_BYTES` is used for `initializeCalldata`, as the contract is not initializable, and the
      * `initializeCalldata` will not be used.
      *
      * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is
      * used along with these parameters:
-     *  - `initializable` boolean 
+     *  - `initializable` boolean
      *  - `initializeCalldata` (when the contract is initializable and `initializable` is set to `true`).
-     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2. 
-     * 
+     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2.
+     *
      * See {generateSalt} function for more details.
      *
      * Using the same `implementation` and `providedSalt` multiple times will revert, as the contract cannot be deployed
@@ -198,10 +200,11 @@ contract LSP16UniversalFactory {
      *
      * @return The address of the minimal proxy deployed
      */
-    function deployERC1167Proxy(
-        address implementation,
-        bytes32 providedSalt
-    ) public virtual returns (address) {
+    function deployERC1167Proxy(address implementation, bytes32 providedSalt)
+        public
+        virtual
+        returns (address)
+    {
         bytes32 generatedSalt = generateSalt(false, _EMPTY_BYTE, providedSalt);
 
         address proxy = Clones.cloneDeterministic(implementation, generatedSalt);
@@ -220,10 +223,10 @@ contract LSP16UniversalFactory {
      *
      * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is
      * used along with these parameters:
-     *  - `initializable` boolean 
+     *  - `initializable` boolean
      *  - `initializeCalldata` (when the contract is initializable and `initializable` is set to `true`).
-     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2. 
-     * 
+     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2.
+     *
      * See {generateSalt} function for more details.
      *
      * Using the same `implementation`, `providedSalt` and `initializeCalldata` multiple times will revert, as the
@@ -314,14 +317,14 @@ contract LSP16UniversalFactory {
      *
      * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is
      * used along with these parameters:
-     *  - `initializable` boolean 
+     *  - `initializable` boolean
      *  - `initializeCalldata` (when the contract is initializable and `initializable` is set to `true`).
-     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2. 
+     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2.
      *
      * This approach ensures that in order to reproduce an initializable contract at the same address on another chain,
      * not only the `providedSalt` is required to be the same, but also the initialize parameters within the `initializeCalldata`
      * must also be the same.
-     * 
+     *
      * This maintains consistent deployment behaviour. Users are required to initialize contracts with the same parameters across
      * different chains to ensure contracts are deployed at the same address across different chains.
      *
@@ -330,7 +333,7 @@ contract LSP16UniversalFactory {
      *
      * For an existing contract A on chain 1 owned by X, to replicate the same contract at the same address with
      * the same owner X on chain 2, the salt used to generate the address should include the initializeCalldata
-     * that assigns X as the owner of contract A. 
+     * that assigns X as the owner of contract A.
      *
      * For instance, if another user, Y, tries to deploy the contract at the same address
      * on chain 2 using the same providedSalt, but with a different initializeCalldata to make Y the owner instead of X,
