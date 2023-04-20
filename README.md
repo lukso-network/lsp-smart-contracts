@@ -104,7 +104,7 @@ import {
 
 > **NB:** dates of the audit reports use the american date format YYYY-MM-DD.
 
-The following audits where conducted. All high-level issues were addressed, or were not deemed as critical.
+The following audits were conducted. All high-level issues were addressed, or were not deemed as critical.
 
 - Chainsulting Audit, 2022-07-06, Final Result: [Chainsulting_audit_06_07_2022.pdf](./audits/Chainsulting_audit_2022_07_06.pdf)
 - Quantstamp Audit, 2022-09-07, Final Result: [Quantstamp_audit_07_09_2022.pdf](./audits/Quantstamp_audit_2022_09_07.pdf)
