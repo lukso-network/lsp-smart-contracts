@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ethers, network } from "hardhat";
+import { ethers, network, artifacts } from "hardhat";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
@@ -9,13 +9,11 @@ import {
 } from "../../types";
 
 // constants
-import { INTERFACE_IDS, OPERATION_TYPES } from "../../constants";
+import { OPERATION_TYPES } from "../../constants";
 
 // helpers
 import { provider } from "../utils/helpers";
 import { BigNumber, ContractTransaction } from "ethers";
-
-const hre = require("hardhat");
 
 export type LSP14TestContext = {
   accounts: SignerWithAddress[];
@@ -337,10 +335,10 @@ export const shouldBehaveLikeLSP14 = (
       it("should instantiate the renounceOwnership process correctly", async () => {
         const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
           (
-            await hre.artifacts.getBuildInfo(
-              "contracts/LSP9Vault/LSP9VaultCore.sol:LSP9VaultCore"
+            await artifacts.getBuildInfo(
+              "contracts/LSP9Vault/LSP9Vault.sol:LSP9Vault"
             )
-          ).output.contracts[
+          )?.output.contracts[
             "contracts/LSP9Vault/LSP9Vault.sol"
           ].LSP9Vault.storageLayout.storage.filter((elem) => {
             if (elem.label === "_renounceOwnershipStartedAt") return elem;
@@ -458,10 +456,10 @@ export const shouldBehaveLikeLSP14 = (
       it("should initialize again if the confirmation period passed", async () => {
         const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
           (
-            await hre.artifacts.getBuildInfo(
-              "contracts/LSP9Vault/LSP9VaultCore.sol:LSP9VaultCore"
+            await artifacts.getBuildInfo(
+              "contracts/LSP9Vault/LSP9Vault.sol:LSP9Vault"
             )
-          ).output.contracts[
+          )?.output.contracts[
             "contracts/LSP9Vault/LSP9Vault.sol"
           ].LSP9Vault.storageLayout.storage.filter((elem) => {
             if (elem.label === "_renounceOwnershipStartedAt") return elem;
@@ -548,10 +546,10 @@ export const shouldBehaveLikeLSP14 = (
         it("should have reset the `_renounceOwnershipStartedAt` state variable to zero", async () => {
           const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
             (
-              await hre.artifacts.getBuildInfo(
-                "contracts/LSP9Vault/LSP9VaultCore.sol:LSP9VaultCore"
+              await artifacts.getBuildInfo(
+                "contracts/LSP9Vault/LSP9Vault.sol:LSP9Vault"
               )
-            ).output.contracts[
+            )?.output.contracts[
               "contracts/LSP9Vault/LSP9Vault.sol"
             ].LSP9Vault.storageLayout.storage.filter((elem) => {
               if (elem.label === "_renounceOwnershipStartedAt") return elem;
@@ -656,16 +654,16 @@ export const shouldBehaveLikeLSP14 = (
       // Simulate real blockchain
       // in a real blockchain environment, you would not likely be able to deploy a contract
       // in the block 0
-      await network.provider.send("hardhat_mine", [ethers.utils.hexValue(1)]);
+      await network.provider.send("hardhat_mine", [ethers.utils.hexValue(138)]);
     });
 
     it("should instantiate the renounceOwnership process correctly", async () => {
       const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
         (
-          await hre.artifacts.getBuildInfo(
-            "contracts/LSP9Vault/LSP9VaultCore.sol:LSP9VaultCore"
+          await artifacts.getBuildInfo(
+            "contracts/LSP9Vault/LSP9Vault.sol:LSP9Vault"
           )
-        ).output.contracts[
+        )?.output.contracts[
           "contracts/LSP9Vault/LSP9Vault.sol"
         ].LSP9Vault.storageLayout.storage.filter((elem) => {
           if (elem.label === "_renounceOwnershipStartedAt") return elem;
