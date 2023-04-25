@@ -594,7 +594,12 @@ abstract contract LSP6SetDataModule {
             for (uint256 ii; ii < inputKeysLength; ) {
                 // if the input data key has been marked as allowed previously,
                 // SKIP it and move to the next input data key.
-                if (validatedInputKeys[ii]) continue;
+                if (validatedInputKeys[ii]) {
+                    unchecked {
+                        ii++;
+                    }
+                    continue;
+                }
 
                 // CHECK if the input data key is allowed.
                 if ((inputDataKeys[ii] & mask) == allowedKey) {
