@@ -17,7 +17,6 @@ import {LSP6ExecuteModule} from "./LSP6Modules/LSP6ExecuteModule.sol";
 import {LSP6OwnershipModule} from "./LSP6Modules/LSP6OwnershipModule.sol";
 
 // libraries
-import {GasUtils} from "../Utils/GasUtils.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
@@ -146,12 +145,16 @@ abstract contract LSP6KeyManagerCore is
         bytes[] memory results = new bytes[](payloads.length);
         uint256 totalValues;
 
-        for (uint256 ii; ii < payloads.length; ii = GasUtils.uncheckedIncrement(ii)) {
+        for (uint256 ii; ii < payloads.length;) {
             if ((totalValues += values[ii]) > msg.value) {
                 revert LSP6BatchInsufficientValueSent(totalValues, msg.value);
             }
 
             results[ii] = _execute(values[ii], payloads[ii]);
+
+            unchecked {
+                ii++;
+            }
         }
 
         if (totalValues < msg.value) {
@@ -192,12 +195,16 @@ abstract contract LSP6KeyManagerCore is
         bytes[] memory results = new bytes[](payloads.length);
         uint256 totalValues;
 
-        for (uint256 ii; ii < payloads.length; ii = GasUtils.uncheckedIncrement(ii)) {
+        for (uint256 ii; ii < payloads.length;) {
             if ((totalValues += values[ii]) > msg.value) {
                 revert LSP6BatchInsufficientValueSent(totalValues, msg.value);
             }
 
             results[ii] = _executeRelayCall(signatures[ii], nonces[ii], values[ii], payloads[ii]);
+
+            unchecked {
+                ii++;
+            }
         }
 
         if (totalValues < msg.value) {

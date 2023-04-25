@@ -8,7 +8,6 @@ import {ILSP8IdentifiableDigitalAsset} from "./ILSP8IdentifiableDigitalAsset.sol
 // libraries
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import {GasUtils} from "../Utils/GasUtils.sol";
 
 // modules
 
@@ -204,8 +203,12 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
             revert LSP8InvalidTransferBatch();
         }
 
-        for (uint256 i = 0; i < fromLength; i = GasUtils.uncheckedIncrement(i)) {
+        for (uint256 i = 0; i < fromLength;) {
             transfer(from[i], to[i], tokenId[i], allowNonLSP1Recipient[i], data[i]);
+
+            unchecked {
+                i++;
+            }
         }
     }
 
@@ -235,10 +238,14 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         EnumerableSet.AddressSet storage operatorsForTokenId = _operators[tokenId];
 
         uint256 operatorListLength = operatorsForTokenId.length();
-        for (uint256 i = 0; i < operatorListLength; i = GasUtils.uncheckedIncrement(i)) {
+        for (uint256 i = 0; i < operatorListLength;) {
             // we are emptying the list, always remove from index 0
             address operator = operatorsForTokenId.at(0);
             _revokeOperator(operator, tokenOwner, tokenId);
+
+            unchecked {
+                i++;
+            }
         }
     }
 
