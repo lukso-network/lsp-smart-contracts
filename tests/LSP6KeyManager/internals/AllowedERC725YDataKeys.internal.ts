@@ -224,7 +224,7 @@ export const testAllowedERC725YDataKeysInternals = (
       });
     });
 
-    describe.only("`verifyAllowedERC725YSingleKey(..)`", () => {
+    describe("`verifyAllowedERC725YSingleKey(..)`", () => {
       describe("checking a CompactBytesArray containing 2 dynamic keys", () => {
         it("checking first dynamic key: should return true", async () => {
           const checkedDataKey =
@@ -599,7 +599,7 @@ export const testAllowedERC725YDataKeysInternals = (
       });
     });
 
-    describe.only("`verifyAllowedERC725YDataKeys(..)`", () => {
+    describe("`verifyAllowedERC725YDataKeys(..)`", () => {
       describe("checking a CompactBytesArray containing 2 dynamic keys", () => {
         it("checking an array of valid keys: should return true", async () => {
           const checkedDataKeys = [
