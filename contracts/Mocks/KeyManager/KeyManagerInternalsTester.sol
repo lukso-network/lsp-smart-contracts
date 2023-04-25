@@ -68,13 +68,15 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         address from,
         bytes32[] memory inputKeys,
         bytes memory allowedERC725YDataKeysCompacted,
-        bool[] memory validatedInputKeys
+        bool[] memory validatedInputKeys,
+        uint256 allowedDataKeysFound
     ) public pure returns (bool) {
         super._verifyAllowedERC725YDataKeys(
             from,
             inputKeys,
             allowedERC725YDataKeysCompacted,
-            validatedInputKeys
+            validatedInputKeys,
+            allowedDataKeysFound
         );
         return true;
     }

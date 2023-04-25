@@ -108,6 +108,7 @@ abstract contract LSP6SetDataModule {
 
         bool isSettingERC725YKeys;
         bool[] memory validatedInputDataKeys = new bool[](inputDataKeys.length);
+        uint256 inputDataKeysAllowed = 0;
 
         bytes32 requiredPermission;
 
@@ -125,6 +126,7 @@ abstract contract LSP6SetDataModule {
                 // CHECK the required permissions if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
                 _requirePermissions(controller, permissions, requiredPermission);
                 validatedInputDataKeys[ii] = true;
+                inputDataKeysAllowed++;
             }
 
             unchecked {
@@ -143,7 +145,8 @@ abstract contract LSP6SetDataModule {
                 controller,
                 inputDataKeys,
                 ERC725Y(controlledContract).getAllowedERC725YDataKeysFor(controller),
-                validatedInputDataKeys
+                validatedInputDataKeys,
+                inputDataKeysAllowed
             );
         }
     }
@@ -488,18 +491,18 @@ abstract contract LSP6SetDataModule {
      * @param controllerAddress the address of the controller.
      * @param inputDataKeys the data keys to verify against the allowed ERC725Y Data Keys of the `controllerAddress`.
      * @param allowedERC725YDataKeysCompacted a CompactBytesArray of allowed ERC725Y Data Keys of the `controllerAddress`.
-     * @param validatedInputKeys an array of booleans to store the result of the verification of each data keys checked.
+     * @param validatedInputKeysList an array of booleans to store the result of the verification of each data keys checked.
+     * @param allowedDataKeysFound the number of data keys that were previously validated for other permissions like `ADDCONTROLLER`, `EDITPERMISSIONS`, etc...
      */
     function _verifyAllowedERC725YDataKeys(
         address controllerAddress,
         bytes32[] memory inputDataKeys,
         bytes memory allowedERC725YDataKeysCompacted,
-        bool[] memory validatedInputKeys
+        bool[] memory validatedInputKeysList,
+        uint256 allowedDataKeysFound
     ) internal pure virtual {
         if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
-
-        uint256 allowedKeysFound;
 
         // cache the input data keys from the start
         uint256 inputKeysLength = inputDataKeys.length;
@@ -594,7 +597,7 @@ abstract contract LSP6SetDataModule {
             for (uint256 ii; ii < inputKeysLength; ) {
                 // if the input data key has been marked as allowed previously,
                 // SKIP it and move to the next input data key.
-                if (validatedInputKeys[ii]) {
+                if (validatedInputKeysList[ii]) {
                     unchecked {
                         ii++;
                     }
@@ -605,14 +608,14 @@ abstract contract LSP6SetDataModule {
                 if ((inputDataKeys[ii] & mask) == allowedKey) {
                     // if the input data key is allowed, mark it as allowed
                     // and increment the number of allowed keys found.
-                    validatedInputKeys[ii] = true;
+                    validatedInputKeysList[ii] = true;
 
                     unchecked {
-                        allowedKeysFound++;
+                        allowedDataKeysFound++;
                     }
 
                     // Continue checking until all the inputKeys` have been found.
-                    if (allowedKeysFound == inputKeysLength) return;
+                    if (allowedDataKeysFound == inputKeysLength) return;
                 }
 
                 unchecked {
@@ -628,7 +631,7 @@ abstract contract LSP6SetDataModule {
 
         // if we did not find all the input data keys, search for the first not allowed data key to revert.
         for (uint256 jj; jj < inputKeysLength; ) {
-            if (!validatedInputKeys[jj]) {
+            if (!validatedInputKeysList[jj]) {
                 revert NotAllowedERC725YDataKey(controllerAddress, inputDataKeys[jj]);
             }
 

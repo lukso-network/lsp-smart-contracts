@@ -645,7 +645,8 @@ export const testAllowedERC725YDataKeysInternals = (
               context.universalProfile.address,
               checkedDataKeys,
               compactBytesArray_2d,
-              [false, false]
+              [false, false],
+              0
             );
 
           expect(result).to.be.true;
@@ -657,7 +658,8 @@ export const testAllowedERC725YDataKeysInternals = (
               context.universalProfile.address,
               dataKeysToReturn,
               compactBytesArray_2d,
-              Array(dataKeysToReturn.length).fill(false)
+              Array(dataKeysToReturn.length).fill(false),
+              0
             )
           )
             .to.be.revertedWithCustomError(
@@ -680,7 +682,8 @@ export const testAllowedERC725YDataKeysInternals = (
               context.universalProfile.address,
               checkedDataKeys,
               compactBytesArray_2f,
-              Array(dataKeysToReturn.length).fill(false)
+              Array(dataKeysToReturn.length).fill(false),
+              0
             );
 
           expect(result).to.be.true;
@@ -692,7 +695,8 @@ export const testAllowedERC725YDataKeysInternals = (
               context.universalProfile.address,
               dataKeysToReturn,
               compactBytesArray_2f,
-              Array(dataKeysToReturn.length).fill(false)
+              Array(dataKeysToReturn.length).fill(false),
+              0
             )
           )
             .to.be.revertedWithCustomError(
@@ -735,7 +739,8 @@ export const testAllowedERC725YDataKeysInternals = (
               context.universalProfile.address,
               checkedDataKeys,
               compactBytesArray_2d_2f,
-              Array(checkedDataKeys.length).fill(false)
+              Array(checkedDataKeys.length).fill(false),
+              0
             );
 
           expect(result).to.be.true;
@@ -747,7 +752,8 @@ export const testAllowedERC725YDataKeysInternals = (
               context.universalProfile.address,
               dataKeysToReturn,
               compactBytesArray_2d_2f,
-              Array(dataKeysToReturn.length).fill(false)
+              Array(dataKeysToReturn.length).fill(false),
+              0
             )
           )
             .to.be.revertedWithCustomError(
@@ -811,7 +817,8 @@ export const testAllowedERC725YDataKeysInternals = (
               context.universalProfile.address,
               checkedDataKeys,
               compactBytesArray_mixed_d_f,
-              Array(checkedDataKeys.length).fill(false)
+              Array(checkedDataKeys.length).fill(false),
+              0
             );
 
           expect(result).to.be.true;
@@ -823,7 +830,8 @@ export const testAllowedERC725YDataKeysInternals = (
               context.universalProfile.address,
               dataKeysToReturn,
               compactBytesArray_mixed_d_f,
-              Array(dataKeysToReturn.length).fill(false)
+              Array(dataKeysToReturn.length).fill(false),
+              0
             )
           )
             .to.be.revertedWithCustomError(
