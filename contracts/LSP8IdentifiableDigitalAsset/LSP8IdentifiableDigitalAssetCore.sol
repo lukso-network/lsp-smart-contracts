@@ -203,7 +203,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
             revert LSP8InvalidTransferBatch();
         }
 
-        for (uint256 i = 0; i < fromLength;) {
+        for (uint256 i = 0; i < fromLength; ) {
             transfer(from[i], to[i], tokenId[i], allowNonLSP1Recipient[i], data[i]);
 
             unchecked {
@@ -238,7 +238,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         EnumerableSet.AddressSet storage operatorsForTokenId = _operators[tokenId];
 
         uint256 operatorListLength = operatorsForTokenId.length();
-        for (uint256 i = 0; i < operatorListLength;) {
+        for (uint256 i = 0; i < operatorListLength; ) {
             // we are emptying the list, always remove from index 0
             address operator = operatorsForTokenId.at(0);
             _revokeOperator(operator, tokenOwner, tokenId);

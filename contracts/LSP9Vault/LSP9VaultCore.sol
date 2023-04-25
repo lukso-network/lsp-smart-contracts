@@ -210,7 +210,7 @@ contract LSP9VaultCore is
      */
     function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
         results = new bytes[](data.length);
-        for (uint256 i; i < data.length;) {
+        for (uint256 i; i < data.length; ) {
             (bool success, bytes memory result) = address(this).delegatecall(data[i]);
 
             if (!success) {
@@ -316,7 +316,7 @@ contract LSP9VaultCore is
 
         if (msg.value != 0) revert ERC725Y_MsgValueDisallowed();
 
-        for (uint256 i = 0; i < dataKeys.length;) {
+        for (uint256 i = 0; i < dataKeys.length; ) {
             if (isURD) {
                 if (
                     bytes12(dataKeys[i]) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ||

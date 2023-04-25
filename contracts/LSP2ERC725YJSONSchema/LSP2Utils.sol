@@ -241,7 +241,7 @@ library LSP2Utils {
 
         uint256 pointer = offset + 32;
 
-        for (uint256 ii = 0; ii < arrayLength;) {
+        for (uint256 ii = 0; ii < arrayLength; ) {
             bytes32 key = data.toBytes32(pointer);
 
             // check that the leading bytes are zero bytes "00"
@@ -270,7 +270,7 @@ library LSP2Utils {
         uint256 arrayLength = data.toUint256(offset);
         uint256 pointer = offset + 32;
 
-        for (uint256 ii = 0; ii < arrayLength;) {
+        for (uint256 ii = 0; ii < arrayLength; ) {
             bytes32 key = data.toBytes32(pointer);
 
             // check that the trailing bytes are zero bytes "00"

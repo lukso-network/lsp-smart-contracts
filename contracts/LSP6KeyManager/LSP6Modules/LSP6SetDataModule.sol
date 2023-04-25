@@ -126,7 +126,7 @@ abstract contract LSP6SetDataModule {
                 _requirePermissions(controller, permissions, requiredPermission);
                 validatedInputDataKeys[ii] = true;
             }
-            
+
             unchecked {
                 ii++;
             }
@@ -591,7 +591,7 @@ abstract contract LSP6SetDataModule {
              * Iterate over the `inputDataKeys` to check them against the allowed data keys.
              * This until we have validated them all.
              */
-            for (uint256 ii; ii < inputKeysLength;) {
+            for (uint256 ii; ii < inputKeysLength; ) {
                 // if the input data key has been marked as allowed previously,
                 // SKIP it and move to the next input data key.
                 if (validatedInputKeys[ii]) continue;
@@ -622,7 +622,7 @@ abstract contract LSP6SetDataModule {
         }
 
         // if we did not find all the input data keys, search for the first not allowed data key to revert.
-        for (uint256 jj; jj < inputKeysLength;) {
+        for (uint256 jj; jj < inputKeysLength; ) {
             if (!validatedInputKeys[jj]) {
                 revert NotAllowedERC725YDataKey(controllerAddress, inputDataKeys[jj]);
             }

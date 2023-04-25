@@ -156,7 +156,7 @@ abstract contract LSP0ERC725AccountCore is
      */
     function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
         results = new bytes[](data.length);
-        for (uint256 i; i < data.length;) {
+        for (uint256 i; i < data.length; ) {
             (bool success, bytes memory result) = address(this).delegatecall(data[i]);
 
             if (!success) {
@@ -358,7 +358,7 @@ abstract contract LSP0ERC725AccountCore is
 
         // If the caller is the owner perform setData directly
         if (msg.sender == _owner) {
-            for (uint256 i = 0; i < dataKeys.length;) {
+            for (uint256 i = 0; i < dataKeys.length; ) {
                 _setData(dataKeys[i], dataValues[i]);
 
                 unchecked {
@@ -373,7 +373,7 @@ abstract contract LSP0ERC725AccountCore is
         // Depending on the magicValue returned, a second call is done after setting data
         bool verifyAfter = _verifyCall(_owner);
 
-        for (uint256 i = 0; i < dataKeys.length;) {
+        for (uint256 i = 0; i < dataKeys.length; ) {
             _setData(dataKeys[i], dataValues[i]);
 
             unchecked {
