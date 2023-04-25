@@ -165,33 +165,33 @@ contract CalculateLSPInterfaces {
     }
 
     function calculateInterfaceLSP17Extendable() public pure returns (bytes4) {
-        bytes4 interfaceId = bytes4(keccak256(abi.encodePacked("LSP17Extendable")));
+        bytes4 interfaceId = bytes4(keccak256("LSP17Extendable"));
 
         require(
             interfaceId == _INTERFACEID_LSP17_EXTENDABLE,
-            "hardcoded _INTERFACEID_LSP17_EXTENDABLE does not match hash of LSP17Extendable"
+            "hardcoded _INTERFACEID_LSP17_EXTENDABLE does not match hash of 'LSP17Extendable'"
         );
 
         return interfaceId;
     }
 
     function calculateInterfaceLSP17Extension() public pure returns (bytes4) {
-        bytes4 interfaceId = bytes4(keccak256(abi.encodePacked("LSP17Extension")));
+        bytes4 interfaceId = bytes4(keccak256("LSP17Extension"));
 
         require(
             interfaceId == _INTERFACEID_LSP17_EXTENSION,
-            "hardcoded _INTERFACEID_LSP17_EXTENSION does not match hash of LSP17Extension"
+            "hardcoded _INTERFACEID_LSP17_EXTENSION does not match hash of 'LSP17Extension'"
         );
 
         return interfaceId;
     }
 
     function calculateInterfaceLSP20CallVerification() public pure returns (bytes4) {
-        bytes4 interfaceId = bytes4(keccak256(abi.encodePacked("LSP20CallVerification")));
+        bytes4 interfaceId = bytes4(keccak256("LSP20CallVerification"));
 
         require(
             interfaceId == _INTERFACEID_LSP20_CALL_VERIFICATION,
-            "hardcoded _INTERFACEID_LSP20_CALL_VERIFICATION does not match hash of LSP20CallVerification"
+            "hardcoded _INTERFACEID_LSP20_CALL_VERIFICATION does not match hash of 'LSP20CallVerification'"
         );
 
         return interfaceId;

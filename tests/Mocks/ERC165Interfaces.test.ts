@@ -60,7 +60,7 @@ describe("Calculate LSP interfaces", () => {
   });
 
   it("LSP11", async () => {
-    const result = await contract.callStatic.calculateInterfaceLSP11();
+    const result = await contract.calculateInterfaceLSP11();
     expect(result).to.equal(INTERFACE_IDS.LSP11BasicSocialRecovery);
   });
 
@@ -100,37 +100,37 @@ describe("Calculate ERC interfaces", () => {
   });
 
   it("ERC20", async () => {
-    const result = await contract.callStatic.calculateInterfaceERC20();
+    const result = await contract.calculateInterfaceERC20();
     expect(result).to.equal(INTERFACE_IDS.ERC20);
   });
 
   it("ERC223", async () => {
-    const result = await contract.callStatic.calculateInterfaceERC223();
+    const result = await contract.calculateInterfaceERC223();
     expect(result).to.equal(INTERFACE_IDS.ERC223);
   });
 
   it("ERC721", async () => {
-    const result = await contract.callStatic.calculateInterfaceERC721();
+    const result = await contract.calculateInterfaceERC721();
     expect(result).to.equal(INTERFACE_IDS.ERC721);
   });
 
   it("ERC721Metadata", async () => {
-    const result = await contract.callStatic.calculateInterfaceERC721Metadata();
+    const result = await contract.calculateInterfaceERC721Metadata();
     expect(result).to.equal(INTERFACE_IDS.ERC721Metadata);
   });
 
   it("ERC777", async () => {
-    const result = await contract.callStatic.calculateInterfaceERC777();
+    const result = await contract.calculateInterfaceERC777();
     expect(result).to.equal(INTERFACE_IDS.ERC777);
   });
 
   it("ERC1155", async () => {
-    const result = await contract.callStatic.calculateInterfaceERC1155();
+    const result = await contract.calculateInterfaceERC1155();
     expect(result).to.equal(INTERFACE_IDS.ERC1155);
   });
 
   it("ERC1271", async () => {
-    const result = await contract.callStatic.calculateInterfaceERC1271();
+    const result = await contract.calculateInterfaceERC1271();
     expect(result).to.equal(INTERFACE_IDS.ERC1271);
   });
 });
