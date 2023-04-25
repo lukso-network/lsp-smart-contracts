@@ -225,7 +225,7 @@ abstract contract LSP0ERC725AccountCore is
 
         // if verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         if (verifyAfter) {
-            LSP20CallVerification._verifyCallResult(_owner, result);
+            LSP20CallVerification._verifyCallResult(_owner, abi.encode(result));
         }
 
         return result;
