@@ -310,7 +310,7 @@ abstract contract LSP6SetDataModule {
     }
 
     /**
-     * @dev retrieve the permission required to set some AllowedCalls for a controller.
+     * @dev retrieve the permission required to set some Allowed ERC725Y Data Keys for a controller.
      * @param controlledContract the address of the ERC725Y contract where the data key is verified.
      * @param dataKey  or `AddressPermissions:AllowedERC725YDataKeys:<controller-address>`.
      * @param dataValue the updated value for the `dataKey`. MUST be a bytes[CompactBytesArray] of Allowed ERC725Y Data Keys.
