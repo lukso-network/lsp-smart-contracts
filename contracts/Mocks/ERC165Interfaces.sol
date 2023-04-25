@@ -191,7 +191,7 @@ contract CalculateLSPInterfaces {
 
         require(
             interfaceId == _INTERFACEID_LSP20_CALL_VERIFICATION,
-            "hardcoded _INTERFACEID_LSP17_EXTENSION does not match hash of LSP20CallVerification"
+            "hardcoded _INTERFACEID_LSP20_CALL_VERIFICATION does not match hash of LSP20CallVerification"
         );
 
         return interfaceId;
