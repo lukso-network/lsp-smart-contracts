@@ -28,7 +28,7 @@ abstract contract LSP20CallVerification {
 
         if (returnedData.length < 32) revert LSP20InvalidMagicValue(false, returnedData);
 
-        bytes32 magicValue = abi.decode(returnedData, (bytes32));
+        bytes4 magicValue = abi.decode(returnedData, (bytes4));
 
         if (bytes3(magicValue) != bytes3(ILSP20.lsp20VerifyCall.selector))
             revert LSP20InvalidMagicValue(false, returnedData);
@@ -53,7 +53,7 @@ abstract contract LSP20CallVerification {
 
         if (
             returnedData.length < 32 ||
-            bytes4(abi.decode(returnedData, (bytes32))) != ILSP20.lsp20VerifyCallResult.selector
+            abi.decode(returnedData, (bytes4)) != ILSP20.lsp20VerifyCallResult.selector
         ) revert LSP20InvalidMagicValue(true, returnedData);
     }
 
