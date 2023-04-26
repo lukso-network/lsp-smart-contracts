@@ -56,6 +56,7 @@ import {
     _PERMISSION_SIGN,
     _PERMISSION_REENTRANCY
 } from "./LSP6Constants.sol";
+import {_INTERFACEID_LSP20_CALL_VERIFIER} from "../LSP20CallVerification/LSP20Constants.sol";
 
 /**
  * @title Core implementation of the LSP6 Key Manager standard.
@@ -95,6 +96,7 @@ abstract contract LSP6KeyManagerCore is
         return
             interfaceId == _INTERFACEID_LSP6 ||
             interfaceId == _INTERFACEID_ERC1271 ||
+            interfaceId == _INTERFACEID_LSP20_CALL_VERIFIER ||
             super.supportsInterface(interfaceId);
     }
 
