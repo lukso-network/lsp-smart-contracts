@@ -260,13 +260,23 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 LOCAL_PRIVATE_KEYS.ACCOUNT1
               );
 
-            await context.keyManager
+            const tx = await context.keyManager
               .connect(relayer)
               ["executeRelayCall(bytes,uint256,bytes)"](
                 signature,
                 signedMessageParams.nonce,
                 signedMessageParams.payload,
                 { value: valueToSendFromRelayer }
+              );
+
+            expect(tx)
+              .to.emit(context.keyManager, "VerifiedCall")
+              .withArgs(
+                context.accounts[1].address,
+                signedMessageParams.msgValue,
+                context.universalProfile.interface.getSighash(
+                  "execute(uint256,address,uint256,bytes)"
+                )
               );
 
             const balanceOfUpAfter = await provider.getBalance(

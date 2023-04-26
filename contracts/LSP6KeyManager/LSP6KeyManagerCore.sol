@@ -225,7 +225,7 @@ abstract contract LSP6KeyManagerCore is
         _nonReentrantBefore(isSetData, caller);
 
         _verifyPermissions(caller, msgValue, data);
-        emit VerifiedCall(msg.sender, msgValue, bytes4(data));
+        emit VerifiedCall(caller, msgValue, bytes4(data));
 
         // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
         return
