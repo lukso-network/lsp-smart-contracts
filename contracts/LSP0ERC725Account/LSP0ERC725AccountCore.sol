@@ -42,6 +42,7 @@ import {
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 import {_LSP17_EXTENSION_PREFIX} from "../LSP17ContractExtension/LSP17Constants.sol";
+import {_INTERFACEID_LSP20_CALL_VERIFICATION} from "../LSP20CallVerification/LSP20Constants.sol";
 
 // errors
 import {ERC725Y_DataKeysValuesLengthMismatch} from "@erc725/smart-contracts/contracts/errors.sol";
@@ -634,6 +635,7 @@ abstract contract LSP0ERC725AccountCore is
             interfaceId == _INTERFACEID_LSP0 ||
             interfaceId == _INTERFACEID_LSP1 ||
             interfaceId == _INTERFACEID_LSP14 ||
+            interfaceId == _INTERFACEID_LSP20_CALL_VERIFICATION ||
             super.supportsInterface(interfaceId) ||
             LSP17Extendable._supportsInterfaceInERC165Extension(interfaceId);
     }
