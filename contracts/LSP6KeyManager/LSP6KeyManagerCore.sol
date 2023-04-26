@@ -34,7 +34,6 @@ import {
     InvalidRelayNonce,
     NoPermissionsSet,
     InvalidERC725Function,
-    NotAuthorised,
     CallerIsNotTheTarget,
     CannotSendValueToSetData
 } from "./LSP6Errors.sol";

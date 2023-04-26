@@ -4,18 +4,15 @@ pragma solidity ^0.8.4;
 // interfaces
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {ILSP1UniversalReceiver} from "../ILSP1UniversalReceiver.sol";
-import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // libraries
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP1Utils} from "../LSP1Utils.sol";
 import {LSP2Utils} from "../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
-import {LSP6Utils} from "../../LSP6KeyManager/LSP6Utils.sol";
 import {LSP5Utils} from "../../LSP5ReceivedAssets/LSP5Utils.sol";
 import {LSP10Utils} from "../../LSP10ReceivedVaults/LSP10Utils.sol";
 

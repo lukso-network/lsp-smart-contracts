@@ -5,7 +5,6 @@ pragma solidity ^0.8.4;
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP0ERC725Account} from "./ILSP0ERC725Account.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import {ILSP20CallVerification} from "../LSP20CallVerification/ILSP20CallVerification.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";

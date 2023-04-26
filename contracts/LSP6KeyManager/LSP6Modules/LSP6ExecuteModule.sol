@@ -1,11 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.5;
 
-// interfaces
-import {
-    ILSP20CallVerification as ILSP20
-} from "../../LSP20CallVerification/ILSP20CallVerification.sol";
-
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
@@ -23,8 +18,6 @@ import {
     _PERMISSION_SUPER_CALL,
     _PERMISSION_STATICCALL,
     _PERMISSION_SUPER_STATICCALL,
-    _PERMISSION_DELEGATECALL,
-    _PERMISSION_SUPER_DELEGATECALL,
     _ALLOWEDCALLS_VALUE,
     _ALLOWEDCALLS_WRITE,
     _ALLOWEDCALLS_READ,
