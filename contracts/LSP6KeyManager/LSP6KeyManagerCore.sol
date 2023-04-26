@@ -226,7 +226,7 @@ abstract contract LSP6KeyManagerCore is
         _nonReentrantBefore(isSetData, caller);
 
         _verifyPermissions(caller, msgValue, data);
-        emit VerifiedCall(msg.sender, msgValue, bytes4(data));
+        emit VerifiedCall(caller, msgValue, bytes4(data));
 
         // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
         return
@@ -256,7 +256,7 @@ abstract contract LSP6KeyManagerCore is
             revert InvalidPayload(payload);
         }
 
-        bool isSetData;
+        bool isSetData = false;
         if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_ARRAY_SELECTOR) {
             isSetData = true;
         }
@@ -297,7 +297,7 @@ abstract contract LSP6KeyManagerCore is
             signature
         );
 
-        bool isSetData;
+        bool isSetData = false;
         if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_ARRAY_SELECTOR) {
             isSetData = true;
         }
