@@ -56,6 +56,7 @@ import {
     _PERMISSION_SIGN,
     _PERMISSION_REENTRANCY
 } from "./LSP6Constants.sol";
+import {_INTERFACEID_LSP20_CALL_VERIFIER} from "../LSP20CallVerification/LSP20Constants.sol";
 
 /**
  * @title Core implementation of the LSP6 Key Manager standard.
@@ -95,6 +96,7 @@ abstract contract LSP6KeyManagerCore is
         return
             interfaceId == _INTERFACEID_LSP6 ||
             interfaceId == _INTERFACEID_ERC1271 ||
+            interfaceId == _INTERFACEID_LSP20_CALL_VERIFIER ||
             super.supportsInterface(interfaceId);
     }
 
@@ -353,10 +355,11 @@ abstract contract LSP6KeyManagerCore is
      * @param idx (channel id + nonce within the channel)
      */
     function _isValidNonce(address from, uint256 idx) internal view virtual returns (bool) {
-        // idx % (1 << 128) = nonce
-        // (idx >> 128) = channel
-        // equivalent to: return (nonce == _nonceStore[_from][channel]
-        return (idx % (1 << 128)) == (_nonceStore[from][idx >> 128]);
+        uint256 mask = ~uint128(0);
+        // Alternatively:
+        // uint256 mask = (1<<128)-1;
+        // uint256 mask = 0xffffffffffffffffffffffffffffffff;
+        return (idx & mask) == (_nonceStore[from][idx >> 128]);
     }
 
     /**
