@@ -59,9 +59,8 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         address from,
         bytes32 inputKey,
         bytes memory allowedERC725YDataKeysFor
-    ) public pure returns (bool) {
+    ) public pure {
         super._verifyAllowedERC725YSingleKey(from, inputKey, allowedERC725YDataKeysFor);
-        return true;
     }
 
     function verifyAllowedERC725YDataKeys(
@@ -70,7 +69,7 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         bytes memory allowedERC725YDataKeysCompacted,
         bool[] memory validatedInputKeys,
         uint256 allowedDataKeysFound
-    ) public pure returns (bool) {
+    ) public pure {
         super._verifyAllowedERC725YDataKeys(
             from,
             inputKeys,
@@ -78,7 +77,6 @@ contract KeyManagerInternalTester is LSP6KeyManager {
             validatedInputKeys,
             allowedDataKeysFound
         );
-        return true;
     }
 
     function hasPermission(bytes32 _addressPermission, bytes32 _permissions)

@@ -4,7 +4,6 @@ pragma solidity ^0.8.12;
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ILSP7CompatibleERC20} from "./ILSP7CompatibleERC20.sol";
-import {ILSP7DigitalAsset} from "../ILSP7DigitalAsset.sol";
 
 // modules
 import {LSP4Compatibility} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
@@ -13,7 +12,6 @@ import {
     LSP4DigitalAssetMetadataInitAbstract,
     ERC725YCore
 } from "../LSP7DigitalAssetInitAbstract.sol";
-import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
 
 /**
  * @dev LSP7 extension, for compatibility for clients / tools that expect ERC20.

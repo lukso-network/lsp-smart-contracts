@@ -8,11 +8,6 @@ import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 // libraries
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
-// modules
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-
-import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
-
 // errors
 import "./LSP7Errors.sol";
 

@@ -12,9 +12,6 @@ import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {SETDATA_ARRAY_SELECTOR} from "@erc725/smart-contracts/contracts/constants.sol";
 import "./LSP6Constants.sol";
 
-// errors
-import {NotAuthorised} from "./LSP6Errors.sol";
-
 library LSP6Utils {
     using LSP2Utils for bytes12;
 

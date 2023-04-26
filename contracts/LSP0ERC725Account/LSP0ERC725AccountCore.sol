@@ -5,7 +5,6 @@ pragma solidity ^0.8.4;
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP0ERC725Account} from "./ILSP0ERC725Account.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import {ILSP20CallVerification} from "../LSP20CallVerification/ILSP20CallVerification.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -42,6 +41,7 @@ import {
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 import {_LSP17_EXTENSION_PREFIX} from "../LSP17ContractExtension/LSP17Constants.sol";
+import {_INTERFACEID_LSP20_CALL_VERIFICATION} from "../LSP20CallVerification/LSP20Constants.sol";
 
 // errors
 import {ERC725Y_DataKeysValuesLengthMismatch} from "@erc725/smart-contracts/contracts/errors.sol";
@@ -228,7 +228,7 @@ abstract contract LSP0ERC725AccountCore is
 
         // if verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         if (verifyAfter) {
-            LSP20CallVerification._verifyCallResult(_owner, result);
+            LSP20CallVerification._verifyCallResult(_owner, abi.encode(result));
         }
 
         return result;
@@ -646,6 +646,7 @@ abstract contract LSP0ERC725AccountCore is
             interfaceId == _INTERFACEID_LSP0 ||
             interfaceId == _INTERFACEID_LSP1 ||
             interfaceId == _INTERFACEID_LSP14 ||
+            interfaceId == _INTERFACEID_LSP20_CALL_VERIFICATION ||
             super.supportsInterface(interfaceId) ||
             LSP17Extendable._supportsInterfaceInERC165Extension(interfaceId);
     }
