@@ -255,7 +255,7 @@ abstract contract LSP6KeyManagerCore is
             revert InvalidPayload(payload);
         }
 
-        bool isSetData;
+        bool isSetData = false;
         if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_ARRAY_SELECTOR) {
             isSetData = true;
         }
@@ -296,7 +296,7 @@ abstract contract LSP6KeyManagerCore is
             signature
         );
 
-        bool isSetData;
+        bool isSetData = false;
         if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_ARRAY_SELECTOR) {
             isSetData = true;
         }
