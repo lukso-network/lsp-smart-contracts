@@ -7,7 +7,6 @@ import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 
 // libraries
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import {GasUtils} from "../Utils/GasUtils.sol";
 
 // errors
 import "./LSP7Errors.sol";
@@ -150,9 +149,13 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7InvalidTransferBatch();
         }
 
-        for (uint256 i = 0; i < fromLength; i = GasUtils.uncheckedIncrement(i)) {
+        for (uint256 i = 0; i < fromLength; ) {
             // using the public transfer function to handle updates to operator authorized amounts
             transfer(from[i], to[i], amount[i], allowNonLSP1Recipient[i], data[i]);
+
+            unchecked {
+                ++i;
+            }
         }
     }
 

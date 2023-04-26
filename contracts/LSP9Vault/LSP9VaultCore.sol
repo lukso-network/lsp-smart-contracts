@@ -7,7 +7,8 @@ import {ILSP9Vault} from "./ILSP9Vault.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-import {GasUtils} from "../Utils/GasUtils.sol";
+
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
@@ -209,7 +210,7 @@ contract LSP9VaultCore is
      */
     function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
         results = new bytes[](data.length);
-        for (uint256 i; i < data.length; i = GasUtils.uncheckedIncrement(i)) {
+        for (uint256 i; i < data.length; ) {
             (bool success, bytes memory result) = address(this).delegatecall(data[i]);
 
             if (!success) {
@@ -228,6 +229,10 @@ contract LSP9VaultCore is
             }
 
             results[i] = result;
+
+            unchecked {
+                ++i;
+            }
         }
     }
 
@@ -311,7 +316,7 @@ contract LSP9VaultCore is
 
         if (msg.value != 0) revert ERC725Y_MsgValueDisallowed();
 
-        for (uint256 i = 0; i < dataKeys.length; i = GasUtils.uncheckedIncrement(i)) {
+        for (uint256 i = 0; i < dataKeys.length; ) {
             if (isURD) {
                 if (
                     bytes12(dataKeys[i]) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ||
@@ -322,6 +327,10 @@ contract LSP9VaultCore is
                 }
             }
             _setData(dataKeys[i], dataValues[i]);
+
+            unchecked {
+                ++i;
+            }
         }
     }
 

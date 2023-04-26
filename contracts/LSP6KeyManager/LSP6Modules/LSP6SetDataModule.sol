@@ -6,7 +6,6 @@ import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC725Y_DataKeysValuesLengthMismatch} from "@erc725/smart-contracts/contracts/errors.sol";
 
 // libraries
-import {GasUtils} from "../../Utils/GasUtils.sol";
 import {LSP6Utils} from "../LSP6Utils.sol";
 
 // constants
@@ -109,6 +108,7 @@ abstract contract LSP6SetDataModule {
 
         bool isSettingERC725YKeys;
         bool[] memory validatedInputDataKeys = new bool[](inputDataKeys.length);
+        uint256 inputDataKeysAllowed = 0;
 
         bytes32 requiredPermission;
 
@@ -126,9 +126,12 @@ abstract contract LSP6SetDataModule {
                 // CHECK the required permissions if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
                 _requirePermissions(controller, permissions, requiredPermission);
                 validatedInputDataKeys[ii] = true;
+                inputDataKeysAllowed++;
             }
 
-            ii = GasUtils.uncheckedIncrement(ii);
+            unchecked {
+                ++ii;
+            }
         } while (ii < inputDataKeys.length);
 
         // CHECK if allowed to set one (or multiple) ERC725Y Data Keys
@@ -142,7 +145,8 @@ abstract contract LSP6SetDataModule {
                 controller,
                 inputDataKeys,
                 ERC725Y(controlledContract).getAllowedERC725YDataKeysFor(controller),
-                validatedInputDataKeys
+                validatedInputDataKeys,
+                inputDataKeysAllowed
             );
         }
     }
@@ -310,7 +314,7 @@ abstract contract LSP6SetDataModule {
     }
 
     /**
-     * @dev retrieve the permission required to set some AllowedCalls for a controller.
+     * @dev retrieve the permission required to set some Allowed ERC725Y Data Keys for a controller.
      * @param controlledContract the address of the ERC725Y contract where the data key is verified.
      * @param dataKey  or `AddressPermissions:AllowedERC725YDataKeys:<controller-address>`.
      * @param dataValue the updated value for the `dataKey`. MUST be a bytes[CompactBytesArray] of Allowed ERC725Y Data Keys.
@@ -487,18 +491,18 @@ abstract contract LSP6SetDataModule {
      * @param controllerAddress the address of the controller.
      * @param inputDataKeys the data keys to verify against the allowed ERC725Y Data Keys of the `controllerAddress`.
      * @param allowedERC725YDataKeysCompacted a CompactBytesArray of allowed ERC725Y Data Keys of the `controllerAddress`.
-     * @param validatedInputKeys an array of booleans to store the result of the verification of each data keys checked.
+     * @param validatedInputKeysList an array of booleans to store the result of the verification of each data keys checked.
+     * @param allowedDataKeysFound the number of data keys that were previously validated for other permissions like `ADDCONTROLLER`, `EDITPERMISSIONS`, etc...
      */
     function _verifyAllowedERC725YDataKeys(
         address controllerAddress,
         bytes32[] memory inputDataKeys,
         bytes memory allowedERC725YDataKeysCompacted,
-        bool[] memory validatedInputKeys
+        bool[] memory validatedInputKeysList,
+        uint256 allowedDataKeysFound
     ) internal pure virtual {
         if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
-
-        uint256 allowedKeysFound;
 
         // cache the input data keys from the start
         uint256 inputKeysLength = inputDataKeys.length;
@@ -590,20 +594,32 @@ abstract contract LSP6SetDataModule {
              * Iterate over the `inputDataKeys` to check them against the allowed data keys.
              * This until we have validated them all.
              */
-            for (uint256 ii; ii < inputKeysLength; ii = GasUtils.uncheckedIncrement(ii)) {
+            for (uint256 ii; ii < inputKeysLength; ) {
                 // if the input data key has been marked as allowed previously,
                 // SKIP it and move to the next input data key.
-                if (validatedInputKeys[ii]) continue;
+                if (validatedInputKeysList[ii]) {
+                    unchecked {
+                        ++ii;
+                    }
+                    continue;
+                }
 
                 // CHECK if the input data key is allowed.
                 if ((inputDataKeys[ii] & mask) == allowedKey) {
                     // if the input data key is allowed, mark it as allowed
                     // and increment the number of allowed keys found.
-                    validatedInputKeys[ii] = true;
-                    allowedKeysFound = GasUtils.uncheckedIncrement(allowedKeysFound);
+                    validatedInputKeysList[ii] = true;
+
+                    unchecked {
+                        allowedDataKeysFound++;
+                    }
 
                     // Continue checking until all the inputKeys` have been found.
-                    if (allowedKeysFound == inputKeysLength) return;
+                    if (allowedDataKeysFound == inputKeysLength) return;
+                }
+
+                unchecked {
+                    ++ii;
                 }
             }
 
@@ -614,9 +630,13 @@ abstract contract LSP6SetDataModule {
         }
 
         // if we did not find all the input data keys, search for the first not allowed data key to revert.
-        for (uint256 jj; jj < inputKeysLength; jj = GasUtils.uncheckedIncrement(jj)) {
-            if (!validatedInputKeys[jj]) {
+        for (uint256 jj; jj < inputKeysLength; ) {
+            if (!validatedInputKeysList[jj]) {
                 revert NotAllowedERC725YDataKey(controllerAddress, inputDataKeys[jj]);
+            }
+
+            unchecked {
+                jj++;
             }
         }
     }

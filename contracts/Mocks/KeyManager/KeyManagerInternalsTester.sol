@@ -67,13 +67,15 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         address from,
         bytes32[] memory inputKeys,
         bytes memory allowedERC725YDataKeysCompacted,
-        bool[] memory validatedInputKeys
+        bool[] memory validatedInputKeys,
+        uint256 allowedDataKeysFound
     ) public pure {
         super._verifyAllowedERC725YDataKeys(
             from,
             inputKeys,
             allowedERC725YDataKeysCompacted,
-            validatedInputKeys
+            validatedInputKeys,
+            allowedDataKeysFound
         );
     }
 
@@ -83,5 +85,18 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         returns (bool)
     {
         return _addressPermission.hasPermission(_permissions);
+    }
+
+    function extractExecuteParameters(bytes calldata executeCalldata)
+        public
+        pure
+        returns (
+            uint256,
+            address,
+            uint256,
+            bytes4
+        )
+    {
+        return super._extractExecuteParameters(executeCalldata);
     }
 }

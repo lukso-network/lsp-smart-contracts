@@ -309,7 +309,13 @@ abstract contract LSP6ExecuteModule {
         )
     {
         uint256 operationType = uint256(bytes32(executeCalldata[4:36]));
+
+        // CHECK that it is a valid address left-padded with `00` on the 12 upper bytes
+        if (bytes12(executeCalldata[36:48]) != bytes12(0)) {
+            revert InvalidPayload(executeCalldata);
+        }
         address to = address(bytes20(executeCalldata[48:68]));
+
         uint256 value = uint256(bytes32(executeCalldata[68:100]));
 
         // CHECK if there is at least a 4 bytes function selector
