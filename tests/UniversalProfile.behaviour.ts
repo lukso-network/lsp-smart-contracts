@@ -685,6 +685,13 @@ export const shouldInitializeLikeLSP3 = (
       expect(result).to.be.true;
     });
 
+    it("should support LSP20CallVerification interface", async () => {
+      const result = await context.universalProfile.supportsInterface(
+        INTERFACE_IDS.LSP20CallVerification
+      );
+      expect(result).to.be.true;
+    });
+
     it("should have set key 'SupportedStandards:LSP3UniversalProfile'", async () => {
       const result = await context.universalProfile["getData(bytes32)"](
         SupportedStandards.LSP3UniversalProfile.key
