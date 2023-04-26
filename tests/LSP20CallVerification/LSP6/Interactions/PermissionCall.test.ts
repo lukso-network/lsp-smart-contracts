@@ -27,11 +27,7 @@ import { LSP6TestContext } from "../../../utils/context";
 import { setupKeyManager } from "../../../utils/fixtures";
 
 // helpers
-import {
-  abiCoder,
-  combineAllowedCalls,
-  LOCAL_PRIVATE_KEYS,
-} from "../../../utils/helpers";
+import { abiCoder, combineAllowedCalls } from "../../../utils/helpers";
 
 export const shouldBehaveLikePermissionCall = (
   buildContext: () => Promise<LSP6TestContext>
@@ -259,16 +255,24 @@ export const shouldBehaveLikePermissionCall = (
 
         describe("when `to` is in the list of Allowed Calls", () => {
           it("should pass", async () => {
-            await expect(
-              context.universalProfile
-                .connect(addressCanMakeCallWithAllowedCalls)
-                ["execute(uint256,address,uint256,bytes)"](
-                  OPERATION_TYPES.CALL,
-                  allowedEOA,
-                  0,
-                  "0x"
-                )
-            ).to.not.be.reverted;
+            const tx = context.universalProfile
+              .connect(addressCanMakeCallWithAllowedCalls)
+              ["execute(uint256,address,uint256,bytes)"](
+                OPERATION_TYPES.CALL,
+                allowedEOA,
+                0,
+                "0x"
+              );
+
+            await expect(tx).to.not.be.reverted;
+
+            expect(tx)
+              .to.emit(context.keyManager, "VerifiedCall")
+              .withArgs(
+                addressCanMakeCallWithAllowedCalls.address,
+                0,
+                "0x00000000"
+              );
           });
         });
       });

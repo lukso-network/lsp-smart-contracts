@@ -8,8 +8,6 @@ import {ILSP9Vault} from "./ILSP9Vault.sol";
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {GasUtils} from "../Utils/GasUtils.sol";
-
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";

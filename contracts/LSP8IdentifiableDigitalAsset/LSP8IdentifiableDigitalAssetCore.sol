@@ -10,10 +10,6 @@ import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {GasUtils} from "../Utils/GasUtils.sol";
 
-// modules
-
-import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
-
 // errors
 import "./LSP8Errors.sol";
 

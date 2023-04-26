@@ -3,11 +3,9 @@ pragma solidity ^0.8.4;
 
 // interfaces
 import {ILSP14Ownable2Step} from "./ILSP14Ownable2Step.sol";
-import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // libraries
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
@@ -21,7 +19,6 @@ import {
     _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP14_OwnershipTransferred_RecipientNotification
 } from "./LSP14Constants.sol";
-import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 
 /**
  * @title LSP14Ownable2Step
