@@ -34,6 +34,8 @@ export const INTERFACE_IDS = {
   LSP14Ownable2Step: "0x94be5999",
   LSP17Extendable: "0xa918fa6b",
   LSP17Extension: "0xcee78b40",
+  LSP20CallVerification: "0x1a0eb6a5",
+  LSP20CallVerifier: "0x480c0ec2",
 };
 
 // ERC1271
