@@ -8,10 +8,8 @@ import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // libraries
-import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP1Utils} from "../LSP1Utils.sol";
 import {LSP2Utils} from "../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP5Utils} from "../../LSP5ReceivedAssets/LSP5Utils.sol";

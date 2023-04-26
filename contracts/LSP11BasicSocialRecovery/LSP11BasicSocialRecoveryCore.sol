@@ -12,7 +12,6 @@ import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {LSP6KeyManager} from "../LSP6KeyManager/LSP6KeyManager.sol";
 
 // constants
 import {ALL_REGULAR_PERMISSIONS} from "../LSP6KeyManager/LSP6Constants.sol";
