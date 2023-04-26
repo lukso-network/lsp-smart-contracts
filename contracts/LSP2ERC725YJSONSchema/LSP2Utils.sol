@@ -252,7 +252,7 @@ library LSP2Utils {
             pointer += 32;
 
             unchecked {
-                ii++;
+                ++ii;
             }
         }
 
@@ -280,7 +280,7 @@ library LSP2Utils {
             pointer += 32;
 
             unchecked {
-                ii++;
+                ++ii;
             }
         }
 

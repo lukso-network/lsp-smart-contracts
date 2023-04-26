@@ -159,7 +159,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             transfer(from[i], to[i], amount[i], allowNonLSP1Recipient[i], data[i]);
 
             unchecked {
-                i++;
+                ++i;
             }
         }
     }

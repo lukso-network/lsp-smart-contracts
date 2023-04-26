@@ -207,7 +207,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
             transfer(from[i], to[i], tokenId[i], allowNonLSP1Recipient[i], data[i]);
 
             unchecked {
-                i++;
+                ++i;
             }
         }
     }
@@ -244,7 +244,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
             _revokeOperator(operator, tokenOwner, tokenId);
 
             unchecked {
-                i++;
+                ++i;
             }
         }
     }

@@ -231,7 +231,7 @@ contract LSP9VaultCore is
             results[i] = result;
 
             unchecked {
-                i++;
+                ++i;
             }
         }
     }
@@ -329,7 +329,7 @@ contract LSP9VaultCore is
             _setData(dataKeys[i], dataValues[i]);
 
             unchecked {
-                i++;
+                ++i;
             }
         }
     }

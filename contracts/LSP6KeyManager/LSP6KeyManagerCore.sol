@@ -153,7 +153,7 @@ abstract contract LSP6KeyManagerCore is
             results[ii] = _execute(values[ii], payloads[ii]);
 
             unchecked {
-                ii++;
+                ++ii;
             }
         }
 
@@ -203,7 +203,7 @@ abstract contract LSP6KeyManagerCore is
             results[ii] = _executeRelayCall(signatures[ii], nonces[ii], values[ii], payloads[ii]);
 
             unchecked {
-                ii++;
+                ++ii;
             }
         }
 

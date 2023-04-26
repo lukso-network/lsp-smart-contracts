@@ -130,7 +130,7 @@ abstract contract LSP6SetDataModule {
             }
 
             unchecked {
-                ii++;
+                ++ii;
             }
         } while (ii < inputDataKeys.length);
 
@@ -599,7 +599,7 @@ abstract contract LSP6SetDataModule {
                 // SKIP it and move to the next input data key.
                 if (validatedInputKeysList[ii]) {
                     unchecked {
-                        ii++;
+                        ++ii;
                     }
                     continue;
                 }
@@ -619,7 +619,7 @@ abstract contract LSP6SetDataModule {
                 }
 
                 unchecked {
-                    ii++;
+                    ++ii;
                 }
             }
 

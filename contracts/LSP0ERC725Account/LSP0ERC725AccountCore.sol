@@ -177,7 +177,7 @@ abstract contract LSP0ERC725AccountCore is
             results[i] = result;
 
             unchecked {
-                i++;
+                ++i;
             }
         }
     }
@@ -362,7 +362,7 @@ abstract contract LSP0ERC725AccountCore is
                 _setData(dataKeys[i], dataValues[i]);
 
                 unchecked {
-                    i++;
+                    ++i;
                 }
             }
 
@@ -377,7 +377,7 @@ abstract contract LSP0ERC725AccountCore is
             _setData(dataKeys[i], dataValues[i]);
 
             unchecked {
-                i++;
+                ++i;
             }
         }
 
