@@ -230,14 +230,14 @@ abstract contract LSP6KeyManagerCore is
             isSetData = true;
         }
 
-        _nonReentrantBefore(isSetData, caller);
+        bool reentrantCall = _nonReentrantBefore(isSetData, caller);
 
         _verifyPermissions(caller, msgValue, data);
         emit VerifiedCall(caller, msgValue, bytes4(data));
 
         // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
         return
-            isSetData
+            isSetData || reentrantCall
                 ? bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"00"))
                 : bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"01"));
     }
@@ -268,14 +268,14 @@ abstract contract LSP6KeyManagerCore is
             isSetData = true;
         }
 
-        _nonReentrantBefore(isSetData, msg.sender);
+        bool reentrantCall = _nonReentrantBefore(isSetData, msg.sender);
 
         _verifyPermissions(msg.sender, msgValue, payload);
         emit VerifiedCall(msg.sender, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
 
-        if (!isSetData) {
+        if (!reentrantCall && !isSetData) {
             _nonReentrantAfter();
         }
 
@@ -309,7 +309,7 @@ abstract contract LSP6KeyManagerCore is
             isSetData = true;
         }
 
-        _nonReentrantBefore(isSetData, signer);
+        bool reentrantCall = _nonReentrantBefore(isSetData, signer);
 
         if (!_isValidNonce(signer, nonce)) {
             revert InvalidRelayNonce(signer, nonce, signature);
@@ -323,7 +323,7 @@ abstract contract LSP6KeyManagerCore is
 
         bytes memory result = _executePayload(msgValue, payload);
 
-        if (!isSetData) {
+        if (!reentrantCall && !isSetData) {
             _nonReentrantAfter();
         }
 
@@ -425,8 +425,13 @@ abstract contract LSP6KeyManagerCore is
      * the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
      * Used in the beginning of the `nonReentrant` modifier, before the method execution starts.
      */
-    function _nonReentrantBefore(bool isSetData, address from) internal virtual {
-        if (_reentrancyStatus) {
+    function _nonReentrantBefore(bool isSetData, address from)
+        internal
+        virtual
+        returns (bool reentrantCall)
+    {
+        reentrantCall = _reentrancyStatus;
+        if (reentrantCall) {
             // CHECK the caller has REENTRANCY permission
             _requirePermissions(
                 from,
