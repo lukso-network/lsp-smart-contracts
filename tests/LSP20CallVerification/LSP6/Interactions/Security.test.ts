@@ -173,7 +173,7 @@ export const testSecurityScenarios = (
       await expect(
         context.keyManager
           .connect(context.owner)
-        ["execute(bytes)"](transferPayload)
+          .execute(transferPayload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
         .withArgs(maliciousContract.address, "REENTRANCY");
@@ -228,7 +228,7 @@ export const testSecurityScenarios = (
 
       await context.keyManager
         .connect(context.owner)
-      ["execute(bytes)"](setDataPayload);
+        .execute(setDataPayload);
 
       const universalReceiverDelegatePayload =
         universalReceiverDelegateDataUpdater.interface.encodeFunctionData(
@@ -249,7 +249,7 @@ export const testSecurityScenarios = (
 
       await context.keyManager
         .connect(context.owner)
-      ["execute(bytes)"](executePayload);
+        .execute(executePayload);
 
       expect(
         await context.universalProfile.getData(randomHardcodedKey)

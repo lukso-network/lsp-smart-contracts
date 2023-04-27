@@ -70,7 +70,7 @@ export async function setupKeyManager(
   let payload =
     _context.universalProfile.interface.getSighash("acceptOwnership");
 
-  await _context.keyManager.connect(_context.owner)["execute(bytes)"](payload);
+  await _context.keyManager.connect(_context.owner).execute(payload);
 }
 
 export async function setupKeyManagerHelper(
@@ -98,7 +98,7 @@ export async function setupKeyManagerHelper(
 
   await _context.keyManagerInternalTester
     .connect(_context.owner)
-  ["execute(bytes)"](payload);
+    .execute(payload);
 }
 
 /**
@@ -147,7 +147,7 @@ export async function setupProfileWithKeyManagerWithURD(
   const claimOwnershipPayload =
     universalProfile.interface.getSighash("acceptOwnership");
 
-  await lsp6KeyManager.connect(EOA)["execute(bytes)"](claimOwnershipPayload);
+  await lsp6KeyManager.connect(EOA).execute(claimOwnershipPayload);
 
   await EOA.sendTransaction({
     to: universalProfile.address,
@@ -202,7 +202,7 @@ export async function grantLSP11PermissionViaKeyManager(
       ],
     ]
   );
-  await lsp6KeyManager.connect(EOA)["execute(bytes)"](payload);
+  await lsp6KeyManager.connect(EOA).execute(payload);
 }
 
 /**

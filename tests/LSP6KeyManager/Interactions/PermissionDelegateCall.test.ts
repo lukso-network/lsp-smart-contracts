@@ -95,7 +95,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
       await expect(
         context.keyManager
           .connect(context.owner)
-        ["execute(bytes)"](executePayload)
+          .execute(executePayload)
       ).to.be.revertedWithCustomError(
         context.keyManager,
         "DelegateCallDisallowedViaKeyManager"
@@ -136,7 +136,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
       await expect(
         context.keyManager
           .connect(addressCanDelegateCall)
-        ["execute(bytes)"](executePayload)
+          .execute(executePayload)
       ).to.be.revertedWithCustomError(
         context.keyManager,
         "DelegateCallDisallowedViaKeyManager"
@@ -177,7 +177,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
       await expect(
         context.keyManager
           .connect(addressCannotDelegateCall)
-        ["execute(bytes)"](executePayload)
+          .execute(executePayload)
       ).to.be.revertedWithCustomError(
         context.keyManager,
         "DelegateCallDisallowedViaKeyManager"
@@ -286,7 +286,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
             await expect(
               context.keyManager
                 .connect(caller)
-              ["execute(bytes)"](executePayload)
+                .execute(executePayload)
             ).to.be.revertedWithCustomError(
               context.keyManager,
               "DelegateCallDisallowedViaKeyManager"
@@ -331,7 +331,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
           );
 
         await expect(
-          context.keyManager.connect(caller)["execute(bytes)"](executePayload)
+          context.keyManager.connect(caller).execute(executePayload)
         ).to.be.revertedWithCustomError(
           context.keyManager,
           "DelegateCallDisallowedViaKeyManager"
@@ -370,7 +370,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
           );
 
         await expect(
-          context.keyManager.connect(caller)["execute(bytes)"](executePayload)
+          context.keyManager.connect(caller).execute(executePayload)
         ).to.be.revertedWithCustomError(
           context.keyManager,
           "DelegateCallDisallowedViaKeyManager"

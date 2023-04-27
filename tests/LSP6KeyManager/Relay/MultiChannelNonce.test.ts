@@ -131,7 +131,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
           LOCAL_PRIVATE_KEYS.ACCOUNT1
         );
 
-        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+        await context.keyManager.executeRelayCall(
           signature,
           latestNonce,
           executeRelayCallPayload,
@@ -204,14 +204,14 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
           await context.keyManager
             .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
-            signature,
-            nonceBefore,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+            .executeRelayCall(
+              signature,
+              nonceBefore,
+              executeRelayCallPayload,
+              {
+                value: valueToSend,
+              }
+            );
 
           let fetchedName = await targetContract.callStatic.getName();
           let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -270,14 +270,14 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
           await context.keyManager
             .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
-            signature,
-            nonceBefore,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+            .executeRelayCall(
+              signature,
+              nonceBefore,
+              executeRelayCallPayload,
+              {
+                value: valueToSend,
+              }
+            );
 
           let fetchedName = await targetContract.callStatic.getName();
           let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -341,14 +341,14 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
           await context.keyManager
             .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
-            signature,
-            nonceBefore,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+            .executeRelayCall(
+              signature,
+              nonceBefore,
+              executeRelayCallPayload,
+              {
+                value: valueToSend,
+              }
+            );
 
           let fetchedName = await targetContract.callStatic.getName();
           let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -407,14 +407,14 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
           await context.keyManager
             .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
-            signature,
-            nonceBefore,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+            .executeRelayCall(
+              signature,
+              nonceBefore,
+              executeRelayCallPayload,
+              {
+                value: valueToSend,
+              }
+            );
 
           let fetchedName = await targetContract.callStatic.getName();
           let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -478,14 +478,14 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
           await context.keyManager
             .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
-            signature,
-            nonceBefore,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+            .executeRelayCall(
+              signature,
+              nonceBefore,
+              executeRelayCallPayload,
+              {
+                value: valueToSend,
+              }
+            );
 
           let fetchedName = await targetContract.callStatic.getName();
           let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -544,14 +544,14 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
           await context.keyManager
             .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
-            signature,
-            nonceBefore,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+            .executeRelayCall(
+              signature,
+              nonceBefore,
+              executeRelayCallPayload,
+              {
+                value: valueToSend,
+              }
+            );
 
           let fetchedName = await targetContract.callStatic.getName();
           let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -613,14 +613,14 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-        ["executeRelayCall(bytes,uint256,bytes)"](
-          signature,
-          nonceBefore,
-          executeRelayCallPayload,
-          {
-            value: valueToSend,
-          }
-        );
+          .executeRelayCall(
+            signature,
+            nonceBefore,
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
+          );
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(

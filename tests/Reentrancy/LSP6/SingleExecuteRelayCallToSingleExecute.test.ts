@@ -62,34 +62,32 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     });
 
     transferValueTestCases.NotAuthorised.forEach((testCase) => {
-      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${
-        testCase.permissionsText
-      }; MISSING - ${testCase.missingPermission}; AllowedCalls - ${
-        testCase.allowedCalls ? "YES" : "NO"
-      }`, async () => {
-        await loadTestCase(
-          "TRANSFERVALUE",
-          testCase,
-          context,
-          reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address
-        );
-
-        await expect(
-          context.keyManager
-            .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
-              relayCallParams.signature,
-              relayCallParams.nonce,
-              relayCallParams.payload
-            )
-        )
-          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText
+        }; MISSING - ${testCase.missingPermission}; AllowedCalls - ${testCase.allowedCalls ? "YES" : "NO"
+        }`, async () => {
+          await loadTestCase(
+            "TRANSFERVALUE",
+            testCase,
+            context,
             reentrancyContext.reentrantContract.address,
-            testCase.missingPermission
+            reentrancyContext.reentrantContract.address
           );
-      });
+
+          await expect(
+            context.keyManager
+              .connect(reentrancyContext.caller)
+              .executeRelayCall(
+                relayCallParams.signature,
+                relayCallParams.nonce,
+                relayCallParams.payload
+              )
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(
+              reentrancyContext.reentrantContract.address,
+              testCase.missingPermission
+            );
+        });
     });
 
     it("should revert if the reentrant contract has the following permissions: REENTRANCY, TRANSFERVALUE & NO AllowedCalls", async () => {
@@ -104,7 +102,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       await expect(
         context.keyManager
           .connect(reentrancyContext.caller)
-          ["executeRelayCall(bytes,uint256,bytes)"](
+          .executeRelayCall(
             relayCallParams.signature,
             relayCallParams.nonce,
             relayCallParams.payload
@@ -129,7 +127,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
           relayCallParams.payload
@@ -170,34 +168,32 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     });
 
     setDataTestCases.NotAuthorised.forEach((testCase) => {
-      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${
-        testCase.permissionsText
-      }; MISSING - ${testCase.missingPermission}; AllowedERC725YDataKeys - ${
-        testCase.allowedERC725YDataKeys ? "YES" : "NO"
-      }`, async () => {
-        await loadTestCase(
-          "SETDATA",
-          testCase,
-          context,
-          reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address
-        );
-
-        await expect(
-          context.keyManager
-            .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
-              relayCallParams.signature,
-              relayCallParams.nonce,
-              relayCallParams.payload
-            )
-        )
-          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText
+        }; MISSING - ${testCase.missingPermission}; AllowedERC725YDataKeys - ${testCase.allowedERC725YDataKeys ? "YES" : "NO"
+        }`, async () => {
+          await loadTestCase(
+            "SETDATA",
+            testCase,
+            context,
             reentrancyContext.reentrantContract.address,
-            testCase.missingPermission
+            reentrancyContext.reentrantContract.address
           );
-      });
+
+          await expect(
+            context.keyManager
+              .connect(reentrancyContext.caller)
+              .executeRelayCall(
+                relayCallParams.signature,
+                relayCallParams.nonce,
+                relayCallParams.payload
+              )
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(
+              reentrancyContext.reentrantContract.address,
+              testCase.missingPermission
+            );
+        });
     });
 
     it("should revert if the reentrant contract has the following permissions: REENTRANCY, SETDATA & NO AllowedERC725YDataKeys", async () => {
@@ -212,7 +208,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       await expect(
         context.keyManager
           .connect(reentrancyContext.caller)
-          ["executeRelayCall(bytes,uint256,bytes)"](
+          .executeRelayCall(
             relayCallParams.signature,
             relayCallParams.nonce,
             relayCallParams.payload
@@ -234,7 +230,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
           relayCallParams.payload
@@ -286,7 +282,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
+            .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
               relayCallParams.payload
@@ -311,7 +307,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
           relayCallParams.payload
@@ -364,7 +360,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
+            .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
               relayCallParams.payload
@@ -389,7 +385,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
           relayCallParams.payload
@@ -441,7 +437,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
+            .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
               relayCallParams.payload
@@ -466,7 +462,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
           relayCallParams.payload
@@ -518,7 +514,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           await expect(
             context.keyManager
               .connect(reentrancyContext.caller)
-              ["executeRelayCall(bytes,uint256,bytes)"](
+              .executeRelayCall(
                 relayCallParams.signature,
                 relayCallParams.nonce,
                 relayCallParams.payload
@@ -544,7 +540,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
           relayCallParams.payload

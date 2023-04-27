@@ -46,14 +46,14 @@ export const testInvalidExecutePayloads = (
   describe("payload", () => {
     describe("when the payload is smaller than 4 bytes", () => {
       it("should revert when using `execute(..)` with a payload smaller than 4 bytes", async () => {
-        await expect(context.keyManager["execute(bytes)"]("0xaabbcc"))
+        await expect(context.keyManager.execute("0xaabbcc"))
           .to.be.revertedWithCustomError(context.keyManager, "InvalidPayload")
           .withArgs("0xaabbcc");
       });
 
       it("should revert when using `executeRelayCall(..)` with a payload smaller than 4 bytes", async () => {
         await expect(
-          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+          context.keyManager.executeRelayCall(
             "0x",
             0,
             "0xaabbcc"
@@ -65,7 +65,7 @@ export const testInvalidExecutePayloads = (
     });
 
     it("should fail when sending an empty payload to `keyManager.execute('0x')`", async () => {
-      await expect(context.keyManager["execute(bytes)"]("0x"))
+      await expect(context.keyManager.execute("0x"))
         .to.be.revertedWithCustomError(context.keyManager, "InvalidPayload")
         .withArgs("0x");
     });
@@ -75,7 +75,7 @@ export const testInvalidExecutePayloads = (
       await expect(
         context.keyManager
           .connect(addressCanMakeCall)
-        ["execute(bytes)"](INVALID_PAYLOAD)
+          .execute(INVALID_PAYLOAD)
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
@@ -100,7 +100,7 @@ export const testInvalidExecutePayloads = (
       );
 
       await expect(
-        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+        context.keyManager.connect(context.owner).execute(payload)
       ).to.be.revertedWithCustomError(
         context.universalProfile,
         "ERC725X_UnknownOperationType"
@@ -123,7 +123,7 @@ export const testInvalidExecutePayloads = (
       await expect(
         context.keyManager
           .connect(addressCanMakeCall)
-        ["execute(bytes)"](payload)
+          .execute(payload)
       ).to.be.revertedWithCustomError(
         context.universalProfile,
         "ERC725X_UnknownOperationType"

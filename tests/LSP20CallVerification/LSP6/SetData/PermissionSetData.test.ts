@@ -514,7 +514,7 @@ export const shouldBehaveLikePermissionSetData = (
     /**
      * @dev this is necessary when the function being called in the contract
      *  perform a raw / low-level call (in the function body)
-     *  otherwise, the deeper layer of interaction (UP["execute(bytes)"]) fails
+     *  otherwise, the deeper layer of interaction (UP.execute) fails
      */
     const GAS_PROVIDED = 500_000;
 

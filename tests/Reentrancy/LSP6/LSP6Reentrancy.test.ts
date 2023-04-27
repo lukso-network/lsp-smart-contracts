@@ -135,7 +135,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
         await expect(
           context.keyManager
             .connect(context.owner)
-          ["execute(bytes)"](transferPayload)
+            .execute(transferPayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(maliciousContract.address, "REENTRANCY");
@@ -199,24 +199,24 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
           // first call
           await context.keyManager
             .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
-            signature,
-            nonce,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+            .executeRelayCall(
+              signature,
+              nonce,
+              executeRelayCallPayload,
+              {
+                value: valueToSend,
+              }
+            );
 
           // 2nd call = replay attack
           await expect(
             context.keyManager
               .connect(relayer)
-            ["executeRelayCall(bytes,uint256,bytes)"](
-              signature,
-              nonce,
-              executeRelayCallPayload
-            )
+              .executeRelayCall(
+                signature,
+                nonce,
+                executeRelayCallPayload
+              )
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -250,7 +250,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
         await expect(
           context.keyManager
             .connect(context.owner)
-          ["execute(bytes)"](transferPayload)
+            .execute(transferPayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(maliciousContract.address, "REENTRANCY");
@@ -290,7 +290,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
         await context.keyManager
           .connect(context.owner)
-        ["execute(bytes)"](setDataPayload);
+          .execute(setDataPayload);
 
         let transferPayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -319,7 +319,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
         await context.keyManager
           .connect(context.owner)
-        ["execute(bytes)"](transferPayload);
+          .execute(transferPayload);
 
         let newAccountBalance = await provider.getBalance(
           context.universalProfile.address
@@ -371,7 +371,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
         await context.keyManager
           .connect(context.owner)
-        ["execute(bytes)"](setDataPayload);
+          .execute(setDataPayload);
 
         const universalReceiverDelegatePayload =
           universalReceiverDelegateDataUpdater.interface.encodeFunctionData(
@@ -392,7 +392,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
         await context.keyManager
           .connect(context.owner)
-        ["execute(bytes)"](executePayload);
+          .execute(executePayload);
 
         expect(
           await context.universalProfile.getData(randomHardcodedKey)

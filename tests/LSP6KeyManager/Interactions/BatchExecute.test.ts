@@ -96,7 +96,7 @@ export const shouldBehaveLikeBatchExecute = (
 
       const tx = await context.keyManager
         .connect(context.owner)
-      ["execute(uint256[],bytes[])"]([0, 0, 0], batchExecutePayloads);
+        .executeBatch([0, 0, 0], batchExecutePayloads);
 
       await expect(tx).to.changeEtherBalance(
         context.universalProfile.address,
@@ -132,7 +132,7 @@ export const shouldBehaveLikeBatchExecute = (
 
       const tx = await context.keyManager
         .connect(context.owner)
-      ["execute(uint256[],bytes[])"]([0, 0], payloads);
+        .executeBatch([0, 0], payloads);
 
       await expect(tx).to.changeEtherBalance(recipient, lyxAmount);
       expect(await lyxDaiToken.balanceOf(recipient)).to.equal(lyxDaiAmount);
@@ -187,7 +187,7 @@ export const shouldBehaveLikeBatchExecute = (
 
       await context.keyManager
         .connect(context.owner)
-      ["execute(uint256[],bytes[])"]([0, 0, 0], payloads);
+        .executeBatch([0, 0, 0], payloads);
 
       expect(await lyxDaiToken.balanceOf(recipient)).to.equal(
         recipientLyxDaiBalanceBefore.add(lyxDaiAmount)
@@ -225,7 +225,7 @@ export const shouldBehaveLikeBatchExecute = (
 
       const futureTokenAddress = await context.keyManager
         .connect(context.owner)
-        .callStatic["execute(bytes)"](lsp7ProxyDeploymentPayload);
+        .callStatic.execute(lsp7ProxyDeploymentPayload);
       let futureTokenInstance = await new LSP7MintableInit__factory(
         context.accounts[0]
       ).attach(futureTokenAddress);
@@ -261,17 +261,17 @@ export const shouldBehaveLikeBatchExecute = (
 
       const tx = await context.keyManager
         .connect(context.owner)
-      ["execute(uint256[],bytes[])"](
-        [0, 0, 0],
-        [
-          // Step 1 - deploy Token contract as proxy
-          lsp7ProxyDeploymentPayload,
-          // Step 2 - initialize Token contract
-          initializePayload,
-          // Step 3 - set Token Metadata
-          setTokenMetadataPayload,
-        ]
-      );
+        .executeBatch(
+          [0, 0, 0],
+          [
+            // Step 1 - deploy Token contract as proxy
+            lsp7ProxyDeploymentPayload,
+            // Step 2 - initialize Token contract
+            initializePayload,
+            // Step 3 - set Token Metadata
+            setTokenMetadataPayload,
+          ]
+        );
 
       // CHECK that token contract has been deployed
       await expect(tx)
@@ -331,7 +331,7 @@ export const shouldBehaveLikeBatchExecute = (
       // in the 2nd and 3rd payloads of the LSP6 batch `execute(bytes[])`
       const futureTokenAddress = await context.keyManager
         .connect(context.owner)
-        .callStatic["execute(bytes)"](lsp7DeploymentPayload);
+        .callStatic.execute(lsp7DeploymentPayload);
 
       // step 2 - mint some tokens
       // use the interface of an existing token for encoding the function call
@@ -382,7 +382,7 @@ export const shouldBehaveLikeBatchExecute = (
 
       const tx = await context.keyManager
         .connect(context.owner)
-      ["execute(uint256[],bytes[])"]([0, 0, 0], payloads);
+        .executeBatch([0, 0, 0], payloads);
 
       // CHECK for `ContractCreated` event
       await expect(tx)
@@ -439,11 +439,11 @@ export const shouldBehaveLikeBatchExecute = (
           await expect(
             context.keyManager
               .connect(context.owner)
-            ["execute(uint256[],bytes[])"](
-              [0, 0],
-              [firstSetDataPayload, secondSetDataPayload],
-              { value: amountToFund }
-            )
+              .executeBatch(
+                [0, 0],
+                [firstSetDataPayload, secondSetDataPayload],
+                { value: amountToFund }
+              )
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -496,11 +496,11 @@ export const shouldBehaveLikeBatchExecute = (
           await expect(
             context.keyManager
               .connect(context.owner)
-            ["execute(uint256[],bytes[])"](
-              [1, 1],
-              [firstSetDataPayload, secondSetDataPayload],
-              { value: amountToFund }
-            )
+              .executeBatch(
+                [1, 1],
+                [firstSetDataPayload, secondSetDataPayload],
+                { value: amountToFund }
+              )
           ).to.be.revertedWithCustomError(
             context.keyManager,
             "CannotSendValueToSetData"
@@ -554,9 +554,9 @@ export const shouldBehaveLikeBatchExecute = (
           await expect(
             context.keyManager
               .connect(context.owner)
-            ["execute(uint256[],bytes[])"](msgValues, payloads, {
-              value: totalValues,
-            })
+              .executeBatch(msgValues, payloads, {
+                value: totalValues,
+              })
           ).to.changeEtherBalances(
             [context.universalProfile.address, recipient],
             [0, msgValues[1]]
@@ -599,9 +599,9 @@ export const shouldBehaveLikeBatchExecute = (
           await expect(
             context.keyManager
               .connect(context.owner)
-            ["execute(uint256[],bytes[])"](msgValues, payloads, {
-              value: totalValues,
-            })
+              .executeBatch(msgValues, payloads, {
+                value: totalValues,
+              })
           ).to.be.revertedWithCustomError(
             context.keyManager,
             "CannotSendValueToSetData"
@@ -659,9 +659,9 @@ export const shouldBehaveLikeBatchExecute = (
           await expect(
             context.keyManager
               .connect(context.owner)
-            ["execute(uint256[],bytes[])"](values, payloads, {
-              value: msgValue,
-            })
+              .executeBatch(values, payloads, {
+                value: msgValue,
+              })
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -719,9 +719,9 @@ export const shouldBehaveLikeBatchExecute = (
           await expect(
             context.keyManager
               .connect(context.owner)
-            ["execute(uint256[],bytes[])"](values, payloads, {
-              value: msgValue,
-            })
+              .executeBatch(values, payloads, {
+                value: msgValue,
+              })
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -775,9 +775,9 @@ export const shouldBehaveLikeBatchExecute = (
 
           let tx = await context.keyManager
             .connect(context.owner)
-          ["execute(uint256[],bytes[])"](values, payloads, {
-            value: totalValues,
-          });
+            .executeBatch(values, payloads, {
+              value: totalValues,
+            });
 
           await expect(tx).to.changeEtherBalances(
             [
@@ -833,14 +833,14 @@ export const shouldBehaveLikeBatchExecute = (
       await expect(
         context.keyManager
           .connect(context.owner)
-        ["execute(uint256[],bytes[])"](
-          [0, 0, 0],
-          [
-            failingTransferPayload,
-            firstTransferPayload,
-            secondTransferPayload,
-          ]
-        )
+          .executeBatch(
+            [0, 0, 0],
+            [
+              failingTransferPayload,
+              firstTransferPayload,
+              secondTransferPayload,
+            ]
+          )
       ).to.be.revertedWithCustomError(
         context.universalProfile,
         "ERC725X_InsufficientBalance"
@@ -881,14 +881,14 @@ export const shouldBehaveLikeBatchExecute = (
       await expect(
         context.keyManager
           .connect(context.owner)
-        ["execute(uint256[],bytes[])"](
-          [0, 0, 0],
-          [
-            firstTransferPayload,
-            secondTransferPayload,
-            failingTransferPayload,
-          ]
-        )
+          .executeBatch(
+            [0, 0, 0],
+            [
+              firstTransferPayload,
+              secondTransferPayload,
+              failingTransferPayload,
+            ]
+          )
       ).to.be.revertedWithCustomError(
         context.universalProfile,
         "ERC725X_InsufficientBalance"

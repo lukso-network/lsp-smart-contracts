@@ -31,7 +31,7 @@ async function setupPermissions(
 
   await context.keyManager
     .connect(context.owner)
-  ["execute(bytes)"](setupPayload);
+    .execute(setupPayload);
 }
 
 /**
@@ -48,7 +48,7 @@ async function resetPermissions(
 
   await context.keyManager
     .connect(context.owner)
-  ["execute(bytes)"](teardownPayload);
+    .execute(teardownPayload);
 }
 
 export const shouldBehaveLikePermissionChangeOrAddController = (
@@ -189,7 +189,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.keyManager
             .connect(context.owner)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -210,7 +210,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.keyManager
             .connect(context.owner)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -242,7 +242,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.keyManager
               .connect(context.owner)
-            ["execute(bytes)"](payload);
+              .execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -273,7 +273,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.keyManager
               .connect(context.owner)
-            ["execute(bytes)"](payload);
+              .execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -293,7 +293,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.keyManager
               .connect(context.owner)
-            ["execute(bytes)"](payload);
+              .execute(payload);
 
             const result = await context.universalProfile.getData(
               key
@@ -315,7 +315,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(context.owner)
-              ["execute(bytes)"](setupPayload)
+                .execute(setupPayload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -339,7 +339,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(context.owner)
-              ["execute(bytes)"](setupPayload)
+                .execute(setupPayload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -364,7 +364,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.keyManager
               .connect(context.owner)
-            ["execute(bytes)"](payload);
+              .execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -385,7 +385,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(context.owner)
-              ["execute(bytes)"](setupPayload)
+                .execute(setupPayload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -409,7 +409,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(context.owner)
-              ["execute(bytes)"](setupPayload)
+                .execute(setupPayload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -432,7 +432,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.keyManager
               .connect(context.owner)
-            ["execute(bytes)"](payload);
+              .execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -461,7 +461,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(context.owner)
-              ["execute(bytes)"](payload)
+                .execute(payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -514,7 +514,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.keyManager
             .connect(canOnlyAddController)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -536,7 +536,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -567,7 +567,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.keyManager
               .connect(canOnlyAddController)
-            ["execute(bytes)"](payload);
+              .execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -598,7 +598,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+                .execute(payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -621,7 +621,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.keyManager
               .connect(canOnlyAddController)
-            ["execute(bytes)"](payload);
+              .execute(payload);
 
             const result = await context.universalProfile.getData(
               key
@@ -643,7 +643,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlyAddController)
-              ["execute(bytes)"](setupPayload)
+                .execute(setupPayload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -667,7 +667,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlyAddController)
-              ["execute(bytes)"](setupPayload)
+                .execute(setupPayload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -693,7 +693,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+                .execute(payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -717,7 +717,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+                .execute(payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -748,7 +748,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+                .execute(payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -801,7 +801,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -821,7 +821,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -841,7 +841,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.keyManager
             .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -873,7 +873,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+                .execute(payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -905,7 +905,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.keyManager
               .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload);
+              .execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -926,7 +926,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+                .execute(payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -951,7 +951,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.keyManager
               .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload);
+              .execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -972,7 +972,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](setupPayload)
+                .execute(setupPayload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -996,7 +996,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](setupPayload)
+                .execute(setupPayload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1019,7 +1019,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.keyManager
               .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload);
+              .execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -1048,7 +1048,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+                .execute(payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1101,7 +1101,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canOnlySetData)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDCONTROLLER");
@@ -1121,7 +1121,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canOnlySetData)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDCONTROLLER");
@@ -1142,7 +1142,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canOnlySetData)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "EDITPERMISSIONS");
@@ -1174,7 +1174,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlySetData)
-              ["execute(bytes)"](payload)
+                .execute(payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1207,7 +1207,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlySetData)
-              ["execute(bytes)"](payload)
+                .execute(payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1231,7 +1231,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlySetData)
-              ["execute(bytes)"](payload)
+                .execute(payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1253,7 +1253,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canOnlySetData)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDCONTROLLER");
@@ -1274,7 +1274,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canOnlySetData)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "EDITPERMISSIONS");
@@ -1301,7 +1301,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.keyManager
                 .connect(canOnlySetData)
-              ["execute(bytes)"](payload)
+                .execute(payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1403,7 +1403,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.keyManager
             .connect(context.owner)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile.getDataBatch(keys);
@@ -1434,7 +1434,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.keyManager
             .connect(context.owner)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile.getDataBatch(keys);
@@ -1469,7 +1469,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.keyManager
             .connect(context.owner)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile.getDataBatch(keys);
@@ -1516,7 +1516,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canSetDataAndAddController)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndAddController.address, "EDITPERMISSIONS");
@@ -1547,7 +1547,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canSetDataAndAddController)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndAddController.address, "EDITPERMISSIONS");
@@ -1582,7 +1582,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canSetDataAndAddController)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndAddController.address, "EDITPERMISSIONS");
@@ -1622,7 +1622,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canSetDataAndAddController)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1661,7 +1661,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.keyManager
             .connect(canSetDataAndAddController)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           expect(
             await context.universalProfile.getDataBatch(keys)
@@ -1710,7 +1710,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.keyManager
             .connect(canSetDataAndAddController)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           expect(
             await context.universalProfile.getDataBatch(keys)
@@ -1755,7 +1755,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canSetDataAndEditPermissions)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndEditPermissions.address, "ADDCONTROLLER");
@@ -1790,7 +1790,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canSetDataAndEditPermissions)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndEditPermissions.address, "ADDCONTROLLER");
@@ -1823,7 +1823,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canSetDataAndEditPermissions)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndEditPermissions.address, "ADDCONTROLLER");
@@ -1860,7 +1860,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.keyManager
               .connect(canSetDataAndEditPermissions)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1896,7 +1896,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.keyManager
             .connect(canSetDataAndEditPermissions)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           expect(
             await context.universalProfile.getDataBatch(keys)
@@ -1929,7 +1929,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.keyManager
             .connect(canSetDataAndEditPermissions)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           expect(
             await context.universalProfile.getDataBatch(keys)

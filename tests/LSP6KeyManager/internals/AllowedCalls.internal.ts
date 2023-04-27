@@ -39,7 +39,7 @@ async function teardownKeyManagerHelper(
 
   await context.keyManagerInternalTester
     .connect(context.owner)
-  ["execute(bytes)"](teardownPayload);
+    .execute(teardownPayload);
 }
 
 export const testAllowedCallsInternals = (
@@ -400,7 +400,7 @@ export const testAllowedCallsInternals = (
 
         await context.keyManagerInternalTester
           .connect(context.owner)
-        ["execute(bytes)"](setup);
+          .execute(setup);
       });
 
       after("reset permissions", async () => {
@@ -539,7 +539,7 @@ export const testAllowedCallsInternals = (
 
         await context.keyManagerInternalTester
           .connect(context.owner)
-        ["execute(bytes)"](setup);
+          .execute(setup);
       });
 
       after("reset permissions", async () => {
@@ -678,7 +678,7 @@ export const testAllowedCallsInternals = (
 
         await context.keyManagerInternalTester
           .connect(context.owner)
-        ["execute(bytes)"](setup);
+          .execute(setup);
       });
 
       after("reset permissions", async () => {

@@ -101,11 +101,11 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
           await expect(
             context.keyManager
               .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
-              relayCallParams.signature,
-              relayCallParams.nonce,
-              relayCallParams.payload
-            )
+              .executeRelayCall(
+                relayCallParams.signature,
+                relayCallParams.nonce,
+                relayCallParams.payload
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -127,11 +127,11 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       await expect(
         context.keyManager
           .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
-          relayCallParams.signature,
-          relayCallParams.nonce,
-          relayCallParams.payload
-        )
+          .executeRelayCall(
+            relayCallParams.signature,
+            relayCallParams.nonce,
+            relayCallParams.payload
+          )
       ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
     });
 
@@ -152,11 +152,11 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-      ["executeRelayCall(bytes,uint256,bytes)"](
-        relayCallParams.signature,
-        relayCallParams.nonce,
-        relayCallParams.payload
-      );
+        .executeRelayCall(
+          relayCallParams.signature,
+          relayCallParams.nonce,
+          relayCallParams.payload
+        );
 
       expect(
         await context.universalProfile.provider.getBalance(
@@ -211,11 +211,11 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
           await expect(
             context.keyManager
               .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
-              relayCallParams.signature,
-              relayCallParams.nonce,
-              relayCallParams.payload
-            )
+              .executeRelayCall(
+                relayCallParams.signature,
+                relayCallParams.nonce,
+                relayCallParams.payload
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -237,11 +237,11 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       await expect(
         context.keyManager
           .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
-          relayCallParams.signature,
-          relayCallParams.nonce,
-          relayCallParams.payload
-        )
+          .executeRelayCall(
+            relayCallParams.signature,
+            relayCallParams.nonce,
+            relayCallParams.payload
+          )
       ).to.be.revertedWithCustomError(
         context.keyManager,
         "NoERC725YDataKeysAllowed"
@@ -259,11 +259,11 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-      ["executeRelayCall(bytes,uint256,bytes)"](
-        relayCallParams.signature,
-        relayCallParams.nonce,
-        relayCallParams.payload
-      );
+        .executeRelayCall(
+          relayCallParams.signature,
+          relayCallParams.nonce,
+          relayCallParams.payload
+        );
 
       const hardcodedKey = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
@@ -315,11 +315,11 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-          ["executeRelayCall(bytes,uint256,bytes)"](
-            relayCallParams.signature,
-            relayCallParams.nonce,
-            relayCallParams.payload
-          )
+            .executeRelayCall(
+              relayCallParams.signature,
+              relayCallParams.nonce,
+              relayCallParams.payload
+            )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -340,11 +340,11 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-      ["executeRelayCall(bytes,uint256,bytes)"](
-        relayCallParams.signature,
-        relayCallParams.nonce,
-        relayCallParams.payload
-      );
+        .executeRelayCall(
+          relayCallParams.signature,
+          relayCallParams.nonce,
+          relayCallParams.payload
+        );
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -397,11 +397,11 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-          ["executeRelayCall(bytes,uint256,bytes)"](
-            relayCallParams.signature,
-            relayCallParams.nonce,
-            relayCallParams.payload
-          )
+            .executeRelayCall(
+              relayCallParams.signature,
+              relayCallParams.nonce,
+              relayCallParams.payload
+            )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -422,11 +422,11 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-      ["executeRelayCall(bytes,uint256,bytes)"](
-        relayCallParams.signature,
-        relayCallParams.nonce,
-        relayCallParams.payload
-      );
+        .executeRelayCall(
+          relayCallParams.signature,
+          relayCallParams.nonce,
+          relayCallParams.payload
+        );
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -478,11 +478,11 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-          ["executeRelayCall(bytes,uint256,bytes)"](
-            relayCallParams.signature,
-            relayCallParams.nonce,
-            relayCallParams.payload
-          )
+            .executeRelayCall(
+              relayCallParams.signature,
+              relayCallParams.nonce,
+              relayCallParams.payload
+            )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -503,11 +503,11 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-      ["executeRelayCall(bytes,uint256,bytes)"](
-        relayCallParams.signature,
-        relayCallParams.nonce,
-        relayCallParams.payload
-      );
+        .executeRelayCall(
+          relayCallParams.signature,
+          relayCallParams.nonce,
+          relayCallParams.payload
+        );
 
       const hardcodedLSP1Key =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
@@ -559,11 +559,11 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
           await expect(
             context.keyManager
               .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
-              relayCallParams.signature,
-              relayCallParams.nonce,
-              relayCallParams.payload
-            )
+              .executeRelayCall(
+                relayCallParams.signature,
+                relayCallParams.nonce,
+                relayCallParams.payload
+              )
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -585,11 +585,11 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-      ["executeRelayCall(bytes,uint256,bytes)"](
-        relayCallParams.signature,
-        relayCallParams.nonce,
-        relayCallParams.payload
-      );
+        .executeRelayCall(
+          relayCallParams.signature,
+          relayCallParams.nonce,
+          relayCallParams.payload
+        );
 
       const hardcodedLSP1Key =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +

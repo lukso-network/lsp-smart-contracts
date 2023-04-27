@@ -121,7 +121,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
       await context.keyManager
         .connect(context.owner)
-      ["execute(bytes)"](upPayload);
+        .execute(upPayload);
       let result = await targetContract.callStatic.getName();
 
       expect(result).to.equal(newName);
@@ -146,7 +146,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         let data = await context.keyManager
           .connect(context.owner)
-          .callStatic["execute(bytes)"](upPayload);
+          .callStatic.execute(upPayload);
         let [result] = abiCoder.decode(["bytes4"], data);
         expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
       });
@@ -163,7 +163,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         await context.keyManager
           .connect(context.owner)
-        ["execute(bytes)"](setDataPayload);
+          .execute(setDataPayload);
 
         const result = await context.universalProfile.callStatic[
           "getData(bytes32)"
@@ -194,7 +194,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         let data = await context.keyManager
           .connect(addressCanInteractOnlyWithERC1271)
-          .callStatic["execute(bytes)"](upPayload);
+          .callStatic.execute(upPayload);
         let [result] = abiCoder.decode(["bytes4"], data);
         expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
       });
@@ -219,7 +219,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         await context.keyManager
           .connect(addressCanInteractOnlyWithERC1271)
-        ["execute(bytes)"](transferLyxPayload);
+          .execute(transferLyxPayload);
 
         let newAccountBalance = await provider.getBalance(
           otherUniversalProfile.address
@@ -243,7 +243,7 @@ export const shouldBehaveLikeAllowedStandards = (
         await expect(
           context.keyManager
             .connect(addressCanInteractOnlyWithERC1271)
-          ["execute(bytes)"](upPayload)
+            .execute(upPayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
           .withArgs(
@@ -278,7 +278,7 @@ export const shouldBehaveLikeAllowedStandards = (
         await expect(
           context.keyManager
             .connect(addressCanInteractOnlyWithLSP7)
-          ["execute(bytes)"](upPayload)
+            .execute(upPayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
           .withArgs(
@@ -305,7 +305,7 @@ export const shouldBehaveLikeAllowedStandards = (
         await expect(
           context.keyManager
             .connect(addressCanInteractOnlyWithLSP7)
-          ["execute(bytes)"](transferLyxPayload)
+            .execute(transferLyxPayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
           .withArgs(
@@ -364,7 +364,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         await context.keyManager
           .connect(addressCanInteractOnlyWithLSP7)
-        ["execute(bytes)"](executePayload);
+          .execute(executePayload);
 
         expect(await lsp7TokenA.balanceOf(recipient)).to.equal(amount);
         expect(
@@ -389,7 +389,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         await context.keyManager
           .connect(addressCanInteractOnlyWithLSP7)
-        ["execute(bytes)"](executePayload);
+          .execute(executePayload);
 
         expect(await lsp7TokenB.balanceOf(recipient)).to.equal(amount);
         expect(
@@ -414,7 +414,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         await context.keyManager
           .connect(addressCanInteractOnlyWithLSP7)
-        ["execute(bytes)"](executePayload);
+          .execute(executePayload);
 
         expect(await lsp7TokenC.balanceOf(recipient)).to.equal(amount);
         expect(

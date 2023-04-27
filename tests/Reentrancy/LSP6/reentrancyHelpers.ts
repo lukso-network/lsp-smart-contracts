@@ -708,5 +708,5 @@ export const loadTestCase = async (
     );
   await context.keyManager
     .connect(context.owner)
-  ["execute(bytes)"](permissionsPayload);
+    .execute(permissionsPayload);
 };

@@ -79,7 +79,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       await expect(
         context.keyManager
           .connect(canChangeOwner)
-        ["execute(bytes)"](transferOwnershipPayload)
+          .execute(transferOwnershipPayload)
       ).to.be.revertedWithCustomError(
         context.universalProfile,
         "CannotTransferOwnershipToSelf"
@@ -93,7 +93,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         await expect(
           context.keyManager
             .connect(cannotChangeOwner)
-          ["execute(bytes)"](transferOwnershipPayload)
+            .execute(transferOwnershipPayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(cannotChangeOwner.address, "TRANSFEROWNERSHIP");
@@ -104,13 +104,13 @@ export const shouldBehaveLikePermissionChangeOwner = (
       before("`transferOwnership(...)` to new Key Manager", async () => {
         await context.keyManager
           .connect(context.owner)
-        ["execute(bytes)"](transferOwnershipPayload);
+          .execute(transferOwnershipPayload);
       });
 
       after("reset ownership", async () => {
         await context.keyManager
           .connect(context.owner)
-        ["execute(bytes)"](resetOwnershipPayload);
+          .execute(resetOwnershipPayload);
       });
 
       it("should have set newKeyManager as pendingOwner", async () => {
@@ -129,7 +129,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await context.keyManager
           .connect(context.owner)
-        ["execute(bytes)"](transferOwnershipPayload);
+          .execute(transferOwnershipPayload);
 
         const ownerAfter = await context.universalProfile.owner();
 
@@ -150,7 +150,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
           await context.keyManager
             .connect(context.owner)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           const result = await context.universalProfile.getData(
             key
@@ -168,7 +168,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           );
 
           await expect(
-            context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+            context.keyManager.connect(context.owner).execute(payload)
           ).to.changeEtherBalances(
             [context.universalProfile, recipient],
             [`-${amount}`, amount]
@@ -181,12 +181,12 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await context.keyManager
           .connect(context.owner)
-        ["execute(bytes)"](
-          context.universalProfile.interface.encodeFunctionData(
-            "transferOwnership",
-            [overridenPendingOwner]
-          )
-        );
+          .execute(
+            context.universalProfile.interface.encodeFunctionData(
+              "transferOwnership",
+              [overridenPendingOwner]
+            )
+          );
 
         // checksum the address of the pendingOwner fetched from the storage
         const pendingOwner = ethers.utils.getAddress(
@@ -200,13 +200,13 @@ export const shouldBehaveLikePermissionChangeOwner = (
       before("`transferOwnership(...)` to new KeyManager", async () => {
         await context.keyManager
           .connect(canChangeOwner)
-        ["execute(bytes)"](transferOwnershipPayload);
+          .execute(transferOwnershipPayload);
       });
 
       after("reset ownership", async () => {
         await context.keyManager
           .connect(context.owner)
-        ["execute(bytes)"](resetOwnershipPayload);
+          .execute(resetOwnershipPayload);
       });
 
       it("should have set newKeyManager as pendingOwner", async () => {
@@ -225,7 +225,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await context.keyManager
           .connect(canChangeOwner)
-        ["execute(bytes)"](transferOwnershipPayload);
+          .execute(transferOwnershipPayload);
 
         const ownerAfter = await context.universalProfile.owner();
 
@@ -240,12 +240,12 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await context.keyManager
           .connect(canChangeOwner)
-        ["execute(bytes)"](
-          context.universalProfile.interface.encodeFunctionData(
-            "transferOwnership",
-            [overridenPendingOwner.address]
-          )
-        );
+          .execute(
+            context.universalProfile.interface.encodeFunctionData(
+              "transferOwnership",
+              [overridenPendingOwner.address]
+            )
+          );
 
         const pendingOwner = await context.universalProfile.pendingOwner();
         expect(pendingOwner).to.equal(overridenPendingOwner.address);
@@ -257,7 +257,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
     before("`transferOwnership(...)` to new Key Manager", async () => {
       await context.keyManager
         .connect(context.owner)
-      ["execute(bytes)"](transferOwnershipPayload);
+        .execute(transferOwnershipPayload);
     });
 
     it("should revert", async () => {
@@ -269,7 +269,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         context.universalProfile.interface.getSighash("acceptOwnership");
 
       await expect(
-        notPendingKeyManager.connect(context.owner)["execute(bytes)"](payload)
+        notPendingKeyManager.connect(context.owner).execute(payload)
       ).to.be.revertedWith("LSP14: caller is not the pendingOwner");
     });
   });
@@ -289,7 +289,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       await newKeyManager
         .connect(context.owner)
-      ["execute(bytes)"](acceptOwnershipPayload);
+        .execute(acceptOwnershipPayload);
     });
 
     it("should have change the account's owner to the pendingOwner (= pending KeyManager)", async () => {
@@ -323,7 +323,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         );
 
         await expect(
-          oldKeyManager.connect(context.owner)["execute(bytes)"](payload)
+          oldKeyManager.connect(context.owner).execute(payload)
         )
           .to.be.revertedWithCustomError(newKeyManager, "NoPermissionsSet")
           .withArgs(oldKeyManager.address);
@@ -339,7 +339,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         );
 
         await expect(
-          oldKeyManager.connect(context.owner)["execute(bytes)"](payload)
+          oldKeyManager.connect(context.owner).execute(payload)
         )
           .to.be.revertedWithCustomError(newKeyManager, "NoPermissionsSet")
           .withArgs(oldKeyManager.address);
@@ -357,7 +357,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           [key, value]
         );
 
-        await newKeyManager.connect(context.owner)["execute(bytes)"](payload);
+        await newKeyManager.connect(context.owner).execute(payload);
 
         const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
@@ -373,7 +373,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         );
 
         await expect(
-          newKeyManager.connect(context.owner)["execute(bytes)"](payload)
+          newKeyManager.connect(context.owner).execute(payload)
         ).to.changeEtherBalances(
           [recipient, context.universalProfile],
           [amount, `-${amount}`]
@@ -389,7 +389,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           context.universalProfile.interface.getSighash("renounceOwnership");
 
         await expect(
-          context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+          context.keyManager.connect(context.owner).execute(payload)
         )
           .to.be.revertedWithCustomError(
             context.keyManager,
@@ -423,14 +423,14 @@ export const shouldBehaveLikePermissionChangeOwner = (
         await expect(
           context.keyManager
             .connect(context.owner)
-          ["executeRelayCall(bytes,uint256,bytes)"](
-            signature,
-            nonce,
-            payload,
-            {
-              value: valueToSend,
-            }
-          )
+            .executeRelayCall(
+              signature,
+              nonce,
+              payload,
+              {
+                value: valueToSend,
+              }
+            )
         )
           .to.be.revertedWithCustomError(
             context.keyManager,

@@ -106,13 +106,13 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.owner)
-          ["execute(bytes)"](
-            callPayload(
-              context.universalProfile,
-              context.lsp11BasicSocialRecovery.address,
-              payload
+            .execute(
+              callPayload(
+                context.universalProfile,
+                context.lsp11BasicSocialRecovery.address,
+                payload
+              )
             )
-          )
         ).to.be.revertedWithCustomError(
           context.lsp11BasicSocialRecovery,
           "SecretHashCannotBeZero"
@@ -133,13 +133,13 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.owner)
-          ["execute(bytes)"](
-            callPayload(
-              context.universalProfile,
-              context.lsp11BasicSocialRecovery.address,
-              payload
+            .execute(
+              callPayload(
+                context.universalProfile,
+                context.lsp11BasicSocialRecovery.address,
+                payload
+              )
             )
-          )
         )
           .to.emit(context.lsp11BasicSocialRecovery, "SecretHashChanged")
           .withArgs(txParams.hash);
@@ -295,7 +295,7 @@ export const shouldBehaveLikeLSP11 = (
 
           await context.lsp6KeyManager
             .connect(context.accounts.addressASelected)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           const value = await context.universalProfile.callStatic[
             "getData(bytes32)"
@@ -338,13 +338,13 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.owner)
-          ["execute(bytes)"](
-            callPayload(
-              context.universalProfile,
-              context.lsp11BasicSocialRecovery.address,
-              payload
+            .execute(
+              callPayload(
+                context.universalProfile,
+                context.lsp11BasicSocialRecovery.address,
+                payload
+              )
             )
-          )
         )
           .to.emit(context.lsp11BasicSocialRecovery, "GuardianAdded")
           .withArgs(txParams.guardianAddress);
@@ -382,13 +382,13 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.owner)
-          ["execute(bytes)"](
-            callPayload(
-              context.universalProfile,
-              context.lsp11BasicSocialRecovery.address,
-              payload
+            .execute(
+              callPayload(
+                context.universalProfile,
+                context.lsp11BasicSocialRecovery.address,
+                payload
+              )
             )
-          )
         )
           .to.emit(context.lsp11BasicSocialRecovery, "GuardianRemoved")
           .withArgs(txParams.guardianAddress);
@@ -427,13 +427,13 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.owner)
-          ["execute(bytes)"](
-            callPayload(
-              context.universalProfile,
-              context.lsp11BasicSocialRecovery.address,
-              payload
+            .execute(
+              callPayload(
+                context.universalProfile,
+                context.lsp11BasicSocialRecovery.address,
+                payload
+              )
             )
-          )
         )
           .to.emit(
             context.lsp11BasicSocialRecovery,
@@ -474,13 +474,13 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.owner)
-          ["execute(bytes)"](
-            callPayload(
-              context.universalProfile,
-              context.lsp11BasicSocialRecovery.address,
-              payload
+            .execute(
+              callPayload(
+                context.universalProfile,
+                context.lsp11BasicSocialRecovery.address,
+                payload
+              )
             )
-          )
         )
           .to.emit(context.lsp11BasicSocialRecovery, "SecretHashChanged")
           .withArgs(txParams.hash);
@@ -506,13 +506,13 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-            ["execute(bytes)"](
-              callPayload(
-                context.universalProfile,
-                context.lsp11BasicSocialRecovery.address,
-                payload
+              .execute(
+                callPayload(
+                  context.universalProfile,
+                  context.lsp11BasicSocialRecovery.address,
+                  payload
+                )
               )
-            )
           )
             .to.emit(context.lsp11BasicSocialRecovery, "GuardianAdded")
             .withArgs(txParams.guardianAddress);
@@ -522,13 +522,13 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-            ["execute(bytes)"](
-              callPayload(
-                context.universalProfile,
-                context.lsp11BasicSocialRecovery.address,
-                payload
+              .execute(
+                callPayload(
+                  context.universalProfile,
+                  context.lsp11BasicSocialRecovery.address,
+                  payload
+                )
               )
-            )
           )
             .to.be.revertedWithCustomError(
               context.lsp11BasicSocialRecovery,
@@ -559,13 +559,13 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-            ["execute(bytes)"](
-              callPayload(
-                context.universalProfile,
-                context.lsp11BasicSocialRecovery.address,
-                payload
+              .execute(
+                callPayload(
+                  context.universalProfile,
+                  context.lsp11BasicSocialRecovery.address,
+                  payload
+                )
               )
-            )
           )
             .to.be.revertedWithCustomError(
               context.lsp11BasicSocialRecovery,
@@ -595,13 +595,13 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-            ["execute(bytes)"](
-              callPayload(
-                context.universalProfile,
-                context.lsp11BasicSocialRecovery.address,
-                payload
+              .execute(
+                callPayload(
+                  context.universalProfile,
+                  context.lsp11BasicSocialRecovery.address,
+                  payload
+                )
               )
-            )
           )
             .to.be.revertedWithCustomError(
               context.lsp11BasicSocialRecovery,
@@ -631,13 +631,13 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-            ["execute(bytes)"](
-              callPayload(
-                context.universalProfile,
-                context.lsp11BasicSocialRecovery.address,
-                payload
+              .execute(
+                callPayload(
+                  context.universalProfile,
+                  context.lsp11BasicSocialRecovery.address,
+                  payload
+                )
               )
-            )
           )
             .to.emit(
               context.lsp11BasicSocialRecovery,
@@ -671,13 +671,13 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-            ["execute(bytes)"](
-              callPayload(
-                context.universalProfile,
-                context.lsp11BasicSocialRecovery.address,
-                payload
+              .execute(
+                callPayload(
+                  context.universalProfile,
+                  context.lsp11BasicSocialRecovery.address,
+                  payload
+                )
               )
-            )
           )
             .to.emit(
               context.lsp11BasicSocialRecovery,
@@ -720,13 +720,13 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-            ["execute(bytes)"](
-              callPayload(
-                context.universalProfile,
-                context.lsp11BasicSocialRecovery.address,
-                payload
+              .execute(
+                callPayload(
+                  context.universalProfile,
+                  context.lsp11BasicSocialRecovery.address,
+                  payload
+                )
               )
-            )
           )
             .to.be.revertedWithCustomError(
               context.lsp11BasicSocialRecovery,
@@ -751,13 +751,13 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-            ["execute(bytes)"](
-              callPayload(
-                context.universalProfile,
-                context.lsp11BasicSocialRecovery.address,
-                payload
+              .execute(
+                callPayload(
+                  context.universalProfile,
+                  context.lsp11BasicSocialRecovery.address,
+                  payload
+                )
               )
-            )
           ).to.be.revertedWithCustomError(
             context.lsp11BasicSocialRecovery,
             "SecretHashCannotBeZero"
@@ -798,26 +798,26 @@ export const shouldBehaveLikeLSP11 = (
 
         await context.lsp6KeyManager
           .connect(context.accounts.owner)
-        ["execute(uint256[],bytes[])"](
-          [0, 0, 0],
-          [
-            callPayload(
-              context.universalProfile,
-              context.lsp11BasicSocialRecovery.address,
-              payload1
-            ),
-            callPayload(
-              context.universalProfile,
-              context.lsp11BasicSocialRecovery.address,
-              payload2
-            ),
-            callPayload(
-              context.universalProfile,
-              context.lsp11BasicSocialRecovery.address,
-              payload3
-            ),
-          ]
-        );
+          .executeBatch(
+            [0, 0, 0],
+            [
+              callPayload(
+                context.universalProfile,
+                context.lsp11BasicSocialRecovery.address,
+                payload1
+              ),
+              callPayload(
+                context.universalProfile,
+                context.lsp11BasicSocialRecovery.address,
+                payload2
+              ),
+              callPayload(
+                context.universalProfile,
+                context.lsp11BasicSocialRecovery.address,
+                payload3
+              ),
+            ]
+          );
 
         const isAddress2Guardian =
           await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
@@ -925,13 +925,13 @@ export const shouldBehaveLikeLSP11 = (
 
           await context.lsp6KeyManager
             .connect(context.accounts.owner)
-          ["execute(bytes)"](
-            callPayload(
-              context.universalProfile,
-              context.lsp11BasicSocialRecovery.address,
-              payload1
-            )
-          );
+            .execute(
+              callPayload(
+                context.universalProfile,
+                context.lsp11BasicSocialRecovery.address,
+                payload1
+              )
+            );
 
           guardiansThreshold =
             await context.lsp11BasicSocialRecovery.callStatic.getGuardiansThreshold();
@@ -952,13 +952,13 @@ export const shouldBehaveLikeLSP11 = (
 
           await context.lsp6KeyManager
             .connect(context.accounts.owner)
-          ["execute(bytes)"](
-            callPayload(
-              context.universalProfile,
-              context.lsp11BasicSocialRecovery.address,
-              payload2
-            )
-          );
+            .execute(
+              callPayload(
+                context.universalProfile,
+                context.lsp11BasicSocialRecovery.address,
+                payload2
+              )
+            );
 
           // Guardian 1 selects address A
           await context.lsp11BasicSocialRecovery
@@ -1195,7 +1195,7 @@ export const shouldBehaveLikeLSP11 = (
 
           await context.lsp6KeyManager
             .connect(context.accounts.addressASelected)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           const value = await context.universalProfile.callStatic[
             "getData(bytes32)"

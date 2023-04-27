@@ -636,7 +636,7 @@ export const shouldBehaveLikeLSP9 = (
 
         await context.lsp6KeyManager
           .connect(context.accounts.owner)
-        ["execute(bytes)"](executePayload);
+          .execute(executePayload);
       });
 
       it("should register lsp10 keys of the vault on the profile", async () => {
@@ -703,7 +703,7 @@ export const shouldBehaveLikeLSP9 = (
 
               await context.lsp6KeyManager
                 .connect(context.accounts.owner)
-              ["execute(bytes)"](executePayloadUP);
+                .execute(executePayloadUP);
 
               const result = await context.lsp9Vault.getData(key);
               expect(result).to.equal(value);
@@ -733,7 +733,7 @@ export const shouldBehaveLikeLSP9 = (
               await expect(() =>
                 context.lsp6KeyManager
                   .connect(context.accounts.owner)
-                ["execute(bytes)"](executePayloadUP)
+                  .execute(executePayloadUP)
               ).to.changeEtherBalances(
                 [context.lsp9Vault.address, context.accounts.random.address],
                 [`-${amount}`, amount]
@@ -787,7 +787,7 @@ export const shouldBehaveLikeLSP9 = (
               await expect(() =>
                 context.lsp6KeyManager
                   .connect(context.accounts.owner)
-                ["execute(bytes)"](executePayloadUP)
+                  .execute(executePayloadUP)
               ).to.changeEtherBalances(
                 [context.lsp9Vault.address, context.accounts.random.address],
                 [`-${amount}`, amount]
@@ -832,7 +832,7 @@ export const shouldBehaveLikeLSP9 = (
 
         await context.lsp6KeyManager
           .connect(context.accounts.owner)
-        ["execute(bytes)"](payload);
+          .execute(payload);
       });
 
       it("should allow friend to talk to the vault", async () => {
@@ -849,13 +849,13 @@ export const shouldBehaveLikeLSP9 = (
         );
         await context.lsp6KeyManager
           .connect(context.accounts.friend)
-        ["execute(bytes)"](
-          callPayload(
-            context.universalProfile,
-            context.lsp9Vault.address,
-            payload
-          )
-        );
+          .execute(
+            callPayload(
+              context.universalProfile,
+              context.lsp9Vault.address,
+              payload
+            )
+          );
 
         const res = await context.lsp9Vault.callStatic.getData(
           dataKey
@@ -883,13 +883,13 @@ export const shouldBehaveLikeLSP9 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.friend)
-          ["execute(bytes)"](
-            callPayload(
-              context.universalProfile,
-              context.universalProfile.address,
-              payload
+            .execute(
+              callPayload(
+                context.universalProfile,
+                context.universalProfile.address,
+                payload
+              )
             )
-          )
         )
           .to.be.revertedWithCustomError(
             context.lsp6KeyManager,

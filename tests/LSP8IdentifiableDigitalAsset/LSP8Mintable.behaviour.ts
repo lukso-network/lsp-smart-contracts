@@ -142,7 +142,7 @@ export const shouldBehaveLikeLSP8Mintable = (
 
       await lsp6KeyManager
         .connect(context.accounts.profileOwner)
-      ["execute(bytes)"](setDataPayload);
+        .execute(setDataPayload);
     });
     it("should pass", async () => {
       const randomTokenId = ethers.utils.randomBytes(32);
@@ -168,7 +168,7 @@ export const shouldBehaveLikeLSP8Mintable = (
 
       await lsp6KeyManager
         .connect(context.accounts.profileOwner)
-      ["execute(bytes)"](executePayload);
+        .execute(executePayload);
 
       const balanceOfUP = await context.lsp8Mintable.callStatic.balanceOf(
         universalProfile.address

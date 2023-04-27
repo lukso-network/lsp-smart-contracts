@@ -140,7 +140,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               );
 
             await expect(
-              context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+              context.keyManager.executeRelayCall(
                 signature,
                 signedMessageParams.nonce,
                 signedMessageParams.payload,
@@ -200,12 +200,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
             await expect(
               context.keyManager
                 .connect(relayer)
-              ["executeRelayCall(bytes,uint256,bytes)"](
-                signature,
-                signedMessageParams.nonce,
-                signedMessageParams.payload,
-                { value: valueToSendFromRelayer }
-              )
+                .executeRelayCall(
+                  signature,
+                  signedMessageParams.nonce,
+                  signedMessageParams.payload,
+                  { value: valueToSendFromRelayer }
+                )
             ).to.be.revertedWithCustomError(
               context.keyManager,
               "NoPermissionsSet"
@@ -262,12 +262,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             const tx = await context.keyManager
               .connect(relayer)
-            ["executeRelayCall(bytes,uint256,bytes)"](
-              signature,
-              signedMessageParams.nonce,
-              signedMessageParams.payload,
-              { value: valueToSendFromRelayer }
-            );
+              .executeRelayCall(
+                signature,
+                signedMessageParams.nonce,
+                signedMessageParams.payload,
+                { value: valueToSendFromRelayer }
+              );
 
             expect(tx)
               .to.emit(context.keyManager, "VerifiedCall")
@@ -333,12 +333,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
             await expect(
               context.keyManager
                 .connect(relayer)
-              ["executeRelayCall(bytes,uint256,bytes)"](
-                signature,
-                signedMessageParams.nonce,
-                signedMessageParams.payload,
-                { value: valueToSendFromRelayer }
-              )
+                .executeRelayCall(
+                  signature,
+                  signedMessageParams.nonce,
+                  signedMessageParams.payload,
+                  { value: valueToSendFromRelayer }
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -408,12 +408,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
               await expect(
                 context.keyManager
                   .connect(relayer)
-                ["executeRelayCall(bytes,uint256,bytes)"](
-                  signature,
-                  latestNonce,
-                  executeRelayCallPayload,
-                  { value: valueToSendFromRelayer }
-                )
+                  .executeRelayCall(
+                    signature,
+                    latestNonce,
+                    executeRelayCallPayload,
+                    { value: valueToSendFromRelayer }
+                  )
               )
                 .to.be.revertedWithCustomError(
                   context.universalProfile,
@@ -484,12 +484,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               await context.keyManager
                 .connect(relayer)
-              ["executeRelayCall(bytes,uint256,bytes)"](
-                signature,
-                latestNonce,
-                executeRelayCallPayload,
-                { value: valueToSendFromRelayer }
-              );
+                .executeRelayCall(
+                  signature,
+                  latestNonce,
+                  executeRelayCallPayload,
+                  { value: valueToSendFromRelayer }
+                );
 
               const result = await targetContract.callStatic.getName();
               expect(result).to.equal(nameToSet);
@@ -553,12 +553,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
               await expect(
                 context.keyManager
                   .connect(relayer)
-                ["executeRelayCall(bytes,uint256,bytes)"](
-                  signature,
-                  latestNonce,
-                  executeRelayCallPayload,
-                  { value: valueToSendFromRelayer }
-                )
+                  .executeRelayCall(
+                    signature,
+                    latestNonce,
+                    executeRelayCallPayload,
+                    { value: valueToSendFromRelayer }
+                  )
               )
                 .to.be.revertedWithCustomError(
                   context.keyManager,
@@ -620,12 +620,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
       await expect(
         context.keyManager
           .connect(context.owner)
-        ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-          signatures,
-          nonces,
-          values,
-          payloads
-        )
+          .executeRelayCallBatch(
+            signatures,
+            nonces,
+            values,
+            payloads
+          )
       ).to.be.revertedWithCustomError(
         context.keyManager,
         "BatchExecuteRelayCallParamsLengthMismatch"
@@ -695,12 +695,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
       await expect(
         context.keyManager
           .connect(context.owner)
-        ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-          [transferLyxSignature, transferLyxSignature],
-          [ownerNonce, ownerNonce.add(1)],
-          [0, 0],
-          [transferLyxPayload, transferLyxPayload]
-        )
+          .executeRelayCallBatch(
+            [transferLyxSignature, transferLyxSignature],
+            [ownerNonce, ownerNonce.add(1)],
+            [0, 0],
+            [transferLyxPayload, transferLyxPayload]
+          )
       )
         .to.be.revertedWithCustomError(context.keyManager, "InvalidRelayNonce")
         .withArgs(
@@ -796,20 +796,20 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       await context.keyManager
         .connect(context.owner)
-      ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-        [
-          ownerGivePermissionsSignature,
-          minterMintSignature,
-          ownerRemovePermissionsSignature,
-        ],
-        [ownerNonce, minterNonce, newOwnerNonce],
-        [0, 0, 0],
-        [
-          giveMinterPermissionsPayload,
-          executePayload,
-          removeMinterPermissionsPayload,
-        ]
-      );
+        .executeRelayCallBatch(
+          [
+            ownerGivePermissionsSignature,
+            minterMintSignature,
+            ownerRemovePermissionsSignature,
+          ],
+          [ownerNonce, minterNonce, newOwnerNonce],
+          [0, 0, 0],
+          [
+            giveMinterPermissionsPayload,
+            executePayload,
+            removeMinterPermissionsPayload,
+          ]
+        );
 
       // CHECK that the recipient received its tokens
       expect(await tokenContract.balanceOf(tokenRecipient.address)).to.equal(
@@ -828,7 +828,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       // CHECK that the minter cannot mint anymore
       await expect(
-        context.keyManager.connect(minter)["execute(bytes)"](executePayload)
+        context.keyManager.connect(minter).execute(executePayload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet")
         .withArgs(minter.address);
@@ -908,17 +908,17 @@ export const shouldBehaveLikeExecuteRelayCall = (
           await expect(
             context.keyManager
               .connect(context.owner)
-            ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-              [
-                firstTransferLyxSignature,
-                secondTransferLyxSignature,
-                thirdTransferLyxSignature,
-              ],
-              [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
-              values,
-              [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
-              { value: amountToFund }
-            )
+              .executeRelayCallBatch(
+                [
+                  firstTransferLyxSignature,
+                  secondTransferLyxSignature,
+                  thirdTransferLyxSignature,
+                ],
+                [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
+                values,
+                [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
+                { value: amountToFund }
+              )
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1001,17 +1001,17 @@ export const shouldBehaveLikeExecuteRelayCall = (
           await expect(
             context.keyManager
               .connect(context.owner)
-            ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-              [
-                firstTransferLyxSignature,
-                secondTransferLyxSignature,
-                thirdTransferLyxSignature,
-              ],
-              [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
-              values,
-              [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
-              { value: amountToFund }
-            )
+              .executeRelayCallBatch(
+                [
+                  firstTransferLyxSignature,
+                  secondTransferLyxSignature,
+                  thirdTransferLyxSignature,
+                ],
+                [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
+                values,
+                [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
+                { value: amountToFund }
+              )
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1090,17 +1090,17 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           let tx = await context.keyManager
             .connect(context.owner)
-          ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-            [
-              firstTransferLyxSignature,
-              secondTransferLyxSignature,
-              thirdTransferLyxSignature,
-            ],
-            [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
-            values,
-            [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
-            { value: amountToFund }
-          );
+            .executeRelayCallBatch(
+              [
+                firstTransferLyxSignature,
+                secondTransferLyxSignature,
+                thirdTransferLyxSignature,
+              ],
+              [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
+              values,
+              [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
+              { value: amountToFund }
+            );
 
           await expect(tx).to.changeEtherBalances(
             [
@@ -1167,12 +1167,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
         await expect(
           context.keyManager
             .connect(context.owner)
-          ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-            signatures,
-            nonces,
-            [0, 0, 0],
-            payloads
-          )
+            .executeRelayCallBatch(
+              signatures,
+              nonces,
+              [0, 0, 0],
+              payloads
+            )
         ).to.be.revertedWithCustomError(
           context.universalProfile,
           "ERC725X_InsufficientBalance"
@@ -1231,12 +1231,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
         await expect(
           context.keyManager
             .connect(context.owner)
-          ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-            signatures,
-            nonces,
-            values,
-            payloads
-          )
+            .executeRelayCallBatch(
+              signatures,
+              nonces,
+              values,
+              payloads
+            )
         ).to.be.revertedWithCustomError(
           context.universalProfile,
           "ERC725X_InsufficientBalance"

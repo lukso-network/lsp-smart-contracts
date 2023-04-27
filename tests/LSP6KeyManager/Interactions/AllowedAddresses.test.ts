@@ -119,7 +119,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
           await context.keyManager
             .connect(context.owner)
-          ["execute(bytes)"](transferPayload);
+            .execute(transferPayload);
 
           let newBalanceUP = await provider.getBalance(
             context.universalProfile.address
@@ -150,7 +150,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
       await context.keyManager
         .connect(canCallOnlyTwoAddresses)
-      ["execute(bytes)"](transferPayload);
+        .execute(transferPayload);
 
       let newBalanceUP = await provider.getBalance(
         context.universalProfile.address
@@ -181,7 +181,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
       await context.keyManager
         .connect(canCallOnlyTwoAddresses)
-      ["execute(bytes)"](payload);
+        .execute(payload);
 
       const result = await allowedTargetContract.callStatic.getName();
       expect(result).to.equal(argument);
@@ -209,7 +209,7 @@ export const shouldBehaveLikeAllowedAddresses = (
       await expect(
         context.keyManager
           .connect(canCallOnlyTwoAddresses)
-        ["execute(bytes)"](transferPayload)
+          .execute(transferPayload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
         .withArgs(
@@ -250,7 +250,7 @@ export const shouldBehaveLikeAllowedAddresses = (
       await expect(
         context.keyManager
           .connect(canCallOnlyTwoAddresses)
-        ["execute(bytes)"](payload)
+          .execute(payload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
         .withArgs(
@@ -281,7 +281,7 @@ export const shouldBehaveLikeAllowedAddresses = (
           await expect(
             context.keyManager
               .connect(invalidEncodedAllowedCalls)
-            ["execute(bytes)"](transferPayload)
+              .execute(transferPayload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,

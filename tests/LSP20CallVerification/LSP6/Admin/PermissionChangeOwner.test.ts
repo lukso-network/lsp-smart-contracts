@@ -229,7 +229,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         context.universalProfile.interface.getSighash("acceptOwnership");
 
       await expect(
-        notPendingKeyManager.connect(context.owner)["execute(bytes)"](payload)
+        notPendingKeyManager.connect(context.owner).execute(payload)
       ).to.be.revertedWith("LSP14: caller is not the pendingOwner");
     });
   });
@@ -249,7 +249,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       await newKeyManager
         .connect(context.owner)
-      ["execute(bytes)"](acceptOwnershipPayload);
+        .execute(acceptOwnershipPayload);
     });
 
     it("should have change the account's owner to the pendingOwner (= pending KeyManager)", async () => {
@@ -282,7 +282,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         );
 
         await expect(
-          oldKeyManager.connect(context.owner)["execute(bytes)"](payload)
+          oldKeyManager.connect(context.owner).execute(payload)
         )
           .to.be.revertedWithCustomError(newKeyManager, "NoPermissionsSet")
           .withArgs(oldKeyManager.address);
@@ -298,7 +298,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         );
 
         await expect(
-          oldKeyManager.connect(context.owner)["execute(bytes)"](payload)
+          oldKeyManager.connect(context.owner).execute(payload)
         )
           .to.be.revertedWithCustomError(newKeyManager, "NoPermissionsSet")
           .withArgs(oldKeyManager.address);
@@ -316,7 +316,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           [key, value]
         );
 
-        await newKeyManager.connect(context.owner)["execute(bytes)"](payload);
+        await newKeyManager.connect(context.owner).execute(payload);
 
         const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
@@ -338,7 +338,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
         );
 
-        await newKeyManager.connect(context.owner)["execute(bytes)"](payload);
+        await newKeyManager.connect(context.owner).execute(payload);
 
         const recipientBalanceAfter = await provider.getBalance(
           recipient.address

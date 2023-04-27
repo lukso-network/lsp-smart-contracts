@@ -93,7 +93,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.keyManager
               .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -116,7 +116,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.keyManager
               .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -137,7 +137,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.keyManager
               .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -158,7 +158,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.keyManager
               .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -190,7 +190,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
           await context.keyManager
             .connect(canOnlyAddController)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -214,7 +214,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.keyManager
               .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -247,7 +247,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
           await context.keyManager
             .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -270,7 +270,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
           await context.keyManager
             .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -291,7 +291,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
           await context.keyManager
             .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+            .execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -313,7 +313,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.keyManager
               .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -344,7 +344,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.keyManager
               .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -367,7 +367,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.keyManager
               .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload)
+              .execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
