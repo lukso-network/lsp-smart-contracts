@@ -61,10 +61,8 @@ abstract contract LSP20CallVerification {
         if (!success) _revert(postCall, returnedData);
 
         // check if the returned data contains at least 32 bytes, potentially an abi encoded bytes4 value
-        if (returnedData.length < 32) revert LSP20InvalidMagicValue(postCall, returnedData);
-
         // check if the returned data has in the first 32 bytes an abi encoded bytes4 value
-        if (bytes28(bytes32(returnedData) << 32) != bytes28(0))
+        if (returnedData.length < 32 || bytes28(bytes32(returnedData) << 32) != bytes28(0))
             revert LSP20InvalidMagicValue(postCall, returnedData);
     }
 
