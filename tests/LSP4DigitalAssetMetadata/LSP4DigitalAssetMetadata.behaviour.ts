@@ -35,9 +35,7 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
       );
 
       expect(
-        context.contract
-          .connect(context.deployParams.owner)
-          .setData(key, value)
+        context.contract.connect(context.deployParams.owner).setData(key, value)
       ).to.be.revertedWithCustomError(
         context.contract,
         "LSP4TokenNameNotEditable"
@@ -49,9 +47,7 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
       const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("BAD"));
 
       expect(
-        context.contract
-          .connect(context.deployParams.owner)
-          .setData(key, value)
+        context.contract.connect(context.deployParams.owner).setData(key, value)
       ).to.be.revertedWithCustomError(
         context.contract,
         "LSP4TokenSymbolNotEditable"

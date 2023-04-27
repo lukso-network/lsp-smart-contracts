@@ -16,7 +16,7 @@ export const testSetDataInternals = (
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      context.owner.address.substring(2),
+        context.owner.address.substring(2),
     ];
 
     const permissionValues = [ALL_PERMISSIONS];
@@ -46,11 +46,10 @@ export const testSetDataInternals = (
               dataKeys,
               dataValues
             )
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManagerInternalTester,
-              "ERC725Y_DataKeysValuesLengthMismatch"
-            );
+          ).to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "ERC725Y_DataKeysValuesLengthMismatch"
+          );
         });
 
         it("should revert with error `...` if the dataValues > (greater than) dataKeys", async () => {
@@ -72,11 +71,10 @@ export const testSetDataInternals = (
               dataKeys,
               dataValues
             )
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManagerInternalTester,
-              "ERC725Y_DataKeysValuesLengthMismatch"
-            );
+          ).to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "ERC725Y_DataKeysValuesLengthMismatch"
+          );
         });
       });
 

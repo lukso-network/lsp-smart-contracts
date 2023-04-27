@@ -1877,9 +1877,7 @@ export const shouldBehaveLikeLSP8 = (
       it("new owner should be allowed to use `setData(..)`", async () => {
         const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key"));
         const value = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("value"));
-        await context.lsp8
-          .connect(newOwner)
-          .setData(key, value);
+        await context.lsp8.connect(newOwner).setData(key, value);
 
         expect(await context.lsp8.getData(key)).to.equal(value);
       });
@@ -1927,9 +1925,7 @@ export const shouldInitializeLikeLSP8 = (
           SupportedStandards.LSP4DigitalAsset.value
         );
       expect(
-        await context.lsp8.getData(
-          SupportedStandards.LSP4DigitalAsset.key
-        )
+        await context.lsp8.getData(SupportedStandards.LSP4DigitalAsset.key)
       ).to.equal(SupportedStandards.LSP4DigitalAsset.value);
 
       const nameKey = ERC725YDataKeys.LSP4["LSP4TokenName"];
@@ -1939,9 +1935,7 @@ export const shouldInitializeLikeLSP8 = (
       await expect(context.initializeTransaction)
         .to.emit(context.lsp8, "DataChanged")
         .withArgs(nameKey, expectedNameValue);
-      expect(await context.lsp8.getData(nameKey)).to.equal(
-        expectedNameValue
-      );
+      expect(await context.lsp8.getData(nameKey)).to.equal(expectedNameValue);
 
       const symbolKey = ERC725YDataKeys.LSP4["LSP4TokenSymbol"];
       const expectedSymbolValue = ethers.utils.hexlify(

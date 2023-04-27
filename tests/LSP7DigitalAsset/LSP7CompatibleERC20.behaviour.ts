@@ -1316,9 +1316,9 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
       await expect(context.initializeTransaction)
         .to.emit(context.lsp7CompatibleERC20, "DataChanged")
         .withArgs(nameKey, expectedNameValue);
-      expect(
-        await context.lsp7CompatibleERC20.getData(nameKey)
-      ).to.equal(expectedNameValue);
+      expect(await context.lsp7CompatibleERC20.getData(nameKey)).to.equal(
+        expectedNameValue
+      );
 
       const symbolKey = ERC725YDataKeys.LSP4.LSP4TokenSymbol;
       const expectedSymbolValue = ethers.utils.hexlify(
@@ -1327,9 +1327,9 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
       await expect(context.initializeTransaction)
         .to.emit(context.lsp7CompatibleERC20, "DataChanged")
         .withArgs(symbolKey, expectedSymbolValue);
-      expect(
-        await context.lsp7CompatibleERC20.getData(symbolKey)
-      ).to.equal(expectedSymbolValue);
+      expect(await context.lsp7CompatibleERC20.getData(symbolKey)).to.equal(
+        expectedSymbolValue
+      );
     });
   });
 };

@@ -38,10 +38,7 @@ async function resetPermissions(
 ) {
   await context.universalProfile
     .connect(context.owner)
-    .setDataBatch(
-      permissionsKeys,
-      Array(permissionsKeys.length).fill("0x")
-    );
+    .setDataBatch(permissionsKeys, Array(permissionsKeys.length).fill("0x"));
 }
 
 export const shouldBehaveLikePermissionChangeOrAddController = (
@@ -263,9 +260,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               .connect(context.owner)
               .setData(key, value);
 
-            const result = await context.universalProfile.getData(
-              key
-            );
+            const result = await context.universalProfile.getData(key);
             expect(result).to.equal(value);
           });
 
@@ -543,9 +538,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               .connect(canOnlyAddController)
               .setData(key, value);
 
-            const result = await context.universalProfile.getData(
-              key
-            );
+            const result = await context.universalProfile.getData(key);
             expect(result).to.equal(value);
           });
 
@@ -950,9 +943,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           let value = PERMISSIONS.SETDATA;
 
           await expect(
-            context.universalProfile
-              .connect(canOnlySetData)
-              .setData(key, value)
+            context.universalProfile.connect(canOnlySetData).setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDCONTROLLER");
@@ -965,9 +956,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           let value = PERMISSIONS.SETDATA;
 
           await expect(
-            context.universalProfile
-              .connect(canOnlySetData)
-              .setData(key, value)
+            context.universalProfile.connect(canOnlySetData).setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDCONTROLLER");
@@ -981,9 +970,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           let value = PERMISSIONS.SETDATA;
 
           await expect(
-            context.universalProfile
-              .connect(canOnlySetData)
-              .setData(key, value)
+            context.universalProfile.connect(canOnlySetData).setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "EDITPERMISSIONS");
@@ -1075,9 +1062,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           let value = ethers.Wallet.createRandom().address.toLowerCase();
 
           await expect(
-            context.universalProfile
-              .connect(canOnlySetData)
-              .setData(key, value)
+            context.universalProfile.connect(canOnlySetData).setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDCONTROLLER");
@@ -1093,9 +1078,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           let value = randomWallet.address;
 
           await expect(
-            context.universalProfile
-              .connect(canOnlySetData)
-              .setData(key, value)
+            context.universalProfile.connect(canOnlySetData).setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "EDITPERMISSIONS");

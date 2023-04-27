@@ -58,9 +58,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
     permissionsKeys = [
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      canChangeOwner.address.substring(2),
+        canChangeOwner.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      cannotChangeOwner.address.substring(2),
+        cannotChangeOwner.address.substring(2),
     ];
 
     permissionsValues = [PERMISSIONS.CHANGEOWNER, PERMISSIONS.SETDATA];
@@ -148,13 +148,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
             [key, value]
           );
 
-          await context.keyManager
-            .connect(context.owner)
-            .execute(payload);
+          await context.keyManager.connect(context.owner).execute(payload);
 
-          const result = await context.universalProfile.getData(
-            key
-          );
+          const result = await context.universalProfile.getData(key);
           expect(result).to.equal(value);
         });
 
@@ -322,9 +318,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           [key, value]
         );
 
-        await expect(
-          oldKeyManager.connect(context.owner).execute(payload)
-        )
+        await expect(oldKeyManager.connect(context.owner).execute(payload))
           .to.be.revertedWithCustomError(newKeyManager, "NoPermissionsSet")
           .withArgs(oldKeyManager.address);
       });
@@ -338,9 +332,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
         );
 
-        await expect(
-          oldKeyManager.connect(context.owner).execute(payload)
-        )
+        await expect(oldKeyManager.connect(context.owner).execute(payload))
           .to.be.revertedWithCustomError(newKeyManager, "NoPermissionsSet")
           .withArgs(oldKeyManager.address);
       });
@@ -388,9 +380,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         let payload =
           context.universalProfile.interface.getSighash("renounceOwnership");
 
-        await expect(
-          context.keyManager.connect(context.owner).execute(payload)
-        )
+        await expect(context.keyManager.connect(context.owner).execute(payload))
           .to.be.revertedWithCustomError(
             context.keyManager,
             "InvalidERC725Function"
@@ -423,14 +413,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
         await expect(
           context.keyManager
             .connect(context.owner)
-            .executeRelayCall(
-              signature,
-              nonce,
-              payload,
-              {
-                value: valueToSend,
-              }
-            )
+            .executeRelayCall(signature, nonce, payload, {
+              value: valueToSend,
+            })
         )
           .to.be.revertedWithCustomError(
             context.keyManager,

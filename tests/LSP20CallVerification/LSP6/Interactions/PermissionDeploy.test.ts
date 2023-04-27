@@ -36,11 +36,11 @@ export const shouldBehaveLikePermissionDeploy = (
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      context.owner.address.substring(2),
+        context.owner.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      addressCanDeploy.address.substring(2),
+        addressCanDeploy.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      addressCannotDeploy.address.substring(2),
+        addressCannotDeploy.address.substring(2),
     ];
 
     const permissionsValues = [
@@ -66,14 +66,12 @@ export const shouldBehaveLikePermissionDeploy = (
       );
 
       await expect(
-        context.universalProfile
-          .connect(context.owner)
-          .execute(
-            OPERATION_TYPES.CREATE, // operation type
-            ethers.constants.AddressZero, // recipient
-            0, // value
-            contractBytecodeToDeploy
-          )
+        context.universalProfile.connect(context.owner).execute(
+          OPERATION_TYPES.CREATE, // operation type
+          ethers.constants.AddressZero, // recipient
+          0, // value
+          contractBytecodeToDeploy
+        )
       )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(

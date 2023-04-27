@@ -79,9 +79,7 @@ export const shouldBehaveLikeLSP9 = (
         .connect(context.accounts.owner)
         .setData(dataKey, dataValue);
 
-      const result = await context.lsp9Vault.callStatic.getData(
-        dataKey
-      );
+      const result = await context.lsp9Vault.callStatic.getData(dataKey);
       expect(result).to.equal(dataValue);
     });
 
@@ -181,7 +179,7 @@ export const shouldBehaveLikeLSP9 = (
         .connect(context.accounts.owner)
         .setData(
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-          typeId.substring(2, 42),
+            typeId.substring(2, 42),
           lsp1UniversalReceiverDelegateVaultReentrantB.address
         );
 
@@ -258,7 +256,9 @@ export const shouldBehaveLikeLSP9 = (
                 .connect(context.accounts.owner)
                 .setDataBatch(keys, values);
 
-              const result = await context.lsp9Vault.callStatic.getDataBatch(keys);
+              const result = await context.lsp9Vault.callStatic.getDataBatch(
+                keys
+              );
 
               expect(result).to.deep.equal(values);
             });
@@ -282,7 +282,7 @@ export const shouldBehaveLikeLSP9 = (
                 )
                 .withArgs(
                   ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-                  "00".repeat(20)
+                    "00".repeat(20)
                 );
             });
           });
@@ -302,7 +302,7 @@ export const shouldBehaveLikeLSP9 = (
                 )
                 .withArgs(
                   ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-                  "00".repeat(20)
+                    "00".repeat(20)
                 );
             });
           });
@@ -348,7 +348,9 @@ export const shouldBehaveLikeLSP9 = (
                 .connect(context.accounts.owner)
                 .setDataBatch(keys, values);
 
-              const result = await context.lsp9Vault.callStatic.getDataBatch(keys);
+              const result = await context.lsp9Vault.callStatic.getDataBatch(
+                keys
+              );
 
               expect(result).to.deep.equal(values);
             });
@@ -372,7 +374,7 @@ export const shouldBehaveLikeLSP9 = (
                 )
                 .withArgs(
                   ERC725YDataKeys.LSP6.AddressPermissionsPrefix +
-                  "00".repeat(26)
+                    "00".repeat(26)
                 );
             });
           });
@@ -392,7 +394,7 @@ export const shouldBehaveLikeLSP9 = (
                 )
                 .withArgs(
                   ERC725YDataKeys.LSP6.AddressPermissionsPrefix +
-                  "00".repeat(26)
+                    "00".repeat(26)
                 );
             });
           });
@@ -438,7 +440,9 @@ export const shouldBehaveLikeLSP9 = (
                 .connect(context.accounts.owner)
                 .setDataBatch(keys, values);
 
-              const result = await context.lsp9Vault.callStatic.getDataBatch(keys);
+              const result = await context.lsp9Vault.callStatic.getDataBatch(
+                keys
+              );
 
               expect(result).to.deep.equal(values);
             });
@@ -578,13 +582,9 @@ export const shouldBehaveLikeLSP9 = (
         await expect(
           context.lsp9Vault
             .connect(context.accounts.owner)
-            .setDataBatch(
-              txParams.dataKey,
-              txParams.dataValue,
-              {
-                value: value,
-              }
-            )
+            .setDataBatch(txParams.dataKey, txParams.dataValue, {
+              value: value,
+            })
         ).to.be.revertedWithCustomError(
           context.lsp9Vault,
           "ERC725Y_MsgValueDisallowed"
@@ -624,15 +624,12 @@ export const shouldBehaveLikeLSP9 = (
           context.universalProfile.interface.getSighash("acceptOwnership");
 
         let executePayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [
-              OPERATION_TYPES.CALL,
-              context.lsp9Vault.address,
-              0,
-              acceptOwnershipSelector,
-            ]
-          );
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            context.lsp9Vault.address,
+            0,
+            acceptOwnershipSelector,
+          ]);
 
         await context.lsp6KeyManager
           .connect(context.accounts.owner)
@@ -685,10 +682,10 @@ export const shouldBehaveLikeLSP9 = (
               let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
               let setDataPayload =
-                context.lsp9Vault.interface.encodeFunctionData(
-                  "setData",
-                  [key, value]
-                );
+                context.lsp9Vault.interface.encodeFunctionData("setData", [
+                  key,
+                  value,
+                ]);
 
               const multiCallPayload =
                 context.lsp9Vault.interface.encodeFunctionData("batchCalls", [
@@ -714,10 +711,12 @@ export const shouldBehaveLikeLSP9 = (
             it("should pass", async () => {
               let amount = 20;
               let executePayload =
-                context.lsp9Vault.interface.encodeFunctionData(
-                  "execute",
-                  [0, context.accounts.random.address, amount, "0x"]
-                );
+                context.lsp9Vault.interface.encodeFunctionData("execute", [
+                  0,
+                  context.accounts.random.address,
+                  amount,
+                  "0x",
+                ]);
 
               const multiCallPayload =
                 context.lsp9Vault.interface.encodeFunctionData("batchCalls", [
@@ -747,10 +746,12 @@ export const shouldBehaveLikeLSP9 = (
             it("should pass", async () => {
               let amount = 20;
               let executePayload =
-                context.lsp9Vault.interface.encodeFunctionData(
-                  "execute",
-                  [0, context.accounts.random.address, amount, "0x"]
-                );
+                context.lsp9Vault.interface.encodeFunctionData("execute", [
+                  0,
+                  context.accounts.random.address,
+                  amount,
+                  "0x",
+                ]);
 
               let key = ethers.utils.keccak256(
                 ethers.utils.toUtf8Bytes("A new key")
@@ -758,10 +759,10 @@ export const shouldBehaveLikeLSP9 = (
               let value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
 
               let setDataPayload =
-                context.lsp9Vault.interface.encodeFunctionData(
-                  "setData",
-                  [key, value]
-                );
+                context.lsp9Vault.interface.encodeFunctionData("setData", [
+                  key,
+                  value,
+                ]);
 
               let transferOwnershipPayload =
                 context.lsp9Vault.interface.encodeFunctionData(
@@ -813,9 +814,9 @@ export const shouldBehaveLikeLSP9 = (
           [
             [
               ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              context.accounts.friend.address.substring(2),
+                context.accounts.friend.address.substring(2),
               ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-              context.accounts.friend.address.substring(2),
+                context.accounts.friend.address.substring(2),
             ],
             [
               friendPermissions,
@@ -857,9 +858,7 @@ export const shouldBehaveLikeLSP9 = (
             )
           );
 
-        const res = await context.lsp9Vault.callStatic.getData(
-          dataKey
-        );
+        const res = await context.lsp9Vault.callStatic.getData(dataKey);
         expect(res).to.equal(dataValue);
       });
 
@@ -898,9 +897,7 @@ export const shouldBehaveLikeLSP9 = (
           .withArgs(
             context.accounts.friend.address,
             disallowedAddress,
-            context.universalProfile.interface.getSighash(
-              "setData"
-            )
+            context.universalProfile.interface.getSighash("setData")
           );
       });
     });
@@ -950,7 +947,13 @@ export const shouldBehaveLikeLSP9 = (
 
         const msgValue = ethers.utils.parseEther("10");
 
-        const tx = await context.lsp9Vault.executeBatch(operationsType, recipients, values, datas, { value: msgValue });
+        const tx = await context.lsp9Vault.executeBatch(
+          operationsType,
+          recipients,
+          values,
+          datas,
+          { value: msgValue }
+        );
 
         await expect(tx)
           .to.emit(context.lsp9Vault, "ValueReceived")
@@ -971,7 +974,13 @@ export const shouldBehaveLikeLSP9 = (
 
         const msgValue = 0;
 
-        const tx = await context.lsp9Vault.executeBatch(operationsType, recipients, values, datas, { value: msgValue });
+        const tx = await context.lsp9Vault.executeBatch(
+          operationsType,
+          recipients,
+          values,
+          datas,
+          { value: msgValue }
+        );
 
         await expect(tx).to.not.emit(context.lsp9Vault, "ValueReceived");
       });
@@ -1052,9 +1061,7 @@ export const shouldInitializeLikeLSP9 = (
           SupportedStandards.LSP9Vault.value
         );
       expect(
-        await context.lsp9Vault.getData(
-          SupportedStandards.LSP9Vault.key
-        )
+        await context.lsp9Vault.getData(SupportedStandards.LSP9Vault.key)
       ).to.equal(SupportedStandards.LSP9Vault.value);
     });
   });

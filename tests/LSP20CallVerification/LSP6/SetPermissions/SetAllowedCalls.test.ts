@@ -107,9 +107,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
           .connect(canOnlyEditPermissions)
           .setData(dataKey, dataValue);
 
-        const result = await context.universalProfile.getData(
-          dataKey
-        );
+        const result = await context.universalProfile.getData(dataKey);
         expect(result).to.equal(dataValue);
       });
     });

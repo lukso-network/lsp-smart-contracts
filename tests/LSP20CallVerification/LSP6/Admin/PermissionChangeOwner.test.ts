@@ -43,9 +43,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
     permissionsKeys = [
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      canChangeOwner.address.substring(2),
+        canChangeOwner.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      cannotChangeOwner.address.substring(2),
+        cannotChangeOwner.address.substring(2),
     ];
 
     permissionsValues = [PERMISSIONS.CHANGEOWNER, PERMISSIONS.SETDATA];
@@ -120,9 +120,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
             .connect(context.owner)
             .setData(key, value);
 
-          const result = await context.universalProfile.getData(
-            key
-          );
+          const result = await context.universalProfile.getData(key);
           expect(result).to.equal(value);
         });
 
@@ -139,12 +137,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
           await context.universalProfile
             .connect(context.owner)
-            .execute(
-              OPERATION_TYPES.CALL,
-              recipient.address,
-              amount,
-              "0x"
-            );
+            .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x");
 
           const recipientBalanceAfter = await provider.getBalance(
             recipient.address
@@ -281,9 +274,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           [key, value]
         );
 
-        await expect(
-          oldKeyManager.connect(context.owner).execute(payload)
-        )
+        await expect(oldKeyManager.connect(context.owner).execute(payload))
           .to.be.revertedWithCustomError(newKeyManager, "NoPermissionsSet")
           .withArgs(oldKeyManager.address);
       });
@@ -297,9 +288,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
         );
 
-        await expect(
-          oldKeyManager.connect(context.owner).execute(payload)
-        )
+        await expect(oldKeyManager.connect(context.owner).execute(payload))
           .to.be.revertedWithCustomError(newKeyManager, "NoPermissionsSet")
           .withArgs(oldKeyManager.address);
       });

@@ -93,7 +93,11 @@ contract SetDataRestrictedController is UniversalProfileTestsHelper {
         values[2] = abi.encodePacked(_PERMISSION_SUPER_CALL);
 
         // setData payload
-        bytes memory payload = abi.encodeWithSignature("setDataBatch(bytes32[],bytes[])", keys, values);
+        bytes memory payload = abi.encodeWithSignature(
+            "setDataBatch(bytes32[],bytes[])",
+            keys,
+            values
+        );
 
         // execute setData
         vm.prank(restrictedController);
@@ -151,7 +155,11 @@ contract SetDataRestrictedController is UniversalProfileTestsHelper {
         values[1] = allowedERC725YDataKeysCBA;
 
         // setData payload
-        bytes memory payload = abi.encodeWithSignature("setDataBatch(bytes32[],bytes[])", keys, values);
+        bytes memory payload = abi.encodeWithSignature(
+            "setDataBatch(bytes32[],bytes[])",
+            keys,
+            values
+        );
 
         // execute setData
         vm.prank(restrictedController);

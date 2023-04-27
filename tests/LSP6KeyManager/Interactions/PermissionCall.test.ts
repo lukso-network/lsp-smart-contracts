@@ -71,19 +71,19 @@ export const shouldBehaveLikePermissionCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCannotMakeCallNoAllowedCalls.address.substring(2),
+          addressCannotMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCannotMakeCallWithAllowedCalls.address.substring(2),
+          addressCannotMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCanMakeCallNoAllowedCalls.address.substring(2),
+          addressCanMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCanMakeCallWithAllowedCalls.address.substring(2),
+          addressCanMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressWithSuperCall.address.substring(2),
+          addressWithSuperCall.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        addressCannotMakeCallWithAllowedCalls.address.substring(2),
+          addressCannotMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        addressCanMakeCallWithAllowedCalls.address.substring(2),
+          addressCanMakeCallWithAllowedCalls.address.substring(2),
       ];
 
       const allowedCallsValues = combineAllowedCalls(
@@ -231,10 +231,12 @@ export const shouldBehaveLikePermissionCall = (
             const targetEOA = ethers.Wallet.createRandom().address;
 
             const payload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [OPERATION_TYPES.CALL, targetEOA, 0, "0x"]
-              );
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                targetEOA,
+                0,
+                "0x",
+              ]);
 
             await expect(
               context.keyManager
@@ -256,10 +258,12 @@ export const shouldBehaveLikePermissionCall = (
         describe("when `to` is in the list of Allowed Calls", () => {
           it("should pass", async () => {
             const payload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [OPERATION_TYPES.CALL, allowedEOA, 0, "0x"]
-              );
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                allowedEOA,
+                0,
+                "0x",
+              ]);
 
             await expect(
               context.keyManager
@@ -278,10 +282,12 @@ export const shouldBehaveLikePermissionCall = (
             ).deploy();
 
             const payload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [OPERATION_TYPES.CALL, targetContract.address, 0, "0x"]
-              );
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                "0x",
+              ]);
 
             await expect(
               context.keyManager
@@ -357,9 +363,7 @@ export const shouldBehaveLikePermissionCall = (
           [OPERATION_TYPES.CALL, targetEOA, 0, "0x"]
         );
 
-        await context.keyManager
-          .connect(addressWithSuperCall)
-          .execute(payload);
+        await context.keyManager.connect(addressWithSuperCall).execute(payload);
       });
 
       describe("when `to` is a contract", () => {
@@ -371,15 +375,12 @@ export const shouldBehaveLikePermissionCall = (
               ).deploy();
 
             const payload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContractWithFallback.address,
-                  0,
-                  "0x",
-                ]
-              );
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                targetContractWithFallback.address,
+                0,
+                "0x",
+              ]);
 
             await context.keyManager
               .connect(addressWithSuperCall)
@@ -397,20 +398,15 @@ export const shouldBehaveLikePermissionCall = (
               await new FallbackRevert__factory(context.accounts[0]).deploy();
 
             const payload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContractWithFallbackRevert.address,
-                  0,
-                  "0x",
-                ]
-              );
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                targetContractWithFallbackRevert.address,
+                0,
+                "0x",
+              ]);
 
             await expect(
-              context.keyManager
-                .connect(addressWithSuperCall)
-                .execute(payload)
+              context.keyManager.connect(addressWithSuperCall).execute(payload)
             ).to.be.revertedWith("fallback reverted");
           });
         });
@@ -438,15 +434,15 @@ export const shouldBehaveLikePermissionCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
+          context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCanMakeCallNoAllowedCalls.address.substring(2),
+          addressCanMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCanMakeCallWithAllowedCalls.address.substring(2),
+          addressCanMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCannotMakeCall.address.substring(2),
+          addressCannotMakeCall.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        addressCanMakeCallWithAllowedCalls.address.substring(2),
+          addressCanMakeCallWithAllowedCalls.address.substring(2),
       ];
 
       const permissionsValues = [
@@ -503,9 +499,7 @@ export const shouldBehaveLikePermissionCall = (
             [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
           );
 
-          await context.keyManager
-            .connect(context.owner)
-            .execute(payload);
+          await context.keyManager.connect(context.owner).execute(payload);
 
           const result = await targetContract.callStatic.getName();
           expect(result).to.equal(argument);
@@ -519,15 +513,12 @@ export const shouldBehaveLikePermissionCall = (
               targetContract.interface.encodeFunctionData("getName");
 
             let executePayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContract.address,
-                  0,
-                  targetContractPayload,
-                ]
-              );
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]);
 
             let result = await context.keyManager
               .connect(context.owner)
@@ -544,15 +535,12 @@ export const shouldBehaveLikePermissionCall = (
               targetContract.interface.encodeFunctionData("getNumber");
 
             let executePayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContract.address,
-                  0,
-                  targetContractPayload,
-                ]
-              );
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]);
 
             let result = await context.keyManager
               .connect(context.owner)
@@ -654,9 +642,7 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           await expect(
-            context.keyManager
-              .connect(addressCannotMakeCall)
-              .execute(payload)
+            context.keyManager.connect(addressCannotMakeCall).execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(addressCannotMakeCall.address, "CALL");
@@ -681,15 +667,12 @@ export const shouldBehaveLikePermissionCall = (
             );
 
             let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContract.address,
-                  0,
-                  targetContractPayload,
-                ]
-              );
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]);
 
             const HARDHAT_CHAINID = 31337;
             let valueToSend = 0;
@@ -738,15 +721,12 @@ export const shouldBehaveLikePermissionCall = (
             );
 
             let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContract.address,
-                  0,
-                  targetContractPayload,
-                ]
-              );
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]);
 
             const HARDHAT_CHAINID = 31337;
             let valueToSend = 0;
@@ -929,15 +909,12 @@ export const shouldBehaveLikePermissionCall = (
             );
 
             let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContract.address,
-                  0,
-                  targetContractPayload,
-                ]
-              );
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]);
 
             const HARDHAT_CHAINID = 31337;
             let valueToSend = 0;
@@ -999,15 +976,12 @@ export const shouldBehaveLikePermissionCall = (
             );
 
             let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContract.address,
-                  0,
-                  targetContractPayload,
-                ]
-              );
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]);
 
             const HARDHAT_CHAINID = 31337;
             let valueToSend = 0;
@@ -1066,15 +1040,12 @@ export const shouldBehaveLikePermissionCall = (
             );
 
             let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContract.address,
-                  0,
-                  targetContractPayload,
-                ]
-              );
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]);
 
             const HARDHAT_CHAINID = 31337;
             let valueToSend = 0;
@@ -1143,7 +1114,7 @@ export const shouldBehaveLikePermissionCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
+          context.owner.address.substring(2),
       ];
 
       const permissionValues = [ALL_PERMISSIONS];
@@ -1158,15 +1129,12 @@ export const shouldBehaveLikePermissionCall = (
       );
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]
-        );
+        context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
 
       await expect(
         context.keyManager
@@ -1185,20 +1153,15 @@ export const shouldBehaveLikePermissionCall = (
         );
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.CALL,
-            context.keyManager.address,
-            0,
-            lsp20VerifyCallPayload,
-          ]
-        );
+        context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          context.keyManager.address,
+          0,
+          lsp20VerifyCallPayload,
+        ]);
 
       await expect(
-        context.keyManager
-          .connect(context.owner)
-          .execute(executePayload)
+        context.keyManager.connect(context.owner).execute(executePayload)
       ).to.be.revertedWithCustomError(
         context.keyManager,
         "CallingKeyManagerNotAllowed"

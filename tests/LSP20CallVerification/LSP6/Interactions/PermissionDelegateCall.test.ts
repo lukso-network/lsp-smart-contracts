@@ -45,11 +45,11 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
+          context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCanDelegateCall.address.substring(2),
+          addressCanDelegateCall.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCannotDelegateCall.address.substring(2),
+          addressCannotDelegateCall.address.substring(2),
       ];
 
       const permissionsValues = [
@@ -68,9 +68,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       // first check that nothing is set under this key
       // inside the storage of the calling UP
-      const currentStorage = await context.universalProfile.getData(
-        key
-      );
+      const currentStorage = await context.universalProfile.getData(key);
       expect(currentStorage).to.equal("0x");
 
       // Doing a delegatecall to the setData function of another UP
@@ -103,9 +101,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       // first check that nothing is set under this key
       // inside the storage of the calling UP
-      const currentStorage = await context.universalProfile.getData(
-        key
-      );
+      const currentStorage = await context.universalProfile.getData(key);
       expect(currentStorage).to.equal("0x");
 
       // Doing a delegatecall to the setData function of another UP
@@ -138,9 +134,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       // first check that nothing is set under this key
       // inside the storage of the calling UP
-      const currentStorage = await context.universalProfile.getData(
-        key
-      );
+      const currentStorage = await context.universalProfile.getData(key);
       expect(currentStorage).to.equal("0x");
 
       // Doing a delegatecall to the setData function of another UP
@@ -191,9 +185,9 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        caller.address.substring(2),
+          caller.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        caller.address.substring(2),
+          caller.address.substring(2),
       ];
 
       const permissionValues = [

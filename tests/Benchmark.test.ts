@@ -349,10 +349,7 @@ describe("⛽📊 Gas Benchmark", () => {
           let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
           let value = generateRandomData(20);
 
-          const tx = await context.universalProfile.setData(
-            key,
-            value
-          );
+          const tx = await context.universalProfile.setData(key, value);
 
           const receipt = await tx.wait();
 
@@ -368,10 +365,7 @@ describe("⛽📊 Gas Benchmark", () => {
           );
           let value = generateRandomData(60);
 
-          const tx = await context.universalProfile.setData(
-            key,
-            value
-          );
+          const tx = await context.universalProfile.setData(key, value);
 
           const receipt = await tx.wait();
 
@@ -387,10 +381,7 @@ describe("⛽📊 Gas Benchmark", () => {
           );
           let value = generateRandomData(160);
 
-          const tx = await context.universalProfile.setData(
-            key,
-            value
-          );
+          const tx = await context.universalProfile.setData(key, value);
 
           const receipt = await tx.wait();
 
@@ -406,10 +397,7 @@ describe("⛽📊 Gas Benchmark", () => {
           );
           let value = generateRandomData(300);
 
-          const tx = await context.universalProfile.setData(
-            key,
-            value
-          );
+          const tx = await context.universalProfile.setData(key, value);
 
           const receipt = await tx.wait();
 
@@ -425,10 +413,7 @@ describe("⛽📊 Gas Benchmark", () => {
           );
           let value = generateRandomData(600);
 
-          const tx = await context.universalProfile.setData(
-            key,
-            value
-          );
+          const tx = await context.universalProfile.setData(key, value);
 
           const receipt = await tx.wait();
 
@@ -447,10 +432,7 @@ describe("⛽📊 Gas Benchmark", () => {
 
           await context.universalProfile.setData(key, value1);
 
-          const tx = await context.universalProfile.setData(
-            key,
-            value2
-          );
+          const tx = await context.universalProfile.setData(key, value2);
 
           const receipt = await tx.wait();
 
@@ -468,10 +450,7 @@ describe("⛽📊 Gas Benchmark", () => {
 
           await context.universalProfile.setData(key, value);
 
-          const tx = await context.universalProfile.setData(
-            key,
-            "0x"
-          );
+          const tx = await context.universalProfile.setData(key, "0x");
 
           const receipt = await tx.wait();
 
@@ -496,7 +475,10 @@ describe("⛽📊 Gas Benchmark", () => {
           let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key2"));
           let value2 = generateRandomData(20);
 
-          const tx = await context.universalProfile.setDataBatch([key1, key2], [value1, value2]);
+          const tx = await context.universalProfile.setDataBatch(
+            [key1, key2],
+            [value1, value2]
+          );
 
           const receipt = await tx.wait();
 
@@ -513,7 +495,10 @@ describe("⛽📊 Gas Benchmark", () => {
           let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key4"));
           let value2 = generateRandomData(100);
 
-          const tx = await context.universalProfile.setDataBatch([key1, key2], [value1, value2]);
+          const tx = await context.universalProfile.setDataBatch(
+            [key1, key2],
+            [value1, value2]
+          );
 
           const receipt = await tx.wait();
 
@@ -533,7 +518,10 @@ describe("⛽📊 Gas Benchmark", () => {
           let key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key7"));
           let value3 = generateRandomData(20);
 
-          const tx = await context.universalProfile.setDataBatch([key1, key2, key3], [value1, value2, value3]);
+          const tx = await context.universalProfile.setDataBatch(
+            [key1, key2, key3],
+            [value1, value2, value3]
+          );
 
           const receipt = await tx.wait();
 
@@ -558,7 +546,10 @@ describe("⛽📊 Gas Benchmark", () => {
             [value1, value2, value3]
           );
 
-          const tx = await context.universalProfile.setDataBatch([key1, key2, key3], [value1, value2, value3]);
+          const tx = await context.universalProfile.setDataBatch(
+            [key1, key2, key3],
+            [value1, value2, value3]
+          );
 
           const receipt = await tx.wait();
 
@@ -583,7 +574,10 @@ describe("⛽📊 Gas Benchmark", () => {
             [value1, value2, value3]
           );
 
-          const tx = await context.universalProfile.setDataBatch([key1, key2, key3], ["0x", "0x", "0x"]);
+          const tx = await context.universalProfile.setDataBatch(
+            [key1, key2, key3],
+            ["0x", "0x", "0x"]
+          );
 
           const receipt = await tx.wait();
 
@@ -1388,9 +1382,9 @@ describe("⛽📊 Gas Benchmark", () => {
 
           let receipt = await tx.wait();
 
-          expect(
-            await context.universalProfile.getData(dataKey)
-          ).to.equal(dataValue);
+          expect(await context.universalProfile.getData(dataKey)).to.equal(
+            dataValue
+          );
 
           benchmarkCasesSetDataMainController.push([
             "restrict a controller to some specific ERC725Y Data Keys",
@@ -1423,9 +1417,9 @@ describe("⛽📊 Gas Benchmark", () => {
 
           let receipt = await tx.wait();
 
-          expect(
-            await context.universalProfile.getData(dataKey)
-          ).to.equal(dataValue);
+          expect(await context.universalProfile.getData(dataKey)).to.equal(
+            dataValue
+          );
 
           benchmarkCasesSetDataMainController.push([
             "restrict a controller to interact only with 3x specific addresses",
@@ -1494,17 +1488,12 @@ describe("⛽📊 Gas Benchmark", () => {
 
           let tx = await context.universalProfile
             .connect(context.owner)
-            .setDataBatch(
-              issuedAssetsDataKeys,
-              issuedAssetsDataValues
-            );
+            .setDataBatch(issuedAssetsDataKeys, issuedAssetsDataValues);
 
           let receipt = await tx.wait();
 
           expect(
-            await context.universalProfile.getDataBatch(
-              issuedAssetsDataKeys
-            )
+            await context.universalProfile.getDataBatch(issuedAssetsDataKeys)
           ).to.deep.equal(issuedAssetsDataValues);
 
           benchmarkCasesSetDataMainController.push([
@@ -1595,11 +1584,11 @@ describe("⛽📊 Gas Benchmark", () => {
             allowedERC725YDataKeys[0],
             allowedERC725YDataKeys[1],
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            context.accounts[3].address.substring(2),
+              context.accounts[3].address.substring(2),
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            context.accounts[4].address.substring(2),
+              context.accounts[4].address.substring(2),
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            context.accounts[5].address.substring(2),
+              context.accounts[5].address.substring(2),
           ];
 
           const dataValues = [

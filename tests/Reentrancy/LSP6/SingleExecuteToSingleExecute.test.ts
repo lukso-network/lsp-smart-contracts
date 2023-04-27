@@ -51,28 +51,30 @@ export const testSingleExecuteToSingleExecute = (
     });
 
     transferValueTestCases.NotAuthorised.forEach((testCase) => {
-      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText
-        }; MISSING - ${testCase.missingPermission}; AllowedCalls - ${testCase.allowedCalls ? "YES" : "NO"
-        }`, async () => {
-          await loadTestCase(
-            "TRANSFERVALUE",
-            testCase,
-            context,
-            reentrancyContext.reentrantContract.address,
-            reentrancyContext.reentrantContract.address
-          );
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${
+        testCase.permissionsText
+      }; MISSING - ${testCase.missingPermission}; AllowedCalls - ${
+        testCase.allowedCalls ? "YES" : "NO"
+      }`, async () => {
+        await loadTestCase(
+          "TRANSFERVALUE",
+          testCase,
+          context,
+          reentrancyContext.reentrantContract.address,
+          reentrancyContext.reentrantContract.address
+        );
 
-          await expect(
-            context.keyManager
-              .connect(reentrancyContext.caller)
-              .execute(executePayload)
-          )
-            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(
-              reentrancyContext.reentrantContract.address,
-              testCase.missingPermission
-            );
-        });
+        await expect(
+          context.keyManager
+            .connect(reentrancyContext.caller)
+            .execute(executePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            reentrancyContext.reentrantContract.address,
+            testCase.missingPermission
+          );
+      });
     });
 
     it("should revert if the reentrant contract has the following permissions: REENTRANCY, TRANSFERVALUE & NO AllowedCalls", async () => {
@@ -135,28 +137,30 @@ export const testSingleExecuteToSingleExecute = (
     });
 
     setDataTestCases.NotAuthorised.forEach((testCase) => {
-      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText
-        }; MISSING - ${testCase.missingPermission}; AllowedERC725YDataKeys - ${testCase.allowedERC725YDataKeys ? "YES" : "NO"
-        }`, async () => {
-          await loadTestCase(
-            "SETDATA",
-            testCase,
-            context,
-            reentrancyContext.reentrantContract.address,
-            reentrancyContext.reentrantContract.address
-          );
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${
+        testCase.permissionsText
+      }; MISSING - ${testCase.missingPermission}; AllowedERC725YDataKeys - ${
+        testCase.allowedERC725YDataKeys ? "YES" : "NO"
+      }`, async () => {
+        await loadTestCase(
+          "SETDATA",
+          testCase,
+          context,
+          reentrancyContext.reentrantContract.address,
+          reentrancyContext.reentrantContract.address
+        );
 
-          await expect(
-            context.keyManager
-              .connect(reentrancyContext.caller)
-              .execute(executePayload)
-          )
-            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(
-              reentrancyContext.reentrantContract.address,
-              testCase.missingPermission
-            );
-        });
+        await expect(
+          context.keyManager
+            .connect(reentrancyContext.caller)
+            .execute(executePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            reentrancyContext.reentrantContract.address,
+            testCase.missingPermission
+          );
+      });
     });
 
     it("should revert if the reentrant contract has the following permissions: REENTRANCY, SETDATA & NO AllowedERC725YDataKeys", async () => {
@@ -198,9 +202,9 @@ export const testSingleExecuteToSingleExecute = (
         ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
       );
 
-      expect(
-        await context.universalProfile.getData(hardcodedKey)
-      ).to.equal(hardcodedValue);
+      expect(await context.universalProfile.getData(hardcodedKey)).to.equal(
+        hardcodedValue
+      );
     });
   });
 
@@ -257,9 +261,7 @@ export const testSingleExecuteToSingleExecute = (
         "0x0000000000000000000000000000000000000000000000000000000000000010";
 
       expect(
-        await context.universalProfile.getData(
-          hardcodedPermissionKey
-        )
+        await context.universalProfile.getData(hardcodedPermissionKey)
       ).to.equal(hardcodedPermissionValue);
     });
   });
@@ -316,9 +318,7 @@ export const testSingleExecuteToSingleExecute = (
       const hardcodedPermissionValue = "0x";
 
       expect(
-        await context.universalProfile.getData(
-          hardcodedPermissionKey
-        )
+        await context.universalProfile.getData(hardcodedPermissionKey)
       ).to.equal(hardcodedPermissionValue);
     });
   });
@@ -375,9 +375,9 @@ export const testSingleExecuteToSingleExecute = (
 
       const hardcodedLSP1Value = reentrancyContext.newURDAddress;
 
-      expect(
-        await context.universalProfile.getData(hardcodedLSP1Key)
-      ).to.equal(hardcodedLSP1Value.toLowerCase());
+      expect(await context.universalProfile.getData(hardcodedLSP1Key)).to.equal(
+        hardcodedLSP1Value.toLowerCase()
+      );
     });
   });
 
@@ -435,9 +435,9 @@ export const testSingleExecuteToSingleExecute = (
 
       const hardcodedLSP1Value = "0x";
 
-      expect(
-        await context.universalProfile.getData(hardcodedLSP1Key)
-      ).to.equal(hardcodedLSP1Value.toLowerCase());
+      expect(await context.universalProfile.getData(hardcodedLSP1Key)).to.equal(
+        hardcodedLSP1Value.toLowerCase()
+      );
     });
   });
 };

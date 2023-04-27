@@ -42,19 +42,19 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        canOnlyAddController.address.substring(2),
+          canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        canOnlyEditPermissions.address.substring(2),
+          canOnlyEditPermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        invalidBytes.address.substring(2),
+          invalidBytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        noBytes.address.substring(2),
+          noBytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        beneficiary.address.substring(2),
+          beneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        invalidBytes.address.substring(2),
+          invalidBytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        noBytes.address.substring(2),
+          noBytes.address.substring(2),
       ];
 
       let permissionValues = [
@@ -87,10 +87,10 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         const dataValue = "0x";
 
         const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [dataKey, dataValue]
-          );
+          context.universalProfile.interface.encodeFunctionData("setData", [
+            dataKey,
+            dataValue,
+          ]);
 
         await expect(
           context.keyManager
@@ -110,18 +110,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         const dataValue = "0x";
 
         const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [dataKey, dataValue]
-          );
+          context.universalProfile.interface.encodeFunctionData("setData", [
+            dataKey,
+            dataValue,
+          ]);
 
         await context.keyManager
           .connect(canOnlyEditPermissions)
           .execute(setDataPayload);
 
-        const result = await context.universalProfile.getData(
-          dataKey
-        );
+        const result = await context.universalProfile.getData(dataKey);
         expect(result).to.equal(dataValue);
       });
     });
@@ -149,17 +147,17 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        canOnlyAddController.address.substring(2),
+          canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        canOnlyEditPermissions.address.substring(2),
+          canOnlyEditPermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        beneficiary.address.substring(2),
+          beneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        invalidBeneficiary.address.substring(2),
+          invalidBeneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        zero32Bytes.address.substring(2),
+          zero32Bytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        zero40Bytes.address.substring(2),
+          zero40Bytes.address.substring(2),
       ];
 
       let permissionValues = [
@@ -205,9 +203,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyAddController)
-            .execute(payload)
+          context.keyManager.connect(canOnlyAddController).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -236,9 +232,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyAddController)
-            .execute(payload)
+          context.keyManager.connect(canOnlyAddController).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -268,9 +262,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyAddController)
-            .execute(payload)
+          context.keyManager.connect(canOnlyAddController).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -300,9 +292,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyAddController)
-            .execute(payload)
+          context.keyManager.connect(canOnlyAddController).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -332,9 +322,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           [key, value]
         );
 
-        await context.keyManager
-          .connect(canOnlyAddController)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyAddController).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -357,9 +345,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyAddController)
-              .execute(payload)
+            context.keyManager.connect(canOnlyAddController).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -384,9 +370,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyAddController)
-              .execute(payload)
+            context.keyManager.connect(canOnlyAddController).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -423,9 +407,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyEditPermissions)
-            .execute(payload)
+          context.keyManager.connect(canOnlyEditPermissions).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -571,9 +553,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyEditPermissions)
-              .execute(payload)
+            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -596,9 +576,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyEditPermissions)
-              .execute(payload)
+            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -632,17 +610,17 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        canOnlyAddController.address.substring(2),
+          canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        canOnlyEditPermissions.address.substring(2),
+          canOnlyEditPermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        beneficiary.address.substring(2),
+          beneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        invalidBeneficiary.address.substring(2),
+          invalidBeneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        zero32Bytes.address.substring(2),
+          zero32Bytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        zero40Bytes.address.substring(2),
+          zero40Bytes.address.substring(2),
       ];
 
       let permissionValues = [
@@ -688,9 +666,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyAddController)
-            .execute(payload)
+          context.keyManager.connect(canOnlyAddController).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -718,9 +694,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyAddController)
-            .execute(payload)
+          context.keyManager.connect(canOnlyAddController).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -750,9 +724,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyAddController)
-            .execute(payload)
+          context.keyManager.connect(canOnlyAddController).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -782,9 +754,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyAddController)
-            .execute(payload)
+          context.keyManager.connect(canOnlyAddController).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -813,9 +783,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           [key, value]
         );
 
-        await context.keyManager
-          .connect(canOnlyAddController)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyAddController).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -838,9 +806,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyAddController)
-              .execute(payload)
+            context.keyManager.connect(canOnlyAddController).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -865,9 +831,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyAddController)
-              .execute(payload)
+            context.keyManager.connect(canOnlyAddController).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -903,9 +867,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyEditPermissions)
-            .execute(payload)
+          context.keyManager.connect(canOnlyEditPermissions).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -1049,9 +1011,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyEditPermissions)
-              .execute(payload)
+            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1074,9 +1034,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyEditPermissions)
-              .execute(payload)
+            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1110,17 +1068,17 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        canOnlyAddController.address.substring(2),
+          canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        canOnlyEditPermissions.address.substring(2),
+          canOnlyEditPermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        beneficiary.address.substring(2),
+          beneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        invalidBeneficiary.address.substring(2),
+          invalidBeneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        zero32Bytes.address.substring(2),
+          zero32Bytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        zero40Bytes.address.substring(2),
+          zero40Bytes.address.substring(2),
       ];
 
       let permissionValues = [
@@ -1177,9 +1135,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyAddController)
-            .execute(payload)
+          context.keyManager.connect(canOnlyAddController).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1216,9 +1172,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyAddController)
-            .execute(payload)
+          context.keyManager.connect(canOnlyAddController).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1255,9 +1209,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyAddController)
-            .execute(payload)
+          context.keyManager.connect(canOnlyAddController).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1294,9 +1246,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyAddController)
-            .execute(payload)
+          context.keyManager.connect(canOnlyAddController).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1334,9 +1284,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           [key, value]
         );
 
-        await context.keyManager
-          .connect(canOnlyAddController)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyAddController).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -1359,9 +1307,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyAddController)
-              .execute(payload)
+            context.keyManager.connect(canOnlyAddController).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1386,9 +1332,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyAddController)
-              .execute(payload)
+            context.keyManager.connect(canOnlyAddController).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1426,9 +1370,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         await expect(
-          context.keyManager
-            .connect(canOnlyEditPermissions)
-            .execute(payload)
+          context.keyManager.connect(canOnlyEditPermissions).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -1580,9 +1522,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyEditPermissions)
-              .execute(payload)
+            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1605,9 +1545,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyEditPermissions)
-              .execute(payload)
+            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,

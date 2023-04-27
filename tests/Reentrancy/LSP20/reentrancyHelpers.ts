@@ -348,15 +348,15 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
 
   const permissionKeys = [
     ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-    owner.address.substring(2),
+      owner.address.substring(2),
     ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-    caller.address.substring(2),
+      caller.address.substring(2),
     ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-    caller.address.substring(2),
+      caller.address.substring(2),
     ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-    signer.address.substring(2),
+      signer.address.substring(2),
     ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-    signer.address.substring(2),
+      signer.address.substring(2),
   ];
 
   const permissionValues = [
@@ -447,65 +447,50 @@ export const generateSingleRelayPayload = async (
   let payload: BytesLike;
   switch (payloadType) {
     case "TRANSFERVALUE":
-      payload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [0, reentrancyRelayer.address, ethers.utils.parseEther("1"), "0x"]
-      );
+      payload = universalProfile.interface.encodeFunctionData("execute", [
+        0,
+        reentrancyRelayer.address,
+        ethers.utils.parseEther("1"),
+        "0x",
+      ]);
       break;
     case "SETDATA":
-      payload = universalProfile.interface.encodeFunctionData(
-        "setData",
-        [
-          ethers.utils.keccak256(
-            ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
-          ),
-          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("SomeRandomTextUsed")),
-        ]
-      );
+      payload = universalProfile.interface.encodeFunctionData("setData", [
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("SomeRandomTextUsed")),
+        ethers.utils.hexlify(ethers.utils.toUtf8Bytes("SomeRandomTextUsed")),
+      ]);
       break;
     case "ADDCONTROLLER":
-      payload = universalProfile.interface.encodeFunctionData(
-        "setData",
-        [
-          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+      payload = universalProfile.interface.encodeFunctionData("setData", [
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           newControllerAddress.substring(2),
-          "0x0000000000000000000000000000000000000000000000000000000000000010",
-        ]
-      );
+        "0x0000000000000000000000000000000000000000000000000000000000000010",
+      ]);
       break;
     case "EDITPERMISSIONS":
-      payload = universalProfile.interface.encodeFunctionData(
-        "setData",
-        [
-          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+      payload = universalProfile.interface.encodeFunctionData("setData", [
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           newControllerAddress.substring(2),
-          "0x",
-        ]
-      );
+        "0x",
+      ]);
       break;
     case "ADDUNIVERSALRECEIVERDELEGATE":
-      payload = universalProfile.interface.encodeFunctionData(
-        "setData",
-        [
-          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+      payload = universalProfile.interface.encodeFunctionData("setData", [
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
           ethers.utils
             .keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId"))
             .substring(2, 42),
-          newURDAddress,
-        ]
-      );
+        newURDAddress,
+      ]);
       break;
     case "CHANGEUNIVERSALRECEIVERDELEGATE":
-      payload = universalProfile.interface.encodeFunctionData(
-        "setData",
-        [
-          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+      payload = universalProfile.interface.encodeFunctionData("setData", [
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
           ethers.utils
             .keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId"))
             .substring(2, 42),
-          "0x",
-        ]
-      );
+        "0x",
+      ]);
       break;
     default:
       payload = "0x";
@@ -537,65 +522,50 @@ export const generateBatchRelayPayload = async (
   let payload: BytesLike;
   switch (payloadType) {
     case "TRANSFERVALUE":
-      payload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [0, reentrancyRelayer.address, ethers.utils.parseEther("1"), "0x"]
-      );
+      payload = universalProfile.interface.encodeFunctionData("execute", [
+        0,
+        reentrancyRelayer.address,
+        ethers.utils.parseEther("1"),
+        "0x",
+      ]);
       break;
     case "SETDATA":
-      payload = universalProfile.interface.encodeFunctionData(
-        "setData",
-        [
-          ethers.utils.keccak256(
-            ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
-          ),
-          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("SomeRandomTextUsed")),
-        ]
-      );
+      payload = universalProfile.interface.encodeFunctionData("setData", [
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("SomeRandomTextUsed")),
+        ethers.utils.hexlify(ethers.utils.toUtf8Bytes("SomeRandomTextUsed")),
+      ]);
       break;
     case "ADDCONTROLLER":
-      payload = universalProfile.interface.encodeFunctionData(
-        "setData",
-        [
-          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+      payload = universalProfile.interface.encodeFunctionData("setData", [
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           newControllerAddress.substring(2),
-          "0x0000000000000000000000000000000000000000000000000000000000000010",
-        ]
-      );
+        "0x0000000000000000000000000000000000000000000000000000000000000010",
+      ]);
       break;
     case "EDITPERMISSIONS":
-      payload = universalProfile.interface.encodeFunctionData(
-        "setData",
-        [
-          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+      payload = universalProfile.interface.encodeFunctionData("setData", [
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           newControllerAddress.substring(2),
-          "0x",
-        ]
-      );
+        "0x",
+      ]);
       break;
     case "ADDUNIVERSALRECEIVERDELEGATE":
-      payload = universalProfile.interface.encodeFunctionData(
-        "setData",
-        [
-          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+      payload = universalProfile.interface.encodeFunctionData("setData", [
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
           ethers.utils
             .keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId"))
             .substring(2, 42),
-          newURDAddress,
-        ]
-      );
+        newURDAddress,
+      ]);
       break;
     case "CHANGEUNIVERSALRECEIVERDELEGATE":
-      payload = universalProfile.interface.encodeFunctionData(
-        "setData",
-        [
-          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+      payload = universalProfile.interface.encodeFunctionData("setData", [
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
           ethers.utils
             .keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId"))
             .substring(2, 42),
-          "0x",
-        ]
-      );
+        "0x",
+      ]);
       break;
     default:
       payload = "0x";
@@ -632,10 +602,12 @@ export const generateExecutePayload = (
     );
 
   const executePayload =
-    new UniversalProfile__factory().interface.encodeFunctionData(
-      "execute",
-      [0, reentrantContractAddress, 0, reentrantPayload]
-    );
+    new UniversalProfile__factory().interface.encodeFunctionData("execute", [
+      0,
+      reentrantContractAddress,
+      0,
+      reentrantPayload,
+    ]);
 
   return executePayload;
 };
@@ -654,21 +626,21 @@ export const loadTestCase = async (
     case "TRANSFERVALUE": {
       permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        reentrantAddress.substring(2),
+          reentrantAddress.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        reentrantAddress.substring(2),
+          reentrantAddress.substring(2),
       ];
 
       permissionValues = [
         testCase.permissions,
         (testCase as TransferValueTestCase).allowedCalls
           ? combineAllowedCalls(
-            // TODO: is the call permission enough here for this test?
-            [CALLTYPE.VALUE],
-            [valueReceiverAddress],
-            ["0xffffffff"],
-            ["0xffffffff"]
-          )
+              // TODO: is the call permission enough here for this test?
+              [CALLTYPE.VALUE],
+              [valueReceiverAddress],
+              ["0xffffffff"],
+              ["0xffffffff"]
+            )
           : "0x",
       ];
       break;
@@ -676,19 +648,19 @@ export const loadTestCase = async (
     case "SETDATA": {
       permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        reentrantAddress.substring(2),
+          reentrantAddress.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-        reentrantAddress.substring(2),
+          reentrantAddress.substring(2),
       ];
 
       permissionValues = [
         testCase.permissions,
         (testCase as SetDataTestCase).allowedERC725YDataKeys
           ? encodeCompactBytesArray([
-            ethers.utils.keccak256(
-              ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
-            ),
-          ])
+              ethers.utils.keccak256(
+                ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
+              ),
+            ])
           : "0x",
       ];
       break;
@@ -696,7 +668,7 @@ export const loadTestCase = async (
     default: {
       permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        reentrantAddress.substring(2),
+          reentrantAddress.substring(2),
       ];
 
       permissionValues = [testCase.permissions];
@@ -708,7 +680,5 @@ export const loadTestCase = async (
       "setDataBatch",
       [permissionKeys, permissionValues]
     );
-  await context.keyManager
-    .connect(context.owner)
-    .execute(permissionsPayload);
+  await context.keyManager.connect(context.owner).execute(permissionsPayload);
 };

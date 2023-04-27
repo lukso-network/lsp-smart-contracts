@@ -110,12 +110,7 @@ export const shouldBehaveLikeLSP14 = (
 
         await context.contract
           .connect(context.deployParams.owner)
-          .execute(
-            OPERATION_TYPES.CALL,
-            recipient.address,
-            amount,
-            "0x"
-          );
+          .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x");
 
         const recipientBalanceAfter = await provider.getBalance(
           recipient.address
@@ -223,9 +218,7 @@ export const shouldBehaveLikeLSP14 = (
           const value = "0xabcd";
 
           await expect(
-            context.contract
-              .connect(previousOwner)
-              .setData(key, value)
+            context.contract.connect(previousOwner).setData(key, value)
           ).to.be.revertedWith(context.onlyOwnerRevertString);
         });
 
@@ -236,12 +229,7 @@ export const shouldBehaveLikeLSP14 = (
           await expect(
             context.contract
               .connect(previousOwner)
-              .execute(
-                OPERATION_TYPES.CALL,
-                recipient.address,
-                amount,
-                "0x"
-              )
+              .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x")
           ).to.be.revertedWith("Ownable: caller is not the owner");
         });
 
@@ -258,9 +246,7 @@ export const shouldBehaveLikeLSP14 = (
             "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
           const value = "0xabcd";
 
-          await context.contract
-            .connect(newOwner)
-            .setData(key, value);
+          await context.contract.connect(newOwner).setData(key, value);
 
           const result = await context.contract.getData(key);
           expect(result).to.equal(value);
@@ -273,12 +259,7 @@ export const shouldBehaveLikeLSP14 = (
           await expect(() =>
             context.contract
               .connect(newOwner)
-              .execute(
-                OPERATION_TYPES.CALL,
-                recipient.address,
-                amount,
-                "0x"
-              )
+              .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x")
           ).to.changeEtherBalances(
             [context.contract.address, recipient.address],
             [
@@ -369,9 +350,7 @@ export const shouldBehaveLikeLSP14 = (
             ethers.utils.toUtf8Bytes("Random Value")
           );
 
-          await context.contract
-            .connect(currentOwner)
-            .setData(key, value);
+          await context.contract.connect(currentOwner).setData(key, value);
 
           const result = await context.contract.getData(key);
 
@@ -386,12 +365,7 @@ export const shouldBehaveLikeLSP14 = (
           await expect(() =>
             context.contract
               .connect(currentOwner)
-              .execute(
-                OPERATION_TYPES.CALL,
-                recipient,
-                amount,
-                "0x"
-              )
+              .execute(OPERATION_TYPES.CALL, recipient, amount, "0x")
           ).to.changeEtherBalances(
             [context.contract.address, recipient],
             [`-${amount}`, amount]
@@ -555,12 +529,7 @@ export const shouldBehaveLikeLSP14 = (
             await expect(
               context.contract
                 .connect(context.deployParams.owner)
-                .execute(
-                  OPERATION_TYPES.CALL,
-                  recipient,
-                  amount,
-                  "0x"
-                )
+                .execute(OPERATION_TYPES.CALL, recipient, amount, "0x")
             ).to.be.revertedWith("Ownable: caller is not the owner");
           });
         });

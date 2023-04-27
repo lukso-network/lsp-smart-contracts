@@ -49,15 +49,15 @@ export const shouldBehaveLikePermissionDeploy = (
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      context.owner.address.substring(2),
+        context.owner.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      addressCanDeploy.address.substring(2),
+        addressCanDeploy.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      addressCanDeployAndTransferValue.address.substring(2),
+        addressCanDeployAndTransferValue.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      addressCanDeployAndSuperTransferValue.address.substring(2),
+        addressCanDeployAndSuperTransferValue.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      addressCannotDeploy.address.substring(2),
+        addressCannotDeploy.address.substring(2),
     ];
 
     const permissionsValues = [
@@ -91,9 +91,7 @@ export const shouldBehaveLikePermissionDeploy = (
         .connect(context.owner)
         .callStatic.execute(payload);
 
-      await expect(
-        context.keyManager.connect(context.owner).execute(payload)
-      )
+      await expect(context.keyManager.connect(context.owner).execute(payload))
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
           OPERATION_TYPES.CREATE,
@@ -131,9 +129,7 @@ export const shouldBehaveLikePermissionDeploy = (
         .connect(context.owner)
         .callStatic.execute(payload);
 
-      await expect(
-        context.keyManager.connect(context.owner).execute(payload)
-      )
+      await expect(context.keyManager.connect(context.owner).execute(payload))
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
           OPERATION_TYPES.CREATE,
@@ -174,9 +170,7 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy
       ).toLowerCase();
 
-      await expect(
-        context.keyManager.connect(context.owner).execute(payload)
-      )
+      await expect(context.keyManager.connect(context.owner).execute(payload))
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
           OPERATION_TYPES.CREATE2,
@@ -216,9 +210,7 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy
       ).toLowerCase();
 
-      await expect(
-        context.keyManager.connect(context.owner).execute(payload)
-      )
+      await expect(context.keyManager.connect(context.owner).execute(payload))
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
           OPERATION_TYPES.CREATE2,
@@ -697,9 +689,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
         await expect(
-          context.keyManager
-            .connect(addressCannotDeploy)
-            .execute(payload)
+          context.keyManager.connect(addressCannotDeploy).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotDeploy.address, "DEPLOY");
@@ -720,9 +710,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
         await expect(
-          context.keyManager
-            .connect(addressCannotDeploy)
-            .execute(payload)
+          context.keyManager.connect(addressCannotDeploy).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotDeploy.address, "DEPLOY");
@@ -775,14 +763,9 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(
-                  ethereumSignature,
-                  nonce,
-                  payload,
-                  {
-                    value: valueToSend,
-                  }
-                )
+                .executeRelayCall(ethereumSignature, nonce, payload, {
+                  value: valueToSend,
+                })
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -830,14 +813,9 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(
-                  signature,
-                  nonce,
-                  payload,
-                  {
-                    value: valueToSend,
-                  }
-                )
+                .executeRelayCall(signature, nonce, payload, {
+                  value: valueToSend,
+                })
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -893,14 +871,9 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(
-                  ethereumSignature,
-                  nonce,
-                  payload,
-                  {
-                    value: valueToSend,
-                  }
-                )
+                .executeRelayCall(ethereumSignature, nonce, payload, {
+                  value: valueToSend,
+                })
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -949,14 +922,9 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(
-                  signature,
-                  nonce,
-                  payload,
-                  {
-                    value: valueToSend,
-                  }
-                )
+                .executeRelayCall(signature, nonce, payload, {
+                  value: valueToSend,
+                })
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,

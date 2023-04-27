@@ -46,7 +46,7 @@ const buildContext = async () => {
     ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
     ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "0",
     ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-    accounts[0].address.substring(2),
+      accounts[0].address.substring(2),
   ];
 
   const values = [ARRAY_LENGTH.ONE, accounts[0].address, ALL_PERMISSIONS];
@@ -73,15 +73,15 @@ const addControllerWithPermission = async (
     ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
     ERC725YDataKeys.LSP6["AddressPermissions[]"].index + arrayIndex,
     ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-    account.address.substring(2),
+      account.address.substring(2),
   ];
 
   const values = [arrayLength, account.address, permissions];
 
-  const payload = context.token.interface.encodeFunctionData(
-    "setDataBatch",
-    [keys, values]
-  );
+  const payload = context.token.interface.encodeFunctionData("setDataBatch", [
+    keys,
+    values,
+  ]);
 
   await context.keyManager.connect(context.owner).execute(payload);
 };
@@ -120,14 +120,12 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
       ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
       ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "0",
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      context.owner.address.substring(2),
+        context.owner.address.substring(2),
     ];
 
     const values = [ARRAY_LENGTH.ONE, context.owner.address, ALL_PERMISSIONS];
 
-    expect(await context.token.getDataBatch(keys)).to.deep.equal(
-      values
-    );
+    expect(await context.token.getDataBatch(keys)).to.deep.equal(values);
   });
 
   describe("when trying to call mint(..) function on  in LSP7 through LSP6", () => {
@@ -191,10 +189,10 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
       const value = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("SecondRandomString")
       );
-      const payload = context.token.interface.encodeFunctionData(
-        "setData",
-        [key, value]
-      );
+      const payload = context.token.interface.encodeFunctionData("setData", [
+        key,
+        value,
+      ]);
 
       await expect(
         context.keyManager.connect(context.owner).execute(payload)
@@ -209,9 +207,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         ethers.utils.toUtf8Bytes("SecondRandomString")
       );
 
-      await context.token
-        .connect(newOwner)
-        .setData(key, value);
+      await context.token.connect(newOwner).setData(key, value);
 
       expect(await context.token.getData(key)).to.equal(value);
     });
@@ -310,15 +306,15 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         const keys = [
           ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "0",
+            "0".repeat(31) +
+            "0",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "1",
+            "0".repeat(31) +
+            "1",
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+            context.owner.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanChangeOwner.address.substring(2),
+            addressCanChangeOwner.address.substring(2),
         ];
         const values = [
           ARRAY_LENGTH.TWO,
@@ -328,9 +324,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           PERMISSIONS.CHANGEOWNER,
         ];
 
-        expect(await context.token.getDataBatch(keys)).to.deep.equal(
-          values
-        );
+        expect(await context.token.getDataBatch(keys)).to.deep.equal(values);
       });
 
       it("should revert if the caller doesn't have CHANGEOWNER permission when using `transferOwnership(..)`", async () => {
@@ -386,20 +380,20 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         const keys = [
           ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "0",
+            "0".repeat(31) +
+            "0",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "1",
+            "0".repeat(31) +
+            "1",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "2",
+            "0".repeat(31) +
+            "2",
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+            context.owner.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanChangeOwner.address.substring(2),
+            addressCanChangeOwner.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanEditPermissions.address.substring(2),
+            addressCanEditPermissions.address.substring(2),
         ];
         const values = [
           ARRAY_LENGTH.THREE,
@@ -411,9 +405,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           PERMISSIONS.EDITPERMISSIONS,
         ];
 
-        expect(await context.token.getDataBatch(keys)).to.deep.equal(
-          values
-        );
+        expect(await context.token.getDataBatch(keys)).to.deep.equal(values);
       });
 
       it("should revert if caller doesn't have EDITPERMISSIONS permission", async () => {
@@ -421,15 +413,13 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2);
         const value = PERMISSIONS.CALL;
-        const payload = context.token.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        const payload = context.token.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
         await expect(
-          context.keyManager
-            .connect(addressCanChangeOwner)
-            .execute(payload)
+          context.keyManager.connect(addressCanChangeOwner).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCanChangeOwner.address, "EDITPERMISSIONS");
@@ -440,10 +430,10 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2);
         const value = PERMISSIONS.CALL;
-        const payload = context.token.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        const payload = context.token.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
         await context.keyManager
           .connect(addressCanEditPermissions)
@@ -457,10 +447,10 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2);
         const value = ALL_PERMISSIONS;
-        const payload = context.token.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        const payload = context.token.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
         await context.keyManager
           .connect(addressCanEditPermissions)
@@ -486,25 +476,25 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         const keys = [
           ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "0",
+            "0".repeat(31) +
+            "0",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "1",
+            "0".repeat(31) +
+            "1",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "2",
+            "0".repeat(31) +
+            "2",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "3",
+            "0".repeat(31) +
+            "3",
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+            context.owner.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanChangeOwner.address.substring(2),
+            addressCanChangeOwner.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanEditPermissions.address.substring(2),
+            addressCanEditPermissions.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanAddController.address.substring(2),
+            addressCanAddController.address.substring(2),
         ];
         const values = [
           ARRAY_LENGTH.FOUR,
@@ -518,9 +508,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           PERMISSIONS.ADDCONTROLLER,
         ];
 
-        expect(await context.token.getDataBatch(keys)).to.deep.equal(
-          values
-        );
+        expect(await context.token.getDataBatch(keys)).to.deep.equal(values);
       });
 
       it("should be allowed to add a new controller with some permissions", async () => {
@@ -528,10 +516,10 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           addressCanSetData.address.substring(2);
         const value = ALL_PERMISSIONS;
-        const payload = context.token.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        const payload = context.token.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
         await context.keyManager
           .connect(addressCanAddController)
@@ -545,15 +533,13 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           addressCanSetData.address.substring(2);
         const value = ARRAY_LENGTH.ZERO;
-        const payload = context.token.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        const payload = context.token.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
         await expect(
-          context.keyManager
-            .connect(addressCanAddController)
-            .execute(payload)
+          context.keyManager.connect(addressCanAddController).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCanAddController.address, "EDITPERMISSIONS");
@@ -564,14 +550,12 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           addressCanSetData.address.substring(2);
         const value = ARRAY_LENGTH.ZERO;
-        const payload = context.token.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        const payload = context.token.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await context.keyManager
-          .connect(context.owner)
-          .execute(payload);
+        await context.keyManager.connect(context.owner).execute(payload);
       });
     });
 
@@ -601,30 +585,30 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         const keys = [
           ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "0",
+            "0".repeat(31) +
+            "0",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "1",
+            "0".repeat(31) +
+            "1",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "2",
+            "0".repeat(31) +
+            "2",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "3",
+            "0".repeat(31) +
+            "3",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "4",
+            "0".repeat(31) +
+            "4",
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+            context.owner.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanChangeOwner.address.substring(2),
+            addressCanChangeOwner.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanEditPermissions.address.substring(2),
+            addressCanEditPermissions.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanAddController.address.substring(2),
+            addressCanAddController.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanSetData.address.substring(2),
+            addressCanSetData.address.substring(2),
         ];
         const values = [
           ARRAY_LENGTH.FIVE,
@@ -640,23 +624,19 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           PERMISSIONS.SETDATA,
         ];
 
-        expect(await context.token.getDataBatch(keys)).to.deep.equal(
-          values
-        );
+        expect(await context.token.getDataBatch(keys)).to.deep.equal(values);
       });
 
       it("should not allow second controller to use setData without AllowedERC725YDataKeys", async () => {
         const key = firstRandomSringKey;
         const value = secondRandomSringKey;
-        const payload = context.token.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        const payload = context.token.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
         await expect(
-          context.keyManager
-            .connect(addressCanSetData)
-            .execute(payload)
+          context.keyManager.connect(addressCanSetData).execute(payload)
         )
           .to.be.revertedWithCustomError(
             context.keyManager,
@@ -672,14 +652,12 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         const value = encodeCompactBytesArray([
           firstRandomSringKey.substring(0, 34),
         ]);
-        const payload = context.token.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        const payload = context.token.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await context.keyManager
-          .connect(context.owner)
-          .execute(payload);
+        await context.keyManager.connect(context.owner).execute(payload);
 
         expect(await context.token.getData(key)).to.equal(value);
       });
@@ -712,13 +690,9 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           [keys, values]
         );
 
-        await context.keyManager
-          .connect(addressCanSetData)
-          .execute(payload);
+        await context.keyManager.connect(addressCanSetData).execute(payload);
 
-        expect(await context.token.getDataBatch(keys)).to.deep.equal(
-          values
-        );
+        expect(await context.token.getDataBatch(keys)).to.deep.equal(values);
       });
 
       it("should revert when trying to change a key that is not allowed", async () => {
@@ -750,9 +724,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         );
 
         await expect(
-          context.keyManager
-            .connect(addressCanSetData)
-            .execute(payload)
+          context.keyManager.connect(addressCanSetData).execute(payload)
         )
           .to.be.revertedWithCustomError(
             context.keyManager,
@@ -812,35 +784,35 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         const keys = [
           ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "0",
+            "0".repeat(31) +
+            "0",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "1",
+            "0".repeat(31) +
+            "1",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "2",
+            "0".repeat(31) +
+            "2",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "3",
+            "0".repeat(31) +
+            "3",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "4",
+            "0".repeat(31) +
+            "4",
           ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "0".repeat(31) +
-          "5",
+            "0".repeat(31) +
+            "5",
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+            context.owner.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanChangeOwner.address.substring(2),
+            addressCanChangeOwner.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanEditPermissions.address.substring(2),
+            addressCanEditPermissions.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanAddController.address.substring(2),
+            addressCanAddController.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanSetData.address.substring(2),
+            addressCanSetData.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanSign.address.substring(2),
+            addressCanSign.address.substring(2),
         ];
         const values = [
           ARRAY_LENGTH.SIX,
@@ -858,9 +830,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           PERMISSIONS.SIGN,
         ];
 
-        expect(await context.token.getDataBatch(keys)).to.deep.equal(
-          values
-        );
+        expect(await context.token.getDataBatch(keys)).to.deep.equal(values);
       });
 
       it("should be allowed to sign messages for the token contract", async () => {

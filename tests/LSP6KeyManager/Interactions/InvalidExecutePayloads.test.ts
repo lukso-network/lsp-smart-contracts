@@ -33,9 +33,9 @@ export const testInvalidExecutePayloads = (
 
     const permissionsKeys = [
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      context.owner.address.substring(2),
+        context.owner.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      addressCanMakeCall.address.substring(2),
+        addressCanMakeCall.address.substring(2),
     ];
 
     const permissionsValues = [ALL_PERMISSIONS, PERMISSIONS.CALL];
@@ -52,13 +52,7 @@ export const testInvalidExecutePayloads = (
       });
 
       it("should revert when using `executeRelayCall(..)` with a payload smaller than 4 bytes", async () => {
-        await expect(
-          context.keyManager.executeRelayCall(
-            "0x",
-            0,
-            "0xaabbcc"
-          )
-        )
+        await expect(context.keyManager.executeRelayCall("0x", 0, "0xaabbcc"))
           .to.be.revertedWithCustomError(context.keyManager, "InvalidPayload")
           .withArgs("0xaabbcc");
       });
@@ -73,9 +67,7 @@ export const testInvalidExecutePayloads = (
     it("Should revert because calling an unexisting function in ERC725", async () => {
       const INVALID_PAYLOAD = "0xbad000000000000000000000000bad";
       await expect(
-        context.keyManager
-          .connect(addressCanMakeCall)
-          .execute(INVALID_PAYLOAD)
+        context.keyManager.connect(addressCanMakeCall).execute(INVALID_PAYLOAD)
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
@@ -121,9 +113,7 @@ export const testInvalidExecutePayloads = (
       );
 
       await expect(
-        context.keyManager
-          .connect(addressCanMakeCall)
-          .execute(payload)
+        context.keyManager.connect(addressCanMakeCall).execute(payload)
       ).to.be.revertedWithCustomError(
         context.universalProfile,
         "ERC725X_UnknownOperationType"

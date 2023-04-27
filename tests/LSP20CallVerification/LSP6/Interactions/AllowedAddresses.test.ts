@@ -112,12 +112,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
           await context.universalProfile
             .connect(context.owner)
-            .execute(
-              OPERATION_TYPES.CALL,
-              recipient,
-              amount,
-              EMPTY_PAYLOAD
-            );
+            .execute(OPERATION_TYPES.CALL, recipient, amount, EMPTY_PAYLOAD);
 
           let newBalanceUP = await provider.getBalance(
             context.universalProfile.address
@@ -256,12 +251,7 @@ export const shouldBehaveLikeAllowedAddresses = (
           await expect(
             context.universalProfile
               .connect(invalidEncodedAllowedCalls)
-              .execute(
-                OPERATION_TYPES.CALL,
-                recipient,
-                amount,
-                EMPTY_PAYLOAD
-              )
+              .execute(OPERATION_TYPES.CALL, recipient, amount, EMPTY_PAYLOAD)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,

@@ -67,15 +67,15 @@ export const shouldBehaveLikePermissionSetData = (
 
       const permissionsKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
+          context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        canSetDataWithAllowedERC725YDataKeys.address.substring(2),
+          canSetDataWithAllowedERC725YDataKeys.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-        canSetDataWithAllowedERC725YDataKeys.address.substring(2),
+          canSetDataWithAllowedERC725YDataKeys.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        canSetDataWithoutAllowedERC725YDataKeys.address.substring(2),
+          canSetDataWithoutAllowedERC725YDataKeys.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        cannotSetData.address.substring(2),
+          cannotSetData.address.substring(2),
       ];
 
       const permissionsValues = [
@@ -171,9 +171,7 @@ export const shouldBehaveLikePermissionSetData = (
           );
 
           await expect(
-            context.universalProfile
-              .connect(cannotSetData)
-              .setData(key, value)
+            context.universalProfile.connect(cannotSetData).setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(cannotSetData.address, "SETDATA");
@@ -204,7 +202,8 @@ export const shouldBehaveLikePermissionSetData = (
             .connect(context.owner)
             .setDataBatch(keys, values);
 
-          let fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
+          let fetchedResult =
+            await context.universalProfile.callStatic.getDataBatch(keys);
 
           expect(fetchedResult).to.deep.equal(values);
         });
@@ -222,7 +221,8 @@ export const shouldBehaveLikePermissionSetData = (
             .connect(context.owner)
             .setDataBatch(keys, values);
 
-          const fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
+          const fetchedResult =
+            await context.universalProfile.callStatic.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
 
@@ -258,7 +258,8 @@ export const shouldBehaveLikePermissionSetData = (
             .connect(context.owner)
             .setDataBatch(keys, values);
 
-          let fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
+          let fetchedResult =
+            await context.universalProfile.callStatic.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
       });
@@ -285,7 +286,8 @@ export const shouldBehaveLikePermissionSetData = (
             .connect(canSetDataWithAllowedERC725YDataKeys)
             .setDataBatch(keys, values);
 
-          let fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
+          let fetchedResult =
+            await context.universalProfile.callStatic.getDataBatch(keys);
 
           expect(fetchedResult).to.deep.equal(values);
         });
@@ -303,7 +305,8 @@ export const shouldBehaveLikePermissionSetData = (
             .connect(canSetDataWithAllowedERC725YDataKeys)
             .setDataBatch(keys, values);
 
-          let fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
+          let fetchedResult =
+            await context.universalProfile.callStatic.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
 
@@ -335,7 +338,8 @@ export const shouldBehaveLikePermissionSetData = (
             .connect(canSetDataWithAllowedERC725YDataKeys)
             .setDataBatch(keys, values);
 
-          let fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
+          let fetchedResult =
+            await context.universalProfile.callStatic.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
       });
@@ -527,11 +531,11 @@ export const shouldBehaveLikePermissionSetData = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
+          context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        contractCanSetData.address.substring(2),
+          contractCanSetData.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-        contractCanSetData.address.substring(2),
+          contractCanSetData.address.substring(2),
       ];
 
       const compactedAllowedERC725YDataKeys = encodeCompactBytesArray([
@@ -699,15 +703,15 @@ export const shouldBehaveLikePermissionSetData = (
 
       const alicePermissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        alice.address.substring(2),
+          alice.address.substring(2),
       ];
       const alicePermissionValues = [ALL_PERMISSIONS];
 
       const bobPermissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        bob.address.substring(2),
+          bob.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        aliceContext.universalProfile.address.substring(2),
+          aliceContext.universalProfile.address.substring(2),
       ];
 
       const bobPermissionValues = [ALL_PERMISSIONS, PERMISSIONS.SETDATA];
@@ -726,9 +730,7 @@ export const shouldBehaveLikePermissionSetData = (
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         alice.address.substring(2);
 
-      const result = await aliceContext.universalProfile.getData(
-        key
-      );
+      const result = await aliceContext.universalProfile.getData(key);
       expect(result).to.equal(ALL_PERMISSIONS);
     });
 
@@ -757,10 +759,10 @@ export const shouldBehaveLikePermissionSetData = (
       );
 
       let finalSetDataPayload =
-        bobContext.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        bobContext.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
       await expect(
         aliceContext.universalProfile
@@ -790,15 +792,15 @@ export const shouldBehaveLikePermissionSetData = (
         .connect(bob)
         .setData(
           ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-          aliceContext.universalProfile.address.substring(2),
+            aliceContext.universalProfile.address.substring(2),
           encodeCompactBytesArray([key])
         );
 
       let finalSetDataPayload =
-        bobContext.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        bobContext.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
       await aliceContext.universalProfile
         .connect(alice)
@@ -830,9 +832,9 @@ export const shouldBehaveLikePermissionSetData = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        caller.address.substring(2),
+          caller.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-        caller.address.substring(2),
+          caller.address.substring(2),
       ];
 
       const permissionValues = [
@@ -853,13 +855,9 @@ export const shouldBehaveLikePermissionSetData = (
         );
 
         it(`should be allowed to set a disallowed key: ${key}`, async () => {
-          await context.universalProfile
-            .connect(caller)
-            .setData(key, value);
+          await context.universalProfile.connect(caller).setData(key, value);
 
-          const result = await context.universalProfile.getData(
-            key
-          );
+          const result = await context.universalProfile.getData(key);
           expect(result).to.equal(value);
         });
       }

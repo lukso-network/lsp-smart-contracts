@@ -319,10 +319,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              lsp7TokenC.address.substr(2),
+                lsp7TokenC.address.substr(2),
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-              "00000000000000000000000000000002",
+                "00000000000000000000000000000002",
             ]);
 
           expect(mapValue).to.equal("0x");
@@ -362,10 +362,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              lsp7TokenA.address.substr(2),
+                lsp7TokenA.address.substr(2),
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-              "00000000000000000000000000000001",
+                "00000000000000000000000000000001",
             ]);
 
           expect(mapValue).to.equal("0x");
@@ -422,10 +422,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              lsp7TokenB.address.substr(2),
+                lsp7TokenB.address.substr(2),
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-              "00000000000000000000000000000000",
+                "00000000000000000000000000000000",
             ]);
 
           expect(mapValue).to.equal("0x");
@@ -509,10 +509,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              lsp7TokenA.address.substr(2),
+                lsp7TokenA.address.substr(2),
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-              "00000000000000000000000000000002",
+                "00000000000000000000000000000002",
             ]);
 
           expect(mapValue).to.equal("0x");
@@ -632,10 +632,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              lsp7TokenB.address.substr(2),
+                lsp7TokenB.address.substr(2),
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-              "00000000000000000000000000000001",
+                "00000000000000000000000000000001",
             ]);
 
           expect(mapValue).to.equal("0x");
@@ -677,10 +677,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              lsp7TokenB.address.substr(2),
+                lsp7TokenB.address.substr(2),
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-              "00000000000000000000000000000001",
+                "00000000000000000000000000000001",
             ]);
 
           expect(mapValue).to.equal("0x");
@@ -840,14 +840,11 @@ export const shouldBehaveLikeLSP1Delegate = (
           .mint(context.lsp9Vault1.address, 100, true, "0x");
 
         const vaultSetDataCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "setData",
-            [
-              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
+          context.lsp9Vault1.interface.encodeFunctionData("setData", [
+            ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
               token.address.substring(2),
-              "0xcafecafecafecafe",
-            ]
-          );
+            "0xcafecafecafecafe",
+          ]);
 
         await context.universalProfile
           .connect(context.accounts.owner1)
@@ -884,10 +881,12 @@ export const shouldBehaveLikeLSP1Delegate = (
         );
 
         const vaultTokenTransferCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "execute",
-            [OPERATION_TYPES.CALL, token.address, 0, tokenTransferCalldata]
-          );
+          context.lsp9Vault1.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            token.address,
+            0,
+            tokenTransferCalldata,
+          ]);
 
         tokenTransferTx = await context.universalProfile
           .connect(context.accounts.owner1)
@@ -956,14 +955,11 @@ export const shouldBehaveLikeLSP1Delegate = (
           .mint(context.lsp9Vault1.address, 100, true, "0x");
 
         const vaultSetDataCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "setData",
-            [
-              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
+          context.lsp9Vault1.interface.encodeFunctionData("setData", [
+            ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
               token.address.substring(2),
-              "0xda1f85e400000000000000000000000000000000cafecafe",
-            ]
-          );
+            "0xda1f85e400000000000000000000000000000000cafecafe",
+          ]);
 
         await context.universalProfile
           .connect(context.accounts.owner1)
@@ -1000,10 +996,12 @@ export const shouldBehaveLikeLSP1Delegate = (
         );
 
         const vaultTokenTransferCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "execute",
-            [OPERATION_TYPES.CALL, token.address, 0, tokenTransferCalldata]
-          );
+          context.lsp9Vault1.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            token.address,
+            0,
+            tokenTransferCalldata,
+          ]);
 
         tokenTransferTx = await context.universalProfile
           .connect(context.accounts.owner1)
@@ -1068,14 +1066,11 @@ export const shouldBehaveLikeLSP1Delegate = (
           .mint(context.lsp9Vault1.address, 100, true, "0x");
 
         const vaultSetDataCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "setData",
-            [
-              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
+          context.lsp9Vault1.interface.encodeFunctionData("setData", [
+            ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
               token.address.substring(2),
-              "0xcafecafecafecafecafecafecafecafecafecafe",
-            ]
-          );
+            "0xcafecafecafecafecafecafecafecafecafecafe",
+          ]);
 
         await context.universalProfile
           .connect(context.accounts.owner1)
@@ -1112,10 +1107,12 @@ export const shouldBehaveLikeLSP1Delegate = (
         );
 
         const vaultTokenTransferCalldata =
-          context.lsp9Vault1.interface.encodeFunctionData(
-            "execute",
-            [OPERATION_TYPES.CALL, token.address, 0, tokenTransferCalldata]
-          );
+          context.lsp9Vault1.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            token.address,
+            0,
+            tokenTransferCalldata,
+          ]);
 
         tokenTransferTx = await context.universalProfile
           .connect(context.accounts.owner1)
@@ -1334,10 +1331,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              lsp8TokenC.address.substr(2),
+                lsp8TokenC.address.substr(2),
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-              "00000000000000000000000000000002",
+                "00000000000000000000000000000002",
             ]);
 
           expect(mapValue).to.equal("0x");
@@ -1378,10 +1375,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              lsp8TokenA.address.substr(2),
+                lsp8TokenA.address.substr(2),
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-              "00000000000000000000000000000001",
+                "00000000000000000000000000000001",
             ]);
 
           expect(mapValue).to.equal("0x");
@@ -1438,10 +1435,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              lsp8TokenB.address.substr(2),
+                lsp8TokenB.address.substr(2),
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-              "00000000000000000000000000000000",
+                "00000000000000000000000000000000",
             ]);
 
           expect(mapValue).to.equal("0x");
@@ -1542,10 +1539,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              lsp8TokenA.address.substr(2),
+                lsp8TokenA.address.substr(2),
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-              "00000000000000000000000000000002",
+                "00000000000000000000000000000002",
             ]);
 
           expect(mapValue).to.equal("0x");
@@ -1675,10 +1672,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              lsp8TokenB.address.substr(2),
+                lsp8TokenB.address.substr(2),
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-              "00000000000000000000000000000001",
+                "00000000000000000000000000000001",
             ]);
 
           expect(mapValue).to.equal("0x");
@@ -1722,10 +1719,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              lsp8TokenB.address.substr(2),
+                lsp8TokenB.address.substr(2),
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
               ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-              "00000000000000000000000000000001",
+                "00000000000000000000000000000001",
             ]);
 
           expect(mapValue).to.equal("0x");

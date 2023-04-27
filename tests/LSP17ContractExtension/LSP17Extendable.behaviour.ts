@@ -495,10 +495,7 @@ export const shouldBehaveLikeLSP17 = (
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(
-                nameFunctionExtensionHandlerKey,
-                nameExtension.address
-              );
+              .setData(nameFunctionExtensionHandlerKey, nameExtension.address);
           });
 
           it("should pass and return the name correctly", async () => {
@@ -537,10 +534,7 @@ export const shouldBehaveLikeLSP17 = (
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(
-                ageFunctionExtensionHandlerKey,
-                ageExtension.address
-              );
+              .setData(ageFunctionExtensionHandlerKey, ageExtension.address);
           });
 
           it("should pass and return the age correctly", async () => {

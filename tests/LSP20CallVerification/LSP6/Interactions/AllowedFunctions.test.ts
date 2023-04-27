@@ -54,11 +54,11 @@ export const shouldBehaveLikeAllowedFunctions = (
 
     let permissionsKeys = [
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      addressWithNoAllowedFunctions.address.substring(2),
+        addressWithNoAllowedFunctions.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      addressCanCallOnlyOneFunction.address.substring(2),
+        addressCanCallOnlyOneFunction.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-      addressCanCallOnlyOneFunction.address.substring(2),
+        addressCanCallOnlyOneFunction.address.substring(2),
     ];
 
     let permissionsValues = [
@@ -247,17 +247,17 @@ export const shouldBehaveLikeAllowedFunctions = (
 
       let permissionsKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCanCallOnlyTransferOnLSP8.address.substring(2),
+          addressCanCallOnlyTransferOnLSP8.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        addressCanCallOnlyTransferOnLSP8.address.substring(2),
+          addressCanCallOnlyTransferOnLSP8.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.address.substring(
-          2
-        ),
+          addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.address.substring(
+            2
+          ),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.address.substring(
-          2
-        ),
+          addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.address.substring(
+            2
+          ),
       ];
 
       let permissionsValues = [
@@ -464,9 +464,7 @@ export const shouldBehaveLikeAllowedFunctions = (
               setDataPayload
             );
 
-          expect(
-            await lsp7Contract.callStatic.getData(key)
-          ).to.equal(value);
+          expect(await lsp7Contract.callStatic.getData(key)).to.equal(value);
         });
       });
 

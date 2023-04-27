@@ -41,17 +41,17 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        canOnlyAddController.address.substring(2),
+          canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        canOnlyEditPermissions.address.substring(2),
+          canOnlyEditPermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-        beneficiary.address.substring(2),
+          beneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-        invalidBeneficiary.address.substring(2),
+          invalidBeneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-        zero32Bytes.address.substring(2),
+          zero32Bytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-        zero40Bytes.address.substring(2),
+          zero40Bytes.address.substring(2),
       ];
 
       let permissionValues = [
@@ -91,9 +91,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyAddController)
-              .execute(payload)
+            context.keyManager.connect(canOnlyAddController).execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -114,9 +112,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyAddController)
-              .execute(payload)
+            context.keyManager.connect(canOnlyAddController).execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -135,9 +131,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyAddController)
-              .execute(payload)
+            context.keyManager.connect(canOnlyAddController).execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -156,9 +150,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyAddController)
-              .execute(payload)
+            context.keyManager.connect(canOnlyAddController).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -212,9 +204,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyAddController)
-              .execute(payload)
+            context.keyManager.connect(canOnlyAddController).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -311,9 +301,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyEditPermissions)
-              .execute(payload)
+            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -342,9 +330,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyEditPermissions)
-              .execute(payload)
+            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -365,9 +351,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           );
 
           await expect(
-            context.keyManager
-              .connect(canOnlyEditPermissions)
-              .execute(payload)
+            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,

@@ -53,9 +53,9 @@ export const shouldBehaveLikeLSP20 = (
             .connect(context.deployParams.owner)
             .setData(dataKey, dataValue);
 
-          expect(
-            await context.universalProfile.getData(dataKey)
-          ).to.equal(dataValue);
+          expect(await context.universalProfile.getData(dataKey)).to.equal(
+            dataValue
+          );
         });
 
         it("should revert when non-owner calls", async () => {
@@ -165,12 +165,7 @@ export const shouldBehaveLikeLSP20 = (
 
           const tx = await context.universalProfile
             .connect(context.deployParams.owner)
-            .executeBatch(
-              operationsType,
-              recipients,
-              values,
-              datas
-            );
+            .executeBatch(operationsType, recipients, values, datas);
 
           await expect(tx)
             .to.emit(context.universalProfile, "Executed")
@@ -191,12 +186,7 @@ export const shouldBehaveLikeLSP20 = (
           await expect(
             context.universalProfile
               .connect(context.accounts[3])
-              .executeBatch(
-                operationsType,
-                recipients,
-                values,
-                datas
-              )
+              .executeBatch(operationsType, recipients, values, datas)
           )
             .to.be.revertedWithCustomError(
               context.universalProfile,
@@ -299,12 +289,7 @@ export const shouldBehaveLikeLSP20 = (
           );
           const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
 
-          await expect(
-            context.universalProfile.setData(
-              dataKey,
-              dataValue
-            )
-          )
+          await expect(context.universalProfile.setData(dataKey, dataValue))
             .to.be.revertedWithCustomError(
               context.universalProfile,
               "LSP20CallingVerifierFailed"
@@ -344,12 +329,7 @@ export const shouldBehaveLikeLSP20 = (
           );
           const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
 
-          await expect(
-            context.universalProfile.setData(
-              dataKey,
-              dataValue
-            )
-          )
+          await expect(context.universalProfile.setData(dataKey, dataValue))
             .to.be.revertedWithCustomError(
               context.universalProfile,
               "LSP20InvalidMagicValue"
@@ -390,10 +370,7 @@ export const shouldBehaveLikeLSP20 = (
           const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
 
           await expect(
-            context.universalProfile.setData(
-              dataKey,
-              dataValue
-            )
+            context.universalProfile.setData(dataKey, dataValue)
           ).to.emit(ownerContract, "FallbackCalled");
         });
       });
@@ -431,10 +408,7 @@ export const shouldBehaveLikeLSP20 = (
           const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
 
           await expect(
-            context.universalProfile.setData(
-              dataKey,
-              dataValue
-            )
+            context.universalProfile.setData(dataKey, dataValue)
           ).to.be.revertedWithCustomError(
             context.universalProfile,
             "LSP20InvalidMagicValue"
@@ -473,12 +447,7 @@ export const shouldBehaveLikeLSP20 = (
           );
           const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
 
-          await expect(
-            context.universalProfile.setData(
-              dataKey,
-              dataValue
-            )
-          )
+          await expect(context.universalProfile.setData(dataKey, dataValue))
             .to.be.revertedWithCustomError(
               context.universalProfile,
               "LSP20InvalidMagicValue"
@@ -509,9 +478,7 @@ export const shouldBehaveLikeLSP20 = (
           let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
           await expect(
-            newUniversalProfile
-              .connect(context.accounts[3])
-              .setData(key, value)
+            newUniversalProfile.connect(context.accounts[3]).setData(key, value)
           )
             .to.emit(newUniversalProfile, "DataChanged")
             .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
@@ -546,9 +513,7 @@ export const shouldBehaveLikeLSP20 = (
           let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
           await expect(
-            newUniversalProfile
-              .connect(context.accounts[3])
-              .setData(key, value)
+            newUniversalProfile.connect(context.accounts[3]).setData(key, value)
           )
             .to.emit(newUniversalProfile, "DataChanged")
             .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
@@ -583,9 +548,7 @@ export const shouldBehaveLikeLSP20 = (
           let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
           await expect(
-            newUniversalProfile
-              .connect(context.accounts[3])
-              .setData(key, value)
+            newUniversalProfile.connect(context.accounts[3]).setData(key, value)
           ).to.be.revertedWithCustomError(
             newUniversalProfile,
             "LSP20InvalidMagicValue"
@@ -621,9 +584,7 @@ export const shouldBehaveLikeLSP20 = (
           let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
           await expect(
-            newUniversalProfile
-              .connect(context.accounts[3])
-              .setData(key, value)
+            newUniversalProfile.connect(context.accounts[3]).setData(key, value)
           )
             .to.emit(newUniversalProfile, "DataChanged")
             .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));

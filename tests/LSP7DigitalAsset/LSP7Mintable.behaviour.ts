@@ -119,9 +119,9 @@ export const shouldBehaveLikeLSP7Mintable = (
         [
           [
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            URDTokenReentrant.address.substring(2),
+              URDTokenReentrant.address.substring(2),
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-            URDTokenReentrant.address.substring(2),
+              URDTokenReentrant.address.substring(2),
             ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
           ],
           [

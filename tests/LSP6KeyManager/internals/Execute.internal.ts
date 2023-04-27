@@ -21,7 +21,7 @@ export const testExecuteInternals = (
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      context.owner.address.substring(2),
+        context.owner.address.substring(2),
     ];
 
     const permissionValues = [ALL_PERMISSIONS];
