@@ -159,7 +159,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             );
 
             // Set the LSP5 generated data keys on the account
-            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
             return "";
         } else {
             (dataKeys, dataValues) = LSP10Utils.generateReceivedVaultKeys(
@@ -169,7 +169,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             );
 
             // Set the LSP10 generated data keys on the account
-            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
             return "";
         }
     }
@@ -208,7 +208,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
 
             // Set the LSP5 generated data keys on the account
-            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
             return "";
         } else {
             (dataKeys, dataValues) = LSP10Utils.generateSentVaultKeys(
@@ -225,7 +225,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
 
             // Set the LSP10 generated data keys on the account
-            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
             return "";
         }
     }

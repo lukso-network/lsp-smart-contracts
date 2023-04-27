@@ -100,10 +100,7 @@ abstract contract LSP6SetDataModule {
         bytes[] memory inputDataValues
     ) internal view virtual {
         if (inputDataKeys.length != inputDataValues.length) {
-            revert ERC725Y_DataKeysValuesLengthMismatch(
-                inputDataKeys.length,
-                inputDataValues.length
-            );
+            revert ERC725Y_DataKeysValuesLengthMismatch();
         }
 
         bool isSettingERC725YKeys;
