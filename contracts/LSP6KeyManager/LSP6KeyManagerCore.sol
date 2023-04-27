@@ -230,14 +230,14 @@ abstract contract LSP6KeyManagerCore is
             isSetData = true;
         }
 
-        bool reentrantCall = _nonReentrantBefore(isSetData, caller);
+        bool isReentrantCall = _nonReentrantBefore(isSetData, caller);
 
         _verifyPermissions(caller, msgValue, data);
         emit VerifiedCall(caller, msgValue, bytes4(data));
 
         // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
         return
-            isSetData || reentrantCall
+            isSetData || isReentrantCall
                 ? bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"00"))
                 : bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"01"));
     }
@@ -268,14 +268,14 @@ abstract contract LSP6KeyManagerCore is
             isSetData = true;
         }
 
-        bool reentrantCall = _nonReentrantBefore(isSetData, msg.sender);
+        bool isReentrantCall = _nonReentrantBefore(isSetData, msg.sender);
 
         _verifyPermissions(msg.sender, msgValue, payload);
         emit VerifiedCall(msg.sender, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
 
-        if (!reentrantCall && !isSetData) {
+        if (!isReentrantCall && !isSetData) {
             _nonReentrantAfter();
         }
 
@@ -309,7 +309,7 @@ abstract contract LSP6KeyManagerCore is
             isSetData = true;
         }
 
-        bool reentrantCall = _nonReentrantBefore(isSetData, signer);
+        bool isReentrantCall = _nonReentrantBefore(isSetData, signer);
 
         if (!_isValidNonce(signer, nonce)) {
             revert InvalidRelayNonce(signer, nonce, signature);
@@ -323,7 +323,7 @@ abstract contract LSP6KeyManagerCore is
 
         bytes memory result = _executePayload(msgValue, payload);
 
-        if (!reentrantCall && !isSetData) {
+        if (!isReentrantCall && !isSetData) {
             _nonReentrantAfter();
         }
 
@@ -428,10 +428,10 @@ abstract contract LSP6KeyManagerCore is
     function _nonReentrantBefore(bool isSetData, address from)
         internal
         virtual
-        returns (bool reentrantCall)
+        returns (bool isReentrantCall)
     {
-        reentrantCall = _reentrancyStatus;
-        if (reentrantCall) {
+        isReentrantCall = _reentrancyStatus;
+        if (isReentrantCall) {
             // CHECK the caller has REENTRANCY permission
             _requirePermissions(
                 from,
