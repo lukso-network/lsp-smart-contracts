@@ -133,7 +133,7 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(uint256[] calldata values, bytes[] calldata payloads)
+    function executeBatch(uint256[] calldata values, bytes[] calldata payloads)
         public
         payable
         virtual
@@ -179,7 +179,7 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function executeRelayCall(
+    function executeRelayCallBatch(
         bytes[] memory signatures,
         uint256[] calldata nonces,
         uint256[] calldata values,
