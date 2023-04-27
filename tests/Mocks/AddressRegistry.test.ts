@@ -103,7 +103,7 @@ describe("Address Registry contracts", () => {
 
       await account
         .connect(owner)
-        ["execute(uint256,address,uint256,bytes)"](
+        .execute(
           0,
           addressRegistryRequireERC725.address,
           0,
@@ -134,7 +134,7 @@ describe("Address Registry contracts", () => {
 
       await account
         .connect(owner)
-        ["execute(uint256,address,uint256,bytes)"](
+        .execute(
           0,
           addressRegistryRequireERC725.address,
           0,

@@ -67,11 +67,11 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          signer.address.substring(2),
+        signer.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          signer.address.substring(2),
+        signer.address.substring(2),
       ];
 
       const permissionValues = [
@@ -105,7 +105,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
         // in the fallback function of the target (= recipient) contract
         let transferPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
+            "execute",
             [
               OPERATION_TYPES.CALL,
               maliciousContract.address,
@@ -135,7 +135,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
         await expect(
           context.keyManager
             .connect(context.owner)
-            ["execute(bytes)"](transferPayload)
+          ["execute(bytes)"](transferPayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(maliciousContract.address, "REENTRANCY");
@@ -164,7 +164,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
           let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [
                 OPERATION_TYPES.CALL,
                 signer.address,
@@ -199,24 +199,24 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
           // first call
           await context.keyManager
             .connect(relayer)
-            ["executeRelayCall(bytes,uint256,bytes)"](
-              signature,
-              nonce,
-              executeRelayCallPayload,
-              {
-                value: valueToSend,
-              }
-            );
+          ["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
+          );
 
           // 2nd call = replay attack
           await expect(
             context.keyManager
               .connect(relayer)
-              ["executeRelayCall(bytes,uint256,bytes)"](
-                signature,
-                nonce,
-                executeRelayCallPayload
-              )
+            ["executeRelayCall(bytes,uint256,bytes)"](
+              signature,
+              nonce,
+              executeRelayCallPayload
+            )
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -231,7 +231,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
       it("should revert if reentered from a random address", async () => {
         let transferPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
+            "execute",
             [
               OPERATION_TYPES.CALL,
               maliciousContract.address,
@@ -250,7 +250,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
         await expect(
           context.keyManager
             .connect(context.owner)
-            ["execute(bytes)"](transferPayload)
+          ["execute(bytes)"](transferPayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(maliciousContract.address, "REENTRANCY");
@@ -263,14 +263,14 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
         const setDataPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
+            "setDataBatch",
             [
               [
                 ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
                 ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-                  URDDummy.address.substring(2),
+                URDDummy.address.substring(2),
                 ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-                  URDDummy.address.substring(2),
+                URDDummy.address.substring(2),
               ],
               [
                 URDDummy.address,
@@ -290,11 +290,11 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
         await context.keyManager
           .connect(context.owner)
-          ["execute(bytes)"](setDataPayload);
+        ["execute(bytes)"](setDataPayload);
 
         let transferPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
+            "execute",
             [
               OPERATION_TYPES.CALL,
               URDDummy.address,
@@ -319,7 +319,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
         await context.keyManager
           .connect(context.owner)
-          ["execute(bytes)"](transferPayload);
+        ["execute(bytes)"](transferPayload);
 
         let newAccountBalance = await provider.getBalance(
           context.universalProfile.address
@@ -351,14 +351,14 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
         const setDataPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
+            "setDataBatch",
             [
               [
                 ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
                 ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-                  universalReceiverDelegateDataUpdater.address.substring(2),
+                universalReceiverDelegateDataUpdater.address.substring(2),
                 ERC725YDataKeys.LSP6[
-                  "AddressPermissions:AllowedERC725YDataKeys"
+                "AddressPermissions:AllowedERC725YDataKeys"
                 ] + universalReceiverDelegateDataUpdater.address.substring(2),
               ],
               [
@@ -371,7 +371,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
         await context.keyManager
           .connect(context.owner)
-          ["execute(bytes)"](setDataPayload);
+        ["execute(bytes)"](setDataPayload);
 
         const universalReceiverDelegatePayload =
           universalReceiverDelegateDataUpdater.interface.encodeFunctionData(
@@ -381,7 +381,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
         const executePayload =
           context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
+            "execute",
             [
               OPERATION_TYPES.CALL,
               universalReceiverDelegateDataUpdater.address,
@@ -392,10 +392,10 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
         await context.keyManager
           .connect(context.owner)
-          ["execute(bytes)"](executePayload);
+        ["execute(bytes)"](executePayload);
 
         expect(
-          await context.universalProfile["getData(bytes32)"](randomHardcodedKey)
+          await context.universalProfile.getData(randomHardcodedKey)
         ).to.equal(randomHardcodedValue);
       });
     });

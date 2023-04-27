@@ -26,7 +26,7 @@ async function setupPermissions(
 ) {
   await context.universalProfile
     .connect(context.owner)
-    ["setData(bytes32[],bytes[])"](permissionsKeys, permissionValues);
+    .setDataBatch(permissionsKeys, permissionValues);
 }
 
 /**
@@ -38,7 +38,7 @@ async function resetPermissions(
 ) {
   await context.universalProfile
     .connect(context.owner)
-    ["setData(bytes32[],bytes[])"](
+    .setDataBatch(
       permissionsKeys,
       Array(permissionsKeys.length).fill("0x")
     );
@@ -177,10 +177,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.universalProfile
             .connect(context.owner)
-            ["setData(bytes32,bytes)"](key, PERMISSIONS.SETDATA);
+            .setData(key, PERMISSIONS.SETDATA);
 
           // prettier-ignore
-          const result = await context.universalProfile["getData(bytes32)"](key);
+          const result = await context.universalProfile.getData(key);
           expect(result).to.equal(PERMISSIONS.SETDATA);
         });
 
@@ -193,10 +193,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.universalProfile
             .connect(context.owner)
-            ["setData(bytes32,bytes)"](key, value);
+            .setData(key, value);
 
           // prettier-ignore
-          const result = await context.universalProfile["getData(bytes32)"](key);
+          const result = await context.universalProfile.getData(key);
           expect(result).to.equal(value);
         });
 
@@ -219,10 +219,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.universalProfile
               .connect(context.owner)
-              ["setData(bytes32,bytes)"](key, value);
+              .setData(key, value);
 
             // prettier-ignore
-            const result = await context.universalProfile["getData(bytes32)"](key);
+            const result = await context.universalProfile.getData(key);
             expect(result).to.equal(value);
           });
 
@@ -244,10 +244,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.universalProfile
               .connect(context.owner)
-              ["setData(bytes32,bytes)"](key, value);
+              .setData(key, value);
 
             // prettier-ignore
-            const result = await context.universalProfile["getData(bytes32)"](key);
+            const result = await context.universalProfile.getData(key);
             expect(result).to.equal(value);
           });
         });
@@ -261,9 +261,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.universalProfile
               .connect(context.owner)
-              ["setData(bytes32,bytes)"](key, value);
+              .setData(key, value);
 
-            const result = await context.universalProfile["getData(bytes32)"](
+            const result = await context.universalProfile.getData(
               key
             );
             expect(result).to.equal(value);
@@ -280,7 +280,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(context.owner)
-                ["setData(bytes32,bytes)"](key, randomValue)
+                .setData(key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -301,7 +301,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(context.owner)
-                ["setData(bytes32,bytes)"](key, randomValue)
+                .setData(key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -323,10 +323,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.universalProfile
               .connect(context.owner)
-              ["setData(bytes32,bytes)"](key, value);
+              .setData(key, value);
 
             // prettier-ignore
-            const result = await context.universalProfile["getData(bytes32)"](key);
+            const result = await context.universalProfile.getData(key);
             expect(ethers.utils.getAddress(result)).to.equal(value);
           });
 
@@ -341,7 +341,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(context.owner)
-                ["setData(bytes32,bytes)"](key, randomValue)
+                .setData(key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -362,7 +362,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(context.owner)
-                ["setData(bytes32,bytes)"](key, randomValue)
+                .setData(key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -382,10 +382,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.universalProfile
               .connect(context.owner)
-              ["setData(bytes32,bytes)"](key, value);
+              .setData(key, value);
 
             // prettier-ignore
-            const result = await context.universalProfile["getData(bytes32)"](key);
+            const result = await context.universalProfile.getData(key);
             expect(result).to.equal(value);
           });
         });
@@ -406,7 +406,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(context.owner)
-                ["setData(bytes32,bytes)"](key, value)
+                .setData(key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -454,10 +454,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](key, value);
+            .setData(key, value);
 
           // prettier-ignore
-          const result = await context.universalProfile["getData(bytes32)"](key);
+          const result = await context.universalProfile.getData(key);
           expect(result).to.equal(value);
         });
 
@@ -471,7 +471,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddController)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -496,10 +496,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.universalProfile
               .connect(canOnlyAddController)
-              ["setData(bytes32,bytes)"](key, value);
+              .setData(key, value);
 
             // prettier-ignore
-            const result = await context.universalProfile["getData(bytes32)"](key);
+            const result = await context.universalProfile.getData(key);
             expect(result).to.equal(value);
           });
 
@@ -522,7 +522,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlyAddController)
-                ["setData(bytes32,bytes)"](key, value)
+                .setData(key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -541,9 +541,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.universalProfile
               .connect(canOnlyAddController)
-              ["setData(bytes32,bytes)"](key, value);
+              .setData(key, value);
 
-            const result = await context.universalProfile["getData(bytes32)"](
+            const result = await context.universalProfile.getData(
               key
             );
             expect(result).to.equal(value);
@@ -560,7 +560,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlyAddController)
-                ["setData(bytes32,bytes)"](key, randomValue)
+                .setData(key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -579,7 +579,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlyAddController)
-                ["setData(bytes32,bytes)"](key, randomValue)
+                .setData(key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -602,7 +602,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlyAddController)
-                ["setData(bytes32,bytes)"](key, value)
+                .setData(key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -623,7 +623,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlyAddController)
-                ["setData(bytes32,bytes)"](key, value)
+                .setData(key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -649,7 +649,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlyAddController)
-                ["setData(bytes32,bytes)"](key, value)
+                .setData(key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -697,7 +697,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -712,7 +712,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -727,10 +727,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.universalProfile
             .connect(canOnlyEditPermissions)
-            ["setData(bytes32,bytes)"](key, value);
+            .setData(key, value);
 
           // prettier-ignore
-          const result = await context.universalProfile["getData(bytes32)"](key);
+          const result = await context.universalProfile.getData(key);
           expect(result).to.equal(value);
         });
 
@@ -754,7 +754,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlyEditPermissions)
-                ["setData(bytes32,bytes)"](key, value)
+                .setData(key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -781,10 +781,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["setData(bytes32,bytes)"](key, value);
+              .setData(key, value);
 
             // prettier-ignore
-            const result = await context.universalProfile["getData(bytes32)"](key);
+            const result = await context.universalProfile.getData(key);
             expect(result).to.equal(value);
           });
         });
@@ -799,7 +799,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlyEditPermissions)
-                ["setData(bytes32,bytes)"](key, value)
+                .setData(key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -821,10 +821,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["setData(bytes32,bytes)"](key, value);
+              .setData(key, value);
 
             // prettier-ignore
-            const result = await context.universalProfile["getData(bytes32)"](key);
+            const result = await context.universalProfile.getData(key);
             expect(ethers.utils.getAddress(result)).to.equal(value);
           });
 
@@ -839,7 +839,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlyEditPermissions)
-                ["setData(bytes32,bytes)"](key, randomValue)
+                .setData(key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -860,7 +860,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlyEditPermissions)
-                ["setData(bytes32,bytes)"](key, randomValue)
+                .setData(key, randomValue)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -880,10 +880,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             await context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["setData(bytes32,bytes)"](key, value);
+              .setData(key, value);
 
             // prettier-ignore
-            const result = await context.universalProfile["getData(bytes32)"](key);
+            const result = await context.universalProfile.getData(key);
             expect(result).to.equal(value);
           });
         });
@@ -904,7 +904,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlyEditPermissions)
-                ["setData(bytes32,bytes)"](key, value)
+                .setData(key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -952,7 +952,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canOnlySetData)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDCONTROLLER");
@@ -967,7 +967,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canOnlySetData)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDCONTROLLER");
@@ -983,7 +983,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canOnlySetData)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "EDITPERMISSIONS");
@@ -1009,7 +1009,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlySetData)
-                ["setData(bytes32,bytes)"](key, value)
+                .setData(key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1037,7 +1037,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlySetData)
-                ["setData(bytes32,bytes)"](key, value)
+                .setData(key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1058,7 +1058,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlySetData)
-                ["setData(bytes32,bytes)"](key, value)
+                .setData(key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1077,7 +1077,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canOnlySetData)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDCONTROLLER");
@@ -1095,7 +1095,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canOnlySetData)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "EDITPERMISSIONS");
@@ -1117,7 +1117,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile
                 .connect(canOnlySetData)
-                ["setData(bytes32,bytes)"](key, value)
+                .setData(key, value)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1214,10 +1214,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.universalProfile
             .connect(context.owner)
-            ["setData(bytes32[],bytes[])"](keys, values);
+            .setDataBatch(keys, values);
 
           // prettier-ignore
-          const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
+          const fetchedResult = await context.universalProfile.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
 
@@ -1240,10 +1240,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.universalProfile
             .connect(context.owner)
-            ["setData(bytes32[],bytes[])"](keys, values);
+            .setDataBatch(keys, values);
 
           // prettier-ignore
-          const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
+          const fetchedResult = await context.universalProfile.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
 
@@ -1270,10 +1270,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.universalProfile
             .connect(context.owner)
-            ["setData(bytes32[],bytes[])"](keys, values);
+            .setDataBatch(keys, values);
 
           // prettier-ignore
-          const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
+          const fetchedResult = await context.universalProfile.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
       });
@@ -1312,7 +1312,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canSetDataAndAddController)
-              ["setData(bytes32[],bytes[])"](keys, values)
+              .setDataBatch(keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndAddController.address, "EDITPERMISSIONS");
@@ -1338,7 +1338,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canSetDataAndAddController)
-              ["setData(bytes32[],bytes[])"](keys, values)
+              .setDataBatch(keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndAddController.address, "EDITPERMISSIONS");
@@ -1368,7 +1368,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canSetDataAndAddController)
-              ["setData(bytes32[],bytes[])"](keys, values)
+              .setDataBatch(keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndAddController.address, "EDITPERMISSIONS");
@@ -1403,7 +1403,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canSetDataAndAddController)
-              ["setData(bytes32[],bytes[])"](dataKeys, dataValues)
+              .setDataBatch(dataKeys, dataValues)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1437,10 +1437,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.universalProfile
             .connect(canSetDataAndAddController)
-            ["setData(bytes32[],bytes[])"](keys, values);
+            .setDataBatch(keys, values);
 
           expect(
-            await context.universalProfile["getData(bytes32[])"](keys)
+            await context.universalProfile.getDataBatch(keys)
           ).to.deep.equal(values);
         });
 
@@ -1481,10 +1481,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.universalProfile
             .connect(canSetDataAndAddController)
-            ["setData(bytes32[],bytes[])"](keys, values);
+            .setDataBatch(keys, values);
 
           expect(
-            await context.universalProfile["getData(bytes32[])"](keys)
+            await context.universalProfile.getDataBatch(keys)
           ).to.deep.equal(values);
         });
       });
@@ -1521,7 +1521,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canSetDataAndEditPermissions)
-              ["setData(bytes32[],bytes[])"](keys, values)
+              .setDataBatch(keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndEditPermissions.address, "ADDCONTROLLER");
@@ -1551,7 +1551,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canSetDataAndEditPermissions)
-              ["setData(bytes32[],bytes[])"](keys, values)
+              .setDataBatch(keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndEditPermissions.address, "ADDCONTROLLER");
@@ -1579,7 +1579,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canSetDataAndEditPermissions)
-              ["setData(bytes32[],bytes[])"](keys, values)
+              .setDataBatch(keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canSetDataAndEditPermissions.address, "ADDCONTROLLER");
@@ -1611,7 +1611,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(
             context.universalProfile
               .connect(canSetDataAndEditPermissions)
-              ["setData(bytes32[],bytes[])"](keys, values)
+              .setDataBatch(keys, values)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1642,10 +1642,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.universalProfile
             .connect(canSetDataAndEditPermissions)
-            ["setData(bytes32[],bytes[])"](keys, values);
+            .setDataBatch(keys, values);
 
           expect(
-            await context.universalProfile["getData(bytes32[])"](keys)
+            await context.universalProfile.getDataBatch(keys)
           ).to.deep.equal(values);
         });
 
@@ -1670,10 +1670,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           await context.universalProfile
             .connect(canSetDataAndEditPermissions)
-            ["setData(bytes32[],bytes[])"](keys, values);
+            .setDataBatch(keys, values);
 
           expect(
-            await context.universalProfile["getData(bytes32[])"](keys)
+            await context.universalProfile.getDataBatch(keys)
           ).to.deep.equal(values);
         });
       });

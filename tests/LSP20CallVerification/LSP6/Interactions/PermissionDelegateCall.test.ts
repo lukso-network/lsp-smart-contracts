@@ -45,11 +45,11 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanDelegateCall.address.substring(2),
+        addressCanDelegateCall.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCannotDelegateCall.address.substring(2),
+        addressCannotDelegateCall.address.substring(2),
       ];
 
       const permissionsValues = [
@@ -68,7 +68,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       // first check that nothing is set under this key
       // inside the storage of the calling UP
-      const currentStorage = await context.universalProfile["getData(bytes32)"](
+      const currentStorage = await context.universalProfile.getData(
         key
       );
       expect(currentStorage).to.equal("0x");
@@ -84,7 +84,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
       await expect(
         context.universalProfile
           .connect(context.owner)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.DELEGATECALL,
             erc725YDelegateCallContract.address,
             0,
@@ -103,7 +103,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       // first check that nothing is set under this key
       // inside the storage of the calling UP
-      const currentStorage = await context.universalProfile["getData(bytes32)"](
+      const currentStorage = await context.universalProfile.getData(
         key
       );
       expect(currentStorage).to.equal("0x");
@@ -119,7 +119,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
       await expect(
         context.universalProfile
           .connect(addressCanDelegateCall)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.DELEGATECALL,
             erc725YDelegateCallContract.address,
             0,
@@ -138,7 +138,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       // first check that nothing is set under this key
       // inside the storage of the calling UP
-      const currentStorage = await context.universalProfile["getData(bytes32)"](
+      const currentStorage = await context.universalProfile.getData(
         key
       );
       expect(currentStorage).to.equal("0x");
@@ -147,14 +147,14 @@ export const shouldBehaveLikePermissionDelegateCall = (
       // should update the ERC725Y storage of the UP making the delegatecall
       let delegateCallPayload =
         erc725YDelegateCallContract.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
+          "setDataBatch",
           [[key], [value]]
         );
 
       await expect(
         context.universalProfile
           .connect(addressCannotDelegateCall)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.DELEGATECALL,
             erc725YDelegateCallContract.address,
             0,
@@ -191,9 +191,9 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          caller.address.substring(2),
+        caller.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          caller.address.substring(2),
+        caller.address.substring(2),
       ];
 
       const permissionValues = [
@@ -250,14 +250,14 @@ export const shouldBehaveLikePermissionDelegateCall = (
             // prettier-ignore
             let delegateCallPayload = randomContracts[ii].interface.encodeFunctionData(
               "updateStorage", [
-                key,
-                value,
-              ]);
+              key,
+              value,
+            ]);
 
             await expect(
               context.universalProfile
                 .connect(caller)
-                ["execute(uint256,address,uint256,bytes)"](
+                .execute(
                   OPERATION_TYPES.DELEGATECALL,
                   randomContracts[ii].address,
                   0,
@@ -285,20 +285,20 @@ export const shouldBehaveLikePermissionDelegateCall = (
         const value = "0xbbbbbbbbbbbbbbbb";
 
         // prettier-ignore
-        const currentStorage = await context.universalProfile["getData(bytes32)"](key);
+        const currentStorage = await context.universalProfile.getData(key);
         expect(currentStorage).to.equal("0x");
 
         // prettier-ignore
         let delegateCallPayload = allowedDelegateCallContracts[0].interface.encodeFunctionData(
           "updateStorage", [
-            key,
-            value,
-          ]);
+          key,
+          value,
+        ]);
 
         await expect(
           context.universalProfile
             .connect(caller)
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.DELEGATECALL,
               allowedDelegateCallContracts[0].address,
               0,
@@ -310,7 +310,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
         );
 
         // prettier-ignore
-        const newStorage = await context.universalProfile["getData(bytes32)"](key);
+        const newStorage = await context.universalProfile.getData(key);
         expect(newStorage).to.equal("0x");
       });
 
@@ -320,20 +320,20 @@ export const shouldBehaveLikePermissionDelegateCall = (
         const value = "0xbbbbbbbbbbbbbbbb";
 
         // prettier-ignore
-        const currentStorage = await context.universalProfile["getData(bytes32)"](key);
+        const currentStorage = await context.universalProfile.getData(key);
         expect(currentStorage).to.equal("0x");
 
         // prettier-ignore
         let delegateCallPayload = allowedDelegateCallContracts[1].interface.encodeFunctionData(
           "updateStorage", [
-            key,
-            value,
-          ]);
+          key,
+          value,
+        ]);
 
         await expect(
           context.universalProfile
             .connect(caller)
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.DELEGATECALL,
               allowedDelegateCallContracts[1].address,
               0,
@@ -345,7 +345,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
         );
 
         // prettier-ignore
-        const newStorage = await context.universalProfile["getData(bytes32)"](key);
+        const newStorage = await context.universalProfile.getData(key);
         expect(newStorage).to.equal("0x");
       });
     });

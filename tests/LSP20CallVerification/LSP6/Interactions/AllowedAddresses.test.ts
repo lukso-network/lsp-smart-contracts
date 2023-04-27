@@ -112,7 +112,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
           await context.universalProfile
             .connect(context.owner)
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CALL,
               recipient,
               amount,
@@ -142,7 +142,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
       await context.universalProfile
         .connect(canCallOnlyTwoAddresses)
-        ["execute(uint256,address,uint256,bytes)"](
+        .execute(
           OPERATION_TYPES.CALL,
           allowedEOA.address,
           amount,
@@ -168,7 +168,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
       await context.universalProfile
         .connect(canCallOnlyTwoAddresses)
-        ["execute(uint256,address,uint256,bytes)"](
+        .execute(
           OPERATION_TYPES.CALL,
           allowedTargetContract.address,
           0,
@@ -190,7 +190,7 @@ export const shouldBehaveLikeAllowedAddresses = (
       await expect(
         context.universalProfile
           .connect(canCallOnlyTwoAddresses)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.CALL,
             notAllowedEOA.address,
             ethers.utils.parseEther("1"),
@@ -226,7 +226,7 @@ export const shouldBehaveLikeAllowedAddresses = (
       await expect(
         context.universalProfile
           .connect(canCallOnlyTwoAddresses)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.CALL,
             notAllowedTargetContract.address,
             0,
@@ -256,7 +256,7 @@ export const shouldBehaveLikeAllowedAddresses = (
           await expect(
             context.universalProfile
               .connect(invalidEncodedAllowedCalls)
-              ["execute(uint256,address,uint256,bytes)"](
+              .execute(
                 OPERATION_TYPES.CALL,
                 recipient,
                 amount,

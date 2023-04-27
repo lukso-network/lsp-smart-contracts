@@ -51,13 +51,13 @@ export async function setupKeyManager(
 ) {
   await _context.universalProfile
     .connect(_context.owner)
-    ["setData(bytes32[],bytes[])"](
+    .setDataBatch(
       [
         // required to set owner permission so that it can acceptOwnership(...) via the KeyManager
         // otherwise, the KeyManager will flag the calling owner as not having the permission CHANGEOWNER
         // when trying to setup the KeyManager
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          _context.owner.address.substring(2),
+        _context.owner.address.substring(2),
         ..._dataKeys,
       ],
       [ALL_PERMISSIONS, ..._dataValues]
@@ -80,10 +80,10 @@ export async function setupKeyManagerHelper(
 ) {
   await _context.universalProfile
     .connect(_context.owner)
-    ["setData(bytes32[],bytes[])"](
+    .setDataBatch(
       [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          _context.owner.address.substring(2),
+        _context.owner.address.substring(2),
         ..._permissionsKeys,
       ],
       [ALL_PERMISSIONS, ..._permissionsValues]
@@ -98,7 +98,7 @@ export async function setupKeyManagerHelper(
 
   await _context.keyManagerInternalTester
     .connect(_context.owner)
-    ["execute(bytes)"](payload);
+  ["execute(bytes)"](payload);
 }
 
 /**
@@ -119,17 +119,17 @@ export async function setupProfileWithKeyManagerWithURD(
 
   await universalProfile
     .connect(EOA)
-    ["setData(bytes32[],bytes[])"](
+    .setDataBatch(
       [
         ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
         ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000000",
+        "00000000000000000000000000000000",
         ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000001",
+        "00000000000000000000000000000001",
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          EOA.address.substring(2),
+        EOA.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          lsp1universalReceiverDelegateUP.address.substring(2),
+        lsp1universalReceiverDelegateUP.address.substring(2),
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
       ],
       [
@@ -186,14 +186,14 @@ export async function grantLSP11PermissionViaKeyManager(
   const lsp11SocialRecoveryPermissions = PERMISSIONS.ADDCONTROLLER;
 
   const payload = universalProfile.interface.encodeFunctionData(
-    "setData(bytes32[],bytes[])",
+    "setDataBatch",
     [
       [
         ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
         ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          rawPermissionArrayLength.substring(2),
+        rawPermissionArrayLength.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressToGrant.substring(2),
+        addressToGrant.substring(2),
       ],
       [
         newRawPermissionArrayLength,
@@ -210,7 +210,7 @@ export async function grantLSP11PermissionViaKeyManager(
  */
 export function callPayload(from: any, to: string, abi: string) {
   let payload = from.interface.encodeFunctionData(
-    "execute(uint256,address,uint256,bytes)",
+    "execute",
     [0, to, 0, abi]
   );
   return payload;
@@ -221,7 +221,7 @@ export function callPayload(from: any, to: string, abi: string) {
  * for the account provided.
  */
 export async function getLSP5MapAndArrayKeysValue(account, token) {
-  const mapValue = await account["getData(bytes32)"](
+  const mapValue = await account.getData(
     ethers.utils.hexConcat([
       ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap,
       token.address,
@@ -243,7 +243,7 @@ export async function getLSP5MapAndArrayKeysValue(account, token) {
   ]);
 
   let arrayKey = ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length;
-  let [arrayLength, elementAddress] = await account["getData(bytes32[])"]([
+  let [arrayLength, elementAddress] = await account.getDataBatch([
     arrayKey,
     elementInArrayKey,
   ]);

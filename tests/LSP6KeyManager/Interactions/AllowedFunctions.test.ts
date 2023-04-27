@@ -51,11 +51,11 @@ export const shouldBehaveLikeAllowedFunctions = (
 
     let permissionsKeys = [
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressWithNoAllowedFunctions.address.substring(2),
+      addressWithNoAllowedFunctions.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCanCallOnlyOneFunction.address.substring(2),
+      addressCanCallOnlyOneFunction.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        addressCanCallOnlyOneFunction.address.substring(2),
+      addressCanCallOnlyOneFunction.address.substring(2),
     ];
 
     let permissionsValues = [
@@ -84,7 +84,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executePayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [
                 OPERATION_TYPES.CALL,
                 targetContract.address,
@@ -96,7 +96,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           await expect(
             context.keyManager
               .connect(addressWithNoAllowedFunctions)
-              ["execute(bytes)"](executePayload)
+            ["execute(bytes)"](executePayload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
             .withArgs(addressWithNoAllowedFunctions.address);
@@ -111,7 +111,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             ]);
           let executePayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [
                 OPERATION_TYPES.CALL,
                 targetContract.address,
@@ -123,7 +123,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           await expect(
             context.keyManager
               .connect(addressWithNoAllowedFunctions)
-              ["execute(bytes)"](executePayload)
+            ["execute(bytes)"](executePayload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
             .withArgs(addressWithNoAllowedFunctions.address);
@@ -142,7 +142,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executePayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [
                 OPERATION_TYPES.CALL,
                 targetContract.address,
@@ -153,7 +153,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           await context.keyManager
             .connect(addressCanCallOnlyOneFunction)
-            ["execute(bytes)"](executePayload);
+          ["execute(bytes)"](executePayload);
 
           let result = await targetContract.callStatic.getName();
           expect(result).to.not.equal(initialName);
@@ -170,7 +170,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             ]);
           let executePayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [
                 OPERATION_TYPES.CALL,
                 targetContract.address,
@@ -182,7 +182,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           await expect(
             context.keyManager
               .connect(addressCanCallOnlyOneFunction)
-              ["execute(bytes)"](executePayload)
+            ["execute(bytes)"](executePayload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
             .withArgs(
@@ -202,14 +202,14 @@ export const shouldBehaveLikeAllowedFunctions = (
           "0xbaadca110000000000000000000000000000000000000000000000000000000123456789";
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
+          "execute",
           [OPERATION_TYPES.CALL, targetContract.address, 0, randomPayload]
         );
 
         await expect(
           context.keyManager
             .connect(addressCanCallOnlyOneFunction)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
           .withArgs(
@@ -238,7 +238,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [
                 OPERATION_TYPES.CALL,
                 targetContract.address,
@@ -291,7 +291,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [
                 OPERATION_TYPES.CALL,
                 targetContract.address,
@@ -389,17 +389,17 @@ export const shouldBehaveLikeAllowedFunctions = (
 
       let permissionsKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanCallOnlyTransferOnLSP8.address.substring(2),
+        addressCanCallOnlyTransferOnLSP8.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          addressCanCallOnlyTransferOnLSP8.address.substring(2),
+        addressCanCallOnlyTransferOnLSP8.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.address.substring(
-            2
-          ),
+        addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.address.substring(
+          2
+        ),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.address.substring(
-            2
-          ),
+        addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.address.substring(
+          2
+        ),
       ];
 
       let permissionsValues = [
@@ -442,7 +442,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
         let executePayload =
           context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
+            "execute",
             [
               OPERATION_TYPES.CALL,
               lsp8Contract.address,
@@ -454,7 +454,7 @@ export const shouldBehaveLikeAllowedFunctions = (
         await expect(
           context.keyManager
             .connect(addressCanCallOnlyTransferOnLSP8)
-            ["execute(bytes)"](executePayload)
+          ["execute(bytes)"](executePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
           .withArgs(
@@ -480,13 +480,13 @@ export const shouldBehaveLikeAllowedFunctions = (
 
         let executePayload =
           context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
+            "execute",
             [OPERATION_TYPES.CALL, lsp8Contract.address, 0, transferPayload]
           );
 
         await context.keyManager
           .connect(addressCanCallOnlyTransferOnLSP8)
-          ["execute(bytes)"](executePayload);
+        ["execute(bytes)"](executePayload);
 
         expect(await lsp8Contract.tokenOwnerOf(tokenIdToTransfer)).to.equal(
           recipient
@@ -509,7 +509,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executePayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [OPERATION_TYPES.CALL, lsp7Contract.address, 0, mintPayload]
             );
 
@@ -517,7 +517,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            ["execute(bytes)"](executePayload);
+          ["execute(bytes)"](executePayload);
 
           expect(await lsp7Contract.balanceOf(recipient)).to.equal(amount);
         });
@@ -542,7 +542,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executePayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [OPERATION_TYPES.CALL, lsp7Contract.address, 0, transferPayload]
             );
 
@@ -550,7 +550,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            ["execute(bytes)"](executePayload);
+          ["execute(bytes)"](executePayload);
 
           // CHECK that UP token balance has decreased
           expect(
@@ -575,7 +575,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executePayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [
                 OPERATION_TYPES.CALL,
                 lsp7Contract.address,
@@ -588,7 +588,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            ["execute(bytes)"](executePayload);
+          ["execute(bytes)"](executePayload);
 
           expect(
             await lsp7Contract.authorizedAmountFor(
@@ -606,12 +606,12 @@ export const shouldBehaveLikeAllowedFunctions = (
           let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(":)"));
 
           let setDataPayload = lsp7Contract.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
+            "execute",
             [OPERATION_TYPES.CALL, lsp7Contract.address, 0, setDataPayload]
           );
 
@@ -619,10 +619,10 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            ["execute(bytes)"](payload);
+          ["execute(bytes)"](payload);
 
           expect(
-            await lsp7Contract.callStatic["getData(bytes32)"](key)
+            await lsp7Contract.callStatic.getData(key)
           ).to.equal(value);
         });
       });
@@ -644,7 +644,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executePayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [OPERATION_TYPES.CALL, lsp8Contract.address, 0, transferPayload]
             );
 
@@ -653,7 +653,7 @@ export const shouldBehaveLikeAllowedFunctions = (
               .connect(
                 addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
               )
-              ["execute(bytes)"](executePayload)
+            ["execute(bytes)"](executePayload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
             .withArgs(
@@ -678,7 +678,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executePayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [OPERATION_TYPES.CALL, lsp8Contract.address, 0, mintPayload]
             );
 
@@ -687,7 +687,7 @@ export const shouldBehaveLikeAllowedFunctions = (
               .connect(
                 addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
               )
-              ["execute(bytes)"](executePayload)
+            ["execute(bytes)"](executePayload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
             .withArgs(
@@ -708,7 +708,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executePayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [
                 OPERATION_TYPES.CALL,
                 lsp8Contract.address,
@@ -721,7 +721,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            ["execute(bytes)"](executePayload);
+          ["execute(bytes)"](executePayload);
 
           expect(await lsp8Contract.isOperatorFor(recipient, tokenIdToApprove))
             .to.be.true;

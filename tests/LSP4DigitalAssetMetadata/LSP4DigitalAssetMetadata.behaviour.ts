@@ -37,7 +37,7 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
       expect(
         context.contract
           .connect(context.deployParams.owner)
-          ["setData(bytes32,bytes)"](key, value)
+          .setData(key, value)
       ).to.be.revertedWithCustomError(
         context.contract,
         "LSP4TokenNameNotEditable"
@@ -51,7 +51,7 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
       expect(
         context.contract
           .connect(context.deployParams.owner)
-          ["setData(bytes32,bytes)"](key, value)
+          .setData(key, value)
       ).to.be.revertedWithCustomError(
         context.contract,
         "LSP4TokenSymbolNotEditable"
@@ -66,12 +66,12 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
         await expect(
           context.contract
             .connect(context.deployParams.owner)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.emit(context.contract, "DataChanged")
           .withArgs(key, value);
 
-        const result = await context.contract["getData(bytes32)"](key);
+        const result = await context.contract.getData(key);
         expect(result).to.equal(value);
       });
     });
@@ -84,12 +84,12 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
         await expect(
           context.contract
             .connect(context.deployParams.owner)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.emit(context.contract, "DataChanged")
           .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
 
-        const result = await context.contract["getData(bytes32)"](key);
+        const result = await context.contract.getData(key);
         expect(result).to.equal(value);
       });
     });
@@ -102,12 +102,12 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
         await expect(
           context.contract
             .connect(context.deployParams.owner)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.emit(context.contract, "DataChanged")
           .withArgs(key, value);
 
-        const result = await context.contract["getData(bytes32)"](key);
+        const result = await context.contract.getData(key);
         expect(result).to.equal(value);
       });
     });

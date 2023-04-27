@@ -91,9 +91,9 @@ export const shouldBehaveLikeLSP14 = (
 
         await context.contract
           .connect(context.deployParams.owner)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
-        const result = await context.contract["getData(bytes32)"](key);
+        const result = await context.contract.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -110,7 +110,7 @@ export const shouldBehaveLikeLSP14 = (
 
         await context.contract
           .connect(context.deployParams.owner)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.CALL,
             recipient.address,
             amount,
@@ -225,7 +225,7 @@ export const shouldBehaveLikeLSP14 = (
           await expect(
             context.contract
               .connect(previousOwner)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           ).to.be.revertedWith(context.onlyOwnerRevertString);
         });
 
@@ -236,7 +236,7 @@ export const shouldBehaveLikeLSP14 = (
           await expect(
             context.contract
               .connect(previousOwner)
-              ["execute(uint256,address,uint256,bytes)"](
+              .execute(
                 OPERATION_TYPES.CALL,
                 recipient.address,
                 amount,
@@ -260,9 +260,9 @@ export const shouldBehaveLikeLSP14 = (
 
           await context.contract
             .connect(newOwner)
-            ["setData(bytes32,bytes)"](key, value);
+            .setData(key, value);
 
-          const result = await context.contract["getData(bytes32)"](key);
+          const result = await context.contract.getData(key);
           expect(result).to.equal(value);
         });
 
@@ -273,7 +273,7 @@ export const shouldBehaveLikeLSP14 = (
           await expect(() =>
             context.contract
               .connect(newOwner)
-              ["execute(uint256,address,uint256,bytes)"](
+              .execute(
                 OPERATION_TYPES.CALL,
                 recipient.address,
                 amount,
@@ -371,9 +371,9 @@ export const shouldBehaveLikeLSP14 = (
 
           await context.contract
             .connect(currentOwner)
-            ["setData(bytes32,bytes)"](key, value);
+            .setData(key, value);
 
-          const result = await context.contract["getData(bytes32)"](key);
+          const result = await context.contract.getData(key);
 
           expect(result).to.equal(value);
         });
@@ -386,7 +386,7 @@ export const shouldBehaveLikeLSP14 = (
           await expect(() =>
             context.contract
               .connect(currentOwner)
-              ["execute(uint256,address,uint256,bytes)"](
+              .execute(
                 OPERATION_TYPES.CALL,
                 recipient,
                 amount,
@@ -542,7 +542,7 @@ export const shouldBehaveLikeLSP14 = (
             await expect(
               context.contract
                 .connect(context.deployParams.owner)
-                ["setData(bytes32,bytes)"](key, value)
+                .setData(key, value)
             ).to.be.revertedWith(
               "Only Owner or reentered Universal Receiver Delegate allowed"
             );
@@ -555,7 +555,7 @@ export const shouldBehaveLikeLSP14 = (
             await expect(
               context.contract
                 .connect(context.deployParams.owner)
-                ["execute(uint256,address,uint256,bytes)"](
+                .execute(
                   OPERATION_TYPES.CALL,
                   recipient,
                   amount,

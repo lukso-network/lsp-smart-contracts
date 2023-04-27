@@ -248,7 +248,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       );
 
       expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedKey)
+        await context.universalProfile.getData(hardcodedKey)
       ).to.equal(hardcodedValue);
     });
   });
@@ -324,7 +324,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "0x0000000000000000000000000000000000000000000000000000000000000010";
 
       expect(
-        await context.universalProfile["getData(bytes32)"](
+        await context.universalProfile.getData(
           hardcodedPermissionKey
         )
       ).to.equal(hardcodedPermissionValue);
@@ -401,7 +401,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       const hardcodedPermissionValue = "0x";
 
       expect(
-        await context.universalProfile["getData(bytes32)"](
+        await context.universalProfile.getData(
           hardcodedPermissionKey
         )
       ).to.equal(hardcodedPermissionValue);
@@ -479,7 +479,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       const hardcodedLSP1Value = reentrancyContext.newURDAddress;
 
       expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedLSP1Key)
+        await context.universalProfile.getData(hardcodedLSP1Key)
       ).to.equal(hardcodedLSP1Value.toLowerCase());
     });
   });
@@ -557,7 +557,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       const hardcodedLSP1Value = "0x";
 
       expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedLSP1Key)
+        await context.universalProfile.getData(hardcodedLSP1Key)
       ).to.equal(hardcodedLSP1Value.toLowerCase());
     });
   });

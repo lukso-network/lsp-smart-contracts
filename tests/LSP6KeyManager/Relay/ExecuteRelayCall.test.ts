@@ -65,13 +65,13 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          signer.address.substring(2),
+        signer.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          signer.address.substring(2),
+        signer.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          signerNoAllowedCalls.address.substring(2),
+        signerNoAllowedCalls.address.substring(2),
       ];
 
       const permissionsValues = [
@@ -98,7 +98,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           it("should revert by recovering a non permissioned address", async () => {
             let executeRelayCallPayload =
               context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
+                "execute",
                 [OPERATION_TYPES.CALL, random.address, 0, "0x"]
               );
 
@@ -156,7 +156,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           it("should revert by recovering a non permissioned address", async () => {
             let executeRelayCallPayload =
               context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
+                "execute",
                 [OPERATION_TYPES.CALL, random.address, 0, "0x"]
               );
 
@@ -200,12 +200,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
             await expect(
               context.keyManager
                 .connect(relayer)
-                ["executeRelayCall(bytes,uint256,bytes)"](
-                  signature,
-                  signedMessageParams.nonce,
-                  signedMessageParams.payload,
-                  { value: valueToSendFromRelayer }
-                )
+              ["executeRelayCall(bytes,uint256,bytes)"](
+                signature,
+                signedMessageParams.nonce,
+                signedMessageParams.payload,
+                { value: valueToSendFromRelayer }
+              )
             ).to.be.revertedWithCustomError(
               context.keyManager,
               "NoPermissionsSet"
@@ -217,7 +217,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           it("should pass if signer has the `to` address in its allowed calls", async () => {
             let executeRelayCallPayload =
               context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
+                "execute",
                 [OPERATION_TYPES.CALL, random.address, 0, "0x"]
               );
 
@@ -262,12 +262,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             const tx = await context.keyManager
               .connect(relayer)
-              ["executeRelayCall(bytes,uint256,bytes)"](
-                signature,
-                signedMessageParams.nonce,
-                signedMessageParams.payload,
-                { value: valueToSendFromRelayer }
-              );
+            ["executeRelayCall(bytes,uint256,bytes)"](
+              signature,
+              signedMessageParams.nonce,
+              signedMessageParams.payload,
+              { value: valueToSendFromRelayer }
+            );
 
             expect(tx)
               .to.emit(context.keyManager, "VerifiedCall")
@@ -275,7 +275,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 context.accounts[1].address,
                 signedMessageParams.msgValue,
                 context.universalProfile.interface.getSighash(
-                  "execute(uint256,address,uint256,bytes)"
+                  "execute"
                 )
               );
 
@@ -291,7 +291,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           it("should fail if signer has nothing listed in its allowed calls", async () => {
             let executeRelayCallPayload =
               context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
+                "execute",
                 [OPERATION_TYPES.CALL, random.address, 0, "0x"]
               );
 
@@ -333,12 +333,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
             await expect(
               context.keyManager
                 .connect(relayer)
-                ["executeRelayCall(bytes,uint256,bytes)"](
-                  signature,
-                  signedMessageParams.nonce,
-                  signedMessageParams.payload,
-                  { value: valueToSendFromRelayer }
-                )
+              ["executeRelayCall(bytes,uint256,bytes)"](
+                signature,
+                signedMessageParams.nonce,
+                signedMessageParams.payload,
+                { value: valueToSendFromRelayer }
+              )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -366,7 +366,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
-                  "execute(uint256,address,uint256,bytes)",
+                  "execute",
                   [
                     OPERATION_TYPES.CALL,
                     targetContract.address,
@@ -408,12 +408,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
               await expect(
                 context.keyManager
                   .connect(relayer)
-                  ["executeRelayCall(bytes,uint256,bytes)"](
-                    signature,
-                    latestNonce,
-                    executeRelayCallPayload,
-                    { value: valueToSendFromRelayer }
-                  )
+                ["executeRelayCall(bytes,uint256,bytes)"](
+                  signature,
+                  latestNonce,
+                  executeRelayCallPayload,
+                  { value: valueToSendFromRelayer }
+                )
               )
                 .to.be.revertedWithCustomError(
                   context.universalProfile,
@@ -443,7 +443,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
-                  "execute(uint256,address,uint256,bytes)",
+                  "execute",
                   [
                     OPERATION_TYPES.CALL,
                     targetContract.address,
@@ -484,12 +484,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               await context.keyManager
                 .connect(relayer)
-                ["executeRelayCall(bytes,uint256,bytes)"](
-                  signature,
-                  latestNonce,
-                  executeRelayCallPayload,
-                  { value: valueToSendFromRelayer }
-                );
+              ["executeRelayCall(bytes,uint256,bytes)"](
+                signature,
+                latestNonce,
+                executeRelayCallPayload,
+                { value: valueToSendFromRelayer }
+              );
 
               const result = await targetContract.callStatic.getName();
               expect(result).to.equal(nameToSet);
@@ -511,7 +511,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
-                  "execute(uint256,address,uint256,bytes)",
+                  "execute",
                   [
                     OPERATION_TYPES.CALL,
                     targetContract.address,
@@ -553,12 +553,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
               await expect(
                 context.keyManager
                   .connect(relayer)
-                  ["executeRelayCall(bytes,uint256,bytes)"](
-                    signature,
-                    latestNonce,
-                    executeRelayCallPayload,
-                    { value: valueToSendFromRelayer }
-                  )
+                ["executeRelayCall(bytes,uint256,bytes)"](
+                  signature,
+                  latestNonce,
+                  executeRelayCallPayload,
+                  { value: valueToSendFromRelayer }
+                )
               )
                 .to.be.revertedWithCustomError(
                   context.keyManager,
@@ -598,7 +598,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        context.owner.address.substring(2),
       ];
 
       const permissionsValues = [ALL_PERMISSIONS];
@@ -620,12 +620,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
       await expect(
         context.keyManager
           .connect(context.owner)
-          ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-            signatures,
-            nonces,
-            values,
-            payloads
-          )
+        ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
+          signatures,
+          nonces,
+          values,
+          payloads
+        )
       ).to.be.revertedWithCustomError(
         context.keyManager,
         "BatchExecuteRelayCallParamsLengthMismatch"
@@ -638,7 +638,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       const transferLyxPayload =
         context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
+          "execute",
           [OPERATION_TYPES.CALL, recipient, amountForRecipient, "0x"]
         );
 
@@ -695,12 +695,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
       await expect(
         context.keyManager
           .connect(context.owner)
-          ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-            [transferLyxSignature, transferLyxSignature],
-            [ownerNonce, ownerNonce.add(1)],
-            [0, 0],
-            [transferLyxPayload, transferLyxPayload]
-          )
+        ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
+          [transferLyxSignature, transferLyxSignature],
+          [ownerNonce, ownerNonce.add(1)],
+          [0, 0],
+          [transferLyxPayload, transferLyxPayload]
+        )
       )
         .to.be.revertedWithCustomError(context.keyManager, "InvalidRelayNonce")
         .withArgs(
@@ -719,13 +719,13 @@ export const shouldBehaveLikeExecuteRelayCall = (
       // step 1 - give minter permissions to mint
       const giveMinterPermissionsPayload =
         context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
+          "setDataBatch",
           [
             [
               ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-                minter.address.substring(2),
+              minter.address.substring(2),
               ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-                minter.address.substring(2),
+              minter.address.substring(2),
             ],
             [
               PERMISSIONS.CALL,
@@ -758,7 +758,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
       );
       const executePayload =
         context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
+          "execute",
           [OPERATION_TYPES.CALL, tokenContract.address, 0, minterMintPayload]
         );
 
@@ -774,13 +774,13 @@ export const shouldBehaveLikeExecuteRelayCall = (
       // Step 3 - remove minter permissions to mint
       const removeMinterPermissionsPayload =
         context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
+          "setDataBatch",
           [
             [
               ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-                minter.address.substring(2),
+              minter.address.substring(2),
               ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-                minter.address.substring(2),
+              minter.address.substring(2),
             ],
             ["0x", "0x"],
           ]
@@ -796,20 +796,20 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       await context.keyManager
         .connect(context.owner)
-        ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-          [
-            ownerGivePermissionsSignature,
-            minterMintSignature,
-            ownerRemovePermissionsSignature,
-          ],
-          [ownerNonce, minterNonce, newOwnerNonce],
-          [0, 0, 0],
-          [
-            giveMinterPermissionsPayload,
-            executePayload,
-            removeMinterPermissionsPayload,
-          ]
-        );
+      ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
+        [
+          ownerGivePermissionsSignature,
+          minterMintSignature,
+          ownerRemovePermissionsSignature,
+        ],
+        [ownerNonce, minterNonce, newOwnerNonce],
+        [0, 0, 0],
+        [
+          giveMinterPermissionsPayload,
+          executePayload,
+          removeMinterPermissionsPayload,
+        ]
+      );
 
       // CHECK that the recipient received its tokens
       expect(await tokenContract.balanceOf(tokenRecipient.address)).to.equal(
@@ -818,11 +818,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       // CHECK that the minter does not have permissions anymore
       expect(
-        await context.universalProfile["getData(bytes32[])"]([
+        await context.universalProfile.getDataBatch([
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            minter.address.substring(2),
+          minter.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-            minter.address.substring(2),
+          minter.address.substring(2),
         ])
       ).to.deep.equal(["0x", "0x"]);
 
@@ -862,19 +862,19 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           const firstLyxTransfer =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [OPERATION_TYPES.CALL, firstRecipient, transferAmounts[0], "0x"]
             );
 
           const secondLyxTransfer =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [OPERATION_TYPES.CALL, secondRecipient, transferAmounts[1], "0x"]
             );
 
           const thirdLyxTransfer =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [OPERATION_TYPES.CALL, thirdRecipient, transferAmounts[2], "0x"]
             );
 
@@ -908,17 +908,17 @@ export const shouldBehaveLikeExecuteRelayCall = (
           await expect(
             context.keyManager
               .connect(context.owner)
-              ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-                [
-                  firstTransferLyxSignature,
-                  secondTransferLyxSignature,
-                  thirdTransferLyxSignature,
-                ],
-                [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
-                values,
-                [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
-                { value: amountToFund }
-              )
+            ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
+              [
+                firstTransferLyxSignature,
+                secondTransferLyxSignature,
+                thirdTransferLyxSignature,
+              ],
+              [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
+              values,
+              [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
+              { value: amountToFund }
+            )
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -955,19 +955,19 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           const firstLyxTransfer =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [OPERATION_TYPES.CALL, firstRecipient, transferAmounts[0], "0x"]
             );
 
           const secondLyxTransfer =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [OPERATION_TYPES.CALL, secondRecipient, transferAmounts[1], "0x"]
             );
 
           const thirdLyxTransfer =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [OPERATION_TYPES.CALL, thirdRecipient, transferAmounts[2], "0x"]
             );
 
@@ -1001,17 +1001,17 @@ export const shouldBehaveLikeExecuteRelayCall = (
           await expect(
             context.keyManager
               .connect(context.owner)
-              ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-                [
-                  firstTransferLyxSignature,
-                  secondTransferLyxSignature,
-                  thirdTransferLyxSignature,
-                ],
-                [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
-                values,
-                [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
-                { value: amountToFund }
-              )
+            ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
+              [
+                firstTransferLyxSignature,
+                secondTransferLyxSignature,
+                thirdTransferLyxSignature,
+              ],
+              [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
+              values,
+              [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
+              { value: amountToFund }
+            )
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1045,19 +1045,19 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           const firstLyxTransfer =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [OPERATION_TYPES.CALL, firstRecipient, transferAmounts[0], "0x"]
             );
 
           const secondLyxTransfer =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [OPERATION_TYPES.CALL, secondRecipient, transferAmounts[1], "0x"]
             );
 
           const thirdLyxTransfer =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [OPERATION_TYPES.CALL, thirdRecipient, transferAmounts[2], "0x"]
             );
 
@@ -1090,17 +1090,17 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           let tx = await context.keyManager
             .connect(context.owner)
-            ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-              [
-                firstTransferLyxSignature,
-                secondTransferLyxSignature,
-                thirdTransferLyxSignature,
-              ],
-              [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
-              values,
-              [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
-              { value: amountToFund }
-            );
+          ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
+            [
+              firstTransferLyxSignature,
+              secondTransferLyxSignature,
+              thirdTransferLyxSignature,
+            ],
+            [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
+            values,
+            [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
+            { value: amountToFund }
+          );
 
           await expect(tx).to.changeEtherBalances(
             [
@@ -1131,19 +1131,19 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         const failingTransferPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
+            "execute",
             [OPERATION_TYPES.CALL, randomRecipient, invalidAmount, "0x"]
           );
 
         const firstTransferPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
+            "execute",
             [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"]
           );
 
         const secondTransferPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
+            "execute",
             [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"]
           );
 
@@ -1156,10 +1156,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         // prettier-ignore
         const signatures = [
-                signLSP6ExecuteRelayCall(context.keyManager, nonces[0].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, failingTransferPayload),
-              signLSP6ExecuteRelayCall(context.keyManager, nonces[1].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, firstTransferPayload),
-              signLSP6ExecuteRelayCall(context.keyManager, nonces[2].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, secondTransferPayload),
-            ];
+          signLSP6ExecuteRelayCall(context.keyManager, nonces[0].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, failingTransferPayload),
+          signLSP6ExecuteRelayCall(context.keyManager, nonces[1].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, firstTransferPayload),
+          signLSP6ExecuteRelayCall(context.keyManager, nonces[2].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, secondTransferPayload),
+        ];
 
         // prettier-ignore
         const payloads = [failingTransferPayload, firstTransferPayload, secondTransferPayload];
@@ -1167,12 +1167,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
         await expect(
           context.keyManager
             .connect(context.owner)
-            ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-              signatures,
-              nonces,
-              [0, 0, 0],
-              payloads
-            )
+          ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
+            signatures,
+            nonces,
+            [0, 0, 0],
+            payloads
+          )
         ).to.be.revertedWithCustomError(
           context.universalProfile,
           "ERC725X_InsufficientBalance"
@@ -1194,19 +1194,19 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         const failingTransferPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
+            "execute",
             [OPERATION_TYPES.CALL, randomRecipient, invalidAmount, "0x"]
           );
 
         const firstTransferPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
+            "execute",
             [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"]
           );
 
         const secondTransferPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
+            "execute",
             [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"]
           );
 
@@ -1231,12 +1231,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
         await expect(
           context.keyManager
             .connect(context.owner)
-            ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
-              signatures,
-              nonces,
-              values,
-              payloads
-            )
+          ["executeRelayCall(bytes[],uint256[],uint256[],bytes[])"](
+            signatures,
+            nonces,
+            values,
+            payloads
+          )
         ).to.be.revertedWithCustomError(
           context.universalProfile,
           "ERC725X_InsufficientBalance"

@@ -51,10 +51,10 @@ export const shouldBehaveLikeLSP20 = (
         it("should pass when owner calls", async () => {
           await context.universalProfile
             .connect(context.deployParams.owner)
-            ["setData(bytes32,bytes)"](dataKey, dataValue);
+            .setData(dataKey, dataValue);
 
           expect(
-            await context.universalProfile["getData(bytes32)"](dataKey)
+            await context.universalProfile.getData(dataKey)
           ).to.equal(dataValue);
         });
 
@@ -62,7 +62,7 @@ export const shouldBehaveLikeLSP20 = (
           await expect(
             context.universalProfile
               .connect(context.accounts[1])
-              ["setData(bytes32,bytes)"](dataKey, dataValue)
+              .setData(dataKey, dataValue)
           )
             .to.be.revertedWithCustomError(
               context.universalProfile,
@@ -81,10 +81,10 @@ export const shouldBehaveLikeLSP20 = (
         it("should pass when owner calls", async () => {
           await context.universalProfile
             .connect(context.deployParams.owner)
-            ["setData(bytes32[],bytes[])"]([dataKey], [dataValue]);
+            .setDataBatch([dataKey], [dataValue]);
 
           expect(
-            await context.universalProfile["getData(bytes32[])"]([dataKey])
+            await context.universalProfile.getDataBatch([dataKey])
           ).to.deep.equal([dataValue]);
         });
 
@@ -92,7 +92,7 @@ export const shouldBehaveLikeLSP20 = (
           await expect(
             context.universalProfile
               .connect(context.accounts[1])
-              ["setData(bytes32[],bytes[])"]([dataKey], [dataValue])
+              .setDataBatch([dataKey], [dataValue])
           )
             .to.be.revertedWithCustomError(
               context.universalProfile,
@@ -114,7 +114,7 @@ export const shouldBehaveLikeLSP20 = (
           await expect(
             context.universalProfile
               .connect(context.deployParams.owner)
-              ["execute(uint256,address,uint256,bytes)"](
+              .execute(
                 executeParams.operation,
                 executeParams.address,
                 executeParams.value,
@@ -141,7 +141,7 @@ export const shouldBehaveLikeLSP20 = (
           await expect(
             context.universalProfile
               .connect(context.accounts[1])
-              ["execute(uint256,address,uint256,bytes)"](
+              .execute(
                 executeParams.operation,
                 executeParams.address,
                 executeParams.value,
@@ -165,7 +165,7 @@ export const shouldBehaveLikeLSP20 = (
 
           const tx = await context.universalProfile
             .connect(context.deployParams.owner)
-            ["execute(uint256[],address[],uint256[],bytes[])"](
+            .executeBatch(
               operationsType,
               recipients,
               values,
@@ -191,7 +191,7 @@ export const shouldBehaveLikeLSP20 = (
           await expect(
             context.universalProfile
               .connect(context.accounts[3])
-              ["execute(uint256[],address[],uint256[],bytes[])"](
+              .executeBatch(
                 operationsType,
                 recipients,
                 values,
@@ -300,7 +300,7 @@ export const shouldBehaveLikeLSP20 = (
           const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
 
           await expect(
-            context.universalProfile["setData(bytes32,bytes)"](
+            context.universalProfile.setData(
               dataKey,
               dataValue
             )
@@ -345,7 +345,7 @@ export const shouldBehaveLikeLSP20 = (
           const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
 
           await expect(
-            context.universalProfile["setData(bytes32,bytes)"](
+            context.universalProfile.setData(
               dataKey,
               dataValue
             )
@@ -390,7 +390,7 @@ export const shouldBehaveLikeLSP20 = (
           const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
 
           await expect(
-            context.universalProfile["setData(bytes32,bytes)"](
+            context.universalProfile.setData(
               dataKey,
               dataValue
             )
@@ -431,7 +431,7 @@ export const shouldBehaveLikeLSP20 = (
           const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
 
           await expect(
-            context.universalProfile["setData(bytes32,bytes)"](
+            context.universalProfile.setData(
               dataKey,
               dataValue
             )
@@ -474,7 +474,7 @@ export const shouldBehaveLikeLSP20 = (
           const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
 
           await expect(
-            context.universalProfile["setData(bytes32,bytes)"](
+            context.universalProfile.setData(
               dataKey,
               dataValue
             )
@@ -511,12 +511,12 @@ export const shouldBehaveLikeLSP20 = (
           await expect(
             newUniversalProfile
               .connect(context.accounts[3])
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.emit(newUniversalProfile, "DataChanged")
             .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
 
-          const result = await newUniversalProfile["getData(bytes32)"](key);
+          const result = await newUniversalProfile.getData(key);
           expect(result).to.equal(value);
         });
       });
@@ -548,12 +548,12 @@ export const shouldBehaveLikeLSP20 = (
           await expect(
             newUniversalProfile
               .connect(context.accounts[3])
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.emit(newUniversalProfile, "DataChanged")
             .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
 
-          const result = await newUniversalProfile["getData(bytes32)"](key);
+          const result = await newUniversalProfile.getData(key);
           expect(result).to.equal(value);
         });
       });
@@ -585,7 +585,7 @@ export const shouldBehaveLikeLSP20 = (
           await expect(
             newUniversalProfile
               .connect(context.accounts[3])
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           ).to.be.revertedWithCustomError(
             newUniversalProfile,
             "LSP20InvalidMagicValue"
@@ -623,12 +623,12 @@ export const shouldBehaveLikeLSP20 = (
           await expect(
             newUniversalProfile
               .connect(context.accounts[3])
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.emit(newUniversalProfile, "DataChanged")
             .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
 
-          const result = await newUniversalProfile["getData(bytes32)"](key);
+          const result = await newUniversalProfile.getData(key);
           expect(result).to.equal(value);
         });
       });

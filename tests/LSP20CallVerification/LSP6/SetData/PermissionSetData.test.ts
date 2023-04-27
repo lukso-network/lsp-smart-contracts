@@ -67,15 +67,15 @@ export const shouldBehaveLikePermissionSetData = (
 
       const permissionsKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canSetDataWithAllowedERC725YDataKeys.address.substring(2),
+        canSetDataWithAllowedERC725YDataKeys.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-          canSetDataWithAllowedERC725YDataKeys.address.substring(2),
+        canSetDataWithAllowedERC725YDataKeys.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canSetDataWithoutAllowedERC725YDataKeys.address.substring(2),
+        canSetDataWithoutAllowedERC725YDataKeys.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          cannotSetData.address.substring(2),
+        cannotSetData.address.substring(2),
       ];
 
       const permissionsValues = [
@@ -111,7 +111,7 @@ export const shouldBehaveLikePermissionSetData = (
 
           await context.universalProfile
             .connect(context.owner)
-            ["setData(bytes32,bytes)"](key, value);
+            .setData(key, value);
 
           const fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32)"
@@ -131,7 +131,7 @@ export const shouldBehaveLikePermissionSetData = (
 
           await context.universalProfile
             .connect(canSetDataWithAllowedERC725YDataKeys)
-            ["setData(bytes32,bytes)"](key, value);
+            .setData(key, value);
           const fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32)"
           ](key);
@@ -151,7 +151,7 @@ export const shouldBehaveLikePermissionSetData = (
           await expect(
             context.universalProfile
               .connect(canSetDataWithoutAllowedERC725YDataKeys)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -173,7 +173,7 @@ export const shouldBehaveLikePermissionSetData = (
           await expect(
             context.universalProfile
               .connect(cannotSetData)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(cannotSetData.address, "SETDATA");
@@ -202,11 +202,9 @@ export const shouldBehaveLikePermissionSetData = (
 
           await context.universalProfile
             .connect(context.owner)
-            ["setData(bytes32[],bytes[])"](keys, values);
+            .setDataBatch(keys, values);
 
-          let fetchedResult = await context.universalProfile.callStatic[
-            "getData(bytes32[])"
-          ](keys);
+          let fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
 
           expect(fetchedResult).to.deep.equal(values);
         });
@@ -222,11 +220,9 @@ export const shouldBehaveLikePermissionSetData = (
 
           await context.universalProfile
             .connect(context.owner)
-            ["setData(bytes32[],bytes[])"](keys, values);
+            .setDataBatch(keys, values);
 
-          const fetchedResult = await context.universalProfile.callStatic[
-            "getData(bytes32[])"
-          ](keys);
+          const fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
 
@@ -260,11 +256,9 @@ export const shouldBehaveLikePermissionSetData = (
 
           await context.universalProfile
             .connect(context.owner)
-            ["setData(bytes32[],bytes[])"](keys, values);
+            .setDataBatch(keys, values);
 
-          let fetchedResult = await context.universalProfile.callStatic[
-            "getData(bytes32[])"
-          ](keys);
+          let fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
       });
@@ -289,11 +283,9 @@ export const shouldBehaveLikePermissionSetData = (
 
           await context.universalProfile
             .connect(canSetDataWithAllowedERC725YDataKeys)
-            ["setData(bytes32[],bytes[])"](keys, values);
+            .setDataBatch(keys, values);
 
-          let fetchedResult = await context.universalProfile.callStatic[
-            "getData(bytes32[])"
-          ](keys);
+          let fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
 
           expect(fetchedResult).to.deep.equal(values);
         });
@@ -309,11 +301,9 @@ export const shouldBehaveLikePermissionSetData = (
 
           await context.universalProfile
             .connect(canSetDataWithAllowedERC725YDataKeys)
-            ["setData(bytes32[],bytes[])"](keys, values);
+            .setDataBatch(keys, values);
 
-          let fetchedResult = await context.universalProfile.callStatic[
-            "getData(bytes32[])"
-          ](keys);
+          let fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
 
@@ -343,11 +333,9 @@ export const shouldBehaveLikePermissionSetData = (
 
           await context.universalProfile
             .connect(canSetDataWithAllowedERC725YDataKeys)
-            ["setData(bytes32[],bytes[])"](keys, values);
+            .setDataBatch(keys, values);
 
-          let fetchedResult = await context.universalProfile.callStatic[
-            "getData(bytes32[])"
-          ](keys);
+          let fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
       });
@@ -373,7 +361,7 @@ export const shouldBehaveLikePermissionSetData = (
           await expect(
             context.universalProfile
               .connect(canSetDataWithoutAllowedERC725YDataKeys)
-              ["setData(bytes32[],bytes[])"](keys, values)
+              .setDataBatch(keys, values)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -394,7 +382,7 @@ export const shouldBehaveLikePermissionSetData = (
           await expect(
             context.universalProfile
               .connect(canSetDataWithoutAllowedERC725YDataKeys)
-              ["setData(bytes32[],bytes[])"](keys, values)
+              .setDataBatch(keys, values)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -427,7 +415,7 @@ export const shouldBehaveLikePermissionSetData = (
           await expect(
             context.universalProfile
               .connect(canSetDataWithoutAllowedERC725YDataKeys)
-              ["setData(bytes32[],bytes[])"](keys, values)
+              .setDataBatch(keys, values)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -458,7 +446,7 @@ export const shouldBehaveLikePermissionSetData = (
           await expect(
             context.universalProfile
               .connect(cannotSetData)
-              ["setData(bytes32[],bytes[])"](keys, values)
+              .setDataBatch(keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(cannotSetData.address, "SETDATA");
@@ -476,7 +464,7 @@ export const shouldBehaveLikePermissionSetData = (
           await expect(
             context.universalProfile
               .connect(cannotSetData)
-              ["setData(bytes32[],bytes[])"](keys, values)
+              .setDataBatch(keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(cannotSetData.address, "SETDATA");
@@ -505,7 +493,7 @@ export const shouldBehaveLikePermissionSetData = (
           await expect(
             context.universalProfile
               .connect(cannotSetData)
-              ["setData(bytes32[],bytes[])"](keys, values)
+              .setDataBatch(keys, values)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(cannotSetData.address, "SETDATA");
@@ -539,11 +527,11 @@ export const shouldBehaveLikePermissionSetData = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          contractCanSetData.address.substring(2),
+        contractCanSetData.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-          contractCanSetData.address.substring(2),
+        contractCanSetData.address.substring(2),
       ];
 
       const compactedAllowedERC725YDataKeys = encodeCompactBytesArray([
@@ -711,15 +699,15 @@ export const shouldBehaveLikePermissionSetData = (
 
       const alicePermissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          alice.address.substring(2),
+        alice.address.substring(2),
       ];
       const alicePermissionValues = [ALL_PERMISSIONS];
 
       const bobPermissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          bob.address.substring(2),
+        bob.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          aliceContext.universalProfile.address.substring(2),
+        aliceContext.universalProfile.address.substring(2),
       ];
 
       const bobPermissionValues = [ALL_PERMISSIONS, PERMISSIONS.SETDATA];
@@ -738,7 +726,7 @@ export const shouldBehaveLikePermissionSetData = (
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         alice.address.substring(2);
 
-      const result = await aliceContext.universalProfile["getData(bytes32)"](
+      const result = await aliceContext.universalProfile.getData(
         key
       );
       expect(result).to.equal(ALL_PERMISSIONS);
@@ -749,7 +737,7 @@ export const shouldBehaveLikePermissionSetData = (
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         bob.address.substring(2);
 
-      const result = await bobContext.universalProfile["getData(bytes32)"](key);
+      const result = await bobContext.universalProfile.getData(key);
       expect(result).to.equal(ALL_PERMISSIONS);
     });
 
@@ -758,7 +746,7 @@ export const shouldBehaveLikePermissionSetData = (
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         aliceContext.universalProfile.address.substring(2);
 
-      const result = await bobContext.universalProfile["getData(bytes32)"](key);
+      const result = await bobContext.universalProfile.getData(key);
       expect(result).to.equal(PERMISSIONS.SETDATA);
     });
 
@@ -770,14 +758,14 @@ export const shouldBehaveLikePermissionSetData = (
 
       let finalSetDataPayload =
         bobContext.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
       await expect(
         aliceContext.universalProfile
           .connect(alice)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.CALL,
             bobContext.universalProfile.address,
             0,
@@ -800,28 +788,28 @@ export const shouldBehaveLikePermissionSetData = (
       // Adding `key` to AllowedERC725YDataKeys for Alice
       await bobContext.universalProfile
         .connect(bob)
-        ["setData(bytes32,bytes)"](
+        .setData(
           ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-            aliceContext.universalProfile.address.substring(2),
+          aliceContext.universalProfile.address.substring(2),
           encodeCompactBytesArray([key])
         );
 
       let finalSetDataPayload =
         bobContext.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
       await aliceContext.universalProfile
         .connect(alice)
-        ["execute(uint256,address,uint256,bytes)"](
+        .execute(
           OPERATION_TYPES.CALL,
           bobContext.universalProfile.address,
           0,
           finalSetDataPayload
         );
 
-      const result = await bobContext.universalProfile["getData(bytes32)"](key);
+      const result = await bobContext.universalProfile.getData(key);
       expect(result).to.equal(value);
     });
   });
@@ -842,9 +830,9 @@ export const shouldBehaveLikePermissionSetData = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          caller.address.substring(2),
+        caller.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-          caller.address.substring(2),
+        caller.address.substring(2),
       ];
 
       const permissionValues = [
@@ -867,9 +855,9 @@ export const shouldBehaveLikePermissionSetData = (
         it(`should be allowed to set a disallowed key: ${key}`, async () => {
           await context.universalProfile
             .connect(caller)
-            ["setData(bytes32,bytes)"](key, value);
+            .setData(key, value);
 
-          const result = await context.universalProfile["getData(bytes32)"](
+          const result = await context.universalProfile.getData(
             key
           );
           expect(result).to.equal(value);
@@ -885,9 +873,9 @@ export const shouldBehaveLikePermissionSetData = (
 
         await context.universalProfile
           .connect(caller)
-          ["setData(bytes32,bytes)"](AllowedERC725YDataKeys[0], value);
+          .setData(AllowedERC725YDataKeys[0], value);
 
-        const result = await context.universalProfile["getData(bytes32)"](
+        const result = await context.universalProfile.getData(
           AllowedERC725YDataKeys[0]
         );
         expect(result).to.equal(value);
@@ -900,9 +888,9 @@ export const shouldBehaveLikePermissionSetData = (
 
         await context.universalProfile
           .connect(caller)
-          ["setData(bytes32,bytes)"](AllowedERC725YDataKeys[1], value);
+          .setData(AllowedERC725YDataKeys[1], value);
 
-        const result = await context.universalProfile["getData(bytes32)"](
+        const result = await context.universalProfile.getData(
           AllowedERC725YDataKeys[1]
         );
         expect(result).to.equal(value);
@@ -915,9 +903,9 @@ export const shouldBehaveLikePermissionSetData = (
 
         await context.universalProfile
           .connect(caller)
-          ["setData(bytes32,bytes)"](AllowedERC725YDataKeys[2], value);
+          .setData(AllowedERC725YDataKeys[2], value);
 
-        const result = await context.universalProfile["getData(bytes32)"](
+        const result = await context.universalProfile.getData(
           AllowedERC725YDataKeys[2]
         );
         expect(result).to.equal(value);

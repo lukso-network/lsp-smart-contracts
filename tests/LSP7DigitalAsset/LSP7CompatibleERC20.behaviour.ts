@@ -1304,7 +1304,7 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
           SupportedStandards.LSP4DigitalAsset.value
         );
       expect(
-        await context.lsp7CompatibleERC20["getData(bytes32)"](
+        await context.lsp7CompatibleERC20.getData(
           SupportedStandards.LSP4DigitalAsset.key
         )
       ).to.equal(SupportedStandards.LSP4DigitalAsset.value);
@@ -1317,7 +1317,7 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
         .to.emit(context.lsp7CompatibleERC20, "DataChanged")
         .withArgs(nameKey, expectedNameValue);
       expect(
-        await context.lsp7CompatibleERC20["getData(bytes32)"](nameKey)
+        await context.lsp7CompatibleERC20.getData(nameKey)
       ).to.equal(expectedNameValue);
 
       const symbolKey = ERC725YDataKeys.LSP4.LSP4TokenSymbol;
@@ -1328,7 +1328,7 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
         .to.emit(context.lsp7CompatibleERC20, "DataChanged")
         .withArgs(symbolKey, expectedSymbolValue);
       expect(
-        await context.lsp7CompatibleERC20["getData(bytes32)"](symbolKey)
+        await context.lsp7CompatibleERC20.getData(symbolKey)
       ).to.equal(expectedSymbolValue);
     });
   });

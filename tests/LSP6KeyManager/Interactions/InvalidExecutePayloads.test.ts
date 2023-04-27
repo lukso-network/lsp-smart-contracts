@@ -33,9 +33,9 @@ export const testInvalidExecutePayloads = (
 
     const permissionsKeys = [
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
+      context.owner.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCanMakeCall.address.substring(2),
+      addressCanMakeCall.address.substring(2),
     ];
 
     const permissionsValues = [ALL_PERMISSIONS, PERMISSIONS.CALL];
@@ -75,7 +75,7 @@ export const testInvalidExecutePayloads = (
       await expect(
         context.keyManager
           .connect(addressCanMakeCall)
-          ["execute(bytes)"](INVALID_PAYLOAD)
+        ["execute(bytes)"](INVALID_PAYLOAD)
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
@@ -95,7 +95,7 @@ export const testInvalidExecutePayloads = (
       const INVALID_OPERATION_TYPE = 8;
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [INVALID_OPERATION_TYPE, targetContract.address, 0, targetPayload]
       );
 
@@ -116,14 +116,14 @@ export const testInvalidExecutePayloads = (
       const INVALID_OPERATION_TYPE = 8;
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [INVALID_OPERATION_TYPE, targetContract.address, 0, targetPayload]
       );
 
       await expect(
         context.keyManager
           .connect(addressCanMakeCall)
-          ["execute(bytes)"](payload)
+        ["execute(bytes)"](payload)
       ).to.be.revertedWithCustomError(
         context.universalProfile,
         "ERC725X_UnknownOperationType"

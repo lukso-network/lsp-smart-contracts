@@ -43,9 +43,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
     permissionsKeys = [
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        canChangeOwner.address.substring(2),
+      canChangeOwner.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        cannotChangeOwner.address.substring(2),
+      cannotChangeOwner.address.substring(2),
     ];
 
     permissionsValues = [PERMISSIONS.CHANGEOWNER, PERMISSIONS.SETDATA];
@@ -118,9 +118,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
           await context.universalProfile
             .connect(context.owner)
-            ["setData(bytes32,bytes)"](key, value);
+            .setData(key, value);
 
-          const result = await context.universalProfile["getData(bytes32)"](
+          const result = await context.universalProfile.getData(
             key
           );
           expect(result).to.equal(value);
@@ -139,7 +139,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
           await context.universalProfile
             .connect(context.owner)
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CALL,
               recipient.address,
               amount,
@@ -249,7 +249,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       await newKeyManager
         .connect(context.owner)
-        ["execute(bytes)"](acceptOwnershipPayload);
+      ["execute(bytes)"](acceptOwnershipPayload);
     });
 
     it("should have change the account's owner to the pendingOwner (= pending KeyManager)", async () => {
@@ -277,7 +277,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         const value = "0xabcd";
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
@@ -293,7 +293,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         let amount = ethers.utils.parseEther("3");
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
+          "execute",
           [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
         );
 
@@ -312,13 +312,13 @@ export const shouldBehaveLikePermissionChangeOwner = (
         const value = "0xabcd";
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await newKeyManager.connect(context.owner)["execute(bytes)"](payload);
 
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -334,7 +334,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
+          "execute",
           [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
         );
 

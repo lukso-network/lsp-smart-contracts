@@ -55,7 +55,7 @@ describe("LSP4Compatibility", () => {
       expect(nameAsString).to.equal(context.deployParams.name);
 
       // using getData -> returns(bytes)
-      const nameAsBytes = await context.lsp4Compatibility["getData(bytes32)"](
+      const nameAsBytes = await context.lsp4Compatibility.getData(
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenName"))
       );
 
@@ -70,7 +70,7 @@ describe("LSP4Compatibility", () => {
       expect(symbolAsString).to.equal(context.deployParams.symbol);
 
       // using getData -> returns(bytes)
-      const symbolAsBytes = await context.lsp4Compatibility["getData(bytes32)"](
+      const symbolAsBytes = await context.lsp4Compatibility.getData(
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenSymbol"))
       );
 

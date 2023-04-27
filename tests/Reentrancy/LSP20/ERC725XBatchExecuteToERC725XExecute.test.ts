@@ -72,7 +72,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
         await expect(
           context.universalProfile
             .connect(reentrancyContext.caller)
-            ["execute(uint256[],address[],uint256[],bytes[])"](
+            .executeBatch(
               [0],
               [reentrancyContext.reentrantContract.address],
               [0],
@@ -99,7 +99,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
       await expect(
         context.universalProfile
           .connect(reentrancyContext.caller)
-          ["execute(uint256[],address[],uint256[],bytes[])"](
+          .executeBatch(
             [0],
             [reentrancyContext.reentrantContract.address],
             [0],
@@ -125,7 +125,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
 
       await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["execute(uint256[],address[],uint256[],bytes[])"](
+        .executeBatch(
           [0],
           [reentrancyContext.reentrantContract.address],
           [0],
@@ -173,7 +173,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
         await expect(
           context.universalProfile
             .connect(reentrancyContext.caller)
-            ["execute(uint256[],address[],uint256[],bytes[])"](
+            .executeBatch(
               [0],
               [reentrancyContext.reentrantContract.address],
               [0],
@@ -200,7 +200,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
       await expect(
         context.universalProfile
           .connect(reentrancyContext.caller)
-          ["execute(uint256[],address[],uint256[],bytes[])"](
+          .executeBatch(
             [0],
             [reentrancyContext.reentrantContract.address],
             [0],
@@ -223,7 +223,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
 
       await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["execute(uint256[],address[],uint256[],bytes[])"](
+        .executeBatch(
           [0],
           [reentrancyContext.reentrantContract.address],
           [0],
@@ -238,7 +238,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
       );
 
       expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedKey)
+        await context.universalProfile.getData(hardcodedKey)
       ).to.equal(hardcodedValue);
     });
   });
@@ -266,7 +266,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
         await expect(
           context.universalProfile
             .connect(reentrancyContext.caller)
-            ["execute(uint256[],address[],uint256[],bytes[])"](
+            .executeBatch(
               [0],
               [reentrancyContext.reentrantContract.address],
               [0],
@@ -292,7 +292,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
 
       await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["execute(uint256[],address[],uint256[],bytes[])"](
+        .executeBatch(
           [0],
           [reentrancyContext.reentrantContract.address],
           [0],
@@ -306,7 +306,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
         "0x0000000000000000000000000000000000000000000000000000000000000010";
 
       expect(
-        await context.universalProfile["getData(bytes32)"](
+        await context.universalProfile.getData(
           hardcodedPermissionKey
         )
       ).to.equal(hardcodedPermissionValue);
@@ -336,7 +336,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
         await expect(
           context.universalProfile
             .connect(reentrancyContext.caller)
-            ["execute(uint256[],address[],uint256[],bytes[])"](
+            .executeBatch(
               [0],
               [reentrancyContext.reentrantContract.address],
               [0],
@@ -362,7 +362,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
 
       await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["execute(uint256[],address[],uint256[],bytes[])"](
+        .executeBatch(
           [0],
           [reentrancyContext.reentrantContract.address],
           [0],
@@ -375,7 +375,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
       const hardcodedPermissionValue = "0x";
 
       expect(
-        await context.universalProfile["getData(bytes32)"](
+        await context.universalProfile.getData(
           hardcodedPermissionKey
         )
       ).to.equal(hardcodedPermissionValue);
@@ -405,7 +405,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
         await expect(
           context.universalProfile
             .connect(reentrancyContext.caller)
-            ["execute(uint256[],address[],uint256[],bytes[])"](
+            .executeBatch(
               [0],
               [reentrancyContext.reentrantContract.address],
               [0],
@@ -431,7 +431,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
 
       await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["execute(uint256[],address[],uint256[],bytes[])"](
+        .executeBatch(
           [0],
           [reentrancyContext.reentrantContract.address],
           [0],
@@ -445,7 +445,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
       const hardcodedLSP1Value = reentrancyContext.newURDAddress;
 
       expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedLSP1Key)
+        await context.universalProfile.getData(hardcodedLSP1Key)
       ).to.equal(hardcodedLSP1Value.toLowerCase());
     });
   });
@@ -474,7 +474,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
           await expect(
             context.universalProfile
               .connect(reentrancyContext.caller)
-              ["execute(uint256[],address[],uint256[],bytes[])"](
+              .executeBatch(
                 [0],
                 [reentrancyContext.reentrantContract.address],
                 [0],
@@ -501,7 +501,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
 
       await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["execute(uint256[],address[],uint256[],bytes[])"](
+        .executeBatch(
           [0],
           [reentrancyContext.reentrantContract.address],
           [0],
@@ -515,7 +515,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
       const hardcodedLSP1Value = "0x";
 
       expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedLSP1Key)
+        await context.universalProfile.getData(hardcodedLSP1Key)
       ).to.equal(hardcodedLSP1Value.toLowerCase());
     });
   });

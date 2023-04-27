@@ -311,7 +311,7 @@ export const shouldBehaveLikeLSP17 = (
 
                 await context.contract
                   .connect(context.deployParams.owner)
-                  ["setData(bytes32,bytes)"](
+                  .setData(
                     checkMsgVariableFunctionExtensionHandlerKey,
                     checkerExtension.address
                   );
@@ -388,7 +388,7 @@ export const shouldBehaveLikeLSP17 = (
 
             await context.contract
               .connect(context.deployParams.owner)
-              ["setData(bytes32,bytes)"](
+              .setData(
                 revertStringFunctionExtensionHandlerKey,
                 revertStringExtension.address
               );
@@ -421,7 +421,7 @@ export const shouldBehaveLikeLSP17 = (
 
             await context.contract
               .connect(context.deployParams.owner)
-              ["setData(bytes32,bytes)"](
+              .setData(
                 revertCustomFunctionExtensionHandlerKey,
                 revertCustomExtension.address
               );
@@ -455,7 +455,7 @@ export const shouldBehaveLikeLSP17 = (
 
             await context.contract
               .connect(context.deployParams.owner)
-              ["setData(bytes32,bytes)"](
+              .setData(
                 emitEventFunctionExtensionHandlerKey,
                 emitEventExtension.address
               );
@@ -495,7 +495,7 @@ export const shouldBehaveLikeLSP17 = (
 
             await context.contract
               .connect(context.deployParams.owner)
-              ["setData(bytes32,bytes)"](
+              .setData(
                 nameFunctionExtensionHandlerKey,
                 nameExtension.address
               );
@@ -537,7 +537,7 @@ export const shouldBehaveLikeLSP17 = (
 
             await context.contract
               .connect(context.deployParams.owner)
-              ["setData(bytes32,bytes)"](
+              .setData(
                 ageFunctionExtensionHandlerKey,
                 ageExtension.address
               );
@@ -564,7 +564,7 @@ export const shouldBehaveLikeLSP17 = (
 
             await context.contract
               .connect(context.deployParams.owner)
-              ["setData(bytes32,bytes)"](
+              .setData(
                 transferFunctionExtensionHandlerKey,
                 transferExtension.address
               );
@@ -607,7 +607,7 @@ export const shouldBehaveLikeLSP17 = (
 
             await context.contract
               .connect(context.deployParams.owner)
-              ["setData(bytes32,bytes)"](
+              .setData(
                 reenterAccountFunctionExtensionHandlerKey,
                 reenterAccountExtension.address
               );
@@ -663,7 +663,7 @@ export const shouldBehaveLikeLSP17 = (
 
                 await context.contract
                   .connect(context.deployParams.owner)
-                  ["setData(bytes32,bytes)"](
+                  .setData(
                     emitEventFunctionExtensionHandlerKey,
                     emitEventExtension.address
                   );
@@ -704,7 +704,7 @@ export const shouldBehaveLikeLSP17 = (
 
               await context.contract
                 .connect(context.deployParams.owner)
-                ["setData(bytes32,bytes)"](
+                .setData(
                   supportsInterfaceFunctionExtensionHandlerKey,
                   erc165Extension.address
                 );
@@ -735,7 +735,7 @@ export const shouldBehaveLikeLSP17 = (
 
           await context.contract
             .connect(context.deployParams.owner)
-            ["setData(bytes32,bytes)"](
+            .setData(
               bytes1ZeroPaddedExtensionHandlerKey,
               revertFallbackExtension.address
             );
@@ -840,7 +840,7 @@ export const shouldBehaveLikeLSP17 = (
 
               await context.contract
                 .connect(context.deployParams.owner)
-                ["setData(bytes32,bytes)"](
+                .setData(
                   bytes1ZeroPaddedExtensionHandlerKey,
                   revertFallbackExtension.address
                 );
@@ -908,7 +908,7 @@ export const shouldBehaveLikeLSP17 = (
 
               await context.contract
                 .connect(context.deployParams.owner)
-                ["setData(bytes32,bytes)"](
+                .setData(
                   onERC721ReceivedFunctionExtensionHandlerKey,
                   onERC721ReceivedExtension.address
                 );

@@ -89,7 +89,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](dataKey, dataValue)
+            .setData(dataKey, dataValue)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -105,9 +105,9 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["setData(bytes32,bytes)"](dataKey, dataValue);
+          .setData(dataKey, dataValue);
 
-        const result = await context.universalProfile["getData(bytes32)"](
+        const result = await context.universalProfile.getData(
           dataKey
         );
         expect(result).to.equal(dataValue);
@@ -190,7 +190,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -216,7 +216,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -243,7 +243,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -270,7 +270,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -297,10 +297,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyAddController)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -317,7 +317,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddController)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -339,7 +339,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddController)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -373,7 +373,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyEditPermissions)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -399,10 +399,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -424,10 +424,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -451,10 +451,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -478,10 +478,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -496,7 +496,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
           await expect(
             context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -516,7 +516,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
           await expect(
             context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -603,7 +603,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -628,7 +628,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -655,7 +655,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -682,7 +682,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -708,10 +708,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyAddController)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -728,7 +728,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddController)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -750,7 +750,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddController)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -783,7 +783,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyEditPermissions)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -807,10 +807,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -832,10 +832,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -859,10 +859,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -886,10 +886,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -904,7 +904,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
           await expect(
             context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -924,7 +924,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
           await expect(
             context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1022,7 +1022,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1056,7 +1056,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1090,7 +1090,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1124,7 +1124,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1159,10 +1159,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyAddController)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -1179,7 +1179,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddController)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1201,7 +1201,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddController)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1236,7 +1236,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
         await expect(
           context.universalProfile
             .connect(canOnlyEditPermissions)
-            ["setData(bytes32,bytes)"](key, value)
+            .setData(key, value)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -1269,10 +1269,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -1293,10 +1293,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -1320,10 +1320,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -1347,10 +1347,10 @@ export const shouldBehaveLikeSetAllowedCalls = (
 
         await context.universalProfile
           .connect(canOnlyEditPermissions)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -1365,7 +1365,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
           await expect(
             context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1385,7 +1385,7 @@ export const shouldBehaveLikeSetAllowedCalls = (
           await expect(
             context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,

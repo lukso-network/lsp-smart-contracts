@@ -36,11 +36,11 @@ export const shouldBehaveLikePermissionDeploy = (
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
+      context.owner.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCanDeploy.address.substring(2),
+      addressCanDeploy.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCannotDeploy.address.substring(2),
+      addressCannotDeploy.address.substring(2),
     ];
 
     const permissionsValues = [
@@ -57,7 +57,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
       const expectedContractAddress = await context.universalProfile.callStatic[
-        "execute(uint256,address,uint256,bytes)"
+        "execute"
       ](
         OPERATION_TYPES.CREATE, // operation type
         ethers.constants.AddressZero, // recipient
@@ -68,7 +68,7 @@ export const shouldBehaveLikePermissionDeploy = (
       await expect(
         context.universalProfile
           .connect(context.owner)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.CREATE, // operation type
             ethers.constants.AddressZero, // recipient
             0, // value
@@ -97,7 +97,7 @@ export const shouldBehaveLikePermissionDeploy = (
       await expect(
         context.universalProfile
           .connect(context.owner)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.CREATE2,
             ethers.constants.AddressZero,
             0,
@@ -120,7 +120,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
       const expectedContractAddress = await context.universalProfile
         .connect(addressCanDeploy)
-        .callStatic["execute(uint256,address,uint256,bytes)"](
+        .callStatic.execute(
           OPERATION_TYPES.CREATE,
           ethers.constants.AddressZero,
           0,
@@ -130,7 +130,7 @@ export const shouldBehaveLikePermissionDeploy = (
       await expect(
         context.universalProfile
           .connect(addressCanDeploy)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.CREATE,
             ethers.constants.AddressZero,
             0,
@@ -160,7 +160,7 @@ export const shouldBehaveLikePermissionDeploy = (
       await expect(
         context.universalProfile
           .connect(addressCanDeploy)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.CREATE2,
             ethers.constants.AddressZero,
             0,
@@ -185,7 +185,7 @@ export const shouldBehaveLikePermissionDeploy = (
         await expect(
           context.universalProfile
             .connect(addressCannotDeploy)
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CREATE,
               ethers.constants.AddressZero,
               0,
@@ -204,7 +204,7 @@ export const shouldBehaveLikePermissionDeploy = (
         await expect(
           context.universalProfile
             .connect(addressCannotDeploy)
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CREATE2,
               ethers.constants.AddressZero,
               0,

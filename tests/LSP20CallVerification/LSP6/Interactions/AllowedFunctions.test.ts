@@ -54,11 +54,11 @@ export const shouldBehaveLikeAllowedFunctions = (
 
     let permissionsKeys = [
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressWithNoAllowedFunctions.address.substring(2),
+      addressWithNoAllowedFunctions.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCanCallOnlyOneFunction.address.substring(2),
+      addressCanCallOnlyOneFunction.address.substring(2),
       ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        addressCanCallOnlyOneFunction.address.substring(2),
+      addressCanCallOnlyOneFunction.address.substring(2),
     ];
 
     let permissionsValues = [
@@ -88,7 +88,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           await expect(
             context.universalProfile
               .connect(addressWithNoAllowedFunctions)
-              ["execute(uint256,address,uint256,bytes)"](
+              .execute(
                 OPERATION_TYPES.CALL,
                 targetContract.address,
                 0,
@@ -110,7 +110,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           await expect(
             context.universalProfile
               .connect(addressWithNoAllowedFunctions)
-              ["execute(uint256,address,uint256,bytes)"](
+              .execute(
                 OPERATION_TYPES.CALL,
                 targetContract.address,
                 0,
@@ -134,7 +134,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           await context.universalProfile
             .connect(addressCanCallOnlyOneFunction)
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CALL,
               targetContract.address,
               0,
@@ -158,7 +158,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           await expect(
             context.universalProfile
               .connect(addressCanCallOnlyOneFunction)
-              ["execute(uint256,address,uint256,bytes)"](
+              .execute(
                 OPERATION_TYPES.CALL,
                 targetContract.address,
                 0,
@@ -185,7 +185,7 @@ export const shouldBehaveLikeAllowedFunctions = (
         await expect(
           context.universalProfile
             .connect(addressCanCallOnlyOneFunction)
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CALL,
               targetContract.address,
               0,
@@ -247,17 +247,17 @@ export const shouldBehaveLikeAllowedFunctions = (
 
       let permissionsKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanCallOnlyTransferOnLSP8.address.substring(2),
+        addressCanCallOnlyTransferOnLSP8.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          addressCanCallOnlyTransferOnLSP8.address.substring(2),
+        addressCanCallOnlyTransferOnLSP8.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.address.substring(
-            2
-          ),
+        addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.address.substring(
+          2
+        ),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.address.substring(
-            2
-          ),
+        addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.address.substring(
+          2
+        ),
       ];
 
       let permissionsValues = [
@@ -305,7 +305,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
         await context.universalProfile
           .connect(addressCanCallOnlyTransferOnLSP8)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.CALL,
             lsp8Contract.address,
             0,
@@ -329,7 +329,7 @@ export const shouldBehaveLikeAllowedFunctions = (
         await expect(
           context.universalProfile
             .connect(addressCanCallOnlyTransferOnLSP8)
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CALL,
               lsp8Contract.address,
               0,
@@ -362,7 +362,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CALL,
               lsp7Contract.address,
               0,
@@ -394,7 +394,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CALL,
               lsp7Contract.address,
               0,
@@ -426,7 +426,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CALL,
               lsp7Contract.address,
               0,
@@ -449,7 +449,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(":)"));
 
           let setDataPayload = lsp7Contract.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
@@ -457,7 +457,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CALL,
               lsp7Contract.address,
               0,
@@ -465,7 +465,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             );
 
           expect(
-            await lsp7Contract.callStatic["getData(bytes32)"](key)
+            await lsp7Contract.callStatic.getData(key)
           ).to.equal(value);
         });
       });
@@ -484,7 +484,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CALL,
               lsp8Contract.address,
               0,
@@ -514,7 +514,7 @@ export const shouldBehaveLikeAllowedFunctions = (
               .connect(
                 addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
               )
-              ["execute(uint256,address,uint256,bytes)"](
+              .execute(
                 OPERATION_TYPES.CALL,
                 lsp8Contract.address,
                 0,
@@ -547,7 +547,7 @@ export const shouldBehaveLikeAllowedFunctions = (
               .connect(
                 addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
               )
-              ["execute(uint256,address,uint256,bytes)"](
+              .execute(
                 OPERATION_TYPES.CALL,
                 lsp8Contract.address,
                 0,

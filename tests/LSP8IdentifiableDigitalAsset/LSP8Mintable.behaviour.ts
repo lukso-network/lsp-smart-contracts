@@ -118,13 +118,13 @@ export const shouldBehaveLikeLSP8Mintable = (
         ).deploy();
 
       const setDataPayload = universalProfile.interface.encodeFunctionData(
-        "setData(bytes32[],bytes[])",
+        "setDataBatch",
         [
           [
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              URDTokenReentrant.address.substring(2),
+            URDTokenReentrant.address.substring(2),
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-              URDTokenReentrant.address.substring(2),
+            URDTokenReentrant.address.substring(2),
             ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
           ],
           [
@@ -142,7 +142,7 @@ export const shouldBehaveLikeLSP8Mintable = (
 
       await lsp6KeyManager
         .connect(context.accounts.profileOwner)
-        ["execute(bytes)"](setDataPayload);
+      ["execute(bytes)"](setDataPayload);
     });
     it("should pass", async () => {
       const randomTokenId = ethers.utils.randomBytes(32);
@@ -162,13 +162,13 @@ export const shouldBehaveLikeLSP8Mintable = (
       );
 
       const executePayload = universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [OPERATION_TYPES.CALL, context.lsp8Mintable.address, 0, mintPayload]
       );
 
       await lsp6KeyManager
         .connect(context.accounts.profileOwner)
-        ["execute(bytes)"](executePayload);
+      ["execute(bytes)"](executePayload);
 
       const balanceOfUP = await context.lsp8Mintable.callStatic.balanceOf(
         universalProfile.address

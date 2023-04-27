@@ -83,7 +83,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
       let result = await context.universalProfile
         .connect(context.owner)
-        .callStatic["execute(uint256,address,uint256,bytes)"](
+        .callStatic.execute(
           OPERATION_TYPES.STATICCALL,
           targetContract.address,
           0,
@@ -104,7 +104,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
       let result = await context.universalProfile
         .connect(addressCanMakeStaticCall)
-        .callStatic["execute(uint256,address,uint256,bytes)"](
+        .callStatic.execute(
           OPERATION_TYPES.STATICCALL,
           targetContract.address,
           0,
@@ -126,7 +126,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       await expect(
         context.universalProfile
           .connect(addressCanMakeStaticCall)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.STATICCALL,
             targetContract.address,
             0,
@@ -148,7 +148,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       await expect(
         context.universalProfile
           .connect(addressCanMakeStaticCall)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.CALL,
             targetContract.address,
             0,
@@ -168,7 +168,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       await expect(
         context.universalProfile
           .connect(addressCanMakeStaticCallNoAllowedCalls)
-          .callStatic["execute(uint256,address,uint256,bytes)"](
+          .callStatic.execute(
             OPERATION_TYPES.STATICCALL,
             targetContract.address,
             0,
@@ -188,7 +188,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       await expect(
         context.universalProfile
           .connect(addressCannotMakeStaticCall)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.STATICCALL,
             targetContract.address,
             0,
@@ -245,7 +245,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       await expect(
         context.universalProfile
           .connect(caller)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.STATICCALL,
             targetContract.address,
             0,
@@ -268,7 +268,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         const result = await context.universalProfile
           .connect(caller)
-          .callStatic["execute(uint256,address,uint256,bytes)"](
+          .callStatic.execute(
             OPERATION_TYPES.STATICCALL,
             targetContract.address,
             0,
@@ -286,7 +286,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         const result = await context.universalProfile
           .connect(caller)
-          .callStatic["execute(uint256,address,uint256,bytes)"](
+          .callStatic.execute(
             OPERATION_TYPES.STATICCALL,
             targetContract.address,
             0,
@@ -308,7 +308,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         await expect(
           context.universalProfile
             .connect(caller)
-            .callStatic["execute(uint256,address,uint256,bytes)"](
+            .callStatic.execute(
               OPERATION_TYPES.STATICCALL,
               targetContract.address,
               0,
@@ -328,7 +328,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         await expect(
           context.universalProfile
             .connect(caller)
-            .callStatic["execute(uint256,address,uint256,bytes)"](
+            .callStatic.execute(
               OPERATION_TYPES.STATICCALL,
               targetContract.address,
               0,
@@ -346,7 +346,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         const result = await context.universalProfile
           .connect(caller)
-          .callStatic["execute(uint256,address,uint256,bytes)"](
+          .callStatic.execute(
             OPERATION_TYPES.STATICCALL,
             targetContract.address,
             0,
@@ -364,7 +364,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         const result = await context.universalProfile
           .connect(caller)
-          .callStatic["execute(uint256,address,uint256,bytes)"](
+          .callStatic.execute(
             OPERATION_TYPES.STATICCALL,
             targetContract.address,
             0,
@@ -386,7 +386,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         await expect(
           context.universalProfile
             .connect(caller)
-            .callStatic["execute(uint256,address,uint256,bytes)"](
+            .callStatic.execute(
               OPERATION_TYPES.STATICCALL,
               targetContract.address,
               0,
@@ -406,7 +406,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         await expect(
           context.universalProfile
             .connect(caller)
-            .callStatic["execute(uint256,address,uint256,bytes)"](
+            .callStatic.execute(
               OPERATION_TYPES.STATICCALL,
               targetContract.address,
               0,
@@ -465,7 +465,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
           const result = await context.universalProfile
             .connect(caller)
-            .callStatic["execute(uint256,address,uint256,bytes)"](
+            .callStatic.execute(
               OPERATION_TYPES.STATICCALL,
               targetContract.address,
               0,

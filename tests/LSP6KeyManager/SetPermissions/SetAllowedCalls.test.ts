@@ -42,19 +42,19 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyAddController.address.substring(2),
+        canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyEditPermissions.address.substring(2),
+        canOnlyEditPermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          invalidBytes.address.substring(2),
+        invalidBytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          noBytes.address.substring(2),
+        noBytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          beneficiary.address.substring(2),
+        beneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          invalidBytes.address.substring(2),
+        invalidBytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          noBytes.address.substring(2),
+        noBytes.address.substring(2),
       ];
 
       let permissionValues = [
@@ -88,14 +88,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
         const setDataPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [dataKey, dataValue]
           );
 
         await expect(
           context.keyManager
             .connect(canOnlyAddController)
-            ["execute(bytes)"](setDataPayload)
+          ["execute(bytes)"](setDataPayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -111,15 +111,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
         const setDataPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [dataKey, dataValue]
           );
 
         await context.keyManager
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](setDataPayload);
+        ["execute(bytes)"](setDataPayload);
 
-        const result = await context.universalProfile["getData(bytes32)"](
+        const result = await context.universalProfile.getData(
           dataKey
         );
         expect(result).to.equal(dataValue);
@@ -149,17 +149,17 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyAddController.address.substring(2),
+        canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyEditPermissions.address.substring(2),
+        canOnlyEditPermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          beneficiary.address.substring(2),
+        beneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          invalidBeneficiary.address.substring(2),
+        invalidBeneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          zero32Bytes.address.substring(2),
+        zero32Bytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          zero40Bytes.address.substring(2),
+        zero40Bytes.address.substring(2),
       ];
 
       let permissionValues = [
@@ -200,14 +200,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -231,14 +231,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -263,14 +263,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -295,14 +295,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -328,16 +328,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyAddController)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -352,14 +352,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           let value = "0xbadbadbadbad";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
           await expect(
             context.keyManager
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+            ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -379,14 +379,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0x00000001cafecafecafecafecafecafecafecafecafecafeffffffffffffffff";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
           await expect(
             context.keyManager
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+            ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -418,14 +418,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -450,16 +450,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -480,16 +480,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -512,16 +512,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -544,16 +544,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -566,14 +566,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           let value = "0xbadbadbadbad";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
           await expect(
             context.keyManager
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+            ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -591,14 +591,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0x00000001cafecafecafecafecafecafecafecafecafecafeffffffffffffffff";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
           await expect(
             context.keyManager
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+            ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -632,17 +632,17 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyAddController.address.substring(2),
+        canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyEditPermissions.address.substring(2),
+        canOnlyEditPermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          beneficiary.address.substring(2),
+        beneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          invalidBeneficiary.address.substring(2),
+        invalidBeneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          zero32Bytes.address.substring(2),
+        zero32Bytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          zero40Bytes.address.substring(2),
+        zero40Bytes.address.substring(2),
       ];
 
       let permissionValues = [
@@ -683,14 +683,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -713,14 +713,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -745,14 +745,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -777,14 +777,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -809,16 +809,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyAddController)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -833,14 +833,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           let value = "0xbadbadbadbad";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
           await expect(
             context.keyManager
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+            ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -860,14 +860,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0x00000002ffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
           await expect(
             context.keyManager
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+            ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -898,14 +898,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -928,16 +928,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -958,16 +958,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -990,16 +990,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -1022,16 +1022,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -1044,14 +1044,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           let value = "0xbadbadbadbad";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
           await expect(
             context.keyManager
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+            ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1069,14 +1069,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0x00000002ffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
           await expect(
             context.keyManager
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+            ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1110,17 +1110,17 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyAddController.address.substring(2),
+        canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyEditPermissions.address.substring(2),
+        canOnlyEditPermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          beneficiary.address.substring(2),
+        beneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          invalidBeneficiary.address.substring(2),
+        invalidBeneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          zero32Bytes.address.substring(2),
+        zero32Bytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          zero40Bytes.address.substring(2),
+        zero40Bytes.address.substring(2),
       ];
 
       let permissionValues = [
@@ -1172,14 +1172,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1211,14 +1211,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1250,14 +1250,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1289,14 +1289,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyAddController)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -1330,16 +1330,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyAddController)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -1354,14 +1354,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           let value = "0xbadbadbadbad";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
           await expect(
             context.keyManager
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+            ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1381,14 +1381,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0x00000002ffffffffffffffffffffffffffffffffffffffffcafecafeffffffff";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
           await expect(
             context.keyManager
               .connect(canOnlyAddController)
-              ["execute(bytes)"](payload)
+            ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1421,14 +1421,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await expect(
           context.keyManager
             .connect(canOnlyEditPermissions)
-            ["execute(bytes)"](payload)
+          ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -1460,16 +1460,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -1489,16 +1489,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -1521,16 +1521,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -1553,16 +1553,16 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
+          "setData",
           [key, value]
         );
 
         await context.keyManager
           .connect(canOnlyEditPermissions)
-          ["execute(bytes)"](payload);
+        ["execute(bytes)"](payload);
 
         // prettier-ignore
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
 
@@ -1575,14 +1575,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           let value = "0xbadbadbadbad";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
           await expect(
             context.keyManager
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+            ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -1600,14 +1600,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0x00000002ffffffffffffffffffffffffffffffffffffffffcafecafeffffffff";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
           await expect(
             context.keyManager
               .connect(canOnlyEditPermissions)
-              ["execute(bytes)"](payload)
+            ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
               context.keyManager,

@@ -138,9 +138,9 @@ export const shouldBehaveLikeLSP3 = (
   describe("when interacting with the ERC725Y storage", () => {
     let lsp12IssuedAssetsKeys = [
       ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
-        "00000000000000000000000000000000",
+      "00000000000000000000000000000000",
       ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
-        "00000000000000000000000000000001",
+      "00000000000000000000000000000001",
     ];
 
     let lsp12IssuedAssetsValues = [
@@ -162,12 +162,12 @@ export const shouldBehaveLikeLSP3 = (
         "0x1183790f29be3cdfd0a102862fea1a4a30b3adab",
       ];
 
-      await context.universalProfile["setData(bytes32[],bytes[])"](
+      await context.universalProfile.setDataBatch(
         keys,
         values
       );
 
-      const result = await context.universalProfile["getData(bytes32[])"](keys);
+      const result = await context.universalProfile.getDataBatch(keys);
       expect(result).to.eql(values);
     });
 
@@ -184,7 +184,7 @@ export const shouldBehaveLikeLSP3 = (
 
         lsp12IssuedAssetsKeys.push(
           ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
-            ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
+          ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
         );
 
         lsp12IssuedAssetsValues.push(newIssuedAssets[ii]);
@@ -205,12 +205,12 @@ export const shouldBehaveLikeLSP3 = (
         ),
       ];
 
-      await context.universalProfile["setData(bytes32[],bytes[])"](
+      await context.universalProfile.setDataBatch(
         keys,
         values
       );
 
-      const result = await context.universalProfile["getData(bytes32[])"](keys);
+      const result = await context.universalProfile.getDataBatch(keys);
       expect(result).to.eql(values);
     });
 
@@ -220,7 +220,7 @@ export const shouldBehaveLikeLSP3 = (
 
         lsp12IssuedAssetsKeys.push(
           ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
-            ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
+          ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
         );
 
         lsp12IssuedAssetsValues.push(
@@ -240,12 +240,12 @@ export const shouldBehaveLikeLSP3 = (
           ),
         ];
 
-        await context.universalProfile["setData(bytes32[],bytes[])"](
+        await context.universalProfile.setDataBatch(
           keys,
           values
         );
 
-        const result = await context.universalProfile["getData(bytes32[])"](
+        const result = await context.universalProfile.getDataBatch(
           keys
         );
         expect(result).to.eql(values);
@@ -258,12 +258,12 @@ export const shouldBehaveLikeLSP3 = (
         let value = ethers.utils.hexlify(ethers.utils.randomBytes(200));
 
         await expect(
-          context.universalProfile["setData(bytes32,bytes)"](key, value)
+          context.universalProfile.setData(key, value)
         )
           .to.emit(context.universalProfile, "DataChanged")
           .withArgs(key, value);
 
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
     });
@@ -274,12 +274,12 @@ export const shouldBehaveLikeLSP3 = (
         let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
         await expect(
-          context.universalProfile["setData(bytes32,bytes)"](key, value)
+          context.universalProfile.setData(key, value)
         )
           .to.emit(context.universalProfile, "DataChanged")
           .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
 
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
     });
@@ -290,12 +290,12 @@ export const shouldBehaveLikeLSP3 = (
         let value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
 
         await expect(
-          context.universalProfile["setData(bytes32,bytes)"](key, value)
+          context.universalProfile.setData(key, value)
         )
           .to.emit(context.universalProfile, "DataChanged")
           .withArgs(key, value);
 
-        const result = await context.universalProfile["getData(bytes32)"](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
     });
@@ -310,12 +310,12 @@ export const shouldBehaveLikeLSP3 = (
           await expect(
             context.universalProfile
               .connect(context.accounts[0])
-              ["setData(bytes32,bytes)"](key, value, { value: msgValue })
+              .setData(key, value, { value: msgValue })
           )
             .to.emit(context.universalProfile, "ValueReceived")
             .withArgs(context.accounts[0].address, msgValue);
 
-          const result = await context.universalProfile["getData(bytes32)"](
+          const result = await context.universalProfile.getData(
             key
           );
           expect(result).to.equal(value);
@@ -333,12 +333,12 @@ export const shouldBehaveLikeLSP3 = (
           await expect(
             context.universalProfile
               .connect(context.accounts[0])
-              ["setData(bytes32[],bytes[])"](key, value, { value: msgValue })
+              .setDataBatch(key, value, { value: msgValue })
           )
             .to.emit(context.universalProfile, "ValueReceived")
             .withArgs(context.accounts[0].address, msgValue);
 
-          const result = await context.universalProfile["getData(bytes32[])"](
+          const result = await context.universalProfile.getDataBatch(
             key
           );
           expect(result).to.deep.equal(value);
@@ -354,12 +354,12 @@ export const shouldBehaveLikeLSP3 = (
 
       // prettier-ignore
       await expect(
-          sender.sendTransaction({
-            to: context.universalProfile.address,
-            value: amount,
-          })
-        ).to.not.be.reverted
-         .to.not.emit(context.universalProfile, "ValueReceived");
+        sender.sendTransaction({
+          to: context.universalProfile.address,
+          value: amount,
+        })
+      ).to.not.be.reverted
+        .to.not.emit(context.universalProfile, "ValueReceived");
     });
   });
 
@@ -425,9 +425,7 @@ export const shouldBehaveLikeLSP3 = (
 
         const msgValue = ethers.utils.parseEther("10");
 
-        const tx = await context.universalProfile[
-          "execute(uint256[],address[],uint256[],bytes[])"
-        ](operationsType, recipients, values, datas, { value: msgValue });
+        const tx = await context.universalProfile.executeBatch(operationsType, recipients, values, datas, { value: msgValue });
 
         await expect(tx)
           .to.emit(context.universalProfile, "ValueReceived")
@@ -448,9 +446,7 @@ export const shouldBehaveLikeLSP3 = (
 
         const msgValue = 0;
 
-        const tx = await context.universalProfile[
-          "execute(uint256[],address[],uint256[],bytes[])"
-        ](operationsType, recipients, values, datas, { value: msgValue });
+        const tx = await context.universalProfile.executeBatch(operationsType, recipients, values, datas, { value: msgValue });
 
         await expect(tx).to.not.emit(context.universalProfile, "ValueReceived");
       });
@@ -465,7 +461,7 @@ export const shouldBehaveLikeLSP3 = (
 
         let setDataPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [key, value]
           );
 
@@ -493,7 +489,7 @@ export const shouldBehaveLikeLSP3 = (
 
             let setDataPayload =
               context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
+                "setData",
                 [key, value]
               );
 
@@ -501,7 +497,7 @@ export const shouldBehaveLikeLSP3 = (
               .connect(context.deployParams.owner)
               .batchCalls([setDataPayload]);
 
-            const result = await context.universalProfile["getData(bytes32)"](
+            const result = await context.universalProfile.getData(
               key
             );
             expect(result).to.equal(value);
@@ -513,7 +509,7 @@ export const shouldBehaveLikeLSP3 = (
             let amount = 20;
             let executePayload =
               context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
+                "execute",
                 [0, context.accounts[4].address, amount, "0x"]
               );
 
@@ -535,7 +531,7 @@ export const shouldBehaveLikeLSP3 = (
             let amount = 20;
             let executePayload =
               context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
+                "execute",
                 [0, context.accounts[5].address, amount, "0x"]
               );
 
@@ -546,7 +542,7 @@ export const shouldBehaveLikeLSP3 = (
 
             let setDataPayload =
               context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
+                "setData",
                 [key, value]
               );
 
@@ -573,7 +569,7 @@ export const shouldBehaveLikeLSP3 = (
               [`-${amount}`, amount]
             );
 
-            const result = await context.universalProfile["getData(bytes32)"](
+            const result = await context.universalProfile.getData(
               key
             );
             expect(result).to.equal(value);
@@ -589,7 +585,7 @@ export const shouldBehaveLikeLSP3 = (
             let amount = 100;
             let executePayload =
               context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
+                "execute",
                 [3, context.accounts[5].address, amount, "0x"]
               );
 
@@ -600,7 +596,7 @@ export const shouldBehaveLikeLSP3 = (
 
             let setDataPayload =
               context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
+                "setData",
                 [key, value]
               );
 
@@ -693,7 +689,7 @@ export const shouldInitializeLikeLSP3 = (
     });
 
     it("should have set key 'SupportedStandards:LSP3UniversalProfile'", async () => {
-      const result = await context.universalProfile["getData(bytes32)"](
+      const result = await context.universalProfile.getData(
         SupportedStandards.LSP3UniversalProfile.key
       );
 
