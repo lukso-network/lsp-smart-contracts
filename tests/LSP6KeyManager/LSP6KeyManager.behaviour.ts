@@ -43,6 +43,7 @@ import {
   testAllowedERC725YDataKeysInternals,
   testReadingPermissionsInternals,
   testSetDataInternals,
+  testExecuteInternals,
 } from "./index";
 
 export const shouldBehaveLikeLSP6 = (
@@ -170,4 +171,5 @@ export const testLSP6InternalFunctions = (
   testAllowedERC725YDataKeysInternals(buildContext);
   testReadingPermissionsInternals(buildContext);
   testSetDataInternals(buildContext);
+  testExecuteInternals(buildContext);
 };

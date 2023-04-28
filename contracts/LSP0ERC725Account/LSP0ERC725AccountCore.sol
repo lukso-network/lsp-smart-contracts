@@ -5,7 +5,6 @@ pragma solidity ^0.8.4;
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP0ERC725Account} from "./ILSP0ERC725Account.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import {ILSP20CallVerification} from "../LSP20CallVerification/ILSP20CallVerification.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -14,7 +13,6 @@ import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165C
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
-import {GasUtils} from "../Utils/GasUtils.sol";
 
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
@@ -158,7 +156,7 @@ abstract contract LSP0ERC725AccountCore is
      */
     function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
         results = new bytes[](data.length);
-        for (uint256 i; i < data.length; i = GasUtils.uncheckedIncrement(i)) {
+        for (uint256 i; i < data.length; ) {
             (bool success, bytes memory result) = address(this).delegatecall(data[i]);
 
             if (!success) {
@@ -177,6 +175,10 @@ abstract contract LSP0ERC725AccountCore is
             }
 
             results[i] = result;
+
+            unchecked {
+                ++i;
+            }
         }
     }
 
@@ -226,7 +228,7 @@ abstract contract LSP0ERC725AccountCore is
 
         // if verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         if (verifyAfter) {
-            LSP20CallVerification._verifyCallResult(_owner, result);
+            LSP20CallVerification._verifyCallResult(_owner, abi.encode(result));
         }
 
         return result;
@@ -356,8 +358,12 @@ abstract contract LSP0ERC725AccountCore is
 
         // If the caller is the owner perform setData directly
         if (msg.sender == _owner) {
-            for (uint256 i = 0; i < dataKeys.length; i = _uncheckedIncrementERC725Y(i)) {
+            for (uint256 i = 0; i < dataKeys.length; ) {
                 _setData(dataKeys[i], dataValues[i]);
+
+                unchecked {
+                    ++i;
+                }
             }
 
             return;
@@ -367,8 +373,12 @@ abstract contract LSP0ERC725AccountCore is
         // Depending on the magicValue returned, a second call is done after setting data
         bool verifyAfter = _verifyCall(_owner);
 
-        for (uint256 i = 0; i < dataKeys.length; i = _uncheckedIncrementERC725Y(i)) {
+        for (uint256 i = 0; i < dataKeys.length; ) {
             _setData(dataKeys[i], dataValues[i]);
+
+            unchecked {
+                ++i;
+            }
         }
 
         // If verifyAfter is true, Call {lsp20VerifyCallResult} on the owner

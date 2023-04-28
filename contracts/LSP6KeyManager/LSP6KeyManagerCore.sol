@@ -17,7 +17,6 @@ import {LSP6ExecuteModule} from "./LSP6Modules/LSP6ExecuteModule.sol";
 import {LSP6OwnershipModule} from "./LSP6Modules/LSP6OwnershipModule.sol";
 
 // libraries
-import {GasUtils} from "../Utils/GasUtils.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
@@ -34,7 +33,6 @@ import {
     InvalidRelayNonce,
     NoPermissionsSet,
     InvalidERC725Function,
-    NotAuthorised,
     CallerIsNotTheTarget,
     CannotSendValueToSetData
 } from "./LSP6Errors.sol";
@@ -148,12 +146,16 @@ abstract contract LSP6KeyManagerCore is
         bytes[] memory results = new bytes[](payloads.length);
         uint256 totalValues;
 
-        for (uint256 ii; ii < payloads.length; ii = GasUtils.uncheckedIncrement(ii)) {
+        for (uint256 ii; ii < payloads.length; ) {
             if ((totalValues += values[ii]) > msg.value) {
                 revert LSP6BatchInsufficientValueSent(totalValues, msg.value);
             }
 
             results[ii] = _execute(values[ii], payloads[ii]);
+
+            unchecked {
+                ++ii;
+            }
         }
 
         if (totalValues < msg.value) {
@@ -194,12 +196,16 @@ abstract contract LSP6KeyManagerCore is
         bytes[] memory results = new bytes[](payloads.length);
         uint256 totalValues;
 
-        for (uint256 ii; ii < payloads.length; ii = GasUtils.uncheckedIncrement(ii)) {
+        for (uint256 ii; ii < payloads.length; ) {
             if ((totalValues += values[ii]) > msg.value) {
                 revert LSP6BatchInsufficientValueSent(totalValues, msg.value);
             }
 
             results[ii] = _executeRelayCall(signatures[ii], nonces[ii], values[ii], payloads[ii]);
+
+            unchecked {
+                ++ii;
+            }
         }
 
         if (totalValues < msg.value) {
@@ -227,7 +233,7 @@ abstract contract LSP6KeyManagerCore is
         _nonReentrantBefore(isSetData, caller);
 
         _verifyPermissions(caller, msgValue, data);
-        emit VerifiedCall(msg.sender, msgValue, bytes4(data));
+        emit VerifiedCall(caller, msgValue, bytes4(data));
 
         // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
         return
@@ -257,7 +263,7 @@ abstract contract LSP6KeyManagerCore is
             revert InvalidPayload(payload);
         }
 
-        bool isSetData;
+        bool isSetData = false;
         if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_ARRAY_SELECTOR) {
             isSetData = true;
         }
@@ -298,7 +304,7 @@ abstract contract LSP6KeyManagerCore is
             signature
         );
 
-        bool isSetData;
+        bool isSetData = false;
         if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_ARRAY_SELECTOR) {
             isSetData = true;
         }
@@ -355,10 +361,11 @@ abstract contract LSP6KeyManagerCore is
      * @param idx (channel id + nonce within the channel)
      */
     function _isValidNonce(address from, uint256 idx) internal view virtual returns (bool) {
-        // idx % (1 << 128) = nonce
-        // (idx >> 128) = channel
-        // equivalent to: return (nonce == _nonceStore[_from][channel]
-        return (idx % (1 << 128)) == (_nonceStore[from][idx >> 128]);
+        uint256 mask = ~uint128(0);
+        // Alternatively:
+        // uint256 mask = (1<<128)-1;
+        // uint256 mask = 0xffffffffffffffffffffffffffffffff;
+        return (idx & mask) == (_nonceStore[from][idx >> 128]);
     }
 
     /**
