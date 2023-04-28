@@ -428,37 +428,85 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
         const permissionValues = [
           ALL_PERMISSIONS,
           combinePermissions(PERMISSIONS.SUPER_CALL, PERMISSIONS.REENTRANCY),
-          combinePermissions(PERMISSIONS.SUPER_SETDATA, PERMISSIONS.REENTRANCY),
+          combinePermissions(PERMISSIONS.SUPER_SETDATA),
         ];
 
         await setupKeyManager(context, permissionKeys, permissionValues);
       });
 
       describe("when executing reentrant calls from two different contracts", () => {
-        describe("when the firstReentrant execute its first reentrant call to the KeyManager successfully", () => {
-          it("should require REENTRANCY Permission from the secondReentrant when reentering the KeyManager", async () => {
-            let firstTargetSelector =
-              firstReentrant.interface.encodeFunctionData("firstTarget");
+        describe("when the firstReentrant execute its first reentrant call to the UniversalProfile successfully", () => {
+          describe("when the secondReentrant is not granted REENTRANCY Permission", () => {
+            it("shoul fail stating that the caller (secondReentrant) is not authorised (no reentrancy permission)", async () => {
+              let firstTargetSelector =
+                firstReentrant.interface.encodeFunctionData("firstTarget");
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [
-                OPERATION_TYPES.CALL,
-                firstReentrant.address,
-                0,
-                firstTargetSelector,
-              ]
-            );
+              let payload =
+                context.universalProfile.interface.encodeFunctionData(
+                  "execute(uint256,address,uint256,bytes)",
+                  [
+                    OPERATION_TYPES.CALL,
+                    firstReentrant.address,
+                    0,
+                    firstTargetSelector,
+                  ]
+                );
 
-            await context.keyManager
-              .connect(context.owner)
-              ["execute(bytes)"](payload);
+              await expect(
+                context.keyManager
+                  .connect(context.owner)
+                  ["execute(bytes)"](payload)
+              )
+                .to.be.revertedWithCustomError(
+                  context.keyManager,
+                  "NotAuthorised"
+                )
+                .withArgs(secondReentrant.address, "REENTRANCY");
+            });
+          });
 
-            let result = await context.universalProfile["getData(bytes32)"](
-              ethers.constants.HashZero
-            );
+          describe("when the secondReentrant is granted REENTRANCY Permission", () => {
+            before(async () => {
+              const permissionKeys = [
+                ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+                  secondReentrant.address.substring(2),
+              ];
 
-            expect(result).to.equal("0xaabbccdd");
+              const permissionValues = [
+                combinePermissions(
+                  PERMISSIONS.SUPER_SETDATA,
+                  PERMISSIONS.REENTRANCY
+                ),
+              ];
+
+              await setupKeyManager(context, permissionKeys, permissionValues);
+            });
+
+            it("should pass and setData from the second reentrantCall on the UniversalProfile correctly", async () => {
+              let firstTargetSelector =
+                firstReentrant.interface.encodeFunctionData("firstTarget");
+
+              let payload =
+                context.universalProfile.interface.encodeFunctionData(
+                  "execute(uint256,address,uint256,bytes)",
+                  [
+                    OPERATION_TYPES.CALL,
+                    firstReentrant.address,
+                    0,
+                    firstTargetSelector,
+                  ]
+                );
+
+              await context.keyManager
+                .connect(context.owner)
+                ["execute(bytes)"](payload);
+
+              let result = await context.universalProfile["getData(bytes32)"](
+                ethers.constants.HashZero
+              );
+
+              expect(result).to.equal("0xaabbccdd");
+            });
           });
         });
       });
