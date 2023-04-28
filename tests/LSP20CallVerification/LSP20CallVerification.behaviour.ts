@@ -488,6 +488,43 @@ export const shouldBehaveLikeLSP20 = (
         });
       });
 
+      describe("that implements verifyCall that returns a valid magicValue with additional data after the first 32 bytes", () => {
+        let firstCallReturnMagicValueContract: FakeContract;
+        let newUniversalProfile: UniversalProfile;
+
+        before(async () => {
+          firstCallReturnMagicValueContract = await smock.fake(
+            ILSP20CallVerification__factory.abi
+          );
+          firstCallReturnMagicValueContract.lsp20VerifyCall.returns(
+            LSP20_MAGIC_VALUES.VERIFY_CALL.NO_POST_VERIFICATION +
+              "0".repeat(56) +
+              "0xcafecafecafecafecafecafecafecafecafecafe" +
+              "0".repeat(24)
+          );
+
+          newUniversalProfile = await new UniversalProfile__factory(
+            context.accounts[0]
+          ).deploy(firstCallReturnMagicValueContract.address);
+        });
+
+        it("should pass when calling `setData(bytes32,bytes)`", async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+          await expect(
+            newUniversalProfile
+              .connect(context.accounts[3])
+              ["setData(bytes32,bytes)"](key, value)
+          )
+            .to.emit(newUniversalProfile, "DataChanged")
+            .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+
+          const result = await newUniversalProfile["getData(bytes32)"](key);
+          expect(result).to.equal(value);
+        });
+      });
+
       describe("that implements verifyCall and verifyCallResult and both return magic value", () => {
         let bothCallReturnMagicValueContract: FakeContract<ILSP20CallVerification>;
         let newUniversalProfile: UniversalProfile;
@@ -519,6 +556,49 @@ export const shouldBehaveLikeLSP20 = (
             .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
 
           const result = await newUniversalProfile.getData(key);
+          expect(result).to.equal(value);
+        });
+      });
+
+      describe("that implements verifyCall and verifyCallResult and both return magic value plus additional data", () => {
+        let bothCallReturnMagicValueContract: FakeContract<ILSP20CallVerification>;
+        let newUniversalProfile: UniversalProfile;
+
+        before(async () => {
+          bothCallReturnMagicValueContract = await smock.fake(
+            ILSP20CallVerification__factory.abi
+          );
+          bothCallReturnMagicValueContract.lsp20VerifyCall.returns(
+            LSP20_MAGIC_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION +
+              "0".repeat(56) +
+              "0xcafecafecafecafecafecafecafecafecafecafe" +
+              "0".repeat(24)
+          );
+          bothCallReturnMagicValueContract.lsp20VerifyCallResult.returns(
+            LSP20_MAGIC_VALUES.VERIFY_CALL_RESULT +
+              "0".repeat(56) +
+              "0xcafecafecafecafecafecafecafecafecafecafe" +
+              "0".repeat(24)
+          );
+
+          newUniversalProfile = await new UniversalProfile__factory(
+            context.accounts[0]
+          ).deploy(bothCallReturnMagicValueContract.address);
+        });
+
+        it("should pass when calling `setData(bytes32,bytes)`", async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+          await expect(
+            newUniversalProfile
+              .connect(context.accounts[3])
+              ["setData(bytes32,bytes)"](key, value)
+          )
+            .to.emit(newUniversalProfile, "DataChanged")
+            .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+
+          const result = await newUniversalProfile["getData(bytes32)"](key);
           expect(result).to.equal(value);
         });
       });

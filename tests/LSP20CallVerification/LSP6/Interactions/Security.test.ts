@@ -3,8 +3,12 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {
+  FirstToCallLSP20,
   Reentrancy,
   Reentrancy__factory,
+  SecondToCallLSP20,
+  SecondToCallLSP20__factory,
+  FirstToCallLSP20__factory,
   TargetContract,
   TargetContract__factory,
   UniversalReceiverDelegateDataUpdater__factory,
@@ -238,6 +242,102 @@ export const testSecurityScenarios = (
       expect(
         await context.universalProfile.getData(randomHardcodedKey)
       ).to.equal(randomHardcodedValue);
+    });
+  });
+
+  describe("when chaining reentrancy", () => {
+    let firstReentrant: FirstToCallLSP20;
+    let secondReentrant: SecondToCallLSP20;
+
+    before(async () => {
+      secondReentrant = await new SecondToCallLSP20__factory(
+        context.accounts[0]
+      ).deploy(context.universalProfile.address);
+      firstReentrant = await new FirstToCallLSP20__factory(
+        context.accounts[0]
+      ).deploy(context.universalProfile.address, secondReentrant.address);
+
+      const permissionKeys = [
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          firstReentrant.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          secondReentrant.address.substring(2),
+      ];
+
+      const permissionValues = [
+        ALL_PERMISSIONS,
+        combinePermissions(PERMISSIONS.SUPER_CALL, PERMISSIONS.REENTRANCY),
+        combinePermissions(PERMISSIONS.SUPER_SETDATA),
+      ];
+
+      await setupKeyManager(context, permissionKeys, permissionValues);
+    });
+
+    describe("when executing reentrant calls from two different contracts", () => {
+      describe("when the firstReentrant execute its first reentrant call to the UniversalProfile successfully", () => {
+        describe("when the secondReentrant is not granted REENTRANCY Permission", () => {
+          it("shoul fail stating that the caller (secondReentrant) is not authorised (no reentrancy permission)", async () => {
+            let firstTargetSelector =
+              firstReentrant.interface.encodeFunctionData("firstTarget");
+
+            await expect(
+              context.universalProfile
+                .connect(context.owner)
+                ["execute(uint256,address,uint256,bytes)"](
+                  OPERATION_TYPES.CALL,
+                  firstReentrant.address,
+                  0,
+                  firstTargetSelector
+                )
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NotAuthorised"
+              )
+              .withArgs(secondReentrant.address, "REENTRANCY");
+          });
+        });
+
+        describe("when the secondReentrant is granted REENTRANCY Permission", () => {
+          before(async () => {
+            const permissionKeys = [
+              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+                secondReentrant.address.substring(2),
+            ];
+
+            const permissionValues = [
+              combinePermissions(
+                PERMISSIONS.SUPER_SETDATA,
+                PERMISSIONS.REENTRANCY
+              ),
+            ];
+
+            await setupKeyManager(context, permissionKeys, permissionValues);
+          });
+
+          it("should pass and setData from the second reentrantCall on the UniversalProfile correctly", async () => {
+            let firstTargetSelector =
+              firstReentrant.interface.encodeFunctionData("firstTarget");
+
+            await context.universalProfile
+              .connect(context.owner)
+              ["execute(uint256,address,uint256,bytes)"](
+                OPERATION_TYPES.CALL,
+                firstReentrant.address,
+                0,
+                firstTargetSelector
+              );
+
+            let result = await context.universalProfile["getData(bytes32)"](
+              ethers.constants.HashZero
+            );
+
+            expect(result).to.equal("0xaabbccdd");
+          });
+        });
+      });
     });
   });
 };
