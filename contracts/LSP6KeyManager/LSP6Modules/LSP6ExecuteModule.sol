@@ -211,7 +211,8 @@ abstract contract LSP6ExecuteModule {
             uint256 operationType,
             address to,
             uint256 value,
-            bytes4 selector
+            bytes4 selector,
+            bool isEmptyCall
         ) = _extractExecuteParameters(payload);
 
         // CHECK for ALLOWED CALLS
@@ -223,7 +224,7 @@ abstract contract LSP6ExecuteModule {
             revert NoCallsAllowed(controllerAddress);
         }
 
-        bytes4 requiredCallTypes = _extractCallType(operationType, selector, value);
+        bytes4 requiredCallTypes = _extractCallType(operationType, value, isEmptyCall);
 
         for (uint256 ii; ii < allowedCalls.length; ii += 34) {
             /// @dev structure of an AllowedCall
@@ -269,25 +270,22 @@ abstract contract LSP6ExecuteModule {
      */
     function _extractCallType(
         uint256 operationType,
-        bytes4 selector,
-        uint256 value
+        uint256 value,
+        bool isEmptyCall
     ) internal pure returns (bytes4) {
         bytes4 requiredCallTypes;
 
-        if (operationType == OPERATION_0_CALL) {
-            if (
-                // CHECK if we are doing an empty call
-                (selector == bytes4(0) && value == 0) ||
-                // we do not require callType CALL
-                // if we are just transferring value without `data`
-                selector != bytes4(0)
-            ) {
-                requiredCallTypes = _ALLOWEDCALLS_WRITE;
-            }
+        if (operationType == OPERATION_0_CALL && !isEmptyCall) {
+            requiredCallTypes = _ALLOWEDCALLS_WRITE;
         }
 
-        if (operationType == OPERATION_3_STATICCALL) requiredCallTypes = _ALLOWEDCALLS_READ;
-        if (operationType == OPERATION_4_DELEGATECALL) requiredCallTypes = _ALLOWEDCALLS_EXECUTE;
+        if (operationType == OPERATION_3_STATICCALL && !isEmptyCall) {
+            requiredCallTypes = _ALLOWEDCALLS_READ;
+        }
+
+        if (operationType == OPERATION_4_DELEGATECALL && !isEmptyCall) {
+            requiredCallTypes = _ALLOWEDCALLS_EXECUTE;
+        }
 
         // if there is value being transferred, add the extra bit
         // for the first bit for Value Transfer in the `requiredCallTypes`
@@ -305,7 +303,8 @@ abstract contract LSP6ExecuteModule {
             uint256,
             address,
             uint256,
-            bytes4
+            bytes4,
+            bool
         )
     {
         uint256 operationType = uint256(bytes32(executeCalldata[4:36]));
@@ -323,7 +322,7 @@ abstract contract LSP6ExecuteModule {
             ? bytes4(executeCalldata[164:168])
             : bytes4(0);
 
-        return (operationType, to, value, selector);
+        return (operationType, to, value, selector, executeCalldata.length == 164);
     }
 
     function _isAllowedAddress(bytes memory allowedCall, address to) internal pure returns (bool) {

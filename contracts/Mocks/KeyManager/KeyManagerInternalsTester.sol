@@ -94,7 +94,8 @@ contract KeyManagerInternalTester is LSP6KeyManager {
             uint256,
             address,
             uint256,
-            bytes4
+            bytes4,
+            bool
         )
     {
         return super._extractExecuteParameters(executeCalldata);
