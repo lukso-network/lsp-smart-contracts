@@ -40,7 +40,7 @@ import {
 // constants
 import {
     SETDATA_SELECTOR,
-    SETDATA_ARRAY_SELECTOR,
+    SETDATA_BATCH_SELECTOR,
     EXECUTE_SELECTOR
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
@@ -133,7 +133,7 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(uint256[] calldata values, bytes[] calldata payloads)
+    function executeBatch(uint256[] calldata values, bytes[] calldata payloads)
         public
         payable
         virtual
@@ -179,7 +179,7 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function executeRelayCall(
+    function executeRelayCallBatch(
         bytes[] memory signatures,
         uint256[] calldata nonces,
         uint256[] calldata values,
@@ -226,7 +226,7 @@ abstract contract LSP6KeyManagerCore is
         if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
 
         bool isSetData = false;
-        if (bytes4(data) == SETDATA_SELECTOR || bytes4(data) == SETDATA_ARRAY_SELECTOR) {
+        if (bytes4(data) == SETDATA_SELECTOR || bytes4(data) == SETDATA_BATCH_SELECTOR) {
             isSetData = true;
         }
 
@@ -264,7 +264,7 @@ abstract contract LSP6KeyManagerCore is
         }
 
         bool isSetData = false;
-        if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_ARRAY_SELECTOR) {
+        if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_BATCH_SELECTOR) {
             isSetData = true;
         }
 
@@ -305,7 +305,7 @@ abstract contract LSP6KeyManagerCore is
         );
 
         bool isSetData = false;
-        if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_ARRAY_SELECTOR) {
+        if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_BATCH_SELECTOR) {
             isSetData = true;
         }
 
@@ -390,8 +390,8 @@ abstract contract LSP6KeyManagerCore is
 
             LSP6SetDataModule._verifyCanSetData(_target, from, permissions, inputKey, inputValue);
 
-            // ERC725Y.setData(bytes32[],bytes[])
-        } else if (erc725Function == SETDATA_ARRAY_SELECTOR) {
+            // ERC725Y.setDataBatch(bytes32[],bytes[])
+        } else if (erc725Function == SETDATA_BATCH_SELECTOR) {
             if (msgValue != 0) revert CannotSendValueToSetData();
             (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi.decode(
                 payload[4:],

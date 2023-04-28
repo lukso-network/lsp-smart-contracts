@@ -49,7 +49,7 @@ interface ILSP6KeyManager is
     /**
      * @dev batch `execute(bytes)`
      */
-    function execute(uint256[] calldata values, bytes[] calldata payloads)
+    function executeBatch(uint256[] calldata values, bytes[] calldata payloads)
         external
         payable
         returns (bytes[] memory);
@@ -70,7 +70,7 @@ interface ILSP6KeyManager is
     /**
      * @dev batch `executeRelayCall(...)`
      */
-    function executeRelayCall(
+    function executeRelayCallBatch(
         bytes[] calldata signatures,
         uint256[] calldata nonces,
         uint256[] calldata values,

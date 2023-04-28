@@ -39,7 +39,7 @@ export const testExecuteInternals = (
       };
 
       const calldata = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           executeParameters.operationType,
           executeParameters.to,
@@ -70,7 +70,7 @@ export const testExecuteInternals = (
       };
 
       const calldata = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           executeParameters.operationType,
           executeParameters.to,

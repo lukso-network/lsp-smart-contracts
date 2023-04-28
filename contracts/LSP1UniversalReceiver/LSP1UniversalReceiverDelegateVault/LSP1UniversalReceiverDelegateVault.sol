@@ -74,7 +74,7 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
                 interfaceID
             );
 
-            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
         } else {
             // if there is no map value for the asset to remove, then do nothing
             if (bytes20(notifierMapValue) == bytes20(0))
@@ -99,7 +99,7 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
              */
             if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
 
-            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
         }
     }
 

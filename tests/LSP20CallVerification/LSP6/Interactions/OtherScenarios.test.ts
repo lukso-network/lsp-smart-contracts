@@ -55,7 +55,7 @@ export const otherTestScenarios = (
       await expect(
         context.universalProfile
           .connect(context.owner)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             INVALID_OPERATION_TYPE,
             targetContract.address,
             0,
@@ -78,7 +78,7 @@ export const otherTestScenarios = (
       await expect(
         context.universalProfile
           .connect(addressCanMakeCall)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             INVALID_OPERATION_TYPE,
             targetContract.address,
             0,

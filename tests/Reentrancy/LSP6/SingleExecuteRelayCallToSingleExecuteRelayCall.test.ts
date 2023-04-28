@@ -51,15 +51,12 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         [context.keyManager.address]
       );
     executePayload =
-      new UniversalProfile__factory().interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
-        [
-          0,
-          reentrancyContext.singleReentarncyRelayer.address,
-          0,
-          reentrantCallPayload,
-        ]
-      );
+      new UniversalProfile__factory().interface.encodeFunctionData("execute", [
+        0,
+        reentrancyContext.singleReentarncyRelayer.address,
+        0,
+        reentrantCallPayload,
+      ]);
   });
 
   describe("when reentering and transferring value", () => {
@@ -103,7 +100,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
+            .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
               relayCallParams.payload
@@ -129,7 +126,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       await expect(
         context.keyManager
           .connect(reentrancyContext.caller)
-          ["executeRelayCall(bytes,uint256,bytes)"](
+          .executeRelayCall(
             relayCallParams.signature,
             relayCallParams.nonce,
             relayCallParams.payload
@@ -154,7 +151,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
           relayCallParams.payload
@@ -215,7 +212,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
+            .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
               relayCallParams.payload
@@ -241,7 +238,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       await expect(
         context.keyManager
           .connect(reentrancyContext.caller)
-          ["executeRelayCall(bytes,uint256,bytes)"](
+          .executeRelayCall(
             relayCallParams.signature,
             relayCallParams.nonce,
             relayCallParams.payload
@@ -263,7 +260,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
           relayCallParams.payload
@@ -276,9 +273,9 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
       );
 
-      expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedKey)
-      ).to.equal(hardcodedValue);
+      expect(await context.universalProfile.getData(hardcodedKey)).to.equal(
+        hardcodedValue
+      );
     });
   });
 
@@ -319,7 +316,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
+            .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
               relayCallParams.payload
@@ -344,7 +341,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
           relayCallParams.payload
@@ -357,9 +354,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         "0x0000000000000000000000000000000000000000000000000000000000000010";
 
       expect(
-        await context.universalProfile["getData(bytes32)"](
-          hardcodedPermissionKey
-        )
+        await context.universalProfile.getData(hardcodedPermissionKey)
       ).to.equal(hardcodedPermissionValue);
     });
   });
@@ -401,7 +396,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
+            .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
               relayCallParams.payload
@@ -426,7 +421,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
           relayCallParams.payload
@@ -438,9 +433,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       const hardcodedPermissionValue = "0x";
 
       expect(
-        await context.universalProfile["getData(bytes32)"](
-          hardcodedPermissionKey
-        )
+        await context.universalProfile.getData(hardcodedPermissionKey)
       ).to.equal(hardcodedPermissionValue);
     });
   });
@@ -482,7 +475,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
+            .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
               relayCallParams.payload
@@ -507,7 +500,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
           relayCallParams.payload
@@ -519,9 +512,9 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 
       const hardcodedLSP1Value = reentrancyContext.newURDAddress;
 
-      expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedLSP1Key)
-      ).to.equal(hardcodedLSP1Value.toLowerCase());
+      expect(await context.universalProfile.getData(hardcodedLSP1Key)).to.equal(
+        hardcodedLSP1Value.toLowerCase()
+      );
     });
   });
 
@@ -563,7 +556,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
           await expect(
             context.keyManager
               .connect(reentrancyContext.caller)
-              ["executeRelayCall(bytes,uint256,bytes)"](
+              .executeRelayCall(
                 relayCallParams.signature,
                 relayCallParams.nonce,
                 relayCallParams.payload
@@ -589,7 +582,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
           relayCallParams.payload
@@ -601,9 +594,9 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
 
       const hardcodedLSP1Value = "0x";
 
-      expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedLSP1Key)
-      ).to.equal(hardcodedLSP1Value.toLowerCase());
+      expect(await context.universalProfile.getData(hardcodedLSP1Key)).to.equal(
+        hardcodedLSP1Value.toLowerCase()
+      );
     });
   });
 };

@@ -107,7 +107,7 @@ export const testSecurityScenarios = (
     await expect(
       context.universalProfile
         .connect(addressWithNoPermissions)
-        ["execute(uint256,address,uint256,bytes)"](
+        .execute(
           OPERATION_TYPES.CALL,
           targetContract.address,
           0,
@@ -128,7 +128,7 @@ export const testSecurityScenarios = (
     await expect(
       context.universalProfile
         .connect(context.owner)
-        ["execute(uint256,address,uint256,bytes)"](
+        .execute(
           OPERATION_TYPES.CALL,
           context.keyManager.address,
           0,
@@ -146,15 +146,12 @@ export const testSecurityScenarios = (
       // we assume the UP owner is not aware that some malicious code is present
       // in the fallback function of the target (= recipient) contract
       let transferPayload =
-        context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
-            OPERATION_TYPES.CALL,
-            maliciousContract.address,
-            ethers.utils.parseEther("1"),
-            EMPTY_PAYLOAD,
-          ]
-        );
+        context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          maliciousContract.address,
+          ethers.utils.parseEther("1"),
+          EMPTY_PAYLOAD,
+        ]);
 
       let executePayload = context.keyManager.interface.encodeFunctionData(
         "execute(bytes)",
@@ -175,9 +172,7 @@ export const testSecurityScenarios = (
       // at this point, the malicious contract receive function try to drain funds by re-entering the KeyManager
       // this should not be possible since it does not have the permission `REENTRANCY`
       await expect(
-        context.keyManager
-          .connect(context.owner)
-          ["execute(bytes)"](transferPayload)
+        context.keyManager.connect(context.owner).execute(transferPayload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
         .withArgs(maliciousContract.address, "REENTRANCY");
@@ -211,28 +206,22 @@ export const testSecurityScenarios = (
       );
 
       const setDataPayload =
-        context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
+        context.universalProfile.interface.encodeFunctionData("setDataBatch", [
           [
-            [
-              ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
-              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-                universalReceiverDelegateDataUpdater.address.substring(2),
-              ERC725YDataKeys.LSP6[
-                "AddressPermissions:AllowedERC725YDataKeys"
-              ] + universalReceiverDelegateDataUpdater.address.substring(2),
-            ],
-            [
-              universalReceiverDelegateDataUpdater.address,
-              combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.REENTRANCY),
-              encodeCompactBytesArray([randomHardcodedKey]),
-            ],
-          ]
-        );
+            ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+              universalReceiverDelegateDataUpdater.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
+              universalReceiverDelegateDataUpdater.address.substring(2),
+          ],
+          [
+            universalReceiverDelegateDataUpdater.address,
+            combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.REENTRANCY),
+            encodeCompactBytesArray([randomHardcodedKey]),
+          ],
+        ]);
 
-      await context.keyManager
-        .connect(context.owner)
-        ["execute(bytes)"](setDataPayload);
+      await context.keyManager.connect(context.owner).execute(setDataPayload);
 
       const universalReceiverDelegatePayload =
         universalReceiverDelegateDataUpdater.interface.encodeFunctionData(
@@ -241,22 +230,17 @@ export const testSecurityScenarios = (
         );
 
       const executePayload =
-        context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
-            OPERATION_TYPES.CALL,
-            universalReceiverDelegateDataUpdater.address,
-            ethers.utils.parseEther("0"),
-            universalReceiverDelegatePayload,
-          ]
-        );
+        context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          universalReceiverDelegateDataUpdater.address,
+          ethers.utils.parseEther("0"),
+          universalReceiverDelegatePayload,
+        ]);
 
-      await context.keyManager
-        .connect(context.owner)
-        ["execute(bytes)"](executePayload);
+      await context.keyManager.connect(context.owner).execute(executePayload);
 
       expect(
-        await context.universalProfile["getData(bytes32)"](randomHardcodedKey)
+        await context.universalProfile.getData(randomHardcodedKey)
       ).to.equal(randomHardcodedValue);
     });
   });
