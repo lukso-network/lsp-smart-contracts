@@ -24,11 +24,9 @@ abstract contract LSP20CallVerification {
             abi.encodeWithSelector(ILSP20.lsp20VerifyCall.selector, msg.sender, msg.value, msg.data)
         );
 
-        if (!success) _revert(false, returnedData);
+        _validateCall(false, success, returnedData);
 
-        if (returnedData.length < 32) revert LSP20InvalidMagicValue(false, returnedData);
-
-        bytes32 magicValue = abi.decode(returnedData, (bytes32));
+        bytes4 magicValue = abi.decode(returnedData, (bytes4));
 
         if (bytes3(magicValue) != bytes3(ILSP20.lsp20VerifyCall.selector))
             revert LSP20InvalidMagicValue(false, returnedData);
@@ -49,12 +47,23 @@ abstract contract LSP20CallVerification {
             )
         );
 
-        if (!success) _revert(true, returnedData);
+        _validateCall(true, success, returnedData);
 
-        if (
-            returnedData.length < 32 ||
-            bytes4(abi.decode(returnedData, (bytes32))) != ILSP20.lsp20VerifyCallResult.selector
-        ) revert LSP20InvalidMagicValue(true, returnedData);
+        if (abi.decode(returnedData, (bytes4)) != ILSP20.lsp20VerifyCallResult.selector)
+            revert LSP20InvalidMagicValue(true, returnedData);
+    }
+
+    function _validateCall(
+        bool postCall,
+        bool success,
+        bytes memory returnedData
+    ) internal pure {
+        if (!success) _revert(postCall, returnedData);
+
+        // check if the returned data contains at least 32 bytes, potentially an abi encoded bytes4 value
+        // check if the returned data has in the first 32 bytes an abi encoded bytes4 value
+        if (returnedData.length < 32 || bytes28(bytes32(returnedData) << 32) != bytes28(0))
+            revert LSP20InvalidMagicValue(postCall, returnedData);
     }
 
     function _revert(bool postCall, bytes memory returnedData) internal pure {
