@@ -255,7 +255,7 @@ abstract contract LSP0ERC725AccountCore is
      * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2 (each iteration)
      * Emits a {ValueReceived} event when receiving native tokens.
      */
-    function execute(
+    function executeBatch(
         uint256[] memory operationsType,
         address[] memory targets,
         uint256[] memory values,
@@ -269,7 +269,7 @@ abstract contract LSP0ERC725AccountCore is
 
         // If the caller is the owner perform execute directly
         if (msg.sender == _owner) {
-            return ERC725XCore._execute(operationsType, targets, values, datas);
+            return ERC725XCore._executeBatch(operationsType, targets, values, datas);
         }
 
         // If the caller is not the owner, call {lsp20VerifyCall} on the owner
@@ -277,7 +277,7 @@ abstract contract LSP0ERC725AccountCore is
         bool verifyAfter = LSP20CallVerification._verifyCall(_owner);
 
         // Perform the execution
-        bytes[] memory results = ERC725XCore._execute(operationsType, targets, values, datas);
+        bytes[] memory results = ERC725XCore._executeBatch(operationsType, targets, values, datas);
 
         // if verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         if (verifyAfter) {
@@ -340,7 +340,7 @@ abstract contract LSP0ERC725AccountCore is
      * Emits a {ValueReceived} event when receiving native tokens.
      * Emits a {DataChanged} event. (on each iteration of setting data)
      */
-    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues)
+    function setDataBatch(bytes32[] memory dataKeys, bytes[] memory dataValues)
         public
         payable
         virtual
@@ -351,7 +351,7 @@ abstract contract LSP0ERC725AccountCore is
         }
 
         if (dataKeys.length != dataValues.length) {
-            revert ERC725Y_DataKeysValuesLengthMismatch(dataKeys.length, dataValues.length);
+            revert ERC725Y_DataKeysValuesLengthMismatch();
         }
 
         address _owner = owner();
