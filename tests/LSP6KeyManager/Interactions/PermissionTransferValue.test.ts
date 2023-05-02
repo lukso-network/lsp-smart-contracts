@@ -14,6 +14,9 @@ import {
   TargetPayableContract,
   TargetPayableContract__factory,
   UniversalProfile__factory,
+  GraffitiEventExtension__factory,
+  GraffitiEventExtension,
+  UniversalProfile,
 } from "../../../types";
 
 // constants
@@ -53,6 +56,11 @@ export const shouldBehaveLikePermissionTransferValue = (
 
     let recipient;
 
+    let recipientUP: UniversalProfile;
+
+    // used to test when sending data as graffiti
+    let graffitiExtension: GraffitiEventExtension;
+
     before(async () => {
       context = await buildContext(ethers.utils.parseEther("100"));
 
@@ -60,6 +68,31 @@ export const shouldBehaveLikePermissionTransferValue = (
       canTransferValueAndCall = context.accounts[2];
       cannotTransferValue = context.accounts[3];
       recipient = context.accounts[4];
+
+      recipientUP = await new UniversalProfile__factory(
+        context.accounts[0]
+      ).deploy(context.accounts[0].address);
+
+      graffitiExtension = await new GraffitiEventExtension__factory(
+        context.accounts[0]
+      ).deploy();
+
+      const lsp17ExtensionDataKeyForGraffiti =
+        ERC725YDataKeys.LSP17["LSP17ExtensionPrefix"] +
+        "00000000" + // selector for graffiti data,
+        "00000000000000000000000000000000"; // zero padded
+
+      await recipientUP
+        .connect(context.accounts[0])
+        .setData(lsp17ExtensionDataKeyForGraffiti, graffitiExtension.address);
+
+      // CHECK that a LSP17 Extension is was set for graffiti data `bytes4(0)`
+      expect(
+        // checksum address retrieved from storage (stored in lower case with hex)
+        ethers.utils.getAddress(
+          await recipientUP.getData(lsp17ExtensionDataKeyForGraffiti)
+        )
+      ).to.equal(graffitiExtension.address);
 
       const permissionsKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -80,17 +113,20 @@ export const shouldBehaveLikePermissionTransferValue = (
         ALL_PERMISSIONS,
         PERMISSIONS.TRANSFERVALUE,
         combineAllowedCalls(
-          [CALLTYPE.VALUE],
-          [recipient.address],
-          ["0xffffffff"],
-          ["0xffffffff"]
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
+          [recipient.address, recipientUP.address],
+          ["0xffffffff", "0xffffffff"],
+          ["0xffffffff", "0xffffffff"]
         ),
         combinePermissions(PERMISSIONS.TRANSFERVALUE, PERMISSIONS.CALL),
         combineAllowedCalls(
-          [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL)],
-          [recipient.address],
-          ["0xffffffff"],
-          ["0xffffffff"]
+          [
+            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
+            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
+          ],
+          [recipient.address, recipientUP.address],
+          ["0xffffffff", "0xffffffff"],
+          ["0xffffffff", "0xffffffff"]
         ),
         PERMISSIONS.CALL,
       ];
@@ -338,6 +374,69 @@ export const shouldBehaveLikePermissionTransferValue = (
             expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
           });
         });
+
+        describe("when transferring value with graffiti `_data` (prefixed with `bytes4(0)`)", () => {
+          const data = "0x00000000aabbccdd";
+
+          it("should fail when caller has permission TRANSFERVALUE only", async () => {
+            let initialBalanceUP = await provider.getBalance(
+              context.universalProfile.address
+            );
+            let initialBalanceRecipient = await provider.getBalance(
+              recipient.address
+            );
+
+            let transferPayload = universalProfileInterface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                recipient.address,
+                ethers.utils.parseEther("3"),
+                data,
+              ]
+            );
+
+            await expect(
+              context.keyManager
+                .connect(canTransferValue)
+                ["execute(bytes)"](transferPayload)
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NotAuthorised"
+              )
+              .withArgs(canTransferValue.address, "CALL");
+
+            let newBalanceUP = await provider.getBalance(
+              context.universalProfile.address
+            );
+            let newBalanceRecipient = await provider.getBalance(
+              recipient.address
+            );
+
+            // verify that native token balances have not changed
+            expect(newBalanceUP).to.equal(initialBalanceUP);
+            expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
+          });
+
+          it("should pass when caller has permission TRANSFERVALUE + CALL", async () => {
+            const amount = ethers.utils.parseEther("3");
+
+            let transferPayload = universalProfileInterface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, recipient.address, amount, data]
+            );
+
+            await expect(() =>
+              context.keyManager
+                .connect(canTransferValueAndCall)
+                ["execute(bytes)"](transferPayload)
+            ).to.changeEtherBalances(
+              [context.universalProfile.address, recipient.address],
+              [`-${amount}`, amount]
+            );
+          });
+        });
       });
 
       describe("when transferring value via `executeRelayCall(...)`", () => {
@@ -426,9 +525,69 @@ export const shouldBehaveLikePermissionTransferValue = (
       });
     });
 
-    /**
-     * @todo when recipient is a contract
-     */
+    describe("when recipient is a UP", () => {
+      describe("when transferring value with graffiti `_data` (prefixed with `bytes4(0)`)", () => {
+        const data = "0x00000000aabbccdd";
+
+        it("should fail when caller has permission TRANSFERVALUE only", async () => {
+          let initialBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          let initialBalanceRecipient = await provider.getBalance(
+            recipientUP.address
+          );
+
+          let transferPayload = universalProfileInterface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              recipientUP.address,
+              ethers.utils.parseEther("3"),
+              data,
+            ]
+          );
+
+          await expect(
+            context.keyManager
+              .connect(canTransferValue)
+              ["execute(bytes)"](transferPayload)
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canTransferValue.address, "CALL");
+
+          let newBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          let newBalanceRecipient = await provider.getBalance(
+            recipientUP.address
+          );
+
+          // verify that native token balances have not changed
+          expect(newBalanceUP).to.equal(initialBalanceUP);
+          expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
+        });
+
+        it("should pass when caller has permission TRANSFERVALUE + CALL", async () => {
+          const amount = ethers.utils.parseEther("3");
+
+          let transferPayload = universalProfileInterface.encodeFunctionData(
+            "execute",
+            [OPERATION_TYPES.CALL, recipientUP.address, amount, data]
+          );
+
+          const tx = await context.keyManager
+            .connect(canTransferValueAndCall)
+            ["execute(bytes)"](transferPayload);
+
+          //   expect(tx).to.changeEtherBalances(
+          //     [context.universalProfile.address, recipientUP.address],
+          //     [`-${amount}`, amount]
+          //   );
+
+          //   expect(tx).to.emit(graffitiExtension, "EventEmittedInExtension");
+        });
+      });
+    });
   });
 
   describe("when caller = contract", () => {
