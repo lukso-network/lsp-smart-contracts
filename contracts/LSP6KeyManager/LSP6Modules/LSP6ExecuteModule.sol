@@ -18,10 +18,10 @@ import {
     _PERMISSION_SUPER_CALL,
     _PERMISSION_STATICCALL,
     _PERMISSION_SUPER_STATICCALL,
-    _ALLOWEDCALLS_VALUE,
-    _ALLOWEDCALLS_WRITE,
-    _ALLOWEDCALLS_READ,
-    _ALLOWEDCALLS_EXECUTE
+    _ALLOWEDCALLS_TRANSFERVALUE,
+    _ALLOWEDCALLS_CALL,
+    _ALLOWEDCALLS_STATICCALL,
+    _ALLOWEDCALLS_DELEGATECALL
 } from "../LSP6Constants.sol";
 import {
     OPERATION_0_CALL,
@@ -276,21 +276,21 @@ abstract contract LSP6ExecuteModule {
         bytes4 requiredCallTypes;
 
         if (operationType == OPERATION_0_CALL && !isEmptyCall) {
-            requiredCallTypes = _ALLOWEDCALLS_WRITE;
+            requiredCallTypes = _ALLOWEDCALLS_CALL;
         }
 
         if (operationType == OPERATION_3_STATICCALL && !isEmptyCall) {
-            requiredCallTypes = _ALLOWEDCALLS_READ;
+            requiredCallTypes = _ALLOWEDCALLS_STATICCALL;
         }
 
         if (operationType == OPERATION_4_DELEGATECALL && !isEmptyCall) {
-            requiredCallTypes = _ALLOWEDCALLS_EXECUTE;
+            requiredCallTypes = _ALLOWEDCALLS_DELEGATECALL;
         }
 
         // if there is value being transferred, add the extra bit
         // for the first bit for Value Transfer in the `requiredCallTypes`
         if (value != 0) {
-            requiredCallTypes |= _ALLOWEDCALLS_VALUE;
+            requiredCallTypes |= _ALLOWEDCALLS_TRANSFERVALUE;
         }
 
         return requiredCallTypes;
