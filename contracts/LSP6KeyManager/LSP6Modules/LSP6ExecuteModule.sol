@@ -266,34 +266,28 @@ abstract contract LSP6ExecuteModule {
     /**
      * @dev extract the bytes4 representation of a single bit for the type of call according to the `operationType`
      * @param operationType 0 = CALL, 3 = STATICCALL or 3 = DELEGATECALL
-     * @return a bytes4 value containing a single 1 bit for the callType
+     * @return requiredCallTypes a bytes4 value containing a single 1 bit for the callType
      */
     function _extractCallType(
         uint256 operationType,
         uint256 value,
         bool isEmptyCall
-    ) internal pure returns (bytes4) {
-        bytes4 requiredCallTypes;
-
-        if (operationType == OPERATION_0_CALL && !isEmptyCall) {
-            requiredCallTypes = _ALLOWEDCALLS_CALL;
-        }
-
-        if (operationType == OPERATION_3_STATICCALL && !isEmptyCall) {
-            requiredCallTypes = _ALLOWEDCALLS_STATICCALL;
-        }
-
-        if (operationType == OPERATION_4_DELEGATECALL && !isEmptyCall) {
-            requiredCallTypes = _ALLOWEDCALLS_DELEGATECALL;
-        }
-
+    ) internal pure returns (bytes4 requiredCallTypes) {
         // if there is value being transferred, add the extra bit
         // for the first bit for Value Transfer in the `requiredCallTypes`
         if (value != 0) {
             requiredCallTypes |= _ALLOWEDCALLS_TRANSFERVALUE;
         }
 
-        return requiredCallTypes;
+        if (!isEmptyCall) {
+            if (operationType == OPERATION_0_CALL) {
+                requiredCallTypes |= _ALLOWEDCALLS_CALL;
+            } else if (operationType == OPERATION_3_STATICCALL) {
+                requiredCallTypes |= _ALLOWEDCALLS_STATICCALL;
+            } else if (operationType == OPERATION_4_DELEGATECALL) {
+                requiredCallTypes |= _ALLOWEDCALLS_DELEGATECALL;
+            }
+        }
     }
 
     function _extractExecuteParameters(bytes calldata executeCalldata)
