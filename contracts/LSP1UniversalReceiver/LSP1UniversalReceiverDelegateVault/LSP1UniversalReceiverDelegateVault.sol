@@ -8,10 +8,8 @@ import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // libraries
-import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP1Utils} from "../LSP1Utils.sol";
 import {LSP2Utils} from "../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP5Utils} from "../../LSP5ReceivedAssets/LSP5Utils.sol";
@@ -76,7 +74,7 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
                 interfaceID
             );
 
-            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
         } else {
             // if there is no map value for the asset to remove, then do nothing
             if (bytes20(notifierMapValue) == bytes20(0))
@@ -101,7 +99,7 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
              */
             if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
 
-            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
         }
     }
 

@@ -7,7 +7,6 @@ import {ILSP9Vault} from "./ILSP9Vault.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-import {GasUtils} from "../Utils/GasUtils.sol";
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
@@ -211,7 +210,7 @@ contract LSP9VaultCore is
      */
     function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
         results = new bytes[](data.length);
-        for (uint256 i; i < data.length; i = GasUtils.uncheckedIncrement(i)) {
+        for (uint256 i; i < data.length; ) {
             (bool success, bytes memory result) = address(this).delegatecall(data[i]);
 
             if (!success) {
@@ -230,6 +229,10 @@ contract LSP9VaultCore is
             }
 
             results[i] = result;
+
+            unchecked {
+                ++i;
+            }
         }
     }
 
@@ -258,14 +261,14 @@ contract LSP9VaultCore is
      *
      * @dev Emits a {ValueReceived} event when receiving native tokens.
      */
-    function execute(
+    function executeBatch(
         uint256[] memory operationsType,
         address[] memory targets,
         uint256[] memory values,
         bytes[] memory datas
     ) public payable virtual override onlyOwner returns (bytes[] memory) {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
-        return _execute(operationsType, targets, values, datas);
+        return _executeBatch(operationsType, targets, values, datas);
     }
 
     /**
@@ -300,7 +303,7 @@ contract LSP9VaultCore is
      *
      * Emits a {DataChanged} event.
      */
-    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues)
+    function setDataBatch(bytes32[] memory dataKeys, bytes[] memory dataValues)
         public
         payable
         virtual
@@ -308,12 +311,12 @@ contract LSP9VaultCore is
     {
         bool isURD = _validateAndIdentifyCaller();
         if (dataKeys.length != dataValues.length) {
-            revert ERC725Y_DataKeysValuesLengthMismatch(dataKeys.length, dataValues.length);
+            revert ERC725Y_DataKeysValuesLengthMismatch();
         }
 
         if (msg.value != 0) revert ERC725Y_MsgValueDisallowed();
 
-        for (uint256 i = 0; i < dataKeys.length; i = GasUtils.uncheckedIncrement(i)) {
+        for (uint256 i = 0; i < dataKeys.length; ) {
             if (isURD) {
                 if (
                     bytes12(dataKeys[i]) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ||
@@ -324,6 +327,10 @@ contract LSP9VaultCore is
                 }
             }
             _setData(dataKeys[i], dataValues[i]);
+
+            unchecked {
+                ++i;
+            }
         }
     }
 

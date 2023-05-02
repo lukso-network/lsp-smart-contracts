@@ -26,7 +26,7 @@ contract BatchReentrancyRelayer {
 
     function relayCallThatReenters(address keyManagerAddress) external returns (bytes[] memory) {
         return
-            ILSP6KeyManager(keyManagerAddress).executeRelayCall(
+            ILSP6KeyManager(keyManagerAddress).executeRelayCallBatch(
                 _signatures,
                 _nonces,
                 _values,

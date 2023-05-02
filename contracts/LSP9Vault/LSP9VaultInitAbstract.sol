@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
-// interfaces
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -13,9 +10,7 @@ import {LSP9VaultCore} from "./LSP9VaultCore.sol";
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 
 // constants
-import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {
-    _INTERFACEID_LSP9,
     _LSP9_SUPPORTED_STANDARDS_KEY,
     _LSP9_SUPPORTED_STANDARDS_VALUE,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification

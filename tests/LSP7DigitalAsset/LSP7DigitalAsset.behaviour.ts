@@ -2001,7 +2001,7 @@ export const shouldBehaveLikeLSP7 = (
         const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key"));
         const value = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("value"));
         await expect(
-          context.lsp7.connect(oldOwner)["setData(bytes32,bytes)"](key, value)
+          context.lsp7.connect(oldOwner).setData(key, value)
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
@@ -2024,11 +2024,9 @@ export const shouldBehaveLikeLSP7 = (
       it("new owner should be allowed to use `setData(..)`", async () => {
         const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key"));
         const value = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("value"));
-        await context.lsp7
-          .connect(newOwner)
-          ["setData(bytes32,bytes)"](key, value);
+        await context.lsp7.connect(newOwner).setData(key, value);
 
-        expect(await context.lsp7["getData(bytes32)"](key)).to.equal(value);
+        expect(await context.lsp7.getData(key)).to.equal(value);
       });
     });
   });
@@ -2072,9 +2070,7 @@ export const shouldInitializeLikeLSP7 = (
           SupportedStandards.LSP4DigitalAsset.value
         );
       expect(
-        await context.lsp7["getData(bytes32)"](
-          SupportedStandards.LSP4DigitalAsset.key
-        )
+        await context.lsp7.getData(SupportedStandards.LSP4DigitalAsset.key)
       ).to.equal(SupportedStandards.LSP4DigitalAsset.value);
 
       const nameKey = ERC725YDataKeys.LSP4["LSP4TokenName"];
@@ -2084,9 +2080,7 @@ export const shouldInitializeLikeLSP7 = (
       await expect(context.initializeTransaction)
         .to.emit(context.lsp7, "DataChanged")
         .withArgs(nameKey, expectedNameValue);
-      expect(await context.lsp7["getData(bytes32)"](nameKey)).to.equal(
-        expectedNameValue
-      );
+      expect(await context.lsp7.getData(nameKey)).to.equal(expectedNameValue);
 
       const symbolKey = ERC725YDataKeys.LSP4["LSP4TokenSymbol"];
       const expectedSymbolValue = ethers.utils.hexlify(
@@ -2095,7 +2089,7 @@ export const shouldInitializeLikeLSP7 = (
       await expect(context.initializeTransaction)
         .to.emit(context.lsp7, "DataChanged")
         .withArgs(symbolKey, expectedSymbolValue);
-      expect(await context.lsp7["getData(bytes32)"](symbolKey)).to.equal(
+      expect(await context.lsp7.getData(symbolKey)).to.equal(
         expectedSymbolValue
       );
     });
