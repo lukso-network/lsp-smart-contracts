@@ -646,18 +646,16 @@ export const shouldBehaveLikeLSP14 = (
     });
   });
 
-  describe("should be able to have 2-step `renounceOwnership()` on a fresh blockchain", () => {
+  describe("when calling `renounceOwnership()` when `block.number` is less than 400 blocks (RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY + RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD)`", () => {
     before(async () => {
       context = await buildContext();
 
-      // Skip 1 block
-      // Simulate real blockchain
-      // in a real blockchain environment, you would not likely be able to deploy a contract
-      // in the block 0
+      // Simulate a scenario where we are at just few hundred blocks after the blockchain started
+      // (few hundred blocks after genesis)
       await network.provider.send("hardhat_mine", [ethers.utils.hexValue(138)]);
     });
 
-    it("should instantiate the renounceOwnership process correctly", async () => {
+    it("should instantiate the renounceOwnership process in 2 steps correctly", async () => {
       const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
         (
           await artifacts.getBuildInfo(
