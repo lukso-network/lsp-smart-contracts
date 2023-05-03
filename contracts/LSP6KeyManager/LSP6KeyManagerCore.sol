@@ -308,6 +308,7 @@ abstract contract LSP6KeyManagerCore is
             LSP6_VERSION,
             block.chainid,
             nonce,
+            validityTimestamps,
             msgValue,
             payload
         );
