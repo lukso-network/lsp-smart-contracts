@@ -14,9 +14,9 @@ import {
   TargetPayableContract,
   TargetPayableContract__factory,
   UniversalProfile__factory,
+  UniversalProfile,
   GraffitiEventExtension__factory,
   GraffitiEventExtension,
-  UniversalProfile,
 } from "../../../types";
 
 // constants
@@ -579,12 +579,12 @@ export const shouldBehaveLikePermissionTransferValue = (
             .connect(canTransferValueAndCall)
             ["execute(bytes)"](transferPayload);
 
-          //   expect(tx).to.changeEtherBalances(
-          //     [context.universalProfile.address, recipientUP.address],
-          //     [`-${amount}`, amount]
-          //   );
+          expect(tx).to.changeEtherBalances(
+            [context.universalProfile.address, recipientUP.address],
+            [`-${amount}`, amount]
+          );
 
-          //   expect(tx).to.emit(graffitiExtension, "EventEmittedInExtension");
+          expect(tx).to.emit(graffitiExtension, "EventEmittedInExtension");
         });
       });
     });
