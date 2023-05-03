@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ethers, network } from "hardhat";
+import { ethers, network, artifacts } from "hardhat";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
@@ -339,9 +339,21 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
       });
 
       it("should instantiate the renounceOwnership process correctly", async () => {
+        const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
+          (
+            await artifacts.getBuildInfo(
+              "contracts/LSP0ERC725Account/LSP0ERC725Account.sol:LSP0ERC725Account"
+            )
+          )?.output.contracts[
+            "contracts/LSP0ERC725Account/LSP0ERC725Account.sol"
+          ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
+            if (elem.label === "_renounceOwnershipStartedAt") return elem;
+          })[0].slot
+        );
+
         const _renounceOwnershipStartedAtAfter = await provider.getStorageAt(
           context.contract.address,
-          2
+          _renounceOwnershipStartedAtAfterSlotNumber
         );
 
         expect(
@@ -441,6 +453,18 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
       });
 
       it("should initialize again if the confirmation period passed", async () => {
+        const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
+          (
+            await artifacts.getBuildInfo(
+              "contracts/LSP0ERC725Account/LSP0ERC725Account.sol:LSP0ERC725Account"
+            )
+          )?.output.contracts[
+            "contracts/LSP0ERC725Account/LSP0ERC725Account.sol"
+          ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
+            if (elem.label === "_renounceOwnershipStartedAt") return elem;
+          })[0].slot
+        );
+
         await context.contract
           .connect(context.deployParams.owner)
           .renounceOwnership();
@@ -457,7 +481,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
 
         const _renounceOwnershipStartedAtAfter = await provider.getStorageAt(
           context.contract.address,
-          2
+          _renounceOwnershipStartedAtAfterSlotNumber
         );
 
         expect(
@@ -518,9 +542,21 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         });
 
         it("should have reset the `_renounceOwnershipStartedAt` state variable to zero", async () => {
+          const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
+            (
+              await artifacts.getBuildInfo(
+                "contracts/LSP0ERC725Account/LSP0ERC725Account.sol:LSP0ERC725Account"
+              )
+            )?.output.contracts[
+              "contracts/LSP0ERC725Account/LSP0ERC725Account.sol"
+            ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
+              if (elem.label === "_renounceOwnershipStartedAt") return elem;
+            })[0].slot
+          );
+
           const _renounceOwnershipStartedAtAfter = await provider.getStorageAt(
             context.contract.address,
-            2
+            _renounceOwnershipStartedAtAfterSlotNumber
           );
 
           expect(
@@ -608,6 +644,49 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
           ).to.be.revertedWith("LSP14: caller is not the pendingOwner");
         });
       });
+    });
+  });
+
+  describe("when calling `renounceOwnership()` when `block.number` is less than 400 blocks (RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY + RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD)`", () => {
+    before(async () => {
+      context = await buildContext();
+
+      // Simulate a scenario where we are at just few hundred blocks after the blockchain started
+      // (few hundred blocks after genesis)
+      await network.provider.send("hardhat_mine", [ethers.utils.hexValue(138)]);
+    });
+
+    it("should instantiate the renounceOwnership process in 2 steps correctly", async () => {
+      const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
+        (
+          await artifacts.getBuildInfo(
+            "contracts/LSP0ERC725Account/LSP0ERC725Account.sol:LSP0ERC725Account"
+          )
+        )?.output.contracts[
+          "contracts/LSP0ERC725Account/LSP0ERC725Account.sol"
+        ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
+          if (elem.label === "_renounceOwnershipStartedAt") return elem;
+        })[0].slot
+      );
+
+      const renounceOwnershipTx = await context.contract
+        .connect(context.deployParams.owner)
+        .renounceOwnership();
+
+      await renounceOwnershipTx.wait();
+
+      const _renounceOwnershipStartedAtAfter = await provider.getStorageAt(
+        context.contract.address,
+        _renounceOwnershipStartedAtAfterSlotNumber
+      );
+
+      expect(ethers.BigNumber.from(_renounceOwnershipStartedAtAfter)).to.equal(
+        renounceOwnershipTx.blockNumber
+      );
+
+      expect(await context.contract.owner()).to.equal(
+        context.deployParams.owner.address
+      );
     });
   });
 };
