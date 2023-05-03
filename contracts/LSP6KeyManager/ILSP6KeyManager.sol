@@ -64,6 +64,7 @@ interface ILSP6KeyManager is
     function executeRelayCall(
         bytes calldata signature,
         uint256 nonce,
+        uint256 validityTimestamps,
         bytes calldata payload
     ) external payable returns (bytes memory);
 
@@ -73,6 +74,7 @@ interface ILSP6KeyManager is
     function executeRelayCallBatch(
         bytes[] calldata signatures,
         uint256[] calldata nonces,
+        uint256[] calldata validityTimestamps,
         uint256[] calldata values,
         bytes[] calldata payloads
     ) external payable returns (bytes[] memory);
