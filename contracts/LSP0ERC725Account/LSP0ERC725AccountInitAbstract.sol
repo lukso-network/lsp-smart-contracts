@@ -40,12 +40,11 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
 abstract contract LSP0ERC725AccountInitAbstract is Initializable, LSP0ERC725AccountCore {
     /**
      * @notice Owner updated
-     * @dev Sets the owner of the contract
-     * @param newOwner the owner of the contract
-     *
-     * ERC725X & ERC725Y parent contracts are not initialised as they don't have
-     * non-zero initial state. If you decide to add non-zero initial state to any of those
+     * @dev Sets the owner of the contract. ERC725X & ERC725Y parent contracts
+     * are not initialised as they don't have non-zero initial state.
+     * If you decide to add non-zero initial state to any of those
      * contracts, you MUST initialize them here
+     * @param newOwner the owner of the contract
      */
     function _initialize(address newOwner) internal virtual onlyInitializing {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
