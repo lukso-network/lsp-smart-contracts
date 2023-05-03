@@ -114,8 +114,16 @@ abstract contract LSP6KeyManagerCore is
         view
         returns (bytes4 magicValue)
     {
-        address recoveredAddress = dataHash.recover(signature);
+        // if isValidSignature fail, the error is catched in returnedError
+        (address recoveredAddress, ECDSA.RecoverError returnedError) = ECDSA.tryRecover(
+            dataHash,
+            signature
+        );
 
+        // if recovering throws an error, return the fail value
+        if (returnedError != ECDSA.RecoverError.NoError) return _ERC1271_FAILVALUE;
+
+        // if the address recovered has SIGN permission return the magicValue, failValue otherwise
         return (
             ERC725Y(_target).getPermissionsFor(recoveredAddress).hasPermission(_PERMISSION_SIGN)
                 ? _ERC1271_MAGICVALUE
