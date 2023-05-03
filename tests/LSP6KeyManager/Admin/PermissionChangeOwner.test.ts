@@ -17,7 +17,10 @@ import { LSP6KeyManager, LSP6KeyManager__factory } from "../../../types";
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 import { EIP191Signer } from "@lukso/eip191-signer.js";
-import { LOCAL_PRIVATE_KEYS } from "../../utils/helpers";
+import {
+  LOCAL_PRIVATE_KEYS,
+  createValidityTimestamps,
+} from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionChangeOwner = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
@@ -390,16 +393,35 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       it("should revert via `executeRelayCall()`", async () => {
         const HARDHAT_CHAINID = 31337;
-        let valueToSend = 0;
+        const valueToSend = 0;
 
-        let nonce = await context.keyManager.getNonce(context.owner.address, 0);
+        const nonce = await context.keyManager.getNonce(
+          context.owner.address,
+          0
+        );
 
-        let payload =
+        const validityTimestamps = createValidityTimestamps(
+          {
+            days: 1,
+          },
+          {
+            days: 1,
+          }
+        );
+
+        const payload =
           context.universalProfile.interface.getSighash("renounceOwnership");
 
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
+        const encodedMessage = ethers.utils.solidityPack(
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+          [
+            LSP6_VERSION,
+            HARDHAT_CHAINID,
+            nonce,
+            validityTimestamps,
+            valueToSend,
+            payload,
+          ]
         );
 
         const eip191Signer = new EIP191Signer();
@@ -413,7 +435,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         await expect(
           context.keyManager
             .connect(context.owner)
-            .executeRelayCall(signature, nonce, payload, {
+            .executeRelayCall(signature, nonce, validityTimestamps, payload, {
               value: valueToSend,
             })
         )

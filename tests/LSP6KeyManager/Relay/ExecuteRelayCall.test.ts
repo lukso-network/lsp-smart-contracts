@@ -26,6 +26,7 @@ import {
 import {
   combineAllowedCalls,
   combinePermissions,
+  createValidityTimestamps,
   signLSP6ExecuteRelayCall,
 } from "../../utils/helpers";
 
@@ -109,12 +110,22 @@ export const shouldBehaveLikeExecuteRelayCall = (
               0
             );
 
+            const validityTimestamps = createValidityTimestamps(
+              {
+                days: 1,
+              },
+              {
+                days: 1,
+              }
+            );
+
             let valueToSign = 5;
 
             const signedMessageParams = {
               lsp6Version: LSP6_VERSION,
               chainId: 31337, // HARDHAT_CHAINID
               nonce: latestNonce,
+              validityTimestamps,
               msgValue: valueToSign,
               payload: executeRelayCallPayload,
             };
@@ -122,11 +133,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
             let valueToSendFromRelayer = 10;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
               [
                 signedMessageParams.lsp6Version,
                 signedMessageParams.chainId,
                 signedMessageParams.nonce,
+                signedMessageParams.validityTimestamps,
                 signedMessageParams.msgValue,
                 signedMessageParams.payload,
               ]
@@ -145,6 +157,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               context.keyManager.executeRelayCall(
                 signature,
                 signedMessageParams.nonce,
+                signedMessageParams.validityTimestamps,
                 signedMessageParams.payload,
                 { value: valueToSendFromRelayer }
               )
@@ -169,12 +182,22 @@ export const shouldBehaveLikeExecuteRelayCall = (
               0
             );
 
+            const validityTimestamps = createValidityTimestamps(
+              {
+                days: 1,
+              },
+              {
+                days: 1,
+              }
+            );
+
             let valueToSign = 5;
 
             const signedMessageParams = {
               lsp6Version: LSP6_VERSION,
               chainId: 31337, // HARDHAT_CHAINID
               nonce: latestNonce,
+              validityTimestamps,
               msgValue: valueToSign,
               payload: executeRelayCallPayload,
             };
@@ -182,11 +205,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
             let valueToSendFromRelayer = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
               [
                 signedMessageParams.lsp6Version,
                 signedMessageParams.chainId,
                 signedMessageParams.nonce,
+                signedMessageParams.validityTimestamps,
                 signedMessageParams.msgValue,
                 signedMessageParams.payload,
               ]
@@ -207,6 +231,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 .executeRelayCall(
                   signature,
                   signedMessageParams.nonce,
+                  signedMessageParams.validityTimestamps,
                   signedMessageParams.payload,
                   { value: valueToSendFromRelayer }
                 )
@@ -232,22 +257,33 @@ export const shouldBehaveLikeExecuteRelayCall = (
               0
             );
 
+            const validityTimestamps = createValidityTimestamps(
+              {
+                days: 1,
+              },
+              {
+                days: 1,
+              }
+            );
+
             let valueToSendFromRelayer = 10;
 
             const signedMessageParams = {
               lsp6Version: LSP6_VERSION,
               chainId: 31337, // HARDHAT_CHAINID
               nonce: latestNonce,
+              validityTimestamps,
               msgValue: valueToSendFromRelayer,
               payload: executeRelayCallPayload,
             };
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
               [
                 signedMessageParams.lsp6Version,
                 signedMessageParams.chainId,
                 signedMessageParams.nonce,
+                signedMessageParams.validityTimestamps,
                 signedMessageParams.msgValue,
                 signedMessageParams.payload,
               ]
@@ -271,6 +307,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               .executeRelayCall(
                 signature,
                 signedMessageParams.nonce,
+                signedMessageParams.validityTimestamps,
                 signedMessageParams.payload,
                 { value: valueToSendFromRelayer }
               );
@@ -306,22 +343,33 @@ export const shouldBehaveLikeExecuteRelayCall = (
               0
             );
 
+            const validityTimestamps = createValidityTimestamps(
+              {
+                days: 1,
+              },
+              {
+                days: 1,
+              }
+            );
+
             let valueToSendFromRelayer = 10;
 
             const signedMessageParams = {
               lsp6Version: LSP6_VERSION,
               chainId: 31337, // HARDHAT_CHAINID
               nonce: latestNonce,
+              validityTimestamps,
               msgValue: valueToSendFromRelayer,
               payload: executeRelayCallPayload,
             };
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
               [
                 signedMessageParams.lsp6Version,
                 signedMessageParams.chainId,
                 signedMessageParams.nonce,
+                signedMessageParams.validityTimestamps,
                 signedMessageParams.msgValue,
                 signedMessageParams.payload,
               ]
@@ -342,6 +390,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 .executeRelayCall(
                   signature,
                   signedMessageParams.nonce,
+                  signedMessageParams.validityTimestamps,
                   signedMessageParams.payload,
                   { value: valueToSendFromRelayer }
                 )
@@ -370,6 +419,15 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 0
               );
 
+              const validityTimestamps = createValidityTimestamps(
+                {
+                  days: 1,
+                },
+                {
+                  days: 1,
+                }
+              );
+
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
                   "execute",
@@ -387,16 +445,25 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 lsp6Version: LSP6_VERSION,
                 chainId: 31337, // HARDHAT_CHAINID
                 nonce: latestNonce,
+                validityTimestamps,
                 msgValue: valueToSendFromRelayer,
                 payload: executeRelayCallPayload,
               };
 
               let encodedMessage = ethers.utils.solidityPack(
-                ["uint256", "uint256", "uint256", "uint256", "bytes"],
+                [
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "bytes",
+                ],
                 [
                   signedMessageParams.lsp6Version,
                   signedMessageParams.chainId,
                   signedMessageParams.nonce,
+                  signedMessageParams.validityTimestamps,
                   signedMessageParams.msgValue,
                   signedMessageParams.payload,
                 ]
@@ -416,8 +483,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   .connect(relayer)
                   .executeRelayCall(
                     signature,
-                    latestNonce,
-                    executeRelayCallPayload,
+                    signedMessageParams.nonce,
+                    signedMessageParams.validityTimestamps,
+                    signedMessageParams.payload,
                     { value: valueToSendFromRelayer }
                   )
               )
@@ -447,6 +515,15 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 0
               );
 
+              const validityTimestamps = createValidityTimestamps(
+                {
+                  days: 1,
+                },
+                {
+                  days: 1,
+                }
+              );
+
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
                   "execute",
@@ -464,16 +541,25 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 lsp6Version: LSP6_VERSION,
                 chainId: 31337, // HARDHAT_CHAINID
                 nonce: latestNonce,
+                validityTimestamps,
                 msgValue: valueToSendFromRelayer,
                 payload: executeRelayCallPayload,
               };
 
               let encodedMessage = ethers.utils.solidityPack(
-                ["uint256", "uint256", "uint256", "uint256", "bytes"],
+                [
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "bytes",
+                ],
                 [
                   signedMessageParams.lsp6Version,
                   signedMessageParams.chainId,
                   signedMessageParams.nonce,
+                  signedMessageParams.validityTimestamps,
                   signedMessageParams.msgValue,
                   signedMessageParams.payload,
                 ]
@@ -492,8 +578,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 .connect(relayer)
                 .executeRelayCall(
                   signature,
-                  latestNonce,
-                  executeRelayCallPayload,
+                  signedMessageParams.nonce,
+                  signedMessageParams.validityTimestamps,
+                  signedMessageParams.payload,
                   { value: valueToSendFromRelayer }
                 );
 
@@ -515,6 +602,15 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 0
               );
 
+              const validityTimestamps = createValidityTimestamps(
+                {
+                  days: 1,
+                },
+                {
+                  days: 1,
+                }
+              );
+
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
                   "execute",
@@ -532,16 +628,25 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 lsp6Version: LSP6_VERSION,
                 chainId: 31337, // HARDHAT_CHAINID
                 nonce: latestNonce,
+                validityTimestamps,
                 msgValue: valueToSendFromRelayer,
                 payload: executeRelayCallPayload,
               };
 
               let encodedMessage = ethers.utils.solidityPack(
-                ["uint256", "uint256", "uint256", "uint256", "bytes"],
+                [
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "bytes",
+                ],
                 [
                   signedMessageParams.lsp6Version,
                   signedMessageParams.chainId,
                   signedMessageParams.nonce,
+                  signedMessageParams.validityTimestamps,
                   signedMessageParams.msgValue,
                   signedMessageParams.payload,
                 ]
@@ -561,8 +666,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   .connect(relayer)
                   .executeRelayCall(
                     signature,
-                    latestNonce,
-                    executeRelayCallPayload,
+                    signedMessageParams.nonce,
+                    signedMessageParams.validityTimestamps,
+                    signedMessageParams.payload,
                     { value: valueToSendFromRelayer }
                   )
               )
@@ -621,12 +727,19 @@ export const shouldBehaveLikeExecuteRelayCall = (
       ];
       const nonces = [0, 1, 2];
       const values = [0, 0, 0];
+      const validityTimestamps = [0, 0, 0];
       const payloads = ["0xcafecafe", "0xbeefbeef"];
 
       await expect(
         context.keyManager
           .connect(context.owner)
-          .executeRelayCallBatch(signatures, nonces, values, payloads)
+          .executeRelayCallBatch(
+            signatures,
+            nonces,
+            validityTimestamps,
+            values,
+            payloads
+          )
       ).to.be.revertedWithCustomError(
         context.keyManager,
         "BatchExecuteRelayCallParamsLengthMismatch"
@@ -650,9 +763,19 @@ export const shouldBehaveLikeExecuteRelayCall = (
         0
       );
 
+      const validityTimestamps = createValidityTimestamps(
+        {
+          days: 1,
+        },
+        {
+          days: 1,
+        }
+      );
+
       const transferLyxSignature = await signLSP6ExecuteRelayCall(
         context.keyManager,
         ownerNonce.toHexString(),
+        validityTimestamps,
         LOCAL_PRIVATE_KEYS.ACCOUNT0,
         0,
         transferLyxPayload
@@ -678,8 +801,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
       const eip191 = new EIP191Signer();
 
       let encodedMessage = ethers.utils.solidityPack(
-        ["uint256", "uint256", "uint256", "uint256", "bytes"],
-        [6, 31337, ownerNonce.add(1), 0, transferLyxPayload]
+        ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+        [6, 31337, ownerNonce.add(1), validityTimestamps, 0, transferLyxPayload]
       );
 
       const hashedDataWithIntendedValidator =
@@ -701,6 +824,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           .executeRelayCallBatch(
             [transferLyxSignature, transferLyxSignature],
             [ownerNonce, ownerNonce.add(1)],
+            [validityTimestamps, validityTimestamps],
             [0, 0],
             [transferLyxPayload, transferLyxPayload]
           )
@@ -718,6 +842,15 @@ export const shouldBehaveLikeExecuteRelayCall = (
       let nonces: BigNumber[];
       let payloads: string[];
       const tokensToMint = 1_000;
+
+      const validityTimestamps = createValidityTimestamps(
+        {
+          days: 1,
+        },
+        {
+          days: 1,
+        }
+      );
 
       // step 1 - give minter permissions to mint
       const giveMinterPermissionsPayload =
@@ -743,9 +876,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
         context.owner.address,
         0
       );
+
       const ownerGivePermissionsSignature = await signLSP6ExecuteRelayCall(
         context.keyManager,
         ownerNonce.toHexString(),
+        validityTimestamps,
         LOCAL_PRIVATE_KEYS.ACCOUNT0,
         0,
         giveMinterPermissionsPayload
@@ -765,9 +900,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
         ]);
 
       const minterNonce = await context.keyManager.getNonce(minter.address, 0);
+
       const minterMintSignature = await signLSP6ExecuteRelayCall(
         context.keyManager,
         minterNonce.toHexString(),
+        validityTimestamps,
         LOCAL_PRIVATE_KEYS.ACCOUNT1,
         0,
         executePayload
@@ -785,9 +922,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
           ["0x", "0x"],
         ]);
       const newOwnerNonce = ownerNonce.add(1);
+
       const ownerRemovePermissionsSignature = await signLSP6ExecuteRelayCall(
         context.keyManager,
         newOwnerNonce.toHexString(),
+        validityTimestamps,
         LOCAL_PRIVATE_KEYS.ACCOUNT0,
         0,
         removeMinterPermissionsPayload
@@ -802,6 +941,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             ownerRemovePermissionsSignature,
           ],
           [ownerNonce, minterNonce, newOwnerNonce],
+          [validityTimestamps, validityTimestamps, validityTimestamps],
           [0, 0, 0],
           [
             giveMinterPermissionsPayload,
@@ -886,9 +1026,19 @@ export const shouldBehaveLikeExecuteRelayCall = (
             0
           );
 
+          const validityTimestamps = createValidityTimestamps(
+            {
+              days: 1,
+            },
+            {
+              days: 1,
+            }
+          );
+
           const firstTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
             ownerNonce.toHexString(),
+            validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[0],
             firstLyxTransfer
@@ -896,6 +1046,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           const secondTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
             ownerNonce.add(1).toHexString(),
+            validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[1],
             secondLyxTransfer
@@ -903,6 +1054,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           const thirdTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
             ownerNonce.add(2).toHexString(),
+            validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[2],
             thirdLyxTransfer
@@ -918,6 +1070,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   thirdTransferLyxSignature,
                 ],
                 [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
+                [validityTimestamps, validityTimestamps, validityTimestamps],
                 values,
                 [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
                 { value: amountToFund }
@@ -985,9 +1138,19 @@ export const shouldBehaveLikeExecuteRelayCall = (
             0
           );
 
+          const validityTimestamps = createValidityTimestamps(
+            {
+              days: 1,
+            },
+            {
+              days: 1,
+            }
+          );
+
           const firstTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
             ownerNonce.toHexString(),
+            validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[0],
             firstLyxTransfer
@@ -995,6 +1158,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           const secondTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
             ownerNonce.add(1).toHexString(),
+            validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[1],
             secondLyxTransfer
@@ -1002,6 +1166,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           const thirdTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
             ownerNonce.add(2).toHexString(),
+            validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[2],
             thirdLyxTransfer
@@ -1017,6 +1182,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   thirdTransferLyxSignature,
                 ],
                 [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
+                [validityTimestamps, validityTimestamps, validityTimestamps],
                 values,
                 [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
                 { value: amountToFund }
@@ -1081,9 +1247,19 @@ export const shouldBehaveLikeExecuteRelayCall = (
             0
           );
 
+          const validityTimestamps = createValidityTimestamps(
+            {
+              days: 1,
+            },
+            {
+              days: 1,
+            }
+          );
+
           const firstTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
             ownerNonce.toHexString(),
+            validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[0],
             firstLyxTransfer
@@ -1091,6 +1267,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           const secondTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
             ownerNonce.add(1).toHexString(),
+            validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[1],
             secondLyxTransfer
@@ -1098,6 +1275,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           const thirdTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
             ownerNonce.add(2).toHexString(),
+            validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[2],
             thirdLyxTransfer
@@ -1112,6 +1290,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 thirdTransferLyxSignature,
               ],
               [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
+              [validityTimestamps, validityTimestamps, validityTimestamps],
               values,
               [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
               { value: amountToFund }
@@ -1175,11 +1354,40 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         const nonces = [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)];
 
-        // prettier-ignore
+        const validityTimestamps = createValidityTimestamps(
+          {
+            days: 1,
+          },
+          {
+            days: 1,
+          }
+        );
+
         const signatures = [
-          signLSP6ExecuteRelayCall(context.keyManager, nonces[0].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, failingTransferPayload),
-          signLSP6ExecuteRelayCall(context.keyManager, nonces[1].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, firstTransferPayload),
-          signLSP6ExecuteRelayCall(context.keyManager, nonces[2].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, secondTransferPayload),
+          signLSP6ExecuteRelayCall(
+            context.keyManager,
+            nonces[0].toHexString(),
+            validityTimestamps,
+            LOCAL_PRIVATE_KEYS.ACCOUNT0,
+            0,
+            failingTransferPayload
+          ),
+          signLSP6ExecuteRelayCall(
+            context.keyManager,
+            nonces[1].toHexString(),
+            validityTimestamps,
+            LOCAL_PRIVATE_KEYS.ACCOUNT0,
+            0,
+            firstTransferPayload
+          ),
+          signLSP6ExecuteRelayCall(
+            context.keyManager,
+            nonces[2].toHexString(),
+            validityTimestamps,
+            LOCAL_PRIVATE_KEYS.ACCOUNT0,
+            0,
+            secondTransferPayload
+          ),
         ];
 
         // prettier-ignore
@@ -1188,7 +1396,13 @@ export const shouldBehaveLikeExecuteRelayCall = (
         await expect(
           context.keyManager
             .connect(context.owner)
-            .executeRelayCallBatch(signatures, nonces, [0, 0, 0], payloads)
+            .executeRelayCallBatch(
+              signatures,
+              nonces,
+              [validityTimestamps, validityTimestamps, validityTimestamps],
+              [0, 0, 0],
+              payloads
+            )
         ).to.be.revertedWithCustomError(
           context.universalProfile,
           "ERC725X_InsufficientBalance"
@@ -1240,11 +1454,40 @@ export const shouldBehaveLikeExecuteRelayCall = (
         const nonces = [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)];
         const values = [0, 0, 0];
 
-        // prettier-ignore
+        const validityTimestamps = createValidityTimestamps(
+          {
+            days: 1,
+          },
+          {
+            days: 1,
+          }
+        );
+
         const signatures = [
-          signLSP6ExecuteRelayCall(context.keyManager, nonces[0].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, firstTransferPayload),
-          signLSP6ExecuteRelayCall(context.keyManager, nonces[1].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, secondTransferPayload),
-          signLSP6ExecuteRelayCall(context.keyManager, nonces[2].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, failingTransferPayload),
+          signLSP6ExecuteRelayCall(
+            context.keyManager,
+            nonces[0].toHexString(),
+            validityTimestamps,
+            LOCAL_PRIVATE_KEYS.ACCOUNT0,
+            0,
+            firstTransferPayload
+          ),
+          signLSP6ExecuteRelayCall(
+            context.keyManager,
+            nonces[1].toHexString(),
+            validityTimestamps,
+            LOCAL_PRIVATE_KEYS.ACCOUNT0,
+            0,
+            secondTransferPayload
+          ),
+          signLSP6ExecuteRelayCall(
+            context.keyManager,
+            nonces[2].toHexString(),
+            validityTimestamps,
+            LOCAL_PRIVATE_KEYS.ACCOUNT0,
+            0,
+            failingTransferPayload
+          ),
         ];
 
         // prettier-ignore
@@ -1253,7 +1496,13 @@ export const shouldBehaveLikeExecuteRelayCall = (
         await expect(
           context.keyManager
             .connect(context.owner)
-            .executeRelayCallBatch(signatures, nonces, values, payloads)
+            .executeRelayCallBatch(
+              signatures,
+              nonces,
+              [validityTimestamps, validityTimestamps, validityTimestamps],
+              values,
+              payloads
+            )
         ).to.be.revertedWithCustomError(
           context.universalProfile,
           "ERC725X_InsufficientBalance"

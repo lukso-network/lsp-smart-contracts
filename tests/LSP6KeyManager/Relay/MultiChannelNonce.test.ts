@@ -18,7 +18,11 @@ import {
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
-import { LOCAL_PRIVATE_KEYS, combineAllowedCalls } from "../../utils/helpers";
+import {
+  LOCAL_PRIVATE_KEYS,
+  combineAllowedCalls,
+  createValidityTimestamps,
+} from "../../utils/helpers";
 
 export const shouldBehaveLikeMultiChannelNonce = (
   buildContext: () => Promise<LSP6TestContext>
@@ -95,6 +99,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
+        const validityTimestamps = createValidityTimestamps(
+          {
+            days: 1,
+          },
+          {
+            days: 1,
+          }
+        );
+
         const targetContractPayload =
           targetContract.interface.encodeFunctionData("setName", [newName]);
 
@@ -113,11 +126,12 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let valueToSend = 0;
 
         const encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             latestNonce,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -134,6 +148,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         await context.keyManager.executeRelayCall(
           signature,
           latestNonce,
+          validityTimestamps,
           executeRelayCallPayload,
           { value: valueToSend }
         );
@@ -164,6 +179,16 @@ export const shouldBehaveLikeMultiChannelNonce = (
           signer.address,
           channelId
         );
+
+        const validityTimestamps = createValidityTimestamps(
+          {
+            days: 1,
+          },
+          {
+            days: 1,
+          }
+        );
+
         let newName = names[0];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData(
@@ -182,11 +207,12 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -202,9 +228,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
-            value: valueToSend,
-          });
+          .executeRelayCall(
+            signature,
+            nonceBefore,
+            validityTimestamps,
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
+          );
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -223,6 +255,16 @@ export const shouldBehaveLikeMultiChannelNonce = (
           signer.address,
           channelId
         );
+
+        const validityTimestamps = createValidityTimestamps(
+          {
+            days: 1,
+          },
+          {
+            days: 1,
+          }
+        );
+
         let newName = names[1];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData(
@@ -241,11 +283,12 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -261,9 +304,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
-            value: valueToSend,
-          });
+          .executeRelayCall(
+            signature,
+            nonceBefore,
+            validityTimestamps,
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
+          );
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -287,6 +336,16 @@ export const shouldBehaveLikeMultiChannelNonce = (
           signer.address,
           channelId
         );
+
+        const validityTimestamps = createValidityTimestamps(
+          {
+            days: 1,
+          },
+          {
+            days: 1,
+          }
+        );
+
         let newName = names[0];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData(
@@ -305,11 +364,12 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -325,9 +385,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
-            value: valueToSend,
-          });
+          .executeRelayCall(
+            signature,
+            nonceBefore,
+            validityTimestamps,
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
+          );
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -346,6 +412,16 @@ export const shouldBehaveLikeMultiChannelNonce = (
           signer.address,
           channelId
         );
+
+        const validityTimestamps = createValidityTimestamps(
+          {
+            days: 1,
+          },
+          {
+            days: 1,
+          }
+        );
+
         let newName = names[1];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData(
@@ -364,11 +440,12 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -384,9 +461,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
-            value: valueToSend,
-          });
+          .executeRelayCall(
+            signature,
+            nonceBefore,
+            validityTimestamps,
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
+          );
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -410,6 +493,16 @@ export const shouldBehaveLikeMultiChannelNonce = (
           signer.address,
           channelId
         );
+
+        const validityTimestamps = createValidityTimestamps(
+          {
+            days: 1,
+          },
+          {
+            days: 1,
+          }
+        );
+
         let newName = names[0];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData(
@@ -428,11 +521,12 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -448,9 +542,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
-            value: valueToSend,
-          });
+          .executeRelayCall(
+            signature,
+            nonceBefore,
+            validityTimestamps,
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
+          );
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -469,6 +569,16 @@ export const shouldBehaveLikeMultiChannelNonce = (
           signer.address,
           channelId
         );
+
+        const validityTimestamps = createValidityTimestamps(
+          {
+            days: 1,
+          },
+          {
+            days: 1,
+          }
+        );
+
         let newName = names[1];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData(
@@ -487,11 +597,12 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -507,9 +618,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
-            value: valueToSend,
-          });
+          .executeRelayCall(
+            signature,
+            nonceBefore,
+            validityTimestamps,
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
+          );
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -530,6 +647,16 @@ export const shouldBehaveLikeMultiChannelNonce = (
           signer.address,
           channelId
         );
+
+        const validityTimestamps = createValidityTimestamps(
+          {
+            days: 1,
+          },
+          {
+            days: 1,
+          }
+        );
+
         let newName = "Lukasz";
 
         let targetContractPayload = targetContract.interface.encodeFunctionData(
@@ -548,11 +675,12 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -568,9 +696,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
-            value: valueToSend,
-          });
+          .executeRelayCall(
+            signature,
+            nonceBefore,
+            validityTimestamps,
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
+          );
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(

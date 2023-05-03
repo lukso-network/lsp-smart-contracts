@@ -27,7 +27,11 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { LOCAL_PRIVATE_KEYS, combineAllowedCalls } from "../../utils/helpers";
+import {
+  LOCAL_PRIVATE_KEYS,
+  combineAllowedCalls,
+  createValidityTimestamps,
+} from "../../utils/helpers";
 
 export const shouldBehaveLikeAllowedFunctions = (
   buildContext: () => Promise<LSP6TestContext>
@@ -224,6 +228,15 @@ export const shouldBehaveLikeAllowedFunctions = (
             channelId
           );
 
+          const validityTimestamps = createValidityTimestamps(
+            {
+              days: 1,
+            },
+            {
+              days: 1,
+            }
+          );
+
           let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
               OPERATION_TYPES.CALL,
@@ -236,11 +249,12 @@ export const shouldBehaveLikeAllowedFunctions = (
           let valueToSend = 0;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
             [
               LSP6_VERSION,
               HARDHAT_CHAINID,
               nonce,
+              validityTimestamps,
               valueToSend,
               executeRelayCallPayload,
             ]
@@ -257,6 +271,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           await context.keyManager.executeRelayCall(
             signature,
             nonce,
+            validityTimestamps,
             executeRelayCallPayload,
             { value: valueToSend }
           );
@@ -271,6 +286,16 @@ export const shouldBehaveLikeAllowedFunctions = (
             addressCanCallOnlyOneFunction.address,
             channelId
           );
+
+          const validityTimestamps = createValidityTimestamps(
+            {
+              days: 1,
+            },
+            {
+              days: 1,
+            }
+          );
+
           let targetContractPayload =
             targetContract.interface.encodeFunctionData("setNumber", [2354]);
 
@@ -286,11 +311,12 @@ export const shouldBehaveLikeAllowedFunctions = (
           let valueToSend = 0;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
             [
               LSP6_VERSION,
               HARDHAT_CHAINID,
               nonce,
+              validityTimestamps,
               valueToSend,
               executeRelayCallPayload,
             ]
@@ -308,6 +334,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             context.keyManager.executeRelayCall(
               signature,
               nonce,
+              validityTimestamps,
               executeRelayCallPayload,
               { value: valueToSend }
             )

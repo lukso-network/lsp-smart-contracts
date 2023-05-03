@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 
 // types
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { BigNumber, BytesLike, Wallet } from "ethers";
+import { BigNumber, Bytes, BytesLike, Wallet } from "ethers";
 import {
   LSP20ReentrantContract__factory,
   LSP20ReentrantContract,
@@ -33,6 +33,7 @@ import {
   LOCAL_PRIVATE_KEYS,
   signLSP6ExecuteRelayCall,
   encodeCompactBytesArray,
+  createValidityTimestamps,
 } from "../../utils/helpers";
 import { setupKeyManager } from "../../utils/fixtures";
 
@@ -413,10 +414,21 @@ export const generateRelayCall = async (
   signer: Wallet
 ) => {
   let nonce = await keyManager.callStatic.getNonce(signer.address, 1);
+
+  const validityTimestamps = createValidityTimestamps(
+    {
+      days: 1,
+    },
+    {
+      days: 1,
+    }
+  );
+
   let msgValue = 0;
   let signature = await signLSP6ExecuteRelayCall(
     keyManager,
     nonce.toString(),
+    validityTimestamps,
     signer.privateKey,
     msgValue,
     payload.toString()
@@ -425,10 +437,12 @@ export const generateRelayCall = async (
   const relayCallContext: {
     signature: BytesLike;
     nonce: BigNumber;
+    validityTimestamps: BytesLike;
     payload: BytesLike;
   } = {
     signature,
     nonce,
+    validityTimestamps,
     payload,
   };
 
@@ -498,16 +512,32 @@ export const generateSingleRelayPayload = async (
   }
 
   let nonce = await keyManager.callStatic.getNonce(reentrantSigner.address, 1);
+
+  const validityTimestamps = createValidityTimestamps(
+    {
+      days: 1,
+    },
+    {
+      days: 1,
+    }
+  );
+
   let msgValue = 0;
   let signature = await signLSP6ExecuteRelayCall(
     keyManager,
     nonce.toString(),
+    validityTimestamps,
     reentrantSigner.privateKey,
     msgValue,
     payload
   );
 
-  await reentrancyRelayer.prepareRelayCall(signature, nonce, payload);
+  await reentrancyRelayer.prepareRelayCall(
+    signature,
+    nonce,
+    validityTimestamps,
+    payload
+  );
 };
 
 export const generateBatchRelayPayload = async (
@@ -573,10 +603,21 @@ export const generateBatchRelayPayload = async (
   }
 
   let nonce = await keyManager.callStatic.getNonce(reentrantSigner.address, 1);
+
+  const validityTimestamps = createValidityTimestamps(
+    {
+      days: 1,
+    },
+    {
+      days: 1,
+    }
+  );
+
   let msgValue = 0;
   let signature = await signLSP6ExecuteRelayCall(
     keyManager,
     nonce.toString(),
+    validityTimestamps,
     reentrantSigner.privateKey,
     msgValue,
     payload
@@ -585,6 +626,7 @@ export const generateBatchRelayPayload = async (
   await reentrancyRelayer.prepareRelayCall(
     [signature],
     [nonce],
+    [validityTimestamps],
     [msgValue],
     [payload]
   );

@@ -58,6 +58,7 @@ interface ILSP6KeyManager is
      * @dev allows anybody to execute given they have a signed message from an executor
      * @param signature bytes32 ethereum signature
      * @param nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
+     * @param validityTimestamps two timestamps combined, first timestamp limits from when the payload can be executed and the second timestamp delimits the end of the validity of the payload
      * @param payload obtained via encodeABI() in web3
      * @return the data being returned by the ERC725 Account
      */

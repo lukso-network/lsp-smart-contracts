@@ -331,8 +331,9 @@ abstract contract LSP6KeyManagerCore is
         // increase nonce after successful verification
         _nonceStore[signer][nonce >> 128]++;
 
-        uint128 startTimestamp = uint128(validityTimestamps);
-        uint128 endTimestamp = uint128(validityTimestamps << 128);
+        uint128 startTimestamp = uint128(validityTimestamps >> 128);
+        uint128 endTimestamp = uint128(validityTimestamps);
+
         if (startTimestamp > block.timestamp) {
             revert RelayCallNotValidYet();
         }

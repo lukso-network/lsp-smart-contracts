@@ -45,6 +45,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     let relayCallParams: {
       signature: BytesLike;
       nonce: BigNumber;
+      validityTimestamps: BytesLike;
       payload: BytesLike;
     };
     before(async () => {
@@ -81,6 +82,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
             .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
+              relayCallParams.validityTimestamps,
               relayCallParams.payload
             )
         )
@@ -107,6 +109,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           .executeRelayCall(
             relayCallParams.signature,
             relayCallParams.nonce,
+            relayCallParams.validityTimestamps,
             relayCallParams.payload
           )
       ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
@@ -132,6 +135,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
+          relayCallParams.validityTimestamps,
           relayCallParams.payload
         );
 
@@ -153,6 +157,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     let relayCallParams: {
       signature: BytesLike;
       nonce: BigNumber;
+      validityTimestamps: BytesLike;
       payload: BytesLike;
     };
     before(async () => {
@@ -189,6 +194,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
             .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
+              relayCallParams.validityTimestamps,
               relayCallParams.payload
             )
         )
@@ -215,6 +221,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           .executeRelayCall(
             relayCallParams.signature,
             relayCallParams.nonce,
+            relayCallParams.validityTimestamps,
             relayCallParams.payload
           )
       ).to.be.revertedWithCustomError(
@@ -237,6 +244,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
+          relayCallParams.validityTimestamps,
           relayCallParams.payload
         );
 
@@ -257,6 +265,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     let relayCallParams: {
       signature: BytesLike;
       nonce: BigNumber;
+      validityTimestamps: BytesLike;
       payload: BytesLike;
     };
     before(async () => {
@@ -289,6 +298,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
             .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
+              relayCallParams.validityTimestamps,
               relayCallParams.payload
             )
         )
@@ -314,6 +324,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
+          relayCallParams.validityTimestamps,
           relayCallParams.payload
         );
 
@@ -333,6 +344,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     let relayCallParams: {
       signature: BytesLike;
       nonce: BigNumber;
+      validityTimestamps: BytesLike;
       payload: BytesLike;
     };
     before(async () => {
@@ -365,6 +377,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
             .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
+              relayCallParams.validityTimestamps,
               relayCallParams.payload
             )
         )
@@ -390,6 +403,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
+          relayCallParams.validityTimestamps,
           relayCallParams.payload
         );
 
@@ -408,6 +422,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     let relayCallParams: {
       signature: BytesLike;
       nonce: BigNumber;
+      validityTimestamps: BytesLike;
       payload: BytesLike;
     };
     before(async () => {
@@ -440,6 +455,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
             .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
+              relayCallParams.validityTimestamps,
               relayCallParams.payload
             )
         )
@@ -465,6 +481,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
+          relayCallParams.validityTimestamps,
           relayCallParams.payload
         );
 
@@ -484,6 +501,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     let relayCallParams: {
       signature: BytesLike;
       nonce: BigNumber;
+      validityTimestamps: BytesLike;
       payload: BytesLike;
     };
     before(async () => {
@@ -517,6 +535,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
               .executeRelayCall(
                 relayCallParams.signature,
                 relayCallParams.nonce,
+                relayCallParams.validityTimestamps,
                 relayCallParams.payload
               )
           )
@@ -543,6 +562,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
+          relayCallParams.validityTimestamps,
           relayCallParams.payload
         );
 
