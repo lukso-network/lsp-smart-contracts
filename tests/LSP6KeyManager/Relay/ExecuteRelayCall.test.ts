@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { time } from "@nomicfoundation/hardhat-network-helpers";
 import { BigNumber } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { EIP191Signer } from "@lukso/eip191-signer.js";
@@ -49,6 +50,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
       relayer: SignerWithAddress,
       random: SignerWithAddress,
       signerNoAllowedCalls: SignerWithAddress;
+    const signerPrivateKey = LOCAL_PRIVATE_KEYS.ACCOUNT1;
 
     let targetContract: TargetContract;
 
@@ -154,19 +156,22 @@ export const shouldBehaveLikeExecuteRelayCall = (
               );
 
             await expect(
-              context.keyManager.executeRelayCall(
-                signature,
-                signedMessageParams.nonce,
-                signedMessageParams.validityTimestamps,
-                signedMessageParams.payload,
-                { value: valueToSendFromRelayer }
-              )
+              context.keyManager
+                .connect(relayer)
+                .executeRelayCall(
+                  signature,
+                  signedMessageParams.nonce,
+                  signedMessageParams.validityTimestamps,
+                  signedMessageParams.payload,
+                  { value: valueToSendFromRelayer }
+                )
             ).to.be.revertedWithCustomError(
               context.keyManager,
               "NoPermissionsSet"
             );
           });
         });
+
         describe("When sending 0 while msg.value signed > 0", () => {
           it("should revert by recovering a non permissioned address", async () => {
             let executeRelayCallPayload =
@@ -681,10 +686,634 @@ export const shouldBehaveLikeExecuteRelayCall = (
           });
         });
       });
+
+      describe.only("When testing `validityTimestamps`", () => {
+        const oneDayInSeconds = 60 * 60 * 24;
+        let count = 0;
+        let startingTimestamp: number;
+        let endingTimestamp: number;
+
+        describe("start timestamp > end timestamp", () => {
+          beforeEach("Update timestamp by adding a year", () => {
+            const year = 2100 + count;
+
+            startingTimestamp =
+              Date.parse(`Tue Apr 20 ${year} 04:20:00 GMT+0000`) / 1000;
+            endingTimestamp =
+              Date.parse(`Mon Apr 19 ${year} 04:20:00 GMT+0000`) / 1000;
+
+            count++;
+          });
+
+          describe("start timestamp = now > end timestamp", () => {
+            it("reverts", async () => {
+              const now = startingTimestamp;
+
+              const nonce = await context.keyManager.callStatic.getNonce(
+                signer.address,
+                1
+              );
+              const validityTimestamps = createValidityTimestamps(
+                {},
+                {},
+                startingTimestamp,
+                endingTimestamp
+              );
+              const calldata = "0xcafecafe";
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata
+              );
+
+              await time.setNextBlockTimestamp(now);
+
+              await expect(
+                context.keyManager
+                  .connect(relayer)
+                  .executeRelayCall(
+                    signature,
+                    nonce,
+                    validityTimestamps,
+                    calldata
+                  )
+              ).to.be.revertedWithCustomError(
+                context.keyManager,
+                "RelayCallExpired"
+              );
+            });
+          });
+          describe("start timestamp < now > end timestamp", () => {
+            it("reverts", async () => {
+              const now = startingTimestamp + oneDayInSeconds;
+
+              const nonce = await context.keyManager.callStatic.getNonce(
+                signer.address,
+                2
+              );
+              const validityTimestamps = createValidityTimestamps(
+                {},
+                {},
+                startingTimestamp,
+                endingTimestamp
+              );
+              const calldata = "0xcafecafe";
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata
+              );
+
+              await time.setNextBlockTimestamp(now);
+
+              await expect(
+                context.keyManager
+                  .connect(relayer)
+                  .executeRelayCall(
+                    signature,
+                    nonce,
+                    validityTimestamps,
+                    calldata
+                  )
+              ).to.be.revertedWithCustomError(
+                context.keyManager,
+                "RelayCallExpired"
+              );
+            });
+          });
+          describe("start timestamp > now < end timestamp", () => {
+            it("reverts", async () => {
+              const now = endingTimestamp - oneDayInSeconds;
+
+              const nonce = await context.keyManager.callStatic.getNonce(
+                signer.address,
+                3
+              );
+              const validityTimestamps = createValidityTimestamps(
+                {},
+                {},
+                startingTimestamp,
+                endingTimestamp
+              );
+              const calldata = "0xcafecafe";
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata
+              );
+
+              await time.setNextBlockTimestamp(now);
+
+              await expect(
+                context.keyManager
+                  .connect(relayer)
+                  .executeRelayCall(
+                    signature,
+                    nonce,
+                    validityTimestamps,
+                    calldata
+                  )
+              ).to.be.revertedWithCustomError(
+                context.keyManager,
+                "RelayCallNotValidYet"
+              );
+            });
+          });
+          describe("start timestamp > now > end timestamp", () => {
+            it("reverts", async () => {
+              const now = Math.round((startingTimestamp + endingTimestamp) / 2);
+
+              const nonce = await context.keyManager.callStatic.getNonce(
+                signer.address,
+                4
+              );
+              const validityTimestamps = createValidityTimestamps(
+                {},
+                {},
+                startingTimestamp,
+                endingTimestamp
+              );
+              const calldata = "0xcafecafe";
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata
+              );
+
+              await time.setNextBlockTimestamp(now);
+
+              await expect(
+                context.keyManager
+                  .connect(relayer)
+                  .executeRelayCall(
+                    signature,
+                    nonce,
+                    validityTimestamps,
+                    calldata
+                  )
+              ).to.be.revertedWithCustomError(
+                context.keyManager,
+                "RelayCallNotValidYet"
+              );
+            });
+          });
+          describe("start timestamp > now = end timestamp", () => {
+            it("reverts", async () => {
+              const now = endingTimestamp;
+
+              const nonce = await context.keyManager.callStatic.getNonce(
+                signer.address,
+                5
+              );
+              const validityTimestamps = createValidityTimestamps(
+                {},
+                {},
+                startingTimestamp,
+                endingTimestamp
+              );
+              const calldata = "0xcafecafe";
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata
+              );
+
+              await time.setNextBlockTimestamp(now);
+
+              await expect(
+                context.keyManager
+                  .connect(relayer)
+                  .executeRelayCall(
+                    signature,
+                    nonce,
+                    validityTimestamps,
+                    calldata
+                  )
+              ).to.be.revertedWithCustomError(
+                context.keyManager,
+                "RelayCallNotValidYet"
+              );
+            });
+          });
+        });
+        describe("start timestamp < end timestamp", () => {
+          beforeEach("Update timestamp by adding a year", () => {
+            const year = 2100 + count;
+
+            startingTimestamp =
+              Date.parse(`Tue Apr 20 ${year} 04:20:00 GMT+0000`) / 1000;
+            endingTimestamp =
+              Date.parse(`Mon Apr 21 ${year} 04:20:00 GMT+0000`) / 1000;
+
+            count++;
+          });
+
+          describe("start timestamp = now < end timestamp", () => {
+            it("passes", async () => {
+              const now = startingTimestamp;
+
+              const nonce = await context.keyManager.callStatic.getNonce(
+                signer.address,
+                6
+              );
+              const validityTimestamps = createValidityTimestamps(
+                {},
+                {},
+                startingTimestamp,
+                endingTimestamp
+              );
+              const calldata =
+                context.universalProfile.interface.encodeFunctionData(
+                  "execute",
+                  [
+                    0,
+                    targetContract.address,
+                    0,
+                    targetContract.interface.encodeFunctionData("setNumber", [
+                      nonce,
+                    ]),
+                  ]
+                );
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata
+              );
+
+              await time.setNextBlockTimestamp(now);
+
+              await context.keyManager
+                .connect(relayer)
+                .executeRelayCall(
+                  signature,
+                  nonce,
+                  validityTimestamps,
+                  calldata
+                );
+
+              expect(await targetContract.getNumber()).to.equal(nonce);
+            });
+          });
+          describe("start timestamp > now < end timestamp", () => {
+            it("reverts", async () => {
+              const now = startingTimestamp - oneDayInSeconds;
+
+              const nonce = await context.keyManager.callStatic.getNonce(
+                signer.address,
+                7
+              );
+              const validityTimestamps = createValidityTimestamps(
+                {},
+                {},
+                startingTimestamp,
+                endingTimestamp
+              );
+              const calldata = "0xcafecafe";
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata
+              );
+
+              await time.setNextBlockTimestamp(now);
+
+              await expect(
+                context.keyManager
+                  .connect(relayer)
+                  .executeRelayCall(
+                    signature,
+                    nonce,
+                    validityTimestamps,
+                    calldata
+                  )
+              ).to.be.revertedWithCustomError(
+                context.keyManager,
+                "RelayCallNotValidYet"
+              );
+            });
+          });
+          describe("start timestamp < now > end timestamp", () => {
+            it("reverts", async () => {
+              const now = endingTimestamp + oneDayInSeconds;
+
+              const nonce = await context.keyManager.callStatic.getNonce(
+                signer.address,
+                8
+              );
+              const validityTimestamps = createValidityTimestamps(
+                {},
+                {},
+                startingTimestamp,
+                endingTimestamp
+              );
+              const calldata = "0xcafecafe";
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata
+              );
+
+              await time.setNextBlockTimestamp(now);
+
+              await expect(
+                context.keyManager
+                  .connect(relayer)
+                  .executeRelayCall(
+                    signature,
+                    nonce,
+                    validityTimestamps,
+                    calldata
+                  )
+              ).to.be.revertedWithCustomError(
+                context.keyManager,
+                "RelayCallExpired"
+              );
+            });
+          });
+          describe("start timestamp < now < end timestamp", () => {
+            it("passes", async () => {
+              const now = Math.floor((startingTimestamp + endingTimestamp) / 2);
+
+              const nonce = await context.keyManager.callStatic.getNonce(
+                signer.address,
+                9
+              );
+              const validityTimestamps = createValidityTimestamps(
+                {},
+                {},
+                startingTimestamp,
+                endingTimestamp
+              );
+              const calldata =
+                context.universalProfile.interface.encodeFunctionData(
+                  "execute",
+                  [
+                    0,
+                    targetContract.address,
+                    0,
+                    targetContract.interface.encodeFunctionData("setNumber", [
+                      nonce,
+                    ]),
+                  ]
+                );
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata
+              );
+
+              await time.setNextBlockTimestamp(now);
+
+              await context.keyManager
+                .connect(relayer)
+                .executeRelayCall(
+                  signature,
+                  nonce,
+                  validityTimestamps,
+                  calldata
+                );
+
+              expect(await targetContract.getNumber()).to.equal(nonce);
+            });
+          });
+          describe("start timestamp < now = end timestamp", () => {
+            it("passes", async () => {
+              const now = endingTimestamp;
+
+              const nonce = await context.keyManager.callStatic.getNonce(
+                signer.address,
+                10
+              );
+              const validityTimestamps = createValidityTimestamps(
+                {},
+                {},
+                startingTimestamp,
+                endingTimestamp
+              );
+              const calldata =
+                context.universalProfile.interface.encodeFunctionData(
+                  "execute",
+                  [
+                    0,
+                    targetContract.address,
+                    0,
+                    targetContract.interface.encodeFunctionData("setNumber", [
+                      nonce,
+                    ]),
+                  ]
+                );
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata
+              );
+
+              await time.setNextBlockTimestamp(now);
+
+              await context.keyManager
+                .connect(relayer)
+                .executeRelayCall(
+                  signature,
+                  nonce,
+                  validityTimestamps,
+                  calldata
+                );
+
+              expect(await targetContract.getNumber()).to.equal(nonce);
+            });
+          });
+        });
+        describe("start timestamp = end timestamp", () => {
+          beforeEach("Update timestamp by adding a year", () => {
+            const year = 2100 + count;
+
+            startingTimestamp =
+              Date.parse(`Tue Apr 20 ${year} 04:20:00 GMT+0000`) / 1000;
+            endingTimestamp = startingTimestamp;
+
+            count++;
+          });
+
+          describe("start timestamp = end timestamp < now", () => {
+            it("reverts", async () => {
+              const now = endingTimestamp + oneDayInSeconds;
+
+              const nonce = await context.keyManager.callStatic.getNonce(
+                signer.address,
+                11
+              );
+              const validityTimestamps = createValidityTimestamps(
+                {},
+                {},
+                startingTimestamp,
+                endingTimestamp
+              );
+              const calldata = "0xcafecafe";
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata
+              );
+
+              await time.setNextBlockTimestamp(now);
+
+              await expect(
+                context.keyManager
+                  .connect(relayer)
+                  .executeRelayCall(
+                    signature,
+                    nonce,
+                    validityTimestamps,
+                    calldata
+                  )
+              ).to.be.revertedWithCustomError(
+                context.keyManager,
+                "RelayCallExpired"
+              );
+            });
+          });
+          describe("start timestamp = end timestamp > now", () => {
+            it("reverts", async () => {
+              const now = startingTimestamp - oneDayInSeconds;
+
+              const nonce = await context.keyManager.callStatic.getNonce(
+                signer.address,
+                12
+              );
+              const validityTimestamps = createValidityTimestamps(
+                {},
+                {},
+                startingTimestamp,
+                endingTimestamp
+              );
+              const calldata = "0xcafecafe";
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata
+              );
+
+              await time.setNextBlockTimestamp(now);
+
+              await expect(
+                context.keyManager
+                  .connect(relayer)
+                  .executeRelayCall(
+                    signature,
+                    nonce,
+                    validityTimestamps,
+                    calldata
+                  )
+              ).to.be.revertedWithCustomError(
+                context.keyManager,
+                "RelayCallNotValidYet"
+              );
+            });
+          });
+          describe("start timestamp = end timestamp = now", () => {
+            it("passes", async () => {
+              const now = startingTimestamp;
+
+              const nonce = await context.keyManager.callStatic.getNonce(
+                signer.address,
+                13
+              );
+              const validityTimestamps = createValidityTimestamps(
+                {},
+                {},
+                startingTimestamp,
+                endingTimestamp
+              );
+              const calldata =
+                context.universalProfile.interface.encodeFunctionData(
+                  "execute",
+                  [
+                    0,
+                    targetContract.address,
+                    0,
+                    targetContract.interface.encodeFunctionData("setNumber", [
+                      nonce,
+                    ]),
+                  ]
+                );
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata
+              );
+
+              await time.setNextBlockTimestamp(now);
+
+              await context.keyManager
+                .connect(relayer)
+                .executeRelayCall(
+                  signature,
+                  nonce,
+                  validityTimestamps,
+                  calldata
+                );
+
+              expect(await targetContract.getNumber()).to.equal(nonce);
+            });
+          });
+        });
+      });
     });
   });
 
-  describe("Batch `executeRelayCall([],[],[],[])", () => {
+  describe("`executeRelayCallBatch()", () => {
     let context: LSP6TestContext;
 
     let minter: SignerWithAddress;

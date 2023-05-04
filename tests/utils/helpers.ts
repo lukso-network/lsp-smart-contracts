@@ -183,8 +183,16 @@ export function createValidityTimestamps(
     hours?: number;
     days?: number;
     weeks?: number;
-  }
+  },
+  startingTimestamp?: number,
+  endingTimestamp?: number
 ): BytesLike {
+  if (startingTimestamp !== undefined && endingTimestamp !== undefined)
+    return ethers.utils.hexConcat([
+      ethers.utils.zeroPad(ethers.utils.hexlify(startingTimestamp), 16),
+      ethers.utils.zeroPad(ethers.utils.hexlify(endingTimestamp), 16),
+    ]);
+
   let totalTimeBefore: number = countSeconds(timeBefore);
   let totalTimeAfter: number = countSeconds(timeAfter);
 
