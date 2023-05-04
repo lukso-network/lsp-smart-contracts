@@ -7,6 +7,7 @@ pragma solidity ^0.8.4;
 contract GraffitiEventExtension {
     event GraffitiDataReceived(bytes graffitiData);
 
+    // solhint-disable no-complex-fallback
     fallback(bytes calldata data) external payable returns (bytes memory) {
         emit GraffitiDataReceived(data);
         return data;
