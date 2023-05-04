@@ -25,15 +25,15 @@ import {_TYPEID_LSP7_TOKENSSENDER, _TYPEID_LSP7_TOKENSRECIPIENT} from "./LSP7Con
 abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     // --- Storage
 
-    bool internal _isNonDivisible;
-
-    uint256 internal _existingTokens;
-
     // Mapping from `tokenOwner` to an `amount` of tokens
-    mapping(address => uint256) internal _tokenOwnerBalances;
+    mapping(address => uint256) private _tokenOwnerBalances;
 
     // Mapping a `tokenOwner` to an `operator` to `amount` of tokens.
-    mapping(address => mapping(address => uint256)) internal _operatorAuthorizedAmount;
+    mapping(address => mapping(address => uint256)) private _operatorAuthorizedAmount;
+
+    uint256 private _existingTokens;
+
+    bool internal _isNonDivisible;
 
     // --- Token queries
 
