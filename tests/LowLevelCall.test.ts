@@ -10,6 +10,7 @@ import {
   SourceERC725__factory,
   ERC725Y,
   ERC725Y__factory,
+  GenericExecutor__factory,
 } from "../types";
 
 describe("Solidity Low Level Call", () => {
@@ -172,5 +173,43 @@ describe("Solidity Low Level Call + plain ERC725", () => {
     expect(result).to.equal(
       ethers.utils.hexlify(ethers.utils.toUtf8Bytes(dataValue))
     );
+  });
+});
+
+describe.only("Generic Executor Low Level Call + plain ERC725", () => {
+  let genericExecutor;
+  let targetERC725;
+
+  before("setup", async () => {
+    genericExecutor = await new GenericExecutor__factory(
+      ethers.provider.getSigner()
+    ).deploy();
+
+    targetERC725 = await new ERC725Y__factory(
+      ethers.provider.getSigner()
+    ).deploy(genericExecutor.address);
+  });
+
+  it("test", async () => {
+    const dataKey =
+      "0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1";
+
+    const expectedValue = ethers.utils.hexlify(
+      ethers.utils.toUtf8Bytes(
+        "Some value with low level call with calldata param"
+      )
+    );
+
+    const calldata = targetERC725.interface.encodeFunctionData("setData", [
+      dataKey,
+      expectedValue,
+    ]);
+
+    await genericExecutor.call(targetERC725.address, 0, calldata);
+
+    const result = await targetERC725.getData(dataKey);
+    // console.log("result = ", result);
+
+    expect(result).to.equal(expectedValue);
   });
 });
