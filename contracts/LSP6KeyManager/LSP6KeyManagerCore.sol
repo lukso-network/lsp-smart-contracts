@@ -123,7 +123,7 @@ abstract contract LSP6KeyManagerCore is
         // if recovering throws an error, return the fail value
         if (returnedError != ECDSA.RecoverError.NoError) return _ERC1271_FAILVALUE;
 
-        // if the address recovered has SIGN permission return the magicValue, failValue otherwise
+        // if the address recovered has SIGN permission return the ERC1271 magic value, otherwise the fail value
         return (
             ERC725Y(_target).getPermissionsFor(recoveredAddress).hasPermission(_PERMISSION_SIGN)
                 ? _ERC1271_MAGICVALUE
