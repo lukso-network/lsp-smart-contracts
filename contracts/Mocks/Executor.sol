@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "hardhat/console.sol";
+
 // modules
 import {UniversalProfile} from "../UniversalProfile.sol";
 import {LSP6KeyManager} from "../LSP6KeyManager/LSP6KeyManager.sol";
@@ -93,10 +95,14 @@ contract Executor {
 
         bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, key, value);
 
+        console.log("gas left %s", gasleft());
+
         bytes memory keyManagerPayload = abi.encodeWithSelector(
             _LSP6_EXECUTE_SELECTOR,
             erc725Payload
         );
+
+        console.log("gas left %s", gasleft());
 
         (bool success, ) = address(_keyManager).call(keyManagerPayload);
         return success;

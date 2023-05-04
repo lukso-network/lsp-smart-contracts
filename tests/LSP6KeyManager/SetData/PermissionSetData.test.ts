@@ -624,7 +624,7 @@ export const shouldBehaveLikePermissionSetData = (
     });
   });
 
-  describe("when caller is a contract", () => {
+  describe.only("when caller is a contract", () => {
     let contractCanSetData: Executor;
 
     const hardcodedDataKey =
@@ -684,8 +684,14 @@ export const shouldBehaveLikePermissionSetData = (
         ](hardcodedDataKey);
         expect(initialStorage).to.equal("0x");
 
+        const gasEstimate =
+          await contractCanSetData.estimateGas.setHardcodedKey();
+        console.log("gasEstimate", gasEstimate);
+
         // make the executor call
-        await contractCanSetData.setHardcodedKey();
+        const tx = await contractCanSetData.setHardcodedKey();
+        const receipt = await tx.wait();
+        console.log("receipt", receipt);
 
         // check that store[key] is now set to value
         const newStorage = await context.universalProfile.callStatic[
@@ -732,8 +738,8 @@ export const shouldBehaveLikePermissionSetData = (
       });
     });
 
-    describe("> Low-level calls", () => {
-      it("Should allow to `setHardcodedKeyRawCall` on UP", async () => {
+    describe.only("> Low-level calls", () => {
+      it.only("Should allow to `setHardcodedKeyRawCall` on UP", async () => {
         // check that nothing is set at store[key]
         const initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
@@ -741,17 +747,21 @@ export const shouldBehaveLikePermissionSetData = (
         expect(initialStorage).to.equal("0x");
 
         // check if low-level call succeeded
-        let result = await contractCanSetData.callStatic.setHardcodedKeyRawCall(
-          {
-            gasLimit: GAS_PROVIDED,
-          }
-        );
+        let result =
+          await contractCanSetData.callStatic.setHardcodedKeyRawCall();
         expect(result).to.be.true;
 
+        const gasEstimate =
+          await contractCanSetData.estimateGas.setHardcodedKeyRawCall();
+
+        console.log("gasEstimate: ", gasEstimate);
+
         // make the executor call
-        await contractCanSetData.setHardcodedKeyRawCall({
-          gasLimit: GAS_PROVIDED,
-        });
+        const tx = await contractCanSetData.setHardcodedKeyRawCall();
+        const receipt = await tx.wait();
+
+        console.log("receipt: ", receipt);
+        // console.log("gas used: ", receipt.gasUsed.toNumber());
 
         // check that store[key] is now set to value
         const newStorage = await context.universalProfile.callStatic[
