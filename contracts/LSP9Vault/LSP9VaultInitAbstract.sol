@@ -25,7 +25,7 @@ abstract contract LSP9VaultInitAbstract is Initializable, LSP9VaultCore {
     using LSP1Utils for address;
 
     /**
-     * @notice Owner updated and LSP9Vault Standard is now supported
+     * @notice Initializing the contract owner to: `newOwner`
      * @dev Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key.
      * ERC725X & ERC725Y parent contracts are not initialised as they don't have
      * non-zero initial state. If you decide to add non-zero initial state to any of those
