@@ -53,12 +53,15 @@ export const testExecuteInternals = (
           calldata
         );
 
-      expect(result[0]).to.equal(executeParameters.operationType);
-      expect(result[1]).to.equal(executeParameters.to);
-      expect(result[2]).to.equal(executeParameters.value);
+      expect(result).to.deep.equal([
+        executeParameters.operationType,
+        executeParameters.to,
+        executeParameters.value,
 
-      // only the first 4 bytes of the `data` param (the function selector) is extracted
-      expect(result[3]).to.equal("0xcafecafe");
+        // only the first 4 bytes of the `data` param (the function selector) is extracted
+        "0xcafecafe",
+        false,
+      ]);
     });
 
     it("should revert with `InvalidPayload` error if the address param is not left padded with 12 x `00` bytes", async () => {
