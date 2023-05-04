@@ -708,7 +708,8 @@ abstract contract LSP0ERC725AccountCore is
             // if recovering throws an error, return the fail value
             if (returnedError != ECDSA.RecoverError.NoError) return _ERC1271_FAILVALUE;
 
-            // if recovering is successfull, return the magic value if the recovered address
+            // if recovering is successful and the recovered address matches the owner's address,
+            // return the ERC1271 magic value. Otherwise, return the ERC1271 fail value
             // matches the address of the owner, otherwise return fail value
             return recoveredAddress == _owner ? _ERC1271_MAGICVALUE : _ERC1271_FAILVALUE;
         }
