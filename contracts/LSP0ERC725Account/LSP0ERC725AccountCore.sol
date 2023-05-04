@@ -699,10 +699,19 @@ abstract contract LSP0ERC725AccountCore is
         }
         // If owner is an EOA
         else {
-            return
-                _owner == ECDSA.recover(dataHash, signature)
-                    ? _ERC1271_MAGICVALUE
-                    : _ERC1271_FAILVALUE;
+            // if isValidSignature fail, the error is catched in returnedError
+            (address recoveredAddress, ECDSA.RecoverError returnedError) = ECDSA.tryRecover(
+                dataHash,
+                signature
+            );
+
+            // if recovering throws an error, return the fail value
+            if (returnedError != ECDSA.RecoverError.NoError) return _ERC1271_FAILVALUE;
+
+            // if recovering is successful and the recovered address matches the owner's address,
+            // return the ERC1271 magic value. Otherwise, return the ERC1271 fail value
+            // matches the address of the owner, otherwise return fail value
+            return recoveredAddress == _owner ? _ERC1271_MAGICVALUE : _ERC1271_FAILVALUE;
         }
     }
 
