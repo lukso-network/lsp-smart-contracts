@@ -102,12 +102,12 @@ library LSP10Utils {
      * @param sender The address sending the vault and where the Keys should be updated
      * @param vaultMapKey The map key of the vault being sent containing the interfaceId of the
      * vault and the index in the array
-     * @param vaultInterfaceIdAndIndex The value of the map key of the vault being sent
+     * @param vaultIndex The index where the vault address is stored under `LSP10Vaults[]` Array
      */
     function generateSentVaultKeys(
         address sender,
         bytes32 vaultMapKey,
-        bytes memory vaultInterfaceIdAndIndex
+        uint128 vaultIndex
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
         IERC725Y account = IERC725Y(sender);
         bytes memory lsp10VaultsCountValue = getLSP10ReceivedVaultsCount(account);
@@ -129,19 +129,14 @@ library LSP10Utils {
         // Updating the number of the received vaults (decrementing by 1
         uint128 newArrayLength = oldArrayLength - 1;
 
-        // Identify where the vault is located in the LSP10Vaults[] array
-        // by extracting the index from the tuple value `(bytes4,uint128)`
-        // fetched under the LSP10VaultsMap data key
-        uint128 index = uint128(uint160(bytes20(vaultInterfaceIdAndIndex)));
-
         // Generate the element key in the array of the vault
         bytes32 vaultInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
             _LSP10_VAULTS_ARRAY_KEY,
-            index
+            vaultIndex
         );
 
         // If the asset to remove is the last element in the array
-        if (index == newArrayLength) {
+        if (vaultIndex == newArrayLength) {
             /**
              * We will be updating/removing 3 keys:
              * - Keys[0]: [Update] The arrayLengthKey to contain the new number of the received vaults
@@ -165,7 +160,7 @@ library LSP10Utils {
 
             // Swapping last element in ArrayKey with the element in ArrayKey to remove || {Swap and pop} method;
             // check https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/structs/EnumerableSet.sol#L80
-        } else if (index < newArrayLength) {
+        } else if (vaultIndex < newArrayLength) {
             /**
              * We will be updating/removing 5 keys:
              * - Keys[0]: [Update] The arrayLengthKey to contain the new number of the received vaults
@@ -215,7 +210,7 @@ library LSP10Utils {
             // Update the index and the interfaceId of the address swapped (last vault in the array)
             // to point to the new location in the LSP10Vaults array
             keys[4] = lastVaultInArrayMapKey;
-            values[4] = bytes.concat(_INTERFACEID_LSP9, bytes16(index));
+            values[4] = bytes.concat(_INTERFACEID_LSP9, bytes16(vaultIndex));
         } else {
             // If index is bigger than the array length, out of bounds
             return (keys, values);
