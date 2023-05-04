@@ -132,7 +132,7 @@ library LSP10Utils {
         // Identify where the vault is located in the LSP10Vaults[] array
         // by extracting the index from the tuple value `(bytes4,uint128)`
         // fetched under the LSP10VaultsMap data key
-        uint128 index = extractIndexFromMap(vaultInterfaceIdAndIndex);
+        uint128 index = uint128(uint160(bytes20(vaultInterfaceIdAndIndex)));
 
         // Generate the element key in the array of the vault
         bytes32 vaultInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
@@ -224,13 +224,5 @@ library LSP10Utils {
 
     function getLSP10ReceivedVaultsCount(IERC725Y account) internal view returns (bytes memory) {
         return account.getData(_LSP10_VAULTS_ARRAY_KEY);
-    }
-
-    /**
-     * @dev returns the index from the LSP10VaultMap
-     */
-    function extractIndexFromMap(bytes memory mapValue) internal pure returns (uint128) {
-        bytes memory val = BytesLib.slice(mapValue, 4, 16);
-        return BytesLib.toUint128(val, 0);
     }
 }

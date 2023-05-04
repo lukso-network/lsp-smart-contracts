@@ -130,7 +130,7 @@ library LSP5Utils {
         // Identify where the vault is located in the LSP5ReceivedAssets[] array
         // by extracting the index from the tuple value `(bytes4,uint128)`
         // fetched under the LSP5ReceivedAssetsMap data key
-        uint128 index = extractIndexFromMap(assetInterfaceIdAndIndex);
+        uint128 index = uint128(uint160(bytes20(assetInterfaceIdAndIndex)));
 
         // Generate the element key in the array of the asset
         bytes32 assetInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
@@ -230,13 +230,5 @@ library LSP5Utils {
 
     function getLSP5ReceivedAssetsCount(IERC725Y account) internal view returns (bytes memory) {
         return account.getData(_LSP5_RECEIVED_ASSETS_ARRAY_KEY);
-    }
-
-    /**
-     * @dev returns the index from the LSP5ReceivedAssetMap
-     */
-    function extractIndexFromMap(bytes memory mapValue) internal pure returns (uint128) {
-        bytes memory val = BytesLib.slice(mapValue, 4, 16);
-        return BytesLib.toUint128(val, 0);
     }
 }
