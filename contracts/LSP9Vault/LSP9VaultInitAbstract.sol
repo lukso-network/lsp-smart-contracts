@@ -24,6 +24,14 @@ import {
 abstract contract LSP9VaultInitAbstract is Initializable, LSP9VaultCore {
     using LSP1Utils for address;
 
+    /**
+     * @notice Initializing the contract owner to: `newOwner`
+     * @dev Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key.
+     * ERC725X & ERC725Y parent contracts are not initialised as they don't have
+     * non-zero initial state. If you decide to add non-zero initial state to any of those
+     * contracts, you MUST initialize them here
+     * @param newOwner the owner of the contract
+     */
     function _initialize(address newOwner) internal virtual onlyInitializing {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         OwnableUnset._setOwner(newOwner);

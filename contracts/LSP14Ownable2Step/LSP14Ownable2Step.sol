@@ -164,7 +164,6 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
 
         _setOwner(address(0));
         delete _renounceOwnershipStartedAt;
-        delete _pendingOwner;
         emit OwnershipRenounced();
     }
 }
