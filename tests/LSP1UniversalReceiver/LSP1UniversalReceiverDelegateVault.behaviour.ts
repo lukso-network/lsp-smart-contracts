@@ -11,6 +11,8 @@ import {
   LSP8Tester__factory,
   LSP9Vault,
   LSP1UniversalReceiverDelegateVault,
+  LSP7MintWhenDeployed__factory,
+  LSP7MintWhenDeployed,
 } from "../../types";
 
 import {
@@ -184,6 +186,59 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
 
     describe("when minting tokens", () => {
+      describe("when tokens are minted through the constructor (on LSP7 deployment)", () => {
+        let deployedLSP7Token: LSP7MintWhenDeployed;
+
+        before(
+          "deploy LSP7 token which mint tokens in `constructor`",
+          async () => {
+            deployedLSP7Token = await new LSP7MintWhenDeployed__factory(
+              context.accounts.any
+            ).deploy("LSP7 Token", "TKN", context.lsp9Vault1.address);
+          }
+        );
+
+        after("clear LSP5 storage", async () => {
+          // cleanup and reset the `LSP5ReceivedAssets[]` length, index and map value to 0x
+          const setDataPayload =
+            context.lsp9Vault1.interface.encodeFunctionData("setDataBatch", [
+              [
+                ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
+                ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
+                  "00".repeat(16),
+                ERC725YDataKeys.LSP5["LSP5ReceivedAssetsMap"] +
+                  deployedLSP7Token.address.substring(2),
+              ],
+              ["0x", "0x", "0x"],
+            ]);
+
+          // vault is owned by UP so we need to execute via the UP
+          await context.universalProfile
+            .connect(context.accounts.owner1)
+            .execute(
+              OPERATION_TYPES.CALL,
+              context.lsp9Vault1.address,
+              0,
+              setDataPayload
+            );
+        });
+
+        it("it should have registered the token in LSP5ReceivedAssets Map and Array", async () => {
+          const [indexInMap, interfaceId, arrayLength, elementAddress] =
+            await getLSP5MapAndArrayKeysValue(
+              context.lsp9Vault1,
+              deployedLSP7Token
+            );
+
+          expect(indexInMap).to.equal(0);
+          expect(interfaceId).to.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.equal(
+            ethers.utils.hexZeroPad(ethers.utils.hexValue(1), 16)
+          );
+          expect(elementAddress).to.equal(deployedLSP7Token.address);
+        });
+      });
+
       describe("when minting 10 tokenA to lsp9Vault1", () => {
         before(async () => {
           const abi = lsp7TokenA.interface.encodeFunctionData("mint", [
