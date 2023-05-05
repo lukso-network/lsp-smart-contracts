@@ -94,15 +94,6 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         // solhint-disable avoid-tx-origin
         if (notifier == tx.origin) revert CannotRegisterEOAsAsAssets(notifier);
 
-        // if the contract being transferred doesn't support LSP9 interfaceId, do not register it as a received vault
-        if (
-            mapPrefix == _LSP10_VAULTS_MAP_KEY_PREFIX &&
-            notifier.code.length > 0 &&
-            !notifier.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP9)
-        ) {
-            return "LSP1: not an LSP9Vault ownership transfer";
-        }
-
         // Generate the LSP5ReceivedAssetsMap/LSP10VaultsMap based on the prefix and the notifier
         bytes32 notifierMapKey = LSP2Utils.generateMappingKey(mapPrefix, bytes20(notifier));
 

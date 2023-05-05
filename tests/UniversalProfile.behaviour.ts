@@ -54,7 +54,7 @@ export const shouldBehaveLikeLSP3 = (
       expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
     });
 
-    it("should fail when verifying signature from non-owner", async () => {
+    it("should return fail value when verifying signature from non-owner", async () => {
       const signer = context.accounts[1];
 
       const dataToSign = "0xcafecafe";
@@ -126,6 +126,18 @@ export const shouldBehaveLikeLSP3 = (
       const dataToSign = "0xcafecafe";
       const messageHash = ethers.utils.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
+
+      const result = await context.universalProfile.isValidSignature(
+        messageHash,
+        signature
+      );
+      expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
+    });
+
+    it("should return failValue when providing an invalid length signature", async () => {
+      const data = "0xcafecafe";
+      const messageHash = ethers.utils.hashMessage(data);
+      const signature = "0xbadbadbadb";
 
       const result = await context.universalProfile.isValidSignature(
         messageHash,
