@@ -666,6 +666,8 @@ export const shouldBehaveLikePermissionCall = (
               channelId
             );
 
+            const validityTimestamps = 0;
+
             let executeRelayCallPayload =
               context.universalProfile.interface.encodeFunctionData("execute", [
                 OPERATION_TYPES.CALL,
@@ -678,11 +680,12 @@ export const shouldBehaveLikePermissionCall = (
             let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
               [
                 LSP6_VERSION,
                 HARDHAT_CHAINID,
                 nonce,
+                validityTimestamps,
                 valueToSend,
                 executeRelayCallPayload,
               ]
@@ -700,6 +703,7 @@ export const shouldBehaveLikePermissionCall = (
             await context.keyManager.executeRelayCall(
               signature,
               nonce,
+              validityTimestamps,
               executeRelayCallPayload,
               { value: valueToSend }
             );
@@ -720,6 +724,8 @@ export const shouldBehaveLikePermissionCall = (
               channelId
             );
 
+            const validityTimestamps = 0;
+
             let executeRelayCallPayload =
               context.universalProfile.interface.encodeFunctionData("execute", [
                 OPERATION_TYPES.CALL,
@@ -734,11 +740,12 @@ export const shouldBehaveLikePermissionCall = (
             const eip191Signer = new EIP191Signer();
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
               [
                 LSP6_VERSION,
                 HARDHAT_CHAINID,
                 nonce,
+                validityTimestamps,
                 valueToSend,
                 executeRelayCallPayload,
               ]
@@ -758,6 +765,7 @@ export const shouldBehaveLikePermissionCall = (
               context.keyManager.executeRelayCall(
                 signature,
                 nonce,
+                validityTimestamps,
                 executeRelayCallPayload,
                 { value: valueToSend }
               )
@@ -787,6 +795,8 @@ export const shouldBehaveLikePermissionCall = (
                 channelId
               );
 
+              const validityTimestamps = 0;
+
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
                   "execute",
@@ -802,11 +812,19 @@ export const shouldBehaveLikePermissionCall = (
               let valueToSend = 0;
 
               let encodedMessage = ethers.utils.solidityPack(
-                ["uint256", "uint256", "uint256", "uint256", "bytes"],
+                [
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "bytes",
+                ],
                 [
                   LSP6_VERSION,
                   HARDHAT_CHAINID,
                   nonce,
+                  validityTimestamps,
                   valueToSend,
                   executeRelayCallPayload,
                 ]
@@ -824,6 +842,7 @@ export const shouldBehaveLikePermissionCall = (
               await context.keyManager.executeRelayCall(
                 signature,
                 nonce,
+                validityTimestamps,
                 executeRelayCallPayload,
                 { value: valueToSend }
               );
@@ -846,6 +865,8 @@ export const shouldBehaveLikePermissionCall = (
                 channelId
               );
 
+              const validityTimestamps = 0;
+
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
                   "execute",
@@ -861,11 +882,19 @@ export const shouldBehaveLikePermissionCall = (
               let valueToSend = 0;
 
               let encodedMessage = ethers.utils.solidityPack(
-                ["uint256", "uint256", "uint256", "uint256", "bytes"],
+                [
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "uint256",
+                  "bytes",
+                ],
                 [
                   LSP6_VERSION,
                   HARDHAT_CHAINID,
                   nonce,
+                  validityTimestamps,
                   valueToSend,
                   executeRelayCallPayload,
                 ]
@@ -884,6 +913,7 @@ export const shouldBehaveLikePermissionCall = (
                 context.keyManager.executeRelayCall(
                   signature,
                   nonce,
+                  validityTimestamps,
                   executeRelayCallPayload,
                   { value: valueToSend }
                 )
@@ -908,6 +938,8 @@ export const shouldBehaveLikePermissionCall = (
               channelId
             );
 
+            const validityTimestamps = 0;
+
             let executeRelayCallPayload =
               context.universalProfile.interface.encodeFunctionData("execute", [
                 OPERATION_TYPES.CALL,
@@ -920,11 +952,12 @@ export const shouldBehaveLikePermissionCall = (
             let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
               [
                 LSP6_VERSION,
                 HARDHAT_CHAINID,
                 nonce,
+                validityTimestamps,
                 valueToSend,
                 executeRelayCallPayload,
               ]
@@ -948,6 +981,7 @@ export const shouldBehaveLikePermissionCall = (
               context.keyManager.executeRelayCall(
                 signature,
                 nonce,
+                validityTimestamps,
                 executeRelayCallPayload,
                 { value: valueToSend }
               )
@@ -975,6 +1009,8 @@ export const shouldBehaveLikePermissionCall = (
               channelId
             );
 
+            const validityTimestamps = 0;
+
             let executeRelayCallPayload =
               context.universalProfile.interface.encodeFunctionData("execute", [
                 OPERATION_TYPES.CALL,
@@ -987,11 +1023,12 @@ export const shouldBehaveLikePermissionCall = (
             let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
               [
                 LSP6_VERSION,
                 HARDHAT_CHAINID,
                 nonce,
+                validityTimestamps,
                 valueToSend,
                 executeRelayCallPayload,
               ]
@@ -1010,6 +1047,7 @@ export const shouldBehaveLikePermissionCall = (
               context.keyManager.executeRelayCall(
                 signature,
                 nonce,
+                validityTimestamps,
                 executeRelayCallPayload,
                 { value: valueToSend }
               )
@@ -1039,6 +1077,8 @@ export const shouldBehaveLikePermissionCall = (
               channelId
             );
 
+            const validityTimestamps = 0;
+
             let executeRelayCallPayload =
               context.universalProfile.interface.encodeFunctionData("execute", [
                 OPERATION_TYPES.CALL,
@@ -1051,11 +1091,12 @@ export const shouldBehaveLikePermissionCall = (
             let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
               [
                 LSP6_VERSION,
                 HARDHAT_CHAINID,
                 nonce,
+                validityTimestamps,
                 valueToSend,
                 executeRelayCallPayload,
               ]
@@ -1079,6 +1120,7 @@ export const shouldBehaveLikePermissionCall = (
               context.keyManager.executeRelayCall(
                 ethereumSignature,
                 nonce,
+                validityTimestamps,
                 executeRelayCallPayload,
                 { value: valueToSend }
               )

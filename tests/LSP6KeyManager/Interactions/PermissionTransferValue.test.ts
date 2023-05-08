@@ -443,6 +443,8 @@ export const shouldBehaveLikePermissionTransferValue = (
         it("should revert if tx was signed with Eth Signed Message", async () => {
           const amount = ethers.utils.parseEther("3");
 
+          const validityTimestamps = 0;
+
           let executeRelayCallPayload =
             universalProfileInterface.encodeFunctionData("execute", [
               OPERATION_TYPES.CALL,
@@ -455,11 +457,12 @@ export const shouldBehaveLikePermissionTransferValue = (
           let valueToSend = 0;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
             [
               LSP6_VERSION,
               HARDHAT_CHAINID,
               0,
+              validityTimestamps,
               valueToSend,
               executeRelayCallPayload,
             ]
@@ -472,6 +475,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             context.keyManager.executeRelayCall(
               signature,
               0,
+              validityTimestamps,
               executeRelayCallPayload,
               { value: valueToSend }
             )
@@ -482,6 +486,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           const eip191Signer = new EIP191Signer();
 
           const amount = ethers.utils.parseEther("3");
+
+          const validityTimestamps = 0;
 
           let executeRelayCallPayload =
             universalProfileInterface.encodeFunctionData("execute", [
@@ -495,11 +501,12 @@ export const shouldBehaveLikePermissionTransferValue = (
           let valueToSend = 0;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
             [
               LSP6_VERSION,
               HARDHAT_CHAINID,
               0,
+              validityTimestamps,
               valueToSend,
               executeRelayCallPayload,
             ]
@@ -514,9 +521,15 @@ export const shouldBehaveLikePermissionTransferValue = (
           await expect(
             context.keyManager
               .connect(context.owner)
-              .executeRelayCall(signature, 0, executeRelayCallPayload, {
-                value: valueToSend,
-              })
+              .executeRelayCall(
+                signature,
+                0,
+                validityTimestamps,
+                executeRelayCallPayload,
+                {
+                  value: valueToSend,
+                }
+              )
           ).to.changeEtherBalances(
             [context.universalProfile.address, recipient.address],
             [`-${amount}`, amount]
@@ -787,7 +800,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         ]);
 
       let bobKeyManagerPayload =
-        bobContext.keyManager.interface.encodeFunctionData("execute(bytes)", [
+        bobContext.keyManager.interface.encodeFunctionData("execute", [
           finalTransferLyxPayload,
         ]);
 

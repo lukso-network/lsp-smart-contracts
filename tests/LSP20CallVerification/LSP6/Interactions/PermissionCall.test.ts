@@ -490,7 +490,7 @@ export const shouldBehaveLikePermissionCall = (
               targetContract.interface.encodeFunctionData("revertCall");
 
             await expect(
-              context.universalProfile["execute"](
+              context.universalProfile.execute(
                 OPERATION_TYPES.CALL,
                 targetContract.address,
                 0,
