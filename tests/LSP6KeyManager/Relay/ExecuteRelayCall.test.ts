@@ -1243,7 +1243,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               signer.address,
               14
             );
-            const validityTimestamps = "0";
+            const validityTimestamps = 0;
             const calldata =
               context.universalProfile.interface.encodeFunctionData("execute", [
                 0,

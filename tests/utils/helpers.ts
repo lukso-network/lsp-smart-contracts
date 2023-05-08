@@ -168,7 +168,7 @@ export function createValidityTimestamps(
 export async function signLSP6ExecuteRelayCall(
   _keyManager: LSP6KeyManager,
   _signerNonce: string,
-  _signerValidityTimestamps: BytesLike,
+  _signerValidityTimestamps: BytesLike | number,
   _signerPrivateKey: string,
   _msgValue: number | BigNumber | string,
   _payload: string
