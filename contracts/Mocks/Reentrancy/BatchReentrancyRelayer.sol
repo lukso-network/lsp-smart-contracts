@@ -7,19 +7,22 @@ import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 contract BatchReentrancyRelayer {
     bytes[] private _signatures;
     uint256[] private _nonces;
+    uint256[] private _validityTimestamps;
     uint256[] private _values;
     bytes[] private _payloads;
 
     function prepareRelayCall(
-        bytes[] memory newSignatures,
-        uint256[] memory newNonces,
-        uint256[] memory newValues,
-        bytes[] memory newPayloads
+        bytes[] memory signatures,
+        uint256[] memory nonces,
+        uint256[] memory validityTimestamps,
+        uint256[] memory values,
+        bytes[] memory payloads
     ) external {
-        _signatures = newSignatures;
-        _nonces = newNonces;
-        _values = newValues;
-        _payloads = newPayloads;
+        _signatures = signatures;
+        _nonces = nonces;
+        _validityTimestamps = validityTimestamps;
+        _values = values;
+        _payloads = payloads;
     }
 
     receive() external payable {}
@@ -29,6 +32,7 @@ contract BatchReentrancyRelayer {
             ILSP6KeyManager(keyManagerAddress).executeRelayCallBatch(
                 _signatures,
                 _nonces,
+                _validityTimestamps,
                 _values,
                 _payloads
             );

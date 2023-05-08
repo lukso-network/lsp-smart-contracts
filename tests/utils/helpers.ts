@@ -155,9 +155,20 @@ export function combineAllowedCalls(
   return result;
 }
 
+export function createValidityTimestamps(
+  startingTimestamp: number,
+  endingTimestamp: number
+): BytesLike {
+  return ethers.utils.hexConcat([
+    ethers.utils.zeroPad(ethers.utils.hexlify(startingTimestamp), 16),
+    ethers.utils.zeroPad(ethers.utils.hexlify(endingTimestamp), 16),
+  ]);
+}
+
 export async function signLSP6ExecuteRelayCall(
   _keyManager: LSP6KeyManager,
   _signerNonce: string,
+  _signerValidityTimestamps: BytesLike | number,
   _signerPrivateKey: string,
   _msgValue: number | BigNumber | string,
   _payload: string
@@ -166,16 +177,18 @@ export async function signLSP6ExecuteRelayCall(
     lsp6Version: LSP6_VERSION,
     chainId: 31337, // HARDHAT_CHAINID
     nonce: _signerNonce,
+    validityTimestamps: _signerValidityTimestamps,
     msgValue: _msgValue,
     payload: _payload,
   };
 
   let encodedMessage = ethers.utils.solidityPack(
-    ["uint256", "uint256", "uint256", "uint256", "bytes"],
+    ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
     [
       signedMessageParams.lsp6Version,
       signedMessageParams.chainId,
       signedMessageParams.nonce,
+      signedMessageParams.validityTimestamps,
       signedMessageParams.msgValue,
       signedMessageParams.payload,
     ]

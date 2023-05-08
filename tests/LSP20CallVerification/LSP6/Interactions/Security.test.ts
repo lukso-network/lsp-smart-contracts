@@ -154,7 +154,7 @@ export const testSecurityScenarios = (
         ]);
 
       let executePayload = context.keyManager.interface.encodeFunctionData(
-        "execute(bytes)",
+        "execute",
         [transferPayload]
       );
       // load the malicious payload, that will be executed in the receive function
@@ -285,7 +285,7 @@ export const testSecurityScenarios = (
             await expect(
               context.universalProfile
                 .connect(context.owner)
-                ["execute(uint256,address,uint256,bytes)"](
+                .execute(
                   OPERATION_TYPES.CALL,
                   firstReentrant.address,
                   0,
@@ -323,7 +323,7 @@ export const testSecurityScenarios = (
 
             await context.universalProfile
               .connect(context.owner)
-              ["execute(uint256,address,uint256,bytes)"](
+              .execute(
                 OPERATION_TYPES.CALL,
                 firstReentrant.address,
                 0,

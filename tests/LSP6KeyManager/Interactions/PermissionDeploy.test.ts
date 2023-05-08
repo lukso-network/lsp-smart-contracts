@@ -728,6 +728,8 @@ export const shouldBehaveLikePermissionDeploy = (
               0
             );
 
+            const validityTimestamps = 0;
+
             let payload = context.universalProfile.interface.encodeFunctionData(
               "execute",
               [
@@ -742,8 +744,15 @@ export const shouldBehaveLikePermissionDeploy = (
             let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+              [
+                LSP6_VERSION,
+                HARDHAT_CHAINID,
+                nonce,
+                validityTimestamps,
+                valueToSend,
+                payload,
+              ]
             );
 
             let ethereumSignature = await addressCannotDeploy.signMessage(
@@ -763,9 +772,15 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(ethereumSignature, nonce, payload, {
-                  value: valueToSend,
-                })
+                .executeRelayCall(
+                  ethereumSignature,
+                  nonce,
+                  validityTimestamps,
+                  payload,
+                  {
+                    value: valueToSend,
+                  }
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -784,6 +799,8 @@ export const shouldBehaveLikePermissionDeploy = (
               0
             );
 
+            const validityTimestamps = 0;
+
             let payload = context.universalProfile.interface.encodeFunctionData(
               "execute",
               [
@@ -798,8 +815,15 @@ export const shouldBehaveLikePermissionDeploy = (
             let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+              [
+                LSP6_VERSION,
+                HARDHAT_CHAINID,
+                nonce,
+                validityTimestamps,
+                valueToSend,
+                payload,
+              ]
             );
 
             const eip191Signer = new EIP191Signer();
@@ -813,9 +837,15 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(signature, nonce, payload, {
-                  value: valueToSend,
-                })
+                .executeRelayCall(
+                  signature,
+                  nonce,
+                  validityTimestamps,
+                  payload,
+                  {
+                    value: valueToSend,
+                  }
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -837,6 +867,8 @@ export const shouldBehaveLikePermissionDeploy = (
               0
             );
 
+            const validityTimestamps = 0;
+
             let payload = context.universalProfile.interface.encodeFunctionData(
               "execute",
               [
@@ -851,8 +883,15 @@ export const shouldBehaveLikePermissionDeploy = (
             let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+              [
+                LSP6_VERSION,
+                HARDHAT_CHAINID,
+                nonce,
+                validityTimestamps,
+                valueToSend,
+                payload,
+              ]
             );
 
             let ethereumSignature = await addressCannotDeploy.signMessage(
@@ -871,9 +910,15 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(ethereumSignature, nonce, payload, {
-                  value: valueToSend,
-                })
+                .executeRelayCall(
+                  ethereumSignature,
+                  nonce,
+                  validityTimestamps,
+                  payload,
+                  {
+                    value: valueToSend,
+                  }
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -893,6 +938,8 @@ export const shouldBehaveLikePermissionDeploy = (
               0
             );
 
+            const validityTimestamps = 0;
+
             let payload = context.universalProfile.interface.encodeFunctionData(
               "execute",
               [
@@ -907,8 +954,15 @@ export const shouldBehaveLikePermissionDeploy = (
             let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+              [
+                LSP6_VERSION,
+                HARDHAT_CHAINID,
+                nonce,
+                validityTimestamps,
+                valueToSend,
+                payload,
+              ]
             );
 
             const lsp6Signer = new EIP191Signer();
@@ -922,9 +976,15 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(signature, nonce, payload, {
-                  value: valueToSend,
-                })
+                .executeRelayCall(
+                  signature,
+                  nonce,
+                  validityTimestamps,
+                  payload,
+                  {
+                    value: valueToSend,
+                  }
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,

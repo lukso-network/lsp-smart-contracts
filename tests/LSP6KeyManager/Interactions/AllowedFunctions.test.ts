@@ -224,6 +224,8 @@ export const shouldBehaveLikeAllowedFunctions = (
             channelId
           );
 
+          const validityTimestamps = 0;
+
           let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
               OPERATION_TYPES.CALL,
@@ -236,11 +238,12 @@ export const shouldBehaveLikeAllowedFunctions = (
           let valueToSend = 0;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
             [
               LSP6_VERSION,
               HARDHAT_CHAINID,
               nonce,
+              validityTimestamps,
               valueToSend,
               executeRelayCallPayload,
             ]
@@ -257,6 +260,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           await context.keyManager.executeRelayCall(
             signature,
             nonce,
+            validityTimestamps,
             executeRelayCallPayload,
             { value: valueToSend }
           );
@@ -271,6 +275,9 @@ export const shouldBehaveLikeAllowedFunctions = (
             addressCanCallOnlyOneFunction.address,
             channelId
           );
+
+          const validityTimestamps = 0;
+
           let targetContractPayload =
             targetContract.interface.encodeFunctionData("setNumber", [2354]);
 
@@ -286,11 +293,12 @@ export const shouldBehaveLikeAllowedFunctions = (
           let valueToSend = 0;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
             [
               LSP6_VERSION,
               HARDHAT_CHAINID,
               nonce,
+              validityTimestamps,
               valueToSend,
               executeRelayCallPayload,
             ]
@@ -308,6 +316,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             context.keyManager.executeRelayCall(
               signature,
               nonce,
+              validityTimestamps,
               executeRelayCallPayload,
               { value: valueToSend }
             )
