@@ -339,15 +339,17 @@ abstract contract LSP6KeyManagerCore is
         // increase nonce after successful verification
         _nonceStore[signer][nonce >> 128]++;
 
-        uint128 startTimestamp = uint128(validityTimestamps >> 128);
-        uint128 endTimestamp = uint128(validityTimestamps);
+        if (validityTimestamps != 0) {
+            uint128 startTimestamp = uint128(validityTimestamps >> 128);
+            uint128 endTimestamp = uint128(validityTimestamps);
 
-        // solhint-disable not-rely-on-time
-        if (startTimestamp > block.timestamp) {
-            revert RelayCallNotValidYet();
-        }
-        if (endTimestamp < block.timestamp) {
-            revert RelayCallExpired();
+            // solhint-disable not-rely-on-time
+            if (startTimestamp > block.timestamp) {
+                revert RelayCallNotValidYet();
+            }
+            if (endTimestamp < block.timestamp) {
+                revert RelayCallExpired();
+            }
         }
 
         _verifyPermissions(signer, msgValue, payload);

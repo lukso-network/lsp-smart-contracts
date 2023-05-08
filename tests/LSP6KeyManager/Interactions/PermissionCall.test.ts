@@ -30,7 +30,6 @@ import { setupKeyManager } from "../../utils/fixtures";
 import {
   abiCoder,
   combineAllowedCalls,
-  createValidityTimestamps,
   LOCAL_PRIVATE_KEYS,
 } from "../../utils/helpers";
 
@@ -667,14 +666,7 @@ export const shouldBehaveLikePermissionCall = (
               channelId
             );
 
-            const validityTimestamps = createValidityTimestamps(
-              {
-                days: 1,
-              },
-              {
-                days: 1,
-              }
-            );
+            const validityTimestamps = 0;
 
             let executeRelayCallPayload =
               context.universalProfile.interface.encodeFunctionData("execute", [
@@ -732,14 +724,7 @@ export const shouldBehaveLikePermissionCall = (
               channelId
             );
 
-            const validityTimestamps = createValidityTimestamps(
-              {
-                days: 1,
-              },
-              {
-                days: 1,
-              }
-            );
+            const validityTimestamps = 0;
 
             let executeRelayCallPayload =
               context.universalProfile.interface.encodeFunctionData("execute", [
@@ -810,14 +795,7 @@ export const shouldBehaveLikePermissionCall = (
                 channelId
               );
 
-              const validityTimestamps = createValidityTimestamps(
-                {
-                  days: 1,
-                },
-                {
-                  days: 1,
-                }
-              );
+              const validityTimestamps = 0;
 
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
@@ -887,14 +865,7 @@ export const shouldBehaveLikePermissionCall = (
                 channelId
               );
 
-              const validityTimestamps = createValidityTimestamps(
-                {
-                  days: 1,
-                },
-                {
-                  days: 1,
-                }
-              );
+              const validityTimestamps = 0;
 
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
@@ -967,14 +938,7 @@ export const shouldBehaveLikePermissionCall = (
               channelId
             );
 
-            const validityTimestamps = createValidityTimestamps(
-              {
-                days: 1,
-              },
-              {
-                days: 1,
-              }
-            );
+            const validityTimestamps = 0;
 
             let executeRelayCallPayload =
               context.universalProfile.interface.encodeFunctionData("execute", [
@@ -1045,14 +1009,7 @@ export const shouldBehaveLikePermissionCall = (
               channelId
             );
 
-            const validityTimestamps = createValidityTimestamps(
-              {
-                days: 1,
-              },
-              {
-                days: 1,
-              }
-            );
+            const validityTimestamps = 0;
 
             let executeRelayCallPayload =
               context.universalProfile.interface.encodeFunctionData("execute", [
@@ -1120,14 +1077,7 @@ export const shouldBehaveLikePermissionCall = (
               channelId
             );
 
-            const validityTimestamps = createValidityTimestamps(
-              {
-                days: 1,
-              },
-              {
-                days: 1,
-              }
-            );
+            const validityTimestamps = 0;
 
             let executeRelayCallPayload =
               context.universalProfile.interface.encodeFunctionData("execute", [

@@ -24,7 +24,6 @@ import { setupKeyManager } from "../../utils/fixtures";
 
 import {
   combinePermissions,
-  createValidityTimestamps,
   LOCAL_PRIVATE_KEYS,
   provider,
 } from "../../utils/helpers";
@@ -729,14 +728,7 @@ export const shouldBehaveLikePermissionDeploy = (
               0
             );
 
-            const validityTimestamps = createValidityTimestamps(
-              {
-                days: 1,
-              },
-              {
-                days: 1,
-              }
-            );
+            const validityTimestamps = 0;
 
             let payload = context.universalProfile.interface.encodeFunctionData(
               "execute",
@@ -807,14 +799,7 @@ export const shouldBehaveLikePermissionDeploy = (
               0
             );
 
-            const validityTimestamps = createValidityTimestamps(
-              {
-                days: 1,
-              },
-              {
-                days: 1,
-              }
-            );
+            const validityTimestamps = 0;
 
             let payload = context.universalProfile.interface.encodeFunctionData(
               "execute",
@@ -882,14 +867,7 @@ export const shouldBehaveLikePermissionDeploy = (
               0
             );
 
-            const validityTimestamps = createValidityTimestamps(
-              {
-                days: 1,
-              },
-              {
-                days: 1,
-              }
-            );
+            const validityTimestamps = 0;
 
             let payload = context.universalProfile.interface.encodeFunctionData(
               "execute",
@@ -960,14 +938,7 @@ export const shouldBehaveLikePermissionDeploy = (
               0
             );
 
-            const validityTimestamps = createValidityTimestamps(
-              {
-                days: 1,
-              },
-              {
-                days: 1,
-              }
-            );
+            const validityTimestamps = 0;
 
             let payload = context.universalProfile.interface.encodeFunctionData(
               "execute",

@@ -27,11 +27,7 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import {
-  LOCAL_PRIVATE_KEYS,
-  combineAllowedCalls,
-  createValidityTimestamps,
-} from "../../utils/helpers";
+import { LOCAL_PRIVATE_KEYS, combineAllowedCalls } from "../../utils/helpers";
 
 export const shouldBehaveLikeAllowedFunctions = (
   buildContext: () => Promise<LSP6TestContext>
@@ -228,14 +224,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             channelId
           );
 
-          const validityTimestamps = createValidityTimestamps(
-            {
-              days: 1,
-            },
-            {
-              days: 1,
-            }
-          );
+          const validityTimestamps = 0;
 
           let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
@@ -287,14 +276,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             channelId
           );
 
-          const validityTimestamps = createValidityTimestamps(
-            {
-              days: 1,
-            },
-            {
-              days: 1,
-            }
-          );
+          const validityTimestamps = 0;
 
           let targetContractPayload =
             targetContract.interface.encodeFunctionData("setNumber", [2354]);

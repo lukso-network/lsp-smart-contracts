@@ -112,14 +112,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               0
             );
 
-            const validityTimestamps = createValidityTimestamps(
-              {
-                days: 1,
-              },
-              {
-                days: 1,
-              }
-            );
+            const validityTimestamps = 0;
 
             let valueToSign = 5;
 
@@ -187,14 +180,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               0
             );
 
-            const validityTimestamps = createValidityTimestamps(
-              {
-                days: 1,
-              },
-              {
-                days: 1,
-              }
-            );
+            const validityTimestamps = 0;
 
             let valueToSign = 5;
 
@@ -262,14 +248,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               0
             );
 
-            const validityTimestamps = createValidityTimestamps(
-              {
-                days: 1,
-              },
-              {
-                days: 1,
-              }
-            );
+            const validityTimestamps = 0;
 
             let valueToSendFromRelayer = 10;
 
@@ -348,14 +327,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               0
             );
 
-            const validityTimestamps = createValidityTimestamps(
-              {
-                days: 1,
-              },
-              {
-                days: 1,
-              }
-            );
+            const validityTimestamps = 0;
 
             let valueToSendFromRelayer = 10;
 
@@ -424,14 +396,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 0
               );
 
-              const validityTimestamps = createValidityTimestamps(
-                {
-                  days: 1,
-                },
-                {
-                  days: 1,
-                }
-              );
+              const validityTimestamps = 0;
 
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
@@ -520,14 +485,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 0
               );
 
-              const validityTimestamps = createValidityTimestamps(
-                {
-                  days: 1,
-                },
-                {
-                  days: 1,
-                }
-              );
+              const validityTimestamps = 0;
 
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
@@ -607,14 +565,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 0
               );
 
-              const validityTimestamps = createValidityTimestamps(
-                {
-                  days: 1,
-                },
-                {
-                  days: 1,
-                }
-              );
+              const validityTimestamps = 0;
 
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
@@ -687,7 +638,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         });
       });
 
-      describe.only("When testing `validityTimestamps`", () => {
+      describe("When testing `validityTimestamps`", () => {
         const oneDayInSeconds = 60 * 60 * 24;
         let count = 0;
         let startingTimestamp: number;
@@ -714,8 +665,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 1
               );
               const validityTimestamps = createValidityTimestamps(
-                {},
-                {},
                 startingTimestamp,
                 endingTimestamp
               );
@@ -756,8 +705,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 2
               );
               const validityTimestamps = createValidityTimestamps(
-                {},
-                {},
                 startingTimestamp,
                 endingTimestamp
               );
@@ -798,8 +745,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 3
               );
               const validityTimestamps = createValidityTimestamps(
-                {},
-                {},
                 startingTimestamp,
                 endingTimestamp
               );
@@ -840,8 +785,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 4
               );
               const validityTimestamps = createValidityTimestamps(
-                {},
-                {},
                 startingTimestamp,
                 endingTimestamp
               );
@@ -882,8 +825,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 5
               );
               const validityTimestamps = createValidityTimestamps(
-                {},
-                {},
                 startingTimestamp,
                 endingTimestamp
               );
@@ -916,6 +857,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             });
           });
         });
+
         describe("start timestamp < end timestamp", () => {
           beforeEach("Update timestamp by adding a year", () => {
             const year = 2100 + count;
@@ -937,8 +879,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 6
               );
               const validityTimestamps = createValidityTimestamps(
-                {},
-                {},
                 startingTimestamp,
                 endingTimestamp
               );
@@ -987,8 +927,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 7
               );
               const validityTimestamps = createValidityTimestamps(
-                {},
-                {},
                 startingTimestamp,
                 endingTimestamp
               );
@@ -1029,8 +967,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 8
               );
               const validityTimestamps = createValidityTimestamps(
-                {},
-                {},
                 startingTimestamp,
                 endingTimestamp
               );
@@ -1071,8 +1007,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 9
               );
               const validityTimestamps = createValidityTimestamps(
-                {},
-                {},
                 startingTimestamp,
                 endingTimestamp
               );
@@ -1121,8 +1055,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 10
               );
               const validityTimestamps = createValidityTimestamps(
-                {},
-                {},
                 startingTimestamp,
                 endingTimestamp
               );
@@ -1163,6 +1095,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             });
           });
         });
+
         describe("start timestamp = end timestamp", () => {
           beforeEach("Update timestamp by adding a year", () => {
             const year = 2100 + count;
@@ -1183,8 +1116,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 11
               );
               const validityTimestamps = createValidityTimestamps(
-                {},
-                {},
                 startingTimestamp,
                 endingTimestamp
               );
@@ -1225,8 +1156,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 12
               );
               const validityTimestamps = createValidityTimestamps(
-                {},
-                {},
                 startingTimestamp,
                 endingTimestamp
               );
@@ -1267,8 +1196,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 13
               );
               const validityTimestamps = createValidityTimestamps(
-                {},
-                {},
                 startingTimestamp,
                 endingTimestamp
               );
@@ -1307,6 +1234,40 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               expect(await targetContract.getNumber()).to.equal(nonce);
             });
+          });
+        });
+
+        describe("when `validityTimestamps == 0`", () => {
+          it("passes", async () => {
+            const nonce = await context.keyManager.callStatic.getNonce(
+              signer.address,
+              14
+            );
+            const validityTimestamps = "0";
+            const calldata =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                0,
+                targetContract.address,
+                0,
+                targetContract.interface.encodeFunctionData("setNumber", [
+                  nonce,
+                ]),
+              ]);
+            const value = 0;
+            const signature = await signLSP6ExecuteRelayCall(
+              context.keyManager,
+              nonce.toString(),
+              validityTimestamps,
+              signerPrivateKey,
+              value,
+              calldata
+            );
+
+            await context.keyManager
+              .connect(relayer)
+              .executeRelayCall(signature, nonce, validityTimestamps, calldata);
+
+            expect(await targetContract.getNumber()).to.equal(nonce);
           });
         });
       });
@@ -1392,14 +1353,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         0
       );
 
-      const validityTimestamps = createValidityTimestamps(
-        {
-          days: 1,
-        },
-        {
-          days: 1,
-        }
-      );
+      const validityTimestamps = 0;
 
       const transferLyxSignature = await signLSP6ExecuteRelayCall(
         context.keyManager,
@@ -1472,14 +1426,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
       let payloads: string[];
       const tokensToMint = 1_000;
 
-      const validityTimestamps = createValidityTimestamps(
-        {
-          days: 1,
-        },
-        {
-          days: 1,
-        }
-      );
+      const validityTimestamps = 0;
 
       // step 1 - give minter permissions to mint
       const giveMinterPermissionsPayload =
@@ -1655,14 +1602,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             0
           );
 
-          const validityTimestamps = createValidityTimestamps(
-            {
-              days: 1,
-            },
-            {
-              days: 1,
-            }
-          );
+          const validityTimestamps = 0;
 
           const firstTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
@@ -1767,14 +1707,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             0
           );
 
-          const validityTimestamps = createValidityTimestamps(
-            {
-              days: 1,
-            },
-            {
-              days: 1,
-            }
-          );
+          const validityTimestamps = 0;
 
           const firstTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
@@ -1876,14 +1809,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             0
           );
 
-          const validityTimestamps = createValidityTimestamps(
-            {
-              days: 1,
-            },
-            {
-              days: 1,
-            }
-          );
+          const validityTimestamps = 0;
 
           const firstTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
@@ -1983,14 +1909,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         const nonces = [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)];
 
-        const validityTimestamps = createValidityTimestamps(
-          {
-            days: 1,
-          },
-          {
-            days: 1,
-          }
-        );
+        const validityTimestamps = 0;
 
         const signatures = [
           signLSP6ExecuteRelayCall(
@@ -2083,14 +2002,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         const nonces = [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)];
         const values = [0, 0, 0];
 
-        const validityTimestamps = createValidityTimestamps(
-          {
-            days: 1,
-          },
-          {
-            days: 1,
-          }
-        );
+        const validityTimestamps = 0;
 
         const signatures = [
           signLSP6ExecuteRelayCall(

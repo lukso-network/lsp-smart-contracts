@@ -155,60 +155,14 @@ export function combineAllowedCalls(
   return result;
 }
 
-function countSeconds(time: {
-  seconds?: number;
-  hours?: number;
-  days?: number;
-  weeks?: number;
-}): number {
-  let totalTime: number = 0;
-
-  if (time.seconds) totalTime += time.seconds * 60;
-  if (time.hours) totalTime += time.hours * 60 * 60;
-  if (time.days) totalTime += time.days * 60 * 60 * 24;
-  if (time.weeks) totalTime += time.weeks * 60 * 60 * 24 * 7;
-
-  return totalTime;
-}
-
 export function createValidityTimestamps(
-  timeBefore: {
-    seconds?: number;
-    hours?: number;
-    days?: number;
-    weeks?: number;
-  },
-  timeAfter: {
-    seconds?: number;
-    hours?: number;
-    days?: number;
-    weeks?: number;
-  },
-  startingTimestamp?: number,
-  endingTimestamp?: number
+  startingTimestamp: number,
+  endingTimestamp: number
 ): BytesLike {
-  if (startingTimestamp !== undefined && endingTimestamp !== undefined)
-    return ethers.utils.hexConcat([
-      ethers.utils.zeroPad(ethers.utils.hexlify(startingTimestamp), 16),
-      ethers.utils.zeroPad(ethers.utils.hexlify(endingTimestamp), 16),
-    ]);
-
-  let totalTimeBefore: number = countSeconds(timeBefore);
-  let totalTimeAfter: number = countSeconds(timeAfter);
-
-  const currentTimestamp = Math.floor(Date.now() / 1000); // get senconds not miliseconds
-  const validityTimestamps = ethers.utils.hexConcat([
-    ethers.utils.zeroPad(
-      ethers.utils.hexlify(currentTimestamp - totalTimeBefore),
-      16
-    ),
-    ethers.utils.zeroPad(
-      ethers.utils.hexlify(currentTimestamp + totalTimeAfter),
-      16
-    ),
+  return ethers.utils.hexConcat([
+    ethers.utils.zeroPad(ethers.utils.hexlify(startingTimestamp), 16),
+    ethers.utils.zeroPad(ethers.utils.hexlify(endingTimestamp), 16),
   ]);
-
-  return validityTimestamps;
 }
 
 export async function signLSP6ExecuteRelayCall(

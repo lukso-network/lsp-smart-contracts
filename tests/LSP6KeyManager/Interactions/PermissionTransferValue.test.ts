@@ -40,7 +40,6 @@ import {
   combineAllowedCalls,
   LOCAL_PRIVATE_KEYS,
   combineCallTypes,
-  createValidityTimestamps,
 } from "../../utils/helpers";
 
 const universalProfileInterface = UniversalProfile__factory.createInterface();
@@ -444,14 +443,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         it("should revert if tx was signed with Eth Signed Message", async () => {
           const amount = ethers.utils.parseEther("3");
 
-          const validityTimestamps = createValidityTimestamps(
-            {
-              days: 1,
-            },
-            {
-              days: 1,
-            }
-          );
+          const validityTimestamps = 0;
 
           let executeRelayCallPayload =
             universalProfileInterface.encodeFunctionData("execute", [
@@ -495,14 +487,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
           const amount = ethers.utils.parseEther("3");
 
-          const validityTimestamps = createValidityTimestamps(
-            {
-              days: 1,
-            },
-            {
-              days: 1,
-            }
-          );
+          const validityTimestamps = 0;
 
           let executeRelayCallPayload =
             universalProfileInterface.encodeFunctionData("execute", [

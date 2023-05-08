@@ -165,6 +165,6 @@ error CallingKeyManagerNotAllowed();
 error RelayCallNotValidYet();
 
 /**
- * @dev reverts when relay call end timestamp is smaller than the current timestamp
+ * @dev reverts when the period to execute the relay call has expired
  */
 error RelayCallExpired();

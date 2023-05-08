@@ -29,7 +29,6 @@ import {
   combineAllowedCalls,
   combineCallTypes,
   combinePermissions,
-  createValidityTimestamps,
   encodeCompactBytesArray,
   LOCAL_PRIVATE_KEYS,
   provider,
@@ -162,14 +161,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
             channelId
           );
 
-          const validityTimestamps = createValidityTimestamps(
-            {
-              days: 1,
-            },
-            {
-              days: 1,
-            }
-          );
+          const validityTimestamps = 0;
 
           let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData("execute", [

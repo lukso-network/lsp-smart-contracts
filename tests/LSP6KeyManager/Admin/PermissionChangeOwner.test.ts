@@ -17,10 +17,7 @@ import { LSP6KeyManager, LSP6KeyManager__factory } from "../../../types";
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 import { EIP191Signer } from "@lukso/eip191-signer.js";
-import {
-  LOCAL_PRIVATE_KEYS,
-  createValidityTimestamps,
-} from "../../utils/helpers";
+import { LOCAL_PRIVATE_KEYS } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionChangeOwner = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
@@ -400,14 +397,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           0
         );
 
-        const validityTimestamps = createValidityTimestamps(
-          {
-            days: 1,
-          },
-          {
-            days: 1,
-          }
-        );
+        const validityTimestamps = 0;
 
         const payload =
           context.universalProfile.interface.getSighash("renounceOwnership");

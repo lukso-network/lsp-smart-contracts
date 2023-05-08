@@ -18,11 +18,7 @@ import {
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
-import {
-  LOCAL_PRIVATE_KEYS,
-  combineAllowedCalls,
-  createValidityTimestamps,
-} from "../../utils/helpers";
+import { LOCAL_PRIVATE_KEYS, combineAllowedCalls } from "../../utils/helpers";
 
 export const shouldBehaveLikeMultiChannelNonce = (
   buildContext: () => Promise<LSP6TestContext>
@@ -99,14 +95,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        const validityTimestamps = createValidityTimestamps(
-          {
-            days: 1,
-          },
-          {
-            days: 1,
-          }
-        );
+        const validityTimestamps = 0;
 
         const targetContractPayload =
           targetContract.interface.encodeFunctionData("setName", [newName]);
@@ -180,14 +169,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        const validityTimestamps = createValidityTimestamps(
-          {
-            days: 1,
-          },
-          {
-            days: 1,
-          }
-        );
+        const validityTimestamps = 0;
 
         let newName = names[0];
 
@@ -256,14 +238,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        const validityTimestamps = createValidityTimestamps(
-          {
-            days: 1,
-          },
-          {
-            days: 1,
-          }
-        );
+        const validityTimestamps = 0;
 
         let newName = names[1];
 
@@ -337,14 +312,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        const validityTimestamps = createValidityTimestamps(
-          {
-            days: 1,
-          },
-          {
-            days: 1,
-          }
-        );
+        const validityTimestamps = 0;
 
         let newName = names[0];
 
@@ -413,14 +381,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        const validityTimestamps = createValidityTimestamps(
-          {
-            days: 1,
-          },
-          {
-            days: 1,
-          }
-        );
+        const validityTimestamps = 0;
 
         let newName = names[1];
 
@@ -494,14 +455,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        const validityTimestamps = createValidityTimestamps(
-          {
-            days: 1,
-          },
-          {
-            days: 1,
-          }
-        );
+        const validityTimestamps = 0;
 
         let newName = names[0];
 
@@ -570,14 +524,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        const validityTimestamps = createValidityTimestamps(
-          {
-            days: 1,
-          },
-          {
-            days: 1,
-          }
-        );
+        const validityTimestamps = 0;
 
         let newName = names[1];
 
@@ -648,14 +595,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        const validityTimestamps = createValidityTimestamps(
-          {
-            days: 1,
-          },
-          {
-            days: 1,
-          }
-        );
+        const validityTimestamps = 0;
 
         let newName = "Lukasz";
 
