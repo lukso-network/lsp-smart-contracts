@@ -644,7 +644,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         let startingTimestamp: number;
         let endingTimestamp: number;
 
-        describe("start timestamp > end timestamp", () => {
+        describe("(invalid timestamps) `startingTimestamp` is greter than `endingTimestamp`", () => {
           beforeEach("Update timestamp by adding a year", () => {
             const year = 2100 + count;
 
@@ -656,7 +656,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             count++;
           });
 
-          describe("start timestamp = now > end timestamp", () => {
+          describe("`now` is equal to `startingTimestamp` and `now` is greter than `endingTimestamp`", () => {
             it("reverts", async () => {
               const now = startingTimestamp;
 
@@ -696,7 +696,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
               );
             });
           });
-          describe("start timestamp < now > end timestamp", () => {
+
+          describe("`now` is greater than `startingTimestamp` and `now` is greater than `endingTimestamp`", () => {
             it("reverts", async () => {
               const now = startingTimestamp + oneDayInSeconds;
 
@@ -736,7 +737,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
               );
             });
           });
-          describe("start timestamp > now < end timestamp", () => {
+
+          describe("`now` is lesser than `startingTimestamp` and `now` is lesser than `endingTimestamp`", () => {
             it("reverts", async () => {
               const now = endingTimestamp - oneDayInSeconds;
 
@@ -776,7 +778,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
               );
             });
           });
-          describe("start timestamp > now > end timestamp", () => {
+
+          describe("`now` is lesser than `startingTimestamp` and `now` is greater than `endingTimestamp`", () => {
             it("reverts", async () => {
               const now = Math.round((startingTimestamp + endingTimestamp) / 2);
 
@@ -816,7 +819,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
               );
             });
           });
-          describe("start timestamp > now = end timestamp", () => {
+
+          describe("`now` is lesser than `startingTimestamp` and `now` is equal to `endingTimestamp`", () => {
             it("reverts", async () => {
               const now = endingTimestamp;
 
@@ -858,7 +862,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           });
         });
 
-        describe("start timestamp < end timestamp", () => {
+        describe("(valid timestamps) `startingTimestamp` is lesser than `endingTimestamp`", () => {
           beforeEach("Update timestamp by adding a year", () => {
             const year = 2100 + count;
 
@@ -870,7 +874,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             count++;
           });
 
-          describe("start timestamp = now < end timestamp", () => {
+          describe("(tx can be executed) `now` is equal to `startingTimestamp` and `now` is lesser than `endingTimestamp`", () => {
             it("passes", async () => {
               const now = startingTimestamp;
 
@@ -918,7 +922,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
               expect(await targetContract.getNumber()).to.equal(nonce);
             });
           });
-          describe("start timestamp > now < end timestamp", () => {
+
+          describe("(tx cannot be executed yet) `now` is lesser than `startingTimestamp` and `now` is lesser than `endingTimestamp`", () => {
             it("reverts", async () => {
               const now = startingTimestamp - oneDayInSeconds;
 
@@ -958,7 +963,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
               );
             });
           });
-          describe("start timestamp < now > end timestamp", () => {
+
+          describe("(tx is expired) `now` is greater than `startingTimestamp` and `now` is greater than `endingTimestamp`", () => {
             it("reverts", async () => {
               const now = endingTimestamp + oneDayInSeconds;
 
@@ -998,7 +1004,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
               );
             });
           });
-          describe("start timestamp < now < end timestamp", () => {
+
+          describe("(tx can be executed) `now` is greater than `startingTimestamp` and `now` is lesser than `endingTimestamp`", () => {
             it("passes", async () => {
               const now = Math.floor((startingTimestamp + endingTimestamp) / 2);
 
@@ -1046,7 +1053,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
               expect(await targetContract.getNumber()).to.equal(nonce);
             });
           });
-          describe("start timestamp < now = end timestamp", () => {
+
+          describe("(tx can be executed) `now` is greater than `startingTimestamp` and `now` is equal to `endingTimestamp`", () => {
             it("passes", async () => {
               const now = endingTimestamp;
 
@@ -1147,6 +1155,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               );
             });
           });
+
           describe("start timestamp = end timestamp > now", () => {
             it("reverts", async () => {
               const now = startingTimestamp - oneDayInSeconds;
@@ -1187,6 +1196,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               );
             });
           });
+
           describe("start timestamp = end timestamp = now", () => {
             it("passes", async () => {
               const now = startingTimestamp;
