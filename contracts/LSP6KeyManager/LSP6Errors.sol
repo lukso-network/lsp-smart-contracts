@@ -162,7 +162,7 @@ error CallingKeyManagerNotAllowed();
 /**
  * @dev reverts when relay call start timestamp is bigger than the current timestamp
  */
-error RelayCallNotValidYet();
+error RelayCallBeforeStartTime();
 
 /**
  * @dev reverts when the period to execute the relay call has expired

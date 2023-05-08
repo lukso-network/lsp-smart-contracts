@@ -774,7 +774,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   )
               ).to.be.revertedWithCustomError(
                 context.keyManager,
-                "RelayCallNotValidYet"
+                "RelayCallBeforeStartTime"
               );
             });
           });
@@ -815,7 +815,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   )
               ).to.be.revertedWithCustomError(
                 context.keyManager,
-                "RelayCallNotValidYet"
+                "RelayCallBeforeStartTime"
               );
             });
           });
@@ -856,7 +856,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   )
               ).to.be.revertedWithCustomError(
                 context.keyManager,
-                "RelayCallNotValidYet"
+                "RelayCallBeforeStartTime"
               );
             });
           });
@@ -959,7 +959,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   )
               ).to.be.revertedWithCustomError(
                 context.keyManager,
-                "RelayCallNotValidYet"
+                "RelayCallBeforeStartTime"
               );
             });
           });
@@ -1192,7 +1192,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   )
               ).to.be.revertedWithCustomError(
                 context.keyManager,
-                "RelayCallNotValidYet"
+                "RelayCallBeforeStartTime"
               );
             });
           });

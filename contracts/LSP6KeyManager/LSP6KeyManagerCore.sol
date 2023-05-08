@@ -35,7 +35,7 @@ import {
     InvalidERC725Function,
     CallerIsNotTheTarget,
     CannotSendValueToSetData,
-    RelayCallNotValidYet,
+    RelayCallBeforeStartTime,
     RelayCallExpired
 } from "./LSP6Errors.sol";
 
@@ -340,14 +340,14 @@ abstract contract LSP6KeyManagerCore is
         _nonceStore[signer][nonce >> 128]++;
 
         if (validityTimestamps != 0) {
-            uint128 startTimestamp = uint128(validityTimestamps >> 128);
-            uint128 endTimestamp = uint128(validityTimestamps);
+            uint128 startingTimestamp = uint128(validityTimestamps >> 128);
+            uint128 endingTimestamp = uint128(validityTimestamps);
 
             // solhint-disable not-rely-on-time
-            if (startTimestamp > block.timestamp) {
-                revert RelayCallNotValidYet();
+            if (block.timestamp < startingTimestamp) {
+                revert RelayCallBeforeStartTime();
             }
-            if (endTimestamp < block.timestamp) {
+            if (block.timestamp > endingTimestamp) {
                 revert RelayCallExpired();
             }
         }
