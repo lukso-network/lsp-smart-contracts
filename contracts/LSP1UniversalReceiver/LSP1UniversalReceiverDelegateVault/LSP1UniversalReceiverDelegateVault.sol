@@ -63,9 +63,13 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
             if (bytes20(notifierMapValue) != bytes20(0))
                 return "URD: asset received is already registered";
 
-            // if the amount sent is 0, then do not update the keys
-            uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
-            if (balance == 0) return "LSP1: balance not updated";
+            // CHECK balance only when the Token contract is already deployed,
+            // not when tokens are being transferred on deployment through the `constructor`
+            if (notifier.code.length > 0) {
+                // if the amount sent is 0, then do not update the keys
+                uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
+                if (balance == 0) return "LSP1: balance not updated";
+            }
 
             (dataKeys, dataValues) = LSP5Utils.generateReceivedAssetKeys(
                 msg.sender,
