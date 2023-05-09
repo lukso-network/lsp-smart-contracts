@@ -116,7 +116,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
           ]);
 
         let executePayload = context.keyManager.interface.encodeFunctionData(
-          "execute(bytes)",
+          "execute",
           [transferPayload]
         );
         // load the malicious payload, that will be executed in the receive function
@@ -161,6 +161,8 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
             channelId
           );
 
+          const validityTimestamps = 0;
+
           let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
               OPERATION_TYPES.CALL,
@@ -173,11 +175,12 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
           let valueToSend = 0;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
             [
               LSP6_VERSION,
               HARDHAT_CHAINID,
               nonce,
+              validityTimestamps,
               valueToSend,
               executeRelayCallPayload,
             ]
@@ -195,15 +198,26 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
           // first call
           await context.keyManager
             .connect(relayer)
-            .executeRelayCall(signature, nonce, executeRelayCallPayload, {
-              value: valueToSend,
-            });
+            .executeRelayCall(
+              signature,
+              nonce,
+              validityTimestamps,
+              executeRelayCallPayload,
+              {
+                value: valueToSend,
+              }
+            );
 
           // 2nd call = replay attack
           await expect(
             context.keyManager
               .connect(relayer)
-              .executeRelayCall(signature, nonce, executeRelayCallPayload)
+              .executeRelayCall(
+                signature,
+                nonce,
+                validityTimestamps,
+                executeRelayCallPayload
+              )
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
@@ -225,7 +239,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
           ]);
 
         let executePayload = context.keyManager.interface.encodeFunctionData(
-          "execute(bytes)",
+          "execute",
           [transferPayload]
         );
 
@@ -281,7 +295,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
           ]);
 
         let executePayload = context.keyManager.interface.encodeFunctionData(
-          "execute(bytes)",
+          "execute",
           [transferPayload]
         );
 
@@ -419,9 +433,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
                 );
 
               await expect(
-                context.keyManager
-                  .connect(context.owner)
-                  ["execute(bytes)"](payload)
+                context.keyManager.connect(context.owner).execute(payload)
               )
                 .to.be.revertedWithCustomError(
                   context.keyManager,
@@ -463,9 +475,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
                   ]
                 );
 
-              await context.keyManager
-                .connect(context.owner)
-                ["execute(bytes)"](payload);
+              await context.keyManager.connect(context.owner).execute(payload);
 
               let result = await context.universalProfile["getData(bytes32)"](
                 ethers.constants.HashZero

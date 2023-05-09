@@ -34,7 +34,9 @@ import {
     NoPermissionsSet,
     InvalidERC725Function,
     CallerIsNotTheTarget,
-    CannotSendValueToSetData
+    CannotSendValueToSetData,
+    RelayCallBeforeStartTime,
+    RelayCallExpired
 } from "./LSP6Errors.sol";
 
 // constants
@@ -179,9 +181,10 @@ abstract contract LSP6KeyManagerCore is
     function executeRelayCall(
         bytes memory signature,
         uint256 nonce,
+        uint256 validityTimestamps,
         bytes calldata payload
     ) public payable virtual returns (bytes memory) {
-        return _executeRelayCall(signature, nonce, msg.value, payload);
+        return _executeRelayCall(signature, nonce, validityTimestamps, msg.value, payload);
     }
 
     /**
@@ -190,12 +193,14 @@ abstract contract LSP6KeyManagerCore is
     function executeRelayCallBatch(
         bytes[] memory signatures,
         uint256[] calldata nonces,
+        uint256[] calldata validityTimestamps,
         uint256[] calldata values,
         bytes[] calldata payloads
     ) public payable virtual returns (bytes[] memory) {
         if (
             signatures.length != nonces.length ||
-            nonces.length != values.length ||
+            nonces.length != validityTimestamps.length ||
+            validityTimestamps.length != values.length ||
             values.length != payloads.length
         ) {
             revert BatchExecuteRelayCallParamsLengthMismatch();
@@ -209,7 +214,13 @@ abstract contract LSP6KeyManagerCore is
                 revert LSP6BatchInsufficientValueSent(totalValues, msg.value);
             }
 
-            results[ii] = _executeRelayCall(signatures[ii], nonces[ii], values[ii], payloads[ii]);
+            results[ii] = _executeRelayCall(
+                signatures[ii],
+                nonces[ii],
+                validityTimestamps[ii],
+                values[ii],
+                payloads[ii]
+            );
 
             unchecked {
                 ++ii;
@@ -293,6 +304,7 @@ abstract contract LSP6KeyManagerCore is
     function _executeRelayCall(
         bytes memory signature,
         uint256 nonce,
+        uint256 validityTimestamps,
         uint256 msgValue,
         bytes calldata payload
     ) internal virtual returns (bytes memory) {
@@ -304,6 +316,7 @@ abstract contract LSP6KeyManagerCore is
             LSP6_VERSION,
             block.chainid,
             nonce,
+            validityTimestamps,
             msgValue,
             payload
         );
@@ -325,6 +338,19 @@ abstract contract LSP6KeyManagerCore is
 
         // increase nonce after successful verification
         _nonceStore[signer][nonce >> 128]++;
+
+        if (validityTimestamps != 0) {
+            uint128 startingTimestamp = uint128(validityTimestamps >> 128);
+            uint128 endingTimestamp = uint128(validityTimestamps);
+
+            // solhint-disable not-rely-on-time
+            if (block.timestamp < startingTimestamp) {
+                revert RelayCallBeforeStartTime();
+            }
+            if (block.timestamp > endingTimestamp) {
+                revert RelayCallExpired();
+            }
+        }
 
         _verifyPermissions(signer, msgValue, payload);
         emit VerifiedCall(signer, msgValue, bytes4(payload));

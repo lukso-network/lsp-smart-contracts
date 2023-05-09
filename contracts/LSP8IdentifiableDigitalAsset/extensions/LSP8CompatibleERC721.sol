@@ -100,8 +100,8 @@ abstract contract LSP8CompatibleERC721 is
         bytes32 tokenIdAsBytes32 = bytes32(tokenId);
         _existsOrError(tokenIdAsBytes32);
 
-        EnumerableSet.AddressSet storage operatorsForTokenId = _operators[tokenIdAsBytes32];
-        uint256 operatorListLength = operatorsForTokenId.length();
+        address[] memory operatorsForTokenId = getOperatorsOf(tokenIdAsBytes32);
+        uint256 operatorListLength = operatorsForTokenId.length;
 
         if (operatorListLength == 0) {
             return address(0);
@@ -112,7 +112,7 @@ abstract contract LSP8CompatibleERC721 is
             // compatibility version the same is true, when the authorized operators were not previously
             // authorized. If addresses are removed, then `getApproved` returned address can change due
             // to implementation of `EnumberableSet._remove`.
-            return operatorsForTokenId.at(operatorListLength - 1);
+            return operatorsForTokenId[operatorListLength - 1];
         }
     }
 

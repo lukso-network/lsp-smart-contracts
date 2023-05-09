@@ -158,3 +158,13 @@ error CannotSendValueToSetData();
  * @dev reverts when calling the KeyManager through execute(..)
  */
 error CallingKeyManagerNotAllowed();
+
+/**
+ * @dev reverts when relay call start timestamp is bigger than the current timestamp
+ */
+error RelayCallBeforeStartTime();
+
+/**
+ * @dev reverts when the period to execute the relay call has expired
+ */
+error RelayCallExpired();

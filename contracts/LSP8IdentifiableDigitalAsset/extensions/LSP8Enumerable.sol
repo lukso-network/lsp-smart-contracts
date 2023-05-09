@@ -30,11 +30,11 @@ abstract contract LSP8Enumerable is LSP8IdentifiableDigitalAsset {
         bytes32 tokenId
     ) internal virtual override(LSP8IdentifiableDigitalAssetCore) {
         if (from == address(0)) {
-            uint256 index = _existingTokens;
+            uint256 index = totalSupply();
             _indexToken[index] = tokenId;
             _tokenIndex[tokenId] = index;
         } else if (to == address(0)) {
-            uint256 lastIndex = _existingTokens - 1;
+            uint256 lastIndex = totalSupply() - 1;
             uint256 index = _tokenIndex[tokenId];
             if (index < lastIndex) {
                 bytes32 lastTokenId = _indexToken[lastIndex];
