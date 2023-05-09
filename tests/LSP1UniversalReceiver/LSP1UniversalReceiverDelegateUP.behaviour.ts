@@ -20,6 +20,8 @@ import {
   UniversalProfile__factory,
   LSP6KeyManager__factory,
   LSP1UniversalReceiverDelegateUP__factory,
+  LSP7MintWhenDeployed__factory,
+  LSP7MintWhenDeployed,
 } from "../../types";
 
 // helpers
@@ -237,6 +239,56 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
 
     describe("when minting tokens", () => {
+      describe("when tokens are minted through the constructor (on LSP7 deployment)", () => {
+        let deployedLSP7Token: LSP7MintWhenDeployed;
+
+        before(
+          "deploy LSP7 token which mint tokens in `constructor`",
+          async () => {
+            deployedLSP7Token = await new LSP7MintWhenDeployed__factory(
+              context.accounts.any
+            ).deploy("LSP7 Token", "TKN", context.universalProfile1.address);
+          }
+        );
+
+        after("clear LSP5 storage", async () => {
+          // cleanup and reset the `LSP5ReceivedAssets[]` length, index and map value to 0x
+          const setDataPayload =
+            context.universalProfile1.interface.encodeFunctionData(
+              "setDataBatch",
+              [
+                [
+                  ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
+                  ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
+                    "00".repeat(16),
+                  ERC725YDataKeys.LSP5["LSP5ReceivedAssetsMap"] +
+                    deployedLSP7Token.address.substring(2),
+                ],
+                ["0x", "0x", "0x"],
+              ]
+            );
+
+          await context.lsp6KeyManager1
+            .connect(context.accounts.owner1)
+            .execute(setDataPayload);
+        });
+
+        it("it should have registered the token in LSP5ReceivedAssets Map and Array", async () => {
+          const [indexInMap, interfaceId, arrayLength, elementAddress] =
+            await getLSP5MapAndArrayKeysValue(
+              context.universalProfile1,
+              deployedLSP7Token
+            );
+
+          expect(indexInMap).to.equal(0);
+          expect(interfaceId).to.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.equal(
+            ethers.utils.hexZeroPad(ethers.utils.hexValue(1), 16)
+          );
+          expect(elementAddress).to.equal(deployedLSP7Token.address);
+        });
+      });
+
       describe("when calling `mint(...)` with `amount == 0` and a `to == universalProfile`", () => {
         it("should not revert, not register any LSP5ReceivedAssets[] and just emit the `UniversalReceiver` event on the UP", async () => {
           await expect(

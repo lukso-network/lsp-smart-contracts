@@ -52,7 +52,9 @@ export const testInvalidExecutePayloads = (
       });
 
       it("should revert when using `executeRelayCall(..)` with a payload smaller than 4 bytes", async () => {
-        await expect(context.keyManager.executeRelayCall("0x", 0, "0xaabbcc"))
+        await expect(
+          context.keyManager.executeRelayCall("0x", 0, 0, "0xaabbcc")
+        )
           .to.be.revertedWithCustomError(context.keyManager, "InvalidPayload")
           .withArgs("0xaabbcc");
       });

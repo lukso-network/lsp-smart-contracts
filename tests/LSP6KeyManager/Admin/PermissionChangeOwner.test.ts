@@ -390,16 +390,28 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       it("should revert via `executeRelayCall()`", async () => {
         const HARDHAT_CHAINID = 31337;
-        let valueToSend = 0;
+        const valueToSend = 0;
 
-        let nonce = await context.keyManager.getNonce(context.owner.address, 0);
+        const nonce = await context.keyManager.getNonce(
+          context.owner.address,
+          0
+        );
 
-        let payload =
+        const validityTimestamps = 0;
+
+        const payload =
           context.universalProfile.interface.getSighash("renounceOwnership");
 
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
+        const encodedMessage = ethers.utils.solidityPack(
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+          [
+            LSP6_VERSION,
+            HARDHAT_CHAINID,
+            nonce,
+            validityTimestamps,
+            valueToSend,
+            payload,
+          ]
         );
 
         const eip191Signer = new EIP191Signer();
@@ -413,7 +425,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         await expect(
           context.keyManager
             .connect(context.owner)
-            .executeRelayCall(signature, nonce, payload, {
+            .executeRelayCall(signature, nonce, validityTimestamps, payload, {
               value: valueToSend,
             })
         )

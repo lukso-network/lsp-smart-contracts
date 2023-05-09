@@ -144,9 +144,13 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
 
         // if it's a token transfer (LSP7/LSP8)
         if (typeId != _TYPEID_LSP9_OwnershipTransferred_RecipientNotification) {
-            // if the amount sent is 0, then do not update the keys
-            uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
-            if (balance == 0) return "LSP1: balance not updated";
+            // CHECK balance only when the Token contract is already deployed,
+            // not when tokens are being transferred on deployment through the `constructor`
+            if (notifier.code.length > 0) {
+                // if the amount sent is 0, then do not update the keys
+                uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
+                if (balance == 0) return "LSP1: balance not updated";
+            }
 
             (dataKeys, dataValues) = LSP5Utils.generateReceivedAssetKeys(
                 msg.sender,

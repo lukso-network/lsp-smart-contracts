@@ -27,18 +27,18 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
 
     // --- Storage
 
-    uint256 internal _existingTokens;
+    uint256 private _existingTokens;
 
     // Mapping from `tokenId` to `tokenOwner`
-    mapping(bytes32 => address) internal _tokenOwners;
+    mapping(bytes32 => address) private _tokenOwners;
 
     // Mapping `tokenOwner` to owned tokenIds
-    mapping(address => EnumerableSet.Bytes32Set) internal _ownedTokens;
+    mapping(address => EnumerableSet.Bytes32Set) private _ownedTokens;
 
     // Mapping a `tokenId` to its authorized operator addresses.
-    mapping(bytes32 => EnumerableSet.AddressSet) internal _operators;
+    mapping(bytes32 => EnumerableSet.AddressSet) private _operators;
 
-    mapping(address => EnumerableSet.Bytes32Set) internal _tokenIdsForOperator;
+    mapping(address => EnumerableSet.Bytes32Set) private _tokenIdsForOperator;
 
     // --- Token queries
 

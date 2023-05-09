@@ -884,7 +884,7 @@ export const shouldBehaveLikePermissionSetData = (
         ]);
 
       let bobKeyManagerPayload =
-        bobContext.keyManager.interface.encodeFunctionData("execute(bytes)", [
+        bobContext.keyManager.interface.encodeFunctionData("execute", [
           finalSetDataPayload,
         ]);
 
@@ -932,7 +932,7 @@ export const shouldBehaveLikePermissionSetData = (
         ]);
 
       let bobKeyManagerPayload =
-        bobContext.keyManager.interface.encodeFunctionData("execute(bytes)", [
+        bobContext.keyManager.interface.encodeFunctionData("execute", [
           finalSetDataPayload,
         ]);
 
