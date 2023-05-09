@@ -105,12 +105,12 @@ library LSP5Utils {
      * @param sender The address sending the asset and where the Keys should be updated
      * @param assetMapKey The map key of the asset being received containing the interfaceId of the
      * asset and the index in the array
-     * @param assetInterfaceIdAndIndex The value of the map key of the asset being sent
+     * @param assetIndex The index in the LSP5ReceivedAssets[] array
      */
     function generateSentAssetKeys(
         address sender,
         bytes32 assetMapKey,
-        bytes memory assetInterfaceIdAndIndex
+        uint128 assetIndex
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
         IERC725Y account = IERC725Y(sender);
         bytes memory lsp5ReceivedAssetsCountValue = getLSP5ReceivedAssetsCount(account);
@@ -127,19 +127,14 @@ library LSP5Utils {
         // Updating the number of the received assets (decrementing by 1
         uint128 newArrayLength = oldArrayLength - 1;
 
-        // Identify where the vault is located in the LSP5ReceivedAssets[] array
-        // by extracting the index from the tuple value `(bytes4,uint128)`
-        // fetched under the LSP5ReceivedAssetsMap data key
-        uint128 index = extractIndexFromMap(assetInterfaceIdAndIndex);
-
         // Generate the element key in the array of the asset
         bytes32 assetInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
             _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
-            index
+            assetIndex
         );
 
         // If the asset to remove is the last element in the array
-        if (index == newArrayLength) {
+        if (assetIndex == newArrayLength) {
             /**
              * We will be updating/removing 3 keys:
              * - Keys[0]: [Update] The arrayLengthKey to contain the new number of the received assets
@@ -163,7 +158,7 @@ library LSP5Utils {
 
             // Swapping last element in ArrayKey with the element in ArrayKey to remove || {Swap and pop} method;
             // check https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/structs/EnumerableSet.sol#L80
-        } else if (index < newArrayLength) {
+        } else if (assetIndex < newArrayLength) {
             /**
              * We will be updating/removing 5 keys:
              * - Keys[0]: [Update] The arrayLengthKey to contain the new number of the received assets
@@ -221,7 +216,7 @@ library LSP5Utils {
             // Update the index and the interfaceId of the address swapped (last element in the array)
             // to point to the new location in the LSP5ReceivedAssets array
             keys[4] = lastAssetInArrayMapKey;
-            values[4] = bytes.concat(interfaceID, bytes16(index));
+            values[4] = bytes.concat(interfaceID, bytes16(assetIndex));
         } else {
             // If index is bigger than the array length, out of bounds
             return (keys, values);
@@ -230,13 +225,5 @@ library LSP5Utils {
 
     function getLSP5ReceivedAssetsCount(IERC725Y account) internal view returns (bytes memory) {
         return account.getData(_LSP5_RECEIVED_ASSETS_ARRAY_KEY);
-    }
-
-    /**
-     * @dev returns the index from the LSP5ReceivedAssetMap
-     */
-    function extractIndexFromMap(bytes memory mapValue) internal pure returns (uint128) {
-        bytes memory val = BytesLib.slice(mapValue, 4, 16);
-        return BytesLib.toUint128(val, 0);
     }
 }

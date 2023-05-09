@@ -112,11 +112,17 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             // If the mapValue is not set, we assume that all other data keys relevant to the asset/vault
             // are not registered in the account, we cannot remove non-existing data keys for the asset being sent
             if (!isMapValueSet) return "LSP1: asset sent is not registered";
+
             // if the value under the `LSP5ReceivedAssetsMap:<asset-address>` or `LSP10VaultsMap:<vault-address>`
             // is not a valid tuple as `(bytes4,uint128)`
             if (notifierMapValue.length < 20) return "LSP1: asset data corrupted";
 
-            return _whenSending(typeId, notifier, notifierMapKey, notifierMapValue);
+            // Identify where the asset/vault is located in the `LSP5ReceivedAssets[]` / `LSP10Vaults[]` Array
+            // by extracting the index from the tuple value `(bytes4,uint128)`
+            // fetched under the `LSP5ReceivedAssetsMap` / `LSP10VaultsMap` data key
+            uint128 arrayIndex = uint128(uint160(bytes20(notifierMapValue)));
+
+            return _whenSending(typeId, notifier, notifierMapKey, arrayIndex);
         }
     }
 
@@ -178,7 +184,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         bytes32 typeId,
         address notifier,
         bytes32 notifierMapKey,
-        bytes memory notifierMapValue
+        uint128 arrayIndex
     ) internal virtual returns (bytes memory) {
         bytes32[] memory dataKeys;
         bytes[] memory dataValues;
@@ -192,7 +198,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             (dataKeys, dataValues) = LSP5Utils.generateSentAssetKeys(
                 msg.sender,
                 notifierMapKey,
-                notifierMapValue
+                arrayIndex
             );
 
             /**
@@ -209,7 +215,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             (dataKeys, dataValues) = LSP10Utils.generateSentVaultKeys(
                 msg.sender,
                 notifierMapKey,
-                notifierMapValue
+                arrayIndex
             );
 
             /**
