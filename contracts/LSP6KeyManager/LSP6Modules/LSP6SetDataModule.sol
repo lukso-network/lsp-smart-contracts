@@ -62,6 +62,7 @@ abstract contract LSP6SetDataModule {
     ) internal view virtual {
         bytes32 requiredPermission = _getPermissionRequiredToSetDataKey(
             controlledContract,
+            controllerPermissions,
             inputDataKey,
             inputDataValue
         );
@@ -79,6 +80,9 @@ abstract contract LSP6SetDataModule {
                 ERC725Y(controlledContract).getAllowedERC725YDataKeysFor(controllerAddress)
             );
         } else {
+            // Do not check again if we already checked that the controller had the permissions inside `_getPermissionRequiredToSetDataKey(...)`
+            if (requiredPermission == bytes32(0)) return;
+
             // Otherwise CHECK the required permission if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
             _requirePermissions(controllerAddress, controllerPermissions, requiredPermission);
         }
@@ -113,6 +117,7 @@ abstract contract LSP6SetDataModule {
         do {
             requiredPermission = _getPermissionRequiredToSetDataKey(
                 controlledContract,
+                permissions,
                 inputDataKeys[ii],
                 inputDataValues[ii]
             );
@@ -120,8 +125,12 @@ abstract contract LSP6SetDataModule {
             if (requiredPermission == _PERMISSION_SETDATA) {
                 isSettingERC725YKeys = true;
             } else {
-                // CHECK the required permissions if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
-                _requirePermissions(controller, permissions, requiredPermission);
+                // if we did not check already the permissions of the controller inside `_getPermissionRequiredToSetDataKey(...)`
+                if (requiredPermission != bytes32(0)) {
+                    // CHECK the required permissions for setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
+                    _requirePermissions(controller, permissions, requiredPermission);
+                }
+
                 validatedInputDataKeys[ii] = true;
                 inputDataKeysAllowed++;
             }
@@ -157,22 +166,39 @@ abstract contract LSP6SetDataModule {
      */
     function _getPermissionRequiredToSetDataKey(
         address controlledContract,
+        bytes32 controllerPermissions,
         bytes32 inputDataKey,
         bytes memory inputDataValue
     ) internal view virtual returns (bytes32) {
         // AddressPermissions[] or AddressPermissions[index]
         if (bytes16(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX) {
+            // this is our best attempt to save gas to avoid reading the `target` storage multiple times
+            // to know if we need the permission `ADDCONTROLLER` or `EDITPERMISSIONS`.
+            // Even if `getData(...)` is `view`, multiple external calls to fetch values from storage add to the total gas used.
+            bool hasBothAddControllerAndEditPermissions = controllerPermissions.hasPermission(
+                _PERMISSION_ADDCONTROLLER | _PERMISSION_EDITPERMISSIONS
+            );
+
             return
                 _getPermissionToSetPermissionsArray(
                     controlledContract,
                     inputDataKey,
-                    inputDataValue
+                    inputDataValue,
+                    hasBothAddControllerAndEditPermissions
                 );
 
             // AddressPermissions:...
         } else if (bytes6(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX) {
+            // same as above, save gas by avoiding redundants or unecessary external calls to fetch values from the `target` storage.
+            bool hasBothAddControllerAndEditPermissions = controllerPermissions.hasPermission(
+                _PERMISSION_ADDCONTROLLER | _PERMISSION_EDITPERMISSIONS
+            );
+
             // AddressPermissions:Permissions:<address>
             if (bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
+                // controller already has the permissions needed. Do not run internal function.
+                if (hasBothAddControllerAndEditPermissions) return (bytes32(0));
+
                 return _getPermissionToSetControllerPermissions(controlledContract, inputDataKey);
 
                 // AddressPermissions:AllowedCalls:<address>
@@ -181,7 +207,8 @@ abstract contract LSP6SetDataModule {
                     _getPermissionToSetAllowedCalls(
                         controlledContract,
                         inputDataKey,
-                        inputDataValue
+                        inputDataValue,
+                        hasBothAddControllerAndEditPermissions
                     );
 
                 // AddressPermissions:AllowedERC725YKeys:<address>
@@ -192,7 +219,8 @@ abstract contract LSP6SetDataModule {
                     _getPermissionToSetAllowedERC725YDataKeys(
                         controlledContract,
                         inputDataKey,
-                        inputDataValue
+                        inputDataValue,
+                        hasBothAddControllerAndEditPermissions
                     );
 
                 // if the first 6 bytes of the input data key are "AddressPermissions:..." but did not match
@@ -218,10 +246,31 @@ abstract contract LSP6SetDataModule {
             inputDataKey == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY ||
             bytes12(inputDataKey) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
         ) {
+            // same as above. If controller has both permissions, do not read the `target` storage
+            // to save gas by avoiding an extra external `view` call.
+            if (
+                controllerPermissions.hasPermission(
+                    _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE |
+                        _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE
+                )
+            ) {
+                return bytes32(0);
+            }
+
             return _getPermissionToSetLSP1Delegate(controlledContract, inputDataKey);
 
             // LSP17Extension:<bytes4>
         } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
+            // same as above. If controller has both permissions, do not read the `target` storage
+            // to save gas by avoiding an extra external `view` call.
+            if (
+                controllerPermissions.hasPermission(
+                    _PERMISSION_ADDEXTENSIONS | _PERMISSION_CHANGEEXTENSIONS
+                )
+            ) {
+                return bytes32(0);
+            }
+
             return _getPermissionToSetLSP17Extension(controlledContract, inputDataKey);
         } else {
             return _PERMISSION_SETDATA;
@@ -241,16 +290,19 @@ abstract contract LSP6SetDataModule {
     function _getPermissionToSetPermissionsArray(
         address controlledContract,
         bytes32 inputDataKey,
-        bytes memory inputDataValue
+        bytes memory inputDataValue,
+        bool hasBothAddControllerAndEditPermissions
     ) internal view virtual returns (bytes32) {
-        bytes memory currentValue = ERC725Y(controlledContract).getData(inputDataKey);
-
         // AddressPermissions[] -> array length
         if (inputDataKey == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY) {
+            // if the controller already has both permissions from one of the two required,
+            // No permission required as CHECK is already done. We don't need to read `target` storage.
+            if (hasBothAddControllerAndEditPermissions) return bytes32(0);
+
             uint128 newLength = uint128(bytes16(inputDataValue));
 
             return
-                newLength > uint128(bytes16(currentValue))
+                newLength > uint128(bytes16(ERC725Y(controlledContract).getData(inputDataKey)))
                     ? _PERMISSION_ADDCONTROLLER
                     : _PERMISSION_EDITPERMISSIONS;
         }
@@ -262,7 +314,14 @@ abstract contract LSP6SetDataModule {
             revert AddressPermissionArrayIndexValueNotAnAddress(inputDataKey, inputDataValue);
         }
 
-        return currentValue.length == 0 ? _PERMISSION_ADDCONTROLLER : _PERMISSION_EDITPERMISSIONS;
+        // if the controller already has both permissions from one of the two required below,
+        // No permission required as CHECK is already done. We don't need to read `target` storage.
+        if (hasBothAddControllerAndEditPermissions) return bytes32(0);
+
+        return
+            ERC725Y(controlledContract).getData(inputDataKey).length == 0
+                ? _PERMISSION_ADDCONTROLLER
+                : _PERMISSION_EDITPERMISSIONS;
     }
 
     /**
@@ -293,16 +352,21 @@ abstract contract LSP6SetDataModule {
     function _getPermissionToSetAllowedCalls(
         address controlledContract,
         bytes32 dataKey,
-        bytes memory dataValue
+        bytes memory dataValue,
+        bool hasBothAddControllerAndEditPermissions
     ) internal view virtual returns (bytes32) {
         if (!LSP6Utils.isCompactBytesArrayOfAllowedCalls(dataValue)) {
             revert InvalidEncodedAllowedCalls(dataValue);
         }
 
-        // if there is nothing stored under the Allowed Calls of the controller,
+        // if the controller already has both permissions from one of the two required below,
+        // No permission required as CHECK is already done. We don't need to read `target` storage.
+        if (hasBothAddControllerAndEditPermissions) return bytes32(0);
+
+        // if nothing is stored under the controller's Allowed Calls of the controller,
         // we are trying to ADD a list of restricted calls (standards + address + function selector)
         //
-        // if there are already some data set under the Allowed Calls of the controller,
+        // if some data is already set under the Allowed Calls of the controller,
         // we are trying to CHANGE (= edit) these restrictions.
         return
             ERC725Y(controlledContract).getData(dataKey).length == 0
@@ -320,7 +384,8 @@ abstract contract LSP6SetDataModule {
     function _getPermissionToSetAllowedERC725YDataKeys(
         address controlledContract,
         bytes32 dataKey,
-        bytes memory dataValue
+        bytes memory dataValue,
+        bool hasBothAddControllerAndEditPermissions
     ) internal view returns (bytes32) {
         if (!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(dataValue)) {
             revert InvalidEncodedAllowedERC725YDataKeys(
@@ -328,6 +393,10 @@ abstract contract LSP6SetDataModule {
                 "couldn't VALIDATE the data value"
             );
         }
+
+        // if the controller already has both permissions from one of the two required below,
+        // CHECK is already done. We don't need to read `target` storage.
+        if (hasBothAddControllerAndEditPermissions) return bytes32(0);
 
         // if there is nothing stored under the Allowed ERC725Y Data Keys of the controller,
         // we are trying to ADD a list of restricted ERC725Y Data Keys.
