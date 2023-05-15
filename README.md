@@ -107,12 +107,13 @@ import {
 
 > **NB:** dates of the audit reports use the american date format YYYY-MM-DD.
 
-The following audits were conducted. All high-level issues were addressed, or were not deemed as critical.
+The following audits and formal verification were conducted. All high-level issues were addressed, or were not deemed as critical.
 
 - Chainsulting Audit, 2022-07-06, Final Result: [Chainsulting_audit_06_07_2022.pdf](./audits/Chainsulting_audit_2022_07_06.pdf)
 - Quantstamp Audit, 2022-09-07, Final Result: [Quantstamp_audit_07_09_2022.pdf](./audits/Quantstamp_audit_2022_09_07.pdf)
 - Watchpug Audit, 2022-10-20, Final Result: [Watchpug_audit_20_10_2022.pdf](./audits/Watchpug_audit_2022_10_20.pdf)
 - Watchpug Audit, 2022-12-15, Final Result: [Watchpug_audit_15_12_2022.pdf](./audits/Watchpug_audit_2022_12_15.pdf)
+- Runtime Verification - Formal Verification, 2023-02-20, Final Result: [RuntimeVerification_formalVerification_2023_02_20.pdf](./audits/RuntimeVerification_formalVerification_2023_02_20.pdf)
 
 ## Contributors ✨
 
