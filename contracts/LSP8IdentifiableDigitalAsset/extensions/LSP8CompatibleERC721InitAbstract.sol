@@ -205,8 +205,8 @@ abstract contract LSP8CompatibleERC721InitAbstract is
             revert LSP8NotTokenOperator(tokenId, operator);
         }
 
-        super._transfer(from, to, tokenId, allowNonLSP1Recipient, data);
         emit Transfer(from, to, uint256(tokenId));
+        super._transfer(from, to, tokenId, allowNonLSP1Recipient, data);
     }
 
     function _safeTransfer(
@@ -228,15 +228,15 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual override {
-        super._mint(to, tokenId, allowNonLSP1Recipient, data);
         emit Transfer(address(0), to, uint256(tokenId));
+        super._mint(to, tokenId, allowNonLSP1Recipient, data);
     }
 
     function _burn(bytes32 tokenId, bytes memory data) internal virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
 
-        super._burn(tokenId, data);
         emit Transfer(tokenOwner, address(0), uint256(tokenId));
+        super._burn(tokenId, data);
     }
 
     /**
