@@ -16,7 +16,7 @@ abstract contract LSP8CappedSupplyInitAbstract is LSP8IdentifiableDigitalAssetIn
     error LSP8CappedSupplyCannotMintOverCap();
 
     // --- Storage
-    uint256 internal _tokenSupplyCap;
+    uint256 private _tokenSupplyCap;
 
     function _initialize(uint256 tokenSupplyCap_) internal virtual onlyInitializing {
         if (tokenSupplyCap_ == 0) {
