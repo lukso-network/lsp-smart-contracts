@@ -21,6 +21,9 @@ import {_TYPEID_LSP7_TOKENSSENDER, _TYPEID_LSP7_TOKENSRECIPIENT} from "./LSP7Con
  * @dev Core Implementation of a LSP7 compliant contract.
  *
  * This contract implement the core logic of the functions for the {ILSP7DigitalAsset} interface.
+ *
+ * Similar to ERC20, the non-standard {decreaseAllowance} and {increaseAllowance}
+ * functions have been added to mitigate the well-known issues around setting allowances.
  */
 abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     // --- Storage
@@ -157,6 +160,56 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
                 ++i;
             }
         }
+    }
+
+    /**
+     * @notice Increase the allowance of `operator` by +`addedAmount`
+     * @dev Atomically increases the allowance granted to `operator` by the caller.
+     *
+     * This is an alternative approach to {authorizeOperator} that can be used as a mitigation
+     * for problems described in {ILSP7DigitalAsset}.
+     *
+     * Emits an {AuthorizedOperator} event indicating the updated allowance.
+     *
+     * @param operator the operator to increase the allowance for `msg.sender`
+     * @param addedAmount the additional amount to add on top of the current operator's allowance
+     *
+     * @dev Requirements:
+     *  - `operator` cannot be the same address as `msg.sender`
+     *  - `operator` cannot be the `ero address.
+     */
+    function increaseAllowance(address operator, uint256 addedAmount) public virtual {
+        _updateOperator(
+            msg.sender,
+            operator,
+            authorizedAmountFor(operator, msg.sender) + addedAmount
+        );
+    }
+
+    /**
+     * @notice Decrease the allowance of `operator` by -`substractedAmount`
+     * @dev Atomically decreases the allowance granted to `operator` by the caller.
+     * This is an alternative approach to {authorizeOperator} that can be used as a mitigation
+     * for problems described in {ILSP7DigitalAsset}
+     *
+     * Emits:
+     *  - an {AuthorizedOperator} event indicating the updated allowance after decreasing it.
+     *  - a {RevokeOperator} event if `substractedAmount` is the full allowance,
+     *    indicating `operator` does not have any allowance left for `msg.sender`.
+     *
+     * @param operator the operator to decrease allowance for `msg.sender`
+     * @param substractedAmount the amount to decrease by in the operator's allowance.
+     *
+     * @dev Requirements:
+     *  - `operator` cannot be the zero address.
+     *  - operator` must have allowance for the caller of at least `substractedAmount`.
+     */
+    function decreaseAllowance(address operator, uint256 substractedAmount) public virtual {
+        uint256 currentAllowance = authorizedAmountFor(operator, msg.sender);
+        if (currentAllowance < substractedAmount) {
+            revert LSP7DecreasedAllowanceBelowZero();
+        }
+        _updateOperator(msg.sender, operator, currentAllowance - substractedAmount);
     }
 
     /**
