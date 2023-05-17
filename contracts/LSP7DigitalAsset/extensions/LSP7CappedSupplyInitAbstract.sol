@@ -14,7 +14,7 @@ abstract contract LSP7CappedSupplyInitAbstract is LSP7DigitalAssetInitAbstract {
     error LSP7CappedSupplyCannotMintOverCap();
 
     // --- Storage
-    uint256 internal _tokenSupplyCap;
+    uint256 private _tokenSupplyCap;
 
     function _initialize(uint256 tokenSupplyCap_) internal virtual onlyInitializing {
         if (tokenSupplyCap_ == 0) {
