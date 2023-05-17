@@ -33,7 +33,6 @@ import {
     InvalidRelayNonce,
     NoPermissionsSet,
     InvalidERC725Function,
-    CallerIsNotTheTarget,
     CannotSendValueToSetData,
     RelayCallBeforeStartTime,
     RelayCallExpired
@@ -56,7 +55,7 @@ import {
     _PERMISSION_SIGN,
     _PERMISSION_REENTRANCY
 } from "./LSP6Constants.sol";
-import {_INTERFACEID_LSP20_CALL_VERIFIER} from "../LSP20CallVerification/LSP20Constants.sol";
+import "../LSP20CallVerification/LSP20Constants.sol";
 
 /**
  * @title Core implementation of the LSP6 Key Manager standard.
@@ -242,23 +241,45 @@ abstract contract LSP6KeyManagerCore is
         uint256 msgValue,
         bytes calldata data
     ) external returns (bytes4) {
-        if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
-
         bool isSetData = false;
         if (bytes4(data) == SETDATA_SELECTOR || bytes4(data) == SETDATA_BATCH_SELECTOR) {
             isSetData = true;
         }
 
-        bool isReentrantCall = _nonReentrantBefore(isSetData, caller);
+        // If target is invoking the verification, emit the event and change the reentrancy guard
+        if (msg.sender == _target) {
+            bool isReentrantCall = _nonReentrantBefore(isSetData, caller);
 
-        _verifyPermissions(caller, msgValue, data);
-        emit VerifiedCall(caller, msgValue, bytes4(data));
+            _verifyPermissions(caller, msgValue, data);
+            emit VerifiedCall(caller, msgValue, bytes4(data));
 
-        // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
-        return
-            isSetData || isReentrantCall
-                ? bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"00"))
-                : bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"01"));
+            // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
+            return
+                isSetData || isReentrantCall
+                    ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
+                    : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
+        }
+        // If a different address is invoking the verification, do not change the state
+        // and do read-only verification
+        else {
+            bool isReentrantCall = _reentrancyStatus;
+
+            if (isReentrantCall) {
+                _requirePermissions(
+                    caller,
+                    ERC725Y(_target).getPermissionsFor(caller),
+                    _PERMISSION_REENTRANCY
+                );
+            }
+
+            _verifyPermissions(caller, msgValue, data);
+
+            // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
+            return
+                isSetData || isReentrantCall
+                    ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
+                    : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
+        }
     }
 
     /**
@@ -268,9 +289,12 @@ abstract contract LSP6KeyManagerCore is
         bytes32, /*callHash*/
         bytes memory /*result*/
     ) external returns (bytes4) {
-        if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
-        _nonReentrantAfter();
-        return ILSP20.lsp20VerifyCallResult.selector;
+        // If it's the target calling, set back the reentrancy guard
+        // to false, if not return the magic value
+        if (msg.sender == _target) {
+            _nonReentrantAfter();
+        }
+        return _LSP20_VERIFY_CALL_RESULT_MAGIC_VALUE;
     }
 
     function _execute(uint256 msgValue, bytes calldata payload)
