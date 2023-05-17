@@ -6,9 +6,11 @@ pragma solidity ^0.8.4;
 import {
     LSP7DigitalAssetInitAbstract
 } from "../../LSP7DigitalAsset/LSP7DigitalAssetInitAbstract.sol";
-import {LSP7Burnable} from "../../LSP7DigitalAsset/extensions/LSP7Burnable.sol";
+import {
+    LSP7BurnableInitAbstract
+} from "../../LSP7DigitalAsset/extensions/LSP7BurnableInitAbstract.sol";
 
-contract LSP7InitTester is LSP7DigitalAssetInitAbstract, LSP7Burnable {
+contract LSP7InitTester is LSP7DigitalAssetInitAbstract, LSP7BurnableInitAbstract {
     function initialize(
         string memory tokenName_,
         string memory tokenSymbol_,
