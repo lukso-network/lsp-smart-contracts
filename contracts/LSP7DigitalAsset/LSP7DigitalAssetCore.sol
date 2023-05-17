@@ -209,7 +209,10 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         if (currentAllowance < substractedAmount) {
             revert LSP7DecreasedAllowanceBelowZero();
         }
-        _updateOperator(msg.sender, operator, currentAllowance - substractedAmount);
+
+        unchecked {
+            _updateOperator(msg.sender, operator, currentAllowance - substractedAmount);
+        }
     }
 
     /**
