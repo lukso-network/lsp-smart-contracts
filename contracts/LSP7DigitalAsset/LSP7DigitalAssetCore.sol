@@ -176,7 +176,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      *
      * @dev Requirements:
      *  - `operator` cannot be the same address as `msg.sender`
-     *  - `operator` cannot be the `ero address.
+     *  - `operator` cannot be the zero address.
      */
     function increaseAllowance(address operator, uint256 addedAmount) public virtual {
         _updateOperator(
