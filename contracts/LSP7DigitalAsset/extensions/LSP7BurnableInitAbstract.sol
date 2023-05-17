@@ -2,13 +2,13 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
+import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
 
 /**
  * @dev LSP7 extension that allows token holders to destroy both
  * their own tokens and those that they have an allowance for as an operator.
  */
-abstract contract LSP7Burnable is LSP7DigitalAsset {
+abstract contract LSP7BurnableInitAbstract is LSP7DigitalAssetInitAbstract {
     /**
      * @dev Destroys `amount` tokens from the `from` address.
      *
