@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import { ethers, artifacts } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {
@@ -337,6 +337,55 @@ export const testSecurityScenarios = (
             expect(result).to.equal("0xaabbccdd");
           });
         });
+      });
+    });
+
+    describe("when calling the lsp20 functions by an address other than the target", () => {
+      it("should pass and not modify _reentrancyStatus when verfying that the owner have permission to execute a payload, ", async () => {
+        let emptyCallPayload =
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            context.accounts[5].address,
+            0,
+            EMPTY_PAYLOAD,
+          ]);
+
+        const tx = await context.keyManager.lsp20VerifyCall(
+          context.owner.address,
+          0,
+          emptyCallPayload
+        );
+
+        await tx.wait();
+
+        const _reentrancyStatusSlotNumber = Number.parseInt(
+          (
+            await artifacts.getBuildInfo(
+              "contracts/LSP6KeyManager/LSP6KeyManager.sol:LSP6KeyManager"
+            )
+          )?.output.contracts[
+            "contracts/LSP6KeyManager/LSP6KeyManager.sol"
+          ].LSP6KeyManager.storageLayout.storage.filter((elem) => {
+            if (elem.label === "_reentrancyStatus") return elem;
+          })[0].slot
+        );
+
+        const _reentrancyStatusPackedWithAddress = await provider.getStorageAt(
+          context.keyManager.address,
+          _reentrancyStatusSlotNumber
+        );
+
+        // Extract the two characters representing the boolean value
+        // since its packed with an address
+        const _reentrancyStatusHex = _reentrancyStatusPackedWithAddress.slice(
+          10,
+          12
+        );
+
+        // Convert the hexadecimal value to a boolean
+        const _reentrancyStatus = Boolean(parseInt(_reentrancyStatusHex, 16));
+
+        expect(_reentrancyStatus).to.be.false;
       });
     });
   });
