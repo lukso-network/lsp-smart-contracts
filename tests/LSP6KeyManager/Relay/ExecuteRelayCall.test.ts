@@ -639,9 +639,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
       });
 
       describe("When testing `validityTimestamps`", () => {
-        const oneDayInSeconds = 60 * 60 * 24;
-        let count = 0;
-
         describe("(invalid timestamps) `startingTimestamp` is greter than `endingTimestamp`", () => {
           describe("`now` is equal to `startingTimestamp` and `now` is greter than `endingTimestamp`", () => {
             it("reverts", async () => {
