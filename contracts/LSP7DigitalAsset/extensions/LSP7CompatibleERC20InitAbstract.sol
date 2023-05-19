@@ -110,8 +110,8 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual override {
-        super._transfer(from, to, amount, allowNonLSP1Recipient, data);
         emit Transfer(from, to, amount);
+        super._transfer(from, to, amount, allowNonLSP1Recipient, data);
     }
 
     function _mint(
@@ -120,8 +120,8 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual override {
-        super._mint(to, amount, allowNonLSP1Recipient, data);
         emit Transfer(address(0), to, amount);
+        super._mint(to, amount, allowNonLSP1Recipient, data);
     }
 
     function _burn(
@@ -129,8 +129,8 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         uint256 amount,
         bytes memory data
     ) internal virtual override {
-        super._burn(from, amount, data);
         emit Transfer(from, address(0), amount);
+        super._burn(from, amount, data);
     }
 
     function _setData(bytes32 key, bytes memory value)

@@ -14,7 +14,7 @@ abstract contract LSP8CappedSupply is LSP8IdentifiableDigitalAsset {
     error LSP8CappedSupplyCannotMintOverCap();
 
     // --- Storage
-    uint256 internal _tokenSupplyCap;
+    uint256 private immutable _tokenSupplyCap;
 
     /**
      * @notice Sets the token max supply

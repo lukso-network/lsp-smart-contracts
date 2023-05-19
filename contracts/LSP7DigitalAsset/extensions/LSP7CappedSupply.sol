@@ -14,7 +14,7 @@ abstract contract LSP7CappedSupply is LSP7DigitalAsset {
     error LSP7CappedSupplyCannotMintOverCap();
 
     // --- Storage
-    uint256 internal _tokenSupplyCap;
+    uint256 private immutable _tokenSupplyCap;
 
     /**
      * @notice Sets the token max supply
