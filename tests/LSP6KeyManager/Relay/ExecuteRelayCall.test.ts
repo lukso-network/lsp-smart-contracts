@@ -641,24 +641,14 @@ export const shouldBehaveLikeExecuteRelayCall = (
       describe("When testing `validityTimestamps`", () => {
         const oneDayInSeconds = 60 * 60 * 24;
         let count = 0;
-        let startingTimestamp: number;
-        let endingTimestamp: number;
 
         describe("(invalid timestamps) `startingTimestamp` is greter than `endingTimestamp`", () => {
-          beforeEach("Update timestamp by adding a year", () => {
-            const year = 2100 + count;
-
-            startingTimestamp =
-              Date.parse(`Tue Apr 20 ${year} 04:20:00 GMT+0000`) / 1000;
-            endingTimestamp =
-              Date.parse(`Mon Apr 19 ${year} 04:20:00 GMT+0000`) / 1000;
-
-            count++;
-          });
-
           describe("`now` is equal to `startingTimestamp` and `now` is greter than `endingTimestamp`", () => {
             it("reverts", async () => {
-              const now = startingTimestamp;
+              const now = await time.latest();
+              const startingTimestamp = now;
+
+              const endingTimestamp = now - 1000;
 
               const nonce = await context.keyManager.callStatic.getNonce(
                 signer.address,
@@ -668,6 +658,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 startingTimestamp,
                 endingTimestamp
               );
+
               const calldata = "0xcafecafe";
               const value = 0;
               const signature = await signLSP6ExecuteRelayCall(
@@ -678,8 +669,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 value,
                 calldata
               );
-
-              await time.setNextBlockTimestamp(now);
 
               await expect(
                 context.keyManager
@@ -699,7 +688,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe("`now` is greater than `startingTimestamp` and `now` is greater than `endingTimestamp`", () => {
             it("reverts", async () => {
-              const now = startingTimestamp + oneDayInSeconds;
+              const now = await time.latest();
+
+              const endingTimestamp = now - 2000;
+              const startingTimestamp = now - 1500;
 
               const nonce = await context.keyManager.callStatic.getNonce(
                 signer.address,
@@ -720,8 +712,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 calldata
               );
 
-              await time.setNextBlockTimestamp(now);
-
               await expect(
                 context.keyManager
                   .connect(relayer)
@@ -740,16 +730,21 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe("`now` is lesser than `startingTimestamp` and `now` is lesser than `endingTimestamp`", () => {
             it("reverts", async () => {
-              const now = endingTimestamp - oneDayInSeconds;
-
               const nonce = await context.keyManager.callStatic.getNonce(
                 signer.address,
                 3
               );
+
+              const now = await time.latest();
+
+              const endingTimestamp = now + 1000;
+              const startingTimestamp = now + 1500;
+
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
                 endingTimestamp
               );
+
               const calldata = "0xcafecafe";
               const value = 0;
               const signature = await signLSP6ExecuteRelayCall(
@@ -760,8 +755,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 value,
                 calldata
               );
-
-              await time.setNextBlockTimestamp(now);
 
               await expect(
                 context.keyManager
@@ -781,7 +774,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe("`now` is lesser than `startingTimestamp` and `now` is greater than `endingTimestamp`", () => {
             it("reverts", async () => {
-              const now = Math.round((startingTimestamp + endingTimestamp) / 2);
+              const now = await time.latest();
+
+              const startingTimestamp = now + 1000;
+              const endingTimestamp = now - 1000;
 
               const nonce = await context.keyManager.callStatic.getNonce(
                 signer.address,
@@ -802,8 +798,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 calldata
               );
 
-              await time.setNextBlockTimestamp(now);
-
               await expect(
                 context.keyManager
                   .connect(relayer)
@@ -822,7 +816,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe("`now` is lesser than `startingTimestamp` and `now` is equal to `endingTimestamp`", () => {
             it("reverts", async () => {
-              const now = endingTimestamp;
+              const now = await time.latest();
+
+              const startingTimestamp = now + 1000;
+              const endingTimestamp = now;
 
               const nonce = await context.keyManager.callStatic.getNonce(
                 signer.address,
@@ -843,8 +840,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 calldata
               );
 
-              await time.setNextBlockTimestamp(now);
-
               await expect(
                 context.keyManager
                   .connect(relayer)
@@ -863,20 +858,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
         });
 
         describe("(valid timestamps) `startingTimestamp` is lesser than `endingTimestamp`", () => {
-          beforeEach("Update timestamp by adding a year", () => {
-            const year = 2100 + count;
-
-            startingTimestamp =
-              Date.parse(`Tue Apr 20 ${year} 04:20:00 GMT+0000`) / 1000;
-            endingTimestamp =
-              Date.parse(`Mon Apr 21 ${year} 04:20:00 GMT+0000`) / 1000;
-
-            count++;
-          });
-
           describe("(tx can be executed) `now` is equal to `startingTimestamp` and `now` is lesser than `endingTimestamp`", () => {
             it("passes", async () => {
-              const now = startingTimestamp;
+              const now = await time.latest();
+
+              const startingTimestamp = now;
+              const endingTimestamp = now + 1000;
 
               const nonce = await context.keyManager.callStatic.getNonce(
                 signer.address,
@@ -908,8 +895,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 calldata
               );
 
-              await time.setNextBlockTimestamp(now);
-
               await context.keyManager
                 .connect(relayer)
                 .executeRelayCall(
@@ -925,7 +910,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe("(tx cannot be executed yet) `now` is lesser than `startingTimestamp` and `now` is lesser than `endingTimestamp`", () => {
             it("reverts", async () => {
-              const now = startingTimestamp - oneDayInSeconds;
+              const now = await time.latest();
+
+              const startingTimestamp = now + 1000;
+              const endingTimestamp = now + 1500;
 
               const nonce = await context.keyManager.callStatic.getNonce(
                 signer.address,
@@ -946,8 +934,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 calldata
               );
 
-              await time.setNextBlockTimestamp(now);
-
               await expect(
                 context.keyManager
                   .connect(relayer)
@@ -966,7 +952,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe("(tx is expired) `now` is greater than `startingTimestamp` and `now` is greater than `endingTimestamp`", () => {
             it("reverts", async () => {
-              const now = endingTimestamp + oneDayInSeconds;
+              const now = await time.latest();
+
+              const startingTimestamp = now - 1500;
+              const endingTimestamp = now - 1000;
 
               const nonce = await context.keyManager.callStatic.getNonce(
                 signer.address,
@@ -987,8 +976,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 calldata
               );
 
-              await time.setNextBlockTimestamp(now);
-
               await expect(
                 context.keyManager
                   .connect(relayer)
@@ -1007,7 +994,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe("(tx can be executed) `now` is greater than `startingTimestamp` and `now` is lesser than `endingTimestamp`", () => {
             it("passes", async () => {
-              const now = Math.floor((startingTimestamp + endingTimestamp) / 2);
+              const now = await time.latest();
+
+              const startingTimestamp = now - 1000;
+              const endingTimestamp = now + 1500;
 
               const nonce = await context.keyManager.callStatic.getNonce(
                 signer.address,
@@ -1039,8 +1029,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 calldata
               );
 
-              await time.setNextBlockTimestamp(now);
-
               await context.keyManager
                 .connect(relayer)
                 .executeRelayCall(
@@ -1056,12 +1044,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe("(tx can be executed) `now` is greater than `startingTimestamp` and `now` is equal to `endingTimestamp`", () => {
             it("passes", async () => {
-              const now = endingTimestamp;
+              const now = await time.latest();
+
+              const startingTimestamp = now - 1000;
+              const endingTimestamp = now;
 
               const nonce = await context.keyManager.callStatic.getNonce(
                 signer.address,
                 10
               );
+
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
                 endingTimestamp
@@ -1105,19 +1097,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
         });
 
         describe("start timestamp = end timestamp", () => {
-          beforeEach("Update timestamp by adding a year", () => {
-            const year = 2100 + count;
-
-            startingTimestamp =
-              Date.parse(`Tue Apr 20 ${year} 04:20:00 GMT+0000`) / 1000;
-            endingTimestamp = startingTimestamp;
-
-            count++;
-          });
-
           describe("start timestamp = end timestamp < now", () => {
             it("reverts", async () => {
-              const now = endingTimestamp + oneDayInSeconds;
+              const now = await time.latest();
+
+              const startingTimestamp = now - 100;
+              const endingTimestamp = now - 100;
 
               const nonce = await context.keyManager.callStatic.getNonce(
                 signer.address,
@@ -1138,8 +1123,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 calldata
               );
 
-              await time.setNextBlockTimestamp(now);
-
               await expect(
                 context.keyManager
                   .connect(relayer)
@@ -1158,7 +1141,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe("start timestamp = end timestamp > now", () => {
             it("reverts", async () => {
-              const now = startingTimestamp - oneDayInSeconds;
+              const now = await time.latest();
+
+              const startingTimestamp = now + 100;
+              const endingTimestamp = now + 100;
 
               const nonce = await context.keyManager.callStatic.getNonce(
                 signer.address,
@@ -1179,8 +1165,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 calldata
               );
 
-              await time.setNextBlockTimestamp(now);
-
               await expect(
                 context.keyManager
                   .connect(relayer)
@@ -1199,7 +1183,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe("start timestamp = end timestamp = now", () => {
             it("passes", async () => {
-              const now = startingTimestamp;
+              const now = await time.latest();
+
+              const startingTimestamp = now;
+              const endingTimestamp = now;
 
               const nonce = await context.keyManager.callStatic.getNonce(
                 signer.address,
