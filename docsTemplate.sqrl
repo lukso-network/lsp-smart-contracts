@@ -1,0 +1,219 @@
+{{@if (it.name)}}
+# {{it.name}}
+{{/if}}
+
+
+{{@if (it.title)}}
+> {{it.title}}
+{{/if}}
+
+
+{{@if (it.notice)}}
+{{it.notice}}
+{{/if}}
+
+
+{{@if (it.details)}}
+*{{it.details}}*
+{{/if}}
+
+
+{{@if (it['custom:functionalities'])}}
+**Functionalities:**
+{{@foreach(val['custom:functionalities'].split('-')) => key, functionality}}
+{{@if (functionality.replace(' ', '').length > 0)}}
+- {{_ functionality _}}
+{{/if}}
+{{/foreach}}
+
+
+:::
+{{/if}}
+
+
+{{@if (Object.keys(it.methods).length > 0)}}
+
+
+## Methods
+
+{{@foreach(it.methods) => key, val}}
+### {{key.split('(')[0]}}
+
+
+{{@if (val['custom:danger'])}}
+:::danger
+
+**Warning:**
+
+{{val['custom:danger']}}
+
+
+:::
+{{/if}}
+
+
+{{@if (val['custom:tips'])}}
+:::tip
+
+{{@foreach(val['custom:tips'].split('-')) => key, tip}}
+{{@if (tip.replace(' ', '').length > 0)}}
+{{@if(val['custom:tips'].split('-').length === 2)}}
+{{_ tip}}
+{{#else}}
+- {{_ tip}}
+{{/if}}
+{{/if}}
+
+{{/foreach}}
+
+:::
+{{/if}}
+
+
+{{@if (val['custom:caution'])}}
+:::caution
+
+{{@foreach(val['custom:caution'].split('-')) => key, caution}}
+{{@if (caution.replace(' ', '').length > 0)}}
+{{@if(val['custom:caution'].split('-').length === 2)}}
+{{_ caution}}
+{{#else}}
+- {{_ caution}}
+{{/if}}
+{{/if}}
+
+{{/foreach}}
+
+:::
+{{/if}}
+
+
+:::note
+
+**Links:**
+- Check the `{{key}}` function specification in [LSP-{{it.name.match(/\d+/)[0]}}-{{it.name.split(/LSP\d+/)[1]}}](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-{{it.name.match(/\d+/)[0]}}-{{it.name.split(/LSP\d+/)[1]}}.md) Standard in the LIP repository.
+- Check the `{{key}}` function implementation in [{{it.name}}](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/{{it.name}}/{{it.name}}.sol) Contract.
+
+:::
+
+
+```solidity
+{{val.code}};
+```
+
+
+{{@if (val.notice)}}{{val.notice}}{{/if}}
+
+
+{{@if (val.details)}}*{{val.details}}*{{/if}}
+
+
+{{@if (val['custom:requirements'])}}
+> **Requirements:**
+>
+{{@foreach(val['custom:requirements'].split('-')) => key, requirement}}{{@if (requirement.replace(' ', '').length > 0)}}
+>
+> - {{_ requirement _}}
+{{/if}}{{/foreach}}{{/if}}
+
+{{@if (val['custom:emits'])}}
+>
+> **Emitted events:**
+>
+{{@foreach(val['custom:emits'].split('-')) => key, event}}{{@if (event.replace(' ', '').length > 0)}}
+>
+> - {{_ event _}}
+{{/if}}{{/foreach}}{{/if}}
+
+
+{{@if (Object.keys(val.inputs).length > 0)}}
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+{{@foreach(val.inputs) => key, val}}
+| `{{key}}` | `{{val.type}}` | {{val.description}} |
+{{/foreach}}
+{{/if}}
+
+
+{{@if (Object.keys(val.outputs).length > 0)}}
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+{{@foreach(val.outputs) => key, val}}
+| `{{key}}` | `{{val.type}}` | {{val.description}} |
+{{/foreach}}
+{{/if}}
+
+
+{{/foreach}}
+{{/if}}
+
+
+{{@if (Object.keys(it.events).length > 0)}}
+## Events
+
+
+{{@foreach(it.events) => key, val}}
+### {{key}}
+
+
+```solidity
+{{val.code}}
+```
+
+
+{{@if (val.notice)}}{{val.notice}}{{/if}}
+
+
+{{@if (val.details)}}*{{val.details}}*{{/if}}
+
+
+{{@if (Object.keys(val.inputs).length > 0)}}
+#### Parameters
+
+
+| Name | Type | Description |
+|---|---|---|
+{{@foreach(val.inputs) => key, val}}
+| {{key}} {{@if (val.indexed)}}`indexed`{{/if}} | {{val.type}} | {{val.description}} |
+{{/foreach}}
+{{/if}}
+
+{{/foreach}}
+{{/if}}
+
+
+{{@if (Object.keys(it.errors).length > 0)}}
+## Errors
+
+
+{{@foreach(it.errors) => key, val}}
+### {{key}}
+
+
+```solidity
+{{val.code}}
+```
+
+
+{{@if (val.notice)}}*{{val.notice}}*{{/if}}
+
+
+{{@if (val.details)}}{{val.details}}{{/if}}
+
+
+{{@if (Object.keys(val.inputs).length > 0)}}
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+{{@foreach(val.inputs) => key, val}}
+| {{key}} | {{val.type}} | {{val.description}} |
+{{/foreach}}
+{{/if}}
+
+{{/foreach}}
+{{/if}}
