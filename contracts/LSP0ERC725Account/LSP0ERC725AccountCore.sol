@@ -52,8 +52,10 @@ import {NoExtensionFoundForFunctionSelector} from "../LSP17ContractExtension/LSP
  *        https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md
  *
  * @author Fabian Vogelsteller <fabian@lukso.network>, Jean Cavallera (CJ42)
- * @dev A smart contract account including basic functionalities such as:
+ * @dev A smart contract account including basic functionalities.
  *
+ * @custom:functionalities
+ * 
  * - Detecting supported standards using ERC165
  *   https://eips.ethereum.org/EIPS/eip-165
  *
@@ -183,24 +185,30 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
+     * @custom:requirements
+     * - if a `value` is provided, the contract MUST have at least this amount in its balance to execute successfully.
+     * - if the operation type is {STATICCALL} or {DELEGATECALL}, `value` SHOULD be 0.
+     * - `target` SHOULD be address(0) when deploying a contract.
+     * - MUST pass when called by the owner or by an authorised address that pass the verification check performed on the owner accordinng to LSP20CallVerification specification
+     *
+     * @custom:emits
+     * - Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4
+     * - Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2
+     * - Emits a {ValueReceived} event when receiving native tokens.
+     * 
+     * @custom:tips
+     * - One tip
+     * 
+     * @custom:caution
+     * - First caution
+     * - Second caution
+     *
      * @dev Executes any call on other addresses.
      *
      * @param operationType The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3 DELEGATECALL = 4
      * @param target The address (smart contract/EOA) to interact with, `target` will be unused if a contract is created (operation 1 and 2)
      * @param value The amount of native tokens to transfer (in Wei).
      * @param data The call data to execute on `target`, or the bytecode of the contract to deploy
-     *
-     * Requirements:
-     *
-     * - if a `value` is provided, the contract MUST have at least this amount in its balance to execute successfully.
-     * - if the operation type is {STATICCALL} or {DELEGATECALL}, `value` SHOULD be 0.
-     * - `target` SHOULD be address(0) when deploying a contract.
-     * - MUST pass when called by the owner or by an authorised address that pass the verification check performed
-     * on the owner accordinng to LSP20 - CallVerification specification
-     *
-     * Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4
-     * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2
-     * Emits a {ValueReceived} event when receiving native tokens.
      */
     function execute(
         uint256 operationType,
@@ -235,25 +243,32 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
+     * @custom:requirements
+     * - The length of the parameters provided MUST be equal
+     * - if a `value` is provided, the contract MUST have at least this amount in its balance to execute successfully.
+     * - if the operation type is {STATICCALL} or {DELEGATECALL}, `value` SHOULD be 0.
+     * - `target` SHOULD be address(0) when deploying a contract.
+     * - MUST pass when called by the owner or by an authorised address that pass the verification check performed
+     * on the owner accordinng to LSP20CallVerification specification
+     *
+     * @custom:emits
+     * - Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4 (each iteration)
+     * - Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2 (each iteration)
+     * - Emits a {ValueReceived} event when receiving native tokens.
+     * 
+     * @custom:tips
+     * - First tip
+     * - Second tip
+     * 
+     * @custom:caution
+     * - One caution
+     * 
      * @dev Generic batch executor function that executes any call on other addresses
      *
      * @param operationsType The list of operations type used: CALL = 0; CREATE = 1; CREATE2 = 2; STATICCALL = 3; DELEGATECALL = 4
      * @param targets The list of addresses to call. `targets` will be unused if a contract is created (operation types 1 and 2).
      * @param values The list of native token amounts to transfer (in Wei)
      * @param datas The list of call data to execute on `targets`, or the creation bytecode of the contracts to deploy
-     *
-     * Requirements:
-     *
-     * - The length of the parameters provided MUST be equal
-     * - if a `value` is provided, the contract MUST have at least this amount in its balance to execute successfully.
-     * - if the operation type is {STATICCALL} or {DELEGATECALL}, `value` SHOULD be 0.
-     * - `target` SHOULD be address(0) when deploying a contract.
-     * - MUST pass when called by the owner or by an authorised address that pass the verification check performed
-     * on the owner accordinng to LSP20 - CallVerification specification
-     *
-     * Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4 (each iteration)
-     * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2 (each iteration)
-     * Emits a {ValueReceived} event when receiving native tokens.
      */
     function executeBatch(
         uint256[] memory operationsType,
@@ -488,22 +503,15 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @notice Achieves the goal of LSP14Ownable2Step by implementing a 2-step ownership transfer process.
      *
-     * @dev Sets the pending owner address as an address that should call {acceptOwnership} in order to complete
-     * the ownership transfer of the account.
-     *
-     * Notifies the pending owner via LSP1Standard by calling {universalReceiver} on the pending owner if it's
-     * an address that supports LSP1.
+     * @dev Sets the pending owner address as an address that should call {acceptOwnership} in order to complete the ownership transfer of the account.
+     * Notifies the pending owner via LSP1Standard by calling {universalReceiver} on the pending owner if it's an address that supports LSP1.
      *
      * @param _pendingOwner The address of the new pending owner.
      *
-     * Requirements:
-     *
-     * - MUST pass when called by the owner or by an authorized address that passes the verification check performed
-     *   on the owner according to LSP20 - CallVerification specification.
-     *
+     * @custom:requirements
+     * - MUST pass when called by the owner or by an authorized address that passes the verification check performed on the owner according to LSP20 - CallVerification specification.
      * - When notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferStarted').
-     *
-     * - pending owner cannot accept ownership in the same tx via the LSP1 hook.
+     * - Pending owner cannot accept ownership in the same tx via the LSP1 hook.
      */
     function transferOwnership(address _pendingOwner)
         public
@@ -563,7 +571,7 @@ abstract contract LSP0ERC725AccountCore is
      * - the current `owner()` will loose access to the functions restricted to the `owner()` only.
      * - the `pendingOwner()` will gain access to the functions restricted to the `owner()` only.
      *
-     * Requirements:
+     * @custom:requirements
      * - MUST be called by the pendingOwner.
      * - When notifying the previous owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferred_SenderNotification').
      * - When notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferred_RecipientNotification').
@@ -597,9 +605,9 @@ abstract contract LSP0ERC725AccountCore is
      * MUST pass when called by the owner or by an authorised address that pass the verification check performed
      * on the owner accordinng to LSP20 - CallVerification specification
      *
-     * WARNING: once ownership of the contract has been renounced, any functions
-     * that are restricted to be called by the owner will be permanently inaccessible,
-     * making these functions not callable anymore and unusable.
+     * @custom:danger
+     * Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
+     *
      */
     function renounceOwnership() public virtual override(LSP14Ownable2Step, OwnableUnset) {
         address _owner = owner();

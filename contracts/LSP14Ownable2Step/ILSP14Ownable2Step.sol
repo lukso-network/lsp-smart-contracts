@@ -45,7 +45,7 @@ interface ILSP14Ownable2Step {
      *
      * @param newOwner the address of the new owner.
      *
-     * Requirements:
+     * @custom:requirements
      * - `newOwner` MUST NOT accept ownership of the contract in the same transaction.
      */
     function transferOwnership(address newOwner) external;
@@ -57,7 +57,7 @@ interface ILSP14Ownable2Step {
      * - the current `owner()` will loose access to the functions restricted to the `owner()` only.
      * - the `pendingOwner()` will gain access to the functions restricted to the `owner()` only.
      *
-     * Requirements:
+     * @custom:requirements
      * - MUST be called by the pendingOwner.
      */
     function acceptOwnership() external;
@@ -68,9 +68,8 @@ interface ILSP14Ownable2Step {
      * 1. the first call will initiate the process of renouncing ownership.
      * 2. the second is used as a confirmation and will leave the contract without an owner.
      *
-     * WARNING: once ownership of the contract has been renounced, any functions
-     * that are restricted to be called by the owner will be permanently inaccessible,
-     * making these functions not callable anymore and unusable.
+     * @custom:danger
+     * Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
      */
     function renounceOwnership() external;
 }
