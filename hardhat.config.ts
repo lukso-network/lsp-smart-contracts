@@ -44,6 +44,20 @@ function getL16ChainConfig(): NetworkUserConfig {
   return config;
 }
 
+function getTestnetChainConfig(): NetworkUserConfig {
+  const config: NetworkUserConfig = {
+    live: true,
+    url: "https://rpc.testnet.lukso.network",
+    chainId: 4201,
+  };
+
+  if (process.env.CONTRACT_VERIFICATION_TESTNET_PK !== undefined) {
+    config["accounts"] = [process.env.CONTRACT_VERIFICATION_TESTNET_PK];
+  }
+
+  return config;
+}
+
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
@@ -60,6 +74,7 @@ const config: HardhatUserConfig = {
       //   accounts: [privateKey1, privateKey2, ...]
     },
     luksoL16: getL16ChainConfig(),
+    luksoTestnet: getTestnetChainConfig(),
   },
   namedAccounts: {
     owner: 0,
@@ -83,6 +98,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://explorer.execution.l16.lukso.network/api",
           browserURL: "https://explorer.execution.l16.lukso.network/",
+        },
+      },
+      {
+        network: "luksoTestnet",
+        chainId: 4201,
+        urls: {
+          apiURL: "https://explorer.execution.testnet.lukso.network/api",
+          browserURL: "https://explorer.execution.testnet.lukso.network/",
         },
       },
     ],
