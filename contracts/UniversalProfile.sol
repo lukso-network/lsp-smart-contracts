@@ -17,11 +17,17 @@ import {
  */
 contract UniversalProfile is LSP0ERC725Account {
     /**
-     * @notice Sets the owner of the contract and sets the SupportedStandards:LSP3UniversalProfile key
-     * @param newOwner the owner of the contract
+     * @notice Deploying the contract with owner set to: `initialOwner`
+     * @dev Set `initialOwner` as the contract owner and set the `SupportedStandards:LSP3UniversalProfile` data key
+     * in the ERC725Y data key/value store. The `constructor` also allows funding the contract on deployment.
+     *
+     * Emitted Events:
+     * - ValueReceived: when the contract is funded on deployment.
+     *
+     * @param initialOwner the owner of the contract
      */
-    constructor(address newOwner) payable LSP0ERC725Account(newOwner) {
-        // set key SupportedStandards:LSP3UniversalProfile
+    constructor(address initialOwner) payable LSP0ERC725Account(initialOwner) {
+        // set data key SupportedStandards:LSP3UniversalProfile
         _setData(_LSP3_SUPPORTED_STANDARDS_KEY, _LSP3_SUPPORTED_STANDARDS_VALUE);
     }
 }
