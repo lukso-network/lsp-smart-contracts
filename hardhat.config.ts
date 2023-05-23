@@ -50,6 +50,7 @@ const config: HardhatUserConfig = {
     hardhat: {
       live: false,
       saveDeployments: false,
+      allowBlocksWithSameTimestamp: true,
     },
     // public L14 test network
     luksoL14: {
