@@ -13,13 +13,13 @@ The following folder contains 3 files intended to be used as part of the CI/CD o
 The `deploy-verify.sh` command can also be used standalone (outside of the CI) from the root folder of the repository as follows.
 
 ```
-./scripts/ci/deploy-verify.sh -n luksoL16 -c UniversalProfile
+./scripts/ci/deploy-verify.sh -n luksoTesnet -c UniversalProfile
 ```
 
-It requires to specify a private key in a local `.env` file under the global variable `CONTRACT_VERIFICATION_PK`.
+It requires to specify a private key in a local `.env` file under the global variable `CONTRACT_VERIFICATION_TESTNET_PK`.
 
 ```
-CONTRACT_VERIFICATION_PK=0x...
+CONTRACT_VERIFICATION_TESTNET_PK=0x...
 ```
 
 The following arguments must be specified:
