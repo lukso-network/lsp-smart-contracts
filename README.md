@@ -115,6 +115,7 @@ The following audits and formal verification were conducted. All high-level issu
 - Watchpug Audit, 2022-12-15, Final Result: [Watchpug_audit_15_12_2022.pdf](./audits/Watchpug_audit_2022_12_15.pdf)
 - Runtime Verification - Formal Verification, 2023-02-20, Final Result: [RuntimeVerification_formalVerification_2023_02_20.pdf](./audits/RuntimeVerification_formalVerification_2023_02_20.pdf)
 - Trust Audit, 2023-04-13, Final Result: [Trust_audit_2023_04_13.pdf](./audits/Trust_audit_2023_04_13.pdf)
+- Watchpug Audit, 2023-04-21, Final Result: [Watchpug_audit_2023_04_21.pdf](./audits/Watchpug_audit_2023_04_21.pdf)
 
 ## Contributors ✨
 
