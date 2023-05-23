@@ -71,8 +71,11 @@ import {
   ERC725YDataKeys,
   PERMISSIONS,
   ALL_PERMISSIONS,
-  Errors,
-  EventSignatures,
+  ErrorSelectors,
+  EventSigHashes,
+  FunctionSelectors,
+  ContractsDocs,
+  StateVariables,
 } from "@lukso/lsp-smart-contracts";
 ```
 
@@ -102,12 +105,17 @@ import {
 
 ## Audits
 
-The following audits where conducted. All high-level issues were addressed, or were not deemed as critical.
+> **NB:** dates of the audit reports use the american date format YYYY-MM-DD.
 
-- Chainsulting Audit, 06-07-2022, Final Result: [Chainsulting_audit_06_07_2022.pdf](./audits/Chainsulting_audit_06_07_2022.pdf)
-- Quantstamp Audit, 20-10-2022, Final Result: [Quantstamp_audit_07_09_2022.pdf](./audits/Quantstamp_audit_07_09_2022.pdf)
-- Watchpug Audit, 20-10-2022, Final Result: [Watchpug_audit_20_10_2022.pdf](./audits/Watchpug_audit_20_10_2022.pdf)
-- Watchpug Audit, 15-12-2022, Final Result: [Watchpug_audit_15_12_2022.pdf](./audits/Watchpug_audit_15_12_2022.pdf)
+The following audits and formal verification were conducted. All high-level issues were addressed, or were not deemed as critical.
+
+- Chainsulting Audit, 2022-07-06, Final Result: [Chainsulting_audit_06_07_2022.pdf](./audits/Chainsulting_audit_2022_07_06.pdf)
+- Quantstamp Audit, 2022-09-07, Final Result: [Quantstamp_audit_07_09_2022.pdf](./audits/Quantstamp_audit_2022_09_07.pdf)
+- Watchpug Audit, 2022-10-20, Final Result: [Watchpug_audit_20_10_2022.pdf](./audits/Watchpug_audit_2022_10_20.pdf)
+- Watchpug Audit, 2022-12-15, Final Result: [Watchpug_audit_15_12_2022.pdf](./audits/Watchpug_audit_2022_12_15.pdf)
+- Runtime Verification - Formal Verification, 2023-02-20, Final Result: [RuntimeVerification_formalVerification_2023_02_20.pdf](./audits/RuntimeVerification_formalVerification_2023_02_20.pdf)
+- Trust Audit, 2023-04-13, Final Result: [Trust_audit_2023_04_13.pdf](./audits/Trust_audit_2023_04_13.pdf)
+- Watchpug Audit, 2023-04-21, Final Result: [Watchpug_audit_2023_04_21.pdf](./audits/Watchpug_audit_2023_04_21.pdf)
 
 ## Contributors ✨
 

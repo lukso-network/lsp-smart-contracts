@@ -18,6 +18,7 @@ import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-packager";
 import "hardhat-contract-sizer";
 import "hardhat-deploy";
+import "./scripts/ci/docs-generate";
 
 // Typescript types for web3.js
 import "@nomiclabs/hardhat-web3";
@@ -29,15 +30,15 @@ import "@nomiclabs/hardhat-web3";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
-function getL16ChainConfig(): NetworkUserConfig {
-  const config = {
+function getTestnetChainConfig(): NetworkUserConfig {
+  const config: NetworkUserConfig = {
     live: true,
-    url: "https://rpc.l16.lukso.network",
-    chainId: 2828,
+    url: "https://rpc.testnet.lukso.network",
+    chainId: 4201,
   };
 
-  if (process.env.CONTRACT_VERIFICATION_PK !== undefined) {
-    config["accounts"] = [process.env.CONTRACT_VERIFICATION_PK];
+  if (process.env.CONTRACT_VERIFICATION_TESTNET_PK !== undefined) {
+    config["accounts"] = [process.env.CONTRACT_VERIFICATION_TESTNET_PK];
   }
 
   return config;
@@ -49,38 +50,22 @@ const config: HardhatUserConfig = {
     hardhat: {
       live: false,
       saveDeployments: false,
+      allowBlocksWithSameTimestamp: true,
     },
-    // public L14 test network
-    luksoL14: {
-      live: true,
-      url: "https://rpc.l14.lukso.network",
-      chainId: 22,
-      //   accounts: [privateKey1, privateKey2, ...]
-    },
-    luksoL16: getL16ChainConfig(),
+    luksoTestnet: getTestnetChainConfig(),
   },
   namedAccounts: {
     owner: 0,
   },
   etherscan: {
-    // no API is required to verify contracts
-    // via the Blockscout instance of L14 or L16 network
     apiKey: "no-api-key-needed",
     customChains: [
       {
-        network: "luksoL14",
-        chainId: 22,
+        network: "luksoTestnet",
+        chainId: 4201,
         urls: {
-          apiURL: "https://blockscout.com/lukso/l14/api",
-          browserURL: "https://blockscout.com/lukso/l14",
-        },
-      },
-      {
-        network: "luksoL16",
-        chainId: 2828,
-        urls: {
-          apiURL: "https://explorer.execution.l16.lukso.network/api",
-          browserURL: "https://explorer.execution.l16.lukso.network/",
+          apiURL: "https://explorer.execution.testnet.lukso.network/api",
+          browserURL: "https://explorer.execution.testnet.lukso.network/",
         },
       },
     ],
@@ -105,6 +90,11 @@ const config: HardhatUserConfig = {
          * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
          */
         runs: 1000,
+      },
+      outputSelection: {
+        "*": {
+          "*": ["storageLayout"],
+        },
       },
     },
   },

@@ -1,10 +1,10 @@
 {
+  "plugins": ["prettier-plugin-solidity"],
   "overrides": [
     {
       "files": ["*.js", "*.,ts"],
       "options": {
-        "tabWidth": 4,
-        "useTabs": true,
+        "tabWidth": 2,
         "printWidth": 100,
         "trailingComma": "all",
         "singleQuote": true

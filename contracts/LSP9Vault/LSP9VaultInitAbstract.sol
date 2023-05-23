@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
-// interfaces
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -13,9 +10,7 @@ import {LSP9VaultCore} from "./LSP9VaultCore.sol";
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 
 // constants
-import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {
-    _INTERFACEID_LSP9,
     _LSP9_SUPPORTED_STANDARDS_KEY,
     _LSP9_SUPPORTED_STANDARDS_VALUE,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
@@ -29,6 +24,14 @@ import {
 abstract contract LSP9VaultInitAbstract is Initializable, LSP9VaultCore {
     using LSP1Utils for address;
 
+    /**
+     * @notice Initializing the contract owner to: `newOwner`
+     * @dev Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key.
+     * ERC725X & ERC725Y parent contracts are not initialised as they don't have
+     * non-zero initial state. If you decide to add non-zero initial state to any of those
+     * contracts, you MUST initialize them here
+     * @param newOwner the owner of the contract
+     */
     function _initialize(address newOwner) internal virtual onlyInitializing {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         OwnableUnset._setOwner(newOwner);

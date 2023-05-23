@@ -8,7 +8,6 @@ import {
 
 import {
   LSP9Vault__factory,
-  LSP9VaultInit__factory,
   UniversalProfile,
   LSP6KeyManager,
 } from "../../types";
@@ -25,265 +24,110 @@ import {
   shouldBehaveLikeLSP17,
 } from "../LSP17ContractExtension/LSP17Extendable.behaviour";
 
-import {
-  deployProxy,
-  setupProfileWithKeyManagerWithURD,
-} from "../utils/fixtures";
+import { setupProfileWithKeyManagerWithURD } from "../utils/fixtures";
 import { provider } from "../utils/helpers";
 import { BigNumber } from "ethers";
 
-describe("LSP9Vault", () => {
-  describe("when using LSP9Vault contract with constructor", () => {
-    const buildTestContext = async (
-      initialFunding?: number
-    ): Promise<LSP9TestContext> => {
-      const accounts = await getNamedAccounts();
-      const deployParams = {
-        newOwner: accounts.owner.address,
-        initialFunding,
-      };
-      const lsp9Vault = await new LSP9Vault__factory(accounts.owner).deploy(
-        deployParams.newOwner,
-        { value: initialFunding }
-      );
-
-      const [UP1, KM1, lsp1universalReceiverDelegateUP] =
-        await setupProfileWithKeyManagerWithURD(accounts.owner);
-
-      const universalProfile = UP1 as UniversalProfile;
-      const lsp6KeyManager = KM1 as LSP6KeyManager;
-
-      return {
-        accounts,
-        lsp9Vault,
-        deployParams,
-        universalProfile,
-        lsp6KeyManager,
-      };
+describe("LSP9Vault with constructor", () => {
+  const buildTestContext = async (
+    initialFunding?: number
+  ): Promise<LSP9TestContext> => {
+    const accounts = await getNamedAccounts();
+    const deployParams = {
+      newOwner: accounts.owner.address,
+      initialFunding,
     };
+    const lsp9Vault = await new LSP9Vault__factory(accounts.owner).deploy(
+      deployParams.newOwner,
+      { value: initialFunding }
+    );
 
-    const buildLSP14TestContext = async (
-      initialFunding?: number | BigNumber
-    ): Promise<LSP14TestContext> => {
-      const accounts = await ethers.getSigners();
-      const deployParams = { owner: accounts[0], initialFunding };
+    const [UP1, KM1, lsp1universalReceiverDelegateUP] =
+      await setupProfileWithKeyManagerWithURD(accounts.owner);
 
-      const lsp9Vault = await new LSP9Vault__factory(accounts[0]).deploy(
-        deployParams.owner.address,
-        { value: initialFunding }
-      );
+    const universalProfile = UP1 as UniversalProfile;
+    const lsp6KeyManager = KM1 as LSP6KeyManager;
 
-      const onlyOwnerRevertString =
-        "Only Owner or reentered Universal Receiver Delegate allowed";
-
-      return {
-        accounts,
-        contract: lsp9Vault,
-        deployParams,
-        onlyOwnerRevertString,
-      };
+    return {
+      accounts,
+      lsp9Vault,
+      deployParams,
+      universalProfile,
+      lsp6KeyManager,
     };
+  };
 
-    const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
-      const accounts = await ethers.getSigners();
-      const deployParams = {
-        owner: accounts[0],
-      };
-      const contract = await new LSP9Vault__factory(accounts[0]).deploy(
-        deployParams.owner.address
-      );
+  const buildLSP14TestContext = async (
+    initialFunding?: number | BigNumber
+  ): Promise<LSP14TestContext> => {
+    const accounts = await ethers.getSigners();
+    const deployParams = { owner: accounts[0], initialFunding };
 
-      return { accounts, contract, deployParams };
+    const lsp9Vault = await new LSP9Vault__factory(accounts[0]).deploy(
+      deployParams.owner.address,
+      { value: initialFunding }
+    );
+
+    const onlyOwnerRevertString =
+      "Only Owner or reentered Universal Receiver Delegate allowed";
+
+    return {
+      accounts,
+      contract: lsp9Vault,
+      deployParams,
+      onlyOwnerRevertString,
     };
+  };
 
-    [
-      { initialFunding: undefined },
-      { initialFunding: 0 },
-      { initialFunding: 5 },
-    ].forEach((testCase) => {
-      describe("when deploying the contract with or without value", () => {
-        let context: LSP9TestContext;
+  const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
+    const accounts = await ethers.getSigners();
+    const deployParams = {
+      owner: accounts[0],
+    };
+    const contract = await new LSP9Vault__factory(accounts[0]).deploy(
+      deployParams.owner.address
+    );
 
-        before(async () => {
-          context = await buildTestContext(testCase.initialFunding);
-        });
+    return { accounts, contract, deployParams };
+  };
 
-        it(`should have deployed with the correct funding amount (${testCase.initialFunding})`, async () => {
-          const balance = await provider.getBalance(context.lsp9Vault.address);
-          expect(balance).to.equal(testCase.initialFunding || 0);
-        });
-      });
-    });
-
-    describe("when deploying the contract", () => {
+  [
+    { initialFunding: undefined },
+    { initialFunding: 0 },
+    { initialFunding: 5 },
+  ].forEach((testCase) => {
+    describe("when deploying the contract with or without value", () => {
       let context: LSP9TestContext;
 
-      beforeEach(async () => {
-        context = await buildTestContext();
+      before(async () => {
+        context = await buildTestContext(testCase.initialFunding);
       });
 
-      describe("when initializing the contract", () => {
-        shouldInitializeLikeLSP9(async () => {
-          const { lsp9Vault, deployParams } = context;
-
-          return {
-            lsp9Vault,
-            deployParams,
-            initializeTransaction: context.lsp9Vault.deployTransaction,
-          };
-        });
+      it(`should have deployed with the correct funding amount (${testCase.initialFunding})`, async () => {
+        const balance = await provider.getBalance(context.lsp9Vault.address);
+        expect(balance).to.equal(testCase.initialFunding || 0);
       });
-    });
-
-    describe("when testing deployed contract", () => {
-      shouldBehaveLikeLSP9(buildTestContext);
-      shouldBehaveLikeLSP14(buildLSP14TestContext);
-      shouldBehaveLikeLSP17(buildLSP17TestContext);
     });
   });
 
-  describe("when using LSP9Vault contract with proxy", () => {
-    const buildTestContext = async (
-      initialFunding?: number | BigNumber
-    ): Promise<LSP9TestContext> => {
-      const accounts = await getNamedAccounts();
-      const deployParams = {
-        newOwner: accounts.owner.address,
-        initialFunding,
-      };
-
-      const lsp9VaultInit = await new LSP9VaultInit__factory(
-        accounts.owner
-      ).deploy();
-      const lsp9VaultProxy = await deployProxy(
-        lsp9VaultInit.address,
-        accounts.owner
-      );
-      const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy);
-
-      const [UP1, KM1, lsp1universalReceiverDelegateUP] =
-        await setupProfileWithKeyManagerWithURD(accounts.owner);
-
-      const universalProfile = UP1 as UniversalProfile;
-      const lsp6KeyManager = KM1 as LSP6KeyManager;
-
-      return {
-        accounts,
-        lsp9Vault,
-        deployParams,
-        universalProfile,
-        lsp6KeyManager,
-      };
-    };
-
-    const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
-      const accounts = await ethers.getSigners();
-      const deployParams = {
-        owner: accounts[0],
-      };
-
-      const lsp9VaultInit = await new LSP9VaultInit__factory(
-        accounts[0]
-      ).deploy();
-
-      const lsp9VaultProxy = await deployProxy(
-        lsp9VaultInit.address,
-        accounts[0]
-      );
-
-      const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy);
-
-      return { accounts, contract: lsp9Vault, deployParams };
-    };
-
-    const initializeProxy = async (context: LSP9TestContext) => {
-      return context.lsp9Vault["initialize(address)"](
-        context.deployParams.newOwner,
-        { value: context.deployParams.initialFunding }
-      );
-    };
-
-    describe("when deploying the base implementation contract", () => {
-      it("prevent any address from calling the initialize(...) function on the implementation", async () => {
-        const accounts = await ethers.getSigners();
-
-        const lsp9VaultInit = await new LSP9VaultInit__factory(
-          accounts[0]
-        ).deploy();
-
-        const randomCaller = accounts[1];
-
-        await expect(
-          lsp9VaultInit.initialize(randomCaller.address)
-        ).to.be.revertedWith("Initializable: contract is already initialized");
-      });
-    });
-
-    describe("when deploying the contract as proxy", () => {
-      let context: LSP9TestContext;
-
-      beforeEach(async () => {
-        context = await buildTestContext();
-      });
-
-      describe("when initializing the contract", () => {
-        shouldInitializeLikeLSP9(async () => {
-          const { lsp9Vault, deployParams } = context;
-          const initializeTransaction = await initializeProxy(context);
-
-          return {
-            lsp9Vault,
-            deployParams,
-            initializeTransaction,
-          };
-        });
-      });
-
-      describe("when calling initialize more than once", () => {
-        it("should revert", async () => {
-          await initializeProxy(context);
-
-          await expect(initializeProxy(context)).to.be.revertedWith(
-            "Initializable: contract is already initialized"
-          );
-        });
-      });
-    });
-
-    describe("when testing deployed contract", () => {
-      shouldBehaveLikeLSP9(() =>
-        buildTestContext().then(async (context) => {
-          await initializeProxy(context);
-
-          return context;
-        })
-      );
-
-      shouldBehaveLikeLSP14(async (initialFunding?: number | BigNumber) => {
-        let context = await buildTestContext(initialFunding);
-        let accounts = await ethers.getSigners();
-        await initializeProxy(context);
-
-        const onlyOwnerRevertString =
-          "Only Owner or reentered Universal Receiver Delegate allowed";
+  describe("when deploying the contract", () => {
+    describe("when initializing the contract", () => {
+      shouldInitializeLikeLSP9(async () => {
+        let context = await buildTestContext();
+        const { lsp9Vault, deployParams } = context;
 
         return {
-          accounts: accounts,
-          contract: context.lsp9Vault,
-          deployParams: { owner: context.accounts.owner },
-          onlyOwnerRevertString,
+          lsp9Vault,
+          deployParams,
+          initializeTransaction: context.lsp9Vault.deployTransaction,
         };
       });
-
-      shouldBehaveLikeLSP17(async () => {
-        let fallbackExtensionContext = await buildLSP17TestContext();
-
-        await fallbackExtensionContext.contract["initialize(address)"](
-          fallbackExtensionContext.deployParams.owner.address
-        );
-
-        return fallbackExtensionContext;
-      });
     });
+  });
+
+  describe("when testing deployed contract", () => {
+    shouldBehaveLikeLSP9(buildTestContext);
+    shouldBehaveLikeLSP14(buildLSP14TestContext);
+    shouldBehaveLikeLSP17(buildLSP17TestContext);
   });
 });

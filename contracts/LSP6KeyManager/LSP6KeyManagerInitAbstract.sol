@@ -2,7 +2,6 @@
 pragma solidity ^0.8.5;
 
 // modules
-import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {LSP6KeyManagerCore} from "./LSP6KeyManagerCore.sol";
 import {InvalidLSP6Target} from "./LSP6Errors.sol";

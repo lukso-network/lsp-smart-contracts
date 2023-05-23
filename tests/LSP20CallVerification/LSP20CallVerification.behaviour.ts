@@ -1,19 +1,11 @@
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
-
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { FakeContract, smock } from "@defi-wonderland/smock";
 
 // types
 import {
   UniversalProfile,
-  FirstCallReturnMagicValue__factory,
-  FirstCallReturnMagicValue,
-  BothCallReturnMagicValue__factory,
-  BothCallReturnMagicValue,
-  SecondCallReturnFailureValue__factory,
-  SecondCallReturnFailureValue,
-  SecondCallReturnExpandedValue__factory,
-  SecondCallReturnExpandedValue,
   UniversalProfile__factory,
   NotImplementingVerifyCall,
   NotImplementingVerifyCall__factory,
@@ -26,11 +18,12 @@ import {
   FirstCallReturnInvalidMagicValue,
   FirstCallReturnInvalidMagicValue__factory,
   LSP0ERC725Account,
+  ILSP20CallVerification,
+  ILSP20CallVerification__factory,
 } from "../../types";
 
 // constants
-import { OPERATION_TYPES } from "../../constants";
-import { testReentrancyScenarios } from "./LSP6KeyManager/tests/Reentrancy.test";
+import { LSP20_MAGIC_VALUES, OPERATION_TYPES } from "../../constants";
 
 export type LSP20TestContext = {
   accounts: SignerWithAddress[];
@@ -49,7 +42,7 @@ export const shouldBehaveLikeLSP20 = (
 
   describe("when testing lsp20 integration", () => {
     describe("when owner is an EOA", () => {
-      describe("when calling setData", () => {
+      describe("when calling `setData(bytes32,bytes)`", () => {
         const dataKey = ethers.utils.keccak256(
           ethers.utils.toUtf8Bytes("RandomKey1")
         );
@@ -58,18 +51,18 @@ export const shouldBehaveLikeLSP20 = (
         it("should pass when owner calls", async () => {
           await context.universalProfile
             .connect(context.deployParams.owner)
-            ["setData(bytes32,bytes)"](dataKey, dataValue);
+            .setData(dataKey, dataValue);
 
-          expect(
-            await context.universalProfile["getData(bytes32)"](dataKey)
-          ).to.equal(dataValue);
+          expect(await context.universalProfile.getData(dataKey)).to.equal(
+            dataValue
+          );
         });
 
         it("should revert when non-owner calls", async () => {
           await expect(
             context.universalProfile
               .connect(context.accounts[1])
-              ["setData(bytes32,bytes)"](dataKey, dataValue)
+              .setData(dataKey, dataValue)
           )
             .to.be.revertedWithCustomError(
               context.universalProfile,
@@ -78,7 +71,8 @@ export const shouldBehaveLikeLSP20 = (
             .withArgs(false, "0x");
         });
       });
-      describe("when calling setData array", () => {
+
+      describe("when calling `setData(bytes32[],bytes[])` array", () => {
         const dataKey = ethers.utils.keccak256(
           ethers.utils.toUtf8Bytes("RandomKey2")
         );
@@ -87,10 +81,10 @@ export const shouldBehaveLikeLSP20 = (
         it("should pass when owner calls", async () => {
           await context.universalProfile
             .connect(context.deployParams.owner)
-            ["setData(bytes32[],bytes[])"]([dataKey], [dataValue]);
+            .setDataBatch([dataKey], [dataValue]);
 
           expect(
-            await context.universalProfile["getData(bytes32[])"]([dataKey])
+            await context.universalProfile.getDataBatch([dataKey])
           ).to.deep.equal([dataValue]);
         });
 
@@ -98,7 +92,7 @@ export const shouldBehaveLikeLSP20 = (
           await expect(
             context.universalProfile
               .connect(context.accounts[1])
-              ["setData(bytes32[],bytes[])"]([dataKey], [dataValue])
+              .setDataBatch([dataKey], [dataValue])
           )
             .to.be.revertedWithCustomError(
               context.universalProfile,
@@ -108,7 +102,7 @@ export const shouldBehaveLikeLSP20 = (
         });
       });
 
-      describe("when calling execute", () => {
+      describe("when calling `execute(...)`", () => {
         it("should pass when owner calls", async () => {
           const executeParams = {
             operation: OPERATION_TYPES.CALL,
@@ -120,7 +114,7 @@ export const shouldBehaveLikeLSP20 = (
           await expect(
             context.universalProfile
               .connect(context.deployParams.owner)
-              ["execute(uint256,address,uint256,bytes)"](
+              .execute(
                 executeParams.operation,
                 executeParams.address,
                 executeParams.value,
@@ -147,7 +141,7 @@ export const shouldBehaveLikeLSP20 = (
           await expect(
             context.universalProfile
               .connect(context.accounts[1])
-              ["execute(uint256,address,uint256,bytes)"](
+              .execute(
                 executeParams.operation,
                 executeParams.address,
                 executeParams.value,
@@ -161,7 +155,8 @@ export const shouldBehaveLikeLSP20 = (
             .withArgs(false, "0x");
         });
       });
-      describe("when calling execute Array", () => {
+
+      describe("when calling `execute([],[],[],[])` Array", () => {
         it("should pass when the owner is calling", async () => {
           const operationsType = [OPERATION_TYPES.CALL];
           const recipients = [context.accounts[1].address];
@@ -170,12 +165,7 @@ export const shouldBehaveLikeLSP20 = (
 
           const tx = await context.universalProfile
             .connect(context.deployParams.owner)
-            ["execute(uint256[],address[],uint256[],bytes[])"](
-              operationsType,
-              recipients,
-              values,
-              datas
-            );
+            .executeBatch(operationsType, recipients, values, datas);
 
           await expect(tx)
             .to.emit(context.universalProfile, "Executed")
@@ -196,12 +186,7 @@ export const shouldBehaveLikeLSP20 = (
           await expect(
             context.universalProfile
               .connect(context.accounts[3])
-              ["execute(uint256[],address[],uint256[],bytes[])"](
-                operationsType,
-                recipients,
-                values,
-                datas
-              )
+              .executeBatch(operationsType, recipients, values, datas)
           )
             .to.be.revertedWithCustomError(
               context.universalProfile,
@@ -211,7 +196,7 @@ export const shouldBehaveLikeLSP20 = (
         });
       });
 
-      describe("when calling transferOwnership", () => {
+      describe("when calling `transferOwnership(...)`", () => {
         it("should pass when the owner is calling", async () => {
           const newOwner = context.accounts[1].address;
 
@@ -238,7 +223,7 @@ export const shouldBehaveLikeLSP20 = (
         });
       });
 
-      describe("when calling renounceOwnership", () => {
+      describe("when calling `renounceOwnership`", () => {
         it("should pass when the owner is calling", async () => {
           await network.provider.send("hardhat_mine", [
             ethers.utils.hexValue(500),
@@ -273,6 +258,7 @@ export const shouldBehaveLikeLSP20 = (
     describe("when the owner is a contract", () => {
       describe("that doesn't implement the verifyCall function", () => {
         let ownerContract: NotImplementingVerifyCall;
+
         before("deploying a new owner", async () => {
           ownerContract = await new NotImplementingVerifyCall__factory(
             context.deployParams.owner
@@ -287,25 +273,6 @@ export const shouldBehaveLikeLSP20 = (
             .acceptOwnership(context.universalProfile.address);
         });
 
-        it("should revert when calling LSP0 function", async () => {
-          const dataKey = ethers.utils.keccak256(
-            ethers.utils.toUtf8Bytes("RandomKey1")
-          );
-          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
-
-          await expect(
-            context.universalProfile["setData(bytes32,bytes)"](
-              dataKey,
-              dataValue
-            )
-          )
-            .to.be.revertedWithCustomError(
-              context.universalProfile,
-              "LSP20CallingVerifierFailed"
-            )
-            .withArgs(false);
-        });
-
         after("reverting to previous owner", async () => {
           await ownerContract
             .connect(context.deployParams.owner)
@@ -315,9 +282,25 @@ export const shouldBehaveLikeLSP20 = (
             .connect(context.deployParams.owner)
             .acceptOwnership();
         });
+
+        it("should revert when calling LSP0 function", async () => {
+          const dataKey = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("RandomKey1")
+          );
+          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
+
+          await expect(context.universalProfile.setData(dataKey, dataValue))
+            .to.be.revertedWithCustomError(
+              context.universalProfile,
+              "LSP20CallingVerifierFailed"
+            )
+            .withArgs(false);
+        });
       });
+
       describe("that implement the fallback function that doesn't return anything", () => {
         let ownerContract: ImplementingFallback;
+
         before("deploying a new owner", async () => {
           ownerContract = await new ImplementingFallback__factory(
             context.deployParams.owner
@@ -330,25 +313,6 @@ export const shouldBehaveLikeLSP20 = (
           await ownerContract.acceptOwnership(context.universalProfile.address);
         });
 
-        it("should revert when calling LSP0 function", async () => {
-          const dataKey = ethers.utils.keccak256(
-            ethers.utils.toUtf8Bytes("RandomKey1")
-          );
-          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
-
-          await expect(
-            context.universalProfile["setData(bytes32,bytes)"](
-              dataKey,
-              dataValue
-            )
-          )
-            .to.be.revertedWithCustomError(
-              context.universalProfile,
-              "LSP20InvalidMagicValue"
-            )
-            .withArgs(false, "0x");
-        });
-
         after("reverting to previous owner", async () => {
           await ownerContract
             .connect(context.deployParams.owner)
@@ -358,9 +322,25 @@ export const shouldBehaveLikeLSP20 = (
             .connect(context.deployParams.owner)
             .acceptOwnership();
         });
+
+        it("should revert when calling LSP0 function", async () => {
+          const dataKey = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("RandomKey1")
+          );
+          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
+
+          await expect(context.universalProfile.setData(dataKey, dataValue))
+            .to.be.revertedWithCustomError(
+              context.universalProfile,
+              "LSP20InvalidMagicValue"
+            )
+            .withArgs(false, "0x");
+        });
       });
+
       describe("that implement the fallback that return the magicValue", () => {
         let ownerContract: FallbackReturnMagicValue;
+
         before("deploying a new owner", async () => {
           ownerContract = await new FallbackReturnMagicValue__factory(
             context.deployParams.owner
@@ -373,20 +353,6 @@ export const shouldBehaveLikeLSP20 = (
           await ownerContract.acceptOwnership(context.universalProfile.address);
         });
 
-        it("should pass when calling LSP0 function", async () => {
-          const dataKey = ethers.utils.keccak256(
-            ethers.utils.toUtf8Bytes("RandomKey1")
-          );
-          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
-
-          await expect(
-            context.universalProfile["setData(bytes32,bytes)"](
-              dataKey,
-              dataValue
-            )
-          ).to.emit(ownerContract, "FallbackCalled");
-        });
-
         after("reverting to previous owner", async () => {
           await ownerContract
             .connect(context.deployParams.owner)
@@ -396,9 +362,22 @@ export const shouldBehaveLikeLSP20 = (
             .connect(context.deployParams.owner)
             .acceptOwnership();
         });
+
+        it("should pass when calling LSP0 function", async () => {
+          const dataKey = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("RandomKey1")
+          );
+          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
+
+          await expect(
+            context.universalProfile.setData(dataKey, dataValue)
+          ).to.emit(ownerContract, "FallbackCalled");
+        });
       });
+
       describe("that implements verifyCall but return an expanded bytes32 value", () => {
         let ownerContract: FirstCallReturnExpandedInvalidValue;
+
         before("deploying a new owner", async () => {
           ownerContract =
             await new FirstCallReturnExpandedInvalidValue__factory(
@@ -412,23 +391,6 @@ export const shouldBehaveLikeLSP20 = (
           await ownerContract.acceptOwnership(context.universalProfile.address);
         });
 
-        it("should revert when calling `setData(bytes32,bytes)`", async () => {
-          const dataKey = ethers.utils.keccak256(
-            ethers.utils.toUtf8Bytes("RandomKey1")
-          );
-          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
-
-          await expect(
-            context.universalProfile["setData(bytes32,bytes)"](
-              dataKey,
-              dataValue
-            )
-          ).to.be.revertedWithCustomError(
-            context.universalProfile,
-            "LSP20InvalidMagicValue"
-          );
-        });
-
         after("reverting to previous owner", async () => {
           await ownerContract
             .connect(context.deployParams.owner)
@@ -438,9 +400,25 @@ export const shouldBehaveLikeLSP20 = (
             .connect(context.deployParams.owner)
             .acceptOwnership();
         });
+
+        it("should revert when calling `setData(bytes32,bytes)`", async () => {
+          const dataKey = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("RandomKey1")
+          );
+          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
+
+          await expect(
+            context.universalProfile.setData(dataKey, dataValue)
+          ).to.be.revertedWithCustomError(
+            context.universalProfile,
+            "LSP20InvalidMagicValue"
+          );
+        });
       });
+
       describe("that implements verifyCall but doesn't return magic value", () => {
         let ownerContract: FirstCallReturnInvalidMagicValue;
+
         before("deploying a new owner", async () => {
           ownerContract = await new FirstCallReturnInvalidMagicValue__factory(
             context.deployParams.owner
@@ -453,25 +431,6 @@ export const shouldBehaveLikeLSP20 = (
           await ownerContract.acceptOwnership(context.universalProfile.address);
         });
 
-        it("should revert when calling `setData(bytes32,bytes)`", async () => {
-          const dataKey = ethers.utils.keccak256(
-            ethers.utils.toUtf8Bytes("RandomKey1")
-          );
-          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
-
-          await expect(
-            context.universalProfile["setData(bytes32,bytes)"](
-              dataKey,
-              dataValue
-            )
-          )
-            .to.be.revertedWithCustomError(
-              context.universalProfile,
-              "LSP20InvalidMagicValue"
-            )
-            .withArgs(false, "0xaabbccdd" + "0".repeat(56));
-        });
-
         after("reverting to previous owner", async () => {
           await ownerContract
             .connect(context.deployParams.owner)
@@ -481,15 +440,68 @@ export const shouldBehaveLikeLSP20 = (
             .connect(context.deployParams.owner)
             .acceptOwnership();
         });
+
+        it("should revert when calling `setData(bytes32,bytes)`", async () => {
+          const dataKey = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("RandomKey1")
+          );
+          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
+
+          await expect(context.universalProfile.setData(dataKey, dataValue))
+            .to.be.revertedWithCustomError(
+              context.universalProfile,
+              "LSP20InvalidMagicValue"
+            )
+            .withArgs(false, "0xaabbccdd" + "0".repeat(56));
+        });
       });
+
       describe("that implements verifyCall that returns a valid magicValue but doesn't invoke verifyCallResult", () => {
-        let firstCallReturnMagicValueContract: FirstCallReturnMagicValue;
+        let firstCallReturnMagicValueContract: FakeContract;
         let newUniversalProfile: UniversalProfile;
+
         before(async () => {
-          firstCallReturnMagicValueContract =
-            await new FirstCallReturnMagicValue__factory(
-              context.accounts[0]
-            ).deploy();
+          firstCallReturnMagicValueContract = await smock.fake(
+            ILSP20CallVerification__factory.abi
+          );
+          firstCallReturnMagicValueContract.lsp20VerifyCall.returns(
+            LSP20_MAGIC_VALUES.VERIFY_CALL.NO_POST_VERIFICATION
+          );
+
+          newUniversalProfile = await new UniversalProfile__factory(
+            context.accounts[0]
+          ).deploy(firstCallReturnMagicValueContract.address);
+        });
+
+        it("should pass when calling `setData(bytes32,bytes)`", async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+          await expect(
+            newUniversalProfile.connect(context.accounts[3]).setData(key, value)
+          )
+            .to.emit(newUniversalProfile, "DataChanged")
+            .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+
+          const result = await newUniversalProfile.getData(key);
+          expect(result).to.equal(value);
+        });
+      });
+
+      describe("that implements verifyCall that returns a valid magicValue with additional data after the first 32 bytes", () => {
+        let firstCallReturnMagicValueContract: FakeContract;
+        let newUniversalProfile: UniversalProfile;
+
+        before(async () => {
+          firstCallReturnMagicValueContract = await smock.fake(
+            ILSP20CallVerification__factory.abi
+          );
+          firstCallReturnMagicValueContract.lsp20VerifyCall.returns(
+            LSP20_MAGIC_VALUES.VERIFY_CALL.NO_POST_VERIFICATION +
+              "0".repeat(56) +
+              "0xcafecafecafecafecafecafecafecafecafecafe" +
+              "0".repeat(24)
+          );
 
           newUniversalProfile = await new UniversalProfile__factory(
             context.accounts[0]
@@ -514,13 +526,60 @@ export const shouldBehaveLikeLSP20 = (
       });
 
       describe("that implements verifyCall and verifyCallResult and both return magic value", () => {
-        let bothCallReturnMagicValueContract: BothCallReturnMagicValue;
+        let bothCallReturnMagicValueContract: FakeContract<ILSP20CallVerification>;
         let newUniversalProfile: UniversalProfile;
+
         before(async () => {
-          bothCallReturnMagicValueContract =
-            await new BothCallReturnMagicValue__factory(
-              context.accounts[0]
-            ).deploy();
+          bothCallReturnMagicValueContract = await smock.fake(
+            ILSP20CallVerification__factory.abi
+          );
+          bothCallReturnMagicValueContract.lsp20VerifyCall.returns(
+            LSP20_MAGIC_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION
+          );
+          bothCallReturnMagicValueContract.lsp20VerifyCallResult.returns(
+            LSP20_MAGIC_VALUES.VERIFY_CALL_RESULT
+          );
+
+          newUniversalProfile = await new UniversalProfile__factory(
+            context.accounts[0]
+          ).deploy(bothCallReturnMagicValueContract.address);
+        });
+
+        it("should pass when calling `setData(bytes32,bytes)`", async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+          await expect(
+            newUniversalProfile.connect(context.accounts[3]).setData(key, value)
+          )
+            .to.emit(newUniversalProfile, "DataChanged")
+            .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+
+          const result = await newUniversalProfile.getData(key);
+          expect(result).to.equal(value);
+        });
+      });
+
+      describe("that implements verifyCall and verifyCallResult and both return magic value plus additional data", () => {
+        let bothCallReturnMagicValueContract: FakeContract<ILSP20CallVerification>;
+        let newUniversalProfile: UniversalProfile;
+
+        before(async () => {
+          bothCallReturnMagicValueContract = await smock.fake(
+            ILSP20CallVerification__factory.abi
+          );
+          bothCallReturnMagicValueContract.lsp20VerifyCall.returns(
+            LSP20_MAGIC_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION +
+              "0".repeat(56) +
+              "0xcafecafecafecafecafecafecafecafecafecafe" +
+              "0".repeat(24)
+          );
+          bothCallReturnMagicValueContract.lsp20VerifyCallResult.returns(
+            LSP20_MAGIC_VALUES.VERIFY_CALL_RESULT +
+              "0".repeat(56) +
+              "0xcafecafecafecafecafecafecafecafecafecafe" +
+              "0".repeat(24)
+          );
 
           newUniversalProfile = await new UniversalProfile__factory(
             context.accounts[0]
@@ -545,13 +604,19 @@ export const shouldBehaveLikeLSP20 = (
       });
 
       describe("that implements verifyCallResult but return invalid magicValue", () => {
-        let secondCallReturnFailureContract: SecondCallReturnFailureValue;
+        let secondCallReturnFailureContract: FakeContract<ILSP20CallVerification>;
         let newUniversalProfile: UniversalProfile;
+
         before(async () => {
-          secondCallReturnFailureContract =
-            await new SecondCallReturnFailureValue__factory(
-              context.accounts[0]
-            ).deploy();
+          secondCallReturnFailureContract = await smock.fake(
+            ILSP20CallVerification__factory.abi
+          );
+          secondCallReturnFailureContract.lsp20VerifyCall.returns(
+            LSP20_MAGIC_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION
+          );
+          secondCallReturnFailureContract.lsp20VerifyCallResult.returns(
+            "0x00000000"
+          );
 
           newUniversalProfile = await new UniversalProfile__factory(
             context.accounts[0]
@@ -563,9 +628,7 @@ export const shouldBehaveLikeLSP20 = (
           let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
           await expect(
-            newUniversalProfile
-              .connect(context.accounts[3])
-              ["setData(bytes32,bytes)"](key, value)
+            newUniversalProfile.connect(context.accounts[3]).setData(key, value)
           ).to.be.revertedWithCustomError(
             newUniversalProfile,
             "LSP20InvalidMagicValue"
@@ -574,14 +637,22 @@ export const shouldBehaveLikeLSP20 = (
       });
 
       describe("that implements verifyCallResult but return an expanded magic value", () => {
-        let secondCallReturnExpandedValueContract: SecondCallReturnExpandedValue;
+        let secondCallReturnExpandedValueContract: FakeContract<ILSP20CallVerification>;
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {
-          secondCallReturnExpandedValueContract =
-            await new SecondCallReturnExpandedValue__factory(
-              context.accounts[0]
-            ).deploy();
+          secondCallReturnExpandedValueContract = await smock.fake(
+            ILSP20CallVerification__factory.abi
+          );
+          secondCallReturnExpandedValueContract.lsp20VerifyCall.returns(
+            LSP20_MAGIC_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION
+          );
+          secondCallReturnExpandedValueContract.lsp20VerifyCallResult.returns(
+            ethers.utils.solidityPack(
+              ["bytes4", "bytes28"],
+              [LSP20_MAGIC_VALUES.VERIFY_CALL_RESULT, "0x" + "0".repeat(56)]
+            )
+          );
 
           newUniversalProfile = await new UniversalProfile__factory(
             context.accounts[0]
@@ -593,14 +664,12 @@ export const shouldBehaveLikeLSP20 = (
           let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
           await expect(
-            newUniversalProfile
-              .connect(context.accounts[3])
-              ["setData(bytes32,bytes)"](key, value)
+            newUniversalProfile.connect(context.accounts[3]).setData(key, value)
           )
             .to.emit(newUniversalProfile, "DataChanged")
             .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
 
-          const result = await newUniversalProfile["getData(bytes32)"](key);
+          const result = await newUniversalProfile.getData(key);
           expect(result).to.equal(value);
         });
       });

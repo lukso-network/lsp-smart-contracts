@@ -17,7 +17,6 @@ import {LSP6ExecuteModule} from "./LSP6Modules/LSP6ExecuteModule.sol";
 import {LSP6OwnershipModule} from "./LSP6Modules/LSP6OwnershipModule.sol";
 
 // libraries
-import {GasLib} from "../Utils/GasLib.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
@@ -34,15 +33,15 @@ import {
     InvalidRelayNonce,
     NoPermissionsSet,
     InvalidERC725Function,
-    NotAuthorised,
-    CallerIsNotTheTarget,
-    CannotSendValueToSetData
+    CannotSendValueToSetData,
+    RelayCallBeforeStartTime,
+    RelayCallExpired
 } from "./LSP6Errors.sol";
 
 // constants
 import {
     SETDATA_SELECTOR,
-    SETDATA_ARRAY_SELECTOR,
+    SETDATA_BATCH_SELECTOR,
     EXECUTE_SELECTOR
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
@@ -56,6 +55,7 @@ import {
     _PERMISSION_SIGN,
     _PERMISSION_REENTRANCY
 } from "./LSP6Constants.sol";
+import "../LSP20CallVerification/LSP20Constants.sol";
 
 /**
  * @title Core implementation of the LSP6 Key Manager standard.
@@ -89,51 +89,13 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @inheritdoc ILSP20
-     */
-    function lsp20VerifyCall(
-        address caller,
-        uint256 msgValue,
-        bytes calldata data
-    ) external returns (bytes4) {
-        if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
-
-        bool isSetData = false;
-        if (bytes4(data) == SETDATA_SELECTOR || bytes4(data) == SETDATA_ARRAY_SELECTOR) {
-            isSetData = true;
-        }
-
-        _nonReentrantBefore(isSetData, caller);
-
-        _verifyPermissions(caller, msgValue, data);
-        emit VerifiedCall(msg.sender, msgValue, bytes4(data));
-
-        // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
-        return
-            isSetData
-                ? bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"00"))
-                : bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"01"));
-    }
-
-    /**
-     * @inheritdoc ILSP20
-     */
-    function lsp20VerifyCallResult(
-        bytes32, /*callHash*/
-        bytes memory /*result*/
-    ) external returns (bytes4) {
-        if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
-        _nonReentrantAfter();
-        return ILSP20.lsp20VerifyCallResult.selector;
-    }
-
-    /**
      * @dev See {IERC165-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return
             interfaceId == _INTERFACEID_LSP6 ||
             interfaceId == _INTERFACEID_ERC1271 ||
+            interfaceId == _INTERFACEID_LSP20_CALL_VERIFIER ||
             super.supportsInterface(interfaceId);
     }
 
@@ -153,8 +115,16 @@ abstract contract LSP6KeyManagerCore is
         view
         returns (bytes4 magicValue)
     {
-        address recoveredAddress = dataHash.recover(signature);
+        // if isValidSignature fail, the error is catched in returnedError
+        (address recoveredAddress, ECDSA.RecoverError returnedError) = ECDSA.tryRecover(
+            dataHash,
+            signature
+        );
 
+        // if recovering throws an error, return the fail value
+        if (returnedError != ECDSA.RecoverError.NoError) return _ERC1271_FAILVALUE;
+
+        // if the address recovered has SIGN permission return the ERC1271 magic value, otherwise the fail value
         return (
             ERC725Y(_target).getPermissionsFor(recoveredAddress).hasPermission(_PERMISSION_SIGN)
                 ? _ERC1271_MAGICVALUE
@@ -172,7 +142,7 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(uint256[] calldata values, bytes[] calldata payloads)
+    function executeBatch(uint256[] calldata values, bytes[] calldata payloads)
         public
         payable
         virtual
@@ -185,12 +155,16 @@ abstract contract LSP6KeyManagerCore is
         bytes[] memory results = new bytes[](payloads.length);
         uint256 totalValues;
 
-        for (uint256 ii; ii < payloads.length; ii = GasLib.uncheckedIncrement(ii)) {
+        for (uint256 ii; ii < payloads.length; ) {
             if ((totalValues += values[ii]) > msg.value) {
                 revert LSP6BatchInsufficientValueSent(totalValues, msg.value);
             }
 
             results[ii] = _execute(values[ii], payloads[ii]);
+
+            unchecked {
+                ++ii;
+            }
         }
 
         if (totalValues < msg.value) {
@@ -206,23 +180,26 @@ abstract contract LSP6KeyManagerCore is
     function executeRelayCall(
         bytes memory signature,
         uint256 nonce,
+        uint256 validityTimestamps,
         bytes calldata payload
     ) public payable virtual returns (bytes memory) {
-        return _executeRelayCall(signature, nonce, msg.value, payload);
+        return _executeRelayCall(signature, nonce, validityTimestamps, msg.value, payload);
     }
 
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function executeRelayCall(
+    function executeRelayCallBatch(
         bytes[] memory signatures,
         uint256[] calldata nonces,
+        uint256[] calldata validityTimestamps,
         uint256[] calldata values,
         bytes[] calldata payloads
     ) public payable virtual returns (bytes[] memory) {
         if (
             signatures.length != nonces.length ||
-            nonces.length != values.length ||
+            nonces.length != validityTimestamps.length ||
+            validityTimestamps.length != values.length ||
             values.length != payloads.length
         ) {
             revert BatchExecuteRelayCallParamsLengthMismatch();
@@ -231,12 +208,22 @@ abstract contract LSP6KeyManagerCore is
         bytes[] memory results = new bytes[](payloads.length);
         uint256 totalValues;
 
-        for (uint256 ii; ii < payloads.length; ii = GasLib.uncheckedIncrement(ii)) {
+        for (uint256 ii; ii < payloads.length; ) {
             if ((totalValues += values[ii]) > msg.value) {
                 revert LSP6BatchInsufficientValueSent(totalValues, msg.value);
             }
 
-            results[ii] = _executeRelayCall(signatures[ii], nonces[ii], values[ii], payloads[ii]);
+            results[ii] = _executeRelayCall(
+                signatures[ii],
+                nonces[ii],
+                validityTimestamps[ii],
+                values[ii],
+                payloads[ii]
+            );
+
+            unchecked {
+                ++ii;
+            }
         }
 
         if (totalValues < msg.value) {
@@ -244,6 +231,70 @@ abstract contract LSP6KeyManagerCore is
         }
 
         return results;
+    }
+
+    /**
+     * @inheritdoc ILSP20
+     */
+    function lsp20VerifyCall(
+        address caller,
+        uint256 msgValue,
+        bytes calldata data
+    ) external returns (bytes4) {
+        bool isSetData = false;
+        if (bytes4(data) == SETDATA_SELECTOR || bytes4(data) == SETDATA_BATCH_SELECTOR) {
+            isSetData = true;
+        }
+
+        // If target is invoking the verification, emit the event and change the reentrancy guard
+        if (msg.sender == _target) {
+            bool isReentrantCall = _nonReentrantBefore(isSetData, caller);
+
+            _verifyPermissions(caller, msgValue, data);
+            emit VerifiedCall(caller, msgValue, bytes4(data));
+
+            // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
+            return
+                isSetData || isReentrantCall
+                    ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
+                    : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
+        }
+        // If a different address is invoking the verification, do not change the state
+        // and do read-only verification
+        else {
+            bool isReentrantCall = _reentrancyStatus;
+
+            if (isReentrantCall) {
+                _requirePermissions(
+                    caller,
+                    ERC725Y(_target).getPermissionsFor(caller),
+                    _PERMISSION_REENTRANCY
+                );
+            }
+
+            _verifyPermissions(caller, msgValue, data);
+
+            // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
+            return
+                isSetData || isReentrantCall
+                    ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
+                    : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
+        }
+    }
+
+    /**
+     * @inheritdoc ILSP20
+     */
+    function lsp20VerifyCallResult(
+        bytes32, /*callHash*/
+        bytes memory /*result*/
+    ) external returns (bytes4) {
+        // If it's the target calling, set back the reentrancy guard
+        // to false, if not return the magic value
+        if (msg.sender == _target) {
+            _nonReentrantAfter();
+        }
+        return _LSP20_VERIFY_CALL_RESULT_MAGIC_VALUE;
     }
 
     function _execute(uint256 msgValue, bytes calldata payload)
@@ -255,19 +306,19 @@ abstract contract LSP6KeyManagerCore is
             revert InvalidPayload(payload);
         }
 
-        bool isSetData;
-        if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_ARRAY_SELECTOR) {
+        bool isSetData = false;
+        if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_BATCH_SELECTOR) {
             isSetData = true;
         }
 
-        _nonReentrantBefore(isSetData, msg.sender);
+        bool isReentrantCall = _nonReentrantBefore(isSetData, msg.sender);
 
         _verifyPermissions(msg.sender, msgValue, payload);
         emit VerifiedCall(msg.sender, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
 
-        if (!isSetData) {
+        if (!isReentrantCall && !isSetData) {
             _nonReentrantAfter();
         }
 
@@ -277,6 +328,7 @@ abstract contract LSP6KeyManagerCore is
     function _executeRelayCall(
         bytes memory signature,
         uint256 nonce,
+        uint256 validityTimestamps,
         uint256 msgValue,
         bytes calldata payload
     ) internal virtual returns (bytes memory) {
@@ -288,6 +340,7 @@ abstract contract LSP6KeyManagerCore is
             LSP6_VERSION,
             block.chainid,
             nonce,
+            validityTimestamps,
             msgValue,
             payload
         );
@@ -296,12 +349,12 @@ abstract contract LSP6KeyManagerCore is
             signature
         );
 
-        bool isSetData;
-        if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_ARRAY_SELECTOR) {
+        bool isSetData = false;
+        if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_BATCH_SELECTOR) {
             isSetData = true;
         }
 
-        _nonReentrantBefore(isSetData, signer);
+        bool isReentrantCall = _nonReentrantBefore(isSetData, signer);
 
         if (!_isValidNonce(signer, nonce)) {
             revert InvalidRelayNonce(signer, nonce, signature);
@@ -310,12 +363,25 @@ abstract contract LSP6KeyManagerCore is
         // increase nonce after successful verification
         _nonceStore[signer][nonce >> 128]++;
 
+        if (validityTimestamps != 0) {
+            uint128 startingTimestamp = uint128(validityTimestamps >> 128);
+            uint128 endingTimestamp = uint128(validityTimestamps);
+
+            // solhint-disable not-rely-on-time
+            if (block.timestamp < startingTimestamp) {
+                revert RelayCallBeforeStartTime();
+            }
+            if (block.timestamp > endingTimestamp) {
+                revert RelayCallExpired();
+            }
+        }
+
         _verifyPermissions(signer, msgValue, payload);
         emit VerifiedCall(signer, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
 
-        if (!isSetData) {
+        if (!isReentrantCall && !isSetData) {
             _nonReentrantAfter();
         }
 
@@ -353,10 +419,11 @@ abstract contract LSP6KeyManagerCore is
      * @param idx (channel id + nonce within the channel)
      */
     function _isValidNonce(address from, uint256 idx) internal view virtual returns (bool) {
-        // idx % (1 << 128) = nonce
-        // (idx >> 128) = channel
-        // equivalent to: return (nonce == _nonceStore[_from][channel]
-        return (idx % (1 << 128)) == (_nonceStore[from][idx >> 128]);
+        uint256 mask = ~uint128(0);
+        // Alternatively:
+        // uint256 mask = (1<<128)-1;
+        // uint256 mask = 0xffffffffffffffffffffffffffffffff;
+        return (idx & mask) == (_nonceStore[from][idx >> 128]);
     }
 
     /**
@@ -381,8 +448,8 @@ abstract contract LSP6KeyManagerCore is
 
             LSP6SetDataModule._verifyCanSetData(_target, from, permissions, inputKey, inputValue);
 
-            // ERC725Y.setData(bytes32[],bytes[])
-        } else if (erc725Function == SETDATA_ARRAY_SELECTOR) {
+            // ERC725Y.setDataBatch(bytes32[],bytes[])
+        } else if (erc725Function == SETDATA_BATCH_SELECTOR) {
             if (msgValue != 0) revert CannotSendValueToSetData();
             (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi.decode(
                 payload[4:],
@@ -416,8 +483,13 @@ abstract contract LSP6KeyManagerCore is
      * the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
      * Used in the beginning of the `nonReentrant` modifier, before the method execution starts.
      */
-    function _nonReentrantBefore(bool isSetData, address from) internal virtual {
-        if (_reentrancyStatus) {
+    function _nonReentrantBefore(bool isSetData, address from)
+        internal
+        virtual
+        returns (bool isReentrantCall)
+    {
+        isReentrantCall = _reentrancyStatus;
+        if (isReentrantCall) {
             // CHECK the caller has REENTRANCY permission
             _requirePermissions(
                 from,

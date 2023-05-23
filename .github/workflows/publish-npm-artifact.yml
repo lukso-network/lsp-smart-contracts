@@ -31,7 +31,7 @@ jobs:
 
       - name: Publish
         run: |
-          npm run build:tsc
+          npm run build:js
           npm run package
           npm publish --access public
         env:

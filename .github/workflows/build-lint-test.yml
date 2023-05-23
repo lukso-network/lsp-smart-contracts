@@ -38,6 +38,7 @@ jobs:
             artifacts
             node_modules
             types
+            contracts.ts
           key: ${{ github.run_id }}
 
   test-suites:
@@ -46,16 +47,25 @@ jobs:
         lsp:
           [
             "up",
+            "upinit",
             "lsp1",
             "lsp2",
             "lsp4",
             "lsp6",
+            "lsp6init",
             "lsp7",
+            "lsp7init",
             "lsp8",
+            "lsp8init",
             "lsp9",
+            "lsp9init",
             "lsp11",
+            "lsp11init",
             "lsp20",
+            "lsp20init",
             "universalfactory",
+            "reentrancy",
+            "reentrancyinit",
             "mocks",
           ]
 
@@ -72,6 +82,7 @@ jobs:
             artifacts
             node_modules
             types
+            contracts.ts
           key: ${{ github.run_id }}
 
       - name: Use Node.js v16

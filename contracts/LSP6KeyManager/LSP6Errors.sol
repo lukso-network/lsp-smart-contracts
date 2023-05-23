@@ -144,12 +144,6 @@ error DelegateCallDisallowedViaKeyManager();
 error InvalidPayload(bytes payload);
 
 /**
- * @dev reverts when the caller is not the linked target
- * @param caller The address calling lsp20 related functions
- */
-error CallerIsNotTheTarget(address caller);
-
-/**
  * @dev reverts when sending value to the `setData(..)` functions
  */
 error CannotSendValueToSetData();
@@ -158,3 +152,13 @@ error CannotSendValueToSetData();
  * @dev reverts when calling the KeyManager through execute(..)
  */
 error CallingKeyManagerNotAllowed();
+
+/**
+ * @dev reverts when relay call start timestamp is bigger than the current timestamp
+ */
+error RelayCallBeforeStartTime();
+
+/**
+ * @dev reverts when the period to execute the relay call has expired
+ */
+error RelayCallExpired();

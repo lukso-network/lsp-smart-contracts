@@ -1,13 +1,12 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { FakeContract, smock } from "@defi-wonderland/smock";
+
 import {
   LSP0ERC725Account,
   LSP9Vault,
   CheckerExtension__factory,
-  CheckerExtension,
-  RevertStringExtension,
   ERC165Extension,
   ERC165Extension__factory,
   RevertStringExtension__factory,
@@ -15,10 +14,6 @@ import {
   RevertCustomExtension__factory,
   EmitEventExtension,
   EmitEventExtension__factory,
-  NameExtension,
-  NameExtension__factory,
-  AgeExtension__factory,
-  AgeExtension,
   TransferExtension__factory,
   TransferExtension,
   ReenterAccountExtension__factory,
@@ -31,7 +26,9 @@ import {
   RevertFallbackExtension__factory,
 } from "../../types";
 
+// helpers
 import { abiCoder, provider } from "../utils/helpers";
+
 // constants
 import { ERC725YDataKeys } from "../../constants";
 
@@ -307,14 +304,14 @@ export const shouldBehaveLikeLSP17 = (
             });
 
             describe("when the extension is set", () => {
-              beforeEach(async () => {
+              before(async () => {
                 const checkerExtension = await new CheckerExtension__factory(
                   context.accounts[0]
                 ).deploy();
 
                 await context.contract
                   .connect(context.deployParams.owner)
-                  ["setData(bytes32,bytes)"](
+                  .setData(
                     checkMsgVariableFunctionExtensionHandlerKey,
                     checkerExtension.address
                   );
@@ -383,7 +380,7 @@ export const shouldBehaveLikeLSP17 = (
         });
 
         describe("when calling an extension that reverts with string error", () => {
-          beforeEach(async () => {
+          before(async () => {
             const revertStringExtension =
               await new RevertStringExtension__factory(
                 context.accounts[0]
@@ -391,7 +388,7 @@ export const shouldBehaveLikeLSP17 = (
 
             await context.contract
               .connect(context.deployParams.owner)
-              ["setData(bytes32,bytes)"](
+              .setData(
                 revertStringFunctionExtensionHandlerKey,
                 revertStringExtension.address
               );
@@ -416,14 +413,15 @@ export const shouldBehaveLikeLSP17 = (
 
         describe("when calling an extension that reverts with Custom error with tx.origin and msg.sender as parameters", () => {
           let revertCustomExtension: RevertCustomExtension;
-          beforeEach(async () => {
+
+          before(async () => {
             revertCustomExtension = await new RevertCustomExtension__factory(
               context.accounts[0]
             ).deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
-              ["setData(bytes32,bytes)"](
+              .setData(
                 revertCustomFunctionExtensionHandlerKey,
                 revertCustomExtension.address
               );
@@ -449,14 +447,15 @@ export const shouldBehaveLikeLSP17 = (
 
         describe("when calling an extension that emits an event", () => {
           let emitEventExtension: EmitEventExtension;
-          beforeEach(async () => {
+
+          before(async () => {
             emitEventExtension = await new EmitEventExtension__factory(
               context.accounts[0]
             ).deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
-              ["setData(bytes32,bytes)"](
+              .setData(
                 emitEventFunctionExtensionHandlerKey,
                 emitEventExtension.address
               );
@@ -474,18 +473,29 @@ export const shouldBehaveLikeLSP17 = (
         });
 
         describe("when calling an extension that returns a string", () => {
-          let nameExtension: NameExtension;
-          beforeEach(async () => {
-            nameExtension = await new NameExtension__factory(
-              context.accounts[0]
-            ).deploy();
+          let nameExtension: FakeContract;
+
+          before(async () => {
+            nameExtension = await smock.fake([
+              {
+                inputs: [],
+                name: "name",
+                outputs: [
+                  {
+                    internalType: "string",
+                    name: "",
+                    type: "string",
+                  },
+                ],
+                stateMutability: "view",
+                type: "function",
+              },
+            ]);
+            nameExtension.name.returns("LUKSO");
 
             await context.contract
               .connect(context.deployParams.owner)
-              ["setData(bytes32,bytes)"](
-                nameFunctionExtensionHandlerKey,
-                nameExtension.address
-              );
+              .setData(nameFunctionExtensionHandlerKey, nameExtension.address);
           });
 
           it("should pass and return the name correctly", async () => {
@@ -502,18 +512,29 @@ export const shouldBehaveLikeLSP17 = (
         });
 
         describe("when calling an extension that returns a number", () => {
-          let ageExtension: AgeExtension;
-          beforeEach(async () => {
-            ageExtension = await new AgeExtension__factory(
-              context.accounts[0]
-            ).deploy();
+          let ageExtension: FakeContract;
+
+          before(async () => {
+            ageExtension = await smock.fake([
+              {
+                inputs: [],
+                name: "age",
+                outputs: [
+                  {
+                    internalType: "uint256",
+                    name: "",
+                    type: "uint256",
+                  },
+                ],
+                stateMutability: "view",
+                type: "function",
+              },
+            ]);
+            ageExtension.age.returns(20);
 
             await context.contract
               .connect(context.deployParams.owner)
-              ["setData(bytes32,bytes)"](
-                ageFunctionExtensionHandlerKey,
-                ageExtension.address
-              );
+              .setData(ageFunctionExtensionHandlerKey, ageExtension.address);
           });
 
           it("should pass and return the age correctly", async () => {
@@ -529,14 +550,15 @@ export const shouldBehaveLikeLSP17 = (
 
         describe("when calling an extension that modify the state of the extension", () => {
           let transferExtension: TransferExtension;
-          beforeEach(async () => {
+
+          before(async () => {
             transferExtension = await new TransferExtension__factory(
               context.accounts[0]
             ).deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
-              ["setData(bytes32,bytes)"](
+              .setData(
                 transferFunctionExtensionHandlerKey,
                 transferExtension.address
               );
@@ -570,7 +592,8 @@ export const shouldBehaveLikeLSP17 = (
 
         describe("when calling an extension that reenter the fallback function of the account", () => {
           let reenterAccountExtension: ReenterAccountExtension;
-          beforeEach(async () => {
+
+          before(async () => {
             reenterAccountExtension =
               await new ReenterAccountExtension__factory(
                 context.accounts[0]
@@ -578,7 +601,7 @@ export const shouldBehaveLikeLSP17 = (
 
             await context.contract
               .connect(context.deployParams.owner)
-              ["setData(bytes32,bytes)"](
+              .setData(
                 reenterAccountFunctionExtensionHandlerKey,
                 reenterAccountExtension.address
               );
@@ -602,7 +625,8 @@ export const shouldBehaveLikeLSP17 = (
           describe("when reentering with a call to an extension that emits an event", () => {
             describe("when reentering before setting the extension", () => {
               let emitEventExtension: EmitEventExtension;
-              beforeEach(async () => {
+
+              before(async () => {
                 emitEventExtension = await new EmitEventExtension__factory(
                   context.accounts[0]
                 ).deploy();
@@ -625,14 +649,15 @@ export const shouldBehaveLikeLSP17 = (
             });
             describe("when reentering after setting the extension", () => {
               let emitEventExtension: EmitEventExtension;
-              beforeEach(async () => {
+
+              before(async () => {
                 emitEventExtension = await new EmitEventExtension__factory(
                   context.accounts[0]
                 ).deploy();
 
                 await context.contract
                   .connect(context.deployParams.owner)
-                  ["setData(bytes32,bytes)"](
+                  .setData(
                     emitEventFunctionExtensionHandlerKey,
                     emitEventExtension.address
                   );
@@ -673,7 +698,7 @@ export const shouldBehaveLikeLSP17 = (
 
               await context.contract
                 .connect(context.deployParams.owner)
-                ["setData(bytes32,bytes)"](
+                .setData(
                   supportsInterfaceFunctionExtensionHandlerKey,
                   erc165Extension.address
                 );
@@ -691,7 +716,8 @@ export const shouldBehaveLikeLSP17 = (
     describe("when calling with calldata that is not checked for extension", () => {
       describe("when calling with a payload of length less than 4bytes", () => {
         let revertFallbackExtension: RevertFallbackExtension;
-        beforeEach(async () => {
+
+        before(async () => {
           revertFallbackExtension = await new RevertFallbackExtension__factory(
             context.accounts[0]
           ).deploy();
@@ -703,7 +729,7 @@ export const shouldBehaveLikeLSP17 = (
 
           await context.contract
             .connect(context.deployParams.owner)
-            ["setData(bytes32,bytes)"](
+            .setData(
               bytes1ZeroPaddedExtensionHandlerKey,
               revertFallbackExtension.address
             );
@@ -794,7 +820,8 @@ export const shouldBehaveLikeLSP17 = (
         describe("when there is an extension set for bytes4(0)", () => {
           describe("when setting an extension that reverts", () => {
             let revertFallbackExtension: RevertFallbackExtension;
-            beforeEach(async () => {
+
+            before(async () => {
               revertFallbackExtension =
                 await new RevertFallbackExtension__factory(
                   context.accounts[0]
@@ -807,7 +834,7 @@ export const shouldBehaveLikeLSP17 = (
 
               await context.contract
                 .connect(context.deployParams.owner)
-                ["setData(bytes32,bytes)"](
+                .setData(
                   bytes1ZeroPaddedExtensionHandlerKey,
                   revertFallbackExtension.address
                 );
@@ -850,11 +877,13 @@ export const shouldBehaveLikeLSP17 = (
     describe("use cases", async () => {
       describe("when interacting with a contract that require the recipient to implement onERC721Received function to mint", () => {
         let token: RequireCallbackToken;
-        beforeEach(async () => {
+
+        before(async () => {
           token = await new RequireCallbackToken__factory(
             context.accounts[0]
           ).deploy();
         });
+
         describe("when minitng to the account", () => {
           describe("before setting the onERC721ReceivedExtension", () => {
             it("should fail since onERC721Received is not implemented", async () => {
@@ -864,7 +893,8 @@ export const shouldBehaveLikeLSP17 = (
 
           describe("after setting the onERC721ReceivedExtension", () => {
             let onERC721ReceivedExtension: OnERC721ReceivedExtension;
-            beforeEach(async () => {
+
+            before(async () => {
               onERC721ReceivedExtension =
                 await new OnERC721ReceivedExtension__factory(
                   context.accounts[0]
@@ -872,7 +902,7 @@ export const shouldBehaveLikeLSP17 = (
 
               await context.contract
                 .connect(context.deployParams.owner)
-                ["setData(bytes32,bytes)"](
+                .setData(
                   onERC721ReceivedFunctionExtensionHandlerKey,
                   onERC721ReceivedExtension.address
                 );

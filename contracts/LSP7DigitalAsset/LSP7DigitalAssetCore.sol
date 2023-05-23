@@ -7,12 +7,6 @@ import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 
 // libraries
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import {GasLib} from "../Utils/GasLib.sol";
-
-// modules
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-
-import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // errors
 import "./LSP7Errors.sol";
@@ -27,19 +21,22 @@ import {_TYPEID_LSP7_TOKENSSENDER, _TYPEID_LSP7_TOKENSRECIPIENT} from "./LSP7Con
  * @dev Core Implementation of a LSP7 compliant contract.
  *
  * This contract implement the core logic of the functions for the {ILSP7DigitalAsset} interface.
+ *
+ * Similar to ERC20, the non-standard {decreaseAllowance} and {increaseAllowance}
+ * functions have been added to mitigate the well-known issues around setting allowances.
  */
 abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     // --- Storage
 
-    bool internal _isNonDivisible;
-
-    uint256 internal _existingTokens;
-
     // Mapping from `tokenOwner` to an `amount` of tokens
-    mapping(address => uint256) internal _tokenOwnerBalances;
+    mapping(address => uint256) private _tokenOwnerBalances;
 
     // Mapping a `tokenOwner` to an `operator` to `amount` of tokens.
-    mapping(address => mapping(address => uint256)) internal _operatorAuthorizedAmount;
+    mapping(address => mapping(address => uint256)) private _operatorAuthorizedAmount;
+
+    uint256 private _existingTokens;
+
+    bool internal _isNonDivisible;
 
     // --- Token queries
 
@@ -155,9 +152,66 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7InvalidTransferBatch();
         }
 
-        for (uint256 i = 0; i < fromLength; i = GasLib.uncheckedIncrement(i)) {
+        for (uint256 i = 0; i < fromLength; ) {
             // using the public transfer function to handle updates to operator authorized amounts
             transfer(from[i], to[i], amount[i], allowNonLSP1Recipient[i], data[i]);
+
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
+    /**
+     * @notice Increase the allowance of `operator` by +`addedAmount`
+     * @dev Atomically increases the allowance granted to `operator` by the caller.
+     *
+     * This is an alternative approach to {authorizeOperator} that can be used as a mitigation
+     * for problems described in {ILSP7DigitalAsset}.
+     *
+     * Emits an {AuthorizedOperator} event indicating the updated allowance.
+     *
+     * @param operator the operator to increase the allowance for `msg.sender`
+     * @param addedAmount the additional amount to add on top of the current operator's allowance
+     *
+     * @dev Requirements:
+     *  - `operator` cannot be the same address as `msg.sender`
+     *  - `operator` cannot be the zero address.
+     */
+    function increaseAllowance(address operator, uint256 addedAmount) public virtual {
+        _updateOperator(
+            msg.sender,
+            operator,
+            authorizedAmountFor(operator, msg.sender) + addedAmount
+        );
+    }
+
+    /**
+     * @notice Decrease the allowance of `operator` by -`substractedAmount`
+     * @dev Atomically decreases the allowance granted to `operator` by the caller.
+     * This is an alternative approach to {authorizeOperator} that can be used as a mitigation
+     * for problems described in {ILSP7DigitalAsset}
+     *
+     * Emits:
+     *  - an {AuthorizedOperator} event indicating the updated allowance after decreasing it.
+     *  - a {RevokeOperator} event if `substractedAmount` is the full allowance,
+     *    indicating `operator` does not have any allowance left for `msg.sender`.
+     *
+     * @param operator the operator to decrease allowance for `msg.sender`
+     * @param substractedAmount the amount to decrease by in the operator's allowance.
+     *
+     * @dev Requirements:
+     *  - `operator` cannot be the zero address.
+     *  - operator` must have allowance for the caller of at least `substractedAmount`.
+     */
+    function decreaseAllowance(address operator, uint256 substractedAmount) public virtual {
+        uint256 currentAllowance = authorizedAmountFor(operator, msg.sender);
+        if (currentAllowance < substractedAmount) {
+            revert LSP7DecreasedAllowanceBelowZero();
+        }
+
+        unchecked {
+            _updateOperator(msg.sender, operator, currentAllowance - substractedAmount);
         }
     }
 

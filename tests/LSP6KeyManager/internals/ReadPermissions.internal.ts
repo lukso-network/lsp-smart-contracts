@@ -236,7 +236,7 @@ export const testReadingPermissionsInternals = (
     });
 
     it("Value should be 5 for key 'AddressPermissions[]'", async () => {
-      let result = await context.universalProfile["getData(bytes32)"](
+      let result = await context.universalProfile.getData(
         ERC725YDataKeys.LSP6["AddressPermissions[]"].length
       );
       expect(result).to.equal("0x05");
@@ -245,7 +245,7 @@ export const testReadingPermissionsInternals = (
     // check array indexes individually
     for (let ii = 1; ii <= 5; ii++) {
       it(`Checking address (=value) stored at AddressPermissions[${ii}]'`, async () => {
-        let result = await context.universalProfile["getData(bytes32)"](
+        let result = await context.universalProfile.getData(
           permissionArrayKeys[ii]
         );
         // raw bytes are stored lower case, so we need to checksum the address retrieved

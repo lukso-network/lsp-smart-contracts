@@ -11,6 +11,12 @@ interface ILSP6KeyManager is
     IERC1271
     /* is ERC165 */
 {
+    /**
+     * @dev Emitted when a calldata payload that includes `selector` and `value` as msg.value was verified for `signer`
+     * @param signer the address of the controller that executed the calldata payload.
+     * @param value the amount of native token to be transferred in the calldata payload.
+     * @param selector the bytes4 function of the function to run in the calldata payload.
+     */
     event VerifiedCall(address indexed signer, uint256 indexed value, bytes4 indexed selector);
 
     /**
@@ -43,7 +49,7 @@ interface ILSP6KeyManager is
     /**
      * @dev batch `execute(bytes)`
      */
-    function execute(uint256[] calldata values, bytes[] calldata payloads)
+    function executeBatch(uint256[] calldata values, bytes[] calldata payloads)
         external
         payable
         returns (bytes[] memory);
@@ -52,21 +58,24 @@ interface ILSP6KeyManager is
      * @dev allows anybody to execute given they have a signed message from an executor
      * @param signature bytes32 ethereum signature
      * @param nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
+     * @param validityTimestamps two `uint128` timestamps concatenated, the first timestamp determines from when the payload can be executed, the second timestamp delimits the end of the validity of the payload. If `validityTimestamps` is 0, the checks regardin the timestamps are skipped
      * @param payload obtained via encodeABI() in web3
      * @return the data being returned by the ERC725 Account
      */
     function executeRelayCall(
         bytes calldata signature,
         uint256 nonce,
+        uint256 validityTimestamps,
         bytes calldata payload
     ) external payable returns (bytes memory);
 
     /**
      * @dev batch `executeRelayCall(...)`
      */
-    function executeRelayCall(
+    function executeRelayCallBatch(
         bytes[] calldata signatures,
         uint256[] calldata nonces,
+        uint256[] calldata validityTimestamps,
         uint256[] calldata values,
         bytes[] calldata payloads
     ) external payable returns (bytes[] memory);

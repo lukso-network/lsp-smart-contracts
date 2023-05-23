@@ -4,7 +4,6 @@ pragma solidity ^0.8.4;
 
 // modules
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
-import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
 
 /**
  * @dev LSP7 extension, adds token supply cap.
@@ -15,7 +14,7 @@ abstract contract LSP7CappedSupply is LSP7DigitalAsset {
     error LSP7CappedSupplyCannotMintOverCap();
 
     // --- Storage
-    uint256 internal _tokenSupplyCap;
+    uint256 private immutable _tokenSupplyCap;
 
     /**
      * @notice Sets the token max supply

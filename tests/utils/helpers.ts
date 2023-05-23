@@ -43,7 +43,6 @@ export const LOCAL_PRIVATE_KEYS = {
 };
 
 // bytes32 arraylength
-
 export const ARRAY_LENGTH = {
   ZERO: "0x00000000000000000000000000000000",
   ONE: "0x00000000000000000000000000000001",
@@ -56,18 +55,6 @@ export const ARRAY_LENGTH = {
   EIGHT: "0x00000000000000000000000000000008",
 };
 
-// Random Token Id
-export const TOKEN_ID = {
-  ONE: "0xad7c5bef027816a800da1736444fb58a807ef4c9603b7848673f7e3a68eb14a5",
-  TWO: "0xd4d1a59767271eefdc7830a772b9732a11d503531d972ab8c981a6b1c0e666e5",
-  THREE: "0x3672b35640006da199633c5c75015da83589c4fb84ef8276b18076529e3d3196",
-  FOUR: "0x80a6c6138772c2d7c710a3d49f4eea603028994b7e390f670dd68566005417f0",
-  FIVE: "0x5c6f8b1aed769a328dad1ae15220e93730cdd52cb12817ae5fd8c15023d660d3",
-  SIX: "0x65ce3c3668a850c4f9fce91762a3fb886380399f02a9eb1495055234e7c0287a",
-  SEVEN: "0x00121ee2bd9802ce88a413ac1851c8afe6fe7474fb5d1b7da4475151b013da53",
-  EIGHT: "0x367f9d97f8dd1bece61f8b74c5db7616958147682674fd32de73490bd6347f60",
-};
-
 export function getRandomAddresses(count: Number): string[] {
   let addresses: string[] = [];
   for (let ii = 0; ii < count; ii++) {
@@ -78,60 +65,6 @@ export function getRandomAddresses(count: Number): string[] {
   }
 
   return addresses;
-}
-
-export function generateKeysAndValues(_elementObject) {
-  let keys: string[] = [];
-  let values: string[] = [];
-  for (const [_key, _value] of Object.entries(_elementObject)) {
-    let key = ethers.utils.toUtf8Bytes(_key);
-    let value = ethers.utils.hexlify(
-      ethers.utils.toUtf8Bytes(_value as string)
-    );
-
-    keys.push(ethers.utils.keccak256(key));
-    values.push(value);
-  }
-
-  return [keys, values];
-}
-
-export function getRandomString() {
-  const value =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const randoms = [];
-  for (let i = 0; i < 32; i++) {
-    randoms.push(value[Math.floor(Math.random() * value.length)]);
-  }
-  return randoms.join("");
-}
-
-export function getRandomBytes32() {
-  const value =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const randoms = [];
-  for (let i = 0; i < 32; i++) {
-    randoms.push(value[Math.floor(Math.random() * value.length)]);
-  }
-  return ethers.utils.hashMessage(randoms.join(""));
-}
-
-export async function getMapAndArrayKeyValues(
-  account,
-  vaultMapKey: string,
-  arrayKey: string,
-  elementInArray: string
-) {
-  // prettier-ignore
-  let [mapValue, arrayLength, elementAddress] = await account["getData(bytes32[])"](
-        [
-            vaultMapKey, 
-            arrayKey, 
-            elementInArray
-        ]
-    );
-
-  return [mapValue, arrayLength, elementAddress];
 }
 
 export function combinePermissions(..._permissions: string[]) {
@@ -222,9 +155,20 @@ export function combineAllowedCalls(
   return result;
 }
 
+export function createValidityTimestamps(
+  startingTimestamp: number,
+  endingTimestamp: number
+): BytesLike {
+  return ethers.utils.hexConcat([
+    ethers.utils.zeroPad(ethers.utils.hexlify(startingTimestamp), 16),
+    ethers.utils.zeroPad(ethers.utils.hexlify(endingTimestamp), 16),
+  ]);
+}
+
 export async function signLSP6ExecuteRelayCall(
   _keyManager: LSP6KeyManager,
   _signerNonce: string,
+  _signerValidityTimestamps: BytesLike | number,
   _signerPrivateKey: string,
   _msgValue: number | BigNumber | string,
   _payload: string
@@ -233,16 +177,18 @@ export async function signLSP6ExecuteRelayCall(
     lsp6Version: LSP6_VERSION,
     chainId: 31337, // HARDHAT_CHAINID
     nonce: _signerNonce,
+    validityTimestamps: _signerValidityTimestamps,
     msgValue: _msgValue,
     payload: _payload,
   };
 
   let encodedMessage = ethers.utils.solidityPack(
-    ["uint256", "uint256", "uint256", "uint256", "bytes"],
+    ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
     [
       signedMessageParams.lsp6Version,
       signedMessageParams.chainId,
       signedMessageParams.nonce,
+      signedMessageParams.validityTimestamps,
       signedMessageParams.msgValue,
       signedMessageParams.payload,
     ]

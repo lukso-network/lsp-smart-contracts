@@ -27,10 +27,6 @@ interface ILSP1UniversalReceiver {
      * @param data The arbitrary data received with the call
      * @dev Emits an event when it's succesfully executed
      *
-     * Call the universalReceiverDelegate function in the UniversalReceiverDelegate (URD) contract, if the address of the URD
-     * was set as a value for the `_UniversalReceiverKey` in the account key/value value store of the same contract implementing
-     * the universalReceiver function and if the URD contract has the LSP1UniversalReceiverDelegate Interface Id registred using ERC165
-     *
      * Emits a {UniversalReceiver} event
      */
     function universalReceiver(bytes32 typeId, bytes calldata data)

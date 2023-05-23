@@ -42,6 +42,7 @@ export const getNamedAccounts = async (): Promise<LSP11TestAccounts> => {
     guardian3,
     guardian4,
   ] = await ethers.getSigners();
+
   return {
     owner,
     addressASelected,
@@ -105,7 +106,7 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.owner)
-            ["execute(bytes)"](
+            .execute(
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
@@ -132,7 +133,7 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.owner)
-            ["execute(bytes)"](
+            .execute(
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
@@ -260,7 +261,7 @@ export const shouldBehaveLikeLSP11 = (
             permissionArrayLength,
             controllerAddress,
             controllerPermissions,
-          ] = await context.universalProfile.callStatic["getData(bytes32[])"]([
+          ] = await context.universalProfile.callStatic.getDataBatch([
             txParams.permissionArrayKey,
             txParams.permissionInArrayKey,
             txParams.permissionMap,
@@ -288,13 +289,13 @@ export const shouldBehaveLikeLSP11 = (
           };
 
           const payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [txParams.key, txParams.value]
           );
 
           await context.lsp6KeyManager
             .connect(context.accounts.addressASelected)
-            ["execute(bytes)"](payload);
+            .execute(payload);
 
           const value = await context.universalProfile.callStatic[
             "getData(bytes32)"
@@ -337,7 +338,7 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.owner)
-            ["execute(bytes)"](
+            .execute(
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
@@ -381,7 +382,7 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.owner)
-            ["execute(bytes)"](
+            .execute(
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
@@ -426,7 +427,7 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.owner)
-            ["execute(bytes)"](
+            .execute(
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
@@ -473,7 +474,7 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.owner)
-            ["execute(bytes)"](
+            .execute(
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
@@ -505,7 +506,7 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-              ["execute(bytes)"](
+              .execute(
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
@@ -521,7 +522,7 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-              ["execute(bytes)"](
+              .execute(
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
@@ -558,7 +559,7 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-              ["execute(bytes)"](
+              .execute(
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
@@ -594,7 +595,7 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-              ["execute(bytes)"](
+              .execute(
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
@@ -630,7 +631,7 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-              ["execute(bytes)"](
+              .execute(
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
@@ -670,7 +671,7 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-              ["execute(bytes)"](
+              .execute(
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
@@ -719,7 +720,7 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-              ["execute(bytes)"](
+              .execute(
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
@@ -750,7 +751,7 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp6KeyManager
               .connect(context.accounts.owner)
-              ["execute(bytes)"](
+              .execute(
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
@@ -797,7 +798,7 @@ export const shouldBehaveLikeLSP11 = (
 
         await context.lsp6KeyManager
           .connect(context.accounts.owner)
-          ["execute(uint256[],bytes[])"](
+          .executeBatch(
             [0, 0, 0],
             [
               callPayload(
@@ -924,7 +925,7 @@ export const shouldBehaveLikeLSP11 = (
 
           await context.lsp6KeyManager
             .connect(context.accounts.owner)
-            ["execute(bytes)"](
+            .execute(
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
@@ -951,7 +952,7 @@ export const shouldBehaveLikeLSP11 = (
 
           await context.lsp6KeyManager
             .connect(context.accounts.owner)
-            ["execute(bytes)"](
+            .execute(
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
@@ -1160,7 +1161,7 @@ export const shouldBehaveLikeLSP11 = (
             permissionArrayLength,
             controllerAddress,
             controllerPermissions,
-          ] = await context.universalProfile.callStatic["getData(bytes32[])"]([
+          ] = await context.universalProfile.callStatic.getDataBatch([
             txParams.permissionArrayKey,
             txParams.permissionInArrayKey,
             txParams.permissionMap,
@@ -1188,13 +1189,13 @@ export const shouldBehaveLikeLSP11 = (
           };
 
           const payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32,bytes)",
+            "setData",
             [txParams.key, txParams.value]
           );
 
           await context.lsp6KeyManager
             .connect(context.accounts.addressASelected)
-            ["execute(bytes)"](payload);
+            .execute(payload);
 
           const value = await context.universalProfile.callStatic[
             "getData(bytes32)"
@@ -1236,7 +1237,7 @@ export const shouldInitializeLikeLSP11 = (
 ) => {
   let context: LSP11InitializeTestContext;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
   });
 

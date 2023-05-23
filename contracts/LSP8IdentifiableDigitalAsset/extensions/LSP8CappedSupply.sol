@@ -4,7 +4,6 @@ pragma solidity ^0.8.4;
 
 // modules
 import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol";
-import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
 
 /**
  * @dev LSP8 extension, adds token supply cap.
@@ -15,7 +14,7 @@ abstract contract LSP8CappedSupply is LSP8IdentifiableDigitalAsset {
     error LSP8CappedSupplyCannotMintOverCap();
 
     // --- Storage
-    uint256 internal _tokenSupplyCap;
+    uint256 private immutable _tokenSupplyCap;
 
     /**
      * @notice Sets the token max supply

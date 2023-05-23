@@ -83,12 +83,16 @@ library LSP10Utils {
 
         uint128 newArrayLength = oldArrayLength + 1;
 
+        // store the number of received vaults incremented by 1
         keys[0] = _LSP10_VAULTS_ARRAY_KEY;
         values[0] = bytes.concat(bytes16(newArrayLength));
 
+        // store the address of the vault under the element key in the array
         keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(_LSP10_VAULTS_ARRAY_KEY, oldArrayLength);
         values[1] = bytes.concat(bytes20(vault));
 
+        // store the interfaceId and the location in the array of the asset
+        // under the LSP5ReceivedAssetMap key
         keys[2] = vaultMapKey;
         values[2] = bytes.concat(_INTERFACEID_LSP9, bytes16(oldArrayLength));
     }
@@ -98,12 +102,12 @@ library LSP10Utils {
      * @param sender The address sending the vault and where the Keys should be updated
      * @param vaultMapKey The map key of the vault being sent containing the interfaceId of the
      * vault and the index in the array
-     * @param vaultInterfaceIdAndIndex The value of the map key of the vault being sent
+     * @param vaultIndex The index where the vault address is stored under `LSP10Vaults[]` Array
      */
     function generateSentVaultKeys(
         address sender,
         bytes32 vaultMapKey,
-        bytes memory vaultInterfaceIdAndIndex
+        uint128 vaultIndex
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
         IERC725Y account = IERC725Y(sender);
         bytes memory lsp10VaultsCountValue = getLSP10ReceivedVaultsCount(account);
@@ -122,15 +126,17 @@ library LSP10Utils {
             revert VaultIndexSuperiorToUint128(oldArrayLength);
         }
 
+        // Updating the number of the received vaults (decrementing by 1
         uint128 newArrayLength = oldArrayLength - 1;
 
-        uint128 index = extractIndexFromMap(vaultInterfaceIdAndIndex);
+        // Generate the element key in the array of the vault
         bytes32 vaultInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
             _LSP10_VAULTS_ARRAY_KEY,
-            index
+            vaultIndex
         );
 
-        if (index == newArrayLength) {
+        // If the asset to remove is the last element in the array
+        if (vaultIndex == newArrayLength) {
             /**
              * We will be updating/removing 3 keys:
              * - Keys[0]: [Update] The arrayLengthKey to contain the new number of the received vaults
@@ -140,18 +146,21 @@ library LSP10Utils {
             keys = new bytes32[](3);
             values = new bytes[](3);
 
+            // store the number of received vaults decremented by 1
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
             values[0] = bytes.concat(bytes16(newArrayLength));
 
+            // remove the address of the vault from the element key
             keys[1] = vaultInArrayKey;
             values[1] = "";
 
+            // remove the interfaceId and the location in the array of the vault
             keys[2] = vaultMapKey;
             values[2] = "";
 
             // Swapping last element in ArrayKey with the element in ArrayKey to remove || {Swap and pop} method;
             // check https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/structs/EnumerableSet.sol#L80
-        } else {
+        } else if (vaultIndex < newArrayLength) {
             /**
              * We will be updating/removing 5 keys:
              * - Keys[0]: [Update] The arrayLengthKey to contain the new number of the received vaults
@@ -163,46 +172,52 @@ library LSP10Utils {
             keys = new bytes32[](5);
             values = new bytes[](5);
 
+            // store the number of received vaults decremented by 1
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
             values[0] = bytes.concat(bytes16(newArrayLength));
 
+            // remove the interfaceId and the location in the array of the vault
             keys[1] = vaultMapKey;
             values[1] = "";
 
             // Generate all data Keys/values of the last element in Array to swap
             // with data Keys/values of the vault to remove
+
+            // Generate the element key of the last vault in the array
             bytes32 lastVaultInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP10_VAULTS_ARRAY_KEY,
                 newArrayLength
             );
 
+            // Get the address of the vault from the element key of the last vault in the array
             bytes20 lastVaultInArrayAddress = bytes20(account.getData(lastVaultInArrayKey));
 
+            // Generate the map key of the last vault in the array
             bytes32 lastVaultInArrayMapKey = LSP2Utils.generateMappingKey(
                 _LSP10_VAULTS_MAP_KEY_PREFIX,
                 lastVaultInArrayAddress
             );
 
+            // Set the address of the last vault instead of the asset to be sent
+            // under the element data key in the array
             keys[2] = vaultInArrayKey;
             values[2] = bytes.concat(lastVaultInArrayAddress);
 
+            // Remove the address swapped (last vault in the array) from the last element data key in the array
             keys[3] = lastVaultInArrayKey;
             values[3] = "";
 
+            // Update the index and the interfaceId of the address swapped (last vault in the array)
+            // to point to the new location in the LSP10Vaults array
             keys[4] = lastVaultInArrayMapKey;
-            values[4] = bytes.concat(_INTERFACEID_LSP9, bytes16(index));
+            values[4] = bytes.concat(_INTERFACEID_LSP9, bytes16(vaultIndex));
+        } else {
+            // If index is bigger than the array length, out of bounds
+            return (keys, values);
         }
     }
 
     function getLSP10ReceivedVaultsCount(IERC725Y account) internal view returns (bytes memory) {
         return account.getData(_LSP10_VAULTS_ARRAY_KEY);
-    }
-
-    /**
-     * @dev returns the index from the LSP10VaultMap
-     */
-    function extractIndexFromMap(bytes memory mapValue) internal pure returns (uint128) {
-        bytes memory val = BytesLib.slice(mapValue, 4, 16);
-        return BytesLib.toUint128(val, 0);
     }
 }

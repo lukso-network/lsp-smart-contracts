@@ -38,6 +38,7 @@ bower_components
 # Generated jar files
 jar/
 src/
+java/
 
 # Generated swift files
 ios/
@@ -153,3 +154,6 @@ benchmark.md
 # Exclude build output folders
 /common
 /module
+/contracts.ts
+/devdocs
+/userdocs

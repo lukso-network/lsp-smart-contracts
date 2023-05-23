@@ -146,6 +146,22 @@ library LSP2Utils {
 
     /**
      * @dev Generate a data key of keyType MappingWithGrouping
+     * <bytes6keyPrefix>:<bytes4mapPrefix>:<bytes2(0)>:<subMapKey>
+     * @param keyPrefix the first part of the data key of keyType MappingWithGrouping
+     * @param mapPrefix Used for the second part (bytes4) of the data key of keyType MappingWithGrouping
+     * @param subMapKey Used for the last part (bytes20) of the data key of keyType MappingWithGrouping
+     */
+    function generateMappingWithGroupingKey(
+        bytes6 keyPrefix,
+        bytes4 mapPrefix,
+        bytes20 subMapKey
+    ) internal pure returns (bytes32) {
+        bytes memory generatedKey = bytes.concat(keyPrefix, mapPrefix, bytes2(0), subMapKey);
+        return bytes32(generatedKey);
+    }
+
+    /**
+     * @dev Generate a data key of keyType MappingWithGrouping
      * <bytes10keyPrefix>:<bytes2(0)>:<bytes20Value>
      * @param keyPrefix Used for the first part of the data key of keyType MappingWithGrouping
      * @param bytes20Value Used for the first last of the data key of keyType MappingWithGrouping
@@ -225,7 +241,7 @@ library LSP2Utils {
 
         uint256 pointer = offset + 32;
 
-        for (uint256 ii = 0; ii < arrayLength; ii = uncheckedIncrement(ii)) {
+        for (uint256 ii = 0; ii < arrayLength; ) {
             bytes32 key = data.toBytes32(pointer);
 
             // check that the leading bytes are zero bytes "00"
@@ -234,6 +250,10 @@ library LSP2Utils {
 
             // increment the pointer
             pointer += 32;
+
+            unchecked {
+                ++ii;
+            }
         }
 
         return true;
@@ -250,7 +270,7 @@ library LSP2Utils {
         uint256 arrayLength = data.toUint256(offset);
         uint256 pointer = offset + 32;
 
-        for (uint256 ii = 0; ii < arrayLength; ii = uncheckedIncrement(ii)) {
+        for (uint256 ii = 0; ii < arrayLength; ) {
             bytes32 key = data.toBytes32(pointer);
 
             // check that the trailing bytes are zero bytes "00"
@@ -258,6 +278,10 @@ library LSP2Utils {
 
             // increment the pointer
             pointer += 32;
+
+            unchecked {
+                ++ii;
+            }
         }
 
         return true;
@@ -295,15 +319,5 @@ library LSP2Utils {
         }
         if (pointer == compactBytesArray.length) return true;
         return false;
-    }
-
-    /**
-     * @dev Will return unchecked incremented uint256
-     *      can be used to save gas when iterating over loops
-     */
-    function uncheckedIncrement(uint256 i) internal pure returns (uint256) {
-        unchecked {
-            return i + 1;
-        }
     }
 }

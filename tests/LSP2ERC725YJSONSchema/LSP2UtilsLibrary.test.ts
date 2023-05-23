@@ -206,11 +206,9 @@ describe("LSP2Utils", () => {
 
       it("should return false when the first length does not matches the following number of bytes", async () => {
         let data = encodeCompactBytesArray(["0xaabbccddee"]);
-        console.log(data);
 
         // replace the first length byte of 0xaabbccddee with an invalid length value
         data = String(data).replace(/05/g, "10");
-        console.log(data);
 
         const result = await lsp2Utils.isCompactBytesArray(data);
         expect(result).to.be.false;

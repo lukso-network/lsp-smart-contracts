@@ -79,13 +79,13 @@ describe("Key Manager gas cost interactions", () => {
           combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
           combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
           combineAllowedCalls(
-            [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
+            [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL)],
             [contractImplementsERC1271.address],
             [INTERFACE_IDS.ERC1271],
             ["0xffffffff"]
           ),
           combineAllowedCalls(
-            [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
+            [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL)],
             [contractImplementsERC1271.address],
             ["0xffffffff"],
             ["0xffffffff"]
@@ -107,19 +107,16 @@ describe("Key Manager gas cost interactions", () => {
           );
 
           let transferLyxPayload =
-            context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [
-                OPERATION_TYPES.CALL,
-                contractImplementsERC1271.address,
-                ethers.utils.parseEther("1"),
-                "0x",
-              ]
-            );
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              contractImplementsERC1271.address,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]);
 
           let tx = await context.keyManager
             .connect(context.owner)
-            ["execute(bytes)"](transferLyxPayload);
+            .execute(transferLyxPayload);
 
           let receipt = await tx.wait();
 
@@ -141,19 +138,16 @@ describe("Key Manager gas cost interactions", () => {
         );
 
         let transferLyxPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              contractImplementsERC1271.address,
-              ethers.utils.parseEther("1"),
-              "0x",
-            ]
-          );
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            contractImplementsERC1271.address,
+            ethers.utils.parseEther("1"),
+            "0x",
+          ]);
 
         let tx = await context.keyManager
           .connect(restrictedToOneAddress)
-          ["execute(bytes)"](transferLyxPayload);
+          .execute(transferLyxPayload);
 
         let receipt = await tx.wait();
 
@@ -174,19 +168,16 @@ describe("Key Manager gas cost interactions", () => {
         );
 
         let transferLyxPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              contractImplementsERC1271.address,
-              ethers.utils.parseEther("1"),
-              "0x",
-            ]
-          );
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            contractImplementsERC1271.address,
+            ethers.utils.parseEther("1"),
+            "0x",
+          ]);
 
         let tx = await context.keyManager
           .connect(restrictedToOneAddressAndStandard)
-          ["execute(bytes)"](transferLyxPayload);
+          .execute(transferLyxPayload);
 
         let receipt = await tx.wait();
 
