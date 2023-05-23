@@ -30,20 +30,6 @@ import "@nomiclabs/hardhat-web3";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
-function getL16ChainConfig(): NetworkUserConfig {
-  const config: NetworkUserConfig = {
-    live: true,
-    url: "https://rpc.l16.lukso.network",
-    chainId: 2828,
-  };
-
-  if (process.env.CONTRACT_VERIFICATION_PK !== undefined) {
-    config["accounts"] = [process.env.CONTRACT_VERIFICATION_PK];
-  }
-
-  return config;
-}
-
 function getTestnetChainConfig(): NetworkUserConfig {
   const config: NetworkUserConfig = {
     live: true,
@@ -66,40 +52,14 @@ const config: HardhatUserConfig = {
       saveDeployments: false,
       allowBlocksWithSameTimestamp: true,
     },
-    // public L14 test network
-    luksoL14: {
-      live: true,
-      url: "https://rpc.l14.lukso.network",
-      chainId: 22,
-      //   accounts: [privateKey1, privateKey2, ...]
-    },
-    luksoL16: getL16ChainConfig(),
     luksoTestnet: getTestnetChainConfig(),
   },
   namedAccounts: {
     owner: 0,
   },
   etherscan: {
-    // no API is required to verify contracts
-    // via the Blockscout instance of L14 or L16 network
     apiKey: "no-api-key-needed",
     customChains: [
-      {
-        network: "luksoL14",
-        chainId: 22,
-        urls: {
-          apiURL: "https://blockscout.com/lukso/l14/api",
-          browserURL: "https://blockscout.com/lukso/l14",
-        },
-      },
-      {
-        network: "luksoL16",
-        chainId: 2828,
-        urls: {
-          apiURL: "https://explorer.execution.l16.lukso.network/api",
-          browserURL: "https://explorer.execution.l16.lukso.network/",
-        },
-      },
       {
         network: "luksoTestnet",
         chainId: 4201,
