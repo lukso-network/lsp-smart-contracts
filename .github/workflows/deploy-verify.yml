@@ -1,10 +1,9 @@
-# This workflow deploys and verify the lsp-smart-contracts and verify them.
-
-name: Deploy + Verify Contracts
+# This workflow deploys and verify the lsp-smart-contracts and verify them on LUKSO Testnet.
+name: Deploy + Verify Contracts on Testnet
 
 env:
-  CONTRACT_VERIFICATION_PK: ${{ secrets.CONTRACT_VERIFICATION_PK }}
-  DEPLOYER_ADDRESS: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+  CONTRACT_VERIFICATION_TESTNET_PK: ${{ secrets.CONTRACT_VERIFICATION_TESTNET_PK }}
+  DEPLOYER_ADDRESS: "0x983aBC616f2442bAB7a917E6bb8660Df8b01F3bF"
 
 on:
   workflow_dispatch:
@@ -91,5 +90,5 @@ jobs:
       - name: Verify Deployer Balance
         run: npx ts-node ./scripts/ci/check-deployer-balance.ts
 
-      - name: Deploy + Verify ${{ matrix.contracts }} on L16
-        run: sh ./scripts/ci/deploy-verify.sh -n luksoL16 -c ${{ matrix.contracts }}
+      - name: Deploy + Verify ${{ matrix.contracts }} on Testnet
+        run: sh ./scripts/ci/deploy-verify.sh -n luksoTestnet -c ${{ matrix.contracts }}
