@@ -21,8 +21,9 @@ contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable {
     constructor(
         string memory name_,
         string memory symbol_,
-        address newOwner_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {}
+        address newOwner_,
+        uint256 tokenidType_
+    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, tokenidType_) {}
 
     /**
      * @inheritdoc ILSP8Mintable

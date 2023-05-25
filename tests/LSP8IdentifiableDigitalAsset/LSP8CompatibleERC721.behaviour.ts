@@ -76,6 +76,20 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
     context = await buildContext();
   });
 
+  describe("when setting data", () => {
+    it("should not allow to update the `LSP8TokenIdType` after deployment", async () => {
+      await expect(
+        context.lsp8CompatibleERC721.setData(
+          ERC725YDataKeys.LSP8.LSP8TokenIdType,
+          "0xdeadbeef"
+        )
+      ).to.be.revertedWithCustomError(
+        context.lsp8CompatibleERC721,
+        "LSP8TokenIdTypeNotEditable"
+      );
+    });
+  });
+
   describe("when checking supported ERC165 interfaces", () => {
     it("should support ERC721", async () => {
       expect(

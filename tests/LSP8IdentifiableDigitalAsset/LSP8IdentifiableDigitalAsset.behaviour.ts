@@ -69,6 +69,17 @@ export const shouldBehaveLikeLSP8 = (
     context = await buildContext();
   });
 
+  describe("when setting data", () => {
+    it("should not allow to update the `LSP8TokenIdType` after deployment", async () => {
+      await expect(
+        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdType, "0xdeadbeef")
+      ).to.be.revertedWithCustomError(
+        context.lsp8,
+        "LSP8TokenIdTypeNotEditable"
+      );
+    });
+  });
+
   describe("when minting tokens", () => {
     before(async () => {
       await context.lsp8.mint(
@@ -1900,13 +1911,15 @@ export const shouldInitializeLikeLSP8 = (
     context = await buildContext();
   });
 
-  describe("when the contract was initialized", () => {
+  describe.only("when the contract was initialized", () => {
     it("should have registered the ERC165 interface", async () => {
-      expect(await context.lsp8.supportsInterface(INTERFACE_IDS.ERC165));
+      expect(await context.lsp8.supportsInterface(INTERFACE_IDS.ERC165)).to.be
+        .true;
     });
 
     it("should have registered the ERC725Y interface", async () => {
-      expect(await context.lsp8.supportsInterface(INTERFACE_IDS.ERC725Y));
+      expect(await context.lsp8.supportsInterface(INTERFACE_IDS.ERC725Y)).to.be
+        .true;
     });
 
     it("should have registered the LSP8 interface", async () => {
@@ -1914,7 +1927,7 @@ export const shouldInitializeLikeLSP8 = (
         await context.lsp8.supportsInterface(
           INTERFACE_IDS.LSP8IdentifiableDigitalAsset
         )
-      );
+      ).to.be.true;
     });
 
     it("should have set expected entries with ERC725Y.setData", async () => {

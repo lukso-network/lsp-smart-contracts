@@ -53,7 +53,7 @@ abstract contract LSP8CompatibleERC721 is
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {}
+    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, 1) {}
 
     /**
      * @dev See {IERC165-supportsInterface}.
@@ -298,7 +298,7 @@ abstract contract LSP8CompatibleERC721 is
     function _setData(bytes32 key, bytes memory value)
         internal
         virtual
-        override(LSP4DigitalAssetMetadata, ERC725YCore)
+        override(LSP8IdentifiableDigitalAsset, ERC725YCore)
     {
         super._setData(key, value);
     }

@@ -16,7 +16,7 @@ contract LSP8EnumerableInitTester is LSP8EnumerableInitAbstract {
         string memory symbol,
         address newOwner
     ) public virtual initializer {
-        LSP8IdentifiableDigitalAssetInitAbstract._initialize(name, symbol, newOwner);
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(name, symbol, newOwner, 1);
     }
 
     function mint(address to, bytes32 tokenId) external {

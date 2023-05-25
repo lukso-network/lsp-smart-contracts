@@ -14,7 +14,7 @@ contract LSP8InitTester is LSP8IdentifiableDigitalAssetInitAbstract, LSP8Burnabl
         string memory symbol,
         address newOwner
     ) public initializer {
-        LSP8IdentifiableDigitalAssetInitAbstract._initialize(name, symbol, newOwner);
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(name, symbol, newOwner, 1);
     }
 
     function mint(

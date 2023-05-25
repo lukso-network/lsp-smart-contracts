@@ -48,7 +48,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         string memory symbol_,
         address newOwner_
     ) internal virtual override onlyInitializing {
-        LSP8IdentifiableDigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_);
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, 1);
     }
 
     /**
@@ -294,7 +294,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
     function _setData(bytes32 key, bytes memory value)
         internal
         virtual
-        override(LSP4DigitalAssetMetadataInitAbstract, ERC725YCore)
+        override(LSP8IdentifiableDigitalAssetInitAbstract, ERC725YCore)
     {
         super._setData(key, value);
     }

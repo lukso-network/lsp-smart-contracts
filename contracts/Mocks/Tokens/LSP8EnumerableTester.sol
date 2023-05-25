@@ -13,7 +13,7 @@ contract LSP8EnumerableTester is LSP8Enumerable {
         string memory name,
         string memory symbol,
         address newOwner
-    ) LSP8IdentifiableDigitalAsset(name, symbol, newOwner) {}
+    ) LSP8IdentifiableDigitalAsset(name, symbol, newOwner, 1) {}
 
     function mint(address to, bytes32 tokenId) public {
         _mint(to, tokenId, true, "token printer go brrr");

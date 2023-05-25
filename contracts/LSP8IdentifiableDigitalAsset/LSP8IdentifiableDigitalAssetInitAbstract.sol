@@ -12,7 +12,10 @@ import {
 } from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataInitAbstract.sol";
 
 // constants
-import {_INTERFACEID_LSP8} from "./LSP8Constants.sol";
+import {_INTERFACEID_LSP8, _LSP8_TOKENID_TYPE_KEY} from "./LSP8Constants.sol";
+
+// errors
+import {LSP8TokenIdTypeNotEditable} from "./LSP8Errors.sol";
 
 /**
  * @title LSP8IdentifiableDigitalAsset contract
@@ -26,9 +29,12 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
     function _initialize(
         string memory name_,
         string memory symbol_,
-        address newOwner_
-    ) internal virtual override onlyInitializing {
+        address newOwner_,
+        uint256 tokenIdType
+    ) internal virtual onlyInitializing {
         LSP4DigitalAssetMetadataInitAbstract._initialize(name_, symbol_, newOwner_);
+
+        _setData(_LSP8_TOKENID_TYPE_KEY, abi.encode(tokenIdType));
     }
 
     /**
@@ -42,5 +48,17 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         returns (bool)
     {
         return interfaceId == _INTERFACEID_LSP8 || super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @inheritdoc LSP4DigitalAssetMetadataInitAbstract
+     * @dev The ERC725Y data key `_LSP8_TOKENID_TYPE_KEY` cannot be changed
+     * once the identifiable digital asset contract has been deployed.
+     */
+    function _setData(bytes32 dataKey, bytes memory dataValue) internal virtual override {
+        if (dataKey == _LSP8_TOKENID_TYPE_KEY) {
+            revert LSP8TokenIdTypeNotEditable();
+        }
+        LSP4DigitalAssetMetadataInitAbstract._setData(dataKey, dataValue);
     }
 }

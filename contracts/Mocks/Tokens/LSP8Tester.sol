@@ -12,8 +12,9 @@ contract LSP8Tester is LSP8IdentifiableDigitalAsset, LSP8Burnable {
     constructor(
         string memory name,
         string memory symbol,
-        address newOwner
-    ) LSP8IdentifiableDigitalAsset(name, symbol, newOwner) {}
+        address newOwner,
+        uint256 tokenIdType
+    ) LSP8IdentifiableDigitalAsset(name, symbol, newOwner, tokenIdType) {}
 
     function mint(
         address to,
