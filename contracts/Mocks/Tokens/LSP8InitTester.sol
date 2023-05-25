@@ -17,12 +17,14 @@ contract LSP8InitTester is
     function initialize(
         string memory name,
         string memory symbol,
-        address newOwner
+        address newOwner,
+        uint256 tokenIdType
     ) public initializer {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name,
             symbol,
-            newOwner
+            newOwner,
+            tokenIdType
         );
     }
 

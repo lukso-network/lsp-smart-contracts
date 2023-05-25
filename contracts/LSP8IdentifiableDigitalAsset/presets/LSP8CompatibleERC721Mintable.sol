@@ -18,8 +18,9 @@ contract LSP8CompatibleERC721Mintable is LSP8CompatibleERC721 {
     constructor(
         string memory name_,
         string memory symbol_,
-        address newOwner_
-    ) LSP8CompatibleERC721(name_, symbol_, newOwner_) {}
+        address newOwner_,
+        uint256 tokenIdType
+    ) LSP8CompatibleERC721(name_, symbol_, newOwner_, tokenIdType) {}
 
     /**
      * @notice Minting tokenId `tokenId` for address `to` with the additional data `data` (Note: allow non-LSP1 recipient is set to `force`).

@@ -226,6 +226,9 @@ export const ERC725YDataKeys = {
     // AddressPermissions:AllowedCalls:<address>  + bytes2(0)
     'AddressPermissions:AllowedCalls': '0x4b80742de2bf393a64c70000',
   },
+  LSP8: {
+    LSP8TokenIdType: '0x715f248956de7ce65e94d9d836bfead479f7e70d69b718d47bfe7b00e05b4fe4',
+  },
   LSP9: {
     SupportedStandards_LSP9: SupportedStandards.LSP9Vault.key,
   },

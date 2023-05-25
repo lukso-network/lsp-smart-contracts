@@ -12,6 +12,7 @@ type LSP8BurnableTestContext = {
     name: string;
     symbol: string;
     newOwner: string;
+    tokenIdType: number;
   };
 };
 
@@ -22,12 +23,14 @@ describe('LSP8Burnable with constructor', () => {
       name: 'LSP8 Burnable - deployed with constructor',
       symbol: 'BRN',
       newOwner: accounts[0].address,
+      tokenIdType: 0,
     };
 
     const lsp8Burnable = await new LSP8BurnableTester__factory(accounts[0]).deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
+      deployParams.tokenIdType,
     );
 
     return { accounts, lsp8Burnable, deployParams };

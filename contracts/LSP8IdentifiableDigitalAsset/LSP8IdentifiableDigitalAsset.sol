@@ -19,7 +19,13 @@ import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
-import {_INTERFACEID_LSP8} from "./LSP8Constants.sol";
+import {_INTERFACEID_LSP8, _LSP8_TOKENID_TYPE_KEY} from "./LSP8Constants.sol";
+
+// errors
+import {
+    LSP8InvalidTokenIdType,
+    LSP8TokenIdTypeNotEditable
+} from "./LSP8Errors.sol";
 
 import {
     _LSP17_EXTENSION_PREFIX
@@ -58,8 +64,18 @@ abstract contract LSP8IdentifiableDigitalAsset is
     constructor(
         string memory name_,
         string memory symbol_,
-        address newOwner_
-    ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {}
+        address newOwner_,
+        uint256 tokenIdType
+    ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {
+        if (tokenIdType > 4) {
+            revert LSP8InvalidTokenIdType();
+        }
+
+        LSP4DigitalAssetMetadata._setData(
+            _LSP8_TOKENID_TYPE_KEY,
+            abi.encode(tokenIdType)
+        );
+    }
 
     // fallback function
 
@@ -175,5 +191,20 @@ abstract contract LSP8IdentifiableDigitalAsset is
             interfaceId == _INTERFACEID_LSP8 ||
             super.supportsInterface(interfaceId) ||
             LSP17Extendable._supportsInterfaceInERC165Extension(interfaceId);
+    }
+
+    /**
+     * @inheritdoc LSP4DigitalAssetMetadata
+     * @dev The ERC725Y data key `_LSP8_TOKENID_TYPE_KEY` cannot be changed
+     * once the identifiable digital asset contract has been deployed.
+     */
+    function _setData(
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) internal virtual override {
+        if (dataKey == _LSP8_TOKENID_TYPE_KEY) {
+            revert LSP8TokenIdTypeNotEditable();
+        }
+        LSP4DigitalAssetMetadata._setData(dataKey, dataValue);
     }
 }

@@ -15,12 +15,14 @@ contract LSP8CappedSupplyInitTester is LSP8CappedSupplyInitAbstract {
         string memory name_,
         string memory symbol_,
         address newOwner_,
+        uint256 tokenIdType,
         uint256 tokenSupplyCap_
     ) public virtual initializer {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
-            newOwner_
+            newOwner_,
+            tokenIdType
         );
         LSP8CappedSupplyInitAbstract._initialize(tokenSupplyCap_);
     }

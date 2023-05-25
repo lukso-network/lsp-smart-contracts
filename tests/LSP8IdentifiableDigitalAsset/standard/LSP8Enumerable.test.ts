@@ -15,11 +15,17 @@ describe('LSP8Enumerable with constructor', () => {
       name: 'LSP8 Enumerable - deployed with constructor',
       symbol: 'LSP8 NMRBL',
       newOwner: accounts.owner.address,
+      tokenIdType: 0,
     };
 
     const lsp8Enumerable: LSP8EnumerableTester = await new LSP8EnumerableTester__factory(
       accounts.owner,
-    ).deploy(deployParams.name, deployParams.symbol, deployParams.newOwner);
+    ).deploy(
+      deployParams.name,
+      deployParams.symbol,
+      deployParams.newOwner,
+      deployParams.tokenIdType,
+    );
 
     return { accounts, lsp8Enumerable, deployParams };
   };

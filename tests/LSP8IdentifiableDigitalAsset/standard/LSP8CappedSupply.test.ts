@@ -16,12 +16,14 @@ describe('LSP8CappedSupply with constructor', () => {
       name: 'LSP8 capped supply - deployed with constructor',
       symbol: 'CAP',
       newOwner: accounts.owner.address,
+      tokenIdType: 0,
       tokenSupplyCap: ethers.BigNumber.from('2'),
     };
     const lsp8CappedSupply = await new LSP8CappedSupplyTester__factory(accounts.owner).deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
+      deployParams.tokenIdType,
       deployParams.tokenSupplyCap,
     );
 

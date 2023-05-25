@@ -17,6 +17,7 @@ describe('LSP8EnumerableInit with proxy', () => {
       name: 'LSP8 Enumerable - deployed with proxy',
       symbol: 'LSP8 NMRBL',
       newOwner: accounts.owner.address,
+      tokenIdType: 0,
     };
 
     const LSP8EnumerableInit: LSP8EnumerableInitTester =
@@ -29,10 +30,11 @@ describe('LSP8EnumerableInit with proxy', () => {
   };
 
   const initializeProxy = async (context: LSP8EnumerableTestContext) => {
-    return context.lsp8Enumerable['initialize(string,string,address)'](
+    return context.lsp8Enumerable['initialize(string,string,address,uint256)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
+      context.deployParams.tokenIdType,
     );
   };
 
