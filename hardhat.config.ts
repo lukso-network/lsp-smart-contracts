@@ -27,6 +27,7 @@ import "@nomiclabs/hardhat-web3";
  * @dev uncomment to generate contract docs in Markdown
  */
 import "@primitivefi/hardhat-dodoc";
+import { dodocConfig } from "./dodoc/config";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
@@ -162,20 +163,7 @@ const config: HardhatUserConfig = {
     outDir: "types",
     target: "ethers-v5",
   },
-  dodoc: {
-    include: [
-      "LSP0ERC725Account/LSP0ERC725Account.sol",
-      "LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol",
-      "LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol",
-      "LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol",
-      "LSP6KeyManager/LSP6KeyManager.sol",
-      "LSP7DigitalAsset/LSP7DigitalAsset.sol",
-      "LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol",
-      "LSP9Vault/LSP9Vault.sol",
-      "LSP14Ownable2Step/LSP14Ownable2Step.sol",
-    ],
-    templatePath: "./docsTemplate.sqrl",
-  },
+  dodoc: dodocConfig,
 };
 
 export default config;

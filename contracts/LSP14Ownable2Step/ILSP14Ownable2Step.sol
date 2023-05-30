@@ -33,7 +33,9 @@ interface ILSP14Ownable2Step {
 
     /**
      * @dev The address that ownership of the contract is transferred to.
-     * This address may use `acceptOwnership()` to gain ownership of the contract.
+     * This address may use {acceptOwnership()} to gain ownership of the contract.
+     *
+     * @custom:info If no ownership transfer is in progress, the pendingOwner will be `address(0)`.
      */
     function pendingOwner() external view returns (address);
 
@@ -41,7 +43,7 @@ interface ILSP14Ownable2Step {
      * @dev Initiate the process of transferring ownership of the contract by setting the new owner as the pending owner.
      *
      * If the new owner is a contract that supports + implements LSP1, this will also attempt to notify the new owner that
-     * ownership has been transferred to them by calling the `universalReceiver(...)` function on the `newOwner` contract.
+     * ownership has been transferred to them by calling the {universalReceiver(...)} function on the `newOwner` contract.
      *
      * @param newOwner the address of the new owner.
      *
@@ -51,11 +53,11 @@ interface ILSP14Ownable2Step {
     function transferOwnership(address newOwner) external;
 
     /**
-     * @dev Transfer ownership of the contract from the current `owner()` to the `pendingOwner()`.
+     * @dev Transfer ownership of the contract from the current {owner()} to the {pendingOwner()}.
      *
      * Once this function is called:
-     * - the current `owner()` will loose access to the functions restricted to the `owner()` only.
-     * - the `pendingOwner()` will gain access to the functions restricted to the `owner()` only.
+     * - the current {owner()} will loose access to the functions restricted to the {owner()} only.
+     * - the {pendingOwner()} will gain access to the functions restricted to the {owner()} only.
      *
      * @custom:requirements
      * - MUST be called by the pendingOwner.
@@ -63,13 +65,12 @@ interface ILSP14Ownable2Step {
     function acceptOwnership() external;
 
     /**
-     * @dev Renounce ownership of the contract in a 2-step process.
+     * @dev Renounce ownership of the contract in a two step process.
      *
      * 1. the first call will initiate the process of renouncing ownership.
      * 2. the second is used as a confirmation and will leave the contract without an owner.
      *
-     * @custom:danger
-     * Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
+     * @custom:danger Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
      */
     function renounceOwnership() external;
 }

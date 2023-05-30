@@ -1,0 +1,181 @@
+{{@if (it.name)}}
+# {{it.name}}
+{{/if}}
+
+
+{{@if (it.title)}}
+> {{it.title}}
+{{/if}}
+
+
+{{@if (it.notice)}}
+{{@formatLinks(it.notice) => val}}
+*{{@parseNotice(val) /}}*
+{{/formatLinks}}
+{{/if}}
+
+
+{{@if (it.details)}}
+{{@formatLinks(it.details) => val}}
+{{@parseDetails(val) /}}
+{{/formatLinks}}
+{{/if}}
+
+
+{{@if (Object.keys(it.methods).length > 0)}}
+
+
+## Methods
+
+{{@foreach(it.methods) => key, val}}
+### {{key.split('(')[0]}}
+
+
+:::note Links
+
+- Check the `{{key}}` function specification in [LSP-{{it.name.match(/\d+/)[0]}}-{{it.name.split(/LSP\d+/)[1]}}](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-{{it.name.match(/\d+/)[0]}}-{{it.name.split(/LSP\d+/)[1]}}.md) Standard in the LIP repository.
+- Check the `{{key}}` function implementation in [{{it.name}}](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/{{it.name}}/{{it.name}}Core.sol) Contract.
+
+:::
+
+
+{{@if (val['custom:info'])}}
+:::info{{'\n\n'}}{{_ val['custom:info'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+{{/if}}
+
+
+{{@if (val['custom:hint'])}}
+:::tip Hint{{'\n\n'}}{{_ val['custom:hint'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+{{/if}}
+
+
+{{@if (val['custom:warning'])}}
+:::caution Warning{{'\n\n'}}{{_ val['custom:warning'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+{{/if}}
+
+
+{{@if (val['custom:danger'])}}
+:::danger{{'\n\n'}}{{_ val['custom:danger'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+{{/if}}
+
+
+```solidity
+{{@parseCode(val.code) /}};
+```
+
+
+{{@if (val.notice)}}
+*{{@parseNotice(val.notice) /}}*
+{{/if}}
+
+
+{{@if (val.details)}}
+{{@parseDetails(val.details) /}}
+{{/if}}
+
+
+{{@if (val['custom:requirements'])}}
+<blockquote>{{'\n\n'}}
+{{@parseCustomRequirements(val['custom:requirements']) /}}
+{{'\n\n'}}</blockquote>
+{{/if}}
+
+
+{{@if (val['custom:events'])}}
+<blockquote>{{'\n\n'}}
+{{@parseCustomEvents(val['custom:events']) /}}
+{{'\n\n'}}</blockquote>
+{{/if}}
+
+
+{{@if (Object.keys(val.inputs).length > 0)}}
+#### Parameters
+
+| Name | Type | Description |
+|---|:-:|---|
+{{@foreach(val.inputs) => key, val}}
+| `{{key}}` | `{{val.type}}` | {{val.description ? val.description : '-' }} |
+{{/foreach}}
+{{/if}}
+
+
+{{@if (Object.keys(val.outputs).length > 0)}}
+#### Returns
+
+| Name | Type | Description |
+|---|:-:|---|
+{{@foreach(val.outputs) => key, val}}
+| {{@if (key[0] === '_')}}`{{key.substring(1)}}`{{#else}}`{{key}}`{{/if}} | `{{val.type}}` | {{val.description ? val.description : '-' }} |
+{{/foreach}}
+{{/if}}
+
+
+{{/foreach}}
+{{/if}}
+
+
+{{@if (Object.keys(it.events).length > 0)}}
+## Events
+
+
+{{@foreach(it.events) => key, val}}
+### {{key}}
+
+
+```solidity
+{{@parseCode(val.code) /}};
+```
+
+
+{{@if (val.notice)}}*{{val.notice}}*{{/if}}
+
+
+{{@if (val.details)}}{{val.details}}{{/if}}
+
+
+{{@if (Object.keys(val.inputs).length > 0)}}
+#### Parameters
+
+
+| Name | Type | Description |
+|---|:-:|---|
+{{@foreach(val.inputs) => key, val}}
+| `{{key}}` {{@if (val.indexed)}}**`indexed`**{{/if}} | `{{val.type}}` | {{val.description ? val.description : '-' }} |
+{{/foreach}}
+{{/if}}
+
+{{/foreach}}
+{{/if}}
+
+
+{{@if (Object.keys(it.errors).length > 0)}}
+## Errors
+
+
+{{@foreach(it.errors) => key, val}}
+### {{key}}
+
+
+```solidity
+{{@parseCode(val.code) /}};
+```
+
+
+{{@if (val.notice)}}*{{val.notice}}*{{/if}}
+
+
+{{@if (val.details)}}{{val.details}}{{/if}}
+
+
+{{@if (Object.keys(val.inputs).length > 0)}}
+#### Parameters
+
+| Name | Type | Description |
+|---|:-:|---|
+{{@foreach(val.inputs) => key, val}}
+| `{{key}}` | `{{val.type}}` | {{val.description ? val.description : '-' }} |
+{{/foreach}}
+{{/if}}
+
+{{/foreach}}
+{{/if}}
