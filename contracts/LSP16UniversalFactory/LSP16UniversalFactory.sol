@@ -65,7 +65,7 @@ contract LSP16UniversalFactory {
      * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt
      * that will be used by the `CREATE2` opcode for contract deployment
      * @param initialized The Boolean that specifies if the contract must be initialized or not
-     * @param initializeCalldata The bytes provided as initializeCalldata
+     * @param initializeCalldata The bytes provided as initializeCalldata (Empty string when the `initialized` is set to false)
      */
     event ContractCreated(
         address indexed contractCreated,
@@ -78,9 +78,7 @@ contract LSP16UniversalFactory {
      * @dev Deploys a contract using the CREATE2 opcode. The address where the contract will be deployed
      * can be known in advance via the {computeAddress} function.
      *
-     * This function deploys contracts without initialization (external call after deployment). When examining
-     * the event or computing the address, the `initializable` boolean for this function is set to `false`, and `EMPTY_BYTES`
-     * is used for `initializeCalldata`, as the contract is not initializable and the initializeCalldata will not be used.
+     * This function deploys contracts without initialization (external call after deployment).
      *
      * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with
      * keccak256: `keccak256(abi.encodePacked(false, providedSalt))`. See {generateSalt} function for more details.
@@ -115,9 +113,7 @@ contract LSP16UniversalFactory {
      * @dev Deploys a contract using the CREATE2 opcode. The address where the contract will be deployed
      * can be known in advance via the {computeAddress} function.
      *
-     * This function deploys contracts with initialization (external call after deployment). When examining
-     * the event or computing the address, the `initializable` boolean for this function is set to `true`, and
-     * `initializeCalldata` is used as a parameter.
+     * This function deploys contracts with initialization (external call after deployment).
      *
      * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with
      * keccak256: `keccak256(abi.encodePacked(true, initializeCalldata, providedSalt))`.
@@ -167,10 +163,7 @@ contract LSP16UniversalFactory {
      * @dev Deploys an ERC1167 minimal proxy contract using the CREATE2 opcode. The address where the contract will be deployed
      * can be known in advance via the {computeERC1167Address} function.
      *
-     * This function deploys contracts without initialization (external call after deployment). When examining
-     * the event or computing the address, the `initializable` boolean for this function is set to `false`
-     * and `EMPTY_BYTES` is used for `initializeCalldata`, as the contract is not initializable, and the
-     * `initializeCalldata` will not be used.
+     * This function deploys contracts without initialization (external call after deployment).
      *
      * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with
      * keccak256: `keccak256(abi.encodePacked(false, providedSalt))`. See {generateSalt} function for more details.
@@ -205,9 +198,7 @@ contract LSP16UniversalFactory {
      * @dev Deploys an ERC1167 minimal proxy contract using the CREATE2 opcode. The address where the contract will be deployed
      * can be known in advance via the {computeERC1167Address} function.
      *
-     * This function deploys contracts with initialization (external call after deployment). When examining
-     * the event or computing the address, the `initializable` boolean for this function is set to `true`, and
-     * `initializeCalldata` is used as a parameter.
+     * This function deploys contracts with initialization (external call after deployment).
      *
      * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with
      * keccak256: `keccak256(abi.encodePacked(true, initializeCalldata, providedSalt))`.
