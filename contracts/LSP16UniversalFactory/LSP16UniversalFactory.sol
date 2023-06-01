@@ -65,12 +65,14 @@ contract LSP16UniversalFactory {
      * @param contractCreated The address of the contract created
      * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt
      * that will be used by the `CREATE2` opcode for contract deployment
+     * @param generatedSalt The salt used by the `CREATE2` opcode for contract deployment
      * @param initialized The Boolean that specifies if the contract must be initialized or not
      * @param initializeCalldata The bytes provided as initializeCalldata (Empty string when `initialized` is set to false)
      */
     event ContractCreated(
         address indexed contractCreated,
         bytes32 indexed providedSalt,
+        bytes32 generatedSalt,
         bool indexed initialized,
         bytes initializeCalldata
     );
@@ -103,9 +105,9 @@ contract LSP16UniversalFactory {
         virtual
         returns (address)
     {
-        bytes32 generatedSalt = generateSalt(false, _EMPTY_BYTE, providedSalt);
+        bytes32 generatedSalt = generateSalt(providedSalt, false, _EMPTY_BYTE);
         address contractCreated = Create2.deploy(msg.value, generatedSalt, byteCode);
-        emit ContractCreated(contractCreated, providedSalt, false, _EMPTY_BYTE);
+        emit ContractCreated(contractCreated, providedSalt, generatedSalt, false, _EMPTY_BYTE);
 
         return contractCreated;
     }
@@ -148,9 +150,15 @@ contract LSP16UniversalFactory {
     ) public payable virtual returns (address) {
         if (constructorMsgValue + initializeCalldataMsgValue != msg.value) revert InvalidValueSum();
 
-        bytes32 generatedSalt = generateSalt(true, initializeCalldata, providedSalt);
+        bytes32 generatedSalt = generateSalt(providedSalt, true, initializeCalldata);
         address contractCreated = Create2.deploy(constructorMsgValue, generatedSalt, byteCode);
-        emit ContractCreated(contractCreated, providedSalt, true, initializeCalldata);
+        emit ContractCreated(
+            contractCreated,
+            providedSalt,
+            generatedSalt,
+            true,
+            initializeCalldata
+        );
 
         (bool success, bytes memory returndata) = contractCreated.call{
             value: initializeCalldataMsgValue
@@ -171,7 +179,7 @@ contract LSP16UniversalFactory {
      *
      * See {generateSalt} function for more details.
      *
-     * Using the same `implementation` and `providedSalt` multiple times will revert, as the contract cannot be deployed
+     * Using the same `implementationContract` and `providedSalt` multiple times will revert, as the contract cannot be deployed
      * twice at the same address.
      *
      * Sending value to the contract created is not possible since the constructor of the ERC1167 minimal proxy is not payable.
@@ -187,10 +195,10 @@ contract LSP16UniversalFactory {
         virtual
         returns (address)
     {
-        bytes32 generatedSalt = generateSalt(false, _EMPTY_BYTE, providedSalt);
+        bytes32 generatedSalt = generateSalt(providedSalt, false, _EMPTY_BYTE);
 
         address proxy = Clones.cloneDeterministic(implementationContract, generatedSalt);
-        emit ContractCreated(proxy, providedSalt, false, _EMPTY_BYTE);
+        emit ContractCreated(proxy, providedSalt, generatedSalt, false, _EMPTY_BYTE);
 
         return proxy;
     }
@@ -205,14 +213,14 @@ contract LSP16UniversalFactory {
      * keccak256: `keccak256(abi.encodePacked(true, initializeCalldata, providedSalt))`.
      * See {generateSalt} function for more details.
      *
-     * Using the same `implementation`, `providedSalt` and `initializeCalldata` multiple times will revert, as the
+     * Using the same `implementationContract`, `providedSalt` and `initializeCalldata` multiple times will revert, as the
      * contract cannot be deployed twice at the same address.
      *
      * If the initialize function of the contract to deploy is payable, value can be sent along to fund the created
      * contract while initializating. However, sending value to this function while the initialize function is not
      * payable will result in a revert.
      *
-     * @param implementation The contract address to use as the base implementation behind the proxy that will be deployed
+     * @param implementationContract The contract address to use as the base implementation behind the proxy that will be deployed
      * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt
      * that will be used by the `CREATE2` opcode for contract deployment
      * @param initializeCalldata The calldata to be executed on the created contract
@@ -220,14 +228,14 @@ contract LSP16UniversalFactory {
      * @return The address of the minimal proxy deployed
      */
     function deployERC1167ProxyAndInitialize(
-        address implementation,
+        address implementationContract,
         bytes32 providedSalt,
         bytes calldata initializeCalldata
     ) public payable virtual returns (address) {
-        bytes32 generatedSalt = generateSalt(true, initializeCalldata, providedSalt);
+        bytes32 generatedSalt = generateSalt(providedSalt, true, initializeCalldata);
 
-        address proxy = Clones.cloneDeterministic(implementation, generatedSalt);
-        emit ContractCreated(proxy, providedSalt, true, initializeCalldata);
+        address proxy = Clones.cloneDeterministic(implementationContract, generatedSalt);
+        emit ContractCreated(proxy, providedSalt, generatedSalt, true, initializeCalldata);
 
         (bool success, bytes memory returndata) = proxy.call{value: msg.value}(initializeCalldata);
         _verifyCallResult(success, returndata);
@@ -255,7 +263,7 @@ contract LSP16UniversalFactory {
         bool initializable,
         bytes calldata initializeCalldata
     ) public view virtual returns (address) {
-        bytes32 generatedSalt = generateSalt(initializable, initializeCalldata, providedSalt);
+        bytes32 generatedSalt = generateSalt(providedSalt, initializable, initializeCalldata);
         return Create2.computeAddress(generatedSalt, byteCodeHash);
     }
 
@@ -264,7 +272,7 @@ contract LSP16UniversalFactory {
      * Any change in one of these parameters will result in a different address. When the `initializable`
      * boolean is set to `false`, `initializeCalldata` will not affect the function output.
      *
-     * @param implementation The contract to create a clone of according to ERC1167
+     * @param implementationContract The contract to create a clone of according to ERC1167
      * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt
      * that will be used by the `CREATE2` opcode for contract deployment
      * @param initializable A boolean that indicates whether an external call should be made to initialize the
@@ -274,13 +282,13 @@ contract LSP16UniversalFactory {
      * @return The address where the ERC1167 proxy contract will be deployed
      */
     function computeERC1167Address(
-        address implementation,
+        address implementationContract,
         bytes32 providedSalt,
         bool initializable,
         bytes calldata initializeCalldata
     ) public view virtual returns (address) {
-        bytes32 generatedSalt = generateSalt(initializable, initializeCalldata, providedSalt);
-        return Clones.predictDeterministicAddress(implementation, generatedSalt);
+        bytes32 generatedSalt = generateSalt(providedSalt, initializable, initializeCalldata);
+        return Clones.predictDeterministicAddress(implementationContract, generatedSalt);
     }
 
     /**
@@ -351,9 +359,9 @@ contract LSP16UniversalFactory {
      * @return The generated salt which will be used for CREATE2 deployment
      */
     function generateSalt(
+        bytes32 providedSalt,
         bool initializable,
-        bytes memory initializeCalldata,
-        bytes32 providedSalt
+        bytes memory initializeCalldata
     ) public pure virtual returns (bytes32) {
         if (initializable) {
             return keccak256(abi.encodePacked(true, initializeCalldata, providedSalt));
