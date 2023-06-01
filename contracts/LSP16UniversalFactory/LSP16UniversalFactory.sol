@@ -50,6 +50,7 @@ error InvalidValueSum();
  *
  * The UniversalFactory will be deployed using Nick's Factory (0x4e59b44847b379578588920ca78fbf26c0b4956c)
  *
+ * The deployed address can be found in the LSP16 specification.
  * Please refer to the LSP16 Specification to obtain the exact bytecode and salt that
  * should be used to produce the address of the UniversalFactory on different chains.
  */
