@@ -65,7 +65,7 @@ contract LSP16UniversalFactory {
      * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt
      * that will be used by the `CREATE2` opcode for contract deployment
      * @param initialized The Boolean that specifies if the contract must be initialized or not
-     * @param initializeCalldata The bytes provided as initializeCalldata (Empty string when the `initialized` is set to false)
+     * @param initializeCalldata The bytes provided as initializeCalldata (Empty string when `initialized` is set to false)
      */
     event ContractCreated(
         address indexed contractCreated,
