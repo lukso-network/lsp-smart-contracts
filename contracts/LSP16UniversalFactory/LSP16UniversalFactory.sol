@@ -38,7 +38,7 @@ error InvalidValueSum();
  *
  * See {generateSalt} function for more details.
  *
- * The constructor and `initializeCalldata` MUST NOT include any network-specific parameters (e.g: chain-id,
+ * The constructor and `initializeCalldata` SHOULD NOT include any network-specific parameters (e.g: chain-id,
  * a local token contract address), otherwise the deployed contract will not be recreated at the same address
  * across different networks, thus defeating the purpose of the UniversalFactory.
  *
@@ -82,13 +82,8 @@ contract LSP16UniversalFactory {
      * the event or computing the address, the `initializable` boolean for this function is set to `false`, and `EMPTY_BYTES`
      * is used for `initializeCalldata`, as the contract is not initializable and the initializeCalldata will not be used.
      *
-     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is
-     * used along with these parameters:
-     *  - `initializable` boolean
-     *  - `initializeCalldata` (when the contract is initializable and `initializable` is set to `true`).
-     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2.
-     *
-     * See {generateSalt} function for more details.
+     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with
+     * keccak256: `keccak256(abi.encodePacked(false, providedSalt))`. See {generateSalt} function for more details.
      *
      * Using the same `byteCode` and `providedSalt` multiple times will revert, as the contract cannot be deployed
      * twice at the same address.
@@ -124,12 +119,8 @@ contract LSP16UniversalFactory {
      * the event or computing the address, the `initializable` boolean for this function is set to `true`, and
      * `initializeCalldata` is used as a parameter.
      *
-     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is
-     * used along with these parameters:
-     *  - `initializable` boolean
-     *  - `initializeCalldata` (when the contract is initializable and `initializable` is set to `true`).
-     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2.
-     *
+     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with
+     * keccak256: `keccak256(abi.encodePacked(true, initializeCalldata, providedSalt))`.
      * See {generateSalt} function for more details.
      *
      * Using the same `byteCode`, `providedSalt` and `initializeCalldata` multiple times will revert, as the
@@ -181,11 +172,8 @@ contract LSP16UniversalFactory {
      * and `EMPTY_BYTES` is used for `initializeCalldata`, as the contract is not initializable, and the
      * `initializeCalldata` will not be used.
      *
-     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is
-     * used along with these parameters:
-     *  - `initializable` boolean
-     *  - `initializeCalldata` (when the contract is initializable and `initializable` is set to `true`).
-     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2.
+     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with
+     * keccak256: `keccak256(abi.encodePacked(false, providedSalt))`. See {generateSalt} function for more details.
      *
      * See {generateSalt} function for more details.
      *
@@ -221,12 +209,8 @@ contract LSP16UniversalFactory {
      * the event or computing the address, the `initializable` boolean for this function is set to `true`, and
      * `initializeCalldata` is used as a parameter.
      *
-     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is
-     * used along with these parameters:
-     *  - `initializable` boolean
-     *  - `initializeCalldata` (when the contract is initializable and `initializable` is set to `true`).
-     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2.
-     *
+     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with
+     * keccak256: `keccak256(abi.encodePacked(true, initializeCalldata, providedSalt))`.
      * See {generateSalt} function for more details.
      *
      * Using the same `implementation`, `providedSalt` and `initializeCalldata` multiple times will revert, as the
@@ -359,13 +343,13 @@ contract LSP16UniversalFactory {
      * This prevents user Z from deploying the contract with different constructor arguments at the same address on chain 2.
      * -----------
      *
-     * The initializable boolean (false) is included in the salt to prevent users from deploying initializable contracts using
-     * non-initializable functions such as {deployCreate2} without having the initialization call.
+     * The providedSalt was hashed to produce the salt used by CREATE2 opcode to prevent users from deploying initializable contracts
+     * using non-initializable functions such as {deployCreate2} without having the initialization call.
      *
-     * In other words, if the initializable boolean was not included and the providedSalt was not hashed, malicious users can check
-     * the generated salt used for already deployed initializable contract on chain 1, and deploy the contract from
-     * {deployCreate2} function on chain 2, with passing the generated salt of the deployed contract as providedSalt that will
-     * produce the same address but without the initialization, where the malicious user can initialize after.
+     * In other words, if the providedSalt was not hashed and was used as it is as the salt by the CREATE2 opcode, malicious users
+     * can check the generated salt used for already deployed initializable contract on chain 1, and deploy the contract
+     * from {deployCreate2} function on chain 2, with passing the generated salt of the deployed contract as providedSalt
+     * that will produce the same address but without the initialization, where the malicious user can initialize after.
      *
      * @param initializable The Boolean that specifies if the contract must be initialized or not
      * @param initializeCalldata The calldata to be executed on the created contract if `initializable` is set to `true`
@@ -380,9 +364,9 @@ contract LSP16UniversalFactory {
         bytes32 providedSalt
     ) public pure virtual returns (bytes32) {
         if (initializable) {
-            return keccak256(abi.encodePacked(initializable, initializeCalldata, providedSalt));
+            return keccak256(abi.encodePacked(true, initializeCalldata, providedSalt));
         } else {
-            return keccak256(abi.encodePacked(initializable, providedSalt));
+            return keccak256(abi.encodePacked(false, providedSalt));
         }
     }
 
