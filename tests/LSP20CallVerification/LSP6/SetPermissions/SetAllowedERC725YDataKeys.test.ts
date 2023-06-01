@@ -86,7 +86,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddController)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -104,7 +104,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddController)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -120,7 +120,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddController)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
@@ -136,7 +136,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddController)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           ).to.be.revertedWithCustomError(
             context.keyManager,
             "InvalidEncodedAllowedERC725YDataKeys"
@@ -161,10 +161,10 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
           await context.universalProfile
             .connect(canOnlyAddController)
-            ["setData(bytes32,bytes)"](key, value);
+            .setData(key, value);
 
           // prettier-ignore
-          const result = await context.universalProfile["getData(bytes32)"](key);
+          const result = await context.universalProfile.getData(key);
           expect(result).to.equal(value);
         });
 
@@ -180,7 +180,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddController)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           ).to.be.revertedWithCustomError(
             context.keyManager,
             "InvalidEncodedAllowedERC725YDataKeys"
@@ -206,10 +206,10 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
           await context.universalProfile
             .connect(canOnlyEditPermissions)
-            ["setData(bytes32,bytes)"](key, value);
+            .setData(key, value);
 
           // prettier-ignore
-          const result = await context.universalProfile["getData(bytes32)"](key);
+          const result = await context.universalProfile.getData(key);
           expect(result).to.equal(value);
         });
 
@@ -224,10 +224,10 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
           await context.universalProfile
             .connect(canOnlyEditPermissions)
-            ["setData(bytes32,bytes)"](key, value);
+            .setData(key, value);
 
           // prettier-ignore
-          const result = await context.universalProfile["getData(bytes32)"](key);
+          const result = await context.universalProfile.getData(key);
           expect(result).to.equal(value);
         });
 
@@ -240,10 +240,10 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
           await context.universalProfile
             .connect(canOnlyEditPermissions)
-            ["setData(bytes32,bytes)"](key, value);
+            .setData(key, value);
 
           // prettier-ignore
-          const result = await context.universalProfile["getData(bytes32)"](key);
+          const result = await context.universalProfile.getData(key);
           expect(result).to.equal(value);
         });
 
@@ -257,7 +257,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           ).to.be.revertedWithCustomError(
             context.keyManager,
             "InvalidEncodedAllowedERC725YDataKeys"
@@ -281,7 +281,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
@@ -299,7 +299,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           await expect(
             context.universalProfile
               .connect(canOnlyEditPermissions)
-              ["setData(bytes32,bytes)"](key, value)
+              .setData(key, value)
           ).to.be.revertedWithCustomError(
             context.keyManager,
             "InvalidEncodedAllowedERC725YDataKeys"

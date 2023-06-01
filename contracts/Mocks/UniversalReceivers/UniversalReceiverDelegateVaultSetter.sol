@@ -29,6 +29,6 @@ contract UniversalReceiverDelegateVaultSetter is ERC165Storage {
 
         keys[0] = key;
         values[0] = value;
-        IERC725Y(vaultadd).setData(keys, values);
+        IERC725Y(vaultadd).setDataBatch(keys, values);
     }
 }

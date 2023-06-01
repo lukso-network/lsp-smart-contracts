@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {LSP11BasicSocialRecoveryInitAbstract} from "./LSP11BasicSocialRecoveryInitAbstract.sol";
 
 /**

@@ -45,6 +45,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     let relayCallParams: {
       signature: BytesLike;
       nonce: BigNumber;
+      validityTimestamps: BytesLike;
       payload: BytesLike;
     };
     before(async () => {
@@ -78,9 +79,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
+            .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
+              relayCallParams.validityTimestamps,
               relayCallParams.payload
             )
         )
@@ -104,9 +106,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       await expect(
         context.keyManager
           .connect(reentrancyContext.caller)
-          ["executeRelayCall(bytes,uint256,bytes)"](
+          .executeRelayCall(
             relayCallParams.signature,
             relayCallParams.nonce,
+            relayCallParams.validityTimestamps,
             relayCallParams.payload
           )
       ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
@@ -129,9 +132,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
+          relayCallParams.validityTimestamps,
           relayCallParams.payload
         );
 
@@ -153,6 +157,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     let relayCallParams: {
       signature: BytesLike;
       nonce: BigNumber;
+      validityTimestamps: BytesLike;
       payload: BytesLike;
     };
     before(async () => {
@@ -186,9 +191,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
+            .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
+              relayCallParams.validityTimestamps,
               relayCallParams.payload
             )
         )
@@ -212,9 +218,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       await expect(
         context.keyManager
           .connect(reentrancyContext.caller)
-          ["executeRelayCall(bytes,uint256,bytes)"](
+          .executeRelayCall(
             relayCallParams.signature,
             relayCallParams.nonce,
+            relayCallParams.validityTimestamps,
             relayCallParams.payload
           )
       ).to.be.revertedWithCustomError(
@@ -234,9 +241,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
+          relayCallParams.validityTimestamps,
           relayCallParams.payload
         );
 
@@ -247,9 +255,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
       );
 
-      expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedKey)
-      ).to.equal(hardcodedValue);
+      expect(await context.universalProfile.getData(hardcodedKey)).to.equal(
+        hardcodedValue
+      );
     });
   });
 
@@ -257,6 +265,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     let relayCallParams: {
       signature: BytesLike;
       nonce: BigNumber;
+      validityTimestamps: BytesLike;
       payload: BytesLike;
     };
     before(async () => {
@@ -286,9 +295,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
+            .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
+              relayCallParams.validityTimestamps,
               relayCallParams.payload
             )
         )
@@ -311,9 +321,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
+          relayCallParams.validityTimestamps,
           relayCallParams.payload
         );
 
@@ -324,9 +335,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "0x0000000000000000000000000000000000000000000000000000000000000010";
 
       expect(
-        await context.universalProfile["getData(bytes32)"](
-          hardcodedPermissionKey
-        )
+        await context.universalProfile.getData(hardcodedPermissionKey)
       ).to.equal(hardcodedPermissionValue);
     });
   });
@@ -335,6 +344,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     let relayCallParams: {
       signature: BytesLike;
       nonce: BigNumber;
+      validityTimestamps: BytesLike;
       payload: BytesLike;
     };
     before(async () => {
@@ -364,9 +374,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
+            .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
+              relayCallParams.validityTimestamps,
               relayCallParams.payload
             )
         )
@@ -389,9 +400,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
+          relayCallParams.validityTimestamps,
           relayCallParams.payload
         );
 
@@ -401,9 +413,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       const hardcodedPermissionValue = "0x";
 
       expect(
-        await context.universalProfile["getData(bytes32)"](
-          hardcodedPermissionKey
-        )
+        await context.universalProfile.getData(hardcodedPermissionKey)
       ).to.equal(hardcodedPermissionValue);
     });
   });
@@ -412,6 +422,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     let relayCallParams: {
       signature: BytesLike;
       nonce: BigNumber;
+      validityTimestamps: BytesLike;
       payload: BytesLike;
     };
     before(async () => {
@@ -441,9 +452,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["executeRelayCall(bytes,uint256,bytes)"](
+            .executeRelayCall(
               relayCallParams.signature,
               relayCallParams.nonce,
+              relayCallParams.validityTimestamps,
               relayCallParams.payload
             )
         )
@@ -466,9 +478,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
+          relayCallParams.validityTimestamps,
           relayCallParams.payload
         );
 
@@ -478,9 +491,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
       const hardcodedLSP1Value = reentrancyContext.newURDAddress;
 
-      expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedLSP1Key)
-      ).to.equal(hardcodedLSP1Value.toLowerCase());
+      expect(await context.universalProfile.getData(hardcodedLSP1Key)).to.equal(
+        hardcodedLSP1Value.toLowerCase()
+      );
     });
   });
 
@@ -488,6 +501,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     let relayCallParams: {
       signature: BytesLike;
       nonce: BigNumber;
+      validityTimestamps: BytesLike;
       payload: BytesLike;
     };
     before(async () => {
@@ -518,9 +532,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           await expect(
             context.keyManager
               .connect(reentrancyContext.caller)
-              ["executeRelayCall(bytes,uint256,bytes)"](
+              .executeRelayCall(
                 relayCallParams.signature,
                 relayCallParams.nonce,
+                relayCallParams.validityTimestamps,
                 relayCallParams.payload
               )
           )
@@ -544,9 +559,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["executeRelayCall(bytes,uint256,bytes)"](
+        .executeRelayCall(
           relayCallParams.signature,
           relayCallParams.nonce,
+          relayCallParams.validityTimestamps,
           relayCallParams.payload
         );
 
@@ -556,9 +572,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
       const hardcodedLSP1Value = "0x";
 
-      expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedLSP1Key)
-      ).to.equal(hardcodedLSP1Value.toLowerCase());
+      expect(await context.universalProfile.getData(hardcodedLSP1Key)).to.equal(
+        hardcodedLSP1Value.toLowerCase()
+      );
     });
   });
 };

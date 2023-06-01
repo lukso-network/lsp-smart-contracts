@@ -116,7 +116,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
       await context.universalProfile
         .connect(context.owner)
-        ["execute(uint256,address,uint256,bytes)"](
+        .execute(
           OPERATION_TYPES.CALL,
           targetContract.address,
           0,
@@ -141,7 +141,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         let data = await context.universalProfile
           .connect(context.owner)
-          .callStatic["execute(uint256,address,uint256,bytes)"](
+          .callStatic.execute(
             OPERATION_TYPES.CALL,
             signatureValidatorContract.address,
             0,
@@ -158,7 +158,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         await context.universalProfile
           .connect(context.owner)
-          ["setData(bytes32,bytes)"](key, value);
+          .setData(key, value);
 
         const result = await context.universalProfile.callStatic[
           "getData(bytes32)"
@@ -184,7 +184,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         let data = await context.universalProfile
           .connect(addressCanInteractOnlyWithERC1271)
-          .callStatic["execute(uint256,address,uint256,bytes)"](
+          .callStatic.execute(
             OPERATION_TYPES.CALL,
             signatureValidatorContract.address,
             0,
@@ -204,7 +204,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         await context.universalProfile
           .connect(addressCanInteractOnlyWithERC1271)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.CALL,
             otherUniversalProfile.address,
             ethers.utils.parseEther("1"),
@@ -228,7 +228,7 @@ export const shouldBehaveLikeAllowedStandards = (
         await expect(
           context.universalProfile
             .connect(addressCanInteractOnlyWithERC1271)
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CALL,
               targetContract.address,
               0,
@@ -263,7 +263,7 @@ export const shouldBehaveLikeAllowedStandards = (
         await expect(
           context.universalProfile
             .connect(addressCanInteractOnlyWithLSP7)
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CALL,
               signatureValidatorContract.address,
               0,
@@ -284,7 +284,7 @@ export const shouldBehaveLikeAllowedStandards = (
         await expect(
           context.universalProfile
             .connect(addressCanInteractOnlyWithLSP7)
-            ["execute(uint256,address,uint256,bytes)"](
+            .execute(
               OPERATION_TYPES.CALL,
               otherUniversalProfile.address,
               ethers.utils.parseEther("1"),
@@ -342,7 +342,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         await context.universalProfile
           .connect(addressCanInteractOnlyWithLSP7)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.CALL,
             lsp7TokenA.address,
             0,
@@ -366,7 +366,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         await context.universalProfile
           .connect(addressCanInteractOnlyWithLSP7)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.CALL,
             lsp7TokenB.address,
             0,
@@ -390,7 +390,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         await context.universalProfile
           .connect(addressCanInteractOnlyWithLSP7)
-          ["execute(uint256,address,uint256,bytes)"](
+          .execute(
             OPERATION_TYPES.CALL,
             lsp7TokenC.address,
             0,

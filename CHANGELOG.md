@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.10.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.9.0...v0.10.0) (2023-05-19)
+
+### ⚠ BREAKING CHANGES
+
+- Remove function overloading in ERC725 (affecting LSP0,LSP9) and LSP6 ([#575](https://github.com/lukso-network/lsp-smart-contracts/pull/575))
+
+  Resulting in a change of interfaceId of ERC725X and ERC725Y and LSP0 and LSP9 and LSP6
+
+  - ERC725X from `0x570ef073` to `0x7545acac`
+  - ERC725Y from `0x714df77c` to `0x629aa694`
+  - LSP0 from `0x0f15a0af` to `0x3e89ad98`
+  - LSP6 from `0xfb437414` to `0x06561226` (Changed later to `0x38bb3cdb` when added validity timestamp feature)
+  - LSP9 from `0x06561226` to `0x28af17e6`
+
+- Add validity timestamp for LSP6 signatures ([#581](https://github.com/lukso-network/lsp-smart-contracts/pull/581))
+  Resulting in a change of interfaceId from `0x06561226` to `0x38bb3cdb`
+
+### Features
+
+- Add `increaseAllowance` and `decreaseAllowance` functions in LSP7 as non-standard functions ([#592](https://github.com/lukso-network/lsp-smart-contracts/pull/592))
+
+### Bug Fixes
+
+- Add check for empty array parameters in batch `ERC725X.executeBatch(uint256[],address[],uint256[],bytes[])`/`ERC725Y.setDataBatch(bytes32[],bytes[])` ([#204](https://github.com/ERC725Alliance/ERC725/pull/204))
+- Add check to avoid renounceOwnership in 1 step on network start ([#562](https://github.com/lukso-network/lsp-smart-contracts/pull/562))
+- Fix wrong parameter in VerifiedCall event in LSP6 ([#570](https://github.com/lukso-network/lsp-smart-contracts/pull/570))
+- Fix not checking for the REENTRANCY Permission in case of chained calls ([#576](https://github.com/lukso-network/lsp-smart-contracts/pull/576))
+- Fix reverting in the UniversalReceiverDelegates contracts in case of minting in the constructor ([#579](https://github.com/lukso-network/lsp-smart-contracts/pull/579))
+- Fix inheritance in LSP7Burnable extension ([#591](https://github.com/lukso-network/lsp-smart-contracts/pull/591))
+- Emit event before external calls in the compatible version of the LSP7/8 tokens ([#590](https://github.com/lukso-network/lsp-smart-contracts/pull/590))
+
+### Refactor
+
+- Change the visibility of tokens variable to `private` to enforce access through standard functions ([#584](https://github.com/lukso-network/lsp-smart-contracts/pull/584))
+
 ## [0.9.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.8.1...v0.9.0) (2023-03-21)
 
 ### ⚠ BREAKING CHANGES

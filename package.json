@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp-smart-contracts",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "The reference implementation for universal profiles smart contracts",
   "directories": {
     "test": "test"
@@ -22,17 +22,17 @@
   "exports": {
     ".": {
       "import": "./dist/constants.cjs.js",
-      "require": "./dist/constant.es.js",
+      "require": "./dist/constants.es.js",
       "types": "./dist/constants.d.ts"
     },
     "./constants.js": {
       "import": "./dist/constants.cjs.js",
-      "require": "./dist/constant.es.js",
+      "require": "./dist/constants.es.js",
       "types": "./dist/constants.d.ts"
     },
     "./constants": {
       "import": "./dist/constants.cjs.js",
-      "require": "./dist/constant.es.js",
+      "require": "./dist/constants.es.js",
       "types": "./dist/constants.d.ts"
     },
     "./userdocs/*": "./userdocs",
@@ -97,7 +97,7 @@
   },
   "homepage": "https://github.com/lukso-network/lsp-smart-contracts#readme",
   "dependencies": {
-    "@erc725/smart-contracts": "^4.2.0",
+    "@erc725/smart-contracts": "^5.0.0",
     "@openzeppelin/contracts": "^4.8.2",
     "@openzeppelin/contracts-upgradeable": "^4.8.2",
     "solidity-bytes-utils": "0.8.0"

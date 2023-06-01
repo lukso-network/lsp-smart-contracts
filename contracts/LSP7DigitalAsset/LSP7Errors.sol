@@ -55,3 +55,8 @@ error LSP7NotifyTokenReceiverIsEOA(address tokenReceiver);
  * @dev reverts when trying to authorize or revoke the token's owner as an operator.
  */
 error LSP7TokenOwnerCannotBeOperator();
+
+/**
+ * @dev Reverts when trying to decrease an operator's allowance to more than his current allowance
+ */
+error LSP7DecreasedAllowanceBelowZero();

@@ -67,7 +67,7 @@ export const testSingleExecuteToSingleExecute = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["execute(bytes)"](executePayload)
+            .execute(executePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -89,7 +89,7 @@ export const testSingleExecuteToSingleExecute = (
       await expect(
         context.keyManager
           .connect(reentrancyContext.caller)
-          ["execute(bytes)"](executePayload)
+          .execute(executePayload)
       ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
     });
 
@@ -110,7 +110,7 @@ export const testSingleExecuteToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["execute(bytes)"](executePayload);
+        .execute(executePayload);
 
       expect(
         await context.universalProfile.provider.getBalance(
@@ -153,7 +153,7 @@ export const testSingleExecuteToSingleExecute = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["execute(bytes)"](executePayload)
+            .execute(executePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -175,7 +175,7 @@ export const testSingleExecuteToSingleExecute = (
       await expect(
         context.keyManager
           .connect(reentrancyContext.caller)
-          ["execute(bytes)"](executePayload)
+          .execute(executePayload)
       ).to.be.revertedWithCustomError(
         context.keyManager,
         "NoERC725YDataKeysAllowed"
@@ -193,7 +193,7 @@ export const testSingleExecuteToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["execute(bytes)"](executePayload);
+        .execute(executePayload);
 
       const hardcodedKey = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
@@ -202,9 +202,9 @@ export const testSingleExecuteToSingleExecute = (
         ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
       );
 
-      expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedKey)
-      ).to.equal(hardcodedValue);
+      expect(await context.universalProfile.getData(hardcodedKey)).to.equal(
+        hardcodedValue
+      );
     });
   });
 
@@ -231,7 +231,7 @@ export const testSingleExecuteToSingleExecute = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["execute(bytes)"](executePayload)
+            .execute(executePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -252,7 +252,7 @@ export const testSingleExecuteToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["execute(bytes)"](executePayload);
+        .execute(executePayload);
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -261,9 +261,7 @@ export const testSingleExecuteToSingleExecute = (
         "0x0000000000000000000000000000000000000000000000000000000000000010";
 
       expect(
-        await context.universalProfile["getData(bytes32)"](
-          hardcodedPermissionKey
-        )
+        await context.universalProfile.getData(hardcodedPermissionKey)
       ).to.equal(hardcodedPermissionValue);
     });
   });
@@ -291,7 +289,7 @@ export const testSingleExecuteToSingleExecute = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["execute(bytes)"](executePayload)
+            .execute(executePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -312,7 +310,7 @@ export const testSingleExecuteToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["execute(bytes)"](executePayload);
+        .execute(executePayload);
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -320,9 +318,7 @@ export const testSingleExecuteToSingleExecute = (
       const hardcodedPermissionValue = "0x";
 
       expect(
-        await context.universalProfile["getData(bytes32)"](
-          hardcodedPermissionKey
-        )
+        await context.universalProfile.getData(hardcodedPermissionKey)
       ).to.equal(hardcodedPermissionValue);
     });
   });
@@ -350,7 +346,7 @@ export const testSingleExecuteToSingleExecute = (
         await expect(
           context.keyManager
             .connect(reentrancyContext.caller)
-            ["execute(bytes)"](executePayload)
+            .execute(executePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -371,7 +367,7 @@ export const testSingleExecuteToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["execute(bytes)"](executePayload);
+        .execute(executePayload);
 
       const hardcodedLSP1Key =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
@@ -379,9 +375,9 @@ export const testSingleExecuteToSingleExecute = (
 
       const hardcodedLSP1Value = reentrancyContext.newURDAddress;
 
-      expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedLSP1Key)
-      ).to.equal(hardcodedLSP1Value.toLowerCase());
+      expect(await context.universalProfile.getData(hardcodedLSP1Key)).to.equal(
+        hardcodedLSP1Value.toLowerCase()
+      );
     });
   });
 
@@ -409,7 +405,7 @@ export const testSingleExecuteToSingleExecute = (
           await expect(
             context.keyManager
               .connect(reentrancyContext.caller)
-              ["execute(bytes)"](executePayload)
+              .execute(executePayload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -431,7 +427,7 @@ export const testSingleExecuteToSingleExecute = (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["execute(bytes)"](executePayload);
+        .execute(executePayload);
 
       const hardcodedLSP1Key =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
@@ -439,9 +435,9 @@ export const testSingleExecuteToSingleExecute = (
 
       const hardcodedLSP1Value = "0x";
 
-      expect(
-        await context.universalProfile["getData(bytes32)"](hardcodedLSP1Key)
-      ).to.equal(hardcodedLSP1Value.toLowerCase());
+      expect(await context.universalProfile.getData(hardcodedLSP1Key)).to.equal(
+        hardcodedLSP1Value.toLowerCase()
+      );
     });
   });
 };

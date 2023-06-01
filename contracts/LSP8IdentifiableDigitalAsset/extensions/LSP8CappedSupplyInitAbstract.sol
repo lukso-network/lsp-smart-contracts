@@ -3,7 +3,6 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
 import {
     LSP8IdentifiableDigitalAssetInitAbstract
 } from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
@@ -17,7 +16,7 @@ abstract contract LSP8CappedSupplyInitAbstract is LSP8IdentifiableDigitalAssetIn
     error LSP8CappedSupplyCannotMintOverCap();
 
     // --- Storage
-    uint256 internal _tokenSupplyCap;
+    uint256 private _tokenSupplyCap;
 
     function _initialize(uint256 tokenSupplyCap_) internal virtual onlyInitializing {
         if (tokenSupplyCap_ == 0) {

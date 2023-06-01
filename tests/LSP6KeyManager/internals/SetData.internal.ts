@@ -1,6 +1,5 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // setup
 import { LSP6InternalsTestContext } from "../../utils/context";
@@ -47,12 +46,10 @@ export const testSetDataInternals = (
               dataKeys,
               dataValues
             )
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManagerInternalTester,
-              "ERC725Y_DataKeysValuesLengthMismatch"
-            )
-            .withArgs(dataKeys.length, dataValues.length);
+          ).to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "ERC725Y_DataKeysValuesLengthMismatch"
+          );
         });
 
         it("should revert with error `...` if the dataValues > (greater than) dataKeys", async () => {
@@ -74,12 +71,10 @@ export const testSetDataInternals = (
               dataKeys,
               dataValues
             )
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManagerInternalTester,
-              "ERC725Y_DataKeysValuesLengthMismatch"
-            )
-            .withArgs(dataKeys.length, dataValues.length);
+          ).to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "ERC725Y_DataKeysValuesLengthMismatch"
+          );
         });
       });
 

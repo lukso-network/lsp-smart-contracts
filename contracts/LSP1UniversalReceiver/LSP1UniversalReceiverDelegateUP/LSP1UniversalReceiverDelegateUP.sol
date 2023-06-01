@@ -4,18 +4,15 @@ pragma solidity ^0.8.4;
 // interfaces
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {ILSP1UniversalReceiver} from "../ILSP1UniversalReceiver.sol";
-import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // libraries
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP1Utils} from "../LSP1Utils.sol";
 import {LSP2Utils} from "../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
-import {LSP6Utils} from "../../LSP6KeyManager/LSP6Utils.sol";
 import {LSP5Utils} from "../../LSP5ReceivedAssets/LSP5Utils.sol";
 import {LSP10Utils} from "../../LSP10ReceivedVaults/LSP10Utils.sol";
 
@@ -97,15 +94,6 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         // solhint-disable avoid-tx-origin
         if (notifier == tx.origin) revert CannotRegisterEOAsAsAssets(notifier);
 
-        // if the contract being transferred doesn't support LSP9 interfaceId, do not register it as a received vault
-        if (
-            mapPrefix == _LSP10_VAULTS_MAP_KEY_PREFIX &&
-            notifier.code.length > 0 &&
-            !notifier.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP9)
-        ) {
-            return "LSP1: not an LSP9Vault ownership transfer";
-        }
-
         // Generate the LSP5ReceivedAssetsMap/LSP10VaultsMap based on the prefix and the notifier
         bytes32 notifierMapKey = LSP2Utils.generateMappingKey(mapPrefix, bytes20(notifier));
 
@@ -124,11 +112,17 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             // If the mapValue is not set, we assume that all other data keys relevant to the asset/vault
             // are not registered in the account, we cannot remove non-existing data keys for the asset being sent
             if (!isMapValueSet) return "LSP1: asset sent is not registered";
+
             // if the value under the `LSP5ReceivedAssetsMap:<asset-address>` or `LSP10VaultsMap:<vault-address>`
             // is not a valid tuple as `(bytes4,uint128)`
             if (notifierMapValue.length < 20) return "LSP1: asset data corrupted";
 
-            return _whenSending(typeId, notifier, notifierMapKey, notifierMapValue);
+            // Identify where the asset/vault is located in the `LSP5ReceivedAssets[]` / `LSP10Vaults[]` Array
+            // by extracting the index from the tuple value `(bytes4,uint128)`
+            // fetched under the `LSP5ReceivedAssetsMap` / `LSP10VaultsMap` data key
+            uint128 arrayIndex = uint128(uint160(bytes20(notifierMapValue)));
+
+            return _whenSending(typeId, notifier, notifierMapKey, arrayIndex);
         }
     }
 
@@ -150,9 +144,13 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
 
         // if it's a token transfer (LSP7/LSP8)
         if (typeId != _TYPEID_LSP9_OwnershipTransferred_RecipientNotification) {
-            // if the amount sent is 0, then do not update the keys
-            uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
-            if (balance == 0) return "LSP1: balance not updated";
+            // CHECK balance only when the Token contract is already deployed,
+            // not when tokens are being transferred on deployment through the `constructor`
+            if (notifier.code.length > 0) {
+                // if the amount sent is 0, then do not update the keys
+                uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
+                if (balance == 0) return "LSP1: balance not updated";
+            }
 
             (dataKeys, dataValues) = LSP5Utils.generateReceivedAssetKeys(
                 msg.sender,
@@ -162,7 +160,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             );
 
             // Set the LSP5 generated data keys on the account
-            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
             return "";
         } else {
             (dataKeys, dataValues) = LSP10Utils.generateReceivedVaultKeys(
@@ -172,7 +170,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             );
 
             // Set the LSP10 generated data keys on the account
-            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
             return "";
         }
     }
@@ -186,7 +184,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         bytes32 typeId,
         address notifier,
         bytes32 notifierMapKey,
-        bytes memory notifierMapValue
+        uint128 arrayIndex
     ) internal virtual returns (bytes memory) {
         bytes32[] memory dataKeys;
         bytes[] memory dataValues;
@@ -200,7 +198,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             (dataKeys, dataValues) = LSP5Utils.generateSentAssetKeys(
                 msg.sender,
                 notifierMapKey,
-                notifierMapValue
+                arrayIndex
             );
 
             /**
@@ -211,13 +209,13 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
 
             // Set the LSP5 generated data keys on the account
-            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
             return "";
         } else {
             (dataKeys, dataValues) = LSP10Utils.generateSentVaultKeys(
                 msg.sender,
                 notifierMapKey,
-                notifierMapValue
+                arrayIndex
             );
 
             /**
@@ -228,7 +226,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
 
             // Set the LSP10 generated data keys on the account
-            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
             return "";
         }
     }

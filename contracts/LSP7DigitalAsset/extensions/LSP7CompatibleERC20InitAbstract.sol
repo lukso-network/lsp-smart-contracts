@@ -4,7 +4,6 @@ pragma solidity ^0.8.12;
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ILSP7CompatibleERC20} from "./ILSP7CompatibleERC20.sol";
-import {ILSP7DigitalAsset} from "../ILSP7DigitalAsset.sol";
 
 // modules
 import {LSP4Compatibility} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
@@ -13,7 +12,6 @@ import {
     LSP4DigitalAssetMetadataInitAbstract,
     ERC725YCore
 } from "../LSP7DigitalAssetInitAbstract.sol";
-import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
 
 /**
  * @dev LSP7 extension, for compatibility for clients / tools that expect ERC20.
@@ -112,8 +110,8 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual override {
-        super._transfer(from, to, amount, allowNonLSP1Recipient, data);
         emit Transfer(from, to, amount);
+        super._transfer(from, to, amount, allowNonLSP1Recipient, data);
     }
 
     function _mint(
@@ -122,8 +120,8 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual override {
-        super._mint(to, amount, allowNonLSP1Recipient, data);
         emit Transfer(address(0), to, amount);
+        super._mint(to, amount, allowNonLSP1Recipient, data);
     }
 
     function _burn(
@@ -131,8 +129,8 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         uint256 amount,
         bytes memory data
     ) internal virtual override {
-        super._burn(from, amount, data);
         emit Transfer(from, address(0), amount);
+        super._burn(from, amount, data);
     }
 
     function _setData(bytes32 key, bytes memory value)

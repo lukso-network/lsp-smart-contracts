@@ -76,7 +76,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
       const payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE,
           ethers.constants.AddressZero,
@@ -89,11 +89,9 @@ export const shouldBehaveLikePermissionDeploy = (
       // so we can check it against the address emitted in the ContractCreated event
       const expectedContractAddress = await context.keyManager
         .connect(context.owner)
-        .callStatic["execute(bytes)"](payload);
+        .callStatic.execute(payload);
 
-      await expect(
-        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
-      )
+      await expect(context.keyManager.connect(context.owner).execute(payload))
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
           OPERATION_TYPES.CREATE,
@@ -116,7 +114,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const fundingAmount = ethers.utils.parseEther("10");
 
       const payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE,
           ethers.constants.AddressZero,
@@ -129,11 +127,9 @@ export const shouldBehaveLikePermissionDeploy = (
       // so we can check it against the address emitted in the ContractCreated event
       const expectedContractAddress = await context.keyManager
         .connect(context.owner)
-        .callStatic["execute(bytes)"](payload);
+        .callStatic.execute(payload);
 
-      await expect(
-        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
-      )
+      await expect(context.keyManager.connect(context.owner).execute(payload))
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
           OPERATION_TYPES.CREATE,
@@ -159,7 +155,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE2,
           ethers.constants.AddressZero,
@@ -174,9 +170,7 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy
       ).toLowerCase();
 
-      await expect(
-        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
-      )
+      await expect(context.keyManager.connect(context.owner).execute(payload))
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
           OPERATION_TYPES.CREATE2,
@@ -201,7 +195,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE2,
           ethers.constants.AddressZero,
@@ -216,9 +210,7 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy
       ).toLowerCase();
 
-      await expect(
-        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
-      )
+      await expect(context.keyManager.connect(context.owner).execute(payload))
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
           OPERATION_TYPES.CREATE2,
@@ -246,7 +238,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE,
           ethers.constants.AddressZero,
@@ -257,10 +249,10 @@ export const shouldBehaveLikePermissionDeploy = (
 
       const expectedContractAddress = await context.keyManager
         .connect(addressCanDeploy)
-        .callStatic["execute(bytes)"](payload);
+        .callStatic.execute(payload);
 
       await expect(
-        context.keyManager.connect(addressCanDeploy)["execute(bytes)"](payload)
+        context.keyManager.connect(addressCanDeploy).execute(payload)
       )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
@@ -284,7 +276,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const fundingAmount = ethers.utils.parseEther("10");
 
       const payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE,
           ethers.constants.AddressZero,
@@ -294,7 +286,7 @@ export const shouldBehaveLikePermissionDeploy = (
       );
 
       await expect(
-        context.keyManager.connect(addressCanDeploy)["execute(bytes)"](payload)
+        context.keyManager.connect(addressCanDeploy).execute(payload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
         .withArgs(addressCanDeploy.address, "SUPER_TRANSFERVALUE");
@@ -305,7 +297,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE2,
           ethers.constants.AddressZero,
@@ -321,7 +313,7 @@ export const shouldBehaveLikePermissionDeploy = (
       ).toLowerCase();
 
       await expect(
-        context.keyManager.connect(addressCanDeploy)["execute(bytes)"](payload)
+        context.keyManager.connect(addressCanDeploy).execute(payload)
       )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
@@ -347,7 +339,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE2,
           ethers.constants.AddressZero,
@@ -357,7 +349,7 @@ export const shouldBehaveLikePermissionDeploy = (
       );
 
       await expect(
-        context.keyManager.connect(addressCanDeploy)["execute(bytes)"](payload)
+        context.keyManager.connect(addressCanDeploy).execute(payload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
         .withArgs(addressCanDeploy.address, "SUPER_TRANSFERVALUE");
@@ -369,7 +361,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
       const payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE,
           ethers.constants.AddressZero,
@@ -382,12 +374,12 @@ export const shouldBehaveLikePermissionDeploy = (
       // so we can check it against the address emitted in the ContractCreated event
       const expectedContractAddress = await context.keyManager
         .connect(addressCanDeployAndTransferValue)
-        .callStatic["execute(bytes)"](payload);
+        .callStatic.execute(payload);
 
       await expect(
         context.keyManager
           .connect(addressCanDeployAndTransferValue)
-          ["execute(bytes)"](payload)
+          .execute(payload)
       )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
@@ -411,7 +403,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const fundingAmount = ethers.utils.parseEther("10");
 
       const payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE,
           ethers.constants.AddressZero,
@@ -423,7 +415,7 @@ export const shouldBehaveLikePermissionDeploy = (
       await expect(
         context.keyManager
           .connect(addressCanDeployAndTransferValue)
-          ["execute(bytes)"](payload)
+          .execute(payload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
         .withArgs(
@@ -437,7 +429,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE2,
           ethers.constants.AddressZero,
@@ -455,7 +447,7 @@ export const shouldBehaveLikePermissionDeploy = (
       await expect(
         context.keyManager
           .connect(addressCanDeployAndTransferValue)
-          ["execute(bytes)"](payload)
+          .execute(payload)
       )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
@@ -481,7 +473,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE2,
           ethers.constants.AddressZero,
@@ -493,7 +485,7 @@ export const shouldBehaveLikePermissionDeploy = (
       await expect(
         context.keyManager
           .connect(addressCanDeployAndTransferValue)
-          ["execute(bytes)"](payload)
+          .execute(payload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
         .withArgs(
@@ -508,7 +500,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
       const payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE,
           ethers.constants.AddressZero,
@@ -521,12 +513,12 @@ export const shouldBehaveLikePermissionDeploy = (
       // so we can check it against the address emitted in the ContractCreated event
       const expectedContractAddress = await context.keyManager
         .connect(addressCanDeployAndSuperTransferValue)
-        .callStatic["execute(bytes)"](payload);
+        .callStatic.execute(payload);
 
       await expect(
         context.keyManager
           .connect(addressCanDeployAndSuperTransferValue)
-          ["execute(bytes)"](payload)
+          .execute(payload)
       )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
@@ -550,7 +542,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const fundingAmount = ethers.utils.parseEther("10");
 
       const payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE,
           ethers.constants.AddressZero,
@@ -563,12 +555,12 @@ export const shouldBehaveLikePermissionDeploy = (
       // so we can check it against the address emitted in the ContractCreated event
       const expectedContractAddress = await context.keyManager
         .connect(addressCanDeployAndSuperTransferValue)
-        .callStatic["execute(bytes)"](payload);
+        .callStatic.execute(payload);
 
       await expect(
         context.keyManager
           .connect(addressCanDeployAndSuperTransferValue)
-          ["execute(bytes)"](payload)
+          .execute(payload)
       )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
@@ -595,7 +587,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE2,
           ethers.constants.AddressZero,
@@ -613,7 +605,7 @@ export const shouldBehaveLikePermissionDeploy = (
       await expect(
         context.keyManager
           .connect(addressCanDeployAndSuperTransferValue)
-          ["execute(bytes)"](payload)
+          .execute(payload)
       )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
@@ -639,7 +631,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [
           OPERATION_TYPES.CREATE2,
           ethers.constants.AddressZero,
@@ -657,7 +649,7 @@ export const shouldBehaveLikePermissionDeploy = (
       await expect(
         context.keyManager
           .connect(addressCanDeployAndSuperTransferValue)
-          ["execute(bytes)"](payload)
+          .execute(payload)
       )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
@@ -687,7 +679,7 @@ export const shouldBehaveLikePermissionDeploy = (
         let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
+          "execute",
           [
             OPERATION_TYPES.CREATE,
             ethers.constants.AddressZero,
@@ -697,9 +689,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
         await expect(
-          context.keyManager
-            .connect(addressCannotDeploy)
-            ["execute(bytes)"](payload)
+          context.keyManager.connect(addressCannotDeploy).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotDeploy.address, "DEPLOY");
@@ -710,7 +700,7 @@ export const shouldBehaveLikePermissionDeploy = (
         let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
+          "execute",
           [
             OPERATION_TYPES.CREATE2,
             ethers.constants.AddressZero,
@@ -720,9 +710,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
         await expect(
-          context.keyManager
-            .connect(addressCannotDeploy)
-            ["execute(bytes)"](payload)
+          context.keyManager.connect(addressCannotDeploy).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotDeploy.address, "DEPLOY");
@@ -740,8 +728,10 @@ export const shouldBehaveLikePermissionDeploy = (
               0
             );
 
+            const validityTimestamps = 0;
+
             let payload = context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [
                 OPERATION_TYPES.CREATE,
                 ethers.constants.AddressZero,
@@ -754,8 +744,15 @@ export const shouldBehaveLikePermissionDeploy = (
             let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+              [
+                LSP6_VERSION,
+                HARDHAT_CHAINID,
+                nonce,
+                validityTimestamps,
+                valueToSend,
+                payload,
+              ]
             );
 
             let ethereumSignature = await addressCannotDeploy.signMessage(
@@ -775,9 +772,10 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                ["executeRelayCall(bytes,uint256,bytes)"](
+                .executeRelayCall(
                   ethereumSignature,
                   nonce,
+                  validityTimestamps,
                   payload,
                   {
                     value: valueToSend,
@@ -801,8 +799,10 @@ export const shouldBehaveLikePermissionDeploy = (
               0
             );
 
+            const validityTimestamps = 0;
+
             let payload = context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [
                 OPERATION_TYPES.CREATE,
                 ethers.constants.AddressZero,
@@ -815,8 +815,15 @@ export const shouldBehaveLikePermissionDeploy = (
             let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+              [
+                LSP6_VERSION,
+                HARDHAT_CHAINID,
+                nonce,
+                validityTimestamps,
+                valueToSend,
+                payload,
+              ]
             );
 
             const eip191Signer = new EIP191Signer();
@@ -830,9 +837,10 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                ["executeRelayCall(bytes,uint256,bytes)"](
+                .executeRelayCall(
                   signature,
                   nonce,
+                  validityTimestamps,
                   payload,
                   {
                     value: valueToSend,
@@ -859,8 +867,10 @@ export const shouldBehaveLikePermissionDeploy = (
               0
             );
 
+            const validityTimestamps = 0;
+
             let payload = context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [
                 OPERATION_TYPES.CREATE2,
                 ethers.constants.AddressZero,
@@ -873,8 +883,15 @@ export const shouldBehaveLikePermissionDeploy = (
             let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+              [
+                LSP6_VERSION,
+                HARDHAT_CHAINID,
+                nonce,
+                validityTimestamps,
+                valueToSend,
+                payload,
+              ]
             );
 
             let ethereumSignature = await addressCannotDeploy.signMessage(
@@ -893,9 +910,10 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                ["executeRelayCall(bytes,uint256,bytes)"](
+                .executeRelayCall(
                   ethereumSignature,
                   nonce,
+                  validityTimestamps,
                   payload,
                   {
                     value: valueToSend,
@@ -920,8 +938,10 @@ export const shouldBehaveLikePermissionDeploy = (
               0
             );
 
+            const validityTimestamps = 0;
+
             let payload = context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
+              "execute",
               [
                 OPERATION_TYPES.CREATE2,
                 ethers.constants.AddressZero,
@@ -934,8 +954,15 @@ export const shouldBehaveLikePermissionDeploy = (
             let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "uint256", "bytes"],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
+              ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+              [
+                LSP6_VERSION,
+                HARDHAT_CHAINID,
+                nonce,
+                validityTimestamps,
+                valueToSend,
+                payload,
+              ]
             );
 
             const lsp6Signer = new EIP191Signer();
@@ -949,9 +976,10 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                ["executeRelayCall(bytes,uint256,bytes)"](
+                .executeRelayCall(
                   signature,
                   nonce,
+                  validityTimestamps,
                   payload,
                   {
                     value: valueToSend,

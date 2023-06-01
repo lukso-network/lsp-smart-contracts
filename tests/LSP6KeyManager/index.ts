@@ -39,3 +39,4 @@ export * from "./internals/AllowedCalls.internal";
 export * from "./internals/AllowedERC725YDataKeys.internal";
 export * from "./internals/ReadPermissions.internal";
 export * from "./internals/SetData.internal";
+export * from "./internals/Execute.internal";

@@ -95,12 +95,14 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
+        const validityTimestamps = 0;
+
         const targetContractPayload =
           targetContract.interface.encodeFunctionData("setName", [newName]);
 
         const executeRelayCallPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
+            "execute",
             [
               OPERATION_TYPES.CALL,
               targetContract.address,
@@ -113,11 +115,12 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let valueToSend = 0;
 
         const encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             latestNonce,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -131,9 +134,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
           LOCAL_PRIVATE_KEYS.ACCOUNT1
         );
 
-        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+        await context.keyManager.executeRelayCall(
           signature,
           latestNonce,
+          validityTimestamps,
           executeRelayCallPayload,
           { value: valueToSend }
         );
@@ -164,6 +168,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
           signer.address,
           channelId
         );
+
+        const validityTimestamps = 0;
+
         let newName = names[0];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData(
@@ -171,25 +178,23 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -205,9 +210,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
+          .executeRelayCall(
             signature,
             nonceBefore,
+            validityTimestamps,
             executeRelayCallPayload,
             {
               value: valueToSend,
@@ -231,6 +237,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
           signer.address,
           channelId
         );
+
+        const validityTimestamps = 0;
+
         let newName = names[1];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData(
@@ -238,25 +247,23 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -272,9 +279,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
+          .executeRelayCall(
             signature,
             nonceBefore,
+            validityTimestamps,
             executeRelayCallPayload,
             {
               value: valueToSend,
@@ -303,6 +311,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
           signer.address,
           channelId
         );
+
+        const validityTimestamps = 0;
+
         let newName = names[0];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData(
@@ -310,25 +321,23 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -344,9 +353,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
+          .executeRelayCall(
             signature,
             nonceBefore,
+            validityTimestamps,
             executeRelayCallPayload,
             {
               value: valueToSend,
@@ -370,6 +380,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
           signer.address,
           channelId
         );
+
+        const validityTimestamps = 0;
+
         let newName = names[1];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData(
@@ -377,25 +390,23 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -411,9 +422,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
+          .executeRelayCall(
             signature,
             nonceBefore,
+            validityTimestamps,
             executeRelayCallPayload,
             {
               value: valueToSend,
@@ -442,6 +454,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
           signer.address,
           channelId
         );
+
+        const validityTimestamps = 0;
+
         let newName = names[0];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData(
@@ -449,25 +464,23 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -483,9 +496,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
+          .executeRelayCall(
             signature,
             nonceBefore,
+            validityTimestamps,
             executeRelayCallPayload,
             {
               value: valueToSend,
@@ -509,6 +523,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
           signer.address,
           channelId
         );
+
+        const validityTimestamps = 0;
+
         let newName = names[1];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData(
@@ -516,25 +533,23 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -550,9 +565,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
+          .executeRelayCall(
             signature,
             nonceBefore,
+            validityTimestamps,
             executeRelayCallPayload,
             {
               value: valueToSend,
@@ -578,6 +594,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
           signer.address,
           channelId
         );
+
+        const validityTimestamps = 0;
+
         let newName = "Lukasz";
 
         let targetContractPayload = targetContract.interface.encodeFunctionData(
@@ -585,25 +604,23 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
+            validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
           ]
@@ -619,9 +636,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](
+          .executeRelayCall(
             signature,
             nonceBefore,
+            validityTimestamps,
             executeRelayCallPayload,
             {
               value: valueToSend,
