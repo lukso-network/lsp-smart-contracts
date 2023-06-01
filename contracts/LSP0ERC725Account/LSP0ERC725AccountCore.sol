@@ -5,7 +5,6 @@ pragma solidity ^0.8.4;
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP0ERC725Account} from "./ILSP0ERC725Account.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import {ILSP20CallVerification} from "../LSP20CallVerification/ILSP20CallVerification.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -14,7 +13,6 @@ import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165C
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
-import {GasUtils} from "../Utils/GasUtils.sol";
 
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
@@ -43,6 +41,7 @@ import {
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 import {_LSP17_EXTENSION_PREFIX} from "../LSP17ContractExtension/LSP17Constants.sol";
+import {_INTERFACEID_LSP20_CALL_VERIFICATION} from "../LSP20CallVerification/LSP20Constants.sol";
 
 // errors
 import {ERC725Y_DataKeysValuesLengthMismatch} from "@erc725/smart-contracts/contracts/errors.sol";
@@ -157,7 +156,7 @@ abstract contract LSP0ERC725AccountCore is
      */
     function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
         results = new bytes[](data.length);
-        for (uint256 i; i < data.length; i = GasUtils.uncheckedIncrement(i)) {
+        for (uint256 i; i < data.length; ) {
             (bool success, bytes memory result) = address(this).delegatecall(data[i]);
 
             if (!success) {
@@ -176,6 +175,10 @@ abstract contract LSP0ERC725AccountCore is
             }
 
             results[i] = result;
+
+            unchecked {
+                ++i;
+            }
         }
     }
 
@@ -225,7 +228,7 @@ abstract contract LSP0ERC725AccountCore is
 
         // if verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         if (verifyAfter) {
-            LSP20CallVerification._verifyCallResult(_owner, result);
+            LSP20CallVerification._verifyCallResult(_owner, abi.encode(result));
         }
 
         return result;
@@ -252,7 +255,7 @@ abstract contract LSP0ERC725AccountCore is
      * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2 (each iteration)
      * Emits a {ValueReceived} event when receiving native tokens.
      */
-    function execute(
+    function executeBatch(
         uint256[] memory operationsType,
         address[] memory targets,
         uint256[] memory values,
@@ -266,7 +269,7 @@ abstract contract LSP0ERC725AccountCore is
 
         // If the caller is the owner perform execute directly
         if (msg.sender == _owner) {
-            return ERC725XCore._execute(operationsType, targets, values, datas);
+            return ERC725XCore._executeBatch(operationsType, targets, values, datas);
         }
 
         // If the caller is not the owner, call {lsp20VerifyCall} on the owner
@@ -274,7 +277,7 @@ abstract contract LSP0ERC725AccountCore is
         bool verifyAfter = LSP20CallVerification._verifyCall(_owner);
 
         // Perform the execution
-        bytes[] memory results = ERC725XCore._execute(operationsType, targets, values, datas);
+        bytes[] memory results = ERC725XCore._executeBatch(operationsType, targets, values, datas);
 
         // if verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         if (verifyAfter) {
@@ -337,7 +340,7 @@ abstract contract LSP0ERC725AccountCore is
      * Emits a {ValueReceived} event when receiving native tokens.
      * Emits a {DataChanged} event. (on each iteration of setting data)
      */
-    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues)
+    function setDataBatch(bytes32[] memory dataKeys, bytes[] memory dataValues)
         public
         payable
         virtual
@@ -348,15 +351,19 @@ abstract contract LSP0ERC725AccountCore is
         }
 
         if (dataKeys.length != dataValues.length) {
-            revert ERC725Y_DataKeysValuesLengthMismatch(dataKeys.length, dataValues.length);
+            revert ERC725Y_DataKeysValuesLengthMismatch();
         }
 
         address _owner = owner();
 
         // If the caller is the owner perform setData directly
         if (msg.sender == _owner) {
-            for (uint256 i = 0; i < dataKeys.length; i = _uncheckedIncrementERC725Y(i)) {
+            for (uint256 i = 0; i < dataKeys.length; ) {
                 _setData(dataKeys[i], dataValues[i]);
+
+                unchecked {
+                    ++i;
+                }
             }
 
             return;
@@ -366,8 +373,12 @@ abstract contract LSP0ERC725AccountCore is
         // Depending on the magicValue returned, a second call is done after setting data
         bool verifyAfter = _verifyCall(_owner);
 
-        for (uint256 i = 0; i < dataKeys.length; i = _uncheckedIncrementERC725Y(i)) {
+        for (uint256 i = 0; i < dataKeys.length; ) {
             _setData(dataKeys[i], dataValues[i]);
+
+            unchecked {
+                ++i;
+            }
         }
 
         // If verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
@@ -635,6 +646,7 @@ abstract contract LSP0ERC725AccountCore is
             interfaceId == _INTERFACEID_LSP0 ||
             interfaceId == _INTERFACEID_LSP1 ||
             interfaceId == _INTERFACEID_LSP14 ||
+            interfaceId == _INTERFACEID_LSP20_CALL_VERIFICATION ||
             super.supportsInterface(interfaceId) ||
             LSP17Extendable._supportsInterfaceInERC165Extension(interfaceId);
     }
@@ -687,10 +699,19 @@ abstract contract LSP0ERC725AccountCore is
         }
         // If owner is an EOA
         else {
-            return
-                _owner == ECDSA.recover(dataHash, signature)
-                    ? _ERC1271_MAGICVALUE
-                    : _ERC1271_FAILVALUE;
+            // if isValidSignature fail, the error is catched in returnedError
+            (address recoveredAddress, ECDSA.RecoverError returnedError) = ECDSA.tryRecover(
+                dataHash,
+                signature
+            );
+
+            // if recovering throws an error, return the fail value
+            if (returnedError != ECDSA.RecoverError.NoError) return _ERC1271_FAILVALUE;
+
+            // if recovering is successful and the recovered address matches the owner's address,
+            // return the ERC1271 magic value. Otherwise, return the ERC1271 fail value
+            // matches the address of the owner, otherwise return fail value
+            return recoveredAddress == _owner ? _ERC1271_MAGICVALUE : _ERC1271_FAILVALUE;
         }
     }
 

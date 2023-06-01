@@ -1,11 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.5;
 
-// interfaces
-import {
-    ILSP20CallVerification as ILSP20
-} from "../../LSP20CallVerification/ILSP20CallVerification.sol";
-
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
@@ -23,12 +18,10 @@ import {
     _PERMISSION_SUPER_CALL,
     _PERMISSION_STATICCALL,
     _PERMISSION_SUPER_STATICCALL,
-    _PERMISSION_DELEGATECALL,
-    _PERMISSION_SUPER_DELEGATECALL,
-    _ALLOWEDCALLS_VALUE,
-    _ALLOWEDCALLS_WRITE,
-    _ALLOWEDCALLS_READ,
-    _ALLOWEDCALLS_EXECUTE
+    _ALLOWEDCALLS_TRANSFERVALUE,
+    _ALLOWEDCALLS_CALL,
+    _ALLOWEDCALLS_STATICCALL,
+    _ALLOWEDCALLS_DELEGATECALL
 } from "../LSP6Constants.sol";
 import {
     OPERATION_0_CALL,
@@ -218,7 +211,8 @@ abstract contract LSP6ExecuteModule {
             uint256 operationType,
             address to,
             uint256 value,
-            bytes4 selector
+            bytes4 selector,
+            bool isEmptyCall
         ) = _extractExecuteParameters(payload);
 
         // CHECK for ALLOWED CALLS
@@ -230,7 +224,7 @@ abstract contract LSP6ExecuteModule {
             revert NoCallsAllowed(controllerAddress);
         }
 
-        bytes4 requiredCallTypes = _extractCallType(operationType, selector, value);
+        bytes4 requiredCallTypes = _extractCallType(operationType, value, isEmptyCall);
 
         for (uint256 ii; ii < allowedCalls.length; ii += 34) {
             /// @dev structure of an AllowedCall
@@ -272,37 +266,28 @@ abstract contract LSP6ExecuteModule {
     /**
      * @dev extract the bytes4 representation of a single bit for the type of call according to the `operationType`
      * @param operationType 0 = CALL, 3 = STATICCALL or 3 = DELEGATECALL
-     * @return a bytes4 value containing a single 1 bit for the callType
+     * @return requiredCallTypes a bytes4 value containing a single 1 bit for the callType
      */
     function _extractCallType(
         uint256 operationType,
-        bytes4 selector,
-        uint256 value
-    ) internal pure returns (bytes4) {
-        bytes4 requiredCallTypes;
-
-        if (operationType == OPERATION_0_CALL) {
-            if (
-                // CHECK if we are doing an empty call
-                (selector == bytes4(0) && value == 0) ||
-                // we do not require callType CALL
-                // if we are just transferring value without `data`
-                selector != bytes4(0)
-            ) {
-                requiredCallTypes = _ALLOWEDCALLS_WRITE;
-            }
-        }
-
-        if (operationType == OPERATION_3_STATICCALL) requiredCallTypes = _ALLOWEDCALLS_READ;
-        if (operationType == OPERATION_4_DELEGATECALL) requiredCallTypes = _ALLOWEDCALLS_EXECUTE;
-
+        uint256 value,
+        bool isEmptyCall
+    ) internal pure returns (bytes4 requiredCallTypes) {
         // if there is value being transferred, add the extra bit
         // for the first bit for Value Transfer in the `requiredCallTypes`
         if (value != 0) {
-            requiredCallTypes |= _ALLOWEDCALLS_VALUE;
+            requiredCallTypes |= _ALLOWEDCALLS_TRANSFERVALUE;
         }
 
-        return requiredCallTypes;
+        if (!isEmptyCall) {
+            if (operationType == OPERATION_0_CALL) {
+                requiredCallTypes |= _ALLOWEDCALLS_CALL;
+            } else if (operationType == OPERATION_3_STATICCALL) {
+                requiredCallTypes |= _ALLOWEDCALLS_STATICCALL;
+            } else if (operationType == OPERATION_4_DELEGATECALL) {
+                requiredCallTypes |= _ALLOWEDCALLS_DELEGATECALL;
+            }
+        }
     }
 
     function _extractExecuteParameters(bytes calldata executeCalldata)
@@ -312,11 +297,18 @@ abstract contract LSP6ExecuteModule {
             uint256,
             address,
             uint256,
-            bytes4
+            bytes4,
+            bool
         )
     {
         uint256 operationType = uint256(bytes32(executeCalldata[4:36]));
+
+        // CHECK that it is a valid address left-padded with `00` on the 12 upper bytes
+        if (bytes12(executeCalldata[36:48]) != bytes12(0)) {
+            revert InvalidPayload(executeCalldata);
+        }
         address to = address(bytes20(executeCalldata[48:68]));
+
         uint256 value = uint256(bytes32(executeCalldata[68:100]));
 
         // CHECK if there is at least a 4 bytes function selector
@@ -324,7 +316,7 @@ abstract contract LSP6ExecuteModule {
             ? bytes4(executeCalldata[164:168])
             : bytes4(0);
 
-        return (operationType, to, value, selector);
+        return (operationType, to, value, selector, executeCalldata.length == 164);
     }
 
     function _isAllowedAddress(bytes memory allowedCall, address to) internal pure returns (bool) {

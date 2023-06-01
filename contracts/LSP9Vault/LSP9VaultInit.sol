@@ -18,7 +18,8 @@ contract LSP9VaultInit is LSP9VaultInitAbstract {
     }
 
     /**
-     * @notice Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key
+     * @notice Initializing the contract owner to: `newOwner`
+     * @dev Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key
      * @param newOwner the owner of the contract
      */
     function initialize(address newOwner) external payable virtual initializer {

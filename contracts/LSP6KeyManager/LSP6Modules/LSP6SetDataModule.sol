@@ -6,7 +6,6 @@ import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC725Y_DataKeysValuesLengthMismatch} from "@erc725/smart-contracts/contracts/errors.sol";
 
 // libraries
-import {GasUtils} from "../../Utils/GasUtils.sol";
 import {LSP6Utils} from "../LSP6Utils.sol";
 
 // constants
@@ -63,6 +62,7 @@ abstract contract LSP6SetDataModule {
     ) internal view virtual {
         bytes32 requiredPermission = _getPermissionRequiredToSetDataKey(
             controlledContract,
+            controllerPermissions,
             inputDataKey,
             inputDataValue
         );
@@ -80,6 +80,9 @@ abstract contract LSP6SetDataModule {
                 ERC725Y(controlledContract).getAllowedERC725YDataKeysFor(controllerAddress)
             );
         } else {
+            // Do not check again if we already checked that the controller had the permissions inside `_getPermissionRequiredToSetDataKey(...)`
+            if (requiredPermission == bytes32(0)) return;
+
             // Otherwise CHECK the required permission if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
             _requirePermissions(controllerAddress, controllerPermissions, requiredPermission);
         }
@@ -101,14 +104,12 @@ abstract contract LSP6SetDataModule {
         bytes[] memory inputDataValues
     ) internal view virtual {
         if (inputDataKeys.length != inputDataValues.length) {
-            revert ERC725Y_DataKeysValuesLengthMismatch(
-                inputDataKeys.length,
-                inputDataValues.length
-            );
+            revert ERC725Y_DataKeysValuesLengthMismatch();
         }
 
         bool isSettingERC725YKeys;
         bool[] memory validatedInputDataKeys = new bool[](inputDataKeys.length);
+        uint256 inputDataKeysAllowed = 0;
 
         bytes32 requiredPermission;
 
@@ -116,6 +117,7 @@ abstract contract LSP6SetDataModule {
         do {
             requiredPermission = _getPermissionRequiredToSetDataKey(
                 controlledContract,
+                permissions,
                 inputDataKeys[ii],
                 inputDataValues[ii]
             );
@@ -123,12 +125,19 @@ abstract contract LSP6SetDataModule {
             if (requiredPermission == _PERMISSION_SETDATA) {
                 isSettingERC725YKeys = true;
             } else {
-                // CHECK the required permissions if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
-                _requirePermissions(controller, permissions, requiredPermission);
+                // if we did not check already the permissions of the controller inside `_getPermissionRequiredToSetDataKey(...)`
+                if (requiredPermission != bytes32(0)) {
+                    // CHECK the required permissions for setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
+                    _requirePermissions(controller, permissions, requiredPermission);
+                }
+
                 validatedInputDataKeys[ii] = true;
+                inputDataKeysAllowed++;
             }
 
-            ii = GasUtils.uncheckedIncrement(ii);
+            unchecked {
+                ++ii;
+            }
         } while (ii < inputDataKeys.length);
 
         // CHECK if allowed to set one (or multiple) ERC725Y Data Keys
@@ -142,7 +151,8 @@ abstract contract LSP6SetDataModule {
                 controller,
                 inputDataKeys,
                 ERC725Y(controlledContract).getAllowedERC725YDataKeysFor(controller),
-                validatedInputDataKeys
+                validatedInputDataKeys,
+                inputDataKeysAllowed
             );
         }
     }
@@ -156,22 +166,39 @@ abstract contract LSP6SetDataModule {
      */
     function _getPermissionRequiredToSetDataKey(
         address controlledContract,
+        bytes32 controllerPermissions,
         bytes32 inputDataKey,
         bytes memory inputDataValue
     ) internal view virtual returns (bytes32) {
         // AddressPermissions[] or AddressPermissions[index]
         if (bytes16(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX) {
+            // this is our best attempt to save gas to avoid reading the `target` storage multiple times
+            // to know if we need the permission `ADDCONTROLLER` or `EDITPERMISSIONS`.
+            // Even if `getData(...)` is `view`, multiple external calls to fetch values from storage add to the total gas used.
+            bool hasBothAddControllerAndEditPermissions = controllerPermissions.hasPermission(
+                _PERMISSION_ADDCONTROLLER | _PERMISSION_EDITPERMISSIONS
+            );
+
             return
                 _getPermissionToSetPermissionsArray(
                     controlledContract,
                     inputDataKey,
-                    inputDataValue
+                    inputDataValue,
+                    hasBothAddControllerAndEditPermissions
                 );
 
             // AddressPermissions:...
         } else if (bytes6(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX) {
+            // same as above, save gas by avoiding redundants or unecessary external calls to fetch values from the `target` storage.
+            bool hasBothAddControllerAndEditPermissions = controllerPermissions.hasPermission(
+                _PERMISSION_ADDCONTROLLER | _PERMISSION_EDITPERMISSIONS
+            );
+
             // AddressPermissions:Permissions:<address>
             if (bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
+                // controller already has the permissions needed. Do not run internal function.
+                if (hasBothAddControllerAndEditPermissions) return (bytes32(0));
+
                 return _getPermissionToSetControllerPermissions(controlledContract, inputDataKey);
 
                 // AddressPermissions:AllowedCalls:<address>
@@ -180,7 +207,8 @@ abstract contract LSP6SetDataModule {
                     _getPermissionToSetAllowedCalls(
                         controlledContract,
                         inputDataKey,
-                        inputDataValue
+                        inputDataValue,
+                        hasBothAddControllerAndEditPermissions
                     );
 
                 // AddressPermissions:AllowedERC725YKeys:<address>
@@ -191,7 +219,8 @@ abstract contract LSP6SetDataModule {
                     _getPermissionToSetAllowedERC725YDataKeys(
                         controlledContract,
                         inputDataKey,
-                        inputDataValue
+                        inputDataValue,
+                        hasBothAddControllerAndEditPermissions
                     );
 
                 // if the first 6 bytes of the input data key are "AddressPermissions:..." but did not match
@@ -217,10 +246,31 @@ abstract contract LSP6SetDataModule {
             inputDataKey == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY ||
             bytes12(inputDataKey) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
         ) {
+            // same as above. If controller has both permissions, do not read the `target` storage
+            // to save gas by avoiding an extra external `view` call.
+            if (
+                controllerPermissions.hasPermission(
+                    _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE |
+                        _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE
+                )
+            ) {
+                return bytes32(0);
+            }
+
             return _getPermissionToSetLSP1Delegate(controlledContract, inputDataKey);
 
             // LSP17Extension:<bytes4>
         } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
+            // same as above. If controller has both permissions, do not read the `target` storage
+            // to save gas by avoiding an extra external `view` call.
+            if (
+                controllerPermissions.hasPermission(
+                    _PERMISSION_ADDEXTENSIONS | _PERMISSION_CHANGEEXTENSIONS
+                )
+            ) {
+                return bytes32(0);
+            }
+
             return _getPermissionToSetLSP17Extension(controlledContract, inputDataKey);
         } else {
             return _PERMISSION_SETDATA;
@@ -240,16 +290,19 @@ abstract contract LSP6SetDataModule {
     function _getPermissionToSetPermissionsArray(
         address controlledContract,
         bytes32 inputDataKey,
-        bytes memory inputDataValue
+        bytes memory inputDataValue,
+        bool hasBothAddControllerAndEditPermissions
     ) internal view virtual returns (bytes32) {
-        bytes memory currentValue = ERC725Y(controlledContract).getData(inputDataKey);
-
         // AddressPermissions[] -> array length
         if (inputDataKey == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY) {
+            // if the controller already has both permissions from one of the two required,
+            // No permission required as CHECK is already done. We don't need to read `target` storage.
+            if (hasBothAddControllerAndEditPermissions) return bytes32(0);
+
             uint128 newLength = uint128(bytes16(inputDataValue));
 
             return
-                newLength > uint128(bytes16(currentValue))
+                newLength > uint128(bytes16(ERC725Y(controlledContract).getData(inputDataKey)))
                     ? _PERMISSION_ADDCONTROLLER
                     : _PERMISSION_EDITPERMISSIONS;
         }
@@ -261,7 +314,14 @@ abstract contract LSP6SetDataModule {
             revert AddressPermissionArrayIndexValueNotAnAddress(inputDataKey, inputDataValue);
         }
 
-        return currentValue.length == 0 ? _PERMISSION_ADDCONTROLLER : _PERMISSION_EDITPERMISSIONS;
+        // if the controller already has both permissions from one of the two required below,
+        // No permission required as CHECK is already done. We don't need to read `target` storage.
+        if (hasBothAddControllerAndEditPermissions) return bytes32(0);
+
+        return
+            ERC725Y(controlledContract).getData(inputDataKey).length == 0
+                ? _PERMISSION_ADDCONTROLLER
+                : _PERMISSION_EDITPERMISSIONS;
     }
 
     /**
@@ -292,16 +352,21 @@ abstract contract LSP6SetDataModule {
     function _getPermissionToSetAllowedCalls(
         address controlledContract,
         bytes32 dataKey,
-        bytes memory dataValue
+        bytes memory dataValue,
+        bool hasBothAddControllerAndEditPermissions
     ) internal view virtual returns (bytes32) {
         if (!LSP6Utils.isCompactBytesArrayOfAllowedCalls(dataValue)) {
             revert InvalidEncodedAllowedCalls(dataValue);
         }
 
-        // if there is nothing stored under the Allowed Calls of the controller,
+        // if the controller already has both permissions from one of the two required below,
+        // No permission required as CHECK is already done. We don't need to read `target` storage.
+        if (hasBothAddControllerAndEditPermissions) return bytes32(0);
+
+        // if nothing is stored under the controller's Allowed Calls of the controller,
         // we are trying to ADD a list of restricted calls (standards + address + function selector)
         //
-        // if there are already some data set under the Allowed Calls of the controller,
+        // if some data is already set under the Allowed Calls of the controller,
         // we are trying to CHANGE (= edit) these restrictions.
         return
             ERC725Y(controlledContract).getData(dataKey).length == 0
@@ -310,7 +375,7 @@ abstract contract LSP6SetDataModule {
     }
 
     /**
-     * @dev retrieve the permission required to set some AllowedCalls for a controller.
+     * @dev retrieve the permission required to set some Allowed ERC725Y Data Keys for a controller.
      * @param controlledContract the address of the ERC725Y contract where the data key is verified.
      * @param dataKey  or `AddressPermissions:AllowedERC725YDataKeys:<controller-address>`.
      * @param dataValue the updated value for the `dataKey`. MUST be a bytes[CompactBytesArray] of Allowed ERC725Y Data Keys.
@@ -319,7 +384,8 @@ abstract contract LSP6SetDataModule {
     function _getPermissionToSetAllowedERC725YDataKeys(
         address controlledContract,
         bytes32 dataKey,
-        bytes memory dataValue
+        bytes memory dataValue,
+        bool hasBothAddControllerAndEditPermissions
     ) internal view returns (bytes32) {
         if (!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(dataValue)) {
             revert InvalidEncodedAllowedERC725YDataKeys(
@@ -327,6 +393,10 @@ abstract contract LSP6SetDataModule {
                 "couldn't VALIDATE the data value"
             );
         }
+
+        // if the controller already has both permissions from one of the two required below,
+        // CHECK is already done. We don't need to read `target` storage.
+        if (hasBothAddControllerAndEditPermissions) return bytes32(0);
 
         // if there is nothing stored under the Allowed ERC725Y Data Keys of the controller,
         // we are trying to ADD a list of restricted ERC725Y Data Keys.
@@ -487,18 +557,18 @@ abstract contract LSP6SetDataModule {
      * @param controllerAddress the address of the controller.
      * @param inputDataKeys the data keys to verify against the allowed ERC725Y Data Keys of the `controllerAddress`.
      * @param allowedERC725YDataKeysCompacted a CompactBytesArray of allowed ERC725Y Data Keys of the `controllerAddress`.
-     * @param validatedInputKeys an array of booleans to store the result of the verification of each data keys checked.
+     * @param validatedInputKeysList an array of booleans to store the result of the verification of each data keys checked.
+     * @param allowedDataKeysFound the number of data keys that were previously validated for other permissions like `ADDCONTROLLER`, `EDITPERMISSIONS`, etc...
      */
     function _verifyAllowedERC725YDataKeys(
         address controllerAddress,
         bytes32[] memory inputDataKeys,
         bytes memory allowedERC725YDataKeysCompacted,
-        bool[] memory validatedInputKeys
+        bool[] memory validatedInputKeysList,
+        uint256 allowedDataKeysFound
     ) internal pure virtual {
         if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
-
-        uint256 allowedKeysFound;
 
         // cache the input data keys from the start
         uint256 inputKeysLength = inputDataKeys.length;
@@ -590,20 +660,32 @@ abstract contract LSP6SetDataModule {
              * Iterate over the `inputDataKeys` to check them against the allowed data keys.
              * This until we have validated them all.
              */
-            for (uint256 ii; ii < inputKeysLength; ii = GasUtils.uncheckedIncrement(ii)) {
+            for (uint256 ii; ii < inputKeysLength; ) {
                 // if the input data key has been marked as allowed previously,
                 // SKIP it and move to the next input data key.
-                if (validatedInputKeys[ii]) continue;
+                if (validatedInputKeysList[ii]) {
+                    unchecked {
+                        ++ii;
+                    }
+                    continue;
+                }
 
                 // CHECK if the input data key is allowed.
                 if ((inputDataKeys[ii] & mask) == allowedKey) {
                     // if the input data key is allowed, mark it as allowed
                     // and increment the number of allowed keys found.
-                    validatedInputKeys[ii] = true;
-                    allowedKeysFound = GasUtils.uncheckedIncrement(allowedKeysFound);
+                    validatedInputKeysList[ii] = true;
+
+                    unchecked {
+                        allowedDataKeysFound++;
+                    }
 
                     // Continue checking until all the inputKeys` have been found.
-                    if (allowedKeysFound == inputKeysLength) return;
+                    if (allowedDataKeysFound == inputKeysLength) return;
+                }
+
+                unchecked {
+                    ++ii;
                 }
             }
 
@@ -614,9 +696,13 @@ abstract contract LSP6SetDataModule {
         }
 
         // if we did not find all the input data keys, search for the first not allowed data key to revert.
-        for (uint256 jj; jj < inputKeysLength; jj = GasUtils.uncheckedIncrement(jj)) {
-            if (!validatedInputKeys[jj]) {
+        for (uint256 jj; jj < inputKeysLength; ) {
+            if (!validatedInputKeysList[jj]) {
                 revert NotAllowedERC725YDataKey(controllerAddress, inputDataKeys[jj]);
+            }
+
+            unchecked {
+                jj++;
             }
         }
     }

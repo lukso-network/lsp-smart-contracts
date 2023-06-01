@@ -115,7 +115,7 @@ export const shouldBehaveLikeLSP7Mintable = (
         ).deploy();
 
       const setDataPayload = universalProfile.interface.encodeFunctionData(
-        "setData(bytes32[],bytes[])",
+        "setDataBatch",
         [
           [
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -139,7 +139,7 @@ export const shouldBehaveLikeLSP7Mintable = (
 
       await lsp6KeyManager
         .connect(context.accounts.profileOwner)
-        ["execute(bytes)"](setDataPayload);
+        .execute(setDataPayload);
     });
 
     it("should pass", async () => {
@@ -160,13 +160,13 @@ export const shouldBehaveLikeLSP7Mintable = (
       );
 
       const executePayload = universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
+        "execute",
         [OPERATION_TYPES.CALL, context.lsp7Mintable.address, 0, mintPayload]
       );
 
       await lsp6KeyManager
         .connect(context.accounts.profileOwner)
-        ["execute(bytes)"](executePayload);
+        .execute(executePayload);
 
       const balanceOfUP = await context.lsp7Mintable.callStatic.balanceOf(
         universalProfile.address

@@ -290,6 +290,332 @@ export const shouldBehaveLikeLSP7 = (
         });
       });
     });
+
+    describe("increaseAllowance", () => {
+      beforeEach(async () => {
+        const operator = context.accounts.operator.address;
+        const tokenOwner = context.accounts.owner.address;
+        const amount = context.initialSupply;
+
+        const tx = await context.lsp7.authorizeOperator(operator, amount);
+
+        await expect(tx)
+          .to.emit(context.lsp7, "AuthorizedOperator")
+          .withArgs(operator, tokenOwner, amount);
+
+        expect(
+          await context.lsp7.authorizedAmountFor(operator, tokenOwner)
+        ).to.equal(amount);
+      });
+
+      describe("when the sender has enough balance (more than the `addedAmount` to add for the operator)", () => {
+        const addedAmount = ethers.BigNumber.from("1");
+
+        beforeEach("pre-checks", async () => {
+          const senderBalance = await context.lsp7.balanceOf(
+            context.accounts.owner.address
+          );
+
+          expect(senderBalance).to.be.greaterThanOrEqual(addedAmount);
+        });
+
+        describe("when there was no allowance before for the operator (`authorizedAmountFor` operator = 0)", () => {
+          it("should authorize for the `addedAmount`", async () => {
+            const operator = context.accounts.anyone.address;
+            const tokenOwner = context.accounts.owner.address;
+
+            const tx = await context.lsp7.increaseAllowance(
+              operator,
+              addedAmount
+            );
+
+            await expect(tx)
+              .to.emit(context.lsp7, "AuthorizedOperator")
+              .withArgs(operator, tokenOwner, addedAmount);
+
+            expect(
+              await context.lsp7.authorizedAmountFor(operator, tokenOwner)
+            ).to.equal(addedAmount);
+          });
+        });
+
+        describe("when there was an allowance for the operator already (`authorizedAmountFor` operator > 0)", () => {
+          it("should increase the operator's allowance by the `addedAmount`", async () => {
+            const operator = context.accounts.operator.address;
+            const tokenOwner = context.accounts.owner.address;
+
+            const allowanceBefore = await context.lsp7.authorizedAmountFor(
+              operator,
+              tokenOwner
+            );
+
+            const expectedNewAllowance = allowanceBefore.add(addedAmount);
+
+            const tx = await context.lsp7.increaseAllowance(
+              operator,
+              addedAmount
+            );
+
+            await expect(tx)
+              .to.emit(context.lsp7, "AuthorizedOperator")
+              .withArgs(operator, tokenOwner, expectedNewAllowance);
+
+            expect(
+              await context.lsp7.authorizedAmountFor(operator, tokenOwner)
+            ).to.equal(expectedNewAllowance);
+          });
+        });
+      });
+
+      describe("when the sender does not have enough balance (less than the `addedAmount` to add for the operator)", () => {
+        let addedAmountLargerThanBalance: BigNumber;
+
+        beforeEach("set `addedAmount` larger than balance", async () => {
+          const senderBalance = await context.lsp7.balanceOf(
+            context.accounts.owner.address
+          );
+
+          addedAmountLargerThanBalance = senderBalance.add(5);
+        });
+
+        describe("when there was no authorized amount before for the operator (`authorizedAmountFor` operator = 0)", () => {
+          it("should authorize for the `addedAmount`", async () => {
+            const operator = context.accounts.anyone.address;
+            const tokenOwner = context.accounts.owner.address;
+
+            const tx = await context.lsp7.increaseAllowance(
+              operator,
+              addedAmountLargerThanBalance
+            );
+
+            await expect(tx)
+              .to.emit(context.lsp7, "AuthorizedOperator")
+              .withArgs(operator, tokenOwner, addedAmountLargerThanBalance);
+
+            expect(
+              await context.lsp7.authorizedAmountFor(operator, tokenOwner)
+            ).to.equal(addedAmountLargerThanBalance);
+          });
+        });
+
+        describe("when there was an authorized amount for the operator already (`authorizedAmountFor` operator > 0)", () => {
+          it("should increase the operator's allowance by the `addedAmount`", async () => {
+            const operator = context.accounts.operator.address;
+            const tokenOwner = context.accounts.owner.address;
+
+            const allowanceBefore = await context.lsp7.authorizedAmountFor(
+              operator,
+              tokenOwner
+            );
+
+            const expectedNewAllowance = allowanceBefore.add(
+              addedAmountLargerThanBalance
+            );
+
+            const tx = await context.lsp7.increaseAllowance(
+              operator,
+              addedAmountLargerThanBalance
+            );
+
+            await expect(tx)
+              .to.emit(context.lsp7, "AuthorizedOperator")
+              .withArgs(operator, tokenOwner, expectedNewAllowance);
+
+            expect(
+              await context.lsp7.authorizedAmountFor(operator, tokenOwner)
+            ).to.equal(expectedNewAllowance);
+          });
+        });
+      });
+
+      describe("when `operator` param is the zero address", () => {
+        it("should revert", async () => {
+          const addedAmount = ethers.BigNumber.from("1");
+
+          await expect(
+            context.lsp7.increaseAllowance(
+              ethers.constants.AddressZero,
+              addedAmount
+            )
+          ).to.be.revertedWithCustomError(
+            context.lsp7,
+            "LSP7CannotUseAddressZeroAsOperator"
+          );
+        });
+      });
+
+      describe("when `operator` param is `msg.sender`", () => {
+        it("should revert", async () => {
+          const addedAmount = ethers.BigNumber.from("1");
+
+          await expect(
+            context.lsp7.increaseAllowance(
+              context.accounts.owner.address,
+              addedAmount
+            )
+          ).to.be.revertedWithCustomError(
+            context.lsp7,
+            "LSP7TokenOwnerCannotBeOperator"
+          );
+        });
+      });
+    });
+
+    describe("decreaseAllowance", () => {
+      beforeEach(async () => {
+        const operator = context.accounts.operator.address;
+        const tokenOwner = context.accounts.owner.address;
+        const amount = context.initialSupply;
+
+        const tx = await context.lsp7.authorizeOperator(operator, amount);
+
+        await expect(tx)
+          .to.emit(context.lsp7, "AuthorizedOperator")
+          .withArgs(operator, tokenOwner, amount);
+
+        expect(
+          await context.lsp7.authorizedAmountFor(operator, tokenOwner)
+        ).to.equal(amount);
+      });
+
+      describe("when `operator` param is the zero address", () => {
+        it("should revert", async () => {
+          const subtractedAmount = ethers.BigNumber.from("1");
+
+          await expect(
+            context.lsp7.decreaseAllowance(
+              ethers.constants.AddressZero,
+              subtractedAmount
+            )
+          ).to.be.revertedWithCustomError(
+            context.lsp7,
+            // Since we can never grant allowance for address(0), address(0) will always have 0 allowance
+            // and this error message will always be thrown first
+            "LSP7DecreasedAllowanceBelowZero"
+          );
+        });
+      });
+
+      describe("when there was no allowance before for the operator", () => {
+        it("should revert", async () => {
+          const operator = context.accounts.anyone.address;
+          const tokenOwner = context.accounts.owner.address;
+
+          const authorizedAmountFor = await context.lsp7.authorizedAmountFor(
+            operator,
+            tokenOwner
+          );
+
+          const subtractedAmount = authorizedAmountFor.add(1);
+
+          await expect(
+            context.lsp7.decreaseAllowance(operator, subtractedAmount)
+          ).to.be.revertedWithCustomError(
+            context.lsp7,
+            "LSP7DecreasedAllowanceBelowZero"
+          );
+        });
+      });
+
+      describe("when there was an allowance before for the operator", () => {
+        describe("when decreasing the operator's allowance by an amount smaller than the full allowance", () => {
+          it("should decrease the operator's allowance by the `subtractedAmount` + emit `AuthorizedOperator` event", async () => {
+            const operator = context.accounts.operator.address;
+            const tokenOwner = context.accounts.owner.address;
+
+            const subtractedAmount = ethers.BigNumber.from("1");
+
+            const allowanceBefore = await context.lsp7.authorizedAmountFor(
+              operator,
+              tokenOwner
+            );
+
+            const tx = await context.lsp7.decreaseAllowance(
+              operator,
+              subtractedAmount
+            );
+
+            const expectedNewAllowance = allowanceBefore.sub(subtractedAmount);
+
+            await expect(tx)
+              .to.emit(context.lsp7, "AuthorizedOperator")
+              .withArgs(operator, tokenOwner, expectedNewAllowance);
+
+            expect(
+              await context.lsp7.authorizedAmountFor(operator, tokenOwner)
+            ).to.equal(expectedNewAllowance);
+          });
+        });
+
+        describe("when decreasing the operator's allowance by the full allowance", () => {
+          it("should set the operator's allowance to zero + emit `RevokedOperator` event", async () => {
+            const operator = context.accounts.operator.address;
+            const tokenOwner = context.accounts.owner.address;
+
+            const operatorAllowance = await context.lsp7.authorizedAmountFor(
+              operator,
+              tokenOwner
+            );
+
+            const tx = await context.lsp7.decreaseAllowance(
+              operator,
+              operatorAllowance
+            );
+
+            const expectedNewAllowance = 0;
+
+            await expect(tx)
+              .to.emit(context.lsp7, "RevokedOperator")
+              .withArgs(operator, tokenOwner);
+
+            expect(
+              await context.lsp7.authorizedAmountFor(operator, tokenOwner)
+            ).to.equal(expectedNewAllowance);
+          });
+        });
+      });
+
+      describe("when `operator` param is `msg.sender`", () => {
+        it("should revert", async () => {
+          const subtractedAmount = ethers.BigNumber.from("1");
+
+          await expect(
+            context.lsp7.decreaseAllowance(
+              context.accounts.owner.address,
+              subtractedAmount
+            )
+          ).to.be.revertedWithCustomError(
+            context.lsp7,
+            "LSP7TokenOwnerCannotBeOperator"
+          );
+        });
+      });
+
+      describe("when decreasing the operator allowance by an amount larger than the current allowance", () => {
+        it("should revert", async () => {
+          const operator = context.accounts.operator.address;
+          const tokenOwner = context.accounts.owner.address;
+
+          const authorizedAmountFor = await context.lsp7.authorizedAmountFor(
+            operator,
+            tokenOwner
+          );
+
+          const subtractedAmountLargerThanAllowance =
+            authorizedAmountFor.add(5);
+
+          await expect(
+            context.lsp7.decreaseAllowance(
+              operator,
+              subtractedAmountLargerThanAllowance
+            )
+          ).to.be.revertedWithCustomError(
+            context.lsp7,
+            "LSP7DecreasedAllowanceBelowZero"
+          );
+        });
+      });
+    });
   });
 
   describe("revokeOperator", () => {
@@ -2001,7 +2327,7 @@ export const shouldBehaveLikeLSP7 = (
         const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key"));
         const value = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("value"));
         await expect(
-          context.lsp7.connect(oldOwner)["setData(bytes32,bytes)"](key, value)
+          context.lsp7.connect(oldOwner).setData(key, value)
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
@@ -2024,11 +2350,9 @@ export const shouldBehaveLikeLSP7 = (
       it("new owner should be allowed to use `setData(..)`", async () => {
         const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key"));
         const value = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("value"));
-        await context.lsp7
-          .connect(newOwner)
-          ["setData(bytes32,bytes)"](key, value);
+        await context.lsp7.connect(newOwner).setData(key, value);
 
-        expect(await context.lsp7["getData(bytes32)"](key)).to.equal(value);
+        expect(await context.lsp7.getData(key)).to.equal(value);
       });
     });
   });
@@ -2072,9 +2396,7 @@ export const shouldInitializeLikeLSP7 = (
           SupportedStandards.LSP4DigitalAsset.value
         );
       expect(
-        await context.lsp7["getData(bytes32)"](
-          SupportedStandards.LSP4DigitalAsset.key
-        )
+        await context.lsp7.getData(SupportedStandards.LSP4DigitalAsset.key)
       ).to.equal(SupportedStandards.LSP4DigitalAsset.value);
 
       const nameKey = ERC725YDataKeys.LSP4["LSP4TokenName"];
@@ -2084,9 +2406,7 @@ export const shouldInitializeLikeLSP7 = (
       await expect(context.initializeTransaction)
         .to.emit(context.lsp7, "DataChanged")
         .withArgs(nameKey, expectedNameValue);
-      expect(await context.lsp7["getData(bytes32)"](nameKey)).to.equal(
-        expectedNameValue
-      );
+      expect(await context.lsp7.getData(nameKey)).to.equal(expectedNameValue);
 
       const symbolKey = ERC725YDataKeys.LSP4["LSP4TokenSymbol"];
       const expectedSymbolValue = ethers.utils.hexlify(
@@ -2095,7 +2415,7 @@ export const shouldInitializeLikeLSP7 = (
       await expect(context.initializeTransaction)
         .to.emit(context.lsp7, "DataChanged")
         .withArgs(symbolKey, expectedSymbolValue);
-      expect(await context.lsp7["getData(bytes32)"](symbolKey)).to.equal(
+      expect(await context.lsp7.getData(symbolKey)).to.equal(
         expectedSymbolValue
       );
     });

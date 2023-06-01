@@ -3,11 +3,9 @@ pragma solidity ^0.8.4;
 
 // interfaces
 import {ILSP14Ownable2Step} from "./ILSP14Ownable2Step.sol";
-import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // libraries
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
@@ -21,7 +19,6 @@ import {
     _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP14_OwnershipTransferred_RecipientNotification
 } from "./LSP14Constants.sol";
-import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 
 /**
  * @title LSP14Ownable2Step
@@ -152,7 +149,9 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         uint256 confirmationPeriodEnd = confirmationPeriodStart +
             RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD;
 
-        if (currentBlock > confirmationPeriodEnd) {
+        // On the creation of a new network, `currentBlock` will be smaller than `confirmationPeriodEnd`,
+        // `_renounceOwnershipStartedAt == 0` will indicate that a renounceOwnership call is happening for the first time
+        if (currentBlock > confirmationPeriodEnd || _renounceOwnershipStartedAt == 0) {
             _renounceOwnershipStartedAt = currentBlock;
             delete _pendingOwner;
             emit RenounceOwnershipStarted();
@@ -165,7 +164,6 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
 
         _setOwner(address(0));
         delete _renounceOwnershipStartedAt;
-        delete _pendingOwner;
         emit OwnershipRenounced();
     }
 }

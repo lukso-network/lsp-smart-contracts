@@ -9,11 +9,7 @@ import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
-import {SETDATA_ARRAY_SELECTOR} from "@erc725/smart-contracts/contracts/constants.sol";
 import "./LSP6Constants.sol";
-
-// errors
-import {NotAuthorised} from "./LSP6Errors.sol";
 
 library LSP6Utils {
     using LSP2Utils for bytes12;
@@ -155,7 +151,7 @@ library LSP6Utils {
         bytes32[] memory keys,
         bytes[] memory values
     ) internal returns (bytes memory result) {
-        bytes memory payload = abi.encodeWithSelector(SETDATA_ARRAY_SELECTOR, keys, values);
+        bytes memory payload = abi.encodeWithSelector(IERC725Y.setDataBatch.selector, keys, values);
         result = ILSP6KeyManager(keyManagerAddress).execute(payload);
     }
 

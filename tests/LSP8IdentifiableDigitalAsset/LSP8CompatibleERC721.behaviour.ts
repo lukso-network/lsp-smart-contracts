@@ -1384,7 +1384,7 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
           SupportedStandards.LSP4DigitalAsset.value
         );
       expect(
-        await context.lsp8CompatibleERC721["getData(bytes32)"](
+        await context.lsp8CompatibleERC721.getData(
           SupportedStandards.LSP4DigitalAsset.key
         )
       ).to.equal(SupportedStandards.LSP4DigitalAsset.value);
@@ -1396,9 +1396,9 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
       await expect(context.initializeTransaction)
         .to.emit(context.lsp8CompatibleERC721, "DataChanged")
         .withArgs(nameKey, expectedNameValue);
-      expect(
-        await context.lsp8CompatibleERC721["getData(bytes32)"](nameKey)
-      ).to.equal(expectedNameValue);
+      expect(await context.lsp8CompatibleERC721.getData(nameKey)).to.equal(
+        expectedNameValue
+      );
 
       const symbolKey = ERC725YDataKeys.LSP4["LSP4TokenSymbol"];
       const expectedSymbolValue = ethers.utils.hexlify(
@@ -1407,9 +1407,9 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
       await expect(context.initializeTransaction)
         .to.emit(context.lsp8CompatibleERC721, "DataChanged")
         .withArgs(symbolKey, expectedSymbolValue);
-      expect(
-        await context.lsp8CompatibleERC721["getData(bytes32)"](symbolKey)
-      ).to.equal(expectedSymbolValue);
+      expect(await context.lsp8CompatibleERC721.getData(symbolKey)).to.equal(
+        expectedSymbolValue
+      );
     });
   });
 };

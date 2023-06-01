@@ -96,8 +96,8 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         bytes32 tokenIdAsBytes32 = bytes32(tokenId);
         _existsOrError(tokenIdAsBytes32);
 
-        EnumerableSet.AddressSet storage operatorsForTokenId = _operators[tokenIdAsBytes32];
-        uint256 operatorListLength = operatorsForTokenId.length();
+        address[] memory operatorsForTokenId = getOperatorsOf(tokenIdAsBytes32);
+        uint256 operatorListLength = operatorsForTokenId.length;
 
         if (operatorListLength == 0) {
             return address(0);
@@ -108,7 +108,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
             // compatibility version the same is true, when the authorized operators were not previously
             // authorized. If addresses are removed, then `getApproved` returned address can change due
             // to implementation of `EnumberableSet._remove`.
-            return operatorsForTokenId.at(operatorListLength - 1);
+            return operatorsForTokenId[operatorListLength - 1];
         }
     }
 
@@ -205,8 +205,8 @@ abstract contract LSP8CompatibleERC721InitAbstract is
             revert LSP8NotTokenOperator(tokenId, operator);
         }
 
-        super._transfer(from, to, tokenId, allowNonLSP1Recipient, data);
         emit Transfer(from, to, uint256(tokenId));
+        super._transfer(from, to, tokenId, allowNonLSP1Recipient, data);
     }
 
     function _safeTransfer(
@@ -228,15 +228,15 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual override {
-        super._mint(to, tokenId, allowNonLSP1Recipient, data);
         emit Transfer(address(0), to, uint256(tokenId));
+        super._mint(to, tokenId, allowNonLSP1Recipient, data);
     }
 
     function _burn(bytes32 tokenId, bytes memory data) internal virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
 
-        super._burn(tokenId, data);
         emit Transfer(tokenOwner, address(0), uint256(tokenId));
+        super._burn(tokenId, data);
     }
 
     /**
