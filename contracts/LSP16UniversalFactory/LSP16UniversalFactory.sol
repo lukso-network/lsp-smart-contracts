@@ -24,6 +24,12 @@ error InvalidValueSum();
  * standardized as LSP16 - UniversalFactory:
  * https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-16-UniversalFactory.md
  *
+ * The UniversalFactory will be deployed using Nick's Factory (0x4e59b44847b379578588920ca78fbf26c0b4956c)
+ *
+ * The deployed address can be found in the LSP16 specification.
+ * Please refer to the LSP16 Specification to obtain the exact bytecode and salt that
+ * should be used to produce the address of the UniversalFactory on different chains.
+ *
  * This factory contract is designed to deploy contracts at the same address on multiple chains.
  *
  * The UniversalFactory can deploy 2 types of contracts:
@@ -47,12 +53,6 @@ error InvalidValueSum();
  *
  * The UniversalFactory must be deployed at the same address on different chains to successfully deploy
  * contracts at the same address across different chains.
- *
- * The UniversalFactory will be deployed using Nick's Factory (0x4e59b44847b379578588920ca78fbf26c0b4956c)
- *
- * The deployed address can be found in the LSP16 specification.
- * Please refer to the LSP16 Specification to obtain the exact bytecode and salt that
- * should be used to produce the address of the UniversalFactory on different chains.
  */
 contract LSP16UniversalFactory {
     /**
@@ -176,20 +176,20 @@ contract LSP16UniversalFactory {
      *
      * Sending value to the contract created is not possible since the constructor of the ERC1167 minimal proxy is not payable.
      *
-     * @param implementation The contract address to use as the base implementation behind the proxy that will be deployed
+     * @param implementationContract The contract address to use as the base implementation behind the proxy that will be deployed
      * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt
      * that will be used by the `CREATE2` opcode for contract deployment
      *
      * @return The address of the minimal proxy deployed
      */
-    function deployERC1167Proxy(address implementation, bytes32 providedSalt)
+    function deployERC1167Proxy(address implementationContract, bytes32 providedSalt)
         public
         virtual
         returns (address)
     {
         bytes32 generatedSalt = generateSalt(false, _EMPTY_BYTE, providedSalt);
 
-        address proxy = Clones.cloneDeterministic(implementation, generatedSalt);
+        address proxy = Clones.cloneDeterministic(implementationContract, generatedSalt);
         emit ContractCreated(proxy, providedSalt, false, _EMPTY_BYTE);
 
         return proxy;
