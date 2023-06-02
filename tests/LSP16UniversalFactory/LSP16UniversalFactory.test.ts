@@ -60,7 +60,7 @@ describe("UniversalFactory contract", () => {
     return { accounts, universalFactory };
   };
 
-  describe("When using LSP16UniversalFactory", () => {
+  describe.only("When using LSP16UniversalFactory", () => {
     let context: UniversalFactoryTestContext;
     let universalProfileConstructor: UniversalProfile;
     let universalProfileBaseContract: UniversalProfileInit;
@@ -320,9 +320,16 @@ describe("UniversalFactory contract", () => {
             salt
           );
 
+        let generatedSalt =
+          await context.universalFactory.callStatic.generateSalt(
+            salt,
+            false,
+            "0x"
+          );
+
         await expect(context.universalFactory.deployCreate2(UPBytecode, salt))
           .to.emit(context.universalFactory, "ContractCreated")
-          .withArgs(contractCreatedAddress, salt, false, "0x");
+          .withArgs(contractCreatedAddress, salt, generatedSalt, false, "0x");
 
         const universalProfile = universalProfileConstructor.attach(
           contractCreatedAddress
@@ -639,6 +646,13 @@ describe("UniversalFactory contract", () => {
             0
           );
 
+        let generatedSalt =
+          await context.universalFactory.callStatic.generateSalt(
+            salt,
+            true,
+            initializeCallData
+          );
+
         await expect(
           context.universalFactory.deployCreate2AndInitialize(
             ImplementationTesterBytecode,
@@ -649,7 +663,13 @@ describe("UniversalFactory contract", () => {
           )
         )
           .to.emit(context.universalFactory, "ContractCreated")
-          .withArgs(contractCreatedAddress, salt, true, initializeCallData);
+          .withArgs(
+            contractCreatedAddress,
+            salt,
+            generatedSalt,
+            true,
+            initializeCallData
+          );
 
         const factoryTesterContract = implementationTester.attach(
           contractCreatedAddress
@@ -788,6 +808,13 @@ describe("UniversalFactory contract", () => {
             salt
           );
 
+        let generatedSalt =
+          await context.universalFactory.callStatic.generateSalt(
+            salt,
+            false,
+            "0x"
+          );
+
         await expect(
           context.universalFactory.deployERC1167Proxy(
             universalProfileBaseContract.address,
@@ -795,7 +822,7 @@ describe("UniversalFactory contract", () => {
           )
         )
           .to.emit(context.universalFactory, "ContractCreated")
-          .withArgs(contractCreatedAddress, salt, false, "0x");
+          .withArgs(contractCreatedAddress, salt, generatedSalt, false, "0x");
 
         const universalProfile = universalProfileBaseContract.attach(
           contractCreatedAddress
@@ -1003,7 +1030,7 @@ describe("UniversalFactory contract", () => {
             )
         ).to.be.revertedWithCustomError(
           context.universalFactory,
-          "InitializingContractFailed"
+          "ContractInitializationFailed"
         );
       });
 
@@ -1053,7 +1080,7 @@ describe("UniversalFactory contract", () => {
             )
         ).to.be.revertedWithCustomError(
           context.universalFactory,
-          "InitializingContractFailed"
+          "ContractInitializationFailed"
         );
       });
 
@@ -1089,6 +1116,13 @@ describe("UniversalFactory contract", () => {
             initializeCallData
           );
 
+        let generatedSalt =
+          await context.universalFactory.callStatic.generateSalt(
+            salt,
+            true,
+            initializeCallData
+          );
+
         await expect(
           context.universalFactory.deployERC1167ProxyAndInitialize(
             universalProfileBaseContract.address,
@@ -1097,7 +1131,13 @@ describe("UniversalFactory contract", () => {
           )
         )
           .to.emit(context.universalFactory, "ContractCreated")
-          .withArgs(contractCreatedAddress, salt, true, initializeCallData);
+          .withArgs(
+            contractCreatedAddress,
+            salt,
+            generatedSalt,
+            true,
+            initializeCallData
+          );
 
         const universalProfile = universalProfileBaseContract.attach(
           contractCreatedAddress
@@ -1211,9 +1251,9 @@ describe("UniversalFactory contract", () => {
 
         expect(
           await context.universalFactory.generateSalt(
+            providedSalt,
             true,
-            initializeCallData,
-            providedSalt
+            initializeCallData
           )
         ).to.equal(generatedSalt);
       });
@@ -1234,9 +1274,9 @@ describe("UniversalFactory contract", () => {
 
         expect(
           await context.universalFactory.generateSalt(
+            providedSalt,
             true,
-            initializeCallData,
-            providedSalt
+            initializeCallData
           )
         ).to.equal(generatedSalt);
       });

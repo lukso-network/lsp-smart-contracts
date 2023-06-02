@@ -38,11 +38,11 @@ contract LSP16UniversalProfileTest is Test {
         lsp0 = new LSP0ERC725Account(address(20));
 
         uniqueInitializableSalt = lsp16.generateSalt(
+            randomBytes32ForSalt,
             true,
-            initializeCallDataBytes,
-            randomBytes32ForSalt
+            initializeCallDataBytes
         );
-        uniqueNonInitializableSalt = lsp16.generateSalt(false, "", randomBytes32ForSalt);
+        uniqueNonInitializableSalt = lsp16.generateSalt(randomBytes32ForSalt, false, "");
     }
 
     // testing that salt initialized with initializable == true cannot be the same as one with initializable == false
@@ -50,7 +50,7 @@ contract LSP16UniversalProfileTest is Test {
         bytes memory initializeCallData,
         bytes32 providedSalt
     ) public view {
-        bytes32 salt = lsp16.generateSalt(false, initializeCallData, providedSalt);
+        bytes32 salt = lsp16.generateSalt(providedSalt, false, initializeCallData);
         assert(salt != uniqueInitializableSalt);
     }
 
@@ -59,7 +59,7 @@ contract LSP16UniversalProfileTest is Test {
         bytes memory initializeCallData,
         bytes32 providedSalt
     ) public view {
-        bytes32 salt = lsp16.generateSalt(true, initializeCallData, providedSalt);
+        bytes32 salt = lsp16.generateSalt(providedSalt, true, initializeCallData);
         assert(salt != uniqueNonInitializableSalt);
     }
 
@@ -69,19 +69,19 @@ contract LSP16UniversalProfileTest is Test {
         view
     {
         if (keccak256(initializeCallDataBytes) == keccak256(initializeCallData)) return;
-        bytes32 salt = lsp16.generateSalt(true, initializeCallData, randomBytes32ForSalt);
+        bytes32 salt = lsp16.generateSalt(randomBytes32ForSalt, true, initializeCallData);
         assert(salt != uniqueInitializableSalt);
     }
 
     // testing that when randomBytes32ForSalt is different salt cannot be the same
     function testSaltAlwaysUniqueWithDifferentRandomSalt(bytes32 providedSalt) public view {
         if (randomBytes32ForSalt == providedSalt) return;
-        bytes32 salt = lsp16.generateSalt(true, initializeCallDataBytes, providedSalt);
+        bytes32 salt = lsp16.generateSalt(providedSalt, true, initializeCallDataBytes);
         assert(salt != uniqueInitializableSalt);
     }
 
     function testdeployERC1167ProxyWithUPInit() public {
-        bytes32 salt = lsp16.generateSalt(false, "", bytes32(++testCounter));
+        bytes32 salt = lsp16.generateSalt(bytes32(++testCounter), false, "");
 
         (bool success, bytes memory returnData) = address(lsp16).call(
             abi.encodeWithSignature("deployERC1167Proxy(address,bytes32)", address(lsp0Init), salt)
@@ -97,7 +97,7 @@ contract LSP16UniversalProfileTest is Test {
 
         assert(address(this).balance == valueToTransfer);
 
-        bytes32 salt = lsp16.generateSalt(true, initializeCalldata, bytes32(++testCounter));
+        bytes32 salt = lsp16.generateSalt(bytes32(++testCounter), true, initializeCalldata);
         bytes memory lsp0Initbytes = abi.encodeWithSignature("initialize(address)", address(this));
 
         (bool success, bytes memory returndata) = address(lsp16).call{value: valueToTransfer}(
@@ -116,7 +116,7 @@ contract LSP16UniversalProfileTest is Test {
         vm.deal(address(this), valueToTransfer);
         assert(address(this).balance == valueToTransfer);
 
-        bytes32 salt = lsp16.generateSalt(false, "", bytes32(++testCounter));
+        bytes32 salt = lsp16.generateSalt(bytes32(++testCounter), false, "");
 
         (bool success, bytes memory returnData) = address(lsp16).call{value: valueToTransfer}(
             abi.encodeWithSignature(
@@ -136,7 +136,7 @@ contract LSP16UniversalProfileTest is Test {
         vm.deal(address(this), valueForInitializer);
         assert(address(this).balance == valueForInitializer);
 
-        bytes32 salt = lsp16.generateSalt(true, bytes("randomBytes"), bytes32(++testCounter));
+        bytes32 salt = lsp16.generateSalt(bytes32(++testCounter), true, bytes("randomBytes"));
 
         (bool success, bytes memory returndata) = address(lsp16).call{value: valueForInitializer}(
             abi.encodeWithSignature(
@@ -181,7 +181,7 @@ contract LSP16UniversalProfileTest is Test {
         assert(address(this).balance == valueToTransfer);
 
         bytes memory initializeCalldata = abi.encodePacked("initialize(address)", address(this));
-        bytes32 salt = lsp16.generateSalt(true, initializeCalldata, bytes32(++testCounter));
+        bytes32 salt = lsp16.generateSalt(bytes32(++testCounter), true, initializeCalldata);
 
         (bool success, ) = address(lsp16).call{value: valueToTransfer}(
             abi.encodeWithSignature(
@@ -229,7 +229,7 @@ contract LSP16UniversalProfileTest is Test {
         vm.deal(address(this), valueToTransfer);
         assert(address(this).balance == valueToTransfer);
 
-        bytes32 salt = lsp16.generateSalt(true, initializeCalldata, bytes32(++testCounter));
+        bytes32 salt = lsp16.generateSalt(bytes32(++testCounter), true, initializeCalldata);
 
         (bool success, ) = address(lsp16).call{value: valueToTransfer}(
             abi.encodeWithSignature(
