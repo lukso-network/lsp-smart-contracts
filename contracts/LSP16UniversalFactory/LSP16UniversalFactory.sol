@@ -10,7 +10,7 @@ import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 /**
  * @dev Reverts when there is no revert reason bubbled up by the contract created when initializing
  */
-error InitializingContractFailed();
+error ContractInitializationFailed();
 
 /**
  * @dev Reverts when msg.value sent to {deployCreate2AndInitialize} function is not equal to the sum of the
@@ -372,7 +372,7 @@ contract LSP16UniversalFactory {
 
     /**
      * @dev Verifies that the contract created was initialized correctly.
-     * Bubble the revert reason if present, revert with `InitializingContractFailed` otherwise.
+     * Bubble the revert reason if present, revert with `ContractInitializationFailed` otherwise.
      */
     function _verifyCallResult(bool success, bytes memory returndata) internal pure virtual {
         if (!success) {
@@ -386,7 +386,7 @@ contract LSP16UniversalFactory {
                     revert(add(32, returndata), returndata_size)
                 }
             } else {
-                revert InitializingContractFailed();
+                revert ContractInitializationFailed();
             }
         }
     }
