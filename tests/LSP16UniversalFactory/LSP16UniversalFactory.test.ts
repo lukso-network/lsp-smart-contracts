@@ -60,7 +60,7 @@ describe("UniversalFactory contract", () => {
     return { accounts, universalFactory };
   };
 
-  describe.only("When using LSP16UniversalFactory", () => {
+  describe("When using LSP16UniversalFactory", () => {
     let context: UniversalFactoryTestContext;
     let universalProfileConstructor: UniversalProfile;
     let universalProfileBaseContract: UniversalProfileInit;
