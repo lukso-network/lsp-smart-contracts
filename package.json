@@ -76,7 +76,8 @@
     "remixd": "remixd -s . --remix-ide",
     "linter": "solhint 'contracts/**/*.sol'",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "docs": "hardhat dodoc"
   },
   "repository": {
     "type": "git",

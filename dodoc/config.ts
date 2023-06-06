@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { HelperContent } from "squirrelly/dist/types/containers";
 
 export const dodocConfig = {
+  runOnCompile: false,
   include: [
     "UniversalProfile.sol",
     "LSP0ERC725Account/LSP0ERC725Account.sol",
@@ -238,25 +239,31 @@ const genAdditionalInfo = (contract: string, code: string, type: string) => {
 
   const linkBase = "https://github.com/lukso-network/";
 
-  const specsName = `LSP-${contract.match(/\d+/)[0]}-${
-    contract.split(/LSP\d+/)[1]
-  }`;
+  let infoBlock: string;
+  if (contract === "UniversalProfile") {
+    infoBlock =
+      `- Specification details in [**UniversalProfile**](${linkBase}lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata)\n` +
+      `- Solidity implementation in [**UniversalProfile**](${linkBase}lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)\n`;
+  } else {
+    const contractPath = dodocConfig.include.filter((value) => {
+      if (value.endsWith(`${contract}.sol`)) return value;
+    })[0];
+    const contractLink = `${linkBase}lsp-smart-contracts/blob/develop/contracts/${contractPath}`;
 
-  const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${
-    contract.match(/\d+/)[0]
-  }-${contract.split(/LSP\d+/)[1]}.md#${code.split("(")[0].toLowerCase()}`;
+    const specs = contractPath.split("/")[0];
 
-  let contractLink;
-  if (["LSP4DigitalAssetMetadata", "LSP14Ownable2Step"].includes(contract))
-    contractLink = `${linkBase}lsp-smart-contracts/blob/develop/contracts/${contract}/${contract}.sol`;
-  else if (contract.includes("LSP1UniversalReceiver"))
-    contractLink = `${linkBase}lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/${contract}/${contract}.sol`;
-  else
-    contractLink = `${linkBase}lsp-smart-contracts/blob/develop/contracts/${contract}/${contract}Core.sol`;
+    const specsName = `LSP-${specs.match(/\d+/)[0]}-${
+      specs.split(/LSP\d+/)[1]
+    }`;
 
-  let infoBlock =
-    `- Specification details in [**${specsName}**](${specsLink})\n` +
-    `- Solidity implementation in [**${contract}**](${contractLink})\n`;
+    const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${
+      specs.match(/\d+/)[0]
+    }-${specs.split(/LSP\d+/)[1]}.md#${code.split("(")[0].toLowerCase()}`;
+
+    infoBlock =
+      `- Specification details in [**${specsName}**](${specsLink})\n` +
+      `- Solidity implementation in [**${contract}**](${contractLink})\n`;
+  }
 
   if (
     !code.startsWith("constructor") &&
