@@ -92,11 +92,11 @@ abstract contract LSP0ERC725AccountCore is
     using Address for address;
 
     /**
-     * @dev Emits a `ValueReceived` event when receiving native tokens.
-     *
-     * Executed:
+     * @dev Executed:
      *     - when receiving some native tokens without any additional data.
      *     - on empty calls to the contract.
+     *
+     * @custom:events Emits a `ValueReceived` event when receiving native tokens.
      */
     receive() external payable virtual {
         if (msg.value != 0) {
@@ -203,6 +203,12 @@ abstract contract LSP0ERC725AccountCore is
      * - Emits a {ValueReceived} event when receiving native tokens.
      *
      * @custom:hint One tip
+     *
+     * @custom:info
+     * - some hint
+     * - more hint
+     *
+     * @custom:danger This is dangerous.
      *
      * @custom:warning
      * - First caution

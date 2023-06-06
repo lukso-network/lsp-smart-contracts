@@ -26,7 +26,7 @@ import "@nomiclabs/hardhat-web3";
 /**
  * @dev uncomment to generate contract docs in Markdown
  */
-import "@primitivefi/hardhat-dodoc";
+import "@b00ste/hardhat-dodoc";
 import { dodocConfig } from "./dodoc/config";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });

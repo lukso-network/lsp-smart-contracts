@@ -1,4 +1,37 @@
+import { ethers } from "ethers";
 import { HelperContent } from "squirrelly/dist/types/containers";
+
+const createLocalLinks = (textToFormat: string) => {
+  let formatedText = textToFormat;
+  [...textToFormat.matchAll(/{.+?}/g)].forEach((elem) => {
+    const clearedElem = elem[0].replace("{", "").replace("}", "");
+    const linkFirstHalf = `[\`${clearedElem}\`]`;
+    const linkSecondHalf = `(#${clearedElem.toLowerCase().split("(")[0]})`;
+    formatedText = formatedText.replace(
+      elem[0],
+      linkFirstHalf + linkSecondHalf
+    );
+  });
+
+  return formatedText;
+};
+
+const splitMethods = (methods) => {
+  const specialMethods = {};
+  const normalMethods = {};
+
+  for (const method in methods) {
+    if (
+      method.startsWith("constructor") ||
+      method.startsWith("fallback") ||
+      method.startsWith("receive")
+    )
+      specialMethods[method] = methods[method];
+    else normalMethods[method] = methods[method];
+  }
+
+  return [specialMethods, normalMethods];
+};
 
 const formatLinks = (textToFormat: string) => {
   let formatedText: string = textToFormat;
@@ -31,22 +64,7 @@ const formatTextWithLists = (textToFormat: string) => {
   return formatedText;
 };
 
-const createLocalLinks = (textToFormat: string) => {
-  let formatedText = textToFormat;
-  [...textToFormat.matchAll(/{.+?}/g)].forEach((elem) => {
-    const clearedElem = elem[0].replace("{", "").replace("}", "");
-    const linkFirstHalf = `[\`${clearedElem}\`]`;
-    const linkSecondHalf = `(#${clearedElem.toLowerCase().split("(")[0]})`;
-    formatedText = formatedText.replace(
-      elem[0],
-      linkFirstHalf + linkSecondHalf
-    );
-  });
-
-  return formatedText;
-};
-
-const parseCode = (textToFormat: string) => {
+const formatCode = (textToFormat: string) => {
   let formatedText: string = textToFormat;
   if (textToFormat.length > 75) {
     if (textToFormat.split(",").length >= 2) {
@@ -69,13 +87,61 @@ const parseCode = (textToFormat: string) => {
   return formatedText;
 };
 
-const parseBulletPointsWithTitle = (textToFormat: string, title: string) => {
+const formatBulletPointsWithTitle = (textToFormat: string, title: string) => {
   if (textToFormat.length === 0) return "";
   let formatedText: string = `**${title}**\n\n`;
   textToFormat.split("- ").forEach((elem: string) => {
     if (elem.trim().length !== 0) formatedText += `- ${elem.trim()}\n`;
   });
   return formatedText;
+};
+
+const genAdditionalInfo = (contract: string, code: string, type: string) => {
+  code = code
+    .substring(0, code.indexOf(")") + 1)
+    .replace(`${type.toLowerCase()}`, "")
+    .trim();
+  if (!code.endsWith("()"))
+    code =
+      code
+        .split(",")
+        .map((elem) => elem.trim().substring(0, elem.trim().indexOf(" ")))
+        .toString() + ")";
+
+  const linkBase = "https://github.com/lukso-network/";
+
+  const specsName = `LSP-${contract.match(/\d+/)[0]}-${
+    contract.split(/LSP\d+/)[1]
+  }`;
+
+  const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${
+    contract.match(/\d+/)[0]
+  }-${contract.split(/LSP\d+/)[1]}.md#${code.split("(")[0].toLowerCase()}`;
+
+  let contractLink;
+  if (["LSP4DigitalAssetMetadata", "LSP14Ownable2Step"].includes(contract))
+    contractLink = `${linkBase}lsp-smart-contracts/blob/develop/contracts/${contract}/${contract}.sol`;
+  else if (contract.includes("LSP1UniversalReceiver"))
+    contractLink = `${linkBase}lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/${contract}/${contract}.sol`;
+  else
+    contractLink = `${linkBase}lsp-smart-contracts/blob/develop/contracts/${contract}/${contract}Core.sol`;
+
+  let infoBlock =
+    `- Specification details in [**${specsName}**](${specsLink})\n` +
+    `- Solidity implementation in [**${contract}**](${contractLink})\n`;
+
+  if (
+    !code.startsWith("constructor") &&
+    !code.startsWith("fallback") &&
+    !code.startsWith("receive")
+  )
+    infoBlock +=
+      `- ${type} signature: \`${code}\`\n` +
+      `- ${type} ${type !== "Event" ? "selector" : "hash"}: \`${ethers.utils
+        .keccak256(ethers.utils.toUtf8Bytes(code))
+        .substring(0, type !== "Event" ? 10 : 66)}\``;
+
+  return infoBlock;
 };
 
 export const dodocConfig = {
@@ -108,8 +174,13 @@ export const dodocConfig = {
         content.exec(formatLinks(content.params[0])),
     },
     {
-      helperName: "parseCode",
-      helperFunc: (content: HelperContent) => parseCode(content.params[0]),
+      helperName: "splitMethods",
+      helperFunc: (content: HelperContent) =>
+        content.exec(splitMethods(content.params[0])),
+    },
+    {
+      helperName: "formatCode",
+      helperFunc: (content: HelperContent) => formatCode(content.params[0]),
     },
     {
       helperName: "parseNotice",
@@ -124,7 +195,7 @@ export const dodocConfig = {
     {
       helperName: "parseCustomRequirements",
       helperFunc: (content: HelperContent) =>
-        parseBulletPointsWithTitle(
+        formatBulletPointsWithTitle(
           createLocalLinks(content.params[0]),
           "Requirements:"
         ),
@@ -132,10 +203,25 @@ export const dodocConfig = {
     {
       helperName: "parseCustomEvents",
       helperFunc: (content: HelperContent) =>
-        parseBulletPointsWithTitle(
+        formatBulletPointsWithTitle(
           createLocalLinks(content.params[0]),
           "Emitted events:"
         ),
+    },
+    {
+      helperName: "genAdditionalMethodInfo",
+      helperFunc: (content: HelperContent) =>
+        genAdditionalInfo(content.params[0], content.params[1], "Function"),
+    },
+    {
+      helperName: "genAdditionalEventInfo",
+      helperFunc: (content: HelperContent) =>
+        genAdditionalInfo(content.params[0], content.params[1], "Event"),
+    },
+    {
+      helperName: "genAdditionalErrorInfo",
+      helperFunc: (content: HelperContent) =>
+        genAdditionalInfo(content.params[0], content.params[1], "Error"),
     },
   ],
 };

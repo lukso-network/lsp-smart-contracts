@@ -27,16 +27,14 @@
 
 ## Methods
 
-{{@foreach(it.methods) => key, val}}
+
+{{@splitMethods(it.methods) => methods}}
+{{@each(methods) => val, index}}
+{{@foreach(val) => key, val}}
 ### {{key.split('(')[0]}}
 
 
-:::note Links
-
-- Check the `{{key}}` function specification in [LSP-{{it.name.match(/\d+/)[0]}}-{{it.name.split(/LSP\d+/)[1]}}](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-{{it.name.match(/\d+/)[0]}}-{{it.name.split(/LSP\d+/)[1]}}.md) Standard in the LIP repository.
-- Check the `{{key}}` function implementation in [{{it.name}}](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/{{it.name}}/{{it.name}}Core.sol) Contract.
-
-:::
+:::note Links{{'\n\n'}}{{@genAdditionalMethodInfo(it.name, val.code) /}}{{'\n\n'}}:::
 
 
 {{@if (val['custom:info'])}}
@@ -60,7 +58,7 @@
 
 
 ```solidity
-{{@parseCode(val.code) /}};
+{{@formatCode(val.code) /}};
 ```
 
 
@@ -111,6 +109,10 @@
 
 
 {{/foreach}}
+{{/each}}
+{{/splitMethods}}
+
+
 {{/if}}
 
 
@@ -122,8 +124,11 @@
 ### {{key}}
 
 
+:::note Links{{'\n\n'}}{{@genAdditionalEventInfo(it.name, val.code) /}}{{'\n\n'}}:::
+
+
 ```solidity
-{{@parseCode(val.code) /}};
+{{@formatCode(val.code) /}};
 ```
 
 
@@ -156,8 +161,11 @@
 ### {{key}}
 
 
+:::note Links{{'\n\n'}}{{@genAdditionalErrorInfo(it.name, val.code) /}}{{'\n\n'}}:::
+
+
 ```solidity
-{{@parseCode(val.code) /}};
+{{@formatCode(val.code) /}};
 ```
 
 
