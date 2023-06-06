@@ -217,7 +217,7 @@ contract LSP16UniversalFactory {
      * contract cannot be deployed twice at the same address.
      *
      * If the initialize function of the contract to deploy is payable, value can be sent along to fund the created
-     * contract while initializating. However, sending value to this function while the initialize function is not
+     * contract while initializing. However, sending value to this function while the initialize function is not
      * payable will result in a revert.
      *
      * @param implementationContract The contract address to use as the base implementation behind the proxy that will be deployed
@@ -333,7 +333,7 @@ contract LSP16UniversalFactory {
      * Example (for non-initializable contracts)
      *
      * If a contract is deployed with specific constructor arguments on chain 1, these arguments are embedded within the bytecode.
-     * For instance, if contract B is deployed with a specific `tokenName`and `tokenSymbol` on chain 1, and a user wants to deploy
+     * For instance, if contract B is deployed with a specific `tokenName` and `tokenSymbol` on chain 1, and a user wants to deploy
      * the same contract with the same `tokenName` and `tokenSymbol` on chain 2, they must use the same constructor arguments to
      * produce the same bytecode. This ensures that the same deployment behaviour is maintained across different chains,
      * as long as the same bytecode is used.
@@ -347,7 +347,7 @@ contract LSP16UniversalFactory {
      * using non-initializable functions such as {deployCreate2} without having the initialization call.
      *
      * In other words, if the providedSalt was not hashed and was used as it is as the salt by the CREATE2 opcode, malicious users
-     * can check the generated salt used for already deployed initializable contract on chain 1, and deploy the contract
+     * can check the generated salt used for the already deployed initializable contract on chain 1, and deploy the contract
      * from {deployCreate2} function on chain 2, with passing the generated salt of the deployed contract as providedSalt
      * that will produce the same address but without the initialization, where the malicious user can initialize after.
      *
