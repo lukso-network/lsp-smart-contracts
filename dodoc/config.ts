@@ -3,15 +3,42 @@ import { HelperContent } from "squirrelly/dist/types/containers";
 
 export const dodocConfig = {
   include: [
+    "UniversalProfile.sol",
     "LSP0ERC725Account/LSP0ERC725Account.sol",
     "LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol",
     "LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol",
-    "LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol",
     "LSP6KeyManager/LSP6KeyManager.sol",
-    "LSP7DigitalAsset/LSP7DigitalAsset.sol",
-    "LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol",
     "LSP9Vault/LSP9Vault.sol",
+    "LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol",
     "LSP14Ownable2Step/LSP14Ownable2Step.sol",
+    "LSP16UniversalFactory/LSP16UniversalFactory.sol",
+    "LSP17ContractExtension/LSP17Extendable.sol",
+    "LSP17ContractExtension/LSP17Extension.sol",
+    "LSP20CallVerification/LSP20CallVerification.sol",
+
+    // tokens
+    "LSP4DigitalAssetMetadata/LSP4Compatibility.sol",
+    "LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol",
+    "LSP7DigitalAsset/LSP7DigitalAsset.sol",
+    "LSP7DigitalAsset/extensions/LSP7Burnable.sol",
+    "LSP7DigitalAsset/extensions/LSP7CappedSupply.sol",
+    "LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol",
+    "LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol",
+    "LSP7DigitalAsset/presets/LSP7Mintable.sol",
+    "LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol",
+    "LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol",
+    "LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol",
+    "LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721.sol",
+    "LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol",
+    "LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol",
+    "LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol",
+
+    // libraries --------------------
+    "LSP1UniversalReceiver/LSP1Utils.sol",
+    "LSP2ERC725YJSONSchema/LSP2Utils.sol",
+    "LSP5ReceivedAssets/LSP5Utils.sol",
+    "LSP10ReceivedVaults/LSP10Utils.sol",
+    "LSP17ContractExtension/LSP17Utils.sol",
   ],
   templatePath: "./dodoc/template.sqrl",
   helpers: [
