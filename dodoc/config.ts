@@ -96,17 +96,21 @@ export const dodocConfig = {
     {
       helperName: "genAdditionalMethodInfo",
       helperFunc: (content: HelperContent) =>
-        genAdditionalInfo(content.params[0], content.params[1], "Function"),
+        generateAdditionalInfo(
+          content.params[0],
+          content.params[1],
+          "Function"
+        ),
     },
     {
       helperName: "genAdditionalEventInfo",
       helperFunc: (content: HelperContent) =>
-        genAdditionalInfo(content.params[0], content.params[1], "Event"),
+        generateAdditionalInfo(content.params[0], content.params[1], "Event"),
     },
     {
       helperName: "genAdditionalErrorInfo",
       helperFunc: (content: HelperContent) =>
-        genAdditionalInfo(content.params[0], content.params[1], "Error"),
+        generateAdditionalInfo(content.params[0], content.params[1], "Error"),
     },
   ],
 };
@@ -183,8 +187,9 @@ const replaceAll = (
   replaceWith: string
 ) => {
   let formatedText = textToFormat;
-  while (formatedText.includes(textToReplace))
+  while (formatedText.includes(textToReplace)) {
     formatedText = formatedText.replace(textToReplace, replaceWith);
+  }
   return formatedText;
 };
 
@@ -225,17 +230,23 @@ const formatBulletPointsWithTitle = (textToFormat: string, title: string) => {
   return formatedText;
 };
 
-const genAdditionalInfo = (contract: string, code: string, type: string) => {
-  code = code
+const generateAdditionalInfo = (
+  contract: string,
+  code: string,
+  type: string
+) => {
+  let formatedCode = code
     .substring(0, code.indexOf(")") + 1)
     .replace(`${type.toLowerCase()}`, "")
     .trim();
-  if (!code.endsWith("()"))
-    code =
-      code
+
+  if (!formatedCode.endsWith("()")) {
+    formatedCode =
+      formatedCode
         .split(",")
         .map((elem) => elem.trim().substring(0, elem.trim().indexOf(" ")))
         .toString() + ")";
+  }
 
   const linkBase = "https://github.com/lukso-network/";
 
@@ -258,7 +269,9 @@ const genAdditionalInfo = (contract: string, code: string, type: string) => {
 
     const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${
       specs.match(/\d+/)[0]
-    }-${specs.split(/LSP\d+/)[1]}.md#${code.split("(")[0].toLowerCase()}`;
+    }-${specs.split(/LSP\d+/)[1]}.md#${formatedCode
+      .split("(")[0]
+      .toLowerCase()}`;
 
     infoBlock =
       `- Specification details in [**${specsName}**](${specsLink})\n` +
@@ -266,15 +279,16 @@ const genAdditionalInfo = (contract: string, code: string, type: string) => {
   }
 
   if (
-    !code.startsWith("constructor") &&
-    !code.startsWith("fallback") &&
-    !code.startsWith("receive")
-  )
+    !formatedCode.startsWith("constructor") &&
+    !formatedCode.startsWith("fallback") &&
+    !formatedCode.startsWith("receive")
+  ) {
     infoBlock +=
-      `- ${type} signature: \`${code}\`\n` +
+      `- ${type} signature: \`${formatedCode}\`\n` +
       `- ${type} ${type !== "Event" ? "selector" : "hash"}: \`${ethers.utils
-        .keccak256(ethers.utils.toUtf8Bytes(code))
+        .keccak256(ethers.utils.toUtf8Bytes(formatedCode))
         .substring(0, type !== "Event" ? 10 : 66)}\``;
+  }
 
   return infoBlock;
 };

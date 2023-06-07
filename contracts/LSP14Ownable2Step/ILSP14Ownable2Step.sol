@@ -43,24 +43,23 @@ interface ILSP14Ownable2Step {
      * @dev Initiate the process of transferring ownership of the contract by setting the new owner as the pending owner.
      *
      * If the new owner is a contract that supports + implements LSP1, this will also attempt to notify the new owner that
-     * ownership has been transferred to them by calling the {universalReceiver(...)} function on the `newOwner` contract.
+     * ownership has been transferred to them by calling the {`universalReceiver()`} function on the `newOwner` contract.
      *
      * @param newOwner the address of the new owner.
      *
-     * @custom:requirements
-     * - `newOwner` MUST NOT accept ownership of the contract in the same transaction.
+     * @custom:requirements `newOwner` MUST NOT accept ownership of the contract in the same transaction.
      */
     function transferOwnership(address newOwner) external;
 
     /**
-     * @dev Transfer ownership of the contract from the current {owner()} to the {pendingOwner()}.
+     * @dev Transfer ownership of the contract from the current {`owner()`} to the {`pendingOwner()`}.
      *
      * Once this function is called:
-     * - the current {owner()} will loose access to the functions restricted to the {owner()} only.
-     * - the {pendingOwner()} will gain access to the functions restricted to the {owner()} only.
+     * - the current {`owner()`} will loose access to the functions restricted to the {`owner()`} only.
+     * - the {`pendingOwner()`} will gain access to the functions restricted to the {`owner()`} only.
      *
      * @custom:requirements
-     * - MUST be called by the pendingOwner.
+     * - MUST be called by the {`pendingOwner`}.
      */
     function acceptOwnership() external;
 

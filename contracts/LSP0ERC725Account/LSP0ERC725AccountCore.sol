@@ -96,7 +96,7 @@ abstract contract LSP0ERC725AccountCore is
      * - when receiving some native tokens without any additional data.
      * - on empty calls to the contract.
      *
-     * @custom:events Emits a {ValueReceived} event when receiving native tokens.
+     * @custom:events {ValueReceived} event when receiving native tokens.
      */
     receive() external payable virtual {
         if (msg.value != 0) {
@@ -130,8 +130,7 @@ abstract contract LSP0ERC725AccountCore is
      *
      * @custom:return if the data sent to this function is of length less than 4 bytes (not a function selector)
      *
-     * @custom:events
-     * - Emits a {ValueReceived} event when receiving native tokens.
+     * @custom:events {ValueReceived} event when receiving native tokens.
      */
     fallback() external payable virtual {
         if (msg.value != 0) {
@@ -185,7 +184,7 @@ abstract contract LSP0ERC725AccountCore is
      * @dev Executes any call on other addresses.
      *
      * @param operationType The operation to execute: `CALL = 0`, `CREATE = 1` `CREATE2 = 2`, `STATICCALL = 3`, `DELEGATECALL = 4`.
-     * @param target The address (smart contract/EOA) to interact with, `target` will be unused if a contract is created (CREATE & CREATE2).
+     * @param target The address (smart contract/EOA) to interact with, `target` will be unused if a contract is created (`CREATE` & `CREATE2`).
      * @param value The amount of native tokens to transfer (in Wei).
      * @param data The call data to execute on `target`, or the bytecode of the contract to deploy.
      *
@@ -196,9 +195,9 @@ abstract contract LSP0ERC725AccountCore is
      * - MUST pass when called by the owner or by an authorised address that pass the verification check performed on the owner accordinng to [LSP20-CallVerification] specification
      *
      * @custom:events
-     * - Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4
-     * - Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2
-     * - Emits a {ValueReceived} event when receiving native tokens.
+     * - {Executed} event, when a call is executed under `operationType` 0, 3 and 4
+     * - {ContractCreated} event, when a contract is created under `operationType` 1 and 2
+     * - {ValueReceived} event when receiving native tokens.
      */
     function execute(
         uint256 operationType,
@@ -236,7 +235,7 @@ abstract contract LSP0ERC725AccountCore is
      * @dev Generic batch executor function that executes any call on other addresses
      *
      * @param operationsType The list of operations type used: `CALL = 0`, `CREATE = 1`, `CREATE2 = 2`, `STATICCALL = 3`, `DELEGATECALL = 4`.
-     * @param targets The list of addresses to call. `targets` will be unused if a contract is created (CREATE & CREATE2).
+     * @param targets The list of addresses to call. `targets` will be unused if a contract is created (`CREATE` & `CREATE2`).
      * @param values The list of native token amounts to transfer (in Wei).
      * @param datas The list of call data to execute on `targets`, or the creation bytecode of the contracts to deploy.
      *
@@ -249,9 +248,9 @@ abstract contract LSP0ERC725AccountCore is
      * on the owner accordinng to [LSP20-CallVerification] specification
      *
      * @custom:events
-     * - Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4 (each iteration)
-     * - Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2 (each iteration)
-     * - Emits a {ValueReceived} event when receiving native tokens.
+     * - {Executed} event, when a call is executed under `operationType` 0, 3 and 4 (each iteration)
+     * - {ContractCreated} event, when a contract is created under `operationType` 1 and 2 (each iteration)
+     * - {ValueReceived} event when receiving native tokens.
      */
     function executeBatch(
         uint256[] memory operationsType,
@@ -295,8 +294,8 @@ abstract contract LSP0ERC725AccountCore is
      * - MUST pass when called by the owner or by an authorised address that pass the verification check performed on the owner accordinng to [LSP20-CallVerification] specification
      *
      * @custom:events
-     * - Emits a {ValueReceived} event when receiving native tokens.
-     * - Emits a {DataChanged} event.
+     * - {ValueReceived} event when receiving native tokens.
+     * - {DataChanged} event.
      */
     function setData(bytes32 dataKey, bytes memory dataValue) public payable virtual override {
         if (msg.value != 0) {
@@ -333,8 +332,8 @@ abstract contract LSP0ERC725AccountCore is
      * - MUST pass when called by the owner or by an authorised address that pass the verification check performed on the owner accordinng to [LSP20-CallVerification] specification
      *
      * @custom:events
-     * - Emits a {ValueReceived} event when receiving native tokens.
-     * - Emits a {DataChanged} event. (on each iteration of setting data)
+     * - {ValueReceived} event when receiving native tokens.
+     * - {DataChanged} event. (on each iteration of setting data)
      */
     function setDataBatch(bytes32[] memory dataKeys, bytes[] memory dataValues)
         public
@@ -415,8 +414,8 @@ abstract contract LSP0ERC725AccountCore is
      * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call and the LSP1TypeIdDelegate call.
      *
      * @custom:events
-     * - Emits {ValueReceived} when receiving native tokens.
-     * - Emits a {UniversalReceiver} event.
+     * - {ValueReceived} when receiving native tokens.
+     * - {UniversalReceiver} event.
      */
     function universalReceiver(bytes32 typeId, bytes calldata receivedData)
         public
@@ -543,11 +542,11 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @notice Achieves the goal of LSP14Ownable2Step by implementing a 2-step ownership transfer process.
      *
-     * @dev Transfer ownership of the contract from the current {owner()} to the {pendingOwner()}.
+     * @dev Transfer ownership of the contract from the current {`owner()`} to the {`pendingOwner()`}.
      *
      * Once this function is called:
-     * - the current {owner()} will loose access to the functions restricted to the {owner()} only.
-     * - the {pendingOwner()} will gain access to the functions restricted to the {owner()} only.
+     * - the current {`owner()`} will loose access to the functions restricted to the {`owner()`} only.
+     * - the {`pendingOwner()`} will gain access to the functions restricted to the {`owner()`} only.
      *
      * @custom:requirements
      * - MUST be called by the pendingOwner.
@@ -782,8 +781,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @custom:events
-     * - Emits the {DataChanged} event with only the first 256 bytes of {dataValue}.
+     * @custom:events {DataChanged} event with only the first 256 bytes of {dataValue}.
      *
      * @dev This function overrides the {ERC725YCore} internal {_setData} function to optimize gas usage by
      * @param dataKey The key to store the data value under.
