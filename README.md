@@ -90,6 +90,20 @@ It also includes constant values [Array data keys](https://github.com/lukso-netw
 },
 ```
 
+### Note for Hardhat Typescript projects
+
+If you are trying to import the constants in a Hardhat project that uses Typescript, you will need to import the constants from the `dist` folder directly, as shown in the code snippet:
+
+```js
+import { INTERFACE_IDS } from "@lukso/lsp-smart-contracts/dist/constants.cjs.js";
+
+// This will raise an error if you have ES Lint enabled,
+// but will allow you to import the constants in a Hardhat + Typescript based project.
+const LSP0InterfaceId = INTERFACE_IDS.LSP0ERC725Account;
+```
+
+See the [issue related to Hardhat Typescript + ES Modules](https://hardhat.org/hardhat-runner/docs/advanced/using-esm#esm-and-typescript-projects) in the Hardhat docs for more infos.
+
 ### Typescript types
 
 The following additional typescript types are also available.
