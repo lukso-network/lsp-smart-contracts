@@ -67,7 +67,7 @@
     "test:reentrancyinit": "hardhat test --no-compile tests/Reentrancy/ReentrancyInit.test.ts",
     "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
     "clean": "hardhat clean && rm -rf module common",
-    "build": "hardhat compile",
+    "build": "hardhat dodoc && prettier -w docs",
     "build:js": "vite build && dts-bundle-generator --config dtsconfig.json",
     "build:android": "ts-node ./scripts/ci/android-artifacts.ts && ./scripts/ci/generate-java-wrapper.sh",
     "build:ios": "mkdir ios && ts-node ./scripts/ci/ios-artifacts.ts",
@@ -76,8 +76,7 @@
     "remixd": "remixd -s . --remix-ide",
     "linter": "solhint 'contracts/**/*.sol'",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "docs": "hardhat dodoc"
+    "format:check": "prettier --check ."
   },
   "repository": {
     "type": "git",
