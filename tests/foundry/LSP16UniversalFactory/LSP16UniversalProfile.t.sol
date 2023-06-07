@@ -38,11 +38,11 @@ contract LSP16UniversalProfileTest is Test {
         lsp0 = new LSP0ERC725Account(address(20));
 
         uniqueInitializableSalt = lsp16.generateSalt(
+            randomBytes32ForSalt,
             true,
-            initializeCallDataBytes,
-            randomBytes32ForSalt
+            initializeCallDataBytes
         );
-        uniqueNonInitializableSalt = lsp16.generateSalt(false, "", randomBytes32ForSalt);
+        uniqueNonInitializableSalt = lsp16.generateSalt(randomBytes32ForSalt, false, "");
     }
 
     // testing that salt initialized with initializable == true cannot be the same as one with initializable == false
@@ -50,7 +50,7 @@ contract LSP16UniversalProfileTest is Test {
         bytes memory initializeCallData,
         bytes32 providedSalt
     ) public view {
-        bytes32 salt = lsp16.generateSalt(false, initializeCallData, providedSalt);
+        bytes32 salt = lsp16.generateSalt(providedSalt, false, initializeCallData);
         assert(salt != uniqueInitializableSalt);
     }
 
@@ -59,7 +59,7 @@ contract LSP16UniversalProfileTest is Test {
         bytes memory initializeCallData,
         bytes32 providedSalt
     ) public view {
-        bytes32 salt = lsp16.generateSalt(true, initializeCallData, providedSalt);
+        bytes32 salt = lsp16.generateSalt(providedSalt, true, initializeCallData);
         assert(salt != uniqueNonInitializableSalt);
     }
 
@@ -69,27 +69,27 @@ contract LSP16UniversalProfileTest is Test {
         view
     {
         if (keccak256(initializeCallDataBytes) == keccak256(initializeCallData)) return;
-        bytes32 salt = lsp16.generateSalt(true, initializeCallData, randomBytes32ForSalt);
+        bytes32 salt = lsp16.generateSalt(randomBytes32ForSalt, true, initializeCallData);
         assert(salt != uniqueInitializableSalt);
     }
 
     // testing that when randomBytes32ForSalt is different salt cannot be the same
     function testSaltAlwaysUniqueWithDifferentRandomSalt(bytes32 providedSalt) public view {
         if (randomBytes32ForSalt == providedSalt) return;
-        bytes32 salt = lsp16.generateSalt(true, initializeCallDataBytes, providedSalt);
+        bytes32 salt = lsp16.generateSalt(providedSalt, true, initializeCallDataBytes);
         assert(salt != uniqueInitializableSalt);
     }
 
-    function testDeployCreate2ProxyWithUPInit() public {
-        bytes32 salt = lsp16.generateSalt(false, "", bytes32(++testCounter));
+    function testdeployERC1167ProxyWithUPInit() public {
+        bytes32 salt = lsp16.generateSalt(bytes32(++testCounter), false, "");
 
         (bool success, bytes memory returnData) = address(lsp16).call(
-            abi.encodeWithSignature("deployCreate2Proxy(address,bytes32)", address(lsp0Init), salt)
+            abi.encodeWithSignature("deployERC1167Proxy(address,bytes32)", address(lsp0Init), salt)
         );
         Address.verifyCallResult(success, returnData, "call should have succeeded");
     }
 
-    function testDeployCreate2ProxyInitShouldNotKeepValueWithUPInit(
+    function testdeployERC1167ProxyAndInitializeShouldNotKeepValueWithUPInit(
         uint256 valueToTransfer,
         bytes memory initializeCalldata
     ) public {
@@ -97,12 +97,12 @@ contract LSP16UniversalProfileTest is Test {
 
         assert(address(this).balance == valueToTransfer);
 
-        bytes32 salt = lsp16.generateSalt(true, initializeCalldata, bytes32(++testCounter));
+        bytes32 salt = lsp16.generateSalt(bytes32(++testCounter), true, initializeCalldata);
         bytes memory lsp0Initbytes = abi.encodeWithSignature("initialize(address)", address(this));
 
         (bool success, bytes memory returndata) = address(lsp16).call{value: valueToTransfer}(
             abi.encodeWithSignature(
-                "deployCreate2ProxyInit(address,bytes32,bytes)",
+                "deployERC1167ProxyAndInitialize(address,bytes32,bytes)",
                 address(lsp0Init),
                 salt,
                 lsp0Initbytes
@@ -116,7 +116,7 @@ contract LSP16UniversalProfileTest is Test {
         vm.deal(address(this), valueToTransfer);
         assert(address(this).balance == valueToTransfer);
 
-        bytes32 salt = lsp16.generateSalt(false, "", bytes32(++testCounter));
+        bytes32 salt = lsp16.generateSalt(bytes32(++testCounter), false, "");
 
         (bool success, bytes memory returnData) = address(lsp16).call{value: valueToTransfer}(
             abi.encodeWithSignature(
@@ -129,18 +129,18 @@ contract LSP16UniversalProfileTest is Test {
         require(address(lsp16).balance == 0, "LSP16 should not have any balance");
     }
 
-    function testDeployCreate2InitShouldNotKeepValueWithUPInit(
+    function testdeployCreate2AndInitializeShouldNotKeepValueWithUPInit(
         uint128 valueForInitializer,
         bytes4 initilializerBytes
     ) public {
         vm.deal(address(this), valueForInitializer);
         assert(address(this).balance == valueForInitializer);
 
-        bytes32 salt = lsp16.generateSalt(true, bytes("randomBytes"), bytes32(++testCounter));
+        bytes32 salt = lsp16.generateSalt(bytes32(++testCounter), true, bytes("randomBytes"));
 
         (bool success, bytes memory returndata) = address(lsp16).call{value: valueForInitializer}(
             abi.encodeWithSignature(
-                "deployCreate2Init(bytes,bytes32,bytes,uint256,uint256)",
+                "deployCreate2AndInitialize(bytes,bytes32,bytes,uint256,uint256)",
                 type(LSP0ERC725AccountInit).creationCode,
                 salt,
                 _removeRandomByteFromBytes4(initilializerBytes),
@@ -152,7 +152,7 @@ contract LSP16UniversalProfileTest is Test {
         require(address(lsp16).balance == 0, "LSP16 should not have any balance");
     }
 
-    function testDeployCreate2ProxyShouldNotKeepValueWithNonPayableFallback(uint256 valueToTransfer)
+    function testdeployERC1167ProxyShouldNotKeepValueWithNonPayableFallback(uint256 valueToTransfer)
         public
     {
         vm.deal(address(this), valueToTransfer);
@@ -161,7 +161,7 @@ contract LSP16UniversalProfileTest is Test {
 
         (bool success, ) = address(lsp16).call{value: valueToTransfer}(
             abi.encodeWithSignature(
-                "deployCreate2Proxy(address,bytes32)",
+                "deployERC1167Proxy(address,bytes32)",
                 address(nonPayableFallbackContract),
                 abi.encodePacked("fallback()")
             )
@@ -173,7 +173,7 @@ contract LSP16UniversalProfileTest is Test {
         require(address(lsp16).balance == 0, "LSP16 should not have any balance");
     }
 
-    function testDeployCreate2ProxyInitShouldNotKeepValueWithNonPayableFallback(
+    function testdeployERC1167ProxyAndInitializeShouldNotKeepValueWithNonPayableFallback(
         uint256 valueToTransfer
     ) public {
         vm.deal(address(this), valueToTransfer);
@@ -181,11 +181,11 @@ contract LSP16UniversalProfileTest is Test {
         assert(address(this).balance == valueToTransfer);
 
         bytes memory initializeCalldata = abi.encodePacked("initialize(address)", address(this));
-        bytes32 salt = lsp16.generateSalt(true, initializeCalldata, bytes32(++testCounter));
+        bytes32 salt = lsp16.generateSalt(bytes32(++testCounter), true, initializeCalldata);
 
         (bool success, ) = address(lsp16).call{value: valueToTransfer}(
             abi.encodeWithSignature(
-                "deployCreate2ProxyInit(address,bytes32,bytes)",
+                "deployERC1167ProxyAndInitialize(address,bytes32,bytes)",
                 address(lsp0Init),
                 salt,
                 initializeCalldata
@@ -219,7 +219,7 @@ contract LSP16UniversalProfileTest is Test {
         require(address(lsp16).balance == 0, "LSP16 should not have any balance");
     }
 
-    function testDeployCreate2InitShouldNotKeepValueWithNonPayableFallback(
+    function testdeployCreate2AndInitializeShouldNotKeepValueWithNonPayableFallback(
         uint128 valueForConstructor,
         uint128 valueForInitializer,
         bytes calldata initializeCalldata
@@ -229,11 +229,11 @@ contract LSP16UniversalProfileTest is Test {
         vm.deal(address(this), valueToTransfer);
         assert(address(this).balance == valueToTransfer);
 
-        bytes32 salt = lsp16.generateSalt(true, initializeCalldata, bytes32(++testCounter));
+        bytes32 salt = lsp16.generateSalt(bytes32(++testCounter), true, initializeCalldata);
 
         (bool success, ) = address(lsp16).call{value: valueToTransfer}(
             abi.encodeWithSignature(
-                "deployCreate2Init(bytes,bytes32,bytes,uint256,uint256)",
+                "deployCreate2AndInitialize(bytes,bytes32,bytes,uint256,uint256)",
                 type(NonPayableFallback).creationCode,
                 salt,
                 initializeCalldata,
@@ -247,7 +247,7 @@ contract LSP16UniversalProfileTest is Test {
         require(address(lsp16).balance == 0, "LSP16 should not have any balance");
     }
 
-    function testCalculateAddressShouldReturnCorrectUPAddressWithDeployCreate2Init(
+    function testcomputeAddressShouldReturnCorrectUPAddressWithdeployCreate2AndInitialize(
         bytes32 providedSalt,
         uint256 valueForInitializer,
         bytes4 initilializerBytes
@@ -257,7 +257,7 @@ contract LSP16UniversalProfileTest is Test {
 
         bytes memory initializeCallData = _removeRandomByteFromBytes4(initilializerBytes);
 
-        address expectedAddress = lsp16.calculateAddress(
+        address expectedAddress = lsp16.computeAddress(
             keccak256(type(LSP0ERC725AccountInit).creationCode),
             providedSalt,
             true,
@@ -265,7 +265,7 @@ contract LSP16UniversalProfileTest is Test {
         );
         (bool success, bytes memory returnedData) = address(lsp16).call{value: valueForInitializer}(
             abi.encodeWithSignature(
-                "deployCreate2Init(bytes,bytes32,bytes,uint256,uint256)",
+                "deployCreate2AndInitialize(bytes,bytes32,bytes,uint256,uint256)",
                 type(LSP0ERC725AccountInit).creationCode,
                 providedSalt,
                 initializeCallData,
@@ -280,14 +280,14 @@ contract LSP16UniversalProfileTest is Test {
         assert(expectedAddress == returnedAddress);
     }
 
-    function testCalculateAddressShouldReturnCorrectUPAddressWithDeployCreate2(
+    function testcomputeAddressShouldReturnCorrectUPAddressWithDeployCreate2(
         bytes32 providedSalt,
         uint256 valueForConstructor
     ) public {
         vm.deal(address(this), valueForConstructor);
         assert(address(this).balance == valueForConstructor);
 
-        address expectedAddress = lsp16.calculateAddress(
+        address expectedAddress = lsp16.computeAddress(
             keccak256(
                 abi.encodePacked(type(LSP0ERC725Account).creationCode, abi.encode(address(this)))
             ),
@@ -308,7 +308,7 @@ contract LSP16UniversalProfileTest is Test {
         assert(expectedAddress == returnedAddress);
     }
 
-    function testCalculateProxyAddressWithDeployCreate2ProxyInit(
+    function testcomputeERC1167AddressWithdeployERC1167ProxyAndInitialize(
         bytes32 providedSalt,
         uint256 valueForInitializer,
         bytes4 initilializerBytes
@@ -318,7 +318,7 @@ contract LSP16UniversalProfileTest is Test {
 
         bytes memory initializeCallData = _removeRandomByteFromBytes4(initilializerBytes);
 
-        address expectedAddress = lsp16.calculateProxyAddress(
+        address expectedAddress = lsp16.computeERC1167Address(
             address(lsp0Init),
             providedSalt,
             true,
@@ -326,7 +326,7 @@ contract LSP16UniversalProfileTest is Test {
         );
         (bool success, bytes memory returnedData) = address(lsp16).call{value: valueForInitializer}(
             abi.encodeWithSignature(
-                "deployCreate2ProxyInit(address,bytes32,bytes)",
+                "deployERC1167ProxyAndInitialize(address,bytes32,bytes)",
                 address(lsp0Init),
                 providedSalt,
                 initializeCallData
@@ -338,8 +338,8 @@ contract LSP16UniversalProfileTest is Test {
         assert(expectedAddress == returnedAddress);
     }
 
-    function testCalculateProxyAddressWithDeployCreate2Proxy(bytes32 providedSalt) public {
-        address expectedAddress = lsp16.calculateProxyAddress(
+    function testcomputeERC1167AddressWithdeployERC1167Proxy(bytes32 providedSalt) public {
+        address expectedAddress = lsp16.computeERC1167Address(
             address(lsp0),
             providedSalt,
             false,
@@ -347,7 +347,7 @@ contract LSP16UniversalProfileTest is Test {
         );
         (bool success, bytes memory returnedData) = address(lsp16).call(
             abi.encodeWithSignature(
-                "deployCreate2Proxy(address,bytes32)",
+                "deployERC1167Proxy(address,bytes32)",
                 address(lsp0),
                 providedSalt
             )

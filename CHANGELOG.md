@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.10.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.10.0...v0.10.1) (2023-06-07)
+
+### Bug Fixes
+
+- Allow direct import of files in ./dist/\*. ([de3625f](https://github.com/lukso-network/lsp-smart-contracts/commit/de3625f62e9d98f1ca286b47af67b71688d3eb45))
+
 ## [0.10.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.9.0...v0.10.0) (2023-05-19)
 
 ### ⚠ BREAKING CHANGES

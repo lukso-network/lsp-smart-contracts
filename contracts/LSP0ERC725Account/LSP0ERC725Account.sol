@@ -38,15 +38,20 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
  */
 contract LSP0ERC725Account is LSP0ERC725AccountCore {
     /**
-     * @dev Sets the owner of the contract on deployment and allows funding.
-     * Emits a {ValueReceived} event when funding the contract on deployment.
-     * @param newOwner The owner of the contract.
+     * @notice Deploying the contract with owner set to: `initialOwner`
+     * @dev Set `initialOwner` as the contract owner.
+     * The `constructor` also allows funding the contract on deployment.
+     *
+     * Emitted Events:
+     * - ValueReceived: when the contract is funded on deployment.
+     *
+     * @param initialOwner The owner of the contract
      */
-    constructor(address newOwner) payable {
+    constructor(address initialOwner) payable {
         if (msg.value != 0) {
             emit ValueReceived(msg.sender, msg.value);
         }
 
-        OwnableUnset._setOwner(newOwner);
+        OwnableUnset._setOwner(initialOwner);
     }
 }

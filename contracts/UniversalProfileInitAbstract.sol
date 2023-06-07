@@ -17,14 +17,13 @@ import {
  */
 abstract contract UniversalProfileInitAbstract is LSP0ERC725AccountInitAbstract {
     /**
-     * @notice Initializing the contract owner to: `newOwner`
-     * @dev Sets the owner of the contract and sets the SupportedStandards:LSP3UniversalProfile key
-     * @param newOwner the owner of the contract
+     * @inheritdoc LSP0ERC725AccountInitAbstract
+     * @dev Set the `SupportedStandards:LSP3UniversalProfile` data key in the ERC725Y data key/value store.
      */
-    function _initialize(address newOwner) internal virtual override onlyInitializing {
-        LSP0ERC725AccountInitAbstract._initialize(newOwner);
+    function _initialize(address initialOwner) internal virtual override onlyInitializing {
+        LSP0ERC725AccountInitAbstract._initialize(initialOwner);
 
-        // set key SupportedStandards:LSP3UniversalProfile
+        // set data key SupportedStandards:LSP3UniversalProfile
         _setData(_LSP3_SUPPORTED_STANDARDS_KEY, _LSP3_SUPPORTED_STANDARDS_VALUE);
     }
 }
