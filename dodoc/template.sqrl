@@ -132,10 +132,14 @@
 ```
 
 
-{{@if (val.notice)}}*{{val.notice}}*{{/if}}
+{{@if (val.notice)}}
+*{{@parseNotice(val.notice) /}}*
+{{/if}}
 
 
-{{@if (val.details)}}{{val.details}}{{/if}}
+{{@if (val.details)}}
+{{@parseDetails(val.details) /}}
+{{/if}}
 
 
 {{@if (Object.keys(val.inputs).length > 0)}}
@@ -169,10 +173,14 @@
 ```
 
 
-{{@if (val.notice)}}*{{val.notice}}*{{/if}}
+{{@if (val.notice)}}
+*{{@parseNotice(val.notice) /}}*
+{{/if}}
 
 
-{{@if (val.details)}}{{val.details}}{{/if}}
+{{@if (val.details)}}
+{{@parseDetails(val.details) /}}
+{{/if}}
 
 
 {{@if (Object.keys(val.inputs).length > 0)}}
