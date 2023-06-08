@@ -23,7 +23,9 @@
 ## 🤖 CI
 ---->
 
-Fixes #???? <!-- Fill in with issue number -->
+<!---
+Fixes #<Fill in with issue number>
+---->
 
 <!-- Describe the changes introduced in this pull request here. -->
 
@@ -36,7 +38,7 @@ Fixes #???? <!-- Fill in with issue number -->
 <!-- (Some of the items may not apply.) -->
 
 - [ ] Wrote Tests
-- [ ] Wrote Documentation
+- [ ] Wrote & Generated Documentation (readme/natspec/dodoc)
 - [ ] Ran `npm run linter` (solhint)
 - [ ] Ran `npm run format` (prettier)
 - [ ] Ran `npm run build`
