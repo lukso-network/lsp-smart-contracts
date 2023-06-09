@@ -41,11 +41,9 @@ contract LSP0ERC725Account is LSP0ERC725AccountCore {
      * @notice Deploying the contract with owner set to: `initialOwner`
      * @dev Set `initialOwner` as the contract owner.
      * The `constructor` also allows funding the contract on deployment.
+     * @param initialOwner The owner of the contract.
      *
-     * Emitted Events:
-     * - ValueReceived: when the contract is funded on deployment.
-     *
-     * @param initialOwner The owner of the contract
+     * @custom:events {ValueReceived} event when funding the contract on deployment.
      */
     constructor(address initialOwner) payable {
         if (msg.value != 0) {
