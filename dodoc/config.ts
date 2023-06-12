@@ -35,9 +35,11 @@ export const dodocConfig = {
     "LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol",
 
     // libraries --------------------
+    "LSP0ERC725Account/LSP0Utils.sol",
     "LSP1UniversalReceiver/LSP1Utils.sol",
     "LSP2ERC725YJSONSchema/LSP2Utils.sol",
     "LSP5ReceivedAssets/LSP5Utils.sol",
+    "LSP6KeyManager/LSP6Utils.sol",
     "LSP10ReceivedVaults/LSP10Utils.sol",
     "LSP17ContractExtension/LSP17Utils.sol",
   ],
@@ -62,10 +64,6 @@ export const dodocConfig = {
       helperName: "splitMethods",
       helperFunc: (content: HelperContent) =>
         content.exec(splitMethods(content.params[0])),
-    },
-    {
-      helperName: "formatCode",
-      helperFunc: (content: HelperContent) => formatCode(content.params[0]),
     },
     {
       helperName: "parseNotice",
@@ -190,33 +188,6 @@ const replaceAll = (
   while (formatedText.includes(textToReplace)) {
     formatedText = formatedText.replace(textToReplace, replaceWith);
   }
-  return formatedText;
-};
-
-const formatCode = (textToFormat: string) => {
-  let formatedText: string = textToFormat;
-  if (textToFormat.length > 75) {
-    if (textToFormat.split(",").length >= 2) {
-      const start = textToFormat.substring(0, textToFormat.indexOf("(") + 1);
-      const end = textToFormat.substring(textToFormat.indexOf(")"));
-      const middle = textToFormat.replace(start, "").replace(end, "");
-      formatedText = `${start}${middle
-        .split(",")
-        .map((elem) => `\n    ${elem.trim()}`)}\n${end}`;
-    } else {
-      const start = textToFormat.substring(0, textToFormat.indexOf(")") + 1);
-      const end = textToFormat.replace(start, "").trim();
-      formatedText = replaceAll(
-        `${start}${end.split(" ").map((elem) => {
-          if (elem.includes("(") || elem.includes(")")) return ` ${elem}`;
-          return `\n    ${elem}`;
-        })}`,
-        ",",
-        ""
-      );
-    }
-  }
-
   return formatedText;
 };
 
