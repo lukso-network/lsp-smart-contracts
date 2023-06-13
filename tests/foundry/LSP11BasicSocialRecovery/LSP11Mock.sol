@@ -17,10 +17,10 @@ contract LSP11Mock is LSP11BasicSocialRecovery {
         _validateRequirements(recoverer, currentRecoveryCounter, plainSecret, newHash, guardians);
     }
 
-    function setGuardiansThresholdMock(uint256 newThreshold, uint256 guardianLength)
-        public
-        onlyOwner
-    {
+    function setGuardiansThresholdMock(
+        uint256 newThreshold,
+        uint256 guardianLength
+    ) public onlyOwner {
         if (newThreshold > guardianLength)
             revert ThresholdCannotBeHigherThanGuardiansNumber(newThreshold, guardianLength);
 

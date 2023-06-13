@@ -64,10 +64,9 @@ contract LSP16UniversalProfileTest is Test {
     }
 
     // testing that with when initializeCallDataBytes is different salt cannot be the same
-    function testSaltAlwaysUniqueWithDifferentRandomBytes(bytes memory initializeCallData)
-        public
-        view
-    {
+    function testSaltAlwaysUniqueWithDifferentRandomBytes(
+        bytes memory initializeCallData
+    ) public view {
         if (keccak256(initializeCallDataBytes) == keccak256(initializeCallData)) return;
         bytes32 salt = lsp16.generateSalt(randomBytes32ForSalt, true, initializeCallData);
         assert(salt != uniqueInitializableSalt);
@@ -152,9 +151,9 @@ contract LSP16UniversalProfileTest is Test {
         require(address(lsp16).balance == 0, "LSP16 should not have any balance");
     }
 
-    function testdeployERC1167ProxyShouldNotKeepValueWithNonPayableFallback(uint256 valueToTransfer)
-        public
-    {
+    function testdeployERC1167ProxyShouldNotKeepValueWithNonPayableFallback(
+        uint256 valueToTransfer
+    ) public {
         vm.deal(address(this), valueToTransfer);
 
         assert(address(this).balance == valueToTransfer);
@@ -198,9 +197,9 @@ contract LSP16UniversalProfileTest is Test {
         require(address(lsp16).balance == 0, "LSP16 should not have any balance");
     }
 
-    function testDeployCreate2ShouldNotKeepValueWithNonPayableFallback(uint256 valueToTransfer)
-        public
-    {
+    function testDeployCreate2ShouldNotKeepValueWithNonPayableFallback(
+        uint256 valueToTransfer
+    ) public {
         vm.deal(address(this), valueToTransfer);
 
         assert(address(this).balance == valueToTransfer);

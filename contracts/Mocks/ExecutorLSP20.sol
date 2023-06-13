@@ -46,10 +46,10 @@ contract ExecutorLSP20 {
         return "";
     }
 
-    function setComputedKeyFromParams(bytes32 _key, bytes memory _value)
-        public
-        returns (bytes memory)
-    {
+    function setComputedKeyFromParams(
+        bytes32 _key,
+        bytes memory _value
+    ) public returns (bytes memory) {
         _universalProfile.setData(_key, _value);
         return "";
     }
@@ -89,10 +89,10 @@ contract ExecutorLSP20 {
         return success;
     }
 
-    function setComputedKeyFromParamsRawCall(bytes32 _key, bytes memory _value)
-        public
-        returns (bool)
-    {
+    function setComputedKeyFromParamsRawCall(
+        bytes32 _key,
+        bytes memory _value
+    ) public returns (bool) {
         bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, _key, _value);
 
         (bool success, ) = address(_universalProfile).call(erc725Payload);

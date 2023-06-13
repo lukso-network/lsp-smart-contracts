@@ -99,12 +99,10 @@ contract LSP16UniversalFactory {
      *
      * @return The address of the deployed contract
      */
-    function deployCreate2(bytes calldata byteCode, bytes32 providedSalt)
-        public
-        payable
-        virtual
-        returns (address)
-    {
+    function deployCreate2(
+        bytes calldata byteCode,
+        bytes32 providedSalt
+    ) public payable virtual returns (address) {
         bytes32 generatedSalt = generateSalt(providedSalt, false, _EMPTY_BYTE);
         address contractCreated = Create2.deploy(msg.value, generatedSalt, byteCode);
         emit ContractCreated(contractCreated, providedSalt, generatedSalt, false, _EMPTY_BYTE);
@@ -190,11 +188,10 @@ contract LSP16UniversalFactory {
      *
      * @return The address of the minimal proxy deployed
      */
-    function deployERC1167Proxy(address implementationContract, bytes32 providedSalt)
-        public
-        virtual
-        returns (address)
-    {
+    function deployERC1167Proxy(
+        address implementationContract,
+        bytes32 providedSalt
+    ) public virtual returns (address) {
         bytes32 generatedSalt = generateSalt(providedSalt, false, _EMPTY_BYTE);
 
         address proxy = Clones.cloneDeterministic(implementationContract, generatedSalt);

@@ -110,11 +110,10 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc IERC1271
      */
-    function isValidSignature(bytes32 dataHash, bytes memory signature)
-        public
-        view
-        returns (bytes4 magicValue)
-    {
+    function isValidSignature(
+        bytes32 dataHash,
+        bytes memory signature
+    ) public view returns (bytes4 magicValue) {
         // if isValidSignature fail, the error is catched in returnedError
         (address recoveredAddress, ECDSA.RecoverError returnedError) = ECDSA.tryRecover(
             dataHash,
@@ -142,12 +141,10 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function executeBatch(uint256[] calldata values, bytes[] calldata payloads)
-        public
-        payable
-        virtual
-        returns (bytes[] memory)
-    {
+    function executeBatch(
+        uint256[] calldata values,
+        bytes[] calldata payloads
+    ) public payable virtual returns (bytes[] memory) {
         if (values.length != payloads.length) {
             revert BatchExecuteParamsLengthMismatch();
         }
@@ -286,7 +283,7 @@ abstract contract LSP6KeyManagerCore is
      * @inheritdoc ILSP20
      */
     function lsp20VerifyCallResult(
-        bytes32, /*callHash*/
+        bytes32 /*callHash*/,
         bytes memory /*result*/
     ) external returns (bytes4) {
         // If it's the target calling, set back the reentrancy guard
@@ -297,11 +294,10 @@ abstract contract LSP6KeyManagerCore is
         return _LSP20_VERIFY_CALL_RESULT_MAGIC_VALUE;
     }
 
-    function _execute(uint256 msgValue, bytes calldata payload)
-        internal
-        virtual
-        returns (bytes memory)
-    {
+    function _execute(
+        uint256 msgValue,
+        bytes calldata payload
+    ) internal virtual returns (bytes memory) {
         if (payload.length < 4) {
             revert InvalidPayload(payload);
         }
@@ -393,11 +389,10 @@ abstract contract LSP6KeyManagerCore is
      * @param payload the abi-encoded function call to execute on the target.
      * @return bytes the result from calling the target with `payload`
      */
-    function _executePayload(uint256 msgValue, bytes calldata payload)
-        internal
-        virtual
-        returns (bytes memory)
-    {
+    function _executePayload(
+        uint256 msgValue,
+        bytes calldata payload
+    ) internal virtual returns (bytes memory) {
         (bool success, bytes memory returnData) = _target.call{value: msgValue, gas: gasleft()}(
             payload
         );
@@ -483,11 +478,10 @@ abstract contract LSP6KeyManagerCore is
      * the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
      * Used in the beginning of the `nonReentrant` modifier, before the method execution starts.
      */
-    function _nonReentrantBefore(bool isSetData, address from)
-        internal
-        virtual
-        returns (bool isReentrantCall)
-    {
+    function _nonReentrantBefore(
+        bool isSetData,
+        address from
+    ) internal virtual returns (bool isReentrantCall) {
         isReentrantCall = _reentrancyStatus;
         if (isReentrantCall) {
             // CHECK the caller has REENTRANCY permission

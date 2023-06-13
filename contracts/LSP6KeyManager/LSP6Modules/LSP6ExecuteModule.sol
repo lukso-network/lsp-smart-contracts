@@ -290,17 +290,9 @@ abstract contract LSP6ExecuteModule {
         }
     }
 
-    function _extractExecuteParameters(bytes calldata executeCalldata)
-        internal
-        pure
-        returns (
-            uint256,
-            address,
-            uint256,
-            bytes4,
-            bool
-        )
-    {
+    function _extractExecuteParameters(
+        bytes calldata executeCalldata
+    ) internal pure returns (uint256, address, uint256, bytes4, bool) {
         uint256 operationType = uint256(bytes32(executeCalldata[4:36]));
 
         // CHECK that it is a valid address left-padded with `00` on the 12 upper bytes
@@ -344,11 +336,10 @@ abstract contract LSP6ExecuteModule {
             to.supportsERC165InterfaceUnchecked(allowedStandard);
     }
 
-    function _isAllowedFunction(bytes memory allowedCall, bytes4 requiredFunction)
-        internal
-        pure
-        returns (bool)
-    {
+    function _isAllowedFunction(
+        bytes memory allowedCall,
+        bytes4 requiredFunction
+    ) internal pure returns (bool) {
         // <offset> = 28 bytes x 8 bits = 224 bits
         //
         //                                                         function
@@ -364,11 +355,10 @@ abstract contract LSP6ExecuteModule {
             (isFunctionCall && (requiredFunction == allowedFunction));
     }
 
-    function _isAllowedCallType(bytes memory allowedCall, bytes4 requiredCallTypes)
-        internal
-        pure
-        returns (bool)
-    {
+    function _isAllowedCallType(
+        bytes memory allowedCall,
+        bytes4 requiredCallTypes
+    ) internal pure returns (bool) {
         // extract callType
         //
         // <offset> = 0

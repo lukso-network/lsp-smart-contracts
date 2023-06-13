@@ -31,11 +31,10 @@ library LSP6Utils {
         return bytes32(permissions);
     }
 
-    function getAllowedCallsFor(IERC725Y target, address from)
-        internal
-        view
-        returns (bytes memory)
-    {
+    function getAllowedCallsFor(
+        IERC725Y target,
+        address from
+    ) internal view returns (bytes memory) {
         return
             target.getData(
                 LSP2Utils.generateMappingWithGroupingKey(
@@ -51,11 +50,10 @@ library LSP6Utils {
      * @param caller the controller address to read the permissions from.
      * @return an abi-encoded array of allowed ERC725 keys that the controller address is allowed to interact with.
      */
-    function getAllowedERC725YDataKeysFor(IERC725Y target, address caller)
-        internal
-        view
-        returns (bytes memory)
-    {
+    function getAllowedERC725YDataKeysFor(
+        IERC725Y target,
+        address caller
+    ) internal view returns (bytes memory) {
         return
             target.getData(
                 LSP2Utils.generateMappingWithGroupingKey(
@@ -72,11 +70,10 @@ library LSP6Utils {
      * @param permissionToCheck the permissions to check
      * @return true if `addressPermissions` includes `permissionToCheck`, false otherwise
      */
-    function hasPermission(bytes32 addressPermission, bytes32 permissionToCheck)
-        internal
-        pure
-        returns (bool)
-    {
+    function hasPermission(
+        bytes32 addressPermission,
+        bytes32 permissionToCheck
+    ) internal pure returns (bool) {
         return (addressPermission & permissionToCheck) == permissionToCheck;
     }
 
@@ -86,11 +83,9 @@ library LSP6Utils {
      * @param allowedCallsCompacted a compact bytes array of tuples (bytes4,address,bytes4) to check.
      * @return true if the value passed is a valid compact bytes array of bytes28 elements according to LSP2, false otherwise.
      */
-    function isCompactBytesArrayOfAllowedCalls(bytes memory allowedCallsCompacted)
-        internal
-        pure
-        returns (bool)
-    {
+    function isCompactBytesArrayOfAllowedCalls(
+        bytes memory allowedCallsCompacted
+    ) internal pure returns (bool) {
         uint256 pointer;
 
         while (pointer < allowedCallsCompacted.length) {
@@ -214,11 +209,9 @@ library LSP6Utils {
     /**
      * @dev returns the name of the permission as a string
      */
-    function getPermissionName(bytes32 permission)
-        internal
-        pure
-        returns (string memory errorMessage)
-    {
+    function getPermissionName(
+        bytes32 permission
+    ) internal pure returns (string memory errorMessage) {
         if (permission == _PERMISSION_CHANGEOWNER) return "TRANSFEROWNERSHIP";
         if (permission == _PERMISSION_EDITPERMISSIONS) return "EDITPERMISSIONS";
         if (permission == _PERMISSION_ADDCONTROLLER) return "ADDCONTROLLER";
