@@ -12,8 +12,6 @@ import {_INTERFACEID_LSP17_EXTENSION} from "./LSP17Constants.sol";
  * @dev To be inherited to provide context of the msg variable related to the extendable contract
  */
 abstract contract LSP17Extension is ERC165 {
-    // solhint-disable
-
     /**
      * @dev See {IERC165-supportsInterface}.
      */
