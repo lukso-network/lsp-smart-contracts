@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.10.2](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.10.1...v0.10.2) (2023-06-13)
+
+### Bug Fixes
+
+- variable shadowing with `transferOwnership(_pendingOwner)` and `_pendingOwner` state variable ([7d1b5b8](https://github.com/lukso-network/lsp-smart-contracts/commit/7d1b5b8891ce6dfb970635e420bbf2d6e259d0c1))
+
 ## [0.10.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.10.0...v0.10.1) (2023-06-07)
 
 ### Bug Fixes
