@@ -116,11 +116,6 @@ artifacts
 typechain
 deployments
 
-# JAVA
-scripts/java/github.properties
-scripts/java/.gradle
-scripts/java/.idea
-
 .idea
 
 # auto-generated docs
