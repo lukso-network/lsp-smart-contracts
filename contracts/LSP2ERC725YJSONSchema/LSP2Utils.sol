@@ -299,7 +299,7 @@ library LSP2Utils {
          *
          * The pointer can only land on the length of the following bytes value.
          */
-        uint256 pointer;
+        uint256 pointer = 0;
 
         /**
          * Check each length byte and make sure that when you reach the last length byte.

@@ -152,7 +152,7 @@ abstract contract LSP6KeyManagerCore is
         bytes[] memory results = new bytes[](payloads.length);
         uint256 totalValues;
 
-        for (uint256 ii; ii < payloads.length; ) {
+        for (uint256 ii = 0; ii < payloads.length; ) {
             if ((totalValues += values[ii]) > msg.value) {
                 revert LSP6BatchInsufficientValueSent(totalValues, msg.value);
             }
@@ -205,7 +205,7 @@ abstract contract LSP6KeyManagerCore is
         bytes[] memory results = new bytes[](payloads.length);
         uint256 totalValues;
 
-        for (uint256 ii; ii < payloads.length; ) {
+        for (uint256 ii = 0; ii < payloads.length; ) {
             if ((totalValues += values[ii]) > msg.value) {
                 revert LSP6BatchInsufficientValueSent(totalValues, msg.value);
             }
