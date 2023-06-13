@@ -43,6 +43,15 @@ export const dodocConfig = {
     "LSP10ReceivedVaults/LSP10Utils.sol",
     "LSP17ContractExtension/LSP17Utils.sol",
   ],
+  libraries: [
+    "LSP0Utils",
+    "LSP1Utils",
+    "LSP2Utils",
+    "LSP5Utils",
+    "LSP6Utils",
+    "LSP10Utils",
+    "LSP17Utils",
+  ],
   templatePath: "./dodoc/template.sqrl",
   helpers: [
     {
@@ -82,22 +91,28 @@ export const dodocConfig = {
         formatBulletPointsWithTitle(createLocalLinks(content.params[0]), "Emitted events:"),
     },
     {
-      helperName: "genAdditionalMethodInfo",
+      helperName: "generateAdditionalMethodInfo",
       helperFunc: (content: HelperContent) =>
-        generateAdditionalInfo(content.params[0], content.params[1], "Function"),
+        generateAdditionalMethodInfo(content.params[0], content.params[1]),
     },
     {
-      helperName: "genAdditionalEventInfo",
+      helperName: "generateAdditionalEventInfo",
       helperFunc: (content: HelperContent) =>
-        generateAdditionalInfo(content.params[0], content.params[1], "Event"),
+        generateAdditionalEventInfo(content.params[0], content.params[1]),
     },
     {
-      helperName: "genAdditionalErrorInfo",
+      helperName: "generateAdditionalErrorInfo",
       helperFunc: (content: HelperContent) =>
-        generateAdditionalInfo(content.params[0], content.params[1], "Error"),
+        generateAdditionalErrorInfo(content.params[0], content.params[1]),
+    },
+    {
+      helperName: "generateContractLink",
+      helperFunc: (content: HelperContent) => generateContractLink(content.params[0]),
     },
   ],
 };
+
+const linkBase = "https://github.com/lukso-network/";
 
 const createLocalLinks = (textToFormat: string) => {
   let formatedText = textToFormat;
@@ -156,25 +171,7 @@ const formatTextWithLists = (textToFormat: string) => {
   return formatedText;
 };
 
-const replaceAll = (textToFormat: string, textToReplace: string, replaceWith: string) => {
-  let formatedText = textToFormat;
-  while (formatedText.includes(textToReplace)) {
-    formatedText = formatedText.replace(textToReplace, replaceWith);
-  }
-  return formatedText;
-};
-
-const formatBulletPointsWithTitle = (textToFormat: string, title: string) => {
-  if (textToFormat.length === 0) return "";
-  let formatedText: string = `**${title}**\n\n`;
-  if (textToFormat.startsWith("- ")) textToFormat = " " + textToFormat;
-  textToFormat.split(" - ").forEach((elem) => {
-    if (elem.trim().length !== 0) formatedText += `- ${elem.trim()}\n`;
-  });
-  return formatedText;
-};
-
-const generateAdditionalInfo = (contract: string, code: string, type: string) => {
+const formatCode = (code: string, type: string) => {
   let formatedCode = code
     .substring(0, code.indexOf(")") + 1)
     .replace(`${type.toLowerCase()}`, "")
@@ -188,31 +185,32 @@ const generateAdditionalInfo = (contract: string, code: string, type: string) =>
         .toString() + ")";
   }
 
-  const linkBase = "https://github.com/lukso-network/";
+  return formatedCode;
+};
 
-  let infoBlock: string;
-  if (contract === "UniversalProfile") {
-    infoBlock =
-      `- Specification details in [**UniversalProfile**](${linkBase}lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata)\n` +
-      `- Solidity implementation in [**UniversalProfile**](${linkBase}lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)\n`;
-  } else {
-    const contractPath = dodocConfig.include.filter((value) => {
-      if (value.endsWith(`${contract}.sol`)) return value;
-    })[0];
-    const contractLink = `${linkBase}lsp-smart-contracts/blob/develop/contracts/${contractPath}`;
+const formatBulletPointsWithTitle = (textToFormat: string, title: string) => {
+  if (textToFormat.length === 0) return "";
 
-    const specs = contractPath.split("/")[0];
+  let formatedText: string = `**${title}**\n\n`;
 
-    const specsName = `LSP-${specs.match(/\d+/)[0]}-${specs.split(/LSP\d+/)[1]}`;
+  if (textToFormat.startsWith("- ")) textToFormat = " " + textToFormat;
 
-    const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${specs.match(/\d+/)[0]}-${
-      specs.split(/LSP\d+/)[1]
-    }.md#${formatedCode.split("(")[0].toLowerCase()}`;
+  textToFormat.split(" - ").forEach((elem) => {
+    if (elem.trim().length !== 0) formatedText += `- ${elem.trim()}\n`;
+  });
 
-    infoBlock =
-      `- Specification details in [**${specsName}**](${specsLink})\n` +
-      `- Solidity implementation in [**${contract}**](${contractLink})\n`;
-  }
+  return formatedText;
+};
+
+const generateAdditionalMethodInfo = (contract: string, code: string) => {
+  const formatedCode = formatCode(code, "function");
+  const contractLink = generateContractLink(contract);
+  const { specsName, specsLink } = generateContractSpecsDetails(contract);
+
+  let infoBlock =
+    `- Specification details in [**${specsName}**](${specsLink}#${formatedCode
+      .split("(")[0]
+      .toLowerCase()})\n` + `- Solidity implementation in [**${contract}**](${contractLink})\n`;
 
   if (
     !formatedCode.startsWith("constructor") &&
@@ -220,11 +218,76 @@ const generateAdditionalInfo = (contract: string, code: string, type: string) =>
     !formatedCode.startsWith("receive")
   ) {
     infoBlock +=
-      `- ${type} signature: \`${formatedCode}\`\n` +
-      `- ${type} ${type !== "Event" ? "selector" : "hash"}: \`${ethers.utils
+      `- Function signature: \`${formatedCode}\`\n` +
+      `- Function selector: \`${ethers.utils
         .keccak256(ethers.utils.toUtf8Bytes(formatedCode))
-        .substring(0, type !== "Event" ? 10 : 66)}\``;
+        .substring(0, 10)}\``;
   }
 
   return infoBlock;
+};
+
+const generateAdditionalEventInfo = (contract: string, code: string) => {
+  const formatedCode = formatCode(code, "event");
+  const contractLink = generateContractLink(contract);
+  const { specsName, specsLink } = generateContractSpecsDetails(contract);
+
+  return (
+    `- Specification details in [**${specsName}**](${specsLink}#${formatedCode
+      .split("(")[0]
+      .toLowerCase()})\n` +
+    `- Solidity implementation in [**${contract}**](${contractLink})\n` +
+    `- Event signature: \`${formatedCode}\`\n` +
+    `- Event hash: \`${ethers.utils.keccak256(ethers.utils.toUtf8Bytes(formatedCode))}\``
+  );
+};
+
+const generateAdditionalErrorInfo = (contract: string, code: string) => {
+  const formatedCode = formatCode(code, "error");
+  const contractLink = generateContractLink(contract);
+  const { specsName, specsLink } = generateContractSpecsDetails(contract);
+
+  return (
+    `- Specification details in [**${specsName}**](${specsLink}#${formatedCode
+      .split("(")[0]
+      .toLowerCase()})\n` +
+    `- Solidity implementation in [**${contract}**](${contractLink})\n` +
+    `- Error signature: \`${formatedCode}\`\n` +
+    `- Error hash: \`${ethers.utils
+      .keccak256(ethers.utils.toUtf8Bytes(formatedCode))
+      .substring(0, 10)}\``
+  );
+};
+
+const generateContractLink = (contractName: string) => {
+  if (contractName === "UniversalProfile")
+    return `${linkBase}lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol`;
+
+  const contractPath = dodocConfig.include.filter((value) => {
+    if (value.endsWith(`${contractName}.sol`)) return value;
+  })[0];
+
+  return `${linkBase}lsp-smart-contracts/blob/develop/contracts/${contractPath}`;
+};
+
+const generateContractSpecsDetails = (contractName: string) => {
+  if (contractName === "UniversalProfile")
+    return {
+      specsName: `${contractName}`,
+      specsLink: `${linkBase}lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md`,
+    };
+
+  const contractPath = dodocConfig.include.filter((value) => {
+    if (value.endsWith(`${contractName}.sol`)) return value;
+  })[0];
+
+  const specs = contractPath.split("/")[0];
+
+  const specsName = `LSP-${specs.match(/\d+/)[0]}-${specs.split(/LSP\d+/)[1]}`;
+
+  const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${specs.match(/\d+/)[0]}-${
+    specs.split(/LSP\d+/)[1]
+  }.md`;
+
+  return { specsName, specsLink };
 };
