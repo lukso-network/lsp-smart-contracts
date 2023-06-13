@@ -3,6 +3,13 @@
 {{/if}}
 
 
+:::info Soldity contract
+
+[`{{it.name}}.sol`]({{@generateContractLink(it.name) /}})
+
+:::
+
+
 {{@if (it.title)}}
 > {{it.title}}
 {{/if}}
@@ -34,7 +41,7 @@
 ### {{key.split('(')[0]}}
 
 
-:::note Links{{'\n\n'}}{{@genAdditionalMethodInfo(it.name, val.code) /}}{{'\n\n'}}:::
+:::note Links{{'\n\n'}}{{@generateAdditionalMethodInfo(it.name, val.code) /}}{{'\n\n'}}:::
 
 
 {{@if (val['custom:info'])}}
@@ -58,7 +65,7 @@
 
 
 ```solidity
-{{@formatCode(val.code) /}};
+{{val.code}};
 ```
 
 
@@ -124,11 +131,11 @@
 ### {{key}}
 
 
-:::note Links{{'\n\n'}}{{@genAdditionalEventInfo(it.name, val.code) /}}{{'\n\n'}}:::
+:::note Links{{'\n\n'}}{{@generateAdditionalEventInfo(it.name, val.code) /}}{{'\n\n'}}:::
 
 
 ```solidity
-{{@formatCode(val.code) /}};
+{{val.code}};
 ```
 
 
@@ -165,11 +172,11 @@
 ### {{key}}
 
 
-:::note Links{{'\n\n'}}{{@genAdditionalErrorInfo(it.name, val.code) /}}{{'\n\n'}}:::
+:::note Links{{'\n\n'}}{{@generateAdditionalErrorInfo(it.name, val.code) /}}{{'\n\n'}}:::
 
 
 ```solidity
-{{@formatCode(val.code) /}};
+{{val.code}};
 ```
 
 
