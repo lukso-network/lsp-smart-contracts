@@ -20,10 +20,7 @@ describe("ABI Encoder Contract", () => {
   };
 
   const checkGasCost = async (txParameterA, txParameterB) => {
-    const [c, gasUsed] = await contract.callStatic.encode(
-      txParameterA,
-      txParameterB
-    );
+    const [c, gasUsed] = await contract.callStatic.encode(txParameterA, txParameterB);
     return gasUsed.toNumber();
   };
 
@@ -116,9 +113,7 @@ describe("ABI Encoder Contract", () => {
     describe("LSP1 Specific Cases", () => {
       it("Encoding URD response when typeId out of scope with empty bytes", async () => {
         const txParams = {
-          a: ethers.utils.hexlify(
-            ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")
-          ),
+          a: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")),
           b: "0x",
         };
 
@@ -128,9 +123,7 @@ describe("ABI Encoder Contract", () => {
       it("Encoding URD response when owner is not a KM with empty bytes", async () => {
         const txParams = {
           a: ethers.utils.hexlify(
-            ethers.utils.toUtf8Bytes(
-              "LSP1: account owner is not a LSP6KeyManager"
-            )
+            ethers.utils.toUtf8Bytes("LSP1: account owner is not a LSP6KeyManager"),
           ),
           b: "0x",
         };
@@ -141,9 +134,7 @@ describe("ABI Encoder Contract", () => {
       it("Encoding URD response when asset already exist with empty bytes", async () => {
         const txParams = {
           a: ethers.utils.hexlify(
-            ethers.utils.toUtf8Bytes(
-              "LSP1: asset received is already registered"
-            )
+            ethers.utils.toUtf8Bytes("LSP1: asset received is already registered"),
           ),
           b: "0x",
         };
@@ -153,9 +144,7 @@ describe("ABI Encoder Contract", () => {
 
       it("Encoding URD response when asset is not registered with empty bytes", async () => {
         const txParams = {
-          a: ethers.utils.hexlify(
-            ethers.utils.toUtf8Bytes("LSP1: asset sent is not registered")
-          ),
+          a: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("LSP1: asset sent is not registered")),
           b: "0x",
         };
 
@@ -164,9 +153,7 @@ describe("ABI Encoder Contract", () => {
 
       it("Encoding URD response when full balance was not sent with empty bytes", async () => {
         const txParams = {
-          a: ethers.utils.hexlify(
-            ethers.utils.toUtf8Bytes("LSP1: full balance is not sent")
-          ),
+          a: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("LSP1: full balance is not sent")),
           b: "0x",
         };
 

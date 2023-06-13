@@ -24,9 +24,7 @@ export type LSP1TestContext = {
   lsp1Checker: UniversalReceiverTester;
 };
 
-export const shouldBehaveLikeLSP1 = (
-  buildContext: () => Promise<LSP1TestContext>
-) => {
+export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext>) => {
   let context: LSP1TestContext;
 
   describe("when calling the `universalReceiver(...)` function", () => {
@@ -46,7 +44,7 @@ export const shouldBehaveLikeLSP1 = (
             .connect(caller)
             .universalReceiver(LSP1_HOOK_PLACEHOLDER, data, {
               value: valueSent,
-            })
+            }),
         )
           .to.emit(context.lsp1Implementation, "UniversalReceiver")
           .withArgs(
@@ -59,7 +57,7 @@ export const shouldBehaveLikeLSP1 = (
             // receivedData
             data,
             // returnedValue
-            abiCoder.encode(["bytes", "bytes"], ["0x", "0x"])
+            abiCoder.encode(["bytes", "bytes"], ["0x", "0x"]),
           );
       });
     });
@@ -70,8 +68,8 @@ export const shouldBehaveLikeLSP1 = (
           await expect(
             context.lsp1Checker.checkImplementation(
               context.lsp1Implementation.address,
-              LSP1_HOOK_PLACEHOLDER
-            )
+              LSP1_HOOK_PLACEHOLDER,
+            ),
           )
             .to.emit(context.lsp1Implementation, "UniversalReceiver")
             .withArgs(
@@ -84,7 +82,7 @@ export const shouldBehaveLikeLSP1 = (
               // receivedData
               "0x",
               // returnedValue
-              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"])
+              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"]),
             );
         });
       });
@@ -94,8 +92,8 @@ export const shouldBehaveLikeLSP1 = (
           await expect(
             context.lsp1Checker.checkImplementationLowLevelCall(
               context.lsp1Implementation.address,
-              LSP1_HOOK_PLACEHOLDER
-            )
+              LSP1_HOOK_PLACEHOLDER,
+            ),
           )
             .to.emit(context.lsp1Implementation, "UniversalReceiver")
             .withArgs(
@@ -108,7 +106,7 @@ export const shouldBehaveLikeLSP1 = (
               // receivedData
               "0x",
               // returnedValue
-              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"])
+              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"]),
             );
         });
       });
@@ -129,7 +127,7 @@ export const shouldBehaveLikeLSP1 = (
           context = await buildContext();
 
           revertableURD = await new UniversalReceiverDelegateRevert__factory(
-            context.accounts[1]
+            context.accounts[1],
           ).deploy();
 
           await context.lsp1Implementation
@@ -137,7 +135,7 @@ export const shouldBehaveLikeLSP1 = (
             .setData(
               ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
                 LSP1_HOOK_PLACEHOLDER.substr(2, 40),
-              revertableURD.address
+              revertableURD.address,
             );
         });
 
@@ -148,7 +146,7 @@ export const shouldBehaveLikeLSP1 = (
           await expect(
             context.lsp1Implementation
               .connect(caller)
-              .universalReceiver(LSP1_HOOK_PLACEHOLDER, data)
+              .universalReceiver(LSP1_HOOK_PLACEHOLDER, data),
           ).to.be.revertedWith("I Revert");
         });
       });
@@ -171,7 +169,7 @@ export const shouldBehaveLikeLSP1 = (
             .connect(caller)
             .universalReceiver(LSP1_HOOK_PLACEHOLDER, "0x", {
               value: valueSent,
-            })
+            }),
         )
           .to.emit(context.lsp1Implementation, "UniversalReceiver")
           .withArgs(
@@ -179,7 +177,7 @@ export const shouldBehaveLikeLSP1 = (
             valueSent,
             LSP1_HOOK_PLACEHOLDER,
             "0x",
-            abiCoder.encode(["bytes", "bytes"], ["0x", "0x"])
+            abiCoder.encode(["bytes", "bytes"], ["0x", "0x"]),
           );
       });
     });
@@ -198,8 +196,8 @@ export const shouldBehaveLikeLSP1 = (
             context.lsp1Checker.checkImplementation(
               context.lsp1Implementation.address,
               LSP1_HOOK_PLACEHOLDER,
-              { value: valueSent }
-            )
+              { value: valueSent },
+            ),
           )
             .to.emit(context.lsp1Implementation, "UniversalReceiver")
             .withArgs(
@@ -212,7 +210,7 @@ export const shouldBehaveLikeLSP1 = (
               // receivedData
               "0x",
               // returnedValue
-              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"])
+              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"]),
             );
         });
       });
@@ -223,8 +221,8 @@ export const shouldBehaveLikeLSP1 = (
             context.lsp1Checker.checkImplementationLowLevelCall(
               context.lsp1Implementation.address,
               LSP1_HOOK_PLACEHOLDER,
-              { value: valueSent }
-            )
+              { value: valueSent },
+            ),
           )
             .to.emit(context.lsp1Implementation, "UniversalReceiver")
             .withArgs(
@@ -237,7 +235,7 @@ export const shouldBehaveLikeLSP1 = (
               // receivedData
               "0x",
               // returnedValue
-              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"])
+              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"]),
             );
         });
       });

@@ -1,9 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import {
-  LSP4CompatibilityTester,
-  LSP4CompatibilityTester__factory,
-} from "../../types";
+import { LSP4CompatibilityTester, LSP4CompatibilityTester__factory } from "../../types";
 
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -35,9 +32,11 @@ describe("LSP4Compatibility", () => {
       newOwner: accounts.owner.address,
     };
 
-    const lsp4Compatibility = await new LSP4CompatibilityTester__factory(
-      accounts.owner
-    ).deploy(deployParams.name, deployParams.symbol, deployParams.newOwner);
+    const lsp4Compatibility = await new LSP4CompatibilityTester__factory(accounts.owner).deploy(
+      deployParams.name,
+      deployParams.symbol,
+      deployParams.newOwner,
+    );
 
     return { accounts, lsp4Compatibility, deployParams };
   };
@@ -56,12 +55,10 @@ describe("LSP4Compatibility", () => {
 
       // using getData -> returns(bytes)
       const nameAsBytes = await context.lsp4Compatibility.getData(
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenName"))
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenName")),
       );
 
-      expect(ethers.utils.toUtf8String(nameAsBytes)).to.equal(
-        context.deployParams.name
-      );
+      expect(ethers.utils.toUtf8String(nameAsBytes)).to.equal(context.deployParams.name);
     });
 
     it("should allow reading symbol", async () => {
@@ -71,12 +68,10 @@ describe("LSP4Compatibility", () => {
 
       // using getData -> returns(bytes)
       const symbolAsBytes = await context.lsp4Compatibility.getData(
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenSymbol"))
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenSymbol")),
       );
 
-      expect(ethers.utils.toUtf8String(symbolAsBytes)).to.equal(
-        context.deployParams.symbol
-      );
+      expect(ethers.utils.toUtf8String(symbolAsBytes)).to.equal(context.deployParams.symbol);
     });
   });
 });

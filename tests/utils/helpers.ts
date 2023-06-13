@@ -24,22 +24,14 @@ export const LSP1_HOOK_PLACEHOLDER =
  *          Any funds sent to them on Mainnet or any other live network WILL BE LOST.
  */
 export const LOCAL_PRIVATE_KEYS = {
-  ACCOUNT0:
-    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-  ACCOUNT1:
-    "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d",
-  ACCOUNT2:
-    "0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a",
-  ACCOUNT3:
-    "0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6",
-  ACCOUNT4:
-    "0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a",
-  ACCOUNT5:
-    "0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba",
-  ACCOUNT6:
-    "0x92db14e403b83dfe3df233f83dfa3a0d7096f21ca9b0d6d6b8d88b2b4ec1564e",
-  ACCOUNT7:
-    "0x030ab56c9834360e1c0dba6b9a955b6e127f3166cda462c2472f67e1ba773053",
+  ACCOUNT0: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+  ACCOUNT1: "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d",
+  ACCOUNT2: "0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a",
+  ACCOUNT3: "0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6",
+  ACCOUNT4: "0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a",
+  ACCOUNT5: "0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba",
+  ACCOUNT6: "0x92db14e403b83dfe3df233f83dfa3a0d7096f21ca9b0d6d6b8d88b2b4ec1564e",
+  ACCOUNT7: "0x030ab56c9834360e1c0dba6b9a955b6e127f3166cda462c2472f67e1ba773053",
 };
 
 // bytes32 arraylength
@@ -94,12 +86,7 @@ export function encodeCompactBytesArray(inputKeys: BytesLike[]) {
   for (let i = 0; i < inputKeys.length; i++) {
     compactBytesArray +=
       ethers.utils
-        .hexZeroPad(
-          ethers.utils.hexlify([
-            inputKeys[i].toString().substring(2).length / 2,
-          ]),
-          2
-        )
+        .hexZeroPad(ethers.utils.hexlify([inputKeys[i].toString().substring(2).length / 2]), 2)
         .substring(2) + inputKeys[i].toString().substring(2);
   }
 
@@ -111,13 +98,10 @@ export function decodeCompactBytes(compactBytesArray: BytesLike) {
   let keysToExport: BytesLike[] = [];
   while (pointer < compactBytesArray.length) {
     const length = ethers.BigNumber.from(
-      "0x" + compactBytesArray.toString().substring(pointer, pointer + 4)
+      "0x" + compactBytesArray.toString().substring(pointer, pointer + 4),
     ).toNumber();
     keysToExport.push(
-      "0x" +
-        compactBytesArray
-          .toString()
-          .substring(pointer + 4, pointer + 2 * (length + 2))
+      "0x" + compactBytesArray.toString().substring(pointer + 4, pointer + 2 * (length + 2)),
     );
 
     pointer += 2 * (length + 2);
@@ -129,7 +113,7 @@ export function combineAllowedCalls(
   _allowedInteractions: string[],
   _allowedAddresses: string[],
   _allowedStandards: string[],
-  _allowedFunctions: string[]
+  _allowedFunctions: string[],
 ) {
   let result: string = "0x0020";
 
@@ -140,12 +124,7 @@ export function combineAllowedCalls(
     let allowedStandard = _allowedStandards[ii].substring(2);
     let allowedFunction = _allowedFunctions[ii].substring(2);
 
-    result =
-      result +
-      allowedInteractions +
-      allowedAddress +
-      allowedStandard +
-      allowedFunction;
+    result = result + allowedInteractions + allowedAddress + allowedStandard + allowedFunction;
 
     if (ii != _allowedStandards.length - 1) {
       result = result + "0020";
@@ -157,7 +136,7 @@ export function combineAllowedCalls(
 
 export function createValidityTimestamps(
   startingTimestamp: number,
-  endingTimestamp: number
+  endingTimestamp: number,
 ): BytesLike {
   return ethers.utils.hexConcat([
     ethers.utils.zeroPad(ethers.utils.hexlify(startingTimestamp), 16),
@@ -171,7 +150,7 @@ export async function signLSP6ExecuteRelayCall(
   _signerValidityTimestamps: BytesLike | number,
   _signerPrivateKey: string,
   _msgValue: number | BigNumber | string,
-  _payload: string
+  _payload: string,
 ) {
   const signedMessageParams = {
     lsp6Version: LSP6_VERSION,
@@ -191,7 +170,7 @@ export async function signLSP6ExecuteRelayCall(
       signedMessageParams.validityTimestamps,
       signedMessageParams.msgValue,
       signedMessageParams.payload,
-    ]
+    ],
   );
 
   let eip191Signer = new EIP191Signer();
@@ -199,7 +178,7 @@ export async function signLSP6ExecuteRelayCall(
   let { signature } = await eip191Signer.signDataWithIntendedValidator(
     _keyManager.address,
     encodedMessage,
-    _signerPrivateKey
+    _signerPrivateKey,
   );
 
   return signature;

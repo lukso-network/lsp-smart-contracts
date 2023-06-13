@@ -15,12 +15,8 @@ const deployBaseUniversalProfile: DeployFunction = async ({
     gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei
   });
 
-  const UniversalProfileInit = await ethers.getContractFactory(
-    "UniversalProfileInit"
-  );
-  const universalProfileInit = await UniversalProfileInit.attach(
-    deployResult.address
-  );
+  const UniversalProfileInit = await ethers.getContractFactory("UniversalProfileInit");
+  const universalProfileInit = await UniversalProfileInit.attach(deployResult.address);
 };
 
 export default deployBaseUniversalProfile;

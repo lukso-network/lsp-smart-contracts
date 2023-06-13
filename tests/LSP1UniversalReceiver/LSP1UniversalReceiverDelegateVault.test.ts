@@ -19,20 +19,18 @@ describe("LSP1UniversalReceiverDelegateVault", () => {
       // deploying 1 UP, 2 Vaults
 
       const lsp1universalReceiverDelegateVault =
-        await new LSP1UniversalReceiverDelegateVault__factory(
-          accounts.any
-        ).deploy();
+        await new LSP1UniversalReceiverDelegateVault__factory(accounts.any).deploy();
 
-      const universalProfile = await new UniversalProfile__factory(
-        accounts.any
-      ).deploy(accounts.owner1.address);
+      const universalProfile = await new UniversalProfile__factory(accounts.any).deploy(
+        accounts.owner1.address,
+      );
 
       const lsp9Vault1 = await new LSP9Vault__factory(accounts.any).deploy(
-        universalProfile.address
+        universalProfile.address,
       );
 
       const lsp9Vault2 = await new LSP9Vault__factory(accounts.any).deploy(
-        universalProfile.address
+        universalProfile.address,
       );
 
       // Setting lsp1UniversalReceiverDelegateVault as URD for the Vault

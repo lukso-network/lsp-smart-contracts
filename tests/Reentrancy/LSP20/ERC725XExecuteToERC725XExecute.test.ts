@@ -28,9 +28,7 @@ import { LSP20ReentrantContract__factory } from "../../../types";
 
 export const testERC725XExecuteToERC725XExecute = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
-  buildReentrancyContext: (
-    context: LSP6TestContext
-  ) => Promise<ReentrancyContext>
+  buildReentrancyContext: (context: LSP6TestContext) => Promise<ReentrancyContext>,
 ) => {
   let context: LSP6TestContext;
   let reentrancyContext: ReentrancyContext;
@@ -49,11 +47,10 @@ export const testERC725XExecuteToERC725XExecute = (
     };
 
     before(async () => {
-      const reentrantCall =
-        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
-          "callThatReenters",
-          ["TRANSFERVALUE"]
-        );
+      const reentrantCall = new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+        "callThatReenters",
+        ["TRANSFERVALUE"],
+      );
 
       executeCalldata = {
         operationType: 0,
@@ -74,7 +71,7 @@ export const testERC725XExecuteToERC725XExecute = (
           testCase,
           context,
           reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address
+          reentrancyContext.reentrantContract.address,
         );
 
         await expect(
@@ -84,14 +81,11 @@ export const testERC725XExecuteToERC725XExecute = (
               executeCalldata.operationType,
               executeCalldata.to,
               executeCalldata.value,
-              executeCalldata.data
-            )
+              executeCalldata.data,
+            ),
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(
-            reentrancyContext.reentrantContract.address,
-            testCase.missingPermission
-          );
+          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
       });
     });
 
@@ -101,7 +95,7 @@ export const testERC725XExecuteToERC725XExecute = (
         transferValueTestCases.NoCallsAllowed,
         context,
         reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address
+        reentrancyContext.reentrantContract.address,
       );
 
       await expect(
@@ -111,8 +105,8 @@ export const testERC725XExecuteToERC725XExecute = (
             executeCalldata.operationType,
             executeCalldata.to,
             executeCalldata.value,
-            executeCalldata.data
-          )
+            executeCalldata.data,
+          ),
       ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
     });
 
@@ -122,13 +116,11 @@ export const testERC725XExecuteToERC725XExecute = (
         transferValueTestCases.ValidCase,
         context,
         reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address
+        reentrancyContext.reentrantContract.address,
       );
 
       expect(
-        await context.universalProfile.provider.getBalance(
-          context.universalProfile.address
-        )
+        await context.universalProfile.provider.getBalance(context.universalProfile.address),
       ).to.equal(ethers.utils.parseEther("10"));
 
       await context.universalProfile
@@ -137,19 +129,17 @@ export const testERC725XExecuteToERC725XExecute = (
           executeCalldata.operationType,
           executeCalldata.to,
           executeCalldata.value,
-          executeCalldata.data
+          executeCalldata.data,
         );
 
       expect(
-        await context.universalProfile.provider.getBalance(
-          context.universalProfile.address
-        )
+        await context.universalProfile.provider.getBalance(context.universalProfile.address),
       ).to.equal(ethers.utils.parseEther("9"));
 
       expect(
         await context.universalProfile.provider.getBalance(
-          reentrancyContext.reentrantContract.address
-        )
+          reentrancyContext.reentrantContract.address,
+        ),
       ).to.equal(ethers.utils.parseEther("1"));
     });
   });
@@ -163,11 +153,10 @@ export const testERC725XExecuteToERC725XExecute = (
     };
 
     before(async () => {
-      const reentrantCall =
-        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
-          "callThatReenters",
-          ["SETDATA"]
-        );
+      const reentrantCall = new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+        "callThatReenters",
+        ["SETDATA"],
+      );
 
       executeCalldata = {
         operationType: 0,
@@ -188,7 +177,7 @@ export const testERC725XExecuteToERC725XExecute = (
           testCase,
           context,
           reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address
+          reentrancyContext.reentrantContract.address,
         );
 
         await expect(
@@ -198,14 +187,11 @@ export const testERC725XExecuteToERC725XExecute = (
               executeCalldata.operationType,
               executeCalldata.to,
               executeCalldata.value,
-              executeCalldata.data
-            )
+              executeCalldata.data,
+            ),
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(
-            reentrancyContext.reentrantContract.address,
-            testCase.missingPermission
-          );
+          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
       });
     });
 
@@ -215,7 +201,7 @@ export const testERC725XExecuteToERC725XExecute = (
         setDataTestCases.NoERC725YDataKeysAllowed,
         context,
         reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address
+        reentrancyContext.reentrantContract.address,
       );
 
       await expect(
@@ -225,12 +211,9 @@ export const testERC725XExecuteToERC725XExecute = (
             executeCalldata.operationType,
             executeCalldata.to,
             executeCalldata.value,
-            executeCalldata.data
-          )
-      ).to.be.revertedWithCustomError(
-        context.keyManager,
-        "NoERC725YDataKeysAllowed"
-      );
+            executeCalldata.data,
+          ),
+      ).to.be.revertedWithCustomError(context.keyManager, "NoERC725YDataKeysAllowed");
     });
 
     it("should pass if the reentrant contract has the following permissions: REENTRANCY, SETDATA & AllowedERC725YDataKeys", async () => {
@@ -239,7 +222,7 @@ export const testERC725XExecuteToERC725XExecute = (
         setDataTestCases.ValidCase,
         context,
         reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address
+        reentrancyContext.reentrantContract.address,
       );
 
       await context.universalProfile
@@ -248,19 +231,13 @@ export const testERC725XExecuteToERC725XExecute = (
           executeCalldata.operationType,
           executeCalldata.to,
           executeCalldata.value,
-          executeCalldata.data
+          executeCalldata.data,
         );
 
-      const hardcodedKey = ethers.utils.keccak256(
-        ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
-      );
-      const hardcodedValue = ethers.utils.hexlify(
-        ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
-      );
+      const hardcodedKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("SomeRandomTextUsed"));
+      const hardcodedValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("SomeRandomTextUsed"));
 
-      expect(await context.universalProfile.getData(hardcodedKey)).to.equal(
-        hardcodedValue
-      );
+      expect(await context.universalProfile.getData(hardcodedKey)).to.equal(hardcodedValue);
     });
   });
 
@@ -273,11 +250,10 @@ export const testERC725XExecuteToERC725XExecute = (
     };
 
     before(async () => {
-      const reentrantCall =
-        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
-          "callThatReenters",
-          ["ADDCONTROLLER"]
-        );
+      const reentrantCall = new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+        "callThatReenters",
+        ["ADDCONTROLLER"],
+      );
 
       executeCalldata = {
         operationType: 0,
@@ -294,7 +270,7 @@ export const testERC725XExecuteToERC725XExecute = (
           testCase,
           context,
           reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address
+          reentrancyContext.reentrantContract.address,
         );
 
         await expect(
@@ -304,14 +280,11 @@ export const testERC725XExecuteToERC725XExecute = (
               executeCalldata.operationType,
               executeCalldata.to,
               executeCalldata.value,
-              executeCalldata.data
-            )
+              executeCalldata.data,
+            ),
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(
-            reentrancyContext.reentrantContract.address,
-            testCase.missingPermission
-          );
+          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
       });
     });
 
@@ -321,7 +294,7 @@ export const testERC725XExecuteToERC725XExecute = (
         addPermissionsTestCases.ValidCase,
         context,
         reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address
+        reentrancyContext.reentrantContract.address,
       );
 
       await context.universalProfile
@@ -330,16 +303,16 @@ export const testERC725XExecuteToERC725XExecute = (
           executeCalldata.operationType,
           executeCalldata.to,
           executeCalldata.value,
-          executeCalldata.data
+          executeCalldata.data,
         );
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         reentrancyContext.newControllerAddress.substring(2);
 
-      expect(
-        await context.universalProfile.getData(hardcodedPermissionKey)
-      ).to.equal(ALL_PERMISSIONS);
+      expect(await context.universalProfile.getData(hardcodedPermissionKey)).to.equal(
+        ALL_PERMISSIONS,
+      );
     });
   });
 
@@ -352,11 +325,10 @@ export const testERC725XExecuteToERC725XExecute = (
     };
 
     before(async () => {
-      const reentrantCall =
-        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
-          "callThatReenters",
-          ["EDITPERMISSIONS"]
-        );
+      const reentrantCall = new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+        "callThatReenters",
+        ["EDITPERMISSIONS"],
+      );
 
       executeCalldata = {
         operationType: 0,
@@ -373,7 +345,7 @@ export const testERC725XExecuteToERC725XExecute = (
           testCase,
           context,
           reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address
+          reentrancyContext.reentrantContract.address,
         );
 
         await expect(
@@ -383,14 +355,11 @@ export const testERC725XExecuteToERC725XExecute = (
               executeCalldata.operationType,
               executeCalldata.to,
               executeCalldata.value,
-              executeCalldata.data
-            )
+              executeCalldata.data,
+            ),
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(
-            reentrancyContext.reentrantContract.address,
-            testCase.missingPermission
-          );
+          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
       });
     });
 
@@ -400,7 +369,7 @@ export const testERC725XExecuteToERC725XExecute = (
         editPermissionsTestCases.ValidCase,
         context,
         reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address
+        reentrancyContext.reentrantContract.address,
       );
 
       await context.universalProfile
@@ -409,7 +378,7 @@ export const testERC725XExecuteToERC725XExecute = (
           executeCalldata.operationType,
           executeCalldata.to,
           executeCalldata.value,
-          executeCalldata.data
+          executeCalldata.data,
         );
 
       const hardcodedPermissionKey =
@@ -417,9 +386,9 @@ export const testERC725XExecuteToERC725XExecute = (
         reentrancyContext.newControllerAddress.substring(2);
       const hardcodedPermissionValue = "0x";
 
-      expect(
-        await context.universalProfile.getData(hardcodedPermissionKey)
-      ).to.equal(hardcodedPermissionValue);
+      expect(await context.universalProfile.getData(hardcodedPermissionKey)).to.equal(
+        hardcodedPermissionValue,
+      );
     });
   });
 
@@ -432,11 +401,10 @@ export const testERC725XExecuteToERC725XExecute = (
     };
 
     before(async () => {
-      const reentrantCall =
-        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
-          "callThatReenters",
-          ["ADDUNIVERSALRECEIVERDELEGATE"]
-        );
+      const reentrantCall = new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+        "callThatReenters",
+        ["ADDUNIVERSALRECEIVERDELEGATE"],
+      );
 
       executeCalldata = {
         operationType: 0,
@@ -453,7 +421,7 @@ export const testERC725XExecuteToERC725XExecute = (
           testCase,
           context,
           reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address
+          reentrancyContext.reentrantContract.address,
         );
 
         await expect(
@@ -463,14 +431,11 @@ export const testERC725XExecuteToERC725XExecute = (
               executeCalldata.operationType,
               executeCalldata.to,
               executeCalldata.value,
-              executeCalldata.data
-            )
+              executeCalldata.data,
+            ),
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(
-            reentrancyContext.reentrantContract.address,
-            testCase.missingPermission
-          );
+          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
       });
     });
 
@@ -480,7 +445,7 @@ export const testERC725XExecuteToERC725XExecute = (
         addUniversalReceiverDelegateTestCases.ValidCase,
         context,
         reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address
+        reentrancyContext.reentrantContract.address,
       );
 
       await context.universalProfile
@@ -489,7 +454,7 @@ export const testERC725XExecuteToERC725XExecute = (
           executeCalldata.operationType,
           executeCalldata.to,
           executeCalldata.value,
-          executeCalldata.data
+          executeCalldata.data,
         );
 
       const hardcodedLSP1Key =
@@ -499,7 +464,7 @@ export const testERC725XExecuteToERC725XExecute = (
       const hardcodedLSP1Value = reentrancyContext.newURDAddress;
 
       expect(await context.universalProfile.getData(hardcodedLSP1Key)).to.equal(
-        hardcodedLSP1Value.toLowerCase()
+        hardcodedLSP1Value.toLowerCase(),
       );
     });
   });
@@ -513,11 +478,10 @@ export const testERC725XExecuteToERC725XExecute = (
     };
 
     before(async () => {
-      const reentrantCall =
-        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
-          "callThatReenters",
-          ["CHANGEUNIVERSALRECEIVERDELEGATE"]
-        );
+      const reentrantCall = new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+        "callThatReenters",
+        ["CHANGEUNIVERSALRECEIVERDELEGATE"],
+      );
 
       executeCalldata = {
         operationType: 0,
@@ -527,35 +491,30 @@ export const testERC725XExecuteToERC725XExecute = (
       };
     });
 
-    changeUniversalReceiverDelegateTestCases.NotAuthorised.forEach(
-      (testCase) => {
-        it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
-          await loadTestCase(
-            "CHANGEUNIVERSALRECEIVERDELEGATE",
-            testCase,
-            context,
-            reentrancyContext.reentrantContract.address,
-            reentrancyContext.reentrantContract.address
-          );
+    changeUniversalReceiverDelegateTestCases.NotAuthorised.forEach((testCase) => {
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
+        await loadTestCase(
+          "CHANGEUNIVERSALRECEIVERDELEGATE",
+          testCase,
+          context,
+          reentrancyContext.reentrantContract.address,
+          reentrancyContext.reentrantContract.address,
+        );
 
-          await expect(
-            context.universalProfile
-              .connect(reentrancyContext.caller)
-              .execute(
-                executeCalldata.operationType,
-                executeCalldata.to,
-                executeCalldata.value,
-                executeCalldata.data
-              )
-          )
-            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(
-              reentrancyContext.reentrantContract.address,
-              testCase.missingPermission
-            );
-        });
-      }
-    );
+        await expect(
+          context.universalProfile
+            .connect(reentrancyContext.caller)
+            .execute(
+              executeCalldata.operationType,
+              executeCalldata.to,
+              executeCalldata.value,
+              executeCalldata.data,
+            ),
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
+      });
+    });
 
     it("should pass if the reentrant contract has the following permissions: REENTRANCY, CHANGEUNIVERSALRECEIVERDELEGATE", async () => {
       await loadTestCase(
@@ -563,7 +522,7 @@ export const testERC725XExecuteToERC725XExecute = (
         changeUniversalReceiverDelegateTestCases.ValidCase,
         context,
         reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address
+        reentrancyContext.reentrantContract.address,
       );
 
       await context.universalProfile
@@ -572,7 +531,7 @@ export const testERC725XExecuteToERC725XExecute = (
           executeCalldata.operationType,
           executeCalldata.to,
           executeCalldata.value,
-          executeCalldata.data
+          executeCalldata.data,
         );
 
       const hardcodedLSP1Key =
@@ -582,7 +541,7 @@ export const testERC725XExecuteToERC725XExecute = (
       const hardcodedLSP1Value = "0x";
 
       expect(await context.universalProfile.getData(hardcodedLSP1Key)).to.equal(
-        hardcodedLSP1Value.toLowerCase()
+        hardcodedLSP1Value.toLowerCase(),
       );
     });
   });

@@ -3,10 +3,7 @@ import { ethers } from "hardhat";
 
 //types
 import { BigNumber, BytesLike } from "ethers";
-import {
-  SingleReentrancyRelayer__factory,
-  UniversalProfile__factory,
-} from "../../../types";
+import { SingleReentrancyRelayer__factory, UniversalProfile__factory } from "../../../types";
 
 // constants
 import { ERC725YDataKeys } from "../../../constants";
@@ -32,9 +29,7 @@ import {
 
 export const testSingleExecuteToBatchExecuteRelayCall = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
-  buildReentrancyContext: (
-    context: LSP6TestContext
-  ) => Promise<ReentrancyContext>
+  buildReentrancyContext: (context: LSP6TestContext) => Promise<ReentrancyContext>,
 ) => {
   let context: LSP6TestContext;
   let reentrancyContext: ReentrancyContext;
@@ -45,17 +40,15 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
     reentrancyContext = await buildReentrancyContext(context);
 
     const reentrantCallPayload =
-      new SingleReentrancyRelayer__factory().interface.encodeFunctionData(
-        "relayCallThatReenters",
-        [context.keyManager.address]
-      );
-    executePayload =
-      new UniversalProfile__factory().interface.encodeFunctionData("execute", [
-        0,
-        reentrancyContext.batchReentarncyRelayer.address,
-        0,
-        reentrantCallPayload,
+      new SingleReentrancyRelayer__factory().interface.encodeFunctionData("relayCallThatReenters", [
+        context.keyManager.address,
       ]);
+    executePayload = new UniversalProfile__factory().interface.encodeFunctionData("execute", [
+      0,
+      reentrancyContext.batchReentarncyRelayer.address,
+      0,
+      reentrantCallPayload,
+    ]);
   });
 
   describe("when reentering and transferring value", () => {
@@ -67,7 +60,7 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         reentrancyContext.batchReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
-        reentrancyContext.newURDAddress
+        reentrancyContext.newURDAddress,
       );
     });
 
@@ -82,19 +75,12 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.batchReentarncyRelayer.address
+          reentrancyContext.batchReentarncyRelayer.address,
         );
 
-        await expect(
-          context.keyManager
-            .connect(reentrancyContext.caller)
-            .execute(executePayload)
-        )
+        await expect(context.keyManager.connect(reentrancyContext.caller).execute(executePayload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(
-            reentrancyContext.reentrantSigner.address,
-            testCase.missingPermission
-          );
+          .withArgs(reentrancyContext.reentrantSigner.address, testCase.missingPermission);
       });
     });
 
@@ -104,13 +90,11 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         transferValueTestCases.NoCallsAllowed,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address,
       );
 
       await expect(
-        context.keyManager
-          .connect(reentrancyContext.caller)
-          .execute(executePayload)
+        context.keyManager.connect(reentrancyContext.caller).execute(executePayload),
       ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
     });
 
@@ -120,29 +104,23 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         transferValueTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address,
       );
 
       expect(
-        await context.universalProfile.provider.getBalance(
-          context.universalProfile.address
-        )
+        await context.universalProfile.provider.getBalance(context.universalProfile.address),
       ).to.equal(ethers.utils.parseEther("10"));
 
-      await context.keyManager
-        .connect(reentrancyContext.caller)
-        .execute(executePayload);
+      await context.keyManager.connect(reentrancyContext.caller).execute(executePayload);
 
       expect(
-        await context.universalProfile.provider.getBalance(
-          context.universalProfile.address
-        )
+        await context.universalProfile.provider.getBalance(context.universalProfile.address),
       ).to.equal(ethers.utils.parseEther("9"));
 
       expect(
         await context.universalProfile.provider.getBalance(
-          reentrancyContext.batchReentarncyRelayer.address
-        )
+          reentrancyContext.batchReentarncyRelayer.address,
+        ),
       ).to.equal(ethers.utils.parseEther("1"));
     });
   });
@@ -156,7 +134,7 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         reentrancyContext.batchReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
-        reentrancyContext.newURDAddress
+        reentrancyContext.newURDAddress,
       );
     });
 
@@ -171,19 +149,12 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.batchReentarncyRelayer.address
+          reentrancyContext.batchReentarncyRelayer.address,
         );
 
-        await expect(
-          context.keyManager
-            .connect(reentrancyContext.caller)
-            .execute(executePayload)
-        )
+        await expect(context.keyManager.connect(reentrancyContext.caller).execute(executePayload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(
-            reentrancyContext.reentrantSigner.address,
-            testCase.missingPermission
-          );
+          .withArgs(reentrancyContext.reentrantSigner.address, testCase.missingPermission);
       });
     });
 
@@ -193,17 +164,12 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         setDataTestCases.NoERC725YDataKeysAllowed,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address,
       );
 
       await expect(
-        context.keyManager
-          .connect(reentrancyContext.caller)
-          .execute(executePayload)
-      ).to.be.revertedWithCustomError(
-        context.keyManager,
-        "NoERC725YDataKeysAllowed"
-      );
+        context.keyManager.connect(reentrancyContext.caller).execute(executePayload),
+      ).to.be.revertedWithCustomError(context.keyManager, "NoERC725YDataKeysAllowed");
     });
 
     it("should pass if the reentrant signer has the following permissions: REENTRANCY, SETDATA & AllowedERC725YDataKeys", async () => {
@@ -212,23 +178,15 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         setDataTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address,
       );
 
-      await context.keyManager
-        .connect(reentrancyContext.caller)
-        .execute(executePayload);
+      await context.keyManager.connect(reentrancyContext.caller).execute(executePayload);
 
-      const hardcodedKey = ethers.utils.keccak256(
-        ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
-      );
-      const hardcodedValue = ethers.utils.hexlify(
-        ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
-      );
+      const hardcodedKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("SomeRandomTextUsed"));
+      const hardcodedValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("SomeRandomTextUsed"));
 
-      expect(await context.universalProfile.getData(hardcodedKey)).to.equal(
-        hardcodedValue
-      );
+      expect(await context.universalProfile.getData(hardcodedKey)).to.equal(hardcodedValue);
     });
   });
 
@@ -241,7 +199,7 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         reentrancyContext.batchReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
-        reentrancyContext.newURDAddress
+        reentrancyContext.newURDAddress,
       );
     });
 
@@ -252,19 +210,12 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.batchReentarncyRelayer.address
+          reentrancyContext.batchReentarncyRelayer.address,
         );
 
-        await expect(
-          context.keyManager
-            .connect(reentrancyContext.caller)
-            .execute(executePayload)
-        )
+        await expect(context.keyManager.connect(reentrancyContext.caller).execute(executePayload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(
-            reentrancyContext.reentrantSigner.address,
-            testCase.missingPermission
-          );
+          .withArgs(reentrancyContext.reentrantSigner.address, testCase.missingPermission);
       });
     });
 
@@ -274,12 +225,10 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         addPermissionsTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address,
       );
 
-      await context.keyManager
-        .connect(reentrancyContext.caller)
-        .execute(executePayload);
+      await context.keyManager.connect(reentrancyContext.caller).execute(executePayload);
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -287,9 +236,9 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
       const hardcodedPermissionValue =
         "0x0000000000000000000000000000000000000000000000000000000000000010";
 
-      expect(
-        await context.universalProfile.getData(hardcodedPermissionKey)
-      ).to.equal(hardcodedPermissionValue);
+      expect(await context.universalProfile.getData(hardcodedPermissionKey)).to.equal(
+        hardcodedPermissionValue,
+      );
     });
   });
 
@@ -302,7 +251,7 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         reentrancyContext.batchReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
-        reentrancyContext.newURDAddress
+        reentrancyContext.newURDAddress,
       );
     });
 
@@ -313,19 +262,12 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.batchReentarncyRelayer.address
+          reentrancyContext.batchReentarncyRelayer.address,
         );
 
-        await expect(
-          context.keyManager
-            .connect(reentrancyContext.caller)
-            .execute(executePayload)
-        )
+        await expect(context.keyManager.connect(reentrancyContext.caller).execute(executePayload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(
-            reentrancyContext.reentrantSigner.address,
-            testCase.missingPermission
-          );
+          .withArgs(reentrancyContext.reentrantSigner.address, testCase.missingPermission);
       });
     });
 
@@ -335,21 +277,19 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         editPermissionsTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address,
       );
 
-      await context.keyManager
-        .connect(reentrancyContext.caller)
-        .execute(executePayload);
+      await context.keyManager.connect(reentrancyContext.caller).execute(executePayload);
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         reentrancyContext.newControllerAddress.substring(2);
       const hardcodedPermissionValue = "0x";
 
-      expect(
-        await context.universalProfile.getData(hardcodedPermissionKey)
-      ).to.equal(hardcodedPermissionValue);
+      expect(await context.universalProfile.getData(hardcodedPermissionKey)).to.equal(
+        hardcodedPermissionValue,
+      );
     });
   });
 
@@ -362,7 +302,7 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         reentrancyContext.batchReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
-        reentrancyContext.newURDAddress
+        reentrancyContext.newURDAddress,
       );
     });
 
@@ -373,19 +313,12 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.batchReentarncyRelayer.address
+          reentrancyContext.batchReentarncyRelayer.address,
         );
 
-        await expect(
-          context.keyManager
-            .connect(reentrancyContext.caller)
-            .execute(executePayload)
-        )
+        await expect(context.keyManager.connect(reentrancyContext.caller).execute(executePayload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(
-            reentrancyContext.reentrantSigner.address,
-            testCase.missingPermission
-          );
+          .withArgs(reentrancyContext.reentrantSigner.address, testCase.missingPermission);
       });
     });
 
@@ -395,12 +328,10 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         addUniversalReceiverDelegateTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address,
       );
 
-      await context.keyManager
-        .connect(reentrancyContext.caller)
-        .execute(executePayload);
+      await context.keyManager.connect(reentrancyContext.caller).execute(executePayload);
 
       const hardcodedLSP1Key =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
@@ -409,7 +340,7 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
       const hardcodedLSP1Value = reentrancyContext.newURDAddress;
 
       expect(await context.universalProfile.getData(hardcodedLSP1Key)).to.equal(
-        hardcodedLSP1Value.toLowerCase()
+        hardcodedLSP1Value.toLowerCase(),
       );
     });
   });
@@ -423,34 +354,25 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         reentrancyContext.batchReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
-        reentrancyContext.newURDAddress
+        reentrancyContext.newURDAddress,
       );
     });
 
-    changeUniversalReceiverDelegateTestCases.NotAuthorised.forEach(
-      (testCase) => {
-        it(`should revert if the reentrant signer has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
-          await loadTestCase(
-            "CHANGEUNIVERSALRECEIVERDELEGATE",
-            testCase,
-            context,
-            reentrancyContext.reentrantSigner.address,
-            reentrancyContext.batchReentarncyRelayer.address
-          );
+    changeUniversalReceiverDelegateTestCases.NotAuthorised.forEach((testCase) => {
+      it(`should revert if the reentrant signer has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
+        await loadTestCase(
+          "CHANGEUNIVERSALRECEIVERDELEGATE",
+          testCase,
+          context,
+          reentrancyContext.reentrantSigner.address,
+          reentrancyContext.batchReentarncyRelayer.address,
+        );
 
-          await expect(
-            context.keyManager
-              .connect(reentrancyContext.caller)
-              .execute(executePayload)
-          )
-            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(
-              reentrancyContext.reentrantSigner.address,
-              testCase.missingPermission
-            );
-        });
-      }
-    );
+        await expect(context.keyManager.connect(reentrancyContext.caller).execute(executePayload))
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(reentrancyContext.reentrantSigner.address, testCase.missingPermission);
+      });
+    });
 
     it("should pass if the reentrant signer has the following permissions: REENTRANCY, CHANGEUNIVERSALRECEIVERDELEGATE", async () => {
       await loadTestCase(
@@ -458,12 +380,10 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         changeUniversalReceiverDelegateTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.batchReentarncyRelayer.address
+        reentrancyContext.batchReentarncyRelayer.address,
       );
 
-      await context.keyManager
-        .connect(reentrancyContext.caller)
-        .execute(executePayload);
+      await context.keyManager.connect(reentrancyContext.caller).execute(executePayload);
 
       const hardcodedLSP1Key =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
@@ -472,7 +392,7 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
       const hardcodedLSP1Value = "0x";
 
       expect(await context.universalProfile.getData(hardcodedLSP1Key)).to.equal(
-        hardcodedLSP1Value.toLowerCase()
+        hardcodedLSP1Value.toLowerCase(),
       );
     });
   });

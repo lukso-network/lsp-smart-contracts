@@ -1,10 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumber } from "ethers";
-import {
-  KeyManagerInternalTester,
-  LSP6KeyManager,
-  UniversalProfile,
-} from "../../types";
+import { KeyManagerInternalTester, LSP6KeyManager, UniversalProfile } from "../../types";
 
 export type LSP6TestContext = {
   accounts: SignerWithAddress[];

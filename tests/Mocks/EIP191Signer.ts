@@ -16,28 +16,20 @@ describe("EIP191Signer", () => {
       const accounts = await ethers.getSigners();
       const owner = accounts[0];
 
-      const universalProfile = await new UniversalProfile__factory(
-        owner
-      ).deploy(owner.address);
+      const universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
       const keyManager = await new LSP6KeyManager__factory(accounts[0]).deploy(
-        universalProfile.address
+        universalProfile.address,
       );
 
-      const eip191SignerContract = await new EIP191SignerTester__factory(
-        accounts[0]
-      ).deploy();
+      const eip191SignerContract = await new EIP191SignerTester__factory(accounts[0]).deploy();
       const eip191SignerLib = new EIP191Signer();
 
-      const libraryResult = eip191SignerLib.hashDataWithIntendedValidator(
-        keyManager.address,
-        data
-      );
+      const libraryResult = eip191SignerLib.hashDataWithIntendedValidator(keyManager.address, data);
 
-      const solidityResult =
-        await eip191SignerContract.toDataWithIntendedValidator(
-          keyManager.address,
-          ethers.utils.toUtf8Bytes(data)
-        );
+      const solidityResult = await eip191SignerContract.toDataWithIntendedValidator(
+        keyManager.address,
+        ethers.utils.toUtf8Bytes(data),
+      );
 
       expect(solidityResult).to.equal(libraryResult);
     });

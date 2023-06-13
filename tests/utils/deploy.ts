@@ -1,9 +1,7 @@
 import { ethers } from "hardhat";
 import { Contract, ContractTransaction } from "ethers";
 
-export async function getDeploymentCost(
-  contractOrTransaction: Contract | ContractTransaction
-) {
+export async function getDeploymentCost(contractOrTransaction: Contract | ContractTransaction) {
   let gasUsed: number;
   let receipt: any;
 

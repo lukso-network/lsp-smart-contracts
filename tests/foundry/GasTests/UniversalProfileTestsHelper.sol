@@ -48,11 +48,9 @@ contract UniversalProfileTestsHelper is Test {
         vm.stopPrank();
     }
 
-    function generateCompactByteArrayElement(bytes[] memory data)
-        public
-        pure
-        returns (bytes memory)
-    {
+    function generateCompactByteArrayElement(
+        bytes[] memory data
+    ) public pure returns (bytes memory) {
         uint256 totalLength = 0;
         bytes memory concatenatedBytes = new bytes(0);
         for (uint256 i = 0; i < data.length; i++) {

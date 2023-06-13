@@ -28,7 +28,7 @@ export type LSP3TestContext = {
 };
 
 export const shouldBehaveLikeLSP3 = (
-  buildContext: (initialFunding?: number) => Promise<LSP3TestContext>
+  buildContext: (initialFunding?: number) => Promise<LSP3TestContext>,
 ) => {
   let context: LSP3TestContext;
 
@@ -47,10 +47,7 @@ export const shouldBehaveLikeLSP3 = (
       const messageHash = ethers.utils.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
 
-      const result = await context.universalProfile.isValidSignature(
-        messageHash,
-        signature
-      );
+      const result = await context.universalProfile.isValidSignature(messageHash, signature);
       expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
     });
 
@@ -61,43 +58,29 @@ export const shouldBehaveLikeLSP3 = (
       const messageHash = ethers.utils.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
 
-      const result = await context.universalProfile.isValidSignature(
-        messageHash,
-        signature
-      );
+      const result = await context.universalProfile.isValidSignature(messageHash, signature);
       expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
     });
 
     it("should return failValue when the owner doesn't have isValidSignature function", async () => {
       const signer = context.accounts[1];
 
-      const genericExecutor = await new GenericExecutor__factory(
-        context.accounts[0]
-      ).deploy();
+      const genericExecutor = await new GenericExecutor__factory(context.accounts[0]).deploy();
 
       await context.universalProfile
         .connect(context.accounts[0])
         .transferOwnership(genericExecutor.address);
 
       const acceptOwnershipPayload =
-        context.universalProfile.interface.encodeFunctionData(
-          "acceptOwnership"
-        );
+        context.universalProfile.interface.encodeFunctionData("acceptOwnership");
 
-      await genericExecutor.call(
-        context.universalProfile.address,
-        0,
-        acceptOwnershipPayload
-      );
+      await genericExecutor.call(context.universalProfile.address, 0, acceptOwnershipPayload);
 
       const dataToSign = "0xcafecafe";
       const messageHash = ethers.utils.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
 
-      const result = await context.universalProfile.isValidSignature(
-        messageHash,
-        signature
-      );
+      const result = await context.universalProfile.isValidSignature(messageHash, signature);
       expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
     });
 
@@ -105,7 +88,7 @@ export const shouldBehaveLikeLSP3 = (
       const signer = context.accounts[1];
 
       const maliciousERC1271Wallet = await new ERC1271MaliciousMock__factory(
-        context.accounts[0]
+        context.accounts[0],
       ).deploy();
 
       await context.universalProfile
@@ -113,24 +96,19 @@ export const shouldBehaveLikeLSP3 = (
         .transferOwnership(maliciousERC1271Wallet.address);
 
       const acceptOwnershipPayload =
-        context.universalProfile.interface.encodeFunctionData(
-          "acceptOwnership"
-        );
+        context.universalProfile.interface.encodeFunctionData("acceptOwnership");
 
       await maliciousERC1271Wallet.call(
         context.universalProfile.address,
         0,
-        acceptOwnershipPayload
+        acceptOwnershipPayload,
       );
 
       const dataToSign = "0xcafecafe";
       const messageHash = ethers.utils.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
 
-      const result = await context.universalProfile.isValidSignature(
-        messageHash,
-        signature
-      );
+      const result = await context.universalProfile.isValidSignature(messageHash, signature);
       expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
     });
 
@@ -139,20 +117,15 @@ export const shouldBehaveLikeLSP3 = (
       const messageHash = ethers.utils.hashMessage(data);
       const signature = "0xbadbadbadb";
 
-      const result = await context.universalProfile.isValidSignature(
-        messageHash,
-        signature
-      );
+      const result = await context.universalProfile.isValidSignature(messageHash, signature);
       expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
     });
   });
 
   describe("when interacting with the ERC725Y storage", () => {
     let lsp12IssuedAssetsKeys = [
-      ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
-        "00000000000000000000000000000000",
-      ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
-        "00000000000000000000000000000001",
+      ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index + "00000000000000000000000000000000",
+      ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index + "00000000000000000000000000000001",
     ];
 
     let lsp12IssuedAssetsValues = [
@@ -183,17 +156,15 @@ export const shouldBehaveLikeLSP3 = (
     it("should add +10 more LSP12IssuedAssets[]", async () => {
       let newIssuedAssets = getRandomAddresses(10);
 
-      const expectedKeysLength =
-        lsp12IssuedAssetsKeys.length + newIssuedAssets.length;
-      const expectedValuesLength =
-        lsp12IssuedAssetsValues.length + newIssuedAssets.length;
+      const expectedKeysLength = lsp12IssuedAssetsKeys.length + newIssuedAssets.length;
+      const expectedValuesLength = lsp12IssuedAssetsValues.length + newIssuedAssets.length;
 
       for (let ii = 0; ii < newIssuedAssets.length; ii++) {
         let hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length);
 
         lsp12IssuedAssetsKeys.push(
           ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
-            ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
+            ethers.utils.hexZeroPad(hexIndex, 16).substring(2),
         );
 
         lsp12IssuedAssetsValues.push(newIssuedAssets[ii]);
@@ -208,10 +179,7 @@ export const shouldBehaveLikeLSP3 = (
 
       let values = [
         ...lsp12IssuedAssetsValues,
-        ethers.utils.hexZeroPad(
-          ethers.utils.hexlify(lsp12IssuedAssetsValues.length),
-          32
-        ),
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(lsp12IssuedAssetsValues.length), 32),
       ];
 
       await context.universalProfile.setDataBatch(keys, values);
@@ -226,12 +194,10 @@ export const shouldBehaveLikeLSP3 = (
 
         lsp12IssuedAssetsKeys.push(
           ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
-            ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
+            ethers.utils.hexZeroPad(hexIndex, 16).substring(2),
         );
 
-        lsp12IssuedAssetsValues.push(
-          ethers.Wallet.createRandom().address.toLowerCase()
-        );
+        lsp12IssuedAssetsValues.push(ethers.Wallet.createRandom().address.toLowerCase());
 
         let keys = [
           ...lsp12IssuedAssetsKeys,
@@ -240,10 +206,7 @@ export const shouldBehaveLikeLSP3 = (
 
         let values = [
           ...lsp12IssuedAssetsValues,
-          ethers.utils.hexZeroPad(
-            ethers.utils.hexlify(lsp12IssuedAssetsValues.length),
-            32
-          ),
+          ethers.utils.hexZeroPad(ethers.utils.hexlify(lsp12IssuedAssetsValues.length), 32),
         ];
 
         await context.universalProfile.setDataBatch(keys, values);
@@ -305,7 +268,7 @@ export const shouldBehaveLikeLSP3 = (
           await expect(
             context.universalProfile
               .connect(context.accounts[0])
-              .setData(key, value, { value: msgValue })
+              .setData(key, value, { value: msgValue }),
           )
             .to.emit(context.universalProfile, "ValueReceived")
             .withArgs(context.accounts[0].address, msgValue);
@@ -318,15 +281,13 @@ export const shouldBehaveLikeLSP3 = (
       describe("when calling setData(..) Array", () => {
         it("should pass and emit the ValueReceived event", async () => {
           let msgValue = ethers.utils.parseEther("2");
-          let key = [
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key")),
-          ];
+          let key = [ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"))];
           let value = [ethers.utils.hexlify(ethers.utils.randomBytes(256))];
 
           await expect(
             context.universalProfile
               .connect(context.accounts[0])
-              .setDataBatch(key, value, { value: msgValue })
+              .setDataBatch(key, value, { value: msgValue }),
           )
             .to.emit(context.universalProfile, "ValueReceived")
             .withArgs(context.accounts[0].address, msgValue);
@@ -363,7 +324,7 @@ export const shouldBehaveLikeLSP3 = (
         sender.sendTransaction({
           to: context.universalProfile.address,
           value: amount,
-        })
+        }),
       )
         .to.emit(context.universalProfile, "ValueReceived")
         .withArgs(sender.address, amount);
@@ -380,7 +341,7 @@ export const shouldBehaveLikeLSP3 = (
           to: context.universalProfile.address,
           value: amount,
           data: "0x00000000aabbccdd",
-        })
+        }),
       )
         .to.emit(context.universalProfile, "ValueReceived")
         .withArgs(sender.address, amount);
@@ -421,7 +382,7 @@ export const shouldBehaveLikeLSP3 = (
           recipients,
           values,
           datas,
-          { value: msgValue }
+          { value: msgValue },
         );
 
         await expect(tx)
@@ -448,7 +409,7 @@ export const shouldBehaveLikeLSP3 = (
           recipients,
           values,
           datas,
-          { value: msgValue }
+          { value: msgValue },
         );
 
         await expect(tx).to.not.emit(context.universalProfile, "ValueReceived");
@@ -462,21 +423,15 @@ export const shouldBehaveLikeLSP3 = (
         let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
         let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
-        let setDataPayload =
-          context.universalProfile.interface.encodeFunctionData("setData", [
-            key,
-            value,
-          ]);
+        let setDataPayload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
         await expect(
-          context.universalProfile
-            .connect(context.accounts[4])
-            .batchCalls([setDataPayload])
+          context.universalProfile.connect(context.accounts[4]).batchCalls([setDataPayload]),
         )
-          .to.be.revertedWithCustomError(
-            context.universalProfile,
-            "LSP20InvalidMagicValue"
-          )
+          .to.be.revertedWithCustomError(context.universalProfile, "LSP20InvalidMagicValue")
           .withArgs(false, "0x");
       });
     });
@@ -485,16 +440,13 @@ export const shouldBehaveLikeLSP3 = (
       describe("when executing one function", () => {
         describe("setData", () => {
           it("should pass", async () => {
-            let key = ethers.utils.keccak256(
-              ethers.utils.toUtf8Bytes("My Key")
-            );
+            let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
             let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
-            let setDataPayload =
-              context.universalProfile.interface.encodeFunctionData("setData", [
-                key,
-                value,
-              ]);
+            let setDataPayload = context.universalProfile.interface.encodeFunctionData("setData", [
+              key,
+              value,
+            ]);
 
             await context.universalProfile
               .connect(context.deployParams.owner)
@@ -508,21 +460,20 @@ export const shouldBehaveLikeLSP3 = (
         describe("execute", () => {
           it("should pass", async () => {
             let amount = 20;
-            let executePayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                0,
-                context.accounts[4].address,
-                amount,
-                "0x",
-              ]);
+            let executePayload = context.universalProfile.interface.encodeFunctionData("execute", [
+              0,
+              context.accounts[4].address,
+              amount,
+              "0x",
+            ]);
 
             await expect(() =>
               context.universalProfile
                 .connect(context.deployParams.owner)
-                .batchCalls([executePayload])
+                .batchCalls([executePayload]),
             ).to.changeEtherBalances(
               [context.universalProfile.address, context.accounts[4].address],
-              [`-${amount}`, amount]
+              [`-${amount}`, amount],
             );
           });
         });
@@ -532,86 +483,73 @@ export const shouldBehaveLikeLSP3 = (
         describe("When transfering lyx, setting data, transferring ownership", () => {
           it("should pass", async () => {
             let amount = 20;
-            let executePayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                0,
-                context.accounts[5].address,
-                amount,
-                "0x",
-              ]);
+            let executePayload = context.universalProfile.interface.encodeFunctionData("execute", [
+              0,
+              context.accounts[5].address,
+              amount,
+              "0x",
+            ]);
 
-            let key = ethers.utils.keccak256(
-              ethers.utils.toUtf8Bytes("A new key")
-            );
+            let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("A new key"));
             let value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
 
-            let setDataPayload =
-              context.universalProfile.interface.encodeFunctionData("setData", [
-                key,
-                value,
-              ]);
+            let setDataPayload = context.universalProfile.interface.encodeFunctionData("setData", [
+              key,
+              value,
+            ]);
 
-            let transferOwnershipPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "transferOwnership",
-                [context.accounts[8].address]
-              );
+            let transferOwnershipPayload = context.universalProfile.interface.encodeFunctionData(
+              "transferOwnership",
+              [context.accounts[8].address],
+            );
 
-            expect(
-              await context.universalProfile.callStatic.pendingOwner()
-            ).to.equal(ethers.constants.AddressZero);
+            expect(await context.universalProfile.callStatic.pendingOwner()).to.equal(
+              ethers.constants.AddressZero,
+            );
 
             await expect(() =>
               context.universalProfile
                 .connect(context.deployParams.owner)
-                .batchCalls([
-                  executePayload,
-                  setDataPayload,
-                  transferOwnershipPayload,
-                ])
+                .batchCalls([executePayload, setDataPayload, transferOwnershipPayload]),
             ).to.changeEtherBalances(
               [context.universalProfile.address, context.accounts[5].address],
-              [`-${amount}`, amount]
+              [`-${amount}`, amount],
             );
 
             const result = await context.universalProfile.getData(key);
             expect(result).to.equal(value);
 
-            expect(
-              await context.universalProfile.callStatic.pendingOwner()
-            ).to.equal(context.accounts[8].address);
+            expect(await context.universalProfile.callStatic.pendingOwner()).to.equal(
+              context.accounts[8].address,
+            );
           });
         });
 
         describe("When setting data and transferring value in staticcall operation", () => {
           it("should revert", async () => {
             let amount = 100;
-            let executePayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                3,
-                context.accounts[5].address,
-                amount,
-                "0x",
-              ]);
+            let executePayload = context.universalProfile.interface.encodeFunctionData("execute", [
+              3,
+              context.accounts[5].address,
+              amount,
+              "0x",
+            ]);
 
-            let key = ethers.utils.keccak256(
-              ethers.utils.toUtf8Bytes("Another key")
-            );
+            let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Another key"));
             let value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
 
-            let setDataPayload =
-              context.universalProfile.interface.encodeFunctionData("setData", [
-                key,
-                value,
-              ]);
+            let setDataPayload = context.universalProfile.interface.encodeFunctionData("setData", [
+              key,
+              value,
+            ]);
 
             await expect(
               context.universalProfile
                 .connect(context.deployParams.owner)
-                .batchCalls([setDataPayload, executePayload])
+                .batchCalls([setDataPayload, executePayload]),
             ).to.be.revertedWithCustomError(
               context.universalProfile,
-              "ERC725X_MsgValueDisallowedInStaticCall"
+              "ERC725X_MsgValueDisallowedInStaticCall",
             );
           });
         });
@@ -620,9 +558,7 @@ export const shouldBehaveLikeLSP3 = (
   });
 };
 
-export const shouldInitializeLikeLSP3 = (
-  buildContext: () => Promise<LSP3TestContext>
-) => {
+export const shouldInitializeLikeLSP3 = (buildContext: () => Promise<LSP3TestContext>) => {
   let context: LSP3TestContext;
 
   before(async () => {
@@ -631,71 +567,63 @@ export const shouldInitializeLikeLSP3 = (
 
   describe("when the contract was initialized", () => {
     it("should support ERC165 interface", async () => {
-      const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.ERC165
-      );
+      const result = await context.universalProfile.supportsInterface(INTERFACE_IDS.ERC165);
       expect(result).to.be.true;
     });
 
     it("should support ERC1271 interface", async () => {
-      const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.ERC1271
-      );
+      const result = await context.universalProfile.supportsInterface(INTERFACE_IDS.ERC1271);
       expect(result).to.be.true;
     });
 
     it("should support ERC725X interface", async () => {
-      const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.ERC725X
-      );
+      const result = await context.universalProfile.supportsInterface(INTERFACE_IDS.ERC725X);
       expect(result).to.be.true;
     });
 
     it("should support ERC725Y interface", async () => {
-      const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.ERC725Y
-      );
+      const result = await context.universalProfile.supportsInterface(INTERFACE_IDS.ERC725Y);
       expect(result).to.be.true;
     });
 
     it("should support LSP0 (ERC725Account) interface", async () => {
       const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.LSP0ERC725Account
+        INTERFACE_IDS.LSP0ERC725Account,
       );
       expect(result).to.be.true;
     });
 
     it("should support LSP1 interface", async () => {
       const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.LSP1UniversalReceiver
+        INTERFACE_IDS.LSP1UniversalReceiver,
       );
       expect(result).to.be.true;
     });
 
     it("should support LSP14Ownable2Step interface", async () => {
       const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.LSP14Ownable2Step
+        INTERFACE_IDS.LSP14Ownable2Step,
       );
       expect(result).to.be.true;
     });
 
     it("should support LSP17Extendable interface", async () => {
       const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.LSP17Extendable
+        INTERFACE_IDS.LSP17Extendable,
       );
       expect(result).to.be.true;
     });
 
     it("should support LSP20CallVerification interface", async () => {
       const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.LSP20CallVerification
+        INTERFACE_IDS.LSP20CallVerification,
       );
       expect(result).to.be.true;
     });
 
     it("should have set key 'SupportedStandards:LSP3UniversalProfile'", async () => {
       const result = await context.universalProfile.getData(
-        SupportedStandards.LSP3UniversalProfile.key
+        SupportedStandards.LSP3UniversalProfile.key,
       );
 
       expect(result).to.equal(SupportedStandards.LSP3UniversalProfile.value);

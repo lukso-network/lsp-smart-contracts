@@ -17,9 +17,11 @@ describe("LSP8Mintable with constructor", () => {
       newOwner: accounts.owner.address,
     };
 
-    const lsp8Mintable: LSP8Mintable = await new LSP8Mintable__factory(
-      accounts.owner
-    ).deploy(deployParams.name, deployParams.symbol, deployParams.newOwner);
+    const lsp8Mintable: LSP8Mintable = await new LSP8Mintable__factory(accounts.owner).deploy(
+      deployParams.name,
+      deployParams.symbol,
+      deployParams.newOwner,
+    );
 
     return { accounts, lsp8Mintable, deployParams };
   };

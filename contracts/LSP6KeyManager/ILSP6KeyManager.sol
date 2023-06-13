@@ -49,10 +49,10 @@ interface ILSP6KeyManager is
     /**
      * @dev batch `execute(bytes)`
      */
-    function executeBatch(uint256[] calldata values, bytes[] calldata payloads)
-        external
-        payable
-        returns (bytes[] memory);
+    function executeBatch(
+        uint256[] calldata values,
+        bytes[] calldata payloads
+    ) external payable returns (bytes[] memory);
 
     /**
      * @dev allows anybody to execute given they have a signed message from an executor

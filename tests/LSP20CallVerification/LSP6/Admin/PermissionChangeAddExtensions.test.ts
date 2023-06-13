@@ -3,11 +3,7 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
-import {
-  ERC725YDataKeys,
-  ALL_PERMISSIONS,
-  PERMISSIONS,
-} from "../../../../constants";
+import { ERC725YDataKeys, ALL_PERMISSIONS, PERMISSIONS } from "../../../../constants";
 
 // setup
 import { LSP6TestContext } from "../../../utils/context";
@@ -21,7 +17,7 @@ import {
 } from "../../../utils/helpers";
 
 export const shouldBehaveLikePermissionChangeOrAddExtensions = (
-  buildContext: () => Promise<LSP6TestContext>
+  buildContext: () => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
 
@@ -84,8 +80,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
       canOnlyCall = context.accounts[6];
 
       let permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canAddAndChangeExtensions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -98,16 +93,12 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           canOnlySetData.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
           canOnlySetData.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyCall.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + canOnlyCall.address.substring(2),
       ];
 
       let permissionValues = [
         ALL_PERMISSIONS,
-        combinePermissions(
-          PERMISSIONS.ADDEXTENSIONS,
-          PERMISSIONS.CHANGEEXTENSIONS
-        ),
+        combinePermissions(PERMISSIONS.ADDEXTENSIONS, PERMISSIONS.CHANGEEXTENSIONS),
         PERMISSIONS.ADDEXTENSIONS,
         PERMISSIONS.CHANGEEXTENSIONS,
         PERMISSIONS.SUPER_SETDATA,
@@ -124,20 +115,13 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
       permissionArrayKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000000",
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000001",
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000002",
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000003",
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000004",
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000005",
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000006",
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000000",
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000001",
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000002",
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000003",
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000004",
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000005",
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000006",
       ];
 
       permissionArrayValues = [
@@ -169,9 +153,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .connect(context.owner)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
-          const result = await context.universalProfile.getData(
-            payloadParam.dataKey
-          );
+          const result = await context.universalProfile.getData(payloadParam.dataKey);
           expect(result).to.equal(payloadParam.dataValue);
         });
 
@@ -185,9 +167,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .connect(context.owner)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
-          const result = await context.universalProfile.getData(
-            payloadParam.dataKey
-          );
+          const result = await context.universalProfile.getData(payloadParam.dataKey);
           expect(result).to.equal(payloadParam.dataValue);
         });
 
@@ -201,9 +181,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .connect(context.owner)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
-          const result = await context.universalProfile.getData(
-            payloadParam.dataKey
-          );
+          const result = await context.universalProfile.getData(payloadParam.dataKey);
           expect(result).to.equal(payloadParam.dataValue);
         });
       });
@@ -219,9 +197,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .connect(canAddAndChangeExtensions)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
-          const result = await context.universalProfile.getData(
-            payloadParam.dataKey
-          );
+          const result = await context.universalProfile.getData(payloadParam.dataKey);
           expect(result).to.equal(payloadParam.dataValue);
         });
 
@@ -235,9 +211,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .connect(canAddAndChangeExtensions)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
-          const result = await context.universalProfile.getData(
-            payloadParam.dataKey
-          );
+          const result = await context.universalProfile.getData(payloadParam.dataKey);
           expect(result).to.equal(payloadParam.dataValue);
         });
 
@@ -251,9 +225,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .connect(canAddAndChangeExtensions)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
-          const result = await context.universalProfile.getData(
-            payloadParam.dataKey
-          );
+          const result = await context.universalProfile.getData(payloadParam.dataKey);
           expect(result).to.equal(payloadParam.dataValue);
         });
       });
@@ -269,9 +241,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .connect(canOnlyAddExtensions)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
-          const result = await context.universalProfile.getData(
-            payloadParam.dataKey
-          );
+          const result = await context.universalProfile.getData(payloadParam.dataKey);
           expect(result).to.equal(payloadParam.dataValue);
         });
 
@@ -284,7 +254,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddExtensions)
-              .setData(payloadParam.dataKey, payloadParam.dataValue)
+              .setData(payloadParam.dataKey, payloadParam.dataValue),
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddExtensions.address, "CHANGEEXTENSIONS");
@@ -299,7 +269,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddExtensions)
-              .setData(payloadParam.dataKey, payloadParam.dataValue)
+              .setData(payloadParam.dataKey, payloadParam.dataValue),
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddExtensions.address, "CHANGEEXTENSIONS");
@@ -314,7 +284,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           await expect(
             context.universalProfile
               .connect(canOnlyAddExtensions)
-              .setData(payloadParam.dataKey, payloadParam.dataValue)
+              .setData(payloadParam.dataKey, payloadParam.dataValue),
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddExtensions.address, "CHANGEEXTENSIONS");
@@ -331,7 +301,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           await expect(
             context.universalProfile
               .connect(canOnlyChangeExtensions)
-              .setData(payloadParam.dataKey, payloadParam.dataValue)
+              .setData(payloadParam.dataKey, payloadParam.dataValue),
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyChangeExtensions.address, "ADDEXTENSIONS");
@@ -347,9 +317,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .connect(canOnlyChangeExtensions)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
-          const result = await context.universalProfile.getData(
-            payloadParam.dataKey
-          );
+          const result = await context.universalProfile.getData(payloadParam.dataKey);
 
           expect(result).to.equal(payloadParam.dataValue);
         });
@@ -364,9 +332,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .connect(canOnlyChangeExtensions)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
-          const result = await context.universalProfile.getData(
-            payloadParam.dataKey
-          );
+          const result = await context.universalProfile.getData(payloadParam.dataKey);
 
           expect(result).to.equal(payloadParam.dataValue);
         });
@@ -394,7 +360,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           await expect(
             context.universalProfile
               .connect(canOnlySuperSetData)
-              .setData(payloadParam.dataKey, payloadParam.dataValue)
+              .setData(payloadParam.dataKey, payloadParam.dataValue),
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySuperSetData.address, "ADDEXTENSIONS");
@@ -409,7 +375,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           await expect(
             context.universalProfile
               .connect(canOnlySuperSetData)
-              .setData(payloadParam.dataKey, payloadParam.dataValue)
+              .setData(payloadParam.dataKey, payloadParam.dataValue),
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySuperSetData.address, "CHANGEEXTENSIONS");
@@ -424,7 +390,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           await expect(
             context.universalProfile
               .connect(canOnlySuperSetData)
-              .setData(payloadParam.dataKey, payloadParam.dataValue)
+              .setData(payloadParam.dataKey, payloadParam.dataValue),
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySuperSetData.address, "CHANGEEXTENSIONS");
@@ -454,7 +420,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           await expect(
             context.universalProfile
               .connect(canOnlySetData)
-              .setData(payloadParam.dataKey, payloadParam.dataValue)
+              .setData(payloadParam.dataKey, payloadParam.dataValue),
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDEXTENSIONS");
@@ -469,7 +435,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           await expect(
             context.universalProfile
               .connect(canOnlySetData)
-              .setData(payloadParam.dataKey, payloadParam.dataValue)
+              .setData(payloadParam.dataKey, payloadParam.dataValue),
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "CHANGEEXTENSIONS");
@@ -484,7 +450,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           await expect(
             context.universalProfile
               .connect(canOnlySetData)
-              .setData(payloadParam.dataKey, payloadParam.dataValue)
+              .setData(payloadParam.dataKey, payloadParam.dataValue),
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "CHANGEEXTENSIONS");
@@ -514,7 +480,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           await expect(
             context.universalProfile
               .connect(canOnlyCall)
-              .setData(payloadParam.dataKey, payloadParam.dataValue)
+              .setData(payloadParam.dataKey, payloadParam.dataValue),
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyCall.address, "ADDEXTENSIONS");
@@ -529,7 +495,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           await expect(
             context.universalProfile
               .connect(canOnlyCall)
-              .setData(payloadParam.dataKey, payloadParam.dataValue)
+              .setData(payloadParam.dataKey, payloadParam.dataValue),
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyCall.address, "CHANGEEXTENSIONS");
@@ -544,7 +510,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           await expect(
             context.universalProfile
               .connect(canOnlyCall)
-              .setData(payloadParam.dataKey, payloadParam.dataValue)
+              .setData(payloadParam.dataKey, payloadParam.dataValue),
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyCall.address, "CHANGEEXTENSIONS");
@@ -572,9 +538,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .connect(context.owner)
             .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
 
-          const result = await context.universalProfile.getDataBatch(
-            payloadParam.dataKeys
-          );
+          const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
 
           expect(result).to.deep.equal(payloadParam.dataValues);
         });
@@ -593,18 +557,16 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             ],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setDataBatch",
-            [payloadParam.dataKeys, payloadParam.dataValues]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setDataBatch", [
+            payloadParam.dataKeys,
+            payloadParam.dataValues,
+          ]);
 
           await context.universalProfile
             .connect(context.owner)
             .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
 
-          const result = await context.universalProfile.getDataBatch(
-            payloadParam.dataKeys
-          );
+          const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
 
           expect(result).to.deep.equal(payloadParam.dataValues);
         });
@@ -616,20 +578,14 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
             ],
-            dataValues: [
-              "0x",
-              ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
-              "0x",
-            ],
+            dataValues: ["0x", ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16), "0x"],
           };
 
           await context.universalProfile
             .connect(context.owner)
             .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
 
-          const result = await context.universalProfile.getDataBatch(
-            payloadParam.dataKeys
-          );
+          const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
 
           expect(result).to.deep.equal(payloadParam.dataValues);
         });
@@ -654,12 +610,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.universalProfile
                 .connect(canAddAndChangeExtensions)
-                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues)
+                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAuthorised"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
               .withArgs(canAddAndChangeExtensions.address, "EDITPERMISSIONS");
           });
         });
@@ -677,12 +630,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.universalProfile
                 .connect(canAddAndChangeExtensions)
-                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues)
+                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAuthorised"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
               .withArgs(canAddAndChangeExtensions.address, "SETDATA");
           });
         });
@@ -715,10 +665,10 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValues: ["0x", "0x"],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setDataBatch",
-            [payloadParam.dataKeys, payloadParam.dataValues]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setDataBatch", [
+            payloadParam.dataKeys,
+            payloadParam.dataValues,
+          ]);
 
           await context.universalProfile
             .connect(context.owner)
@@ -735,9 +685,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               .connect(canOnlyAddExtensions)
               .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
 
-            const result = await context.universalProfile.getDataBatch(
-              payloadParam.dataKeys
-            );
+            const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
 
             expect(result).to.deep.equal(payloadParam.dataValues);
           });
@@ -753,12 +701,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.universalProfile
                 .connect(canOnlyAddExtensions)
-                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues)
+                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAuthorised"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
               .withArgs(canOnlyAddExtensions.address, "CHANGEEXTENSIONS");
           });
         });
@@ -776,12 +721,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.universalProfile
                 .connect(canOnlyAddExtensions)
-                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues)
+                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAuthorised"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
               .withArgs(canOnlyAddExtensions.address, "SETDATA");
           });
         });
@@ -804,9 +746,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               .connect(canOnlyChangeExtensions)
               .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
 
-            const result = await context.universalProfile.getDataBatch(
-              payloadParam.dataKeys
-            );
+            const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
 
             expect(result).to.deep.equal(payloadParam.dataValues);
           });
@@ -828,12 +768,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.universalProfile
                 .connect(canOnlyChangeExtensions)
-                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues)
+                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAuthorised"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
               .withArgs(canOnlyChangeExtensions.address, "SETDATA");
           });
         });
@@ -855,12 +792,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.universalProfile
                 .connect(canOnlyChangeExtensions)
-                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues)
+                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAuthorised"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
               .withArgs(canOnlyChangeExtensions.address, "ADDEXTENSIONS");
           });
         });
@@ -881,9 +815,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               .connect(canOnlyChangeExtensions)
               .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
 
-            const result = await context.universalProfile.getDataBatch(
-              payloadParam.dataKeys
-            );
+            const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
 
             expect(result).to.deep.equal(payloadParam.dataValues);
           });
@@ -899,12 +831,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.universalProfile
                 .connect(canOnlyChangeExtensions)
-                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues)
+                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAuthorised"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
               .withArgs(canOnlyChangeExtensions.address, "ADDEXTENSIONS");
           });
         });
@@ -922,12 +851,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.universalProfile
                 .connect(canOnlyAddExtensions)
-                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues)
+                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAuthorised"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
               .withArgs(canOnlyAddExtensions.address, "SETDATA");
           });
         });
@@ -944,12 +870,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.universalProfile
                 .connect(canOnlySuperSetData)
-                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues)
+                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAuthorised"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
               .withArgs(canOnlySuperSetData.address, "ADDEXTENSIONS");
           });
         });
@@ -966,12 +889,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.universalProfile
                 .connect(canOnlySuperSetData)
-                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues)
+                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAuthorised"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
               .withArgs(canOnlySuperSetData.address, "ADDEXTENSIONS");
           });
         });
@@ -988,12 +908,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.universalProfile
                 .connect(canOnlySetData)
-                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues)
+                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAuthorised"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
               .withArgs(canOnlySetData.address, "ADDEXTENSIONS");
           });
         });
@@ -1011,12 +928,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.universalProfile
                 .connect(canOnlySetData)
-                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues)
+                .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAuthorised"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
               .withArgs(canOnlySetData.address, "ADDEXTENSIONS");
           });
         });
@@ -1028,12 +942,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
                 ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
                   canOnlySetData.address.substring(2),
               ],
-              dataValues: [
-                combinePermissions(
-                  PERMISSIONS.ADDEXTENSIONS,
-                  PERMISSIONS.SETDATA
-                ),
-              ],
+              dataValues: [combinePermissions(PERMISSIONS.ADDEXTENSIONS, PERMISSIONS.SETDATA)],
             };
 
             await context.universalProfile
@@ -1045,26 +954,21 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               const payloadParam = {
                 dataKeys: [
                   extensionHandlerKey4,
-                  ethers.utils.keccak256(
-                    ethers.utils.toUtf8Bytes("MyFirstKey")
-                  ),
+                  ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFirstKey")),
                 ],
                 dataValues: [extensionA, "0xaabbccdd"],
               };
 
-              let payload =
-                context.universalProfile.interface.encodeFunctionData(
-                  "setDataBatch",
-                  [payloadParam.dataKeys, payloadParam.dataValues]
-                );
+              let payload = context.universalProfile.interface.encodeFunctionData("setDataBatch", [
+                payloadParam.dataKeys,
+                payloadParam.dataValues,
+              ]);
 
               await context.universalProfile
                 .connect(canOnlySetData)
                 .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
 
-              const result = await context.universalProfile.getDataBatch(
-                payloadParam.dataKeys
-              );
+              const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
 
               expect(result).to.deep.equal(payloadParam.dataValues);
             });

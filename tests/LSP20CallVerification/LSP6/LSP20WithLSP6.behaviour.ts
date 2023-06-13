@@ -32,7 +32,7 @@ import {
 } from "./index";
 
 export const shouldBehaveLikeLSP6 = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
+  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
 ) => {
   describe("CHANGEOWNER", () => {
     shouldBehaveLikePermissionChangeOwner(buildContext);

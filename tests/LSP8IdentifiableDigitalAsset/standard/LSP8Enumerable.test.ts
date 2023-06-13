@@ -1,7 +1,4 @@
-import {
-  LSP8EnumerableTester,
-  LSP8EnumerableTester__factory,
-} from "../../../types";
+import { LSP8EnumerableTester, LSP8EnumerableTester__factory } from "../../../types";
 
 import { shouldInitializeLikeLSP8 } from "../LSP8IdentifiableDigitalAsset.behaviour";
 import {
@@ -20,12 +17,9 @@ describe("LSP8Enumerable with constructor", () => {
       newOwner: accounts.owner.address,
     };
 
-    const lsp8Enumerable: LSP8EnumerableTester =
-      await new LSP8EnumerableTester__factory(accounts.owner).deploy(
-        deployParams.name,
-        deployParams.symbol,
-        deployParams.newOwner
-      );
+    const lsp8Enumerable: LSP8EnumerableTester = await new LSP8EnumerableTester__factory(
+      accounts.owner,
+    ).deploy(deployParams.name, deployParams.symbol, deployParams.newOwner);
 
     return { accounts, lsp8Enumerable, deployParams };
   };

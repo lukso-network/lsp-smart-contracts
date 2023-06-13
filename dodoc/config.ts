@@ -35,9 +35,11 @@ export const dodocConfig = {
     "LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol",
 
     // libraries --------------------
+    "LSP0ERC725Account/LSP0Utils.sol",
     "LSP1UniversalReceiver/LSP1Utils.sol",
     "LSP2ERC725YJSONSchema/LSP2Utils.sol",
     "LSP5ReceivedAssets/LSP5Utils.sol",
+    "LSP6KeyManager/LSP6Utils.sol",
     "LSP10ReceivedVaults/LSP10Utils.sol",
     "LSP17ContractExtension/LSP17Utils.sol",
   ],
@@ -54,23 +56,19 @@ export const dodocConfig = {
   helpers: [
     {
       helperName: "formatTextWithLists",
-      helperFunc: (content: HelperContent) =>
-        content.exec(formatTextWithLists(content.params[0])),
+      helperFunc: (content: HelperContent) => content.exec(formatTextWithLists(content.params[0])),
     },
     {
       helperName: "createLocalLinks",
-      helperFunc: (content: HelperContent) =>
-        content.exec(createLocalLinks(content.params[0])),
+      helperFunc: (content: HelperContent) => content.exec(createLocalLinks(content.params[0])),
     },
     {
       helperName: "formatLinks",
-      helperFunc: (content: HelperContent) =>
-        content.exec(formatLinks(content.params[0])),
+      helperFunc: (content: HelperContent) => content.exec(formatLinks(content.params[0])),
     },
     {
       helperName: "splitMethods",
-      helperFunc: (content: HelperContent) =>
-        content.exec(splitMethods(content.params[0])),
+      helperFunc: (content: HelperContent) => content.exec(splitMethods(content.params[0])),
     },
     {
       helperName: "parseNotice",
@@ -85,18 +83,12 @@ export const dodocConfig = {
     {
       helperName: "parseCustomRequirements",
       helperFunc: (content: HelperContent) =>
-        formatBulletPointsWithTitle(
-          createLocalLinks(content.params[0]),
-          "Requirements:"
-        ),
+        formatBulletPointsWithTitle(createLocalLinks(content.params[0]), "Requirements:"),
     },
     {
       helperName: "parseCustomEvents",
       helperFunc: (content: HelperContent) =>
-        formatBulletPointsWithTitle(
-          createLocalLinks(content.params[0]),
-          "Emitted events:"
-        ),
+        formatBulletPointsWithTitle(createLocalLinks(content.params[0]), "Emitted events:"),
     },
     {
       helperName: "generateAdditionalMethodInfo",
@@ -115,8 +107,7 @@ export const dodocConfig = {
     },
     {
       helperName: "generateContractLink",
-      helperFunc: (content: HelperContent) =>
-        generateContractLink(content.params[0]),
+      helperFunc: (content: HelperContent) => generateContractLink(content.params[0]),
     },
   ],
 };
@@ -131,10 +122,7 @@ const createLocalLinks = (textToFormat: string) => {
       const clearedElem = elem[0].replace("{", "").replace("}", "");
       const linkFirstHalf = `[\`${clearedElem}\`]`;
       const linkSecondHalf = `(#${clearedElem.toLowerCase().split("(")[0]})`;
-      formatedText = formatedText.replace(
-        elem[0],
-        linkFirstHalf + linkSecondHalf
-      );
+      formatedText = formatedText.replace(elem[0], linkFirstHalf + linkSecondHalf);
     }
   });
 
@@ -174,16 +162,10 @@ const formatLinks = (textToFormat: string) => {
 const formatTextWithLists = (textToFormat: string) => {
   let formatedText: string = textToFormat;
   [...textToFormat.matchAll(/\s-\s/g)].forEach((element) => {
-    formatedText = formatedText.replace(
-      element[0],
-      `\n\n${element[0].trim()} `
-    );
+    formatedText = formatedText.replace(element[0], `\n\n${element[0].trim()} `);
   });
   [...textToFormat.matchAll(/\s\d+\.\s/g)].forEach((element) => {
-    formatedText = formatedText.replace(
-      element[0],
-      `\n\n${element[0].trim()} `
-    );
+    formatedText = formatedText.replace(element[0], `\n\n${element[0].trim()} `);
   });
 
   return formatedText;
@@ -228,8 +210,7 @@ const generateAdditionalMethodInfo = (contract: string, code: string) => {
   let infoBlock =
     `- Specification details in [**${specsName}**](${specsLink}#${formatedCode
       .split("(")[0]
-      .toLowerCase()})\n` +
-    `- Solidity implementation in [**${contract}**](${contractLink})\n`;
+      .toLowerCase()})\n` + `- Solidity implementation in [**${contract}**](${contractLink})\n`;
 
   if (
     !formatedCode.startsWith("constructor") &&
@@ -257,9 +238,7 @@ const generateAdditionalEventInfo = (contract: string, code: string) => {
       .toLowerCase()})\n` +
     `- Solidity implementation in [**${contract}**](${contractLink})\n` +
     `- Event signature: \`${formatedCode}\`\n` +
-    `- Event hash: \`${ethers.utils.keccak256(
-      ethers.utils.toUtf8Bytes(formatedCode)
-    )}\``
+    `- Event hash: \`${ethers.utils.keccak256(ethers.utils.toUtf8Bytes(formatedCode))}\``
   );
 };
 
@@ -306,9 +285,9 @@ const generateContractSpecsDetails = (contractName: string) => {
 
   const specsName = `LSP-${specs.match(/\d+/)[0]}-${specs.split(/LSP\d+/)[1]}`;
 
-  const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${
-    specs.match(/\d+/)[0]
-  }-${specs.split(/LSP\d+/)[1]}.md`;
+  const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${specs.match(/\d+/)[0]}-${
+    specs.split(/LSP\d+/)[1]
+  }.md`;
 
   return { specsName, specsLink };
 };

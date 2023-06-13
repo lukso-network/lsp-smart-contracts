@@ -23,15 +23,12 @@ describe("LSP7MintableInit with proxy", () => {
       isNFT: false,
     };
 
-    const LSP7MintableInit: LSP7MintableInit =
-      await new LSP7MintableInit__factory(accounts.owner).deploy();
+    const LSP7MintableInit: LSP7MintableInit = await new LSP7MintableInit__factory(
+      accounts.owner,
+    ).deploy();
 
-    const lsp7MintableProxy = await deployProxy(
-      LSP7MintableInit.address,
-      accounts.owner
-    );
-    const lsp7Mintable: LSP7MintableInit =
-      LSP7MintableInit.attach(lsp7MintableProxy);
+    const lsp7MintableProxy = await deployProxy(LSP7MintableInit.address, accounts.owner);
+    const lsp7Mintable: LSP7MintableInit = LSP7MintableInit.attach(lsp7MintableProxy);
 
     return { accounts, lsp7Mintable, deployParams };
   };
@@ -41,7 +38,7 @@ describe("LSP7MintableInit with proxy", () => {
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
-      context.deployParams.isNFT
+      context.deployParams.isNFT,
     );
   };
 
@@ -49,9 +46,7 @@ describe("LSP7MintableInit with proxy", () => {
     it("prevent any address from calling the initialize(...) function on the implementation", async () => {
       const accounts = await ethers.getSigners();
 
-      const lsp7MintableInit = await new LSP7MintableInit__factory(
-        accounts[0]
-      ).deploy();
+      const lsp7MintableInit = await new LSP7MintableInit__factory(accounts[0]).deploy();
 
       const randomCaller = accounts[1];
 
@@ -60,8 +55,8 @@ describe("LSP7MintableInit with proxy", () => {
           "XXXXXXXXXXX",
           "XXX",
           randomCaller.address,
-          false
-        )
+          false,
+        ),
       ).to.be.revertedWith("Initializable: contract is already initialized");
     });
   });
@@ -89,7 +84,7 @@ describe("LSP7MintableInit with proxy", () => {
     describe("when calling initialize more than once", () => {
       it("should revert", async () => {
         await expect(initializeProxy(context)).to.be.revertedWith(
-          "Initializable: contract is already initialized"
+          "Initializable: contract is already initialized",
         );
       });
     });
@@ -101,7 +96,7 @@ describe("LSP7MintableInit with proxy", () => {
         await initializeProxy(context);
 
         return context;
-      })
+      }),
     );
   });
 });

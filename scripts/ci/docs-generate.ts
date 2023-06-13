@@ -12,7 +12,7 @@ import { format } from "prettier";
 task(TASK_COMPILE)
   .addFlag(
     "noTsGen",
-    "Don't generate documentation after running this task, even if runOnCompile option is enabled"
+    "Don't generate documentation after running this task, even if runOnCompile option is enabled",
   )
   .setAction(async function (args, hre, runSuper) {
     for (let compiler of hre.config.solidity.compilers) {
@@ -29,13 +29,7 @@ task(TASK_COMPILE)
   });
 
 // derive external signatures from internal types
-function getSigType({
-  type,
-  components = [],
-}: {
-  type: string;
-  components?: any[];
-}): string {
+function getSigType({ type, components = [] }: { type: string; components?: any[] }): string {
   return type.replace("tuple", `(${components.map(getSigType).join(",")})`);
 }
 
@@ -44,10 +38,7 @@ function collect(items: any) {
     return undefined;
   }
   let collection;
-  for (const [sig, { hash, ...item }] of Object.entries(items) as [
-    string,
-    any
-  ]) {
+  for (const [sig, { hash, ...item }] of Object.entries(items) as [string, any]) {
     if (!collection) {
       collection = {};
     }
@@ -78,11 +69,8 @@ function serialize(obj: any) {
           docs = docs.replace(
             /\(.*\)$/,
             `(\n *  ${v.inputs
-              .map(
-                ({ name, type, indexed }) =>
-                  `${type}${indexed ? " indexed" : ""} ${name}`
-              )
-              .join(",\n *  ")}\n * )`
+              .map(({ name, type, indexed }) => `${type}${indexed ? " indexed" : ""} ${name}`)
+              .join(",\n *  ")}\n * )`,
           );
         }
         if (/^0x/.test(key)) {
@@ -166,9 +154,7 @@ task("ts-gen", "Generate NatSpec documentation automatically on compilation")
         abi,
         devdoc = undefined,
         userdoc = undefined,
-      } = build?.output?.contracts?.[source]?.[
-        name
-      ] as CompilerOutputContract & {
+      } = build?.output?.contracts?.[source]?.[name] as CompilerOutputContract & {
         devdoc?: {
           events: object;
           stateVariables: object;
@@ -180,16 +166,13 @@ task("ts-gen", "Generate NatSpec documentation automatically on compilation")
 
       const fileName = `${name}.json`;
       if (devdoc) {
-        await writeFile(
-          path.join("./devdocs", fileName),
-          JSON.stringify(devdoc, undefined, "  ")
-        );
+        await writeFile(path.join("./devdocs", fileName), JSON.stringify(devdoc, undefined, "  "));
         devdocCount++;
       }
       if (userdoc) {
         await writeFile(
           path.join("./userdocs", fileName),
-          JSON.stringify(userdoc, undefined, "  ")
+          JSON.stringify(userdoc, undefined, "  "),
         );
         userdocCount++;
       }
@@ -204,22 +187,14 @@ task("ts-gen", "Generate NatSpec documentation automatically on compilation")
       {
         // Handle devdoc
 
-        const {
-          events = {},
-          stateVariables = {},
-          methods = {},
-          errors = {},
-        } = devdoc;
+        const { events = {}, stateVariables = {}, methods = {}, errors = {} } = devdoc;
         // associate devdoc and userdoc comments with abi elements
         for (const [sig, event] of Object.entries(events)) {
           if (Object.keys(event).length) {
             allMembers[sig].devdoc = event;
           }
         }
-        for (const [name, stateVariable] of Object.entries(stateVariables) as [
-          string,
-          any
-        ]) {
+        for (const [name, stateVariable] of Object.entries(stateVariables) as [string, any]) {
           const key = `${name}()`;
           let entry = allMembers[key];
           if (!entry) {
@@ -256,8 +231,8 @@ task("ts-gen", "Generate NatSpec documentation automatically on compilation")
         }
       }
 
-      const constructorName: string | undefined = Object.keys(allMembers).find(
-        (k) => k.startsWith("constructor(")
+      const constructorName: string | undefined = Object.keys(allMembers).find((k) =>
+        k.startsWith("constructor("),
       );
 
       const {
@@ -285,12 +260,7 @@ task("ts-gen", "Generate NatSpec documentation automatically on compilation")
         entry[hash] = { sig, ...member };
       }
 
-      const {
-        events = {},
-        methods = {},
-        errors = {},
-        stateVariables,
-      } = membersByType;
+      const { events = {}, methods = {}, errors = {}, stateVariables } = membersByType;
       const {
         events: _events, // Ignore
         errors: _errors, // Ignore
@@ -321,11 +291,9 @@ export const FunctionSelectors = ${serialize(allMethods)};
 export const ContractsDocs = ${serialize(allContracts)};
 export const StateVariables = ${serialize(allStateVariables)};
 `,
-        { parser: "babel-ts" }
-      )
+        { parser: "babel-ts" },
+      ),
     );
     console.log(`Successfully generated ${devdocCount} json files in devdocs`);
-    console.log(
-      `Successfully generated ./contracts.ts for ${contractCount} contracts`
-    );
+    console.log(`Successfully generated ./contracts.ts for ${contractCount} contracts`);
   });

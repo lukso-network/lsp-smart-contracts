@@ -16,12 +16,7 @@ import {
 } from "../../../types";
 
 // constants
-import {
-  ERC725YDataKeys,
-  ALL_PERMISSIONS,
-  PERMISSIONS,
-  CALLTYPE,
-} from "../../../constants";
+import { ERC725YDataKeys, ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from "../../../constants";
 
 // setup
 import { LSP6TestContext } from "../../utils/context";
@@ -113,19 +108,13 @@ export const transferValueTestCases = {
   ],
   NoCallsAllowed: {
     permissionsText: "REENTRANCY, TRANSFERVALUE",
-    permissions: combinePermissions(
-      PERMISSIONS.REENTRANCY,
-      PERMISSIONS.TRANSFERVALUE
-    ),
+    permissions: combinePermissions(PERMISSIONS.REENTRANCY, PERMISSIONS.TRANSFERVALUE),
     allowedCalls: false,
     missingPermission: "",
   },
   ValidCase: {
     permissionsText: "REENTRANCY, TRANSFERVALUE",
-    permissions: combinePermissions(
-      PERMISSIONS.REENTRANCY,
-      PERMISSIONS.TRANSFERVALUE
-    ),
+    permissions: combinePermissions(PERMISSIONS.REENTRANCY, PERMISSIONS.TRANSFERVALUE),
     allowedCalls: true,
     missingPermission: "",
   },
@@ -172,19 +161,13 @@ export const setDataTestCases = {
   ],
   NoERC725YDataKeysAllowed: {
     permissionsText: "REENTRANCY, SETDATA",
-    permissions: combinePermissions(
-      PERMISSIONS.REENTRANCY,
-      PERMISSIONS.SETDATA
-    ),
+    permissions: combinePermissions(PERMISSIONS.REENTRANCY, PERMISSIONS.SETDATA),
     allowedERC725YDataKeys: false,
     missingPermission: "",
   },
   ValidCase: {
     permissionsText: "REENTRANCY, SETDATA",
-    permissions: combinePermissions(
-      PERMISSIONS.REENTRANCY,
-      PERMISSIONS.SETDATA
-    ),
+    permissions: combinePermissions(PERMISSIONS.REENTRANCY, PERMISSIONS.SETDATA),
     allowedERC725YDataKeys: true,
     missingPermission: "",
   },
@@ -215,10 +198,7 @@ export const addPermissionsTestCases = {
   ],
   ValidCase: {
     permissionsText: "REENTRANCY, ADDCONTROLLER",
-    permissions: combinePermissions(
-      PERMISSIONS.REENTRANCY,
-      PERMISSIONS.ADDCONTROLLER
-    ),
+    permissions: combinePermissions(PERMISSIONS.REENTRANCY, PERMISSIONS.ADDCONTROLLER),
     missingPermission: "",
   },
 };
@@ -248,10 +228,7 @@ export const editPermissionsTestCases = {
   ],
   ValidCase: {
     permissionsText: "REENTRANCY, EDITPERMISSIONS",
-    permissions: combinePermissions(
-      PERMISSIONS.REENTRANCY,
-      PERMISSIONS.EDITPERMISSIONS
-    ),
+    permissions: combinePermissions(PERMISSIONS.REENTRANCY, PERMISSIONS.EDITPERMISSIONS),
     missingPermission: "",
   },
 };
@@ -283,7 +260,7 @@ export const addUniversalReceiverDelegateTestCases = {
     permissionsText: "REENTRANCY, ADDUNIVERSALRECEIVERDELEGATE",
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
-      PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE
+      PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE,
     ),
     missingPermission: "",
   },
@@ -316,7 +293,7 @@ export const changeUniversalReceiverDelegateTestCases = {
     permissionsText: "REENTRANCY, CHANGEUNIVERSALRECEIVERDELEGATE",
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
-      PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE
+      PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE,
     ),
     missingPermission: "",
   },
@@ -332,29 +309,20 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
   const reentrantContract = await new ReentrantContract__factory(owner).deploy(
     newControllerAddress,
     ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId")),
-    newURDAddress
+    newURDAddress,
   );
 
   const reentrantSigner = new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT5);
 
-  const singleReentarncyRelayer = await new SingleReentrancyRelayer__factory(
-    owner
-  ).deploy();
-  const batchReentarncyRelayer = await new BatchReentrancyRelayer__factory(
-    owner
-  ).deploy();
+  const singleReentarncyRelayer = await new SingleReentrancyRelayer__factory(owner).deploy();
+  const batchReentarncyRelayer = await new BatchReentrancyRelayer__factory(owner).deploy();
 
   const permissionKeys = [
-    ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      owner.address.substring(2),
-    ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      caller.address.substring(2),
-    ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-      caller.address.substring(2),
-    ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-      signer.address.substring(2),
-    ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-      signer.address.substring(2),
+    ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + owner.address.substring(2),
+    ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + caller.address.substring(2),
+    ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + caller.address.substring(2),
+    ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + signer.address.substring(2),
+    ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + signer.address.substring(2),
   ];
 
   const permissionValues = [
@@ -363,33 +331,23 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
     combineAllowedCalls(
       // allow controller to call the 3 x addresses listed below
       [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
-      [
-        reentrantContract.address,
-        singleReentarncyRelayer.address,
-        batchReentarncyRelayer.address,
-      ],
+      [reentrantContract.address, singleReentarncyRelayer.address, batchReentarncyRelayer.address],
       ["0xffffffff", "0xffffffff", "0xffffffff"],
-      ["0xffffffff", "0xffffffff", "0xffffffff"]
+      ["0xffffffff", "0xffffffff", "0xffffffff"],
     ),
     PERMISSIONS.CALL,
     combineAllowedCalls(
       // allow controller to call the 3 x addresses listed below
       [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
-      [
-        reentrantContract.address,
-        singleReentarncyRelayer.address,
-        batchReentarncyRelayer.address,
-      ],
+      [reentrantContract.address, singleReentarncyRelayer.address, batchReentarncyRelayer.address],
       ["0xffffffff", "0xffffffff", "0xffffffff"],
-      ["0xffffffff", "0xffffffff", "0xffffffff"]
+      ["0xffffffff", "0xffffffff", "0xffffffff"],
     ),
   ];
 
   await setupKeyManager(context, permissionKeys, permissionValues);
 
-  const randomLSP1TypeId = ethers.utils.keccak256(
-    ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
-  );
+  const randomLSP1TypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId"));
 
   return {
     owner,
@@ -408,7 +366,7 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
 export const generateRelayCall = async (
   keyManager: LSP6KeyManager,
   payload: BytesLike,
-  signer: Wallet
+  signer: Wallet,
 ) => {
   let nonce = await keyManager.callStatic.getNonce(signer.address, 1);
 
@@ -421,7 +379,7 @@ export const generateRelayCall = async (
     validityTimestamps,
     signer.privateKey,
     msgValue,
-    payload.toString()
+    payload.toString(),
   );
 
   const relayCallContext: {
@@ -446,7 +404,7 @@ export const generateSingleRelayPayload = async (
   reentrancyRelayer: SingleReentrancyRelayer,
   reentrantSigner: Wallet,
   newControllerAddress: string,
-  newURDAddress: string
+  newURDAddress: string,
 ) => {
   let payload: BytesLike;
   switch (payloadType) {
@@ -466,33 +424,27 @@ export const generateSingleRelayPayload = async (
       break;
     case "ADDCONTROLLER":
       payload = universalProfile.interface.encodeFunctionData("setData", [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          newControllerAddress.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newControllerAddress.substring(2),
         "0x0000000000000000000000000000000000000000000000000000000000000010",
       ]);
       break;
     case "EDITPERMISSIONS":
       payload = universalProfile.interface.encodeFunctionData("setData", [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          newControllerAddress.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newControllerAddress.substring(2),
         "0x",
       ]);
       break;
     case "ADDUNIVERSALRECEIVERDELEGATE":
       payload = universalProfile.interface.encodeFunctionData("setData", [
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-          ethers.utils
-            .keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId"))
-            .substring(2, 42),
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId")).substring(2, 42),
         newURDAddress,
       ]);
       break;
     case "CHANGEUNIVERSALRECEIVERDELEGATE":
       payload = universalProfile.interface.encodeFunctionData("setData", [
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-          ethers.utils
-            .keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId"))
-            .substring(2, 42),
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId")).substring(2, 42),
         "0x",
       ]);
       break;
@@ -512,15 +464,10 @@ export const generateSingleRelayPayload = async (
     validityTimestamps,
     reentrantSigner.privateKey,
     msgValue,
-    payload
+    payload,
   );
 
-  await reentrancyRelayer.prepareRelayCall(
-    signature,
-    nonce,
-    validityTimestamps,
-    payload
-  );
+  await reentrancyRelayer.prepareRelayCall(signature, nonce, validityTimestamps, payload);
 };
 
 export const generateBatchRelayPayload = async (
@@ -530,7 +477,7 @@ export const generateBatchRelayPayload = async (
   reentrancyRelayer: BatchReentrancyRelayer,
   reentrantSigner: Wallet,
   newControllerAddress: string,
-  newURDAddress: string
+  newURDAddress: string,
 ) => {
   let payload: BytesLike;
   switch (payloadType) {
@@ -550,33 +497,27 @@ export const generateBatchRelayPayload = async (
       break;
     case "ADDCONTROLLER":
       payload = universalProfile.interface.encodeFunctionData("setData", [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          newControllerAddress.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newControllerAddress.substring(2),
         "0x0000000000000000000000000000000000000000000000000000000000000010",
       ]);
       break;
     case "EDITPERMISSIONS":
       payload = universalProfile.interface.encodeFunctionData("setData", [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          newControllerAddress.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newControllerAddress.substring(2),
         "0x",
       ]);
       break;
     case "ADDUNIVERSALRECEIVERDELEGATE":
       payload = universalProfile.interface.encodeFunctionData("setData", [
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-          ethers.utils
-            .keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId"))
-            .substring(2, 42),
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId")).substring(2, 42),
         newURDAddress,
       ]);
       break;
     case "CHANGEUNIVERSALRECEIVERDELEGATE":
       payload = universalProfile.interface.encodeFunctionData("setData", [
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-          ethers.utils
-            .keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId"))
-            .substring(2, 42),
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId")).substring(2, 42),
         "0x",
       ]);
       break;
@@ -596,7 +537,7 @@ export const generateBatchRelayPayload = async (
     validityTimestamps,
     reentrantSigner.privateKey,
     msgValue,
-    payload
+    payload,
   );
 
   await reentrancyRelayer.prepareRelayCall(
@@ -604,28 +545,26 @@ export const generateBatchRelayPayload = async (
     [nonce],
     [validityTimestamps],
     [msgValue],
-    [payload]
+    [payload],
   );
 };
 
 export const generateExecutePayload = (
   keyManagerAddress: string,
   reentrantContractAddress: string,
-  payloadType: string
+  payloadType: string,
 ) => {
-  const reentrantPayload =
-    new ReentrantContract__factory().interface.encodeFunctionData(
-      "callThatReenters",
-      [keyManagerAddress, payloadType]
-    );
+  const reentrantPayload = new ReentrantContract__factory().interface.encodeFunctionData(
+    "callThatReenters",
+    [keyManagerAddress, payloadType],
+  );
 
-  const executePayload =
-    new UniversalProfile__factory().interface.encodeFunctionData("execute", [
-      0,
-      reentrantContractAddress,
-      0,
-      reentrantPayload,
-    ]);
+  const executePayload = new UniversalProfile__factory().interface.encodeFunctionData("execute", [
+    0,
+    reentrantContractAddress,
+    0,
+    reentrantPayload,
+  ]);
 
   return executePayload;
 };
@@ -635,7 +574,7 @@ export const loadTestCase = async (
   testCase: TransferValueTestCase | SetDataTestCase | SimplePermissionTestCase,
   context: LSP6TestContext,
   reentrantAddress: string,
-  valueReceiverAddress: string
+  valueReceiverAddress: string,
 ) => {
   let permissionKeys: BytesLike[];
   let permissionValues: BytesLike[];
@@ -643,10 +582,8 @@ export const loadTestCase = async (
   switch (payloadType) {
     case "TRANSFERVALUE": {
       permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          reentrantAddress.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          reentrantAddress.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + reentrantAddress.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + reentrantAddress.substring(2),
       ];
 
       permissionValues = [
@@ -657,7 +594,7 @@ export const loadTestCase = async (
               [CALLTYPE.VALUE],
               [valueReceiverAddress],
               ["0xffffffff"],
-              ["0xffffffff"]
+              ["0xffffffff"],
             )
           : "0x",
       ];
@@ -665,8 +602,7 @@ export const loadTestCase = async (
     }
     case "SETDATA": {
       permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          reentrantAddress.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + reentrantAddress.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
           reentrantAddress.substring(2),
       ];
@@ -675,9 +611,7 @@ export const loadTestCase = async (
         testCase.permissions,
         (testCase as SetDataTestCase).allowedERC725YDataKeys
           ? encodeCompactBytesArray([
-              ethers.utils.keccak256(
-                ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
-              ),
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("SomeRandomTextUsed")),
             ])
           : "0x",
       ];
@@ -685,18 +619,16 @@ export const loadTestCase = async (
     }
     default: {
       permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          reentrantAddress.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + reentrantAddress.substring(2),
       ];
 
       permissionValues = [testCase.permissions];
     }
   }
 
-  const permissionsPayload =
-    new UniversalProfile__factory().interface.encodeFunctionData(
-      "setDataBatch",
-      [permissionKeys, permissionValues]
-    );
+  const permissionsPayload = new UniversalProfile__factory().interface.encodeFunctionData(
+    "setDataBatch",
+    [permissionKeys, permissionValues],
+  );
   await context.keyManager.connect(context.owner).execute(permissionsPayload);
 };

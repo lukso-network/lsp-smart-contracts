@@ -47,7 +47,7 @@ import {
 } from "./index";
 
 export const shouldBehaveLikeLSP6 = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
+  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
 ) => {
   describe("CHANGEOWNER", () => {
     shouldBehaveLikePermissionChangeOwner(buildContext);
@@ -119,9 +119,7 @@ export const shouldBehaveLikeLSP6 = (
   });
 };
 
-export const shouldInitializeLikeLSP6 = (
-  buildContext: () => Promise<LSP6TestContext>
-) => {
+export const shouldInitializeLikeLSP6 = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
   before(async () => {
@@ -130,30 +128,22 @@ export const shouldInitializeLikeLSP6 = (
 
   describe("when the contract was initialized", () => {
     it("should support ERC165 interface", async () => {
-      const result = await context.keyManager.supportsInterface(
-        INTERFACE_IDS.ERC165
-      );
+      const result = await context.keyManager.supportsInterface(INTERFACE_IDS.ERC165);
       expect(result).to.be.true;
     });
 
     it("should support ERC1271 interface", async () => {
-      const result = await context.keyManager.supportsInterface(
-        INTERFACE_IDS.ERC1271
-      );
+      const result = await context.keyManager.supportsInterface(INTERFACE_IDS.ERC1271);
       expect(result).to.be.true;
     });
 
     it("should support LSP6 interface", async () => {
-      const result = await context.keyManager.supportsInterface(
-        INTERFACE_IDS.LSP6KeyManager
-      );
+      const result = await context.keyManager.supportsInterface(INTERFACE_IDS.LSP6KeyManager);
       expect(result).to.be.true;
     });
 
     it("should support LSP20CallVerifier interface", async () => {
-      const result = await context.keyManager.supportsInterface(
-        INTERFACE_IDS.LSP20CallVerifier
-      );
+      const result = await context.keyManager.supportsInterface(INTERFACE_IDS.LSP20CallVerifier);
       expect(result).to.be.true;
     });
 
@@ -165,7 +155,7 @@ export const shouldInitializeLikeLSP6 = (
 };
 
 export const testLSP6InternalFunctions = (
-  buildContext: () => Promise<LSP6InternalsTestContext>
+  buildContext: () => Promise<LSP6InternalsTestContext>,
 ) => {
   testAllowedCallsInternals(buildContext);
   testAllowedERC725YDataKeysInternals(buildContext);

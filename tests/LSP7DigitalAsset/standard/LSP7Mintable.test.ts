@@ -19,13 +19,11 @@ describe("LSP7Mintable with constructor", () => {
       isNFT: false,
     };
 
-    const lsp7Mintable: LSP7Mintable = await new LSP7Mintable__factory(
-      accounts.owner
-    ).deploy(
+    const lsp7Mintable: LSP7Mintable = await new LSP7Mintable__factory(accounts.owner).deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
-      deployParams.isNFT
+      deployParams.isNFT,
     );
 
     return { accounts, lsp7Mintable, deployParams };

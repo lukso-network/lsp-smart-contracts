@@ -1,8 +1,4 @@
-import {
-  LSP11BasicSocialRecovery__factory,
-  LSP6KeyManager,
-  UniversalProfile,
-} from "../../types";
+import { LSP11BasicSocialRecovery__factory, LSP6KeyManager, UniversalProfile } from "../../types";
 
 import {
   getNamedAccounts,
@@ -32,17 +28,15 @@ describe("LSP11BasicSocialRecovery with constructor", () => {
       target: universalProfile,
     };
 
-    const lsp11BasicSocialRecovery =
-      await new LSP11BasicSocialRecovery__factory(accounts.any).deploy(
-        deployParams.owner.address,
-        deployParams.target.address
-      );
+    const lsp11BasicSocialRecovery = await new LSP11BasicSocialRecovery__factory(
+      accounts.any,
+    ).deploy(deployParams.owner.address, deployParams.target.address);
 
     await grantLSP11PermissionViaKeyManager(
       accounts.owner,
       universalProfile,
       lsp6KeyManager,
-      lsp11BasicSocialRecovery.address
+      lsp11BasicSocialRecovery.address,
     );
 
     return {
@@ -65,8 +59,7 @@ describe("LSP11BasicSocialRecovery with constructor", () => {
         return {
           lsp11BasicSocialRecovery,
           deployParams,
-          initializeTransaction:
-            context.lsp11BasicSocialRecovery.deployTransaction,
+          initializeTransaction: context.lsp11BasicSocialRecovery.deployTransaction,
         };
       });
     });

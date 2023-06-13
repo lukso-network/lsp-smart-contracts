@@ -20,9 +20,7 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 import { LOCAL_PRIVATE_KEYS, combineAllowedCalls } from "../../utils/helpers";
 
-export const shouldBehaveLikeMultiChannelNonce = (
-  buildContext: () => Promise<LSP6TestContext>
-) => {
+export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
   let signer: SignerWithAddress, relayer: SignerWithAddress;
@@ -34,20 +32,14 @@ export const shouldBehaveLikeMultiChannelNonce = (
     signer = context.accounts[1];
     relayer = context.accounts[2];
 
-    targetContract = await new TargetContract__factory(
-      context.accounts[0]
-    ).deploy();
+    targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
     const permissionKeys = [
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        signer.address.substring(2),
-      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        signer.address.substring(2),
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + signer.address.substring(2),
+      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + signer.address.substring(2),
       // TODO: why the allowed calls for this controller are set twice? duplicate?
-      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        signer.address.substring(2),
+      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + signer.address.substring(2),
     ];
 
     const permissionsValues = [
@@ -57,13 +49,13 @@ export const shouldBehaveLikeMultiChannelNonce = (
         [CALLTYPE.CALL],
         [targetContract.address],
         ["0xffffffff"],
-        ["0xffffffff"]
+        ["0xffffffff"],
       ),
       combineAllowedCalls(
         [CALLTYPE.CALL],
         [targetContract.address],
         ["0xffffffff"],
-        ["0xffffffff"]
+        ["0xffffffff"],
       ),
     ];
 
@@ -74,8 +66,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
     it("should revert", async () => {
       let channelId = ethers.BigNumber.from(2).pow(129);
 
-      await expect(context.keyManager.getNonce(signer.address, channelId)).to.be
-        .revertedWithPanic;
+      await expect(context.keyManager.getNonce(signer.address, channelId)).to.be.revertedWithPanic;
     });
   });
 
@@ -161,29 +152,20 @@ export const shouldBehaveLikeMultiChannelNonce = (
       let channelId = 1;
       let names = ["Fabian", "Yamen"];
 
-      it(`First call > nonce should increment from ${nonces[0]} to ${
-        nonces[0] + 1
-      }`, async () => {
-        let nonceBefore = await context.keyManager.callStatic.getNonce(
-          signer.address,
-          channelId
-        );
+      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
+        let nonceBefore = await context.keyManager.callStatic.getNonce(signer.address, channelId);
 
         const validityTimestamps = 0;
 
         let newName = names[0];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData(
-          "setName",
-          [newName]
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
         );
-        let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
@@ -197,7 +179,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
             validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
-          ]
+          ],
         );
 
         let eip191Signer = new EIP191Signer();
@@ -205,54 +187,36 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+          LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            signature,
-            nonceBefore,
-            validityTimestamps,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonceBefore, validityTimestamps, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await context.keyManager.callStatic.getNonce(
-          signer.address,
-          channelId
-        );
+        let nonceAfter = await context.keyManager.callStatic.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
         expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
-      it(`Second call > nonce should increment from ${nonces[1]} to ${
-        nonces[1] + 1
-      }`, async () => {
-        let nonceBefore = await context.keyManager.getNonce(
-          signer.address,
-          channelId
-        );
+      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
+        let nonceBefore = await context.keyManager.getNonce(signer.address, channelId);
 
         const validityTimestamps = 0;
 
         let newName = names[1];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData(
-          "setName",
-          [newName]
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
         );
-        let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
@@ -266,7 +230,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
             validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
-          ]
+          ],
         );
 
         let eip191Signer = new EIP191Signer();
@@ -274,26 +238,17 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+          LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            signature,
-            nonceBefore,
-            validityTimestamps,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonceBefore, validityTimestamps, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await context.keyManager.callStatic.getNonce(
-          signer.address,
-          channelId
-        );
+        let nonceAfter = await context.keyManager.callStatic.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
         expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
@@ -304,29 +259,20 @@ export const shouldBehaveLikeMultiChannelNonce = (
       let channelId = 2;
       let names = ["Hugo", "Reto"];
 
-      it(`First call > nonce should increment from ${nonces[0]} to ${
-        nonces[0] + 1
-      }`, async () => {
-        let nonceBefore = await context.keyManager.getNonce(
-          signer.address,
-          channelId
-        );
+      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
+        let nonceBefore = await context.keyManager.getNonce(signer.address, channelId);
 
         const validityTimestamps = 0;
 
         let newName = names[0];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData(
-          "setName",
-          [newName]
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
         );
-        let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
@@ -340,7 +286,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
             validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
-          ]
+          ],
         );
 
         let eip191Signer = new EIP191Signer();
@@ -348,54 +294,36 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+          LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            signature,
-            nonceBefore,
-            validityTimestamps,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonceBefore, validityTimestamps, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await context.keyManager.callStatic.getNonce(
-          signer.address,
-          channelId
-        );
+        let nonceAfter = await context.keyManager.callStatic.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
         expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
-      it(`Second call > nonce should increment from ${nonces[1]} to ${
-        nonces[1] + 1
-      }`, async () => {
-        let nonceBefore = await context.keyManager.getNonce(
-          signer.address,
-          channelId
-        );
+      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
+        let nonceBefore = await context.keyManager.getNonce(signer.address, channelId);
 
         const validityTimestamps = 0;
 
         let newName = names[1];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData(
-          "setName",
-          [newName]
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
         );
-        let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
@@ -409,7 +337,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
             validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
-          ]
+          ],
         );
 
         let eip191Signer = new EIP191Signer();
@@ -417,26 +345,17 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+          LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            signature,
-            nonceBefore,
-            validityTimestamps,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonceBefore, validityTimestamps, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await context.keyManager.callStatic.getNonce(
-          signer.address,
-          channelId
-        );
+        let nonceAfter = await context.keyManager.callStatic.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
         expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
@@ -447,29 +366,20 @@ export const shouldBehaveLikeMultiChannelNonce = (
       let channelId = 3;
       let names = ["Jean", "Lenny"];
 
-      it(`First call > nonce should increment from ${nonces[0]} to ${
-        nonces[0] + 1
-      }`, async () => {
-        let nonceBefore = await context.keyManager.getNonce(
-          signer.address,
-          channelId
-        );
+      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
+        let nonceBefore = await context.keyManager.getNonce(signer.address, channelId);
 
         const validityTimestamps = 0;
 
         let newName = names[0];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData(
-          "setName",
-          [newName]
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
         );
-        let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
@@ -483,7 +393,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
             validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
-          ]
+          ],
         );
 
         let eip191Signer = new EIP191Signer();
@@ -491,54 +401,36 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+          LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            signature,
-            nonceBefore,
-            validityTimestamps,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonceBefore, validityTimestamps, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await context.keyManager.callStatic.getNonce(
-          signer.address,
-          channelId
-        );
+        let nonceAfter = await context.keyManager.callStatic.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
         expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
-      it(`Second call > nonce should increment from ${nonces[1]} to ${
-        nonces[1] + 1
-      }`, async () => {
-        let nonceBefore = await context.keyManager.getNonce(
-          signer.address,
-          channelId
-        );
+      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
+        let nonceBefore = await context.keyManager.getNonce(signer.address, channelId);
 
         const validityTimestamps = 0;
 
         let newName = names[1];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData(
-          "setName",
-          [newName]
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
         );
-        let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
@@ -552,7 +444,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
             validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
-          ]
+          ],
         );
 
         let eip191Signer = new EIP191Signer();
@@ -560,26 +452,17 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+          LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            signature,
-            nonceBefore,
-            validityTimestamps,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonceBefore, validityTimestamps, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await context.keyManager.callStatic.getNonce(
-          signer.address,
-          channelId
-        );
+        let nonceAfter = await context.keyManager.callStatic.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
         expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
@@ -590,26 +473,19 @@ export const shouldBehaveLikeMultiChannelNonce = (
       let channelId = 15;
 
       it("First call > nonce should increment from 0 to 1", async () => {
-        let nonceBefore = await context.keyManager.getNonce(
-          signer.address,
-          channelId
-        );
+        let nonceBefore = await context.keyManager.getNonce(signer.address, channelId);
 
         const validityTimestamps = 0;
 
         let newName = "Lukasz";
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData(
-          "setName",
-          [newName]
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
         );
-        let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
@@ -623,7 +499,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
             validityTimestamps,
             valueToSend,
             executeRelayCallPayload,
-          ]
+          ],
         );
 
         let eip191Signer = new EIP191Signer();
@@ -631,26 +507,17 @@ export const shouldBehaveLikeMultiChannelNonce = (
         let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+          LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            signature,
-            nonceBefore,
-            validityTimestamps,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonceBefore, validityTimestamps, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await context.keyManager.callStatic.getNonce(
-          signer.address,
-          channelId
-        );
+        let nonceAfter = await context.keyManager.callStatic.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
         expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented

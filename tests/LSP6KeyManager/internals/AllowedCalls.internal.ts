@@ -2,11 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import {
-  TargetContract,
-  TargetContract__factory,
-  UniversalProfile__factory,
-} from "../../../types";
+import { TargetContract, TargetContract__factory, UniversalProfile__factory } from "../../../types";
 
 // constants
 import {
@@ -22,28 +18,22 @@ import { LSP6InternalsTestContext } from "../../utils/context";
 import { setupKeyManagerHelper } from "../../utils/fixtures";
 
 // helpers
-import {
-  combinePermissions,
-  combineAllowedCalls,
-  combineCallTypes,
-} from "../../utils/helpers";
+import { combinePermissions, combineAllowedCalls, combineCallTypes } from "../../utils/helpers";
 
 async function teardownKeyManagerHelper(
   context: LSP6InternalsTestContext,
-  permissionsKeys: string[]
+  permissionsKeys: string[],
 ) {
-  const teardownPayload = context.universalProfile.interface.encodeFunctionData(
-    "setDataBatch",
-    [permissionsKeys, Array(permissionsKeys.length).fill("0x")]
-  );
+  const teardownPayload = context.universalProfile.interface.encodeFunctionData("setDataBatch", [
+    permissionsKeys,
+    Array(permissionsKeys.length).fill("0x"),
+  ]);
 
-  await context.keyManagerInternalTester
-    .connect(context.owner)
-    .execute(teardownPayload);
+  await context.keyManagerInternalTester.connect(context.owner).execute(teardownPayload);
 }
 
 export const testAllowedCallsInternals = (
-  buildContext: () => Promise<LSP6InternalsTestContext>
+  buildContext: () => Promise<LSP6InternalsTestContext>,
 ) => {
   let context: LSP6InternalsTestContext;
 
@@ -58,50 +48,45 @@ export const testAllowedCallsInternals = (
           [CALLTYPE.VALUE],
           [context.accounts[5].address],
           ["0xffffffff"],
-          ["0xffffffff"]
+          ["0xffffffff"],
         );
 
-        const result =
-          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
-            allowedCalls
-          );
+        const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
+          allowedCalls,
+        );
 
         expect(result).to.be.true;
       });
 
       it("should return `false` if element is not 28 bytes long", async () => {
         const allowedCalls = ethers.utils.hexlify(ethers.utils.randomBytes(27));
-        const result =
-          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
-            allowedCalls
-          );
+        const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
+          allowedCalls,
+        );
         expect(result).to.be.false;
       });
 
       it("should return `false` if element is 0x0000 (zero length elements not allowed)", async () => {
         const allowedCalls = "0x0000";
-        const result =
-          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
-            allowedCalls
-          );
+        const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
+          allowedCalls,
+        );
         expect(result).to.be.false;
       });
 
       it("should return `false` if there are just 2 x length bytes but not followed by the value (the allowed calls)", async () => {
         const allowedCalls = "0x001c";
-        const result =
-          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
-            allowedCalls
-          );
+        const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
+          allowedCalls,
+        );
         expect(result).to.be.false;
       });
 
       it("should return `false` if there are just 2 x length bytes equal to `0x0002`", async () => {
         const allowedCalls = "0x0002";
-        const result =
-          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
-            allowedCalls
-          );
+        const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
+          allowedCalls,
+        );
         expect(result).to.be.false;
       });
     });
@@ -110,19 +95,14 @@ export const testAllowedCallsInternals = (
       it("should pass if all elements are 28 bytes long", async () => {
         const allowedCalls = combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE, CALLTYPE.VALUE],
-          [
-            context.accounts[5].address,
-            context.accounts[6].address,
-            context.accounts[7].address,
-          ],
+          [context.accounts[5].address, context.accounts[6].address, context.accounts[7].address],
           ["0xffffffff", "0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff", "0xffffffff"],
         );
 
-        const result =
-          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
-            allowedCalls
-          );
+        const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
+          allowedCalls,
+        );
 
         expect(result).to.be.true;
       });
@@ -136,21 +116,19 @@ export const testAllowedCallsInternals = (
             context.accounts[7].address,
           ],
           ["0xffffffff", "0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
         );
 
-        const result =
-          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
-            allowedCalls
-          );
+        const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
+          allowedCalls,
+        );
         expect(result).to.be.false;
       });
     });
   });
 
   describe("testing 2 x addresses encoded as LSP2 CompactBytesArray under `AllowedCalls`", () => {
-    let canCallOnlyTwoAddresses: SignerWithAddress,
-      canCallNoAllowedCalls: SignerWithAddress;
+    let canCallOnlyTwoAddresses: SignerWithAddress, canCallNoAllowedCalls: SignerWithAddress;
 
     let allowedEOA: SignerWithAddress,
       notAllowedEOA: SignerWithAddress,
@@ -167,13 +145,9 @@ export const testAllowedCallsInternals = (
       allowedEOA = context.accounts[3];
       notAllowedEOA = context.accounts[4];
 
-      allowedTargetContract = await new TargetContract__factory(
-        context.accounts[0]
-      ).deploy();
+      allowedTargetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
-      notAllowedTargetContract = await new TargetContract__factory(
-        context.accounts[0]
-      ).deploy();
+      notAllowedTargetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
       // addresses need to be put in lower case for the encoding otherwise:
       //  - the encoding will return them checksummed
@@ -183,17 +157,13 @@ export const testAllowedCallsInternals = (
           combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
           combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
         ],
-        [
-          allowedEOA.address.toLowerCase(),
-          allowedTargetContract.address.toLowerCase(),
-        ],
+        [allowedEOA.address.toLowerCase(), allowedTargetContract.address.toLowerCase()],
         ["0xffffffff", "0xffffffff"],
-        ["0xffffffff", "0xffffffff"]
+        ["0xffffffff", "0xffffffff"],
       );
 
       let permissionsKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canCallOnlyTwoAddresses.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
@@ -211,26 +181,22 @@ export const testAllowedCallsInternals = (
 
     describe("`getAllowedCallsFor(...)`", () => {
       it("should return the list of allowed calls", async () => {
-        let bytesResult =
-          await context.keyManagerInternalTester.getAllowedCallsFor(
-            canCallOnlyTwoAddresses.address
-          );
+        let bytesResult = await context.keyManagerInternalTester.getAllowedCallsFor(
+          canCallOnlyTwoAddresses.address,
+        );
 
         expect(bytesResult).to.equal(encodedAllowedCalls);
       });
 
       it("should return no bytes when no allowed calls were set", async () => {
-        let bytesResult =
-          await context.keyManagerInternalTester.getAllowedCallsFor(
-            context.owner.address
-          );
+        let bytesResult = await context.keyManagerInternalTester.getAllowedCallsFor(
+          context.owner.address,
+        );
         expect(bytesResult).to.equal("0x");
 
-        let resultFromAccount = await context.universalProfile[
-          "getData(bytes32)"
-        ](
+        let resultFromAccount = await context.universalProfile["getData(bytes32)"](
           ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-            context.owner.address.substring(2)
+            context.owner.address.substring(2),
         );
         expect(resultFromAccount).to.equal("0x");
       });
@@ -239,21 +205,18 @@ export const testAllowedCallsInternals = (
     describe("`verifyAllowedCall(...)`", () => {
       describe("when the ERC725X payload (transfer 1 LYX) is for an address listed in the allowed calls", () => {
         it("should pass", async () => {
-          const payload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [
-              OPERATION_TYPES.CALL,
-              allowedEOA.address,
-              ethers.utils.parseEther("1"),
-              "0x",
-            ]
-          );
+          const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            allowedEOA.address,
+            ethers.utils.parseEther("1"),
+            "0x",
+          ]);
 
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
               canCallOnlyTwoAddresses.address,
-              payload
-            )
+              payload,
+            ),
           ).to.not.be.reverted;
         });
       });
@@ -261,34 +224,24 @@ export const testAllowedCallsInternals = (
       describe("when the ERC725X payload (transfer 1 LYX)  is for an address not listed in the allowed calls", () => {
         it("should revert", async () => {
           let disallowedAddress = ethers.utils.getAddress(
-            "0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead"
+            "0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead",
           );
 
-          const payload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [
-              OPERATION_TYPES.CALL,
-              disallowedAddress,
-              ethers.utils.parseEther("1"),
-              "0x",
-            ]
-          );
+          const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            disallowedAddress,
+            ethers.utils.parseEther("1"),
+            "0x",
+          ]);
 
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
               canCallOnlyTwoAddresses.address,
-              payload
-            )
+              payload,
+            ),
           )
-            .to.be.revertedWithCustomError(
-              context.keyManagerInternalTester,
-              "NotAllowedCall"
-            )
-            .withArgs(
-              canCallOnlyTwoAddresses.address,
-              disallowedAddress,
-              "0x00000000"
-            );
+            .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedCall")
+            .withArgs(canCallOnlyTwoAddresses.address, disallowedAddress, "0x00000000");
         });
       });
 
@@ -296,26 +249,20 @@ export const testAllowedCallsInternals = (
         it("should revert", async () => {
           let randomAddress = ethers.Wallet.createRandom().address;
 
-          const payload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [
-              OPERATION_TYPES.CALL,
-              randomAddress,
-              ethers.utils.parseEther("1"),
-              "0x",
-            ]
-          );
+          const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            randomAddress,
+            ethers.utils.parseEther("1"),
+            "0x",
+          ]);
 
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
               canCallNoAllowedCalls.address,
-              payload
-            )
+              payload,
+            ),
           )
-            .to.be.revertedWithCustomError(
-              context.keyManagerInternalTester,
-              "NoCallsAllowed"
-            )
+            .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NoCallsAllowed")
             .withArgs(canCallNoAllowedCalls.address);
         });
       });
@@ -338,29 +285,16 @@ export const testAllowedCallsInternals = (
     before("setup AllowedCalls", async () => {
       context = await buildContext();
 
-      targetContractValue = await new TargetContract__factory(
-        context.accounts[0]
-      ).deploy();
+      targetContractValue = await new TargetContract__factory(context.accounts[0]).deploy();
 
-      targetContractCall = await new TargetContract__factory(
-        context.accounts[0]
-      ).deploy();
+      targetContractCall = await new TargetContract__factory(context.accounts[0]).deploy();
 
-      targetContractStaticCall = await new TargetContract__factory(
-        context.accounts[0]
-      ).deploy();
+      targetContractStaticCall = await new TargetContract__factory(context.accounts[0]).deploy();
 
-      targetContractDelegateCall = await new TargetContract__factory(
-        context.accounts[0]
-      ).deploy();
+      targetContractDelegateCall = await new TargetContract__factory(context.accounts[0]).deploy();
 
       allowedCalls = combineAllowedCalls(
-        [
-          CALLTYPE.VALUE,
-          CALLTYPE.CALL,
-          CALLTYPE.STATICCALL,
-          CALLTYPE.DELEGATECALL,
-        ],
+        [CALLTYPE.VALUE, CALLTYPE.CALL, CALLTYPE.STATICCALL, CALLTYPE.DELEGATECALL],
         [
           targetContractValue.address,
           targetContractCall.address,
@@ -368,7 +302,7 @@ export const testAllowedCallsInternals = (
           targetContractDelegateCall.address,
         ],
         ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
-        ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
+        ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
       );
 
       // setup empty allowed calls
@@ -385,22 +319,18 @@ export const testAllowedCallsInternals = (
         controller = context.accounts[1];
 
         permissionKeys = [
-          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            controller.address.substring(2),
-          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-            controller.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controller.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + controller.address.substring(2),
         ];
 
         permissionValues = [combinePermissions(PERMISSIONS.CALL), allowedCalls];
 
-        const setup = context.universalProfile.interface.encodeFunctionData(
-          "setDataBatch",
-          [permissionKeys, permissionValues]
-        );
+        const setup = context.universalProfile.interface.encodeFunctionData("setDataBatch", [
+          permissionKeys,
+          permissionValues,
+        ]);
 
-        await context.keyManagerInternalTester
-          .connect(context.owner)
-          .execute(setup);
+        await context.keyManagerInternalTester.connect(context.owner).execute(setup);
       });
 
       after("reset permissions", async () => {
@@ -408,106 +338,61 @@ export const testAllowedCallsInternals = (
       });
 
       it("should fail with `NotAllowedCall` error when the allowed address has `v` permission only (`v` = VALUE)", async () => {
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.CALL,
-            targetContractValue.address,
-            0,
-            randomPayload, // random payload
-          ]
-        );
+        const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          targetContractValue.address,
+          0,
+          randomPayload, // random payload
+        ]);
 
         await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            controller.address,
-            payload
-          )
+          context.keyManagerInternalTester.verifyAllowedCall(controller.address, payload),
         )
-          .to.be.revertedWithCustomError(
-            context.keyManagerInternalTester,
-            "NotAllowedCall"
-          )
-          .withArgs(
-            controller.address,
-            targetContractValue.address,
-            randomPayload
-          );
+          .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedCall")
+          .withArgs(controller.address, targetContractValue.address, randomPayload);
       });
 
       it("should pass when the allowed address has `c` permission only (`c` = CALL)", async () => {
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.CALL,
-            targetContractCall.address,
-            0,
-            randomPayload, // random payload
-          ]
-        );
+        const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          targetContractCall.address,
+          0,
+          randomPayload, // random payload
+        ]);
 
         await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            controller.address,
-            payload
-          )
+          context.keyManagerInternalTester.verifyAllowedCall(controller.address, payload),
         ).to.not.be.reverted;
       });
 
       it("should fail with `NotAllowedCall` error when the allowed address has `s` permission only (`s` = STATICCALL)", async () => {
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.CALL,
-            targetContractStaticCall.address,
-            0,
-            randomPayload, // random payload
-          ]
-        );
+        const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          targetContractStaticCall.address,
+          0,
+          randomPayload, // random payload
+        ]);
 
         await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            controller.address,
-            payload
-          )
+          context.keyManagerInternalTester.verifyAllowedCall(controller.address, payload),
         )
-          .to.be.revertedWithCustomError(
-            context.keyManagerInternalTester,
-            "NotAllowedCall"
-          )
-          .withArgs(
-            controller.address,
-            targetContractStaticCall.address,
-            randomPayload
-          );
+          .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedCall")
+          .withArgs(controller.address, targetContractStaticCall.address, randomPayload);
       });
 
       it("should fail with `NotAllowedCall` error when the allowed address has `d` permission only (`d` = DELEGATECALL)", async () => {
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.CALL,
-            targetContractDelegateCall.address,
-            0,
-            randomPayload, // random payload
-          ]
-        );
+        const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          targetContractDelegateCall.address,
+          0,
+          randomPayload, // random payload
+        ]);
 
         await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            controller.address,
-            payload
-          )
+          context.keyManagerInternalTester.verifyAllowedCall(controller.address, payload),
         )
-          .to.be.revertedWithCustomError(
-            context.keyManagerInternalTester,
-            "NotAllowedCall"
-          )
-          .withArgs(
-            controller.address,
-            targetContractDelegateCall.address,
-            randomPayload
-          );
+          .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedCall")
+          .withArgs(controller.address, targetContractDelegateCall.address, randomPayload);
       });
     });
 
@@ -521,25 +406,18 @@ export const testAllowedCallsInternals = (
         controller = context.accounts[1];
 
         permissionKeys = [
-          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            controller.address.substring(2),
-          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-            controller.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controller.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + controller.address.substring(2),
         ];
 
-        permissionValues = [
-          combinePermissions(PERMISSIONS.STATICCALL),
-          allowedCalls,
-        ];
+        permissionValues = [combinePermissions(PERMISSIONS.STATICCALL), allowedCalls];
 
-        const setup = context.universalProfile.interface.encodeFunctionData(
-          "setDataBatch",
-          [permissionKeys, permissionValues]
-        );
+        const setup = context.universalProfile.interface.encodeFunctionData("setDataBatch", [
+          permissionKeys,
+          permissionValues,
+        ]);
 
-        await context.keyManagerInternalTester
-          .connect(context.owner)
-          .execute(setup);
+        await context.keyManagerInternalTester.connect(context.owner).execute(setup);
       });
 
       after("reset permissions", async () => {
@@ -547,106 +425,61 @@ export const testAllowedCallsInternals = (
       });
 
       it("should fail with `NotAllowedCall` error when the allowed address has `v` permission only (`v` = VALUE)", async () => {
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.STATICCALL,
-            targetContractValue.address,
-            0,
-            randomPayload, // random payload
-          ]
-        );
+        const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.STATICCALL,
+          targetContractValue.address,
+          0,
+          randomPayload, // random payload
+        ]);
 
         await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            controller.address,
-            payload
-          )
+          context.keyManagerInternalTester.verifyAllowedCall(controller.address, payload),
         )
-          .to.be.revertedWithCustomError(
-            context.keyManagerInternalTester,
-            "NotAllowedCall"
-          )
-          .withArgs(
-            controller.address,
-            targetContractValue.address,
-            randomPayload
-          );
+          .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedCall")
+          .withArgs(controller.address, targetContractValue.address, randomPayload);
       });
 
       it("should fail with `NotAllowedCall` error when the allowed address has `c` permission only (`c` = CALL)", async () => {
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.STATICCALL,
-            targetContractCall.address,
-            0,
-            randomPayload, // random payload
-          ]
-        );
+        const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.STATICCALL,
+          targetContractCall.address,
+          0,
+          randomPayload, // random payload
+        ]);
 
         await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            controller.address,
-            payload
-          )
+          context.keyManagerInternalTester.verifyAllowedCall(controller.address, payload),
         )
-          .to.be.revertedWithCustomError(
-            context.keyManagerInternalTester,
-            "NotAllowedCall"
-          )
-          .withArgs(
-            controller.address,
-            targetContractCall.address,
-            randomPayload
-          );
+          .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedCall")
+          .withArgs(controller.address, targetContractCall.address, randomPayload);
       });
 
       it("should pass when the allowed address has `s` permission only (`s` = STATICCALL)", async () => {
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.STATICCALL,
-            targetContractStaticCall.address,
-            0,
-            randomPayload, // random payload
-          ]
-        );
+        const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.STATICCALL,
+          targetContractStaticCall.address,
+          0,
+          randomPayload, // random payload
+        ]);
 
         await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            controller.address,
-            payload
-          )
+          context.keyManagerInternalTester.verifyAllowedCall(controller.address, payload),
         ).to.not.be.reverted;
       });
 
       it("should fail with `NotAllowedCall` error when the allowed address has `d` permission only (`d` = DELEGATECALL)", async () => {
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.STATICCALL,
-            targetContractDelegateCall.address,
-            0,
-            randomPayload, // random payload
-          ]
-        );
+        const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.STATICCALL,
+          targetContractDelegateCall.address,
+          0,
+          randomPayload, // random payload
+        ]);
 
         await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            controller.address,
-            payload
-          )
+          context.keyManagerInternalTester.verifyAllowedCall(controller.address, payload),
         )
-          .to.be.revertedWithCustomError(
-            context.keyManagerInternalTester,
-            "NotAllowedCall"
-          )
-          .withArgs(
-            controller.address,
-            targetContractDelegateCall.address,
-            randomPayload
-          );
+          .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedCall")
+          .withArgs(controller.address, targetContractDelegateCall.address, randomPayload);
       });
     });
 
@@ -660,25 +493,18 @@ export const testAllowedCallsInternals = (
         controller = context.accounts[1];
 
         permissionKeys = [
-          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            controller.address.substring(2),
-          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-            controller.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controller.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + controller.address.substring(2),
         ];
 
-        permissionValues = [
-          combinePermissions(PERMISSIONS.DELEGATECALL),
-          allowedCalls,
-        ];
+        permissionValues = [combinePermissions(PERMISSIONS.DELEGATECALL), allowedCalls];
 
-        const setup = context.universalProfile.interface.encodeFunctionData(
-          "setDataBatch",
-          [permissionKeys, permissionValues]
-        );
+        const setup = context.universalProfile.interface.encodeFunctionData("setDataBatch", [
+          permissionKeys,
+          permissionValues,
+        ]);
 
-        await context.keyManagerInternalTester
-          .connect(context.owner)
-          .execute(setup);
+        await context.keyManagerInternalTester.connect(context.owner).execute(setup);
       });
 
       after("reset permissions", async () => {
@@ -686,105 +512,60 @@ export const testAllowedCallsInternals = (
       });
 
       it("should fail with `NotAllowedCall` error when the allowed address has `v` permission only (`v` = VALUE)", async () => {
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.DELEGATECALL,
-            targetContractValue.address,
-            0,
-            randomPayload, // random payload
-          ]
-        );
+        const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.DELEGATECALL,
+          targetContractValue.address,
+          0,
+          randomPayload, // random payload
+        ]);
 
         await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            controller.address,
-            payload
-          )
+          context.keyManagerInternalTester.verifyAllowedCall(controller.address, payload),
         )
-          .to.be.revertedWithCustomError(
-            context.keyManagerInternalTester,
-            "NotAllowedCall"
-          )
-          .withArgs(
-            controller.address,
-            targetContractValue.address,
-            randomPayload
-          );
+          .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedCall")
+          .withArgs(controller.address, targetContractValue.address, randomPayload);
       });
 
       it("should fail with `NotAllowedCall` error when the allowed address has `c` permission only (`c` = CALL)", async () => {
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.DELEGATECALL,
-            targetContractCall.address,
-            0,
-            randomPayload, // random payload
-          ]
-        );
+        const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.DELEGATECALL,
+          targetContractCall.address,
+          0,
+          randomPayload, // random payload
+        ]);
 
         await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            controller.address,
-            payload
-          )
+          context.keyManagerInternalTester.verifyAllowedCall(controller.address, payload),
         )
-          .to.be.revertedWithCustomError(
-            context.keyManagerInternalTester,
-            "NotAllowedCall"
-          )
-          .withArgs(
-            controller.address,
-            targetContractCall.address,
-            randomPayload
-          );
+          .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedCall")
+          .withArgs(controller.address, targetContractCall.address, randomPayload);
       });
 
       it("should fail with `NotAllowedCall` error when the allowed address has `s` permission only (`s` = STATICCALL)", async () => {
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.DELEGATECALL,
-            targetContractStaticCall.address,
-            0,
-            randomPayload, // random payload
-          ]
-        );
+        const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.DELEGATECALL,
+          targetContractStaticCall.address,
+          0,
+          randomPayload, // random payload
+        ]);
 
         await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            controller.address,
-            payload
-          )
+          context.keyManagerInternalTester.verifyAllowedCall(controller.address, payload),
         )
-          .to.be.revertedWithCustomError(
-            context.keyManagerInternalTester,
-            "NotAllowedCall"
-          )
-          .withArgs(
-            controller.address,
-            targetContractStaticCall.address,
-            randomPayload
-          );
+          .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedCall")
+          .withArgs(controller.address, targetContractStaticCall.address, randomPayload);
       });
 
       it("should pass when the allowed address has `d` permission only (`d` = DELEGATECALL)", async () => {
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.DELEGATECALL,
-            targetContractDelegateCall.address,
-            0,
-            randomPayload, // random payload
-          ]
-        );
+        const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.DELEGATECALL,
+          targetContractDelegateCall.address,
+          0,
+          randomPayload, // random payload
+        ]);
 
         await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            controller.address,
-            payload
-          )
+          context.keyManagerInternalTester.verifyAllowedCall(controller.address, payload),
         ).to.not.be.reverted;
       });
     });
@@ -830,26 +611,23 @@ export const testAllowedCallsInternals = (
       };
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
         ...Object.values(controller).map(
           (controller) =>
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            controller.address.substring(2)
+            controller.address.substring(2),
         ),
         ...Object.values(controller).map(
           (controller) =>
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-            controller.address.substring(2)
+            controller.address.substring(2),
         ),
       ];
 
       let permissionValues = [ALL_PERMISSIONS];
 
       for (let ii = 0; ii < Object.values(controller).length; ii++) {
-        permissionValues.push(
-          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE)
-        );
+        permissionValues.push(combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE));
       }
 
       permissionValues = permissionValues.concat(zeroBytesValues);
@@ -861,26 +639,19 @@ export const testAllowedCallsInternals = (
       const randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
       const randomData = "0xaabbccdd";
 
-      const universalProfileInterface =
-        UniversalProfile__factory.createInterface();
+      const universalProfileInterface = UniversalProfile__factory.createInterface();
 
-      let payload: string = universalProfileInterface.encodeFunctionData(
-        "execute",
-        [
-          OPERATION_TYPES.CALL,
-          randomAddress,
-          ethers.utils.parseEther("1"),
-          randomData,
-        ]
-      );
+      let payload: string = universalProfileInterface.encodeFunctionData("execute", [
+        OPERATION_TYPES.CALL,
+        randomAddress,
+        ethers.utils.parseEther("1"),
+        randomData,
+      ]);
 
       describe("should revert with `NoAllowedCall` error", () => {
         it(`noBytes -> ${zeroBytesValues[0]}`, async () => {
           await expect(
-            context.keyManagerInternalTester.verifyAllowedCall(
-              controller.noBytes.address,
-              payload
-            )
+            context.keyManagerInternalTester.verifyAllowedCall(controller.noBytes.address, payload),
           ).to.be.reverted;
         });
 
@@ -888,8 +659,8 @@ export const testAllowedCallsInternals = (
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
               controller.oneZeroByte.address,
-              payload
-            )
+              payload,
+            ),
           ).to.be.reverted;
         });
 
@@ -897,8 +668,8 @@ export const testAllowedCallsInternals = (
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
               controller.tenZeroBytes.address,
-              payload
-            )
+              payload,
+            ),
           ).to.be.reverted;
         });
 
@@ -906,8 +677,8 @@ export const testAllowedCallsInternals = (
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
               controller.twentyZeroBytes.address,
-              payload
-            )
+              payload,
+            ),
           ).to.be.reverted;
         });
       });
@@ -920,17 +691,14 @@ export const testAllowedCallsInternals = (
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
               controller.thirtyTwoZeroBytes.address,
-              payload
-            )
+              payload,
+            ),
           )
-            .to.be.revertedWithCustomError(
-              context.keyManagerInternalTester,
-              "NotAllowedCall"
-            )
+            .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedCall")
             .withArgs(
               controller.thirtyTwoZeroBytes.address,
               ethers.utils.getAddress(randomAddress),
-              randomData
+              randomData,
             );
         });
 
@@ -938,17 +706,14 @@ export const testAllowedCallsInternals = (
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
               controller.fourtyZeroBytes.address,
-              randomAddress
-            )
+              randomAddress,
+            ),
           )
-            .to.be.revertedWithCustomError(
-              context.keyManagerInternalTester,
-              "NotAllowedCall"
-            )
+            .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedCall")
             .withArgs(
               controller.fourtyZeroBytes.address,
               ethers.utils.getAddress(randomAddress),
-              randomData
+              randomData,
             );
         });
 
@@ -956,16 +721,13 @@ export const testAllowedCallsInternals = (
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
               controller.sixtyFourZeroBytes.address,
-              randomAddress
-            )
+              randomAddress,
+            ),
           )
-            .to.be.revertedWithCustomError(
-              context.keyManagerInternalTester,
-              "NotAllowedAddress"
-            )
+            .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedAddress")
             .withArgs(
               controller.sixtyFourZeroBytes.address,
-              ethers.utils.getAddress(randomAddress)
+              ethers.utils.getAddress(randomAddress),
             );
         });
 
@@ -973,17 +735,11 @@ export const testAllowedCallsInternals = (
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
               controller.hundredZeroBytes.address,
-              randomAddress
-            )
+              randomAddress,
+            ),
           )
-            .to.be.revertedWithCustomError(
-              context.keyManagerInternalTester,
-              "NotAllowedAddress"
-            )
-            .withArgs(
-              controller.hundredZeroBytes.address,
-              ethers.utils.getAddress(randomAddress)
-            );
+            .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedAddress")
+            .withArgs(controller.hundredZeroBytes.address, ethers.utils.getAddress(randomAddress));
         });
       });
     });
@@ -1011,15 +767,12 @@ export const testAllowedCallsInternals = (
     before(async () => {
       context = await buildContext();
 
-      payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
-          OPERATION_TYPES.CALL,
-          randomAddress,
-          ethers.utils.parseEther("1"),
-          randomData,
-        ]
-      );
+      payload = context.universalProfile.interface.encodeFunctionData("execute", [
+        OPERATION_TYPES.CALL,
+        randomAddress,
+        ethers.utils.parseEther("1"),
+        randomData,
+      ]);
 
       controller = {
         multipleOf29Bytes: context.accounts[1],
@@ -1028,8 +781,7 @@ export const testAllowedCallsInternals = (
       };
 
       let permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           controller.multipleOf29Bytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -1063,17 +815,14 @@ export const testAllowedCallsInternals = (
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
               controller.multipleOf29Bytes.address,
-              payload
-            )
+              payload,
+            ),
           )
-            .to.be.revertedWithCustomError(
-              context.keyManagerInternalTester,
-              "NotAllowedCall"
-            )
+            .to.be.revertedWithCustomError(context.keyManagerInternalTester, "NotAllowedCall")
             .withArgs(
               controller.multipleOf29Bytes.address,
               ethers.utils.getAddress(randomAddress),
-              randomData
+              randomData,
             );
         });
       });
@@ -1083,8 +832,8 @@ export const testAllowedCallsInternals = (
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
               controller.shortBytes.address,
-              payload
-            )
+              payload,
+            ),
           ).to.be.reverted;
         });
 
@@ -1093,8 +842,8 @@ export const testAllowedCallsInternals = (
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
               controller.longBytes.address,
-              randomAddress
-            )
+              randomAddress,
+            ),
           ).to.be.reverted;
         });
       });
@@ -1110,8 +859,7 @@ export const testAllowedCallsInternals = (
       anyAllowedCalls = context.accounts[1];
 
       let permissionsKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           anyAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
@@ -1129,7 +877,7 @@ export const testAllowedCallsInternals = (
           ["0x00000000"],
           ["0xffffffffffffffffffffffffffffffffffffffff"],
           ["0xffffffff"],
-          ["0xffffffff"]
+          ["0xffffffff"],
         ),
       ];
 
@@ -1140,26 +888,17 @@ export const testAllowedCallsInternals = (
       const randomData = "0xaabbccdd";
       const randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
 
-      const payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
-          OPERATION_TYPES.CALL,
-          randomAddress,
-          ethers.utils.parseEther("1"),
-          randomData,
-        ]
-      );
+      const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+        OPERATION_TYPES.CALL,
+        randomAddress,
+        ethers.utils.parseEther("1"),
+        randomData,
+      ]);
 
       await expect(
-        context.keyManagerInternalTester.verifyAllowedCall(
-          anyAllowedCalls.address,
-          payload
-        )
+        context.keyManagerInternalTester.verifyAllowedCall(anyAllowedCalls.address, payload),
       )
-        .to.be.revertedWithCustomError(
-          context.keyManagerInternalTester,
-          "InvalidWhitelistedCall"
-        )
+        .to.be.revertedWithCustomError(context.keyManagerInternalTester, "InvalidWhitelistedCall")
         .withArgs(anyAllowedCalls.address);
     });
   });
