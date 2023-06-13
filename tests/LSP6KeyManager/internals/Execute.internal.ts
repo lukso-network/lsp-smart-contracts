@@ -4,24 +4,17 @@ import { ethers } from "hardhat";
 // setup
 import { LSP6InternalsTestContext } from "../../utils/context";
 import { setupKeyManagerHelper } from "../../utils/fixtures";
-import {
-  ALL_PERMISSIONS,
-  ERC725YDataKeys,
-  OPERATION_TYPES,
-} from "../../../constants";
+import { ALL_PERMISSIONS, ERC725YDataKeys, OPERATION_TYPES } from "../../../constants";
 import { abiCoder } from "../../utils/helpers";
 
-export const testExecuteInternals = (
-  buildContext: () => Promise<LSP6InternalsTestContext>
-) => {
+export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTestContext>) => {
   let context: LSP6InternalsTestContext;
 
   before(async () => {
     context = await buildContext();
 
     const permissionKeys = [
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
     ];
 
     const permissionValues = [ALL_PERMISSIONS];
@@ -38,20 +31,14 @@ export const testExecuteInternals = (
         data: "0xcafecafecafecafe",
       };
 
-      const calldata = context.universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
-          executeParameters.operationType,
-          executeParameters.to,
-          executeParameters.value,
-          executeParameters.data,
-        ]
-      );
+      const calldata = context.universalProfile.interface.encodeFunctionData("execute", [
+        executeParameters.operationType,
+        executeParameters.to,
+        executeParameters.value,
+        executeParameters.data,
+      ]);
 
-      const result =
-        await context.keyManagerInternalTester.extractExecuteParameters(
-          calldata
-        );
+      const result = await context.keyManagerInternalTester.extractExecuteParameters(calldata);
 
       expect(result).to.deep.equal([
         executeParameters.operationType,
@@ -72,38 +59,25 @@ export const testExecuteInternals = (
         data: "0xcafecafecafecafe",
       };
 
-      const calldata = context.universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
-          executeParameters.operationType,
-          executeParameters.to,
-          executeParameters.value,
-          executeParameters.data,
-        ]
-      );
+      const calldata = context.universalProfile.interface.encodeFunctionData("execute", [
+        executeParameters.operationType,
+        executeParameters.to,
+        executeParameters.value,
+        executeParameters.data,
+      ]);
 
-      const abiEncodedAddress = abiCoder.encode(
-        ["address"],
-        [executeParameters.to]
-      );
+      const abiEncodedAddress = abiCoder.encode(["address"], [executeParameters.to]);
 
       const invalidPart = "deadbeefdeadbeefdeadbeef";
       const addressPart = executeParameters.to.toLowerCase().substring(2);
 
       const invalidCalldata = calldata.replace(
         abiEncodedAddress.substring(2),
-        invalidPart + addressPart
+        invalidPart + addressPart,
       );
 
-      await expect(
-        context.keyManagerInternalTester.extractExecuteParameters(
-          invalidCalldata
-        )
-      )
-        .to.be.revertedWithCustomError(
-          context.keyManagerInternalTester,
-          "InvalidPayload"
-        )
+      await expect(context.keyManagerInternalTester.extractExecuteParameters(invalidCalldata))
+        .to.be.revertedWithCustomError(context.keyManagerInternalTester, "InvalidPayload")
         .withArgs(invalidCalldata);
     });
   });

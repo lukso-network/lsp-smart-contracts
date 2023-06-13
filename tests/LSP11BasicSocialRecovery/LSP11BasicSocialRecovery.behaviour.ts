@@ -3,17 +3,9 @@ import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
 
-import {
-  LSP11BasicSocialRecovery,
-  LSP6KeyManager,
-  UniversalProfile,
-} from "../../types";
+import { LSP11BasicSocialRecovery, LSP6KeyManager, UniversalProfile } from "../../types";
 
-import {
-  ALL_PERMISSIONS,
-  ERC725YDataKeys,
-  INTERFACE_IDS,
-} from "../../constants";
+import { ALL_PERMISSIONS, ERC725YDataKeys, INTERFACE_IDS } from "../../constants";
 
 import { callPayload } from "../utils/fixtures";
 
@@ -69,9 +61,7 @@ export type LSP11TestContext = {
   lsp6KeyManager: LSP6KeyManager;
 };
 
-export const shouldBehaveLikeLSP11 = (
-  buildContext: () => Promise<LSP11TestContext>
-) => {
+export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestContext>) => {
   let context: LSP11TestContext;
 
   describe("When using the contract as password recovery", () => {
@@ -88,7 +78,7 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp11BasicSocialRecovery
             .connect(context.accounts.any)
-            .setRecoverySecretHash(txParams.hash)
+            .setRecoverySecretHash(txParams.hash),
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
@@ -97,11 +87,10 @@ export const shouldBehaveLikeLSP11 = (
           hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
         };
 
-        const payload =
-          context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-            "setRecoverySecretHash",
-            [txParams.hash]
-          );
+        const payload = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+          "setRecoverySecretHash",
+          [txParams.hash],
+        );
 
         await expect(
           context.lsp6KeyManager
@@ -110,13 +99,10 @@ export const shouldBehaveLikeLSP11 = (
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
-                payload
-              )
-            )
-        ).to.be.revertedWithCustomError(
-          context.lsp11BasicSocialRecovery,
-          "SecretHashCannotBeZero"
-        );
+                payload,
+              ),
+            ),
+        ).to.be.revertedWithCustomError(context.lsp11BasicSocialRecovery, "SecretHashCannotBeZero");
       });
 
       it("Should pass when owner calls `setRecoverySecretHash(..)`", async () => {
@@ -124,11 +110,10 @@ export const shouldBehaveLikeLSP11 = (
           hash: ethers.utils.solidityKeccak256(["string"], ["LUKSO"]),
         };
 
-        const payload =
-          context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-            "setRecoverySecretHash",
-            [txParams.hash]
-          );
+        const payload = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+          "setRecoverySecretHash",
+          [txParams.hash],
+        );
 
         await expect(
           context.lsp6KeyManager
@@ -137,9 +122,9 @@ export const shouldBehaveLikeLSP11 = (
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
-                payload
-              )
-            )
+                payload,
+              ),
+            ),
         )
           .to.emit(context.lsp11BasicSocialRecovery, "SecretHashChanged")
           .withArgs(txParams.hash);
@@ -151,10 +136,7 @@ export const shouldBehaveLikeLSP11 = (
         it("should revert", async () => {
           const txParams = {
             secret: "NotLUKSO",
-            newHash: ethers.utils.solidityKeccak256(
-              ["string"],
-              ["UniversalProfiles"]
-            ),
+            newHash: ethers.utils.solidityKeccak256(["string"], ["UniversalProfiles"]),
           };
 
           await expect(
@@ -163,12 +145,9 @@ export const shouldBehaveLikeLSP11 = (
               .recoverOwnership(
                 context.accounts.addressASelected.address,
                 txParams.secret,
-                txParams.newHash
-              )
-          ).to.be.revertedWithCustomError(
-            context.lsp11BasicSocialRecovery,
-            "WrongPlainSecret"
-          );
+                txParams.newHash,
+              ),
+          ).to.be.revertedWithCustomError(context.lsp11BasicSocialRecovery, "WrongPlainSecret");
         });
       });
 
@@ -176,8 +155,7 @@ export const shouldBehaveLikeLSP11 = (
         it("should revert", async () => {
           const txParams = {
             secret: "LUKSO",
-            newHash:
-              "0x0000000000000000000000000000000000000000000000000000000000000000",
+            newHash: "0x0000000000000000000000000000000000000000000000000000000000000000",
           };
 
           await expect(
@@ -186,11 +164,11 @@ export const shouldBehaveLikeLSP11 = (
               .recoverOwnership(
                 context.accounts.addressASelected.address,
                 txParams.secret,
-                txParams.newHash
-              )
+                txParams.newHash,
+              ),
           ).to.be.revertedWithCustomError(
             context.lsp11BasicSocialRecovery,
-            "SecretHashCannotBeZero"
+            "SecretHashCannotBeZero",
           );
         });
       });
@@ -202,10 +180,7 @@ export const shouldBehaveLikeLSP11 = (
         before(async () => {
           txParams = {
             secret: "LUKSO",
-            newHash: ethers.utils.solidityKeccak256(
-              ["string"],
-              ["UniversalProfiles"]
-            ),
+            newHash: ethers.utils.solidityKeccak256(["string"], ["UniversalProfiles"]),
           };
 
           recoveryCounterBeforeRecovery =
@@ -216,7 +191,7 @@ export const shouldBehaveLikeLSP11 = (
             .recoverOwnership(
               context.accounts.addressASelected.address,
               txParams.secret,
-              txParams.newHash
+              txParams.newHash,
             );
         });
 
@@ -224,32 +199,25 @@ export const shouldBehaveLikeLSP11 = (
           const recoveryCounterAfterRecovery =
             await context.lsp11BasicSocialRecovery.callStatic.getRecoveryCounter();
 
-          expect(recoveryCounterAfterRecovery).to.equal(
-            recoveryCounterBeforeRecovery.add(1)
-          );
+          expect(recoveryCounterAfterRecovery).to.equal(recoveryCounterBeforeRecovery.add(1));
         });
 
         it("should emit RecoveryProcessSuccessful event", async () => {
-          const guardians =
-            await context.lsp11BasicSocialRecovery.callStatic.getGuardians();
+          const guardians = await context.lsp11BasicSocialRecovery.callStatic.getGuardians();
 
           expect(recoveryTx)
-            .to.emit(
-              context.lsp11BasicSocialRecovery,
-              "RecoveryProcessSuccessful"
-            )
+            .to.emit(context.lsp11BasicSocialRecovery, "RecoveryProcessSuccessful")
             .withArgs(
               recoveryCounterBeforeRecovery,
               context.accounts.addressASelected.address,
               txParams.secret,
-              guardians
+              guardians,
             );
         });
 
         it("should have set the correct AddressPermissions Keys on target", async () => {
           const txParams = {
-            permissionArrayKey:
-              ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+            permissionArrayKey: ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
             permissionInArrayKey:
               ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
               "00000000000000000000000000000003",
@@ -257,21 +225,18 @@ export const shouldBehaveLikeLSP11 = (
               ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
               context.accounts.addressASelected.address.substr(2),
           };
-          const [
-            permissionArrayLength,
-            controllerAddress,
-            controllerPermissions,
-          ] = await context.universalProfile.callStatic.getDataBatch([
-            txParams.permissionArrayKey,
-            txParams.permissionInArrayKey,
-            txParams.permissionMap,
-          ]);
+          const [permissionArrayLength, controllerAddress, controllerPermissions] =
+            await context.universalProfile.callStatic.getDataBatch([
+              txParams.permissionArrayKey,
+              txParams.permissionInArrayKey,
+              txParams.permissionMap,
+            ]);
 
           expect(permissionArrayLength).to.equal(
-            ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 16)
+            ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 16),
           );
           expect(ethers.utils.getAddress(controllerAddress)).to.equal(
-            context.accounts.addressASelected.address
+            context.accounts.addressASelected.address,
           );
           expect(controllerPermissions).to.equal(ALL_PERMISSIONS);
         });
@@ -283,23 +248,17 @@ export const shouldBehaveLikeLSP11 = (
         it("should pass", async () => {
           const txParams = {
             key: ethers.utils.solidityKeccak256(["string"], ["MyKey"]),
-            value: ethers.utils.hexlify(
-              ethers.utils.toUtf8Bytes("I have access")
-            ),
+            value: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("I have access")),
           };
 
-          const payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [txParams.key, txParams.value]
-          );
+          const payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            txParams.key,
+            txParams.value,
+          ]);
 
-          await context.lsp6KeyManager
-            .connect(context.accounts.addressASelected)
-            .execute(payload);
+          await context.lsp6KeyManager.connect(context.accounts.addressASelected).execute(payload);
 
-          const value = await context.universalProfile.callStatic[
-            "getData(bytes32)"
-          ](txParams.key);
+          const value = await context.universalProfile.callStatic["getData(bytes32)"](txParams.key);
 
           expect(value).to.equal(txParams.value);
         });
@@ -320,7 +279,7 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp11BasicSocialRecovery
             .connect(context.accounts.any)
-            .addGuardian(txParams.guardianAddress)
+            .addGuardian(txParams.guardianAddress),
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
@@ -329,11 +288,10 @@ export const shouldBehaveLikeLSP11 = (
           guardianAddress: context.accounts.guardian1.address,
         };
 
-        const payload =
-          context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-            "addGuardian",
-            [txParams.guardianAddress]
-          );
+        const payload = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+          "addGuardian",
+          [txParams.guardianAddress],
+        );
 
         await expect(
           context.lsp6KeyManager
@@ -342,17 +300,16 @@ export const shouldBehaveLikeLSP11 = (
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
-                payload
-              )
-            )
+                payload,
+              ),
+            ),
         )
           .to.emit(context.lsp11BasicSocialRecovery, "GuardianAdded")
           .withArgs(txParams.guardianAddress);
 
-        const isGuardian =
-          await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
-            txParams.guardianAddress
-          );
+        const isGuardian = await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
+          txParams.guardianAddress,
+        );
 
         expect(isGuardian).to.be.true;
       });
@@ -364,7 +321,7 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp11BasicSocialRecovery
             .connect(context.accounts.any)
-            .removeGuardian(txParams.guardianAddress)
+            .removeGuardian(txParams.guardianAddress),
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
@@ -373,11 +330,10 @@ export const shouldBehaveLikeLSP11 = (
           guardianAddress: context.accounts.guardian1.address,
         };
 
-        const payload =
-          context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-            "removeGuardian",
-            [txParams.guardianAddress]
-          );
+        const payload = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+          "removeGuardian",
+          [txParams.guardianAddress],
+        );
 
         await expect(
           context.lsp6KeyManager
@@ -386,17 +342,16 @@ export const shouldBehaveLikeLSP11 = (
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
-                payload
-              )
-            )
+                payload,
+              ),
+            ),
         )
           .to.emit(context.lsp11BasicSocialRecovery, "GuardianRemoved")
           .withArgs(txParams.guardianAddress);
 
-        const isGuardian =
-          await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
-            txParams.guardianAddress
-          );
+        const isGuardian = await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
+          txParams.guardianAddress,
+        );
 
         expect(isGuardian).to.be.false;
       });
@@ -409,7 +364,7 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp11BasicSocialRecovery
             .connect(context.accounts.any)
-            .setGuardiansThreshold(txParams.newThreshold)
+            .setGuardiansThreshold(txParams.newThreshold),
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
@@ -418,11 +373,10 @@ export const shouldBehaveLikeLSP11 = (
           newThreshold: 0,
         };
 
-        const payload =
-          context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-            "setGuardiansThreshold",
-            [txParams.newThreshold]
-          );
+        const payload = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+          "setGuardiansThreshold",
+          [txParams.newThreshold],
+        );
 
         await expect(
           context.lsp6KeyManager
@@ -431,14 +385,11 @@ export const shouldBehaveLikeLSP11 = (
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
-                payload
-              )
-            )
+                payload,
+              ),
+            ),
         )
-          .to.emit(
-            context.lsp11BasicSocialRecovery,
-            "GuardiansThresholdChanged"
-          )
+          .to.emit(context.lsp11BasicSocialRecovery, "GuardiansThresholdChanged")
           .withArgs(txParams.newThreshold);
 
         const guardiansThreshold = (
@@ -456,7 +407,7 @@ export const shouldBehaveLikeLSP11 = (
         await expect(
           context.lsp11BasicSocialRecovery
             .connect(context.accounts.any)
-            .setRecoverySecretHash(txParams.hash)
+            .setRecoverySecretHash(txParams.hash),
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
@@ -465,11 +416,10 @@ export const shouldBehaveLikeLSP11 = (
           hash: ethers.utils.solidityKeccak256(["string"], ["LUKSO"]),
         };
 
-        const payload =
-          context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-            "setRecoverySecretHash",
-            [txParams.hash]
-          );
+        const payload = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+          "setRecoverySecretHash",
+          [txParams.hash],
+        );
 
         await expect(
           context.lsp6KeyManager
@@ -478,9 +428,9 @@ export const shouldBehaveLikeLSP11 = (
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
-                payload
-              )
-            )
+                payload,
+              ),
+            ),
         )
           .to.emit(context.lsp11BasicSocialRecovery, "SecretHashChanged")
           .withArgs(txParams.hash);
@@ -497,11 +447,9 @@ export const shouldBehaveLikeLSP11 = (
             guardianAddress: context.accounts.guardian1.address,
           };
 
-          payload =
-            context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-              "addGuardian",
-              [txParams.guardianAddress]
-            );
+          payload = context.lsp11BasicSocialRecovery.interface.encodeFunctionData("addGuardian", [
+            txParams.guardianAddress,
+          ]);
 
           await expect(
             context.lsp6KeyManager
@@ -510,9 +458,9 @@ export const shouldBehaveLikeLSP11 = (
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
-                  payload
-                )
-              )
+                  payload,
+                ),
+              ),
           )
             .to.emit(context.lsp11BasicSocialRecovery, "GuardianAdded")
             .withArgs(txParams.guardianAddress);
@@ -526,20 +474,16 @@ export const shouldBehaveLikeLSP11 = (
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
-                  payload
-                )
-              )
+                  payload,
+                ),
+              ),
           )
-            .to.be.revertedWithCustomError(
-              context.lsp11BasicSocialRecovery,
-              "GuardianAlreadyExist"
-            )
+            .to.be.revertedWithCustomError(context.lsp11BasicSocialRecovery, "GuardianAlreadyExist")
             .withArgs(txParams.guardianAddress);
 
-          const isGuardian =
-            await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
-              txParams.guardianAddress
-            );
+          const isGuardian = await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
+            txParams.guardianAddress,
+          );
           expect(isGuardian).to.be.true;
         });
       });
@@ -550,11 +494,10 @@ export const shouldBehaveLikeLSP11 = (
             guardianAddress: context.accounts.random.address,
           };
 
-          const payload =
-            context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-              "removeGuardian",
-              [txParams.guardianAddress]
-            );
+          const payload = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+            "removeGuardian",
+            [txParams.guardianAddress],
+          );
 
           await expect(
             context.lsp6KeyManager
@@ -563,22 +506,18 @@ export const shouldBehaveLikeLSP11 = (
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
-                  payload
-                )
-              )
+                  payload,
+                ),
+              ),
           )
-            .to.be.revertedWithCustomError(
-              context.lsp11BasicSocialRecovery,
-              "GuardianDoNotExist"
-            )
+            .to.be.revertedWithCustomError(context.lsp11BasicSocialRecovery, "GuardianDoNotExist")
             .withArgs(txParams.guardianAddress);
         });
       });
 
       describe("when owner calls setGuardiansThreshold(..) with a threshold higher than the guardians count", () => {
         it("should revert with ThresholdCannotBeHigherThanGuardiansNumber error", async () => {
-          const guardians =
-            await context.lsp11BasicSocialRecovery.callStatic.getGuardians();
+          const guardians = await context.lsp11BasicSocialRecovery.callStatic.getGuardians();
 
           expect(guardians.length).to.equal(1);
 
@@ -586,11 +525,10 @@ export const shouldBehaveLikeLSP11 = (
             newThreshold: 2,
           };
 
-          const payload =
-            context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-              "setGuardiansThreshold",
-              [txParams.newThreshold]
-            );
+          const payload = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+            "setGuardiansThreshold",
+            [txParams.newThreshold],
+          );
 
           await expect(
             context.lsp6KeyManager
@@ -599,13 +537,13 @@ export const shouldBehaveLikeLSP11 = (
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
-                  payload
-                )
-              )
+                  payload,
+                ),
+              ),
           )
             .to.be.revertedWithCustomError(
               context.lsp11BasicSocialRecovery,
-              "ThresholdCannotBeHigherThanGuardiansNumber"
+              "ThresholdCannotBeHigherThanGuardiansNumber",
             )
             .withArgs(txParams.newThreshold, guardians.length);
         });
@@ -613,8 +551,7 @@ export const shouldBehaveLikeLSP11 = (
 
       describe("when owner calls setGuardiansThreshold(..) with a threshold lower than the guardians count", () => {
         it("should pass", async () => {
-          const guardians =
-            await context.lsp11BasicSocialRecovery.callStatic.getGuardians();
+          const guardians = await context.lsp11BasicSocialRecovery.callStatic.getGuardians();
 
           expect(guardians.length).to.equal(1);
 
@@ -622,11 +559,10 @@ export const shouldBehaveLikeLSP11 = (
             newThreshold: 0,
           };
 
-          const payload =
-            context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-              "setGuardiansThreshold",
-              [txParams.newThreshold]
-            );
+          const payload = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+            "setGuardiansThreshold",
+            [txParams.newThreshold],
+          );
 
           await expect(
             context.lsp6KeyManager
@@ -635,14 +571,11 @@ export const shouldBehaveLikeLSP11 = (
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
-                  payload
-                )
-              )
+                  payload,
+                ),
+              ),
           )
-            .to.emit(
-              context.lsp11BasicSocialRecovery,
-              "GuardiansThresholdChanged"
-            )
+            .to.emit(context.lsp11BasicSocialRecovery, "GuardiansThresholdChanged")
             .withArgs(txParams.newThreshold);
 
           const guardiansThreshold =
@@ -653,8 +586,7 @@ export const shouldBehaveLikeLSP11 = (
 
       describe("when owner calls setGuardiansThreshold(..) with a threshold equal to the guardians count", () => {
         it("should pass", async () => {
-          const guardians =
-            await context.lsp11BasicSocialRecovery.callStatic.getGuardians();
+          const guardians = await context.lsp11BasicSocialRecovery.callStatic.getGuardians();
 
           expect(guardians.length).to.equal(1);
 
@@ -662,11 +594,10 @@ export const shouldBehaveLikeLSP11 = (
             newThreshold: 1,
           };
 
-          const payload =
-            context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-              "setGuardiansThreshold",
-              [txParams.newThreshold]
-            );
+          const payload = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+            "setGuardiansThreshold",
+            [txParams.newThreshold],
+          );
 
           await expect(
             context.lsp6KeyManager
@@ -675,14 +606,11 @@ export const shouldBehaveLikeLSP11 = (
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
-                  payload
-                )
-              )
+                  payload,
+                ),
+              ),
           )
-            .to.emit(
-              context.lsp11BasicSocialRecovery,
-              "GuardiansThresholdChanged"
-            )
+            .to.emit(context.lsp11BasicSocialRecovery, "GuardiansThresholdChanged")
             .withArgs(txParams.newThreshold);
 
           const guardiansThreshold =
@@ -694,28 +622,23 @@ export const shouldBehaveLikeLSP11 = (
       describe("when owner calls removeGuardian(..) when the threshold is equal to the guardians count", () => {
         let guardians;
         let guardiansThreshold;
-        before(
-          "Check that the guardians number is equal to the guardians threshold",
-          async () => {
-            guardians =
-              await context.lsp11BasicSocialRecovery.callStatic.getGuardians();
-            guardiansThreshold =
-              await context.lsp11BasicSocialRecovery.callStatic.getGuardiansThreshold();
+        before("Check that the guardians number is equal to the guardians threshold", async () => {
+          guardians = await context.lsp11BasicSocialRecovery.callStatic.getGuardians();
+          guardiansThreshold =
+            await context.lsp11BasicSocialRecovery.callStatic.getGuardiansThreshold();
 
-            expect(guardians.length).to.equal(guardiansThreshold);
-          }
-        );
+          expect(guardians.length).to.equal(guardiansThreshold);
+        });
 
         it("Should revert with GuardiansNumberCannotGoBelowThreshold error", async () => {
           const txParams = {
             guardianAddress: context.accounts.guardian1.address,
           };
 
-          const payload =
-            context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-              "removeGuardian",
-              [txParams.guardianAddress]
-            );
+          const payload = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+            "removeGuardian",
+            [txParams.guardianAddress],
+          );
 
           await expect(
             context.lsp6KeyManager
@@ -724,13 +647,13 @@ export const shouldBehaveLikeLSP11 = (
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
-                  payload
-                )
-              )
+                  payload,
+                ),
+              ),
           )
             .to.be.revertedWithCustomError(
               context.lsp11BasicSocialRecovery,
-              "GuardiansNumberCannotGoBelowThreshold"
+              "GuardiansNumberCannotGoBelowThreshold",
             )
             .withArgs(guardiansThreshold);
         });
@@ -742,11 +665,10 @@ export const shouldBehaveLikeLSP11 = (
             hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
           };
 
-          const payload =
-            context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-              "setRecoverySecretHash",
-              [txParams.hash]
-            );
+          const payload = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+            "setRecoverySecretHash",
+            [txParams.hash],
+          );
 
           await expect(
             context.lsp6KeyManager
@@ -755,12 +677,12 @@ export const shouldBehaveLikeLSP11 = (
                 callPayload(
                   context.universalProfile,
                   context.lsp11BasicSocialRecovery.address,
-                  payload
-                )
-              )
+                  payload,
+                ),
+              ),
           ).to.be.revertedWithCustomError(
             context.lsp11BasicSocialRecovery,
-            "SecretHashCannotBeZero"
+            "SecretHashCannotBeZero",
           );
         });
       });
@@ -769,32 +691,28 @@ export const shouldBehaveLikeLSP11 = (
     describe("when testing guardians functionalities", () => {
       before("Checking guardians and add few more", async () => {
         // Checking that guardian1 address is set
-        const isAddress1Guardian =
-          await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
-            context.accounts.guardian1.address
-          );
+        const isAddress1Guardian = await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
+          context.accounts.guardian1.address,
+        );
 
         expect(isAddress1Guardian).to.be.true;
 
         // Adding more guardians
 
-        const payload1 =
-          context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-            "addGuardian",
-            [context.accounts.guardian2.address]
-          );
+        const payload1 = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+          "addGuardian",
+          [context.accounts.guardian2.address],
+        );
 
-        const payload2 =
-          context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-            "addGuardian",
-            [context.accounts.guardian3.address]
-          );
+        const payload2 = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+          "addGuardian",
+          [context.accounts.guardian3.address],
+        );
 
-        const payload3 =
-          context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-            "addGuardian",
-            [context.accounts.guardian4.address]
-          );
+        const payload3 = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+          "addGuardian",
+          [context.accounts.guardian4.address],
+        );
 
         await context.lsp6KeyManager
           .connect(context.accounts.owner)
@@ -804,35 +722,32 @@ export const shouldBehaveLikeLSP11 = (
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
-                payload1
+                payload1,
               ),
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
-                payload2
+                payload2,
               ),
               callPayload(
                 context.universalProfile,
                 context.lsp11BasicSocialRecovery.address,
-                payload3
+                payload3,
               ),
-            ]
+            ],
           );
 
-        const isAddress2Guardian =
-          await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
-            context.accounts.guardian2.address
-          );
+        const isAddress2Guardian = await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
+          context.accounts.guardian2.address,
+        );
 
-        const isAddress3Guardian =
-          await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
-            context.accounts.guardian3.address
-          );
+        const isAddress3Guardian = await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
+          context.accounts.guardian3.address,
+        );
 
-        const isAddress4Guardian =
-          await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
-            context.accounts.guardian4.address
-          );
+        const isAddress4Guardian = await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
+          context.accounts.guardian4.address,
+        );
 
         expect(isAddress2Guardian).to.be.true;
         expect(isAddress3Guardian).to.be.true;
@@ -847,22 +762,18 @@ export const shouldBehaveLikeLSP11 = (
 
           const caller = context.accounts.random;
 
-          const isGuardian =
-            await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
-              caller.address
-            );
+          const isGuardian = await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
+            caller.address,
+          );
 
           expect(isGuardian).to.be.false;
 
           await expect(
             context.lsp11BasicSocialRecovery
               .connect(caller)
-              .selectNewController(txParams.addressToSelect)
+              .selectNewController(txParams.addressToSelect),
           )
-            .to.be.revertedWithCustomError(
-              context.lsp11BasicSocialRecovery,
-              "CallerIsNotGuardian"
-            )
+            .to.be.revertedWithCustomError(context.lsp11BasicSocialRecovery, "CallerIsNotGuardian")
             .withArgs(caller.address);
         });
       });
@@ -875,10 +786,9 @@ export const shouldBehaveLikeLSP11 = (
 
           const caller = context.accounts.guardian1;
 
-          const isGuardian =
-            await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
-              caller.address
-            );
+          const isGuardian = await context.lsp11BasicSocialRecovery.callStatic.isGuardian(
+            caller.address,
+          );
 
           expect(isGuardian).to.be.true;
 
@@ -888,14 +798,10 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp11BasicSocialRecovery
               .connect(caller)
-              .selectNewController(txParams.addressToSelect)
+              .selectNewController(txParams.addressToSelect),
           )
             .to.emit(context.lsp11BasicSocialRecovery, "SelectedNewController")
-            .withArgs(
-              currentRecoveryCounter,
-              caller.address,
-              txParams.addressToSelect
-            );
+            .withArgs(currentRecoveryCounter, caller.address, txParams.addressToSelect);
         });
       });
     });
@@ -907,119 +813,99 @@ export const shouldBehaveLikeLSP11 = (
       let guardiansThreshold;
       let addressAselection;
       let addressBselection;
-      before(
-        "Distribution selection of the guardians and setting recovery params",
-        async () => {
-          // Checks that recoveryCounter equal 0 before recovery
-          beforeRecoveryCounter =
-            await context.lsp11BasicSocialRecovery.callStatic.getRecoveryCounter();
+      before("Distribution selection of the guardians and setting recovery params", async () => {
+        // Checks that recoveryCounter equal 0 before recovery
+        beforeRecoveryCounter =
+          await context.lsp11BasicSocialRecovery.callStatic.getRecoveryCounter();
 
-          expect(beforeRecoveryCounter).to.equal(0);
+        expect(beforeRecoveryCounter).to.equal(0);
 
-          // Changing the threshold to 3 out of 4 guardians
-          const payload1 =
-            context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-              "setGuardiansThreshold",
-              [3]
-            );
+        // Changing the threshold to 3 out of 4 guardians
+        const payload1 = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+          "setGuardiansThreshold",
+          [3],
+        );
 
-          await context.lsp6KeyManager
-            .connect(context.accounts.owner)
-            .execute(
-              callPayload(
-                context.universalProfile,
-                context.lsp11BasicSocialRecovery.address,
-                payload1
-              )
-            );
-
-          guardiansThreshold =
-            await context.lsp11BasicSocialRecovery.callStatic.getGuardiansThreshold();
-          expect(guardiansThreshold).to.equal(3);
-
-          // Changing the secretHash to "LUKSO"
-          plainSecret = "LUKSO";
-          recoverySecretHash = ethers.utils.solidityKeccak256(
-            ["string"],
-            [plainSecret]
+        await context.lsp6KeyManager
+          .connect(context.accounts.owner)
+          .execute(
+            callPayload(
+              context.universalProfile,
+              context.lsp11BasicSocialRecovery.address,
+              payload1,
+            ),
           );
 
-          const payload2 =
-            context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
-              "setRecoverySecretHash",
-              [recoverySecretHash]
-            );
+        guardiansThreshold =
+          await context.lsp11BasicSocialRecovery.callStatic.getGuardiansThreshold();
+        expect(guardiansThreshold).to.equal(3);
 
-          await context.lsp6KeyManager
-            .connect(context.accounts.owner)
-            .execute(
-              callPayload(
-                context.universalProfile,
-                context.lsp11BasicSocialRecovery.address,
-                payload2
-              )
-            );
+        // Changing the secretHash to "LUKSO"
+        plainSecret = "LUKSO";
+        recoverySecretHash = ethers.utils.solidityKeccak256(["string"], [plainSecret]);
 
-          // Guardian 1 selects address A
-          await context.lsp11BasicSocialRecovery
-            .connect(context.accounts.guardian1)
-            .selectNewController(context.accounts.addressASelected.address);
+        const payload2 = context.lsp11BasicSocialRecovery.interface.encodeFunctionData(
+          "setRecoverySecretHash",
+          [recoverySecretHash],
+        );
 
-          const guardian1Choice =
-            await context.lsp11BasicSocialRecovery.callStatic.getGuardianChoice(
-              context.accounts.guardian1.address
-            );
-
-          expect(guardian1Choice).to.equal(
-            context.accounts.addressASelected.address
+        await context.lsp6KeyManager
+          .connect(context.accounts.owner)
+          .execute(
+            callPayload(
+              context.universalProfile,
+              context.lsp11BasicSocialRecovery.address,
+              payload2,
+            ),
           );
 
-          // Guardian 2 selects address A
-          await context.lsp11BasicSocialRecovery
-            .connect(context.accounts.guardian2)
-            .selectNewController(context.accounts.addressASelected.address);
+        // Guardian 1 selects address A
+        await context.lsp11BasicSocialRecovery
+          .connect(context.accounts.guardian1)
+          .selectNewController(context.accounts.addressASelected.address);
 
-          const guardian2Choice =
-            await context.lsp11BasicSocialRecovery.callStatic.getGuardianChoice(
-              context.accounts.guardian2.address
-            );
+        const guardian1Choice = await context.lsp11BasicSocialRecovery.callStatic.getGuardianChoice(
+          context.accounts.guardian1.address,
+        );
 
-          expect(guardian2Choice).to.equal(
-            context.accounts.addressASelected.address
-          );
+        expect(guardian1Choice).to.equal(context.accounts.addressASelected.address);
 
-          // Guardian 3 selects address A
-          await context.lsp11BasicSocialRecovery
-            .connect(context.accounts.guardian3)
-            .selectNewController(context.accounts.addressASelected.address);
+        // Guardian 2 selects address A
+        await context.lsp11BasicSocialRecovery
+          .connect(context.accounts.guardian2)
+          .selectNewController(context.accounts.addressASelected.address);
 
-          const guardian3Choice =
-            await context.lsp11BasicSocialRecovery.callStatic.getGuardianChoice(
-              context.accounts.guardian3.address
-            );
+        const guardian2Choice = await context.lsp11BasicSocialRecovery.callStatic.getGuardianChoice(
+          context.accounts.guardian2.address,
+        );
 
-          expect(guardian3Choice).to.equal(
-            context.accounts.addressASelected.address
-          );
+        expect(guardian2Choice).to.equal(context.accounts.addressASelected.address);
 
-          // Guardian 4 selects address B
-          await context.lsp11BasicSocialRecovery
-            .connect(context.accounts.guardian4)
-            .selectNewController(context.accounts.addressBSelected.address);
+        // Guardian 3 selects address A
+        await context.lsp11BasicSocialRecovery
+          .connect(context.accounts.guardian3)
+          .selectNewController(context.accounts.addressASelected.address);
 
-          const guardian4Choice =
-            await context.lsp11BasicSocialRecovery.callStatic.getGuardianChoice(
-              context.accounts.guardian4.address
-            );
+        const guardian3Choice = await context.lsp11BasicSocialRecovery.callStatic.getGuardianChoice(
+          context.accounts.guardian3.address,
+        );
 
-          addressAselection = 3;
-          addressBselection = 1;
+        expect(guardian3Choice).to.equal(context.accounts.addressASelected.address);
 
-          expect(guardian4Choice).to.equal(
-            context.accounts.addressBSelected.address
-          );
-        }
-      );
+        // Guardian 4 selects address B
+        await context.lsp11BasicSocialRecovery
+          .connect(context.accounts.guardian4)
+          .selectNewController(context.accounts.addressBSelected.address);
+
+        const guardian4Choice = await context.lsp11BasicSocialRecovery.callStatic.getGuardianChoice(
+          context.accounts.guardian4.address,
+        );
+
+        addressAselection = 3;
+        addressBselection = 1;
+
+        expect(guardian4Choice).to.equal(context.accounts.addressBSelected.address);
+      });
 
       describe("When address B calls recoverOwnership(..) when it didn't reached the guardians threshold", () => {
         it("should revert with ThresholdNotReachedForRecoverer error", async () => {
@@ -1034,17 +920,17 @@ export const shouldBehaveLikeLSP11 = (
               .recoverOwnership(
                 context.accounts.addressBSelected.address,
                 txParams.secret,
-                txParams.newHash
-              )
+                txParams.newHash,
+              ),
           )
             .to.be.revertedWithCustomError(
               context.lsp11BasicSocialRecovery,
-              "ThresholdNotReachedForRecoverer"
+              "ThresholdNotReachedForRecoverer",
             )
             .withArgs(
               context.accounts.addressBSelected.address,
               addressBselection,
-              guardiansThreshold
+              guardiansThreshold,
             );
         });
       });
@@ -1053,8 +939,7 @@ export const shouldBehaveLikeLSP11 = (
         it("should revert with SecretHashCannotBeZero error", async () => {
           const txParams = {
             secret: plainSecret,
-            newHash:
-              "0x0000000000000000000000000000000000000000000000000000000000000000",
+            newHash: "0x0000000000000000000000000000000000000000000000000000000000000000",
           };
 
           await expect(
@@ -1063,11 +948,11 @@ export const shouldBehaveLikeLSP11 = (
               .recoverOwnership(
                 context.accounts.addressASelected.address,
                 txParams.secret,
-                txParams.newHash
-              )
+                txParams.newHash,
+              ),
           ).to.be.revertedWithCustomError(
             context.lsp11BasicSocialRecovery,
-            "SecretHashCannotBeZero"
+            "SecretHashCannotBeZero",
           );
         });
       });
@@ -1085,12 +970,9 @@ export const shouldBehaveLikeLSP11 = (
               .recoverOwnership(
                 context.accounts.addressASelected.address,
                 txParams.secret,
-                txParams.newHash
-              )
-          ).to.be.revertedWithCustomError(
-            context.lsp11BasicSocialRecovery,
-            "WrongPlainSecret"
-          );
+                txParams.newHash,
+              ),
+          ).to.be.revertedWithCustomError(context.lsp11BasicSocialRecovery, "WrongPlainSecret");
         });
       });
 
@@ -1100,10 +982,7 @@ export const shouldBehaveLikeLSP11 = (
         let newSecretHash;
         before("Creating the tx of recovering", async () => {
           newPlainSecret = "UniversalProfiles";
-          newSecretHash = ethers.utils.solidityKeccak256(
-            ["string"],
-            [newPlainSecret]
-          );
+          newSecretHash = ethers.utils.solidityKeccak256(["string"], [newPlainSecret]);
 
           const txParams = {
             secret: plainSecret,
@@ -1115,21 +994,18 @@ export const shouldBehaveLikeLSP11 = (
             .recoverOwnership(
               context.accounts.addressASelected.address,
               txParams.secret,
-              txParams.newHash
+              txParams.newHash,
             );
         });
 
         it("should pass and emit RecoveryProcessSuccessful event", async () => {
           expect(ownershipRecoveryTx)
-            .to.emit(
-              context.lsp11BasicSocialRecovery,
-              "RecoveryProcessSuccessful"
-            )
+            .to.emit(context.lsp11BasicSocialRecovery, "RecoveryProcessSuccessful")
             .withArgs(
               beforeRecoveryCounter,
               context.accounts.addressASelected,
               newSecretHash,
-              await context.lsp11BasicSocialRecovery.callStatic.getGuardians()
+              await context.lsp11BasicSocialRecovery.callStatic.getGuardians(),
             );
         });
 
@@ -1148,8 +1024,7 @@ export const shouldBehaveLikeLSP11 = (
 
         it("should add the AddressPermissions Key for address A in the target ", async () => {
           const txParams = {
-            permissionArrayKey:
-              ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+            permissionArrayKey: ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
             permissionInArrayKey:
               ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
               "00000000000000000000000000000003",
@@ -1157,21 +1032,18 @@ export const shouldBehaveLikeLSP11 = (
               ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
               context.accounts.addressASelected.address.substr(2),
           };
-          const [
-            permissionArrayLength,
-            controllerAddress,
-            controllerPermissions,
-          ] = await context.universalProfile.callStatic.getDataBatch([
-            txParams.permissionArrayKey,
-            txParams.permissionInArrayKey,
-            txParams.permissionMap,
-          ]);
+          const [permissionArrayLength, controllerAddress, controllerPermissions] =
+            await context.universalProfile.callStatic.getDataBatch([
+              txParams.permissionArrayKey,
+              txParams.permissionInArrayKey,
+              txParams.permissionMap,
+            ]);
 
           expect(permissionArrayLength).to.equal(
-            ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 16)
+            ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 16),
           );
           expect(ethers.utils.getAddress(controllerAddress)).to.equal(
-            context.accounts.addressASelected.address
+            context.accounts.addressASelected.address,
           );
           expect(controllerPermissions).to.equal(ALL_PERMISSIONS);
         });
@@ -1183,23 +1055,17 @@ export const shouldBehaveLikeLSP11 = (
         it("should pass", async () => {
           const txParams = {
             key: ethers.utils.solidityKeccak256(["string"], ["MyKey"]),
-            value: ethers.utils.hexlify(
-              ethers.utils.toUtf8Bytes("I have access")
-            ),
+            value: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("I have access")),
           };
 
-          const payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [txParams.key, txParams.value]
-          );
+          const payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            txParams.key,
+            txParams.value,
+          ]);
 
-          await context.lsp6KeyManager
-            .connect(context.accounts.addressASelected)
-            .execute(payload);
+          await context.lsp6KeyManager.connect(context.accounts.addressASelected).execute(payload);
 
-          const value = await context.universalProfile.callStatic[
-            "getData(bytes32)"
-          ](txParams.key);
+          const value = await context.universalProfile.callStatic["getData(bytes32)"](txParams.key);
 
           expect(value).to.equal(txParams.value);
         });
@@ -1208,17 +1074,15 @@ export const shouldBehaveLikeLSP11 = (
 
     describe("when checking guardians choice", () => {
       it("should be reset", async () => {
-        const guardian1Choice =
-          await context.lsp11BasicSocialRecovery.callStatic.getGuardianChoice(
-            context.accounts.guardian1.address
-          );
+        const guardian1Choice = await context.lsp11BasicSocialRecovery.callStatic.getGuardianChoice(
+          context.accounts.guardian1.address,
+        );
 
         expect(guardian1Choice).to.equal(ethers.constants.AddressZero);
 
-        const guardian2Choice =
-          await context.lsp11BasicSocialRecovery.callStatic.getGuardianChoice(
-            context.accounts.guardian2.address
-          );
+        const guardian2Choice = await context.lsp11BasicSocialRecovery.callStatic.getGuardianChoice(
+          context.accounts.guardian2.address,
+        );
 
         expect(guardian2Choice).to.equal(ethers.constants.AddressZero);
       });
@@ -1233,7 +1097,7 @@ export type LSP11InitializeTestContext = {
 };
 
 export const shouldInitializeLikeLSP11 = (
-  buildContext: () => Promise<LSP11InitializeTestContext>
+  buildContext: () => Promise<LSP11InitializeTestContext>,
 ) => {
   let context: LSP11InitializeTestContext;
 
@@ -1244,17 +1108,15 @@ export const shouldInitializeLikeLSP11 = (
   describe("when the contract was initialized", () => {
     it("Should have registered the ERC165 interface", async () => {
       expect(
-        await context.lsp11BasicSocialRecovery.callStatic.supportsInterface(
-          INTERFACE_IDS.ERC165
-        )
+        await context.lsp11BasicSocialRecovery.callStatic.supportsInterface(INTERFACE_IDS.ERC165),
       ).to.be.true;
     });
 
     it("Should have registered the LSP11 interface", async () => {
       expect(
         await context.lsp11BasicSocialRecovery.callStatic.supportsInterface(
-          INTERFACE_IDS.LSP11BasicSocialRecovery
-        )
+          INTERFACE_IDS.LSP11BasicSocialRecovery,
+        ),
       ).to.be.true;
     });
 

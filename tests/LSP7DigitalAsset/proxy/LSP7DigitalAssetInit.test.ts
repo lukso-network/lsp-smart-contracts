@@ -27,9 +27,7 @@ describe("LSP7DigitalAssetInit with proxy", () => {
       newOwner: accounts.owner.address,
     };
 
-    const lsp7TesterInit = await new LSP7InitTester__factory(
-      accounts.owner
-    ).deploy();
+    const lsp7TesterInit = await new LSP7InitTester__factory(accounts.owner).deploy();
 
     const lsp7Proxy = await deployProxy(lsp7TesterInit.address, accounts.owner);
 
@@ -62,7 +60,7 @@ describe("LSP7DigitalAssetInit with proxy", () => {
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
-      false
+      false,
     );
   };
 
@@ -79,8 +77,8 @@ describe("LSP7DigitalAssetInit with proxy", () => {
           context.deployParams.name,
           context.deployParams.symbol,
           ethers.constants.AddressZero,
-          false
-        )
+          false,
+        ),
       ).to.be.revertedWith("Ownable: new owner is the zero address");
     });
 
@@ -100,7 +98,7 @@ describe("LSP7DigitalAssetInit with proxy", () => {
     describe("when calling initialize more than once", () => {
       it("should revert", async () => {
         await expect(initializeProxy(context)).to.be.revertedWith(
-          "Initializable: contract is already initialized"
+          "Initializable: contract is already initialized",
         );
       });
     });
@@ -114,7 +112,7 @@ describe("LSP7DigitalAssetInit with proxy", () => {
         "LSP7 - deployed with proxy",
         "TKN",
         lsp4Context.deployParams.owner.address,
-        false
+        false,
       );
 
       return lsp4Context;
@@ -125,7 +123,7 @@ describe("LSP7DigitalAssetInit with proxy", () => {
         await initializeProxy(context);
 
         return context;
-      })
+      }),
     );
   });
 });

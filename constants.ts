@@ -126,31 +126,26 @@ export const ERC725YDataKeys = {
     SupportedStandards_LSP3: SupportedStandards.LSP3UniversalProfile.key,
 
     // keccak256('LSP3Profile')
-    LSP3Profile:
-      "0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5",
+    LSP3Profile: "0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5",
   },
   LSP4: {
     SupportedStandards_LSP4: SupportedStandards.LSP4DigitalAsset.key,
 
     // keccak256('LSP4TokenName')
-    LSP4TokenName:
-      "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1",
+    LSP4TokenName: "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1",
 
     // keccak256('LSP4TokenSymbol')
-    LSP4TokenSymbol:
-      "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756",
+    LSP4TokenSymbol: "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756",
 
     // keccak256('LSP4Metadata')
-    LSP4Metadata:
-      "0x9afb95cacc9f95858ec44aa8c3b685511002e30ae54415823f406128b85b238e",
+    LSP4Metadata: "0x9afb95cacc9f95858ec44aa8c3b685511002e30ae54415823f406128b85b238e",
 
     // LSP4CreatorsMap:<address>  + bytes2(0)
     LSP4CreatorsMap: "0x6de85eaf5d982b4e5da00000",
 
     // keccak256('"LSP4Creators[]')
     "LSP4Creators[]": {
-      length:
-        "0x114bd03b3a46d48759680d81ebb2b414fda7d030a7105a851867accf1c2352e7",
+      length: "0x114bd03b3a46d48759680d81ebb2b414fda7d030a7105a851867accf1c2352e7",
       index: "0x114bd03b3a46d48759680d81ebb2b414",
     } as LSP2ArrayKey,
   },
@@ -160,16 +155,14 @@ export const ERC725YDataKeys = {
 
     // keccak256('LSP5ReceivedAssets[]')
     "LSP5ReceivedAssets[]": {
-      length:
-        "0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b",
+      length: "0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b",
       index: "0x6460ee3c0aac563ccbf76d6e1d07bada",
     } as LSP2ArrayKey,
   },
   LSP6: {
     // keccak256('AddressPermissions[]')
     "AddressPermissions[]": {
-      length:
-        "0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3",
+      length: "0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3",
       index: "0xdf30dba06db6a30e65354d9a64c60986",
     } as LSP2ArrayKey,
 
@@ -193,8 +186,7 @@ export const ERC725YDataKeys = {
 
     // keccak256('LSP10Vaults[]')
     "LSP10Vaults[]": {
-      length:
-        "0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06",
+      length: "0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06",
       index: "0x55482936e01da86729a45d2b87a6b1d3",
     } as LSP2ArrayKey,
   },
@@ -204,8 +196,7 @@ export const ERC725YDataKeys = {
 
     // keccak256('LSP12IssuedAssets[]')
     "LSP12IssuedAssets[]": {
-      length:
-        "0x7c8c3416d6cda87cd42c71ea1843df28ac4850354f988d55ee2eaa47b6dc05cd",
+      length: "0x7c8c3416d6cda87cd42c71ea1843df28ac4850354f988d55ee2eaa47b6dc05cd",
       index: "0x7c8c3416d6cda87cd42c71ea1843df28",
     } as LSP2ArrayKey,
   },

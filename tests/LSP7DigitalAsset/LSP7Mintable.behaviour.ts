@@ -10,12 +10,7 @@ import {
 
 import { setupProfileWithKeyManagerWithURD } from "../utils/fixtures";
 
-import {
-  PERMISSIONS,
-  ERC725YDataKeys,
-  OPERATION_TYPES,
-  CALLTYPE,
-} from "../../constants";
+import { PERMISSIONS, ERC725YDataKeys, OPERATION_TYPES, CALLTYPE } from "../../constants";
 import { combineAllowedCalls, combinePermissions } from "../utils/helpers";
 
 export type LSP7MintableTestAccounts = {
@@ -43,7 +38,7 @@ export type LSP7MintableTestContext = {
 };
 
 export const shouldBehaveLikeLSP7Mintable = (
-  buildContext: () => Promise<LSP7MintableTestContext>
+  buildContext: () => Promise<LSP7MintableTestContext>,
 ) => {
   let context: LSP7MintableTestContext;
 
@@ -60,7 +55,7 @@ export const shouldBehaveLikeLSP7Mintable = (
         context.accounts.tokenReceiver.address,
         amountToMint,
         true, // beneficiary is an EOA, so we need to allowNonLSP1Recipient minting
-        "0x"
+        "0x",
       );
 
       let postTotalSupply = await context.lsp7Mintable.totalSupply();
@@ -71,7 +66,7 @@ export const shouldBehaveLikeLSP7Mintable = (
       const amountToMint = ethers.BigNumber.from("100");
 
       const tokenReceiverBalance = await context.lsp7Mintable.balanceOf(
-        context.accounts.tokenReceiver.address
+        context.accounts.tokenReceiver.address,
       );
 
       expect(tokenReceiverBalance).to.equal(amountToMint);
@@ -86,9 +81,7 @@ export const shouldBehaveLikeLSP7Mintable = (
       const nonOwner = context.accounts.tokenReceiver;
 
       await expect(
-        context.lsp7Mintable
-          .connect(nonOwner)
-          .mint(nonOwner.address, amountToMint, true, "0x")
+        context.lsp7Mintable.connect(nonOwner).mint(nonOwner.address, amountToMint, true, "0x"),
       ).to.be.revertedWith("Ownable: caller is not the owner");
     });
   });
@@ -98,9 +91,7 @@ export const shouldBehaveLikeLSP7Mintable = (
     let lsp6KeyManager;
 
     before(async () => {
-      const [UP, KM] = await setupProfileWithKeyManagerWithURD(
-        context.accounts.profileOwner
-      );
+      const [UP, KM] = await setupProfileWithKeyManagerWithURD(context.accounts.profileOwner);
 
       universalProfile = UP as UniversalProfile;
       lsp6KeyManager = KM as LSP6KeyManager;
@@ -109,68 +100,61 @@ export const shouldBehaveLikeLSP7Mintable = (
         .connect(context.accounts.owner)
         .transferOwnership(universalProfile.address);
 
-      const URDTokenReentrant =
-        await new UniversalReceiverDelegateTokenReentrant__factory(
-          context.accounts.profileOwner
-        ).deploy();
+      const URDTokenReentrant = await new UniversalReceiverDelegateTokenReentrant__factory(
+        context.accounts.profileOwner,
+      ).deploy();
 
-      const setDataPayload = universalProfile.interface.encodeFunctionData(
-        "setDataBatch",
+      const setDataPayload = universalProfile.interface.encodeFunctionData("setDataBatch", [
         [
-          [
-            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              URDTokenReentrant.address.substring(2),
-            ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-              URDTokenReentrant.address.substring(2),
-            ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
-          ],
-          [
-            combinePermissions(PERMISSIONS.CALL, PERMISSIONS.REENTRANCY),
-            combineAllowedCalls(
-              [CALLTYPE.CALL],
-              [context.lsp7Mintable.address],
-              ["0xffffffff"],
-              ["0xffffffff"]
-            ),
-            URDTokenReentrant.address,
-          ],
-        ]
-      );
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            URDTokenReentrant.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            URDTokenReentrant.address.substring(2),
+          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+        ],
+        [
+          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.REENTRANCY),
+          combineAllowedCalls(
+            [CALLTYPE.CALL],
+            [context.lsp7Mintable.address],
+            ["0xffffffff"],
+            ["0xffffffff"],
+          ),
+          URDTokenReentrant.address,
+        ],
+      ]);
 
-      await lsp6KeyManager
-        .connect(context.accounts.profileOwner)
-        .execute(setDataPayload);
+      await lsp6KeyManager.connect(context.accounts.profileOwner).execute(setDataPayload);
     });
 
     it("should pass", async () => {
       const firstAmount = 50;
       const secondAmount = 150;
 
-      const reentrantMintPayload =
-        context.lsp7Mintable.interface.encodeFunctionData("mint", [
-          universalProfile.address,
-          firstAmount,
-          false,
-          "0x",
-        ]);
+      const reentrantMintPayload = context.lsp7Mintable.interface.encodeFunctionData("mint", [
+        universalProfile.address,
+        firstAmount,
+        false,
+        "0x",
+      ]);
 
-      const mintPayload = context.lsp7Mintable.interface.encodeFunctionData(
-        "mint",
-        [universalProfile.address, secondAmount, false, reentrantMintPayload]
-      );
+      const mintPayload = context.lsp7Mintable.interface.encodeFunctionData("mint", [
+        universalProfile.address,
+        secondAmount,
+        false,
+        reentrantMintPayload,
+      ]);
 
-      const executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [OPERATION_TYPES.CALL, context.lsp7Mintable.address, 0, mintPayload]
-      );
+      const executePayload = universalProfile.interface.encodeFunctionData("execute", [
+        OPERATION_TYPES.CALL,
+        context.lsp7Mintable.address,
+        0,
+        mintPayload,
+      ]);
 
-      await lsp6KeyManager
-        .connect(context.accounts.profileOwner)
-        .execute(executePayload);
+      await lsp6KeyManager.connect(context.accounts.profileOwner).execute(executePayload);
 
-      const balanceOfUP = await context.lsp7Mintable.callStatic.balanceOf(
-        universalProfile.address
-      );
+      const balanceOfUP = await context.lsp7Mintable.callStatic.balanceOf(universalProfile.address);
 
       expect(balanceOfUP).to.equal(firstAmount + secondAmount);
     });

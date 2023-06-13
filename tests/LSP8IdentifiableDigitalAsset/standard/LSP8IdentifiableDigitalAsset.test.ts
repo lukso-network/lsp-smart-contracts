@@ -1,10 +1,7 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 
-import {
-  LSP8Tester__factory,
-  LSP8IdentifiableDigitalAsset,
-} from "../../../types";
+import { LSP8Tester__factory, LSP8IdentifiableDigitalAsset } from "../../../types";
 
 import {
   getNamedAccounts,
@@ -29,7 +26,7 @@ describe("LSP8IdentifiableDigitalAsset with constructor", () => {
     const lsp8 = await new LSP8Tester__factory(accounts.owner).deploy(
       deployParams.name,
       deployParams.symbol,
-      deployParams.newOwner
+      deployParams.newOwner,
     );
 
     return { accounts, lsp8, deployParams };
@@ -65,8 +62,8 @@ describe("LSP8IdentifiableDigitalAsset with constructor", () => {
         new LSP8Tester__factory(accounts[0]).deploy(
           deployParams.name,
           deployParams.symbol,
-          ethers.constants.AddressZero
-        )
+          ethers.constants.AddressZero,
+        ),
       ).to.be.revertedWith("Ownable: new owner is the zero address");
     });
 
@@ -90,9 +87,7 @@ describe("LSP8IdentifiableDigitalAsset with constructor", () => {
   });
 
   describe("when testing deployed contract", () => {
-    shouldBehaveLikeLSP4DigitalAssetMetadata(
-      buildLSP4DigitalAssetMetadataTestContext
-    );
+    shouldBehaveLikeLSP4DigitalAssetMetadata(buildLSP4DigitalAssetMetadataTestContext);
     shouldBehaveLikeLSP8(buildTestContext);
   });
 });

@@ -25,16 +25,13 @@ import {
   shouldBehaveLikeLSP17,
 } from "../LSP17ContractExtension/LSP17Extendable.behaviour";
 
-import {
-  deployProxy,
-  setupProfileWithKeyManagerWithURD,
-} from "../utils/fixtures";
+import { deployProxy, setupProfileWithKeyManagerWithURD } from "../utils/fixtures";
 import { provider } from "../utils/helpers";
 import { BigNumber } from "ethers";
 
 describe("LSP9VaultInit with proxy", () => {
   const buildTestContext = async (
-    initialFunding?: number | BigNumber
+    initialFunding?: number | BigNumber,
   ): Promise<LSP9TestContext> => {
     const accounts = await getNamedAccounts();
     const deployParams = {
@@ -42,17 +39,13 @@ describe("LSP9VaultInit with proxy", () => {
       initialFunding,
     };
 
-    const lsp9VaultInit = await new LSP9VaultInit__factory(
-      accounts.owner
-    ).deploy();
-    const lsp9VaultProxy = await deployProxy(
-      lsp9VaultInit.address,
-      accounts.owner
-    );
+    const lsp9VaultInit = await new LSP9VaultInit__factory(accounts.owner).deploy();
+    const lsp9VaultProxy = await deployProxy(lsp9VaultInit.address, accounts.owner);
     const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy);
 
-    const [UP1, KM1, lsp1universalReceiverDelegateUP] =
-      await setupProfileWithKeyManagerWithURD(accounts.owner);
+    const [UP1, KM1, lsp1universalReceiverDelegateUP] = await setupProfileWithKeyManagerWithURD(
+      accounts.owner,
+    );
 
     const universalProfile = UP1 as UniversalProfile;
     const lsp6KeyManager = KM1 as LSP6KeyManager;
@@ -72,14 +65,9 @@ describe("LSP9VaultInit with proxy", () => {
       owner: accounts[0],
     };
 
-    const lsp9VaultInit = await new LSP9VaultInit__factory(
-      accounts[0]
-    ).deploy();
+    const lsp9VaultInit = await new LSP9VaultInit__factory(accounts[0]).deploy();
 
-    const lsp9VaultProxy = await deployProxy(
-      lsp9VaultInit.address,
-      accounts[0]
-    );
+    const lsp9VaultProxy = await deployProxy(lsp9VaultInit.address, accounts[0]);
 
     const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy);
 
@@ -87,25 +75,22 @@ describe("LSP9VaultInit with proxy", () => {
   };
 
   const initializeProxy = async (context: LSP9TestContext) => {
-    return context.lsp9Vault["initialize(address)"](
-      context.deployParams.newOwner,
-      { value: context.deployParams.initialFunding }
-    );
+    return context.lsp9Vault["initialize(address)"](context.deployParams.newOwner, {
+      value: context.deployParams.initialFunding,
+    });
   };
 
   describe("when deploying the base implementation contract", () => {
     it("prevent any address from calling the initialize(...) function on the implementation", async () => {
       const accounts = await ethers.getSigners();
 
-      const lsp9VaultInit = await new LSP9VaultInit__factory(
-        accounts[0]
-      ).deploy();
+      const lsp9VaultInit = await new LSP9VaultInit__factory(accounts[0]).deploy();
 
       const randomCaller = accounts[1];
 
-      await expect(
-        lsp9VaultInit.initialize(randomCaller.address)
-      ).to.be.revertedWith("Initializable: contract is already initialized");
+      await expect(lsp9VaultInit.initialize(randomCaller.address)).to.be.revertedWith(
+        "Initializable: contract is already initialized",
+      );
     });
   });
 
@@ -132,7 +117,7 @@ describe("LSP9VaultInit with proxy", () => {
     describe("when calling initialize more than once", () => {
       it("should revert", async () => {
         await expect(initializeProxy(context)).to.be.revertedWith(
-          "Initializable: contract is already initialized"
+          "Initializable: contract is already initialized",
         );
       });
     });
@@ -144,7 +129,7 @@ describe("LSP9VaultInit with proxy", () => {
         await initializeProxy(context);
 
         return context;
-      })
+      }),
     );
 
     shouldBehaveLikeLSP14(async (initialFunding?: number | BigNumber) => {
@@ -152,8 +137,7 @@ describe("LSP9VaultInit with proxy", () => {
       let accounts = await ethers.getSigners();
       await initializeProxy(context);
 
-      const onlyOwnerRevertString =
-        "Only Owner or reentered Universal Receiver Delegate allowed";
+      const onlyOwnerRevertString = "Only Owner or reentered Universal Receiver Delegate allowed";
 
       return {
         accounts: accounts,
@@ -167,7 +151,7 @@ describe("LSP9VaultInit with proxy", () => {
       let fallbackExtensionContext = await buildLSP17TestContext();
 
       await fallbackExtensionContext.contract["initialize(address)"](
-        fallbackExtensionContext.deployParams.owner.address
+        fallbackExtensionContext.deployParams.owner.address,
       );
 
       return fallbackExtensionContext;

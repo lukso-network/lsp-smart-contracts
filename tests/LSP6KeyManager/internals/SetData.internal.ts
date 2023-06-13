@@ -6,17 +6,14 @@ import { LSP6InternalsTestContext } from "../../utils/context";
 import { setupKeyManagerHelper } from "../../utils/fixtures";
 import { ALL_PERMISSIONS, ERC725YDataKeys } from "../../../constants";
 
-export const testSetDataInternals = (
-  buildContext: () => Promise<LSP6InternalsTestContext>
-) => {
+export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTestContext>) => {
   let context: LSP6InternalsTestContext;
 
   before(async () => {
     context = await buildContext();
 
     const permissionKeys = [
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
     ];
 
     const permissionValues = [ALL_PERMISSIONS];
@@ -44,11 +41,11 @@ export const testSetDataInternals = (
               context.owner.address,
               ALL_PERMISSIONS,
               dataKeys,
-              dataValues
-            )
+              dataValues,
+            ),
           ).to.be.revertedWithCustomError(
             context.keyManagerInternalTester,
-            "ERC725Y_DataKeysValuesLengthMismatch"
+            "ERC725Y_DataKeysValuesLengthMismatch",
           );
         });
 
@@ -69,11 +66,11 @@ export const testSetDataInternals = (
               context.owner.address,
               ALL_PERMISSIONS,
               dataKeys,
-              dataValues
-            )
+              dataValues,
+            ),
           ).to.be.revertedWithCustomError(
             context.keyManagerInternalTester,
-            "ERC725Y_DataKeysValuesLengthMismatch"
+            "ERC725Y_DataKeysValuesLengthMismatch",
           );
         });
       });
@@ -97,8 +94,8 @@ export const testSetDataInternals = (
               context.owner.address,
               ALL_PERMISSIONS,
               dataKeys,
-              dataValues
-            )
+              dataValues,
+            ),
           ).to.not.be.reverted;
         });
       });

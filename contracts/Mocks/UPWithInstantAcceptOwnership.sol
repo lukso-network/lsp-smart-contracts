@@ -23,13 +23,10 @@ contract UPWithInstantAcceptOwnership is LSP0ERC725AccountCore {
         OwnableUnset._setOwner(newOwner);
     }
 
-    function universalReceiver(bytes32 typeId, bytes calldata receivedData)
-        public
-        payable
-        virtual
-        override
-        returns (bytes memory)
-    {
+    function universalReceiver(
+        bytes32 typeId,
+        bytes calldata receivedData
+    ) public payable virtual override returns (bytes memory) {
         if (
             typeId == _TYPEID_LSP0_OwnershipTransferStarted ||
             typeId == _TYPEID_LSP9_OwnershipTransferStarted ||

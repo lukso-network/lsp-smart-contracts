@@ -53,15 +53,12 @@ library LSP1Utils {
      * @dev Gets all the transfer details depending on the `typeId`
      * @param typeId A unique identifier for a specific action
      */
-    function getTransferDetails(bytes32 typeId)
+    function getTransferDetails(
+        bytes32 typeId
+    )
         internal
         pure
-        returns (
-            bool invalid,
-            bytes10 mapPrefix,
-            bytes4 interfaceId,
-            bool isReceiving
-        )
+        returns (bool invalid, bytes10 mapPrefix, bytes4 interfaceId, bool isReceiving)
     {
         if (typeId == _TYPEID_LSP7_TOKENSSENDER || typeId == _TYPEID_LSP7_TOKENSRECIPIENT) {
             mapPrefix = _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX;

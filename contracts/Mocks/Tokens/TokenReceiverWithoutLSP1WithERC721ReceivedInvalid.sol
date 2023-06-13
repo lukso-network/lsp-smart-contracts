@@ -15,9 +15,9 @@ contract TokenReceiverWithoutLSP1WithERC721ReceivedInvalid is ERC721Holder {
     fallback() external payable {}
 
     function onERC721Received(
-        address, /* operator */
-        address, /* from */
-        uint256, /* tokenId */
+        address /* operator */,
+        address /* from */,
+        uint256 /* tokenId */,
         bytes memory /* data */
     ) public pure override returns (bytes4) {
         return 0xdeadbeef;

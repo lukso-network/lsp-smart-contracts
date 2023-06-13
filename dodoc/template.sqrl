@@ -58,7 +58,7 @@
 
 
 ```solidity
-{{@formatCode(val.code) /}};
+{{val.code}};
 ```
 
 
@@ -128,7 +128,7 @@
 
 
 ```solidity
-{{@formatCode(val.code) /}};
+{{val.code}};
 ```
 
 
@@ -169,7 +169,7 @@
 
 
 ```solidity
-{{@formatCode(val.code) /}};
+{{val.code}};
 ```
 
 

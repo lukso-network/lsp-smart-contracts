@@ -14,11 +14,7 @@ abstract contract LSP7BurnableInitAbstract is LSP7DigitalAssetInitAbstract {
      *
      * See internal _burn function for more details
      */
-    function burn(
-        address from,
-        uint256 amount,
-        bytes memory data
-    ) public {
+    function burn(address from, uint256 amount, bytes memory data) public {
         _burn(from, amount, data);
     }
 }

@@ -45,11 +45,10 @@ library LSP2Utils {
      * @param arrayKey The key from which we're getting the first half of the Array index data key from
      * @param index Used to generate the second half of the Array index data key
      */
-    function generateArrayElementKeyAtIndex(bytes32 arrayKey, uint128 index)
-        internal
-        pure
-        returns (bytes32)
-    {
+    function generateArrayElementKeyAtIndex(
+        bytes32 arrayKey,
+        uint128 index
+    ) internal pure returns (bytes32) {
         bytes memory elementInArray = bytes.concat(bytes16(arrayKey), bytes16(index));
         return bytes32(elementInArray);
     }
@@ -62,11 +61,10 @@ library LSP2Utils {
      * @param lastWord Used to generate a hash and its first 20 bytes
      * are used for the last part of the data key of keyType Mapping
      */
-    function generateMappingKey(string memory firstWord, string memory lastWord)
-        internal
-        pure
-        returns (bytes32)
-    {
+    function generateMappingKey(
+        string memory firstWord,
+        string memory lastWord
+    ) internal pure returns (bytes32) {
         bytes32 firstWordHash = keccak256(bytes(firstWord));
         bytes32 lastWordHash = keccak256(bytes(lastWord));
 
@@ -86,11 +84,10 @@ library LSP2Utils {
      * are used for the first part of the data key of keyType Mapping
      * @param addr used for the last part of the data key of keyType Mapping
      */
-    function generateMappingKey(string memory firstWord, address addr)
-        internal
-        pure
-        returns (bytes32)
-    {
+    function generateMappingKey(
+        string memory firstWord,
+        address addr
+    ) internal pure returns (bytes32) {
         bytes32 firstWordHash = keccak256(bytes(firstWord));
 
         bytes memory temporaryBytes = bytes.concat(
@@ -108,11 +105,10 @@ library LSP2Utils {
      * @param keyPrefix First part of the data key of keyType Mapping
      * @param bytes20Value Second part of the data key of keyType Mapping
      */
-    function generateMappingKey(bytes10 keyPrefix, bytes20 bytes20Value)
-        internal
-        pure
-        returns (bytes32)
-    {
+    function generateMappingKey(
+        bytes10 keyPrefix,
+        bytes20 bytes20Value
+    ) internal pure returns (bytes32) {
         bytes memory generatedKey = bytes.concat(keyPrefix, bytes2(0), bytes20Value);
         return bytes32(generatedKey);
     }
@@ -166,11 +162,10 @@ library LSP2Utils {
      * @param keyPrefix Used for the first part of the data key of keyType MappingWithGrouping
      * @param bytes20Value Used for the first last of the data key of keyType MappingWithGrouping
      */
-    function generateMappingWithGroupingKey(bytes10 keyPrefix, bytes20 bytes20Value)
-        internal
-        pure
-        returns (bytes32)
-    {
+    function generateMappingWithGroupingKey(
+        bytes10 keyPrefix,
+        bytes20 bytes20Value
+    ) internal pure returns (bytes32) {
         bytes memory generatedKey = bytes.concat(keyPrefix, bytes2(0), bytes20Value);
         return bytes32(generatedKey);
     }

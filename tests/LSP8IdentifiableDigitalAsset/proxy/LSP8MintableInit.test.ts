@@ -20,15 +20,12 @@ describe("LSP8MintableInit with proxy", () => {
       newOwner: accounts.owner.address,
     };
 
-    const LSP8MintableInit: LSP8MintableInit =
-      await new LSP8MintableInit__factory(accounts.owner).deploy();
+    const LSP8MintableInit: LSP8MintableInit = await new LSP8MintableInit__factory(
+      accounts.owner,
+    ).deploy();
 
-    const lsp8MintableProxy = await deployProxy(
-      LSP8MintableInit.address,
-      accounts.owner
-    );
-    const lsp8Mintable: LSP8MintableInit =
-      LSP8MintableInit.attach(lsp8MintableProxy);
+    const lsp8MintableProxy = await deployProxy(LSP8MintableInit.address, accounts.owner);
+    const lsp8Mintable: LSP8MintableInit = LSP8MintableInit.attach(lsp8MintableProxy);
 
     return { accounts, lsp8Mintable, deployParams };
   };
@@ -37,7 +34,7 @@ describe("LSP8MintableInit with proxy", () => {
     return context.lsp8Mintable["initialize(string,string,address)"](
       context.deployParams.name,
       context.deployParams.symbol,
-      context.deployParams.newOwner
+      context.deployParams.newOwner,
     );
   };
 
@@ -45,9 +42,7 @@ describe("LSP8MintableInit with proxy", () => {
     it("prevent any address from calling the initialize(...) function on the implementation", async () => {
       const accounts = await ethers.getSigners();
 
-      const lsp8Mintable = await new LSP8MintableInit__factory(
-        accounts[0]
-      ).deploy();
+      const lsp8Mintable = await new LSP8MintableInit__factory(accounts[0]).deploy();
 
       const randomCaller = accounts[1];
 
@@ -55,8 +50,8 @@ describe("LSP8MintableInit with proxy", () => {
         lsp8Mintable["initialize(string,string,address)"](
           "XXXXXXXXXXX",
           "XXX",
-          randomCaller.address
-        )
+          randomCaller.address,
+        ),
       ).to.be.revertedWith("Initializable: contract is already initialized");
     });
   });
@@ -84,7 +79,7 @@ describe("LSP8MintableInit with proxy", () => {
     describe("when calling initialize more than once", () => {
       it("should revert", async () => {
         await expect(initializeProxy(context)).to.be.revertedWith(
-          "Initializable: contract is already initialized"
+          "Initializable: contract is already initialized",
         );
       });
     });
@@ -95,7 +90,7 @@ describe("LSP8MintableInit with proxy", () => {
       buildTestContext().then(async (context) => {
         await initializeProxy(context);
         return context;
-      })
+      }),
     );
   });
 });

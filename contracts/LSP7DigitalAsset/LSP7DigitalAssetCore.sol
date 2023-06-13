@@ -92,12 +92,10 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function authorizedAmountFor(address operator, address tokenOwner)
-        public
-        view
-        virtual
-        returns (uint256)
-    {
+    function authorizedAmountFor(
+        address operator,
+        address tokenOwner
+    ) public view virtual returns (uint256) {
         if (tokenOwner == operator) {
             return _tokenOwnerBalances[tokenOwner];
         } else {
@@ -296,11 +294,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      *
      * Emits a {Transfer} event.
      */
-    function _burn(
-        address from,
-        uint256 amount,
-        bytes memory data
-    ) internal virtual {
+    function _burn(address from, uint256 amount, bytes memory data) internal virtual {
         if (from == address(0)) {
             revert LSP7CannotSendWithAddressZero();
         }
@@ -388,11 +382,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * - When `to` is zero, ``from``'s `amount` tokens will be burned.
      * - `from` and `to` are never both zero.
      */
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 amount
-    ) internal virtual {}
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual {}
 
     /**
      * @dev An attempt is made to notify the token sender about the `amount` tokens changing owners using

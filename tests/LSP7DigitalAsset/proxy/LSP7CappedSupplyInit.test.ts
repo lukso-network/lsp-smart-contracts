@@ -22,25 +22,20 @@ describe("LSP7CappedSupplyInit with proxy", () => {
       tokenSupplyCap: ethers.BigNumber.from("2"),
     };
     const lsp7CappedSupplyInit = await new LSP7CappedSupplyInitTester__factory(
-      accounts.owner
+      accounts.owner,
     ).deploy();
-    const lsp7CappedSupplyProxy = await deployProxy(
-      lsp7CappedSupplyInit.address,
-      accounts.owner
-    );
+    const lsp7CappedSupplyProxy = await deployProxy(lsp7CappedSupplyInit.address, accounts.owner);
     const lsp7CappedSupply = lsp7CappedSupplyInit.attach(lsp7CappedSupplyProxy);
 
     return { accounts, lsp7CappedSupply, deployParams };
   };
 
   const initializeProxy = async (context: LSP7CappedSupplyTestContext) => {
-    return context.lsp7CappedSupply[
-      "initialize(string,string,address,uint256)"
-    ](
+    return context.lsp7CappedSupply["initialize(string,string,address,uint256)"](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
-      context.deployParams.tokenSupplyCap
+      context.deployParams.tokenSupplyCap,
     );
   };
 
@@ -67,7 +62,7 @@ describe("LSP7CappedSupplyInit with proxy", () => {
     describe("when calling initialize more than once", () => {
       it("should revert", async () => {
         await expect(initializeProxy(context)).to.be.revertedWith(
-          "Initializable: contract is already initialized"
+          "Initializable: contract is already initialized",
         );
       });
     });
@@ -79,7 +74,7 @@ describe("LSP7CappedSupplyInit with proxy", () => {
         await initializeProxy(context);
 
         return context;
-      })
+      }),
     );
   });
 });

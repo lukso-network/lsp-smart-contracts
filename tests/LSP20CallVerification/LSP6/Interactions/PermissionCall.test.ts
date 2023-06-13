@@ -29,9 +29,7 @@ import { setupKeyManager } from "../../../utils/fixtures";
 // helpers
 import { abiCoder, combineAllowedCalls } from "../../../utils/helpers";
 
-export const shouldBehaveLikePermissionCall = (
-  buildContext: () => Promise<LSP6TestContext>
-) => {
+export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
   describe("when making an empty call via `ERC25X.execute(...)` -> (`data` = `0x`, `value` = 0)", () => {
@@ -58,11 +56,11 @@ export const shouldBehaveLikePermissionCall = (
       allowedEOA = context.accounts[6].address;
 
       allowedContractWithFallback = await new FallbackInitializer__factory(
-        context.accounts[0]
+        context.accounts[0],
       ).deploy();
 
       allowedContractWithFallbackRevert = await new FallbackRevert__factory(
-        context.accounts[0]
+        context.accounts[0],
       ).deploy();
 
       const permissionKeys = [
@@ -90,7 +88,7 @@ export const shouldBehaveLikePermissionCall = (
           allowedContractWithFallbackRevert.address,
         ],
         ["0xffffffff", "0xffffffff", "0xffffffff"],
-        ["0xffffffff", "0xffffffff", "0xffffffff"]
+        ["0xffffffff", "0xffffffff", "0xffffffff"],
       );
 
       const permissionsValues = [
@@ -113,26 +111,26 @@ export const shouldBehaveLikePermissionCall = (
         await expect(
           context.universalProfile
             .connect(addressCannotMakeCallNoAllowedCalls)
-            .execute(OPERATION_TYPES.CALL, targetEOA, 0, "0x")
+            .execute(OPERATION_TYPES.CALL, targetEOA, 0, "0x"),
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotMakeCallNoAllowedCalls.address, "CALL");
       });
 
       it("should fail with `NotAuthorised` error when `to` is a contract", async () => {
-        const targetContract = await new TargetContract__factory(
-          context.accounts[0]
-        ).deploy();
+        const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [OPERATION_TYPES.CALL, targetContract.address, 0, "0x"]
-        );
+        const payload = context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          targetContract.address,
+          0,
+          "0x",
+        ]);
 
         await expect(
           context.universalProfile
             .connect(addressCannotMakeCallNoAllowedCalls)
-            .execute(OPERATION_TYPES.CALL, targetContract.address, 0, "0x")
+            .execute(OPERATION_TYPES.CALL, targetContract.address, 0, "0x"),
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotMakeCallNoAllowedCalls.address, "CALL");
@@ -146,21 +144,19 @@ export const shouldBehaveLikePermissionCall = (
         await expect(
           context.universalProfile
             .connect(addressCannotMakeCallWithAllowedCalls)
-            .execute(OPERATION_TYPES.CALL, targetEOA, 0, "0x")
+            .execute(OPERATION_TYPES.CALL, targetEOA, 0, "0x"),
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotMakeCallWithAllowedCalls.address, "CALL");
       });
 
       it("should fail with `NotAuthorised` error when `to` is a contract", async () => {
-        const targetContract = await new TargetContract__factory(
-          context.accounts[0]
-        ).deploy();
+        const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
         await expect(
           context.universalProfile
             .connect(addressCannotMakeCallWithAllowedCalls)
-            .execute(OPERATION_TYPES.CALL, targetContract.address, 0, "0x")
+            .execute(OPERATION_TYPES.CALL, targetContract.address, 0, "0x"),
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotMakeCallWithAllowedCalls.address, "CALL");
@@ -174,21 +170,19 @@ export const shouldBehaveLikePermissionCall = (
         await expect(
           context.universalProfile
             .connect(addressCanMakeCallNoAllowedCalls)
-            .execute(OPERATION_TYPES.CALL, targetEOA, 0, "0x")
+            .execute(OPERATION_TYPES.CALL, targetEOA, 0, "0x"),
         )
           .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
           .withArgs(addressCanMakeCallNoAllowedCalls.address);
       });
 
       it("should fail with `NoCallsAllowed` error when `to` is a contract", async () => {
-        const targetContract = await new TargetContract__factory(
-          context.accounts[0]
-        ).deploy();
+        const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
         await expect(
           context.universalProfile
             .connect(addressCanMakeCallNoAllowedCalls)
-            .execute(OPERATION_TYPES.CALL, targetContract.address, 0, "0x")
+            .execute(OPERATION_TYPES.CALL, targetContract.address, 0, "0x"),
         )
           .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
           .withArgs(addressCanMakeCallNoAllowedCalls.address);
@@ -204,17 +198,10 @@ export const shouldBehaveLikePermissionCall = (
             await expect(
               context.universalProfile
                 .connect(addressCanMakeCallWithAllowedCalls)
-                .execute(OPERATION_TYPES.CALL, targetEOA, 0, "0x")
+                .execute(OPERATION_TYPES.CALL, targetEOA, 0, "0x"),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAllowedCall"
-              )
-              .withArgs(
-                addressCanMakeCallWithAllowedCalls.address,
-                targetEOA,
-                "0x00000000"
-              );
+              .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
+              .withArgs(addressCanMakeCallWithAllowedCalls.address, targetEOA, "0x00000000");
           });
         });
 
@@ -228,11 +215,7 @@ export const shouldBehaveLikePermissionCall = (
 
             expect(tx)
               .to.emit(context.keyManager, "VerifiedCall")
-              .withArgs(
-                addressCanMakeCallWithAllowedCalls.address,
-                0,
-                "0x00000000"
-              );
+              .withArgs(addressCanMakeCallWithAllowedCalls.address, 0, "0x00000000");
           });
         });
       });
@@ -240,23 +223,18 @@ export const shouldBehaveLikePermissionCall = (
       describe("when `to` is a contract", () => {
         describe("when `to` is NOT in the list of Allowed Calls", () => {
           it("should fail with `NotAllowedCall` error", async () => {
-            const targetContract = await new TargetContract__factory(
-              context.accounts[0]
-            ).deploy();
+            const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
             await expect(
               context.universalProfile
                 .connect(addressCanMakeCallWithAllowedCalls)
-                .execute(OPERATION_TYPES.CALL, targetContract.address, 0, "0x")
+                .execute(OPERATION_TYPES.CALL, targetContract.address, 0, "0x"),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NotAllowedCall"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
               .withArgs(
                 addressCanMakeCallWithAllowedCalls.address,
                 targetContract.address,
-                "0x00000000"
+                "0x00000000",
               );
           });
         });
@@ -266,15 +244,10 @@ export const shouldBehaveLikePermissionCall = (
             it("should pass and update `to` contract's storage", async () => {
               await context.universalProfile
                 .connect(addressCanMakeCallWithAllowedCalls)
-                .execute(
-                  OPERATION_TYPES.CALL,
-                  allowedContractWithFallback.address,
-                  0,
-                  "0x"
-                );
+                .execute(OPERATION_TYPES.CALL, allowedContractWithFallback.address, 0, "0x");
 
               expect(await allowedContractWithFallback.caller()).to.equal(
-                context.universalProfile.address
+                context.universalProfile.address,
               );
             });
           });
@@ -288,8 +261,8 @@ export const shouldBehaveLikePermissionCall = (
                     OPERATION_TYPES.CALL,
                     allowedContractWithFallbackRevert.address,
                     0,
-                    "0x"
-                  )
+                    "0x",
+                  ),
               ).to.be.revertedWith("fallback reverted");
             });
           });
@@ -309,40 +282,30 @@ export const shouldBehaveLikePermissionCall = (
       describe("when `to` is a contract", () => {
         describe("if the `fallback()` function of `to` update some state", () => {
           it("should pass and update `to` contract's storage", async () => {
-            const targetContractWithFallback =
-              await new FallbackInitializer__factory(
-                context.accounts[0]
-              ).deploy();
+            const targetContractWithFallback = await new FallbackInitializer__factory(
+              context.accounts[0],
+            ).deploy();
 
             await context.universalProfile
               .connect(addressWithSuperCall)
-              .execute(
-                OPERATION_TYPES.CALL,
-                targetContractWithFallback.address,
-                0,
-                "0x"
-              );
+              .execute(OPERATION_TYPES.CALL, targetContractWithFallback.address, 0, "0x");
 
             expect(await targetContractWithFallback.caller()).to.equal(
-              context.universalProfile.address
+              context.universalProfile.address,
             );
           });
         });
 
         describe("if the `fallback()` function of `to` reverts", () => {
           it("should fail and bubble the error back to the Key Manager", async () => {
-            const targetContractWithFallbackRevert =
-              await new FallbackRevert__factory(context.accounts[0]).deploy();
+            const targetContractWithFallbackRevert = await new FallbackRevert__factory(
+              context.accounts[0],
+            ).deploy();
 
             await expect(
               context.universalProfile
                 .connect(addressWithSuperCall)
-                .execute(
-                  OPERATION_TYPES.CALL,
-                  targetContractWithFallbackRevert.address,
-                  0,
-                  "0x"
-                )
+                .execute(OPERATION_TYPES.CALL, targetContractWithFallbackRevert.address, 0, "0x"),
             ).to.be.revertedWith("fallback reverted");
           });
         });
@@ -364,13 +327,10 @@ export const shouldBehaveLikePermissionCall = (
       addressCanMakeCallWithAllowedCalls = context.accounts[2];
       addressCannotMakeCall = context.accounts[3];
 
-      targetContract = await new TargetContract__factory(
-        context.accounts[0]
-      ).deploy();
+      targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           addressCanMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -390,7 +350,7 @@ export const shouldBehaveLikePermissionCall = (
           [CALLTYPE.CALL],
           [targetContract.address],
           ["0xffffffff"],
-          ["0xffffffff"]
+          ["0xffffffff"],
         ),
       ];
 
@@ -399,22 +359,24 @@ export const shouldBehaveLikePermissionCall = (
 
     describe("when the 'offset' of the `data` payload is not `0x00...80`", () => {
       it("should revert", async () => {
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [OPERATION_TYPES.CALL, targetContract.address, 0, "0xcafecafe"]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          targetContract.address,
+          0,
+          "0xcafecafe",
+        ]);
 
         // edit the `data` offset
         payload = payload.replace(
           "0000000000000000000000000000000000000000000000000000000000000080",
-          "0000000000000000000000000000000000000000000000000000000000000040"
+          "0000000000000000000000000000000000000000000000000000000000000040",
         );
 
         await expect(
           addressCanMakeCallWithAllowedCalls.sendTransaction({
             to: context.universalProfile.address,
             data: payload,
-          })
+          }),
         )
           .to.be.revertedWithCustomError(context.keyManager, "InvalidPayload")
           .withArgs(payload);
@@ -426,19 +388,11 @@ export const shouldBehaveLikePermissionCall = (
         it("should pass and change state at the target contract", async () => {
           let argument = "new name";
 
-          let targetPayload = targetContract.interface.encodeFunctionData(
-            "setName",
-            [argument]
-          );
+          let targetPayload = targetContract.interface.encodeFunctionData("setName", [argument]);
 
           await context.universalProfile
             .connect(context.owner)
-            .execute(
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetPayload
-            );
+            .execute(OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload);
 
           const result = await targetContract.callStatic.getName();
           expect(result).to.equal(argument);
@@ -448,8 +402,7 @@ export const shouldBehaveLikePermissionCall = (
           it("should return the value to the Key Manager <- UP <- targetContract.getName()", async () => {
             let expectedName = await targetContract.callStatic.getName();
 
-            let targetContractPayload =
-              targetContract.interface.encodeFunctionData("getName");
+            let targetContractPayload = targetContract.interface.encodeFunctionData("getName");
 
             let result = await context.universalProfile
               .connect(context.owner)
@@ -457,7 +410,7 @@ export const shouldBehaveLikePermissionCall = (
                 OPERATION_TYPES.CALL,
                 targetContract.address,
                 0,
-                targetContractPayload
+                targetContractPayload,
               );
 
             let [decodedResult] = abiCoder.decode(["string"], result);
@@ -467,8 +420,7 @@ export const shouldBehaveLikePermissionCall = (
           it("Should return the value to the Key Manager <- UP <- targetContract.getNumber()", async () => {
             let expectedNumber = await targetContract.callStatic.getNumber();
 
-            let targetContractPayload =
-              targetContract.interface.encodeFunctionData("getNumber");
+            let targetContractPayload = targetContract.interface.encodeFunctionData("getNumber");
 
             let result = await context.universalProfile
               .connect(context.owner)
@@ -476,7 +428,7 @@ export const shouldBehaveLikePermissionCall = (
                 OPERATION_TYPES.CALL,
                 targetContract.address,
                 0,
-                targetContractPayload
+                targetContractPayload,
               );
 
             let [decodedResult] = abiCoder.decode(["uint256"], result);
@@ -486,19 +438,16 @@ export const shouldBehaveLikePermissionCall = (
 
         describe("when calling a function that reverts", () => {
           it("should revert", async () => {
-            let targetContractPayload =
-              targetContract.interface.encodeFunctionData("revertCall");
+            let targetContractPayload = targetContract.interface.encodeFunctionData("revertCall");
 
             await expect(
               context.universalProfile.execute(
                 OPERATION_TYPES.CALL,
                 targetContract.address,
                 0,
-                targetContractPayload
-              )
-            ).to.be.revertedWith(
-              "TargetContract:revertCall: this function has reverted!"
-            );
+                targetContractPayload,
+              ),
+            ).to.be.revertedWith("TargetContract:revertCall: this function has reverted!");
           });
         });
       });
@@ -508,25 +457,14 @@ export const shouldBehaveLikePermissionCall = (
           it("should revert with `NotAllowedCall(...)` error", async () => {
             let argument = "another name";
 
-            let targetPayload = targetContract.interface.encodeFunctionData(
-              "setName",
-              [argument]
-            );
+            let targetPayload = targetContract.interface.encodeFunctionData("setName", [argument]);
 
             await expect(
               context.universalProfile
                 .connect(addressCanMakeCallNoAllowedCalls)
-                .execute(
-                  OPERATION_TYPES.CALL,
-                  targetContract.address,
-                  0,
-                  targetPayload
-                )
+                .execute(OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NoCallsAllowed"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
               .withArgs(addressCanMakeCallNoAllowedCalls.address);
           });
         });
@@ -535,19 +473,11 @@ export const shouldBehaveLikePermissionCall = (
           it("should pass and change state at the target contract", async () => {
             let argument = "another name";
 
-            let targetPayload = targetContract.interface.encodeFunctionData(
-              "setName",
-              [argument]
-            );
+            let targetPayload = targetContract.interface.encodeFunctionData("setName", [argument]);
 
             await context.universalProfile
               .connect(addressCanMakeCallWithAllowedCalls)
-              .execute(
-                OPERATION_TYPES.CALL,
-                targetContract.address,
-                0,
-                targetPayload
-              );
+              .execute(OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload);
 
             const result = await targetContract.callStatic.getName();
             expect(result).to.equal(argument);
@@ -559,20 +489,12 @@ export const shouldBehaveLikePermissionCall = (
         it("should revert", async () => {
           let argument = "another name";
 
-          let targetPayload = targetContract.interface.encodeFunctionData(
-            "setName",
-            [argument]
-          );
+          let targetPayload = targetContract.interface.encodeFunctionData("setName", [argument]);
 
           await expect(
             context.universalProfile
               .connect(addressCannotMakeCall)
-              .execute(
-                OPERATION_TYPES.CALL,
-                targetContract.address,
-                0,
-                targetPayload
-              )
+              .execute(OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload),
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(addressCannotMakeCall.address, "CALL");

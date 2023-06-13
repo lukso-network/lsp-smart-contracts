@@ -16,20 +16,15 @@ import {
 } from "./LSP6KeyManager.behaviour";
 
 describe("LSP6KeyManager with constructor", () => {
-  const buildTestContext = async (
-    initialFunding?: BigNumber
-  ): Promise<LSP6TestContext> => {
+  const buildTestContext = async (initialFunding?: BigNumber): Promise<LSP6TestContext> => {
     const accounts = await ethers.getSigners();
     const owner = accounts[0];
 
-    const universalProfile = await new UniversalProfile__factory(owner).deploy(
-      owner.address,
-      { value: initialFunding }
-    );
+    const universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address, {
+      value: initialFunding,
+    });
 
-    const keyManager = await new LSP6KeyManager__factory(owner).deploy(
-      universalProfile.address
-    );
+    const keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
 
     return { accounts, owner, universalProfile, keyManager, initialFunding };
   };
@@ -49,13 +44,10 @@ describe("LSP6KeyManager with constructor", () => {
       const accounts = await ethers.getSigners();
       const owner = accounts[0];
 
-      const universalProfile = await new UniversalProfile__factory(
-        owner
-      ).deploy(owner.address);
-      const keyManagerInternalTester =
-        await new KeyManagerInternalTester__factory(owner).deploy(
-          universalProfile.address
-        );
+      const universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
+      const keyManagerInternalTester = await new KeyManagerInternalTester__factory(owner).deploy(
+        universalProfile.address,
+      );
 
       return { owner, accounts, universalProfile, keyManagerInternalTester };
     });

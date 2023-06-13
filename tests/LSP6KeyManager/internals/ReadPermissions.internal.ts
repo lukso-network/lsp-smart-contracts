@@ -3,11 +3,7 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
-import {
-  ALL_PERMISSIONS,
-  ERC725YDataKeys,
-  PERMISSIONS,
-} from "../../../constants";
+import { ALL_PERMISSIONS, ERC725YDataKeys, PERMISSIONS } from "../../../constants";
 
 // setup
 import { LSP6InternalsTestContext } from "../../utils/context";
@@ -17,13 +13,12 @@ import { setupKeyManagerHelper } from "../../utils/fixtures";
 import { abiCoder, combinePermissions } from "../../utils/helpers";
 
 export const testReadingPermissionsInternals = (
-  buildContext: () => Promise<LSP6InternalsTestContext>
+  buildContext: () => Promise<LSP6InternalsTestContext>,
 ) => {
   let context: LSP6InternalsTestContext;
 
   describe("`getPermissionsFor(...)` -> reading permissions", () => {
-    let addressCanSetData: SignerWithAddress,
-      addressCanSetDataAndCall: SignerWithAddress;
+    let addressCanSetData: SignerWithAddress, addressCanSetDataAndCall: SignerWithAddress;
 
     before(async () => {
       context = await buildContext();
@@ -32,8 +27,7 @@ export const testReadingPermissionsInternals = (
       addressCanSetDataAndCall = context.accounts[2];
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           addressCanSetData.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -51,25 +45,19 @@ export const testReadingPermissionsInternals = (
 
     it("Should return ALL_PERMISSIONS for owner", async () => {
       expect(
-        await context.keyManagerInternalTester.getPermissionsFor(
-          context.owner.address
-        )
+        await context.keyManagerInternalTester.getPermissionsFor(context.owner.address),
       ).to.equal(ALL_PERMISSIONS); // ALL_PERMISSIONS = "0xffff..."
     });
 
     it("Should return SETDATA", async () => {
       expect(
-        await context.keyManagerInternalTester.getPermissionsFor(
-          addressCanSetData.address
-        )
+        await context.keyManagerInternalTester.getPermissionsFor(addressCanSetData.address),
       ).to.equal(PERMISSIONS.SETDATA);
     });
 
     it("Should return SETDATA + CALL", async () => {
       expect(
-        await context.keyManagerInternalTester.getPermissionsFor(
-          addressCanSetDataAndCall.address
-        )
+        await context.keyManagerInternalTester.getPermissionsFor(addressCanSetDataAndCall.address),
       ).to.equal(combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.CALL));
     });
   });
@@ -81,7 +69,7 @@ export const testReadingPermissionsInternals = (
 
     const expectedEmptyPermission = abiCoder.encode(
       ["bytes32"],
-      ["0x0000000000000000000000000000000000000000000000000000000000000000"]
+      ["0x0000000000000000000000000000000000000000000000000000000000000000"],
     );
 
     before(async () => {
@@ -96,8 +84,7 @@ export const testReadingPermissionsInternals = (
           moreThan32EmptyBytes.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           lessThan32EmptyBytes.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          oneEmptyByte.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + oneEmptyByte.address.substring(2),
       ];
 
       const permissionValues = [
@@ -111,22 +98,20 @@ export const testReadingPermissionsInternals = (
 
     it("should cast permissions to 32 bytes when reading permissions stored as more than 32 empty bytes", async () => {
       const result = await context.keyManagerInternalTester.getPermissionsFor(
-        moreThan32EmptyBytes.address
+        moreThan32EmptyBytes.address,
       );
       expect(result).to.equal(expectedEmptyPermission);
     });
 
     it("should cast permissions to 32 bytes when reading permissions stored as less than 32 empty bytes", async () => {
       const result = await context.keyManagerInternalTester.getPermissionsFor(
-        lessThan32EmptyBytes.address
+        lessThan32EmptyBytes.address,
       );
       expect(result).to.equal(expectedEmptyPermission);
     });
 
     it("should cast permissions to 32 bytes when reading permissions stored as one empty byte", async () => {
-      const result = await context.keyManagerInternalTester.getPermissionsFor(
-        oneEmptyByte.address
-      );
+      const result = await context.keyManagerInternalTester.getPermissionsFor(oneEmptyByte.address);
       expect(result).to.equal(expectedEmptyPermission);
     });
   });
@@ -140,8 +125,7 @@ export const testReadingPermissionsInternals = (
       addressCanSetData = context.accounts[1];
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           addressCanSetData.address.substring(2),
       ];
@@ -152,16 +136,12 @@ export const testReadingPermissionsInternals = (
     });
 
     it("Should return true when checking if has permission SETDATA", async () => {
-      let appPermissions =
-        await context.keyManagerInternalTester.getPermissionsFor(
-          addressCanSetData.address
-        );
+      let appPermissions = await context.keyManagerInternalTester.getPermissionsFor(
+        addressCanSetData.address,
+      );
 
       expect(
-        await context.keyManagerInternalTester.hasPermission(
-          appPermissions,
-          PERMISSIONS.SETDATA
-        )
+        await context.keyManagerInternalTester.hasPermission(appPermissions, PERMISSIONS.SETDATA),
       ).to.be.true;
     });
   });
@@ -184,8 +164,7 @@ export const testReadingPermissionsInternals = (
       fourthBeneficiary = context.accounts[4];
 
       let permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           firstBeneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -207,16 +186,11 @@ export const testReadingPermissionsInternals = (
       // set AddressPermissions array keys
       permissionArrayKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000000",
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000001",
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000002",
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000003",
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000004",
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000000",
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000001",
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000002",
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000003",
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000004",
       ];
 
       // set AddressPermissions array values
@@ -237,7 +211,7 @@ export const testReadingPermissionsInternals = (
 
     it("Value should be 5 for key 'AddressPermissions[]'", async () => {
       let result = await context.universalProfile.getData(
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].length
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
       );
       expect(result).to.equal("0x05");
     });
@@ -245,9 +219,7 @@ export const testReadingPermissionsInternals = (
     // check array indexes individually
     for (let ii = 1; ii <= 5; ii++) {
       it(`Checking address (=value) stored at AddressPermissions[${ii}]'`, async () => {
-        let result = await context.universalProfile.getData(
-          permissionArrayKeys[ii]
-        );
+        let result = await context.universalProfile.getData(permissionArrayKeys[ii]);
         // raw bytes are stored lower case, so we need to checksum the address retrieved
         result = ethers.utils.getAddress(result);
         expect(result).to.equal(permissionArrayValues[ii]);

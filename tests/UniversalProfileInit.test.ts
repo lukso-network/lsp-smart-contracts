@@ -40,23 +40,16 @@ describe("UniversalProfileInit with proxy", () => {
 
   before(async () => {
     accounts = await ethers.getSigners();
-    universalProfileInit = await new UniversalProfileInit__factory(
-      accounts[0]
-    ).deploy();
+    universalProfileInit = await new UniversalProfileInit__factory(accounts[0]).deploy();
   });
 
-  const buildLSP3TestContext = async (
-    initialFunding?: number
-  ): Promise<LSP3TestContext> => {
+  const buildLSP3TestContext = async (initialFunding?: number): Promise<LSP3TestContext> => {
     const deployParams = {
       owner: accounts[0],
       initialFunding,
     };
 
-    const universalProfileProxy = await deployProxy(
-      universalProfileInit.address,
-      accounts[0]
-    );
+    const universalProfileProxy = await deployProxy(universalProfileInit.address, accounts[0]);
 
     const universalProfile = universalProfileInit.attach(universalProfileProxy);
 
@@ -64,43 +57,32 @@ describe("UniversalProfileInit with proxy", () => {
   };
 
   const initializeProxy = async (context: LSP3TestContext) => {
-    return context.universalProfile["initialize(address)"](
-      context.deployParams.owner.address,
-      { value: context.deployParams.initialFunding }
-    );
+    return context.universalProfile["initialize(address)"](context.deployParams.owner.address, {
+      value: context.deployParams.initialFunding,
+    });
   };
 
   const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
-    const universalProfileProxy = await deployProxy(
-      universalProfileInit.address,
-      accounts[0]
-    );
+    const universalProfileProxy = await deployProxy(universalProfileInit.address, accounts[0]);
 
-    const lsp1Implementation = universalProfileInit.attach(
-      universalProfileProxy
-    );
+    const lsp1Implementation = universalProfileInit.attach(universalProfileProxy);
 
     await lsp1Implementation.initialize(accounts[0].address);
 
-    const lsp1Checker = await new UniversalReceiverTester__factory(
-      accounts[0]
-    ).deploy();
+    const lsp1Checker = await new UniversalReceiverTester__factory(accounts[0]).deploy();
 
     return { accounts, lsp1Implementation, lsp1Checker };
   };
 
   const buildLSP14WithLSP20TestContext = async (
-    initialFunding?: number | BigNumber
+    initialFunding?: number | BigNumber,
   ): Promise<LSP14CombinedWithLSP20TestContext> => {
     const deployParams = {
       owner: accounts[0],
       initialFunding: initialFunding,
     };
 
-    const universalProfileProxy = await deployProxy(
-      universalProfileInit.address,
-      accounts[0]
-    );
+    const universalProfileProxy = await deployProxy(universalProfileInit.address, accounts[0]);
 
     const universalProfile = universalProfileInit.attach(universalProfileProxy);
 
@@ -119,10 +101,7 @@ describe("UniversalProfileInit with proxy", () => {
       owner: accounts[0],
     };
 
-    const universalProfileProxy = await deployProxy(
-      universalProfileInit.address,
-      accounts[0]
-    );
+    const universalProfileProxy = await deployProxy(universalProfileInit.address, accounts[0]);
 
     const universalProfile = universalProfileInit.attach(universalProfileProxy);
 
@@ -135,14 +114,9 @@ describe("UniversalProfileInit with proxy", () => {
       owner: accounts[0],
     };
 
-    const universalProfileInit = await new UniversalProfileInit__factory(
-      accounts[0]
-    ).deploy();
+    const universalProfileInit = await new UniversalProfileInit__factory(accounts[0]).deploy();
 
-    const universalProfileProxy = await deployProxy(
-      universalProfileInit.address,
-      accounts[0]
-    );
+    const universalProfileProxy = await deployProxy(universalProfileInit.address, accounts[0]);
 
     const universalProfile = universalProfileInit.attach(universalProfileProxy);
 
@@ -153,28 +127,24 @@ describe("UniversalProfileInit with proxy", () => {
     it("prevent any address from calling the initialize(...) function on the implementation", async () => {
       const randomCaller = accounts[1];
 
-      await expect(
-        universalProfileInit.initialize(randomCaller.address)
-      ).to.be.revertedWith("Initializable: contract is already initialized");
+      await expect(universalProfileInit.initialize(randomCaller.address)).to.be.revertedWith(
+        "Initializable: contract is already initialized",
+      );
     });
   });
 
-  [
-    { initialFunding: undefined },
-    { initialFunding: 0 },
-    { initialFunding: 5 },
-  ].forEach((testCase) => {
-    describe("when deploying + intializing the proxy contract with or without value", () => {
-      it(`should have initialized with the correct funding amount (${testCase.initialFunding})`, async () => {
-        let context = await buildLSP3TestContext(testCase.initialFunding);
-        await initializeProxy(context);
-        const balance = await provider.getBalance(
-          context.universalProfile.address
-        );
-        expect(balance).to.equal(testCase.initialFunding || 0);
+  [{ initialFunding: undefined }, { initialFunding: 0 }, { initialFunding: 5 }].forEach(
+    (testCase) => {
+      describe("when deploying + intializing the proxy contract with or without value", () => {
+        it(`should have initialized with the correct funding amount (${testCase.initialFunding})`, async () => {
+          let context = await buildLSP3TestContext(testCase.initialFunding);
+          await initializeProxy(context);
+          const balance = await provider.getBalance(context.universalProfile.address);
+          expect(balance).to.equal(testCase.initialFunding || 0);
+        });
       });
-    });
-  });
+    },
+  );
 
   describe("when calling `initialize(...)` more than once", () => {
     it("should revert", async () => {
@@ -182,7 +152,7 @@ describe("UniversalProfileInit with proxy", () => {
       await initializeProxy(context);
 
       await expect(initializeProxy(context)).to.be.revertedWith(
-        "Initializable: contract is already initialized"
+        "Initializable: contract is already initialized",
       );
     });
   });
@@ -210,29 +180,24 @@ describe("UniversalProfileInit with proxy", () => {
       return lsp1Context;
     });
 
-    shouldBehaveLikeLSP14WithLSP20(
-      async (initialFunding?: number | BigNumber) => {
-        let claimOwnershipContext = await buildLSP14WithLSP20TestContext(
-          initialFunding
-        );
+    shouldBehaveLikeLSP14WithLSP20(async (initialFunding?: number | BigNumber) => {
+      let claimOwnershipContext = await buildLSP14WithLSP20TestContext(initialFunding);
 
-        await initializeProxy({
-          accounts: claimOwnershipContext.accounts,
-          universalProfile: claimOwnershipContext.contract as LSP0ERC725Account,
-          deployParams: claimOwnershipContext.deployParams,
-        });
+      await initializeProxy({
+        accounts: claimOwnershipContext.accounts,
+        universalProfile: claimOwnershipContext.contract as LSP0ERC725Account,
+        deployParams: claimOwnershipContext.deployParams,
+      });
 
-        return claimOwnershipContext;
-      }
-    );
+      return claimOwnershipContext;
+    });
 
     shouldBehaveLikeLSP17(async () => {
       let fallbackExtensionContext = await buildLSP17TestContext();
 
       await initializeProxy({
         accounts: fallbackExtensionContext.accounts,
-        universalProfile:
-          fallbackExtensionContext.contract as LSP0ERC725Account,
+        universalProfile: fallbackExtensionContext.contract as LSP0ERC725Account,
         deployParams: fallbackExtensionContext.deployParams,
       });
 

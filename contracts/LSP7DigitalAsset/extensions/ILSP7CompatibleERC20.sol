@@ -40,11 +40,7 @@ interface ILSP7CompatibleERC20 is ILSP7DigitalAsset {
      * @param to The receiving address
      * @param amount The amount of tokens to transfer
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 amount
-    ) external returns (bool);
+    function transferFrom(address from, address to, uint256 amount) external returns (bool);
 
     /*
      * @dev Compatible with ERC20 approve

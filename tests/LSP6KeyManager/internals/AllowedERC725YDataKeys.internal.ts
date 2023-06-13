@@ -10,7 +10,7 @@ export type DataKey = {
 };
 
 export const testAllowedERC725YDataKeysInternals = (
-  buildContext: () => Promise<LSP6InternalsTestContext>
+  buildContext: () => Promise<LSP6InternalsTestContext>,
 ) => {
   describe("Testing CheckAllowedERC725YDataKeys", () => {
     let context: LSP6InternalsTestContext;
@@ -119,7 +119,7 @@ export const testAllowedERC725YDataKeysInternals = (
         const allowedERC25YDataKeys = "0x0000";
         const result =
           await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedERC725YDataKeys(
-            allowedERC25YDataKeys
+            allowedERC25YDataKeys,
           );
         expect(result).to.be.false;
       });
@@ -128,7 +128,7 @@ export const testAllowedERC725YDataKeysInternals = (
         const allowedCalls = "0x0020";
         const result =
           await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedERC725YDataKeys(
-            allowedCalls
+            allowedCalls,
           );
         expect(result).to.be.false;
       });
@@ -137,7 +137,7 @@ export const testAllowedERC725YDataKeysInternals = (
         const allowedCalls = "0x0002";
         const result =
           await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedERC725YDataKeys(
-            allowedCalls
+            allowedCalls,
           );
         expect(result).to.be.false;
       });
@@ -145,7 +145,7 @@ export const testAllowedERC725YDataKeysInternals = (
       it("should return `true` for a CompactBytesArray containing 2 dynamic keys", async () => {
         const result =
           await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
-            compactBytesArray_2d
+            compactBytesArray_2d,
           );
 
         expect(result).to.be.true;
@@ -154,7 +154,7 @@ export const testAllowedERC725YDataKeysInternals = (
       it("should return `true` for a CompactBytesArray containing 2 fixed keys", async () => {
         const result =
           await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
-            compactBytesArray_2f
+            compactBytesArray_2f,
           );
 
         expect(result).to.be.true;
@@ -163,7 +163,7 @@ export const testAllowedERC725YDataKeysInternals = (
       it("should return `true` for a CompactBytesArray containing 2 dynamic keys and 2 fixed keys", async () => {
         const result =
           await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
-            compactBytesArray_2d_2f
+            compactBytesArray_2d_2f,
           );
 
         expect(result).to.be.true;
@@ -172,7 +172,7 @@ export const testAllowedERC725YDataKeysInternals = (
       it("should return `true` for a CompactBytesArray with mixed dynamic and fixed keys", async () => {
         const result =
           await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
-            compactBytesArray_mixed_d_f
+            compactBytesArray_mixed_d_f,
           );
 
         expect(result).to.be.true;
@@ -187,7 +187,7 @@ export const testAllowedERC725YDataKeysInternals = (
 
         const result =
           await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
-            data
+            data,
           );
         expect(result).to.be.false;
       });
@@ -201,7 +201,7 @@ export const testAllowedERC725YDataKeysInternals = (
 
         const result =
           await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
-            data
+            data,
           );
         expect(result).to.be.false;
       });
@@ -218,7 +218,7 @@ export const testAllowedERC725YDataKeysInternals = (
 
         const result =
           await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
-            data
+            data,
           );
         expect(result).to.be.false;
       });
@@ -232,10 +232,8 @@ export const testAllowedERC725YDataKeysInternals = (
             ethers.utils
               .hexlify(
                 ethers.utils.randomBytes(
-                  ethers.BigNumber.from(32)
-                    .sub(dataKeys.firstDynamicKey.length)
-                    .toNumber()
-                )
+                  ethers.BigNumber.from(32).sub(dataKeys.firstDynamicKey.length).toNumber(),
+                ),
               )
               .substring(2);
 
@@ -243,8 +241,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_2d
-            )
+              compactBytesArray_2d,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -254,10 +252,8 @@ export const testAllowedERC725YDataKeysInternals = (
             ethers.utils
               .hexlify(
                 ethers.utils.randomBytes(
-                  ethers.BigNumber.from(32)
-                    .sub(dataKeys.secondDynamicKey.length)
-                    .toNumber()
-                )
+                  ethers.BigNumber.from(32).sub(dataKeys.secondDynamicKey.length).toNumber(),
+                ),
               )
               .substring(2);
 
@@ -265,8 +261,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_2d
-            )
+              compactBytesArray_2d,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -278,12 +274,12 @@ export const testAllowedERC725YDataKeysInternals = (
               context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
                 context.universalProfile.address,
                 dataKeyToCheck,
-                compactBytesArray_2d
-              )
+                compactBytesArray_2d,
+              ),
             )
               .to.be.revertedWithCustomError(
                 context.keyManagerInternalTester,
-                "NotAllowedERC725YDataKey"
+                "NotAllowedERC725YDataKey",
               )
               .withArgs(context.universalProfile.address, dataKeyToCheck);
           }
@@ -298,8 +294,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_2f
-            )
+              compactBytesArray_2f,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -310,8 +306,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_2f
-            )
+              compactBytesArray_2f,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -323,12 +319,12 @@ export const testAllowedERC725YDataKeysInternals = (
               context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
                 context.universalProfile.address,
                 dataKeyToCheck,
-                compactBytesArray_2f
-              )
+                compactBytesArray_2f,
+              ),
             )
               .to.be.revertedWithCustomError(
                 context.keyManagerInternalTester,
-                "NotAllowedERC725YDataKey"
+                "NotAllowedERC725YDataKey",
               )
               .withArgs(context.universalProfile.address, dataKeyToCheck);
           }
@@ -342,10 +338,8 @@ export const testAllowedERC725YDataKeysInternals = (
             ethers.utils
               .hexlify(
                 ethers.utils.randomBytes(
-                  ethers.BigNumber.from(32)
-                    .sub(dataKeys.firstDynamicKey.length)
-                    .toNumber()
-                )
+                  ethers.BigNumber.from(32).sub(dataKeys.firstDynamicKey.length).toNumber(),
+                ),
               )
               .substring(2);
 
@@ -353,8 +347,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_2d_2f
-            )
+              compactBytesArray_2d_2f,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -364,10 +358,8 @@ export const testAllowedERC725YDataKeysInternals = (
             ethers.utils
               .hexlify(
                 ethers.utils.randomBytes(
-                  ethers.BigNumber.from(32)
-                    .sub(dataKeys.secondDynamicKey.length)
-                    .toNumber()
-                )
+                  ethers.BigNumber.from(32).sub(dataKeys.secondDynamicKey.length).toNumber(),
+                ),
               )
               .substring(2);
 
@@ -375,8 +367,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_2d_2f
-            )
+              compactBytesArray_2d_2f,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -387,8 +379,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_2d_2f
-            )
+              compactBytesArray_2d_2f,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -399,8 +391,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_2d_2f
-            )
+              compactBytesArray_2d_2f,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -412,12 +404,12 @@ export const testAllowedERC725YDataKeysInternals = (
               context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
                 context.universalProfile.address,
                 dataKeyToCheck,
-                compactBytesArray_2d_2f
-              )
+                compactBytesArray_2d_2f,
+              ),
             )
               .to.be.revertedWithCustomError(
                 context.keyManagerInternalTester,
-                "NotAllowedERC725YDataKey"
+                "NotAllowedERC725YDataKey",
               )
               .withArgs(context.universalProfile.address, dataKeyToCheck);
           }
@@ -431,10 +423,8 @@ export const testAllowedERC725YDataKeysInternals = (
             ethers.utils
               .hexlify(
                 ethers.utils.randomBytes(
-                  ethers.BigNumber.from(32)
-                    .sub(dataKeys.firstDynamicKey.length)
-                    .toNumber()
-                )
+                  ethers.BigNumber.from(32).sub(dataKeys.firstDynamicKey.length).toNumber(),
+                ),
               )
               .substring(2);
 
@@ -442,8 +432,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_mixed_d_f
-            )
+              compactBytesArray_mixed_d_f,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -453,10 +443,8 @@ export const testAllowedERC725YDataKeysInternals = (
             ethers.utils
               .hexlify(
                 ethers.utils.randomBytes(
-                  ethers.BigNumber.from(32)
-                    .sub(dataKeys.secondDynamicKey.length)
-                    .toNumber()
-                )
+                  ethers.BigNumber.from(32).sub(dataKeys.secondDynamicKey.length).toNumber(),
+                ),
               )
               .substring(2);
 
@@ -464,8 +452,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_mixed_d_f
-            )
+              compactBytesArray_mixed_d_f,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -475,10 +463,8 @@ export const testAllowedERC725YDataKeysInternals = (
             ethers.utils
               .hexlify(
                 ethers.utils.randomBytes(
-                  ethers.BigNumber.from(32)
-                    .sub(dataKeys.thirdDynamicKey.length)
-                    .toNumber()
-                )
+                  ethers.BigNumber.from(32).sub(dataKeys.thirdDynamicKey.length).toNumber(),
+                ),
               )
               .substring(2);
 
@@ -486,8 +472,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_mixed_d_f
-            )
+              compactBytesArray_mixed_d_f,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -497,10 +483,8 @@ export const testAllowedERC725YDataKeysInternals = (
             ethers.utils
               .hexlify(
                 ethers.utils.randomBytes(
-                  ethers.BigNumber.from(32)
-                    .sub(dataKeys.fourthDynamicKey.length)
-                    .toNumber()
-                )
+                  ethers.BigNumber.from(32).sub(dataKeys.fourthDynamicKey.length).toNumber(),
+                ),
               )
               .substring(2);
 
@@ -508,8 +492,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_mixed_d_f
-            )
+              compactBytesArray_mixed_d_f,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -520,8 +504,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_mixed_d_f
-            )
+              compactBytesArray_mixed_d_f,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -532,8 +516,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_mixed_d_f
-            )
+              compactBytesArray_mixed_d_f,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -544,8 +528,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
-              compactBytesArray_mixed_d_f
-            )
+              compactBytesArray_mixed_d_f,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -557,44 +541,37 @@ export const testAllowedERC725YDataKeysInternals = (
               context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
                 context.universalProfile.address,
                 dataKeyToCheck,
-                compactBytesArray_mixed_d_f
-              )
+                compactBytesArray_mixed_d_f,
+              ),
             )
               .to.be.revertedWithCustomError(
                 context.keyManagerInternalTester,
-                "NotAllowedERC725YDataKey"
+                "NotAllowedERC725YDataKey",
               )
               .withArgs(context.universalProfile.address, dataKeyToCheck);
           }
         });
 
         it("should revert if compactBytesArray length element is superior at 32", async () => {
-          const dynamicKeyOfLength33 = ethers.utils.hexlify(
-            ethers.utils.randomBytes(33)
-          );
-          const compactBytesArray_with_invalid_length = encodeCompactBytesArray(
-            [
-              dataKeys.firstDynamicKey.key,
-              dynamicKeyOfLength33,
-              dataKeys.thirdDynamicKey.key,
-            ]
-          );
+          const dynamicKeyOfLength33 = ethers.utils.hexlify(ethers.utils.randomBytes(33));
+          const compactBytesArray_with_invalid_length = encodeCompactBytesArray([
+            dataKeys.firstDynamicKey.key,
+            dynamicKeyOfLength33,
+            dataKeys.thirdDynamicKey.key,
+          ]);
 
           await expect(
             context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               dataKeys.firstFixedKey.key,
-              compactBytesArray_with_invalid_length
-            )
+              compactBytesArray_with_invalid_length,
+            ),
           )
             .to.be.revertedWithCustomError(
               context.keyManagerInternalTester,
-              "InvalidEncodedAllowedERC725YDataKeys"
+              "InvalidEncodedAllowedERC725YDataKeys",
             )
-            .withArgs(
-              compactBytesArray_with_invalid_length,
-              "couldn't DECODE from storage"
-            );
+            .withArgs(compactBytesArray_with_invalid_length, "couldn't DECODE from storage");
         });
       });
     });
@@ -607,20 +584,16 @@ export const testAllowedERC725YDataKeysInternals = (
               ethers.utils
                 .hexlify(
                   ethers.utils.randomBytes(
-                    ethers.BigNumber.from(32)
-                      .sub(dataKeys.firstDynamicKey.length)
-                      .toNumber()
-                  )
+                    ethers.BigNumber.from(32).sub(dataKeys.firstDynamicKey.length).toNumber(),
+                  ),
                 )
                 .substring(2),
             dataKeys.secondDynamicKey.key +
               ethers.utils
                 .hexlify(
                   ethers.utils.randomBytes(
-                    ethers.BigNumber.from(32)
-                      .sub(dataKeys.secondDynamicKey.length)
-                      .toNumber()
-                  )
+                    ethers.BigNumber.from(32).sub(dataKeys.secondDynamicKey.length).toNumber(),
+                  ),
                 )
                 .substring(2),
           ];
@@ -631,8 +604,8 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKeys,
               compactBytesArray_2d,
               [false, false],
-              0
-            )
+              0,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -643,12 +616,12 @@ export const testAllowedERC725YDataKeysInternals = (
               dataKeysToReturn,
               compactBytesArray_2d,
               Array(dataKeysToReturn.length).fill(false),
-              0
-            )
+              0,
+            ),
           )
             .to.be.revertedWithCustomError(
               context.keyManagerInternalTester,
-              "NotAllowedERC725YDataKey"
+              "NotAllowedERC725YDataKey",
             )
             .withArgs(context.universalProfile.address, dataKeysToReturn[0]);
         });
@@ -656,10 +629,7 @@ export const testAllowedERC725YDataKeysInternals = (
 
       describe("checking a CompactBytesArray containing 2 fixed keys", () => {
         it("checking an array of valid keys: should return true", async () => {
-          const checkedDataKeys = [
-            dataKeys.firstFixedKey.key,
-            dataKeys.secondFixedKey.key,
-          ];
+          const checkedDataKeys = [dataKeys.firstFixedKey.key, dataKeys.secondFixedKey.key];
 
           expect(
             await context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
@@ -667,8 +637,8 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKeys,
               compactBytesArray_2f,
               Array(dataKeysToReturn.length).fill(false),
-              0
-            )
+              0,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -679,12 +649,12 @@ export const testAllowedERC725YDataKeysInternals = (
               dataKeysToReturn,
               compactBytesArray_2f,
               Array(dataKeysToReturn.length).fill(false),
-              0
-            )
+              0,
+            ),
           )
             .to.be.revertedWithCustomError(
               context.keyManagerInternalTester,
-              "NotAllowedERC725YDataKey"
+              "NotAllowedERC725YDataKey",
             )
             .withArgs(context.universalProfile.address, dataKeysToReturn[0]);
         });
@@ -697,20 +667,16 @@ export const testAllowedERC725YDataKeysInternals = (
               ethers.utils
                 .hexlify(
                   ethers.utils.randomBytes(
-                    ethers.BigNumber.from(32)
-                      .sub(dataKeys.firstDynamicKey.length)
-                      .toNumber()
-                  )
+                    ethers.BigNumber.from(32).sub(dataKeys.firstDynamicKey.length).toNumber(),
+                  ),
                 )
                 .substring(2),
             dataKeys.secondDynamicKey.key +
               ethers.utils
                 .hexlify(
                   ethers.utils.randomBytes(
-                    ethers.BigNumber.from(32)
-                      .sub(dataKeys.secondDynamicKey.length)
-                      .toNumber()
-                  )
+                    ethers.BigNumber.from(32).sub(dataKeys.secondDynamicKey.length).toNumber(),
+                  ),
                 )
                 .substring(2),
             dataKeys.firstFixedKey.key,
@@ -723,8 +689,8 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKeys,
               compactBytesArray_2d_2f,
               Array(checkedDataKeys.length).fill(false),
-              0
-            )
+              0,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -735,12 +701,12 @@ export const testAllowedERC725YDataKeysInternals = (
               dataKeysToReturn,
               compactBytesArray_2d_2f,
               Array(dataKeysToReturn.length).fill(false),
-              0
-            )
+              0,
+            ),
           )
             .to.be.revertedWithCustomError(
               context.keyManagerInternalTester,
-              "NotAllowedERC725YDataKey"
+              "NotAllowedERC725YDataKey",
             )
             .withArgs(context.universalProfile.address, dataKeysToReturn[0]);
         });
@@ -753,10 +719,8 @@ export const testAllowedERC725YDataKeysInternals = (
               ethers.utils
                 .hexlify(
                   ethers.utils.randomBytes(
-                    ethers.BigNumber.from(32)
-                      .sub(dataKeys.firstDynamicKey.length)
-                      .toNumber()
-                  )
+                    ethers.BigNumber.from(32).sub(dataKeys.firstDynamicKey.length).toNumber(),
+                  ),
                 )
                 .substring(2),
             dataKeys.firstFixedKey.key,
@@ -764,20 +728,16 @@ export const testAllowedERC725YDataKeysInternals = (
               ethers.utils
                 .hexlify(
                   ethers.utils.randomBytes(
-                    ethers.BigNumber.from(32)
-                      .sub(dataKeys.secondDynamicKey.length)
-                      .toNumber()
-                  )
+                    ethers.BigNumber.from(32).sub(dataKeys.secondDynamicKey.length).toNumber(),
+                  ),
                 )
                 .substring(2),
             dataKeys.thirdDynamicKey.key +
               ethers.utils
                 .hexlify(
                   ethers.utils.randomBytes(
-                    ethers.BigNumber.from(32)
-                      .sub(dataKeys.thirdDynamicKey.length)
-                      .toNumber()
-                  )
+                    ethers.BigNumber.from(32).sub(dataKeys.thirdDynamicKey.length).toNumber(),
+                  ),
                 )
                 .substring(2),
             dataKeys.secondFixedKey.key,
@@ -785,10 +745,8 @@ export const testAllowedERC725YDataKeysInternals = (
               ethers.utils
                 .hexlify(
                   ethers.utils.randomBytes(
-                    ethers.BigNumber.from(32)
-                      .sub(dataKeys.fourthDynamicKey.length)
-                      .toNumber()
-                  )
+                    ethers.BigNumber.from(32).sub(dataKeys.fourthDynamicKey.length).toNumber(),
+                  ),
                 )
                 .substring(2),
             dataKeys.thirdFixedKey.key,
@@ -800,8 +758,8 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKeys,
               compactBytesArray_mixed_d_f,
               Array(checkedDataKeys.length).fill(false),
-              0
-            )
+              0,
+            ),
           ).to.not.be.reverted;
         });
 
@@ -812,12 +770,12 @@ export const testAllowedERC725YDataKeysInternals = (
               dataKeysToReturn,
               compactBytesArray_mixed_d_f,
               Array(dataKeysToReturn.length).fill(false),
-              0
-            )
+              0,
+            ),
           )
             .to.be.revertedWithCustomError(
               context.keyManagerInternalTester,
-              "NotAllowedERC725YDataKey"
+              "NotAllowedERC725YDataKey",
             )
             .withArgs(context.universalProfile.address, dataKeysToReturn[0]);
         });
