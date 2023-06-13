@@ -61,10 +61,15 @@ abstract contract LSP6ExecuteModule {
         bytes calldata payload
     ) internal view virtual {
         // CHECK the offset of `data` is not pointing to the previous parameters
-        if (
-            bytes32(payload[100:132]) !=
-            0x0000000000000000000000000000000000000000000000000000000000000080
-        ) {
+        //
+        // offsets in calldata for ERC725X.execute(...) parameters (excluding function selector)
+        //
+        // - `operationType`: index 0 in calldata
+        // - `to`: index 32
+        // - `value`: index 64
+        // - `data`'s offset location: index 96
+        // - `data` starts at: index 128 (= 0x0000...0080)
+        if (bytes32(payload[100:132]) != bytes32(uint256(128))) {
             revert InvalidPayload(payload);
         }
 
@@ -226,7 +231,7 @@ abstract contract LSP6ExecuteModule {
 
         bytes4 requiredCallTypes = _extractCallType(operationType, value, isEmptyCall);
 
-        for (uint256 ii; ii < allowedCalls.length; ii += 34) {
+        for (uint256 ii = 0; ii < allowedCalls.length; ii += 34) {
             /// @dev structure of an AllowedCall
             //
             /// AllowedCall = 0x00200000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1

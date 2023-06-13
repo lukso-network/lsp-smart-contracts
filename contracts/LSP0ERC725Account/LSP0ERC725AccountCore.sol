@@ -480,17 +480,20 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @notice Achieves the goal of LSP14Ownable2Step by implementing a 2-step ownership transfer process.
      *
-     * @dev Sets the pending owner address as an address that should call {acceptOwnership} in order to complete the ownership transfer of the account.
-     * Notifies the pending owner via LSP1Standard by calling {universalReceiver()} on the pending owner if it's an address that supports LSP1.
+     * @dev Sets the address of the `pendingNewOwner` as a pending owner that should call {`acceptOwnership()`} in order to complete
+     * the ownership transfer to become the new {`owner()`} of the account.
      *
-     * @param _pendingOwner The address of the new pending owner.
+     * Notifies the pending owner via LSP1Standard by calling {universalReceiver()} on the pending owner if it's
+     * an address that supports LSP1.
+     *
+     * @param pendingNewOwner The address of the new pending owner.
      *
      * @custom:requirements
      * - MUST pass when called by the owner or by an authorized address that passes the verification check performed on the owner according to [LSP20-CallVerification] specification.
      * - When notifying the new owner via LSP1, the `typeId` used MUST be `keccak256('LSP0OwnershipTransferStarted')`.
      * - Pending owner cannot accept ownership in the same tx via the LSP1 hook.
      */
-    function transferOwnership(address _pendingOwner)
+    function transferOwnership(address pendingNewOwner)
         public
         virtual
         override(LSP14Ownable2Step, OwnableUnset)
@@ -500,11 +503,11 @@ abstract contract LSP0ERC725AccountCore is
         // If the caller is the owner perform transferOwnership directly
         if (msg.sender == currentOwner) {
             // set the pending owner
-            LSP14Ownable2Step._transferOwnership(_pendingOwner);
-            emit OwnershipTransferStarted(currentOwner, _pendingOwner);
+            LSP14Ownable2Step._transferOwnership(pendingNewOwner);
+            emit OwnershipTransferStarted(currentOwner, pendingNewOwner);
 
             // notify the pending owner through LSP1
-            _pendingOwner.tryNotifyUniversalReceiver(_TYPEID_LSP0_OwnershipTransferStarted, "");
+            pendingNewOwner.tryNotifyUniversalReceiver(_TYPEID_LSP0_OwnershipTransferStarted, "");
 
             // Require that the owner didn't change after the LSP1 Call
             // (Pending owner didn't automate the acceptOwnership call through LSP1)
@@ -518,11 +521,11 @@ abstract contract LSP0ERC725AccountCore is
             bool verifyAfter = _verifyCall(currentOwner);
 
             // Set the pending owner if the call is allowed
-            LSP14Ownable2Step._transferOwnership(_pendingOwner);
-            emit OwnershipTransferStarted(currentOwner, _pendingOwner);
+            LSP14Ownable2Step._transferOwnership(pendingNewOwner);
+            emit OwnershipTransferStarted(currentOwner, pendingNewOwner);
 
             // notify the pending owner through LSP1
-            _pendingOwner.tryNotifyUniversalReceiver(_TYPEID_LSP0_OwnershipTransferStarted, "");
+            pendingNewOwner.tryNotifyUniversalReceiver(_TYPEID_LSP0_OwnershipTransferStarted, "");
 
             // Require that the owner didn't change after the LSP1 Call
             // (Pending owner didn't automate the acceptOwnership call through LSP1)

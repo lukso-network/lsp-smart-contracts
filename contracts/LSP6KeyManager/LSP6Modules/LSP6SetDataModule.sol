@@ -107,13 +107,13 @@ abstract contract LSP6SetDataModule {
             revert ERC725Y_DataKeysValuesLengthMismatch();
         }
 
-        bool isSettingERC725YKeys;
+        bool isSettingERC725YKeys = false;
         bool[] memory validatedInputDataKeys = new bool[](inputDataKeys.length);
         uint256 inputDataKeysAllowed = 0;
 
         bytes32 requiredPermission;
 
-        uint256 ii;
+        uint256 ii = 0;
         do {
             requiredPermission = _getPermissionRequiredToSetDataKey(
                 controlledContract,
