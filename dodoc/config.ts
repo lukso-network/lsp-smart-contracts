@@ -41,6 +41,15 @@ export const dodocConfig = {
     "LSP10ReceivedVaults/LSP10Utils.sol",
     "LSP17ContractExtension/LSP17Utils.sol",
   ],
+  libraries: [
+    "LSP0Utils",
+    "LSP1Utils",
+    "LSP2Utils",
+    "LSP5Utils",
+    "LSP6Utils",
+    "LSP10Utils",
+    "LSP17Utils",
+  ],
   templatePath: "./dodoc/template.sqrl",
   helpers: [
     {
