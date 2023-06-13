@@ -18,13 +18,11 @@ describe("LSP7CappedSupply with constructor", () => {
       newOwner: accounts.owner.address,
       tokenSupplyCap: ethers.BigNumber.from("2"),
     };
-    const lsp7CappedSupply = await new LSP7CappedSupplyTester__factory(
-      accounts.owner
-    ).deploy(
+    const lsp7CappedSupply = await new LSP7CappedSupplyTester__factory(accounts.owner).deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
-      deployParams.tokenSupplyCap
+      deployParams.tokenSupplyCap,
     );
 
     return { accounts, lsp7CappedSupply, deployParams };

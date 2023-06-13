@@ -3,11 +3,7 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
-import {
-  ERC725YDataKeys,
-  ALL_PERMISSIONS,
-  PERMISSIONS,
-} from "../../../constants";
+import { ERC725YDataKeys, ALL_PERMISSIONS, PERMISSIONS } from "../../../constants";
 
 // helpers
 import { encodeCompactBytesArray } from "../../utils/helpers";
@@ -15,13 +11,12 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
-  buildContext: () => Promise<LSP6TestContext>
+  buildContext: () => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
 
   describe("setting Allowed ERC725YDataKeys", () => {
-    let canOnlyAddController: SignerWithAddress,
-      canOnlyEditPermissions: SignerWithAddress;
+    let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
 
     let beneficiary: SignerWithAddress,
       invalidBeneficiary: SignerWithAddress,
@@ -85,14 +80,12 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Another Custom Data Key")),
           ]);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyAddController).execute(payload)
-          )
+          await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
         });
@@ -102,18 +95,14 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
             beneficiary.address.substring(2);
 
-          let value = encodeCompactBytesArray([
-            ERC725YDataKeys.LSP3["LSP3Profile"],
+          let value = encodeCompactBytesArray([ERC725YDataKeys.LSP3["LSP3Profile"]]);
+
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
           ]);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
-
-          await expect(
-            context.keyManager.connect(canOnlyAddController).execute(payload)
-          )
+          await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
         });
@@ -125,14 +114,12 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
           let value = "0x";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyAddController).execute(payload)
-          )
+          await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
         });
@@ -144,17 +131,15 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyAddController).execute(payload)
-          )
+          await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidEncodedAllowedERC725YDataKeys"
+              "InvalidEncodedAllowedERC725YDataKeys",
             )
             .withArgs(value, "couldn't VALIDATE the data value");
         });
@@ -175,14 +160,12 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Profile Key 2")),
           ]);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await context.keyManager
-            .connect(canOnlyAddController)
-            .execute(payload);
+          await context.keyManager.connect(canOnlyAddController).execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -198,17 +181,15 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyAddController).execute(payload)
-          )
+          await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidEncodedAllowedERC725YDataKeys"
+              "InvalidEncodedAllowedERC725YDataKeys",
             )
             .withArgs(value, "couldn't VALIDATE the data value");
         });
@@ -230,14 +211,12 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Another Custom Data Key")),
           ]);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await context.keyManager
-            .connect(canOnlyEditPermissions)
-            .execute(payload);
+          await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -249,18 +228,14 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
             beneficiary.address.substring(2);
 
-          let value = encodeCompactBytesArray([
-            ERC725YDataKeys.LSP3["LSP3Profile"],
+          let value = encodeCompactBytesArray([ERC725YDataKeys.LSP3["LSP3Profile"]]);
+
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
           ]);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
-
-          await context.keyManager
-            .connect(canOnlyEditPermissions)
-            .execute(payload);
+          await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -274,14 +249,12 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
           let value = "0x";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await context.keyManager
-            .connect(canOnlyEditPermissions)
-            .execute(payload);
+          await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -295,17 +268,15 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
-          )
+          await expect(context.keyManager.connect(canOnlyEditPermissions).execute(payload))
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidEncodedAllowedERC725YDataKeys"
+              "InvalidEncodedAllowedERC725YDataKeys",
             )
             .withArgs(value, "couldn't VALIDATE the data value");
         });
@@ -324,14 +295,12 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Key 2")),
           ]);
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
-          )
+          await expect(context.keyManager.connect(canOnlyEditPermissions).execute(payload))
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
         });
@@ -345,17 +314,15 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
-          )
+          await expect(context.keyManager.connect(canOnlyEditPermissions).execute(payload))
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidEncodedAllowedERC725YDataKeys"
+              "InvalidEncodedAllowedERC725YDataKeys",
             )
             .withArgs(value, "couldn't VALIDATE the data value");
         });

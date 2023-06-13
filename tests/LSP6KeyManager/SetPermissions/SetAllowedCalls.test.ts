@@ -3,12 +3,7 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
-import {
-  ERC725YDataKeys,
-  PERMISSIONS,
-  INTERFACE_IDS,
-  CALLTYPE,
-} from "../../../constants";
+import { ERC725YDataKeys, PERMISSIONS, INTERFACE_IDS, CALLTYPE } from "../../../constants";
 
 // helpers
 import { combineAllowedCalls } from "../../utils/helpers";
@@ -18,13 +13,12 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 export const shouldBehaveLikeSettingAllowedCalls = (
-  buildContext: () => Promise<LSP6TestContext>
+  buildContext: () => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
 
   describe("deleting AllowedCalls", () => {
-    let canOnlyAddController: SignerWithAddress,
-      canOnlyEditPermissions: SignerWithAddress;
+    let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
 
     let beneficiary: SignerWithAddress;
     let invalidBytes: SignerWithAddress;
@@ -45,16 +39,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyEditPermissions.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          invalidBytes.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          noBytes.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          beneficiary.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          invalidBytes.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          noBytes.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + invalidBytes.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + noBytes.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + beneficiary.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + invalidBytes.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + noBytes.address.substring(2),
       ];
 
       let permissionValues = [
@@ -70,7 +59,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         ),
         "0xbadbadbadbad",
         "0x",
@@ -86,17 +75,12 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           beneficiary.address.substring(2);
         const dataValue = "0x";
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData("setData", [
-            dataKey,
-            dataValue,
-          ]);
+        const setDataPayload = context.universalProfile.interface.encodeFunctionData("setData", [
+          dataKey,
+          dataValue,
+        ]);
 
-        await expect(
-          context.keyManager
-            .connect(canOnlyAddController)
-            .execute(setDataPayload)
-        )
+        await expect(context.keyManager.connect(canOnlyAddController).execute(setDataPayload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
       });
@@ -109,15 +93,12 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           beneficiary.address.substring(2);
         const dataValue = "0x";
 
-        const setDataPayload =
-          context.universalProfile.interface.encodeFunctionData("setData", [
-            dataKey,
-            dataValue,
-          ]);
+        const setDataPayload = context.universalProfile.interface.encodeFunctionData("setData", [
+          dataKey,
+          dataValue,
+        ]);
 
-        await context.keyManager
-          .connect(canOnlyEditPermissions)
-          .execute(setDataPayload);
+        await context.keyManager.connect(canOnlyEditPermissions).execute(setDataPayload);
 
         const result = await context.universalProfile.getData(dataKey);
         expect(result).to.equal(dataValue);
@@ -126,8 +107,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
   });
 
   describe("setting Allowed Calls -> Addresses", () => {
-    let canOnlyAddController: SignerWithAddress,
-      canOnlyEditPermissions: SignerWithAddress;
+    let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
 
     let beneficiary: SignerWithAddress,
       invalidBeneficiary: SignerWithAddress,
@@ -150,14 +130,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyEditPermissions.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          beneficiary.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + beneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           invalidBeneficiary.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          zero32Bytes.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          zero40Bytes.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + zero32Bytes.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + zero40Bytes.address.substring(2),
       ];
 
       let permissionValues = [
@@ -171,7 +148,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         ),
         "0x11223344",
         "0x0000000000000000000000000000000000000000000000000000000000000000",
@@ -194,17 +171,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xca11ca11ca11ca11ca11ca11ca11ca11ca11ca11",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyAddController).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
       });
@@ -223,17 +198,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyAddController).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
       });
@@ -253,17 +226,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyAddController).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
       });
@@ -283,17 +254,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyAddController).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
       });
@@ -302,8 +271,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         let newController = ethers.Wallet.createRandom();
 
         let key =
-          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          newController.address.substr(2);
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + newController.address.substr(2);
 
         // set for the newController some allowed calls
         // that allow it to transfer value to addresses 0xcafe... and 0xbeef...
@@ -314,13 +282,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
         await context.keyManager.connect(canOnlyAddController).execute(payload);
 
@@ -339,18 +307,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyAddController).execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidEncodedAllowedCalls"
-            )
+          await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, "InvalidEncodedAllowedCalls")
             .withArgs(value);
         });
 
@@ -361,21 +324,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             newController.address.substr(2);
 
-          let value =
-            "0x00000001cafecafecafecafecafecafecafecafecafecafeffffffffffffffff";
+          let value = "0x00000001cafecafecafecafecafecafecafecafecafecafeffffffffffffffff";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyAddController).execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidEncodedAllowedCalls"
-            )
+          await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, "InvalidEncodedAllowedCalls")
             .withArgs(value);
         });
       });
@@ -386,8 +343,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         let newController = ethers.Wallet.createRandom();
 
         let key =
-          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          newController.address.substr(2);
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + newController.address.substr(2);
 
         // try to set for the newController some allowed calls
         // that allow it to transfer value to addresses 0xcafe... and 0xbeef...
@@ -398,17 +354,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyEditPermissions).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyEditPermissions).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
       });
@@ -428,17 +382,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xf00df00df00df00df00df00df00df00df00df00d",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await context.keyManager
-          .connect(canOnlyEditPermissions)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -458,17 +410,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await context.keyManager
-          .connect(canOnlyEditPermissions)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -490,17 +440,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await context.keyManager
-          .connect(canOnlyEditPermissions)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -522,17 +470,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await context.keyManager
-          .connect(canOnlyEditPermissions)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -547,18 +493,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidEncodedAllowedCalls"
-            )
+          await expect(context.keyManager.connect(canOnlyEditPermissions).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, "InvalidEncodedAllowedCalls")
             .withArgs(value);
         });
 
@@ -567,21 +508,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             beneficiary.address.substring(2);
 
-          let value =
-            "0x00000001cafecafecafecafecafecafecafecafecafecafeffffffffffffffff";
+          let value = "0x00000001cafecafecafecafecafecafecafecafecafecafeffffffffffffffff";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidEncodedAllowedCalls"
-            )
+          await expect(context.keyManager.connect(canOnlyEditPermissions).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, "InvalidEncodedAllowedCalls")
             .withArgs(value);
         });
       });
@@ -589,8 +524,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
   });
 
   describe("setting Allowed Calls -> Functions", () => {
-    let canOnlyAddController: SignerWithAddress,
-      canOnlyEditPermissions: SignerWithAddress;
+    let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
 
     let beneficiary: SignerWithAddress,
       invalidBeneficiary: SignerWithAddress,
@@ -613,14 +547,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyEditPermissions.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          beneficiary.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + beneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           invalidBeneficiary.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          zero32Bytes.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          zero40Bytes.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + zero32Bytes.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + zero40Bytes.address.substring(2),
       ];
 
       let permissionValues = [
@@ -633,7 +564,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xcafecafe", "0xbeefbeef"]
+          ["0xcafecafe", "0xbeefbeef"],
         ),
         "0x11223344",
         "0x0000000000000000000000000000000000000000000000000000000000000000",
@@ -657,17 +588,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xcafecafe", "0xf00df00d"]
+          ["0xcafecafe", "0xf00df00d"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyAddController).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
       });
@@ -685,17 +614,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xcafecafe", "0xf00df00d"]
+          ["0xcafecafe", "0xf00df00d"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyAddController).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
       });
@@ -715,17 +642,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xcafecafe", "0xca11ca11"]
+          ["0xcafecafe", "0xca11ca11"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyAddController).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
       });
@@ -745,17 +670,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xcafecafe", "0xca11ca11"]
+          ["0xcafecafe", "0xca11ca11"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyAddController).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
       });
@@ -764,8 +687,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         let newController = ethers.Wallet.createRandom();
 
         let key =
-          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          newController.address.substr(2);
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + newController.address.substr(2);
 
         let value = combineAllowedCalls(
           // allow beneficiary to CALL only function selectors 0xcafecafe and 0xf00df00d
@@ -775,13 +697,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xcafecafe", "0xf00df00d"]
+          ["0xcafecafe", "0xf00df00d"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
         await context.keyManager.connect(canOnlyAddController).execute(payload);
 
@@ -800,18 +722,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyAddController).execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidEncodedAllowedCalls"
-            )
+          await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, "InvalidEncodedAllowedCalls")
             .withArgs(value);
         });
 
@@ -822,21 +739,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             newController.address.substr(2);
 
-          let value =
-            "0x00000002ffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
+          let value = "0x00000002ffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyAddController).execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidEncodedAllowedCalls"
-            )
+          await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, "InvalidEncodedAllowedCalls")
             .withArgs(value);
         });
       });
@@ -847,8 +758,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         let newController = ethers.Wallet.createRandom();
 
         let key =
-          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          newController.address.substr(2);
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + newController.address.substr(2);
 
         let value = combineAllowedCalls(
           // allow beneficiary to CALL only function selectors 0xcafecafe and 0xbeefbeef
@@ -858,17 +768,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xcafecafe", "0xbeefbeef"]
+          ["0xcafecafe", "0xbeefbeef"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyEditPermissions).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyEditPermissions).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
       });
@@ -886,17 +794,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xcafecafe", "0xbeefbeef"]
+          ["0xcafecafe", "0xbeefbeef"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await context.keyManager
-          .connect(canOnlyEditPermissions)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -916,17 +822,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xcafecafe", "0xbeefbeef"]
+          ["0xcafecafe", "0xbeefbeef"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await context.keyManager
-          .connect(canOnlyEditPermissions)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -948,17 +852,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xcafecafe", "0xbeefbeef"]
+          ["0xcafecafe", "0xbeefbeef"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await context.keyManager
-          .connect(canOnlyEditPermissions)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -980,17 +882,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", "0xffffffff"],
-          ["0xcafecafe", "0xbeefbeef"]
+          ["0xcafecafe", "0xbeefbeef"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await context.keyManager
-          .connect(canOnlyEditPermissions)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -1005,18 +905,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidEncodedAllowedCalls"
-            )
+          await expect(context.keyManager.connect(canOnlyEditPermissions).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, "InvalidEncodedAllowedCalls")
             .withArgs(value);
         });
 
@@ -1025,21 +920,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             beneficiary.address.substring(2);
 
-          let value =
-            "0x00000002ffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
+          let value = "0x00000002ffffffffffffffffffffffffffffffffffffffffffffffffcafecafe";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidEncodedAllowedCalls"
-            )
+          await expect(context.keyManager.connect(canOnlyEditPermissions).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, "InvalidEncodedAllowedCalls")
             .withArgs(value);
         });
       });
@@ -1047,8 +936,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
   });
 
   describe("setting Allowed Calls -> Standards", () => {
-    let canOnlyAddController: SignerWithAddress,
-      canOnlyEditPermissions: SignerWithAddress;
+    let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
 
     let beneficiary: SignerWithAddress,
       invalidBeneficiary: SignerWithAddress,
@@ -1071,14 +959,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyEditPermissions.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          beneficiary.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + beneficiary.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           invalidBeneficiary.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          zero32Bytes.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          zero40Bytes.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + zero32Bytes.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + zero40Bytes.address.substring(2),
       ];
 
       let permissionValues = [
@@ -1093,7 +978,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         ),
         "0x11223344",
         "0x0000000000000000000000000000000000000000000000000000000000000000",
@@ -1126,17 +1011,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
             INTERFACE_IDS.ERC721,
           ],
-          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyAddController).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
       });
@@ -1163,17 +1046,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
             INTERFACE_IDS.ERC721,
           ],
-          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyAddController).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
       });
@@ -1200,17 +1081,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
             INTERFACE_IDS.ERC721,
           ],
-          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyAddController).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
       });
@@ -1237,17 +1116,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
             INTERFACE_IDS.ERC721,
           ],
-          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyAddController).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyAddController.address, "EDITPERMISSIONS");
       });
@@ -1256,8 +1133,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         let newController = ethers.Wallet.createRandom();
 
         let key =
-          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          newController.address.substr(2);
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + newController.address.substr(2);
 
         let value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
@@ -1276,13 +1152,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
             INTERFACE_IDS.ERC721,
           ],
-          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
         await context.keyManager.connect(canOnlyAddController).execute(payload);
 
@@ -1301,18 +1177,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyAddController).execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidEncodedAllowedCalls"
-            )
+          await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, "InvalidEncodedAllowedCalls")
             .withArgs(value);
         });
 
@@ -1323,21 +1194,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             newController.address.substr(2);
 
-          let value =
-            "0x00000002ffffffffffffffffffffffffffffffffffffffffcafecafeffffffff";
+          let value = "0x00000002ffffffffffffffffffffffffffffffffffffffffcafecafeffffffff";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyAddController).execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidEncodedAllowedCalls"
-            )
+          await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, "InvalidEncodedAllowedCalls")
             .withArgs(value);
         });
       });
@@ -1348,8 +1213,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         let newController = ethers.Wallet.createRandom();
 
         let key =
-          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          newController.address.substr(2);
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + newController.address.substr(2);
 
         let value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL],
@@ -1361,17 +1225,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           // the rights to CALL any LSP7 or ERC20 token contract
           // (NB: just the AllowedCalls, not the permission CALL)
           [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await expect(
-          context.keyManager.connect(canOnlyEditPermissions).execute(payload)
-        )
+        await expect(context.keyManager.connect(canOnlyEditPermissions).execute(payload))
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(canOnlyEditPermissions.address, "ADDCONTROLLER");
       });
@@ -1398,17 +1260,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
             INTERFACE_IDS.ERC721,
           ],
-          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await context.keyManager
-          .connect(canOnlyEditPermissions)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -1427,17 +1287,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await context.keyManager
-          .connect(canOnlyEditPermissions)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -1459,17 +1317,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await context.keyManager
-          .connect(canOnlyEditPermissions)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -1491,17 +1347,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData",
-          [key, value]
-        );
+        let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+          key,
+          value,
+        ]);
 
-        await context.keyManager
-          .connect(canOnlyEditPermissions)
-          .execute(payload);
+        await context.keyManager.connect(canOnlyEditPermissions).execute(payload);
 
         // prettier-ignore
         const result = await context.universalProfile.getData(key);
@@ -1516,18 +1370,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
           let value = "0xbadbadbadbad";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidEncodedAllowedCalls"
-            )
+          await expect(context.keyManager.connect(canOnlyEditPermissions).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, "InvalidEncodedAllowedCalls")
             .withArgs(value);
         });
 
@@ -1536,21 +1385,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             beneficiary.address.substring(2);
 
-          let value =
-            "0x00000002ffffffffffffffffffffffffffffffffffffffffcafecafeffffffff";
+          let value = "0x00000002ffffffffffffffffffffffffffffffffffffffffcafecafeffffffff";
 
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [key, value]
-          );
+          let payload = context.universalProfile.interface.encodeFunctionData("setData", [
+            key,
+            value,
+          ]);
 
-          await expect(
-            context.keyManager.connect(canOnlyEditPermissions).execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidEncodedAllowedCalls"
-            )
+          await expect(context.keyManager.connect(canOnlyEditPermissions).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, "InvalidEncodedAllowedCalls")
             .withArgs(value);
         });
       });

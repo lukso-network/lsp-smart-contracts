@@ -16,52 +16,42 @@ import {
 import { deployProxy } from "../../utils/fixtures";
 
 describe("LSP8CompatibleERC721Init with proxy", () => {
-  const buildTestContext =
-    async (): Promise<LSP8CompatibleERC721TestContext> => {
-      const accounts = await getNamedAccounts();
+  const buildTestContext = async (): Promise<LSP8CompatibleERC721TestContext> => {
+    const accounts = await getNamedAccounts();
 
-      const tokenUriHex = ethers.utils.hexlify(
-        ethers.utils.toUtf8Bytes("ipfs://some-cid")
-      );
-      const tokenUriHash = ethers.utils.keccak256(tokenUriHex);
-      const hashSig = ethers.utils.keccak256(
-        ethers.utils.toUtf8Bytes("keccak256(utf8)")
-      );
-      const lsp4MetadataValue = `${hashSig.slice(0, 10)}${tokenUriHash.replace(
-        /^0x/,
-        ""
-      )}${tokenUriHex.replace(/^0x/, "")}`;
+    const tokenUriHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("ipfs://some-cid"));
+    const tokenUriHash = ethers.utils.keccak256(tokenUriHex);
+    const hashSig = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("keccak256(utf8)"));
+    const lsp4MetadataValue = `${hashSig.slice(0, 10)}${tokenUriHash.replace(
+      /^0x/,
+      "",
+    )}${tokenUriHex.replace(/^0x/, "")}`;
 
-      const deployParams = {
-        name: "LSP8 - deployed with constructor",
-        symbol: "NFT",
-        newOwner: accounts.owner.address,
-        lsp4MetadataValue,
-      };
-
-      const lsp8CompatibleERC721TesterInit =
-        await new LSP8CompatibleERC721InitTester__factory(
-          accounts.owner
-        ).deploy();
-      const lsp8CompatibleERC721Proxy = await deployProxy(
-        lsp8CompatibleERC721TesterInit.address,
-        accounts.owner
-      );
-      const lsp8CompatibleERC721 = lsp8CompatibleERC721TesterInit.attach(
-        lsp8CompatibleERC721Proxy
-      );
-
-      return { accounts, lsp8CompatibleERC721, deployParams };
+    const deployParams = {
+      name: "LSP8 - deployed with constructor",
+      symbol: "NFT",
+      newOwner: accounts.owner.address,
+      lsp4MetadataValue,
     };
 
+    const lsp8CompatibleERC721TesterInit = await new LSP8CompatibleERC721InitTester__factory(
+      accounts.owner,
+    ).deploy();
+    const lsp8CompatibleERC721Proxy = await deployProxy(
+      lsp8CompatibleERC721TesterInit.address,
+      accounts.owner,
+    );
+    const lsp8CompatibleERC721 = lsp8CompatibleERC721TesterInit.attach(lsp8CompatibleERC721Proxy);
+
+    return { accounts, lsp8CompatibleERC721, deployParams };
+  };
+
   const initializeProxy = async (context: LSP8CompatibleERC721TestContext) => {
-    return context.lsp8CompatibleERC721[
-      "initialize(string,string,address,bytes)"
-    ](
+    return context.lsp8CompatibleERC721["initialize(string,string,address,bytes)"](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
-      context.deployParams.lsp4MetadataValue
+      context.deployParams.lsp4MetadataValue,
     );
   };
 
@@ -75,19 +65,21 @@ describe("LSP8CompatibleERC721Init with proxy", () => {
       const randomCaller = accounts[1];
 
       await expect(
-        lsp8CompatibilityForERC721TesterInit[
-          "initialize(string,string,address,bytes)"
-        ]("XXXXXXXXXXX", "XXX", randomCaller.address, "0x")
+        lsp8CompatibilityForERC721TesterInit["initialize(string,string,address,bytes)"](
+          "XXXXXXXXXXX",
+          "XXX",
+          randomCaller.address,
+          "0x",
+        ),
       ).to.be.revertedWith("Initializable: contract is already initialized");
     });
 
     it("LSP8CompatibleERC721MintableInit: prevent any address from calling the initialize(...) function on the implementation", async () => {
       const accounts = await ethers.getSigners();
 
-      const lsp8CompatibleERC721MintableInit =
-        await new LSP8CompatibleERC721MintableInit__factory(
-          accounts[0]
-        ).deploy();
+      const lsp8CompatibleERC721MintableInit = await new LSP8CompatibleERC721MintableInit__factory(
+        accounts[0],
+      ).deploy();
 
       const randomCaller = accounts[1];
 
@@ -95,8 +87,8 @@ describe("LSP8CompatibleERC721Init with proxy", () => {
         lsp8CompatibleERC721MintableInit["initialize(string,string,address)"](
           "XXXXXXXXXXX",
           "XXX",
-          randomCaller.address
-        )
+          randomCaller.address,
+        ),
       ).to.be.revertedWith("Initializable: contract is already initialized");
     });
   });
@@ -124,7 +116,7 @@ describe("LSP8CompatibleERC721Init with proxy", () => {
     describe("when calling initialize more than once", () => {
       it("should revert", async () => {
         await expect(initializeProxy(context)).to.be.revertedWith(
-          "Initializable: contract is already initialized"
+          "Initializable: contract is already initialized",
         );
       });
     });
@@ -136,7 +128,7 @@ describe("LSP8CompatibleERC721Init with proxy", () => {
         await initializeProxy(context);
 
         return context;
-      })
+      }),
     );
   });
 });

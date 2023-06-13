@@ -47,23 +47,19 @@ export const dodocConfig = {
   helpers: [
     {
       helperName: "formatTextWithLists",
-      helperFunc: (content: HelperContent) =>
-        content.exec(formatTextWithLists(content.params[0])),
+      helperFunc: (content: HelperContent) => content.exec(formatTextWithLists(content.params[0])),
     },
     {
       helperName: "createLocalLinks",
-      helperFunc: (content: HelperContent) =>
-        content.exec(createLocalLinks(content.params[0])),
+      helperFunc: (content: HelperContent) => content.exec(createLocalLinks(content.params[0])),
     },
     {
       helperName: "formatLinks",
-      helperFunc: (content: HelperContent) =>
-        content.exec(formatLinks(content.params[0])),
+      helperFunc: (content: HelperContent) => content.exec(formatLinks(content.params[0])),
     },
     {
       helperName: "splitMethods",
-      helperFunc: (content: HelperContent) =>
-        content.exec(splitMethods(content.params[0])),
+      helperFunc: (content: HelperContent) => content.exec(splitMethods(content.params[0])),
     },
     {
       helperName: "parseNotice",
@@ -78,27 +74,17 @@ export const dodocConfig = {
     {
       helperName: "parseCustomRequirements",
       helperFunc: (content: HelperContent) =>
-        formatBulletPointsWithTitle(
-          createLocalLinks(content.params[0]),
-          "Requirements:"
-        ),
+        formatBulletPointsWithTitle(createLocalLinks(content.params[0]), "Requirements:"),
     },
     {
       helperName: "parseCustomEvents",
       helperFunc: (content: HelperContent) =>
-        formatBulletPointsWithTitle(
-          createLocalLinks(content.params[0]),
-          "Emitted events:"
-        ),
+        formatBulletPointsWithTitle(createLocalLinks(content.params[0]), "Emitted events:"),
     },
     {
       helperName: "genAdditionalMethodInfo",
       helperFunc: (content: HelperContent) =>
-        generateAdditionalInfo(
-          content.params[0],
-          content.params[1],
-          "Function"
-        ),
+        generateAdditionalInfo(content.params[0], content.params[1], "Function"),
     },
     {
       helperName: "genAdditionalEventInfo",
@@ -121,10 +107,7 @@ const createLocalLinks = (textToFormat: string) => {
       const clearedElem = elem[0].replace("{", "").replace("}", "");
       const linkFirstHalf = `[\`${clearedElem}\`]`;
       const linkSecondHalf = `(#${clearedElem.toLowerCase().split("(")[0]})`;
-      formatedText = formatedText.replace(
-        elem[0],
-        linkFirstHalf + linkSecondHalf
-      );
+      formatedText = formatedText.replace(elem[0], linkFirstHalf + linkSecondHalf);
     }
   });
 
@@ -164,26 +147,16 @@ const formatLinks = (textToFormat: string) => {
 const formatTextWithLists = (textToFormat: string) => {
   let formatedText: string = textToFormat;
   [...textToFormat.matchAll(/\s-\s/g)].forEach((element) => {
-    formatedText = formatedText.replace(
-      element[0],
-      `\n\n${element[0].trim()} `
-    );
+    formatedText = formatedText.replace(element[0], `\n\n${element[0].trim()} `);
   });
   [...textToFormat.matchAll(/\s\d+\.\s/g)].forEach((element) => {
-    formatedText = formatedText.replace(
-      element[0],
-      `\n\n${element[0].trim()} `
-    );
+    formatedText = formatedText.replace(element[0], `\n\n${element[0].trim()} `);
   });
 
   return formatedText;
 };
 
-const replaceAll = (
-  textToFormat: string,
-  textToReplace: string,
-  replaceWith: string
-) => {
+const replaceAll = (textToFormat: string, textToReplace: string, replaceWith: string) => {
   let formatedText = textToFormat;
   while (formatedText.includes(textToReplace)) {
     formatedText = formatedText.replace(textToReplace, replaceWith);
@@ -201,11 +174,7 @@ const formatBulletPointsWithTitle = (textToFormat: string, title: string) => {
   return formatedText;
 };
 
-const generateAdditionalInfo = (
-  contract: string,
-  code: string,
-  type: string
-) => {
+const generateAdditionalInfo = (contract: string, code: string, type: string) => {
   let formatedCode = code
     .substring(0, code.indexOf(")") + 1)
     .replace(`${type.toLowerCase()}`, "")
@@ -234,15 +203,11 @@ const generateAdditionalInfo = (
 
     const specs = contractPath.split("/")[0];
 
-    const specsName = `LSP-${specs.match(/\d+/)[0]}-${
-      specs.split(/LSP\d+/)[1]
-    }`;
+    const specsName = `LSP-${specs.match(/\d+/)[0]}-${specs.split(/LSP\d+/)[1]}`;
 
-    const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${
-      specs.match(/\d+/)[0]
-    }-${specs.split(/LSP\d+/)[1]}.md#${formatedCode
-      .split("(")[0]
-      .toLowerCase()}`;
+    const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${specs.match(/\d+/)[0]}-${
+      specs.split(/LSP\d+/)[1]
+    }.md#${formatedCode.split("(")[0].toLowerCase()}`;
 
     infoBlock =
       `- Specification details in [**${specsName}**](${specsLink})\n` +

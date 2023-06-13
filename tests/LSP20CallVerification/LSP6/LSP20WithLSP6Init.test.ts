@@ -2,10 +2,7 @@ import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 
-import {
-  UniversalProfileInit__factory,
-  LSP6KeyManagerInit__factory,
-} from "../../../types";
+import { UniversalProfileInit__factory, LSP6KeyManagerInit__factory } from "../../../types";
 
 import { LSP6TestContext } from "../../utils/context";
 import { deployProxy } from "../../utils/fixtures";
@@ -13,9 +10,7 @@ import { deployProxy } from "../../utils/fixtures";
 import { shouldBehaveLikeLSP6 } from "./LSP20WithLSP6.behaviour";
 
 describe("LSP20 Init + LSP6 Init with proxy", () => {
-  const buildProxyTestContext = async (
-    initialFunding?: BigNumber
-  ): Promise<LSP6TestContext> => {
+  const buildProxyTestContext = async (initialFunding?: BigNumber): Promise<LSP6TestContext> => {
     const accounts = await ethers.getSigners();
     const owner = accounts[0];
 
@@ -31,14 +26,11 @@ describe("LSP20 Init + LSP6 Init with proxy", () => {
   };
 
   const initializeProxy = async (context: LSP6TestContext) => {
-    await context.universalProfile["initialize(address)"](
-      context.owner.address,
-      { value: context.initialFunding }
-    );
+    await context.universalProfile["initialize(address)"](context.owner.address, {
+      value: context.initialFunding,
+    });
 
-    await context.keyManager["initialize(address)"](
-      context.universalProfile.address
-    );
+    await context.keyManager["initialize(address)"](context.universalProfile.address);
 
     return context;
   };
@@ -47,13 +39,11 @@ describe("LSP20 Init + LSP6 Init with proxy", () => {
     it("should prevent any address from calling the `initialize(...)` function on the base contract", async () => {
       let context = await buildProxyTestContext();
 
-      const baseKM = await new LSP6KeyManagerInit__factory(
-        context.accounts[0]
-      ).deploy();
+      const baseKM = await new LSP6KeyManagerInit__factory(context.accounts[0]).deploy();
 
-      await expect(
-        baseKM.initialize(context.accounts[0].address)
-      ).to.be.revertedWith("Initializable: contract is already initialized");
+      await expect(baseKM.initialize(context.accounts[0].address)).to.be.revertedWith(
+        "Initializable: contract is already initialized",
+      );
     });
   });
 
@@ -66,7 +56,7 @@ describe("LSP20 Init + LSP6 Init with proxy", () => {
         await initializeProxy(context);
 
         await expect(initializeProxy(context)).to.be.revertedWith(
-          "Initializable: contract is already initialized"
+          "Initializable: contract is already initialized",
         );
       });
     });

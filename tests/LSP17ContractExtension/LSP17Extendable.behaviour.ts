@@ -38,9 +38,7 @@ export type LSP17TestContext = {
   deployParams: { owner: SignerWithAddress };
 };
 
-export const shouldBehaveLikeLSP17 = (
-  buildContext: () => Promise<LSP17TestContext>
-) => {
+export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestContext>) => {
   let context: LSP17TestContext;
   let newOwner: SignerWithAddress;
   let notExistingFunctionSignature,
@@ -162,7 +160,7 @@ export const shouldBehaveLikeLSP17 = (
         await expect(
           context.accounts[0].sendTransaction({
             to: context.contract.address,
-          })
+          }),
         ).to.not.be.reverted.to.not.emit(context.contract, "ValueReceived");
       });
     });
@@ -174,7 +172,7 @@ export const shouldBehaveLikeLSP17 = (
           context.accounts[0].sendTransaction({
             to: context.contract.address,
             value: amountSent,
-          })
+          }),
         )
           .to.emit(context.contract, "ValueReceived")
           .withArgs(context.accounts[0].address, amountSent);
@@ -186,22 +184,20 @@ export const shouldBehaveLikeLSP17 = (
     describe("when calling method that exist", () => {
       describe("when calling the contract with transferOwnership Signature", () => {
         it("should pass and set the pending owner", async () => {
-          const pendingOwnerBefore =
-            await context.contract.callStatic.pendingOwner();
+          const pendingOwnerBefore = await context.contract.callStatic.pendingOwner();
           expect(pendingOwnerBefore).to.equal(ethers.constants.AddressZero);
 
-          const transferOwnershipPayload =
-            context.contract.interface.encodeFunctionData("transferOwnership", [
-              context.accounts[2].address,
-            ]);
+          const transferOwnershipPayload = context.contract.interface.encodeFunctionData(
+            "transferOwnership",
+            [context.accounts[2].address],
+          );
 
           await context.accounts[0].sendTransaction({
             to: context.contract.address,
             data: transferOwnershipPayload,
           });
 
-          const pendingOwnerAfter =
-            await context.contract.callStatic.pendingOwner();
+          const pendingOwnerAfter = await context.contract.callStatic.pendingOwner();
 
           expect(pendingOwnerAfter).to.equal(context.accounts[2].address);
         });
@@ -216,11 +212,11 @@ export const shouldBehaveLikeLSP17 = (
               context.accounts[0].sendTransaction({
                 to: context.contract.address,
                 data: notExistingFunctionSignature,
-              })
+              }),
             )
               .to.be.revertedWithCustomError(
                 context.contract,
-                "NoExtensionFoundForFunctionSelector"
+                "NoExtensionFoundForFunctionSelector",
               )
               .withArgs(notExistingFunctionSignature);
           });
@@ -234,11 +230,11 @@ export const shouldBehaveLikeLSP17 = (
                 to: context.contract.address,
                 data: notExistingFunctionSignature,
                 value: amountSent,
-              })
+              }),
             )
               .to.be.revertedWithCustomError(
                 context.contract,
-                "NoExtensionFoundForFunctionSelector"
+                "NoExtensionFoundForFunctionSelector",
               )
               .withArgs(notExistingFunctionSignature);
           });
@@ -255,10 +251,7 @@ export const shouldBehaveLikeLSP17 = (
                 const checkMsgVariableFunctionSignature =
                   checkMsgVariableFunctionSelector +
                   abiCoder
-                    .encode(
-                      ["address", "uint256"],
-                      [supposedSender.address, value]
-                    )
+                    .encode(["address", "uint256"], [supposedSender.address, value])
                     .substring(2);
 
                 // different sender
@@ -267,11 +260,11 @@ export const shouldBehaveLikeLSP17 = (
                     to: context.contract.address,
                     data: checkMsgVariableFunctionSignature,
                     value: value,
-                  })
+                  }),
                 )
                   .to.be.revertedWithCustomError(
                     context.contract,
-                    "NoExtensionFoundForFunctionSelector"
+                    "NoExtensionFoundForFunctionSelector",
                   )
                   .withArgs(checkMsgVariableFunctionSelector);
               });
@@ -282,10 +275,7 @@ export const shouldBehaveLikeLSP17 = (
                 const checkMsgVariableFunctionSignature =
                   checkMsgVariableFunctionSelector +
                   abiCoder
-                    .encode(
-                      ["address", "uint256"],
-                      [sender.address, supposedValue]
-                    )
+                    .encode(["address", "uint256"], [sender.address, supposedValue])
                     .substring(2);
 
                 await expect(
@@ -293,11 +283,11 @@ export const shouldBehaveLikeLSP17 = (
                     to: context.contract.address,
                     data: checkMsgVariableFunctionSignature,
                     value: 100, // different value
-                  })
+                  }),
                 )
                   .to.be.revertedWithCustomError(
                     context.contract,
-                    "NoExtensionFoundForFunctionSelector"
+                    "NoExtensionFoundForFunctionSelector",
                   )
                   .withArgs(checkMsgVariableFunctionSelector);
               });
@@ -306,15 +296,12 @@ export const shouldBehaveLikeLSP17 = (
             describe("when the extension is set", () => {
               before(async () => {
                 const checkerExtension = await new CheckerExtension__factory(
-                  context.accounts[0]
+                  context.accounts[0],
                 ).deploy();
 
                 await context.contract
                   .connect(context.deployParams.owner)
-                  .setData(
-                    checkMsgVariableFunctionExtensionHandlerKey,
-                    checkerExtension.address
-                  );
+                  .setData(checkMsgVariableFunctionExtensionHandlerKey, checkerExtension.address);
               });
 
               it("should fail if passed a different value from the msg.value", async () => {
@@ -323,10 +310,7 @@ export const shouldBehaveLikeLSP17 = (
                 const checkMsgVariableFunctionSignature =
                   checkMsgVariableFunctionSelector +
                   abiCoder
-                    .encode(
-                      ["address", "uint256"],
-                      [sender.address, supposedValue]
-                    )
+                    .encode(["address", "uint256"], [sender.address, supposedValue])
                     .substring(2);
 
                 await expect(
@@ -334,7 +318,7 @@ export const shouldBehaveLikeLSP17 = (
                     to: context.contract.address,
                     data: checkMsgVariableFunctionSignature,
                     value: 100, // different value
-                  })
+                  }),
                 ).to.be.reverted;
               });
 
@@ -344,10 +328,7 @@ export const shouldBehaveLikeLSP17 = (
                 const checkMsgVariableFunctionSignature =
                   checkMsgVariableFunctionSelector +
                   abiCoder
-                    .encode(
-                      ["address", "uint256"],
-                      [supposedSender.address, value]
-                    )
+                    .encode(["address", "uint256"], [supposedSender.address, value])
                     .substring(2);
 
                 // different sender
@@ -356,7 +337,7 @@ export const shouldBehaveLikeLSP17 = (
                     to: context.contract.address,
                     data: checkMsgVariableFunctionSignature,
                     value: value,
-                  })
+                  }),
                 ).to.be.reverted;
               });
 
@@ -365,9 +346,7 @@ export const shouldBehaveLikeLSP17 = (
                 const value = 200;
                 const checkMsgVariableFunctionSignature =
                   checkMsgVariableFunctionSelector +
-                  abiCoder
-                    .encode(["address", "uint256"], [sender.address, value])
-                    .substring(2);
+                  abiCoder.encode(["address", "uint256"], [sender.address, value]).substring(2);
 
                 await sender.sendTransaction({
                   to: context.contract.address,
@@ -381,17 +360,13 @@ export const shouldBehaveLikeLSP17 = (
 
         describe("when calling an extension that reverts with string error", () => {
           before(async () => {
-            const revertStringExtension =
-              await new RevertStringExtension__factory(
-                context.accounts[0]
-              ).deploy();
+            const revertStringExtension = await new RevertStringExtension__factory(
+              context.accounts[0],
+            ).deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(
-                revertStringFunctionExtensionHandlerKey,
-                revertStringExtension.address
-              );
+              .setData(revertStringFunctionExtensionHandlerKey, revertStringExtension.address);
           });
 
           it("should revert with a string error provided as argument", async () => {
@@ -406,7 +381,7 @@ export const shouldBehaveLikeLSP17 = (
                 to: context.contract.address,
                 data: revertStringFunctionSignature,
                 value: 0,
-              })
+              }),
             ).to.be.revertedWith(revertString);
           });
         });
@@ -416,15 +391,12 @@ export const shouldBehaveLikeLSP17 = (
 
           before(async () => {
             revertCustomExtension = await new RevertCustomExtension__factory(
-              context.accounts[0]
+              context.accounts[0],
             ).deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(
-                revertCustomFunctionExtensionHandlerKey,
-                revertCustomExtension.address
-              );
+              .setData(revertCustomFunctionExtensionHandlerKey, revertCustomExtension.address);
           });
 
           it("should revert with a custom error with tx.origin and msg.sender as argument", async () => {
@@ -435,12 +407,9 @@ export const shouldBehaveLikeLSP17 = (
                 to: context.contract.address,
                 data: revertCustomFunctionSelector,
                 value: 0,
-              })
+              }),
             )
-              .to.be.revertedWithCustomError(
-                revertCustomExtension,
-                "RevertWithAddresses"
-              )
+              .to.be.revertedWithCustomError(revertCustomExtension, "RevertWithAddresses")
               .withArgs(sender.address, context.contract.address);
           });
         });
@@ -450,15 +419,12 @@ export const shouldBehaveLikeLSP17 = (
 
           before(async () => {
             emitEventExtension = await new EmitEventExtension__factory(
-              context.accounts[0]
+              context.accounts[0],
             ).deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(
-                emitEventFunctionExtensionHandlerKey,
-                emitEventExtension.address
-              );
+              .setData(emitEventFunctionExtensionHandlerKey, emitEventExtension.address);
           });
 
           it("should pass and emit the event on the extension", async () => {
@@ -467,7 +433,7 @@ export const shouldBehaveLikeLSP17 = (
                 to: context.contract.address,
                 data: emitEventFunctionSelector,
                 value: 0,
-              })
+              }),
             ).to.emit(emitEventExtension, "EventEmittedInExtension");
           });
         });
@@ -505,9 +471,7 @@ export const shouldBehaveLikeLSP17 = (
               data: nameFunctionSelector,
             });
 
-            expect(returnValue).to.equal(
-              abiCoder.encode(["string"], ["LUKSO"])
-            );
+            expect(returnValue).to.equal(abiCoder.encode(["string"], ["LUKSO"]));
           });
         });
 
@@ -552,21 +516,16 @@ export const shouldBehaveLikeLSP17 = (
           let transferExtension: TransferExtension;
 
           before(async () => {
-            transferExtension = await new TransferExtension__factory(
-              context.accounts[0]
-            ).deploy();
+            transferExtension = await new TransferExtension__factory(context.accounts[0]).deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(
-                transferFunctionExtensionHandlerKey,
-                transferExtension.address
-              );
+              .setData(transferFunctionExtensionHandlerKey, transferExtension.address);
           });
 
           it("should pass and change the state accordingly", async () => {
             const balanceBefore = await transferExtension.callStatic.balances(
-              context.accounts[0].address
+              context.accounts[0].address,
             );
 
             expect(balanceBefore).to.equal(0);
@@ -583,7 +542,7 @@ export const shouldBehaveLikeLSP17 = (
             });
 
             const balanceAfter = await transferExtension.callStatic.balances(
-              context.accounts[0].address
+              context.accounts[0].address,
             );
 
             expect(balanceAfter).to.equal(amountTransferred);
@@ -594,30 +553,25 @@ export const shouldBehaveLikeLSP17 = (
           let reenterAccountExtension: ReenterAccountExtension;
 
           before(async () => {
-            reenterAccountExtension =
-              await new ReenterAccountExtension__factory(
-                context.accounts[0]
-              ).deploy();
+            reenterAccountExtension = await new ReenterAccountExtension__factory(
+              context.accounts[0],
+            ).deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(
-                reenterAccountFunctionExtensionHandlerKey,
-                reenterAccountExtension.address
-              );
+              .setData(reenterAccountFunctionExtensionHandlerKey, reenterAccountExtension.address);
           });
 
           describe("when reentering the fallback function without calling any other extension", () => {
             it("should pass", async () => {
               const reenterAccountFunctionSignature =
-                reenterAccountFunctionSelector +
-                abiCoder.encode(["bytes"], ["0x"]).substring(2);
+                reenterAccountFunctionSelector + abiCoder.encode(["bytes"], ["0x"]).substring(2);
 
               await expect(
                 context.accounts[0].sendTransaction({
                   to: context.contract.address,
                   data: reenterAccountFunctionSignature,
-                })
+                }),
               ).to.not.be.reverted;
             });
           });
@@ -628,22 +582,20 @@ export const shouldBehaveLikeLSP17 = (
 
               before(async () => {
                 emitEventExtension = await new EmitEventExtension__factory(
-                  context.accounts[0]
+                  context.accounts[0],
                 ).deploy();
               });
 
               it("should not emit any event", async () => {
                 const reenterAccountFunctionSignature =
                   reenterAccountFunctionSelector +
-                  abiCoder
-                    .encode(["bytes"], [emitEventFunctionSelector])
-                    .substring(2);
+                  abiCoder.encode(["bytes"], [emitEventFunctionSelector]).substring(2);
 
                 await expect(
                   context.accounts[0].sendTransaction({
                     to: context.contract.address,
                     data: reenterAccountFunctionSignature,
-                  })
+                  }),
                 ).to.not.emit(emitEventExtension, "EventEmittedInExtension");
               });
             });
@@ -652,29 +604,24 @@ export const shouldBehaveLikeLSP17 = (
 
               before(async () => {
                 emitEventExtension = await new EmitEventExtension__factory(
-                  context.accounts[0]
+                  context.accounts[0],
                 ).deploy();
 
                 await context.contract
                   .connect(context.deployParams.owner)
-                  .setData(
-                    emitEventFunctionExtensionHandlerKey,
-                    emitEventExtension.address
-                  );
+                  .setData(emitEventFunctionExtensionHandlerKey, emitEventExtension.address);
               });
               it("should emit the event on 3rd extension called", async () => {
                 const reenterAccountFunctionSignature =
                   reenterAccountFunctionSelector +
-                  abiCoder
-                    .encode(["bytes"], [emitEventFunctionSelector])
-                    .substring(2);
+                  abiCoder.encode(["bytes"], [emitEventFunctionSelector]).substring(2);
 
                 await expect(
                   context.accounts[0].sendTransaction({
                     to: context.contract.address,
                     data: reenterAccountFunctionSignature,
                     value: 0,
-                  })
+                  }),
                 ).to.emit(emitEventExtension, "EventEmittedInExtension");
               });
             });
@@ -684,29 +631,22 @@ export const shouldBehaveLikeLSP17 = (
         describe("when calling the supportsInterface of the extendable contract with `0xaabbccdd` value", () => {
           describe("when the ERC165 extension was not set", () => {
             it("should return false", async () => {
-              expect(await context.contract.supportsInterface("0xaabbccdd")).to
-                .be.false;
+              expect(await context.contract.supportsInterface("0xaabbccdd")).to.be.false;
             });
           });
 
           describe("when the ERC165 extension was set", () => {
             let erc165Extension: ERC165Extension;
             before(async () => {
-              erc165Extension = await new ERC165Extension__factory(
-                context.accounts[0]
-              ).deploy();
+              erc165Extension = await new ERC165Extension__factory(context.accounts[0]).deploy();
 
               await context.contract
                 .connect(context.deployParams.owner)
-                .setData(
-                  supportsInterfaceFunctionExtensionHandlerKey,
-                  erc165Extension.address
-                );
+                .setData(supportsInterfaceFunctionExtensionHandlerKey, erc165Extension.address);
             });
 
             it("should return true", async () => {
-              expect(await context.contract.supportsInterface("0xaabbccdd")).to
-                .be.true;
+              expect(await context.contract.supportsInterface("0xaabbccdd")).to.be.true;
             });
           });
         });
@@ -719,7 +659,7 @@ export const shouldBehaveLikeLSP17 = (
 
         before(async () => {
           revertFallbackExtension = await new RevertFallbackExtension__factory(
-            context.accounts[0]
+            context.accounts[0],
           ).deploy();
 
           const bytes1ZeroPaddedExtensionHandlerKey =
@@ -729,17 +669,14 @@ export const shouldBehaveLikeLSP17 = (
 
           await context.contract
             .connect(context.deployParams.owner)
-            .setData(
-              bytes1ZeroPaddedExtensionHandlerKey,
-              revertFallbackExtension.address
-            );
+            .setData(bytes1ZeroPaddedExtensionHandlerKey, revertFallbackExtension.address);
         });
         it("should pass even if there is an extension for it that reverts", async () => {
           await expect(
             context.accounts[0].sendTransaction({
               to: context.contract.address,
               data: "0x01",
-            })
+            }),
           ).to.not.be.reverted;
         });
       });
@@ -755,7 +692,7 @@ export const shouldBehaveLikeLSP17 = (
                     to: context.contract.address,
                     data: "0x00000000",
                     value: amountSent,
-                  })
+                  }),
                 )
                   .to.emit(context.contract, "ValueReceived")
                   .withArgs(context.accounts[0].address, amountSent);
@@ -767,7 +704,7 @@ export const shouldBehaveLikeLSP17 = (
                   context.accounts[0].sendTransaction({
                     to: context.contract.address,
                     data: "0x00000000",
-                  })
+                  }),
                 ).to.not.be.reverted;
               });
             });
@@ -779,9 +716,7 @@ export const shouldBehaveLikeLSP17 = (
                 const graffiti =
                   "0x00000000" +
                   ethers.utils
-                    .hexlify(
-                      ethers.utils.toUtf8Bytes("This is a small tip for you!")
-                    )
+                    .hexlify(ethers.utils.toUtf8Bytes("This is a small tip for you!"))
                     .substring(2);
 
                 await expect(
@@ -789,7 +724,7 @@ export const shouldBehaveLikeLSP17 = (
                     to: context.contract.address,
                     data: graffiti,
                     value: amountSent,
-                  })
+                  }),
                 )
                   .to.emit(context.contract, "ValueReceived")
                   .withArgs(context.accounts[0].address, amountSent);
@@ -800,18 +735,14 @@ export const shouldBehaveLikeLSP17 = (
                 const graffiti =
                   "0x00000000" +
                   ethers.utils
-                    .hexlify(
-                      ethers.utils.toUtf8Bytes(
-                        "Sending a decentralized message"
-                      )
-                    )
+                    .hexlify(ethers.utils.toUtf8Bytes("Sending a decentralized message"))
                     .substring(2);
 
                 await expect(
                   context.accounts[0].sendTransaction({
                     to: context.contract.address,
                     data: graffiti,
-                  })
+                  }),
                 ).to.not.be.reverted;
               });
             });
@@ -822,10 +753,9 @@ export const shouldBehaveLikeLSP17 = (
             let revertFallbackExtension: RevertFallbackExtension;
 
             before(async () => {
-              revertFallbackExtension =
-                await new RevertFallbackExtension__factory(
-                  context.accounts[0]
-                ).deploy();
+              revertFallbackExtension = await new RevertFallbackExtension__factory(
+                context.accounts[0],
+              ).deploy();
 
               const bytes1ZeroPaddedExtensionHandlerKey =
                 ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
@@ -834,10 +764,7 @@ export const shouldBehaveLikeLSP17 = (
 
               await context.contract
                 .connect(context.deployParams.owner)
-                .setData(
-                  bytes1ZeroPaddedExtensionHandlerKey,
-                  revertFallbackExtension.address
-                );
+                .setData(bytes1ZeroPaddedExtensionHandlerKey, revertFallbackExtension.address);
             });
             describe("when the payload is `0x00000000`", () => {
               it("should revert", async () => {
@@ -845,7 +772,7 @@ export const shouldBehaveLikeLSP17 = (
                   context.accounts[0].sendTransaction({
                     to: context.contract.address,
                     data: "0x00000000",
-                  })
+                  }),
                 ).to.be.reverted;
               });
             });
@@ -854,18 +781,14 @@ export const shouldBehaveLikeLSP17 = (
                 const graffiti =
                   "0x00000000" +
                   ethers.utils
-                    .hexlify(
-                      ethers.utils.toUtf8Bytes(
-                        "Sending a decentralized message"
-                      )
-                    )
+                    .hexlify(ethers.utils.toUtf8Bytes("Sending a decentralized message"))
                     .substring(2);
 
                 await expect(
                   context.accounts[0].sendTransaction({
                     to: context.contract.address,
                     data: graffiti,
-                  })
+                  }),
                 ).to.be.reverted;
               });
             });
@@ -879,9 +802,7 @@ export const shouldBehaveLikeLSP17 = (
         let token: RequireCallbackToken;
 
         before(async () => {
-          token = await new RequireCallbackToken__factory(
-            context.accounts[0]
-          ).deploy();
+          token = await new RequireCallbackToken__factory(context.accounts[0]).deploy();
         });
 
         describe("when minitng to the account", () => {
@@ -895,23 +816,19 @@ export const shouldBehaveLikeLSP17 = (
             let onERC721ReceivedExtension: OnERC721ReceivedExtension;
 
             before(async () => {
-              onERC721ReceivedExtension =
-                await new OnERC721ReceivedExtension__factory(
-                  context.accounts[0]
-                ).deploy();
+              onERC721ReceivedExtension = await new OnERC721ReceivedExtension__factory(
+                context.accounts[0],
+              ).deploy();
 
               await context.contract
                 .connect(context.deployParams.owner)
                 .setData(
                   onERC721ReceivedFunctionExtensionHandlerKey,
-                  onERC721ReceivedExtension.address
+                  onERC721ReceivedExtension.address,
                 );
             });
             it("should pass since onERC721Received is implemented as a fallback extension", async () => {
-              await expect(token.mint(context.contract.address)).to.emit(
-                token,
-                "Minted"
-              );
+              await expect(token.mint(context.contract.address)).to.emit(token, "Minted");
             });
           });
         });

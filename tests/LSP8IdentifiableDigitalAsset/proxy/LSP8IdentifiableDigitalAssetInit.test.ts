@@ -1,10 +1,7 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 
-import {
-  LSP8InitTester__factory,
-  LSP8IdentifiableDigitalAsset,
-} from "../../../types";
+import { LSP8InitTester__factory, LSP8IdentifiableDigitalAsset } from "../../../types";
 
 import {
   getNamedAccounts,
@@ -29,9 +26,7 @@ describe("LSP8IdentifiableDigitalAssetInit with proxy", () => {
       newOwner: accounts.owner.address,
     };
 
-    const lsp8TesterInit = await new LSP8InitTester__factory(
-      accounts.owner
-    ).deploy();
+    const lsp8TesterInit = await new LSP8InitTester__factory(accounts.owner).deploy();
     const lsp8Proxy = await deployProxy(lsp8TesterInit.address, accounts.owner);
     const lsp8 = lsp8TesterInit.attach(lsp8Proxy);
 
@@ -58,7 +53,7 @@ describe("LSP8IdentifiableDigitalAssetInit with proxy", () => {
     return context.lsp8["initialize(string,string,address)"](
       context.deployParams.name,
       context.deployParams.symbol,
-      context.deployParams.newOwner
+      context.deployParams.newOwner,
     );
   };
 
@@ -74,8 +69,8 @@ describe("LSP8IdentifiableDigitalAssetInit with proxy", () => {
         context.lsp8["initialize(string,string,address)"](
           context.deployParams.name,
           context.deployParams.symbol,
-          ethers.constants.AddressZero
-        )
+          ethers.constants.AddressZero,
+        ),
       ).to.be.revertedWith("Ownable: new owner is the zero address");
     });
 
@@ -95,7 +90,7 @@ describe("LSP8IdentifiableDigitalAssetInit with proxy", () => {
     describe("when calling initialize more than once", () => {
       it("should revert", async () => {
         await expect(initializeProxy(context)).to.be.revertedWith(
-          "Initializable: contract is already initialized"
+          "Initializable: contract is already initialized",
         );
       });
     });
@@ -108,7 +103,7 @@ describe("LSP8IdentifiableDigitalAssetInit with proxy", () => {
       await lsp4Context.contract["initialize(string,string,address)"](
         "LSP8 - deployed with proxy",
         "NFT",
-        lsp4Context.deployParams.owner.address
+        lsp4Context.deployParams.owner.address,
       );
 
       return lsp4Context;
@@ -119,7 +114,7 @@ describe("LSP8IdentifiableDigitalAssetInit with proxy", () => {
         await initializeProxy(context);
 
         return context;
-      })
+      }),
     );
   });
 });

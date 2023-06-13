@@ -34,14 +34,10 @@ import {
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
-import {
-  provider,
-  LOCAL_PRIVATE_KEYS,
-  combineCallTypes,
-} from "../../utils/helpers";
+import { provider, LOCAL_PRIVATE_KEYS, combineCallTypes } from "../../utils/helpers";
 
 export const shouldBehaveLikeExecuteRelayCall = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
+  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
 
@@ -62,17 +58,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
       signerNoAllowedCalls = context.accounts[3];
       random = context.accounts[4];
 
-      targetContract = await new TargetContract__factory(
-        context.accounts[0]
-      ).deploy();
+      targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          signer.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          signer.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + signer.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + signer.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           signerNoAllowedCalls.address.substring(2),
       ];
@@ -87,7 +78,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           ],
           [random.address, targetContract.address],
           ["0xffffffff", "0xffffffff"],
-          ["0xffffffff", "0xffffffff"]
+          ["0xffffffff", "0xffffffff"],
         ),
         combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       ];
@@ -99,18 +90,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
       describe("When testing msg.value", () => {
         describe("When sending more than the signed msg.value", () => {
           it("should revert by recovering a non permissioned address", async () => {
-            let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                random.address,
-                0,
-                "0x",
-              ]);
-
-            let latestNonce = await context.keyManager.callStatic.getNonce(
-              signer.address,
-              0
+            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+              "execute",
+              [OPERATION_TYPES.CALL, random.address, 0, "0x"],
             );
+
+            let latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
 
             const validityTimestamps = 0;
 
@@ -136,17 +121,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 signedMessageParams.validityTimestamps,
                 signedMessageParams.msgValue,
                 signedMessageParams.payload,
-              ]
+              ],
             );
 
             let eip191Signer = new EIP191Signer();
 
-            let { signature } =
-              await eip191Signer.signDataWithIntendedValidator(
-                context.keyManager.address,
-                encodedMessage,
-                LOCAL_PRIVATE_KEYS.ACCOUNT1
-              );
+            let { signature } = await eip191Signer.signDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage,
+              LOCAL_PRIVATE_KEYS.ACCOUNT1,
+            );
 
             await expect(
               context.keyManager
@@ -156,29 +140,20 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   signedMessageParams.nonce,
                   signedMessageParams.validityTimestamps,
                   signedMessageParams.payload,
-                  { value: valueToSendFromRelayer }
-                )
-            ).to.be.revertedWithCustomError(
-              context.keyManager,
-              "NoPermissionsSet"
-            );
+                  { value: valueToSendFromRelayer },
+                ),
+            ).to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet");
           });
         });
 
         describe("When sending 0 while msg.value signed > 0", () => {
           it("should revert by recovering a non permissioned address", async () => {
-            let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                random.address,
-                0,
-                "0x",
-              ]);
-
-            let latestNonce = await context.keyManager.callStatic.getNonce(
-              signer.address,
-              0
+            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+              "execute",
+              [OPERATION_TYPES.CALL, random.address, 0, "0x"],
             );
+
+            let latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
 
             const validityTimestamps = 0;
 
@@ -204,17 +179,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 signedMessageParams.validityTimestamps,
                 signedMessageParams.msgValue,
                 signedMessageParams.payload,
-              ]
+              ],
             );
 
             let eip191Signer = new EIP191Signer();
 
-            let { signature } =
-              await eip191Signer.signDataWithIntendedValidator(
-                context.keyManager.address,
-                encodedMessage,
-                LOCAL_PRIVATE_KEYS.ACCOUNT1
-              );
+            let { signature } = await eip191Signer.signDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage,
+              LOCAL_PRIVATE_KEYS.ACCOUNT1,
+            );
 
             await expect(
               context.keyManager
@@ -224,29 +198,20 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   signedMessageParams.nonce,
                   signedMessageParams.validityTimestamps,
                   signedMessageParams.payload,
-                  { value: valueToSendFromRelayer }
-                )
-            ).to.be.revertedWithCustomError(
-              context.keyManager,
-              "NoPermissionsSet"
-            );
+                  { value: valueToSendFromRelayer },
+                ),
+            ).to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet");
           });
         });
 
         describe("When sending exact msg.value like the one that is signed", () => {
           it("should pass if signer has the `to` address in its allowed calls", async () => {
-            let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                random.address,
-                0,
-                "0x",
-              ]);
-
-            let latestNonce = await context.keyManager.callStatic.getNonce(
-              signer.address,
-              0
+            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+              "execute",
+              [OPERATION_TYPES.CALL, random.address, 0, "0x"],
             );
+
+            let latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
 
             const validityTimestamps = 0;
 
@@ -270,21 +235,18 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 signedMessageParams.validityTimestamps,
                 signedMessageParams.msgValue,
                 signedMessageParams.payload,
-              ]
+              ],
             );
 
-            const balanceOfUpBefore = await provider.getBalance(
-              context.universalProfile.address
-            );
+            const balanceOfUpBefore = await provider.getBalance(context.universalProfile.address);
 
             let eip191Signer = new EIP191Signer();
 
-            let { signature } =
-              await eip191Signer.signDataWithIntendedValidator(
-                context.keyManager.address,
-                encodedMessage,
-                LOCAL_PRIVATE_KEYS.ACCOUNT1
-              );
+            let { signature } = await eip191Signer.signDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage,
+              LOCAL_PRIVATE_KEYS.ACCOUNT1,
+            );
 
             const tx = await context.keyManager
               .connect(relayer)
@@ -293,7 +255,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 signedMessageParams.nonce,
                 signedMessageParams.validityTimestamps,
                 signedMessageParams.payload,
-                { value: valueToSendFromRelayer }
+                { value: valueToSendFromRelayer },
               );
 
             expect(tx)
@@ -301,30 +263,23 @@ export const shouldBehaveLikeExecuteRelayCall = (
               .withArgs(
                 context.accounts[1].address,
                 signedMessageParams.msgValue,
-                context.universalProfile.interface.getSighash("execute")
+                context.universalProfile.interface.getSighash("execute"),
               );
 
-            const balanceOfUpAfter = await provider.getBalance(
-              context.universalProfile.address
-            );
+            const balanceOfUpAfter = await provider.getBalance(context.universalProfile.address);
 
-            expect(balanceOfUpAfter).to.equal(
-              balanceOfUpBefore.add(valueToSendFromRelayer)
-            );
+            expect(balanceOfUpAfter).to.equal(balanceOfUpBefore.add(valueToSendFromRelayer));
           });
 
           it("should fail if signer has nothing listed in its allowed calls", async () => {
-            let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                random.address,
-                0,
-                "0x",
-              ]);
+            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+              "execute",
+              [OPERATION_TYPES.CALL, random.address, 0, "0x"],
+            );
 
             let latestNonce = await context.keyManager.callStatic.getNonce(
               signerNoAllowedCalls.address,
-              0
+              0,
             );
 
             const validityTimestamps = 0;
@@ -349,17 +304,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 signedMessageParams.validityTimestamps,
                 signedMessageParams.msgValue,
                 signedMessageParams.payload,
-              ]
+              ],
             );
 
             let eip191Signer = new EIP191Signer();
 
-            let { signature } =
-              await eip191Signer.signDataWithIntendedValidator(
-                context.keyManager.address,
-                encodedMessage,
-                LOCAL_PRIVATE_KEYS.ACCOUNT3
-              );
+            let { signature } = await eip191Signer.signDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage,
+              LOCAL_PRIVATE_KEYS.ACCOUNT3,
+            );
 
             await expect(
               context.keyManager
@@ -369,13 +323,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   signedMessageParams.nonce,
                   signedMessageParams.validityTimestamps,
                   signedMessageParams.payload,
-                  { value: valueToSendFromRelayer }
-                )
+                  { value: valueToSendFromRelayer },
+                ),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                "NoCallsAllowed"
-              )
+              .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
               .withArgs(signerNoAllowedCalls.address);
           });
         });
@@ -384,30 +335,26 @@ export const shouldBehaveLikeExecuteRelayCall = (
           describe("When relayer don't fund the UP so it's balance is greater than the value param of execute(..)", () => {
             it("should revert", async () => {
               let nameToSet = "Alice";
-              let targetContractPayload =
-                targetContract.interface.encodeFunctionData("setNamePayable", [
-                  nameToSet,
-                ]);
+              let targetContractPayload = targetContract.interface.encodeFunctionData(
+                "setNamePayable",
+                [nameToSet],
+              );
 
               let requiredValueForExecution = 51; // specified in `setNamePayable(..)`
 
-              let latestNonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                0
-              );
+              let latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
 
               const validityTimestamps = 0;
 
-              let executeRelayCallPayload =
-                context.universalProfile.interface.encodeFunctionData(
-                  "execute",
-                  [
-                    OPERATION_TYPES.CALL,
-                    targetContract.address,
-                    requiredValueForExecution,
-                    targetContractPayload,
-                  ]
-                );
+              let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+                "execute",
+                [
+                  OPERATION_TYPES.CALL,
+                  targetContract.address,
+                  requiredValueForExecution,
+                  targetContractPayload,
+                ],
+              );
 
               let valueToSendFromRelayer = 0;
 
@@ -421,14 +368,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               };
 
               let encodedMessage = ethers.utils.solidityPack(
-                [
-                  "uint256",
-                  "uint256",
-                  "uint256",
-                  "uint256",
-                  "uint256",
-                  "bytes",
-                ],
+                ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
                 [
                   signedMessageParams.lsp6Version,
                   signedMessageParams.chainId,
@@ -436,17 +376,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   signedMessageParams.validityTimestamps,
                   signedMessageParams.msgValue,
                   signedMessageParams.payload,
-                ]
+                ],
               );
 
               let eip191Signer = new EIP191Signer();
 
-              let { signature } =
-                await eip191Signer.signDataWithIntendedValidator(
-                  context.keyManager.address,
-                  encodedMessage,
-                  LOCAL_PRIVATE_KEYS.ACCOUNT1
-                );
+              let { signature } = await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT1,
+              );
 
               await expect(
                 context.keyManager
@@ -456,16 +395,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
                     signedMessageParams.nonce,
                     signedMessageParams.validityTimestamps,
                     signedMessageParams.payload,
-                    { value: valueToSendFromRelayer }
-                  )
+                    { value: valueToSendFromRelayer },
+                  ),
               )
                 .to.be.revertedWithCustomError(
                   context.universalProfile,
-                  "ERC725X_InsufficientBalance"
+                  "ERC725X_InsufficientBalance",
                 )
                 .withArgs(
                   await provider.getBalance(context.universalProfile.address),
-                  requiredValueForExecution
+                  requiredValueForExecution,
                 );
             });
           });
@@ -473,30 +412,26 @@ export const shouldBehaveLikeExecuteRelayCall = (
           describe("When relayer fund the UP so it's balance is greater than the value param of execute(..)", () => {
             it("should pass if signer has the target contract address in its list of allowed calls", async () => {
               let nameToSet = "Alice";
-              let targetContractPayload =
-                targetContract.interface.encodeFunctionData("setNamePayable", [
-                  nameToSet,
-                ]);
+              let targetContractPayload = targetContract.interface.encodeFunctionData(
+                "setNamePayable",
+                [nameToSet],
+              );
 
               let requiredValueForExecution = 51; // specified in `setNamePayable(..)`
 
-              let latestNonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                0
-              );
+              let latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
 
               const validityTimestamps = 0;
 
-              let executeRelayCallPayload =
-                context.universalProfile.interface.encodeFunctionData(
-                  "execute",
-                  [
-                    OPERATION_TYPES.CALL,
-                    targetContract.address,
-                    requiredValueForExecution,
-                    targetContractPayload,
-                  ]
-                );
+              let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+                "execute",
+                [
+                  OPERATION_TYPES.CALL,
+                  targetContract.address,
+                  requiredValueForExecution,
+                  targetContractPayload,
+                ],
+              );
 
               let valueToSendFromRelayer = 51;
 
@@ -510,14 +445,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               };
 
               let encodedMessage = ethers.utils.solidityPack(
-                [
-                  "uint256",
-                  "uint256",
-                  "uint256",
-                  "uint256",
-                  "uint256",
-                  "bytes",
-                ],
+                ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
                 [
                   signedMessageParams.lsp6Version,
                   signedMessageParams.chainId,
@@ -525,17 +453,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   signedMessageParams.validityTimestamps,
                   signedMessageParams.msgValue,
                   signedMessageParams.payload,
-                ]
+                ],
               );
 
               let eip191Signer = new EIP191Signer();
 
-              let { signature } =
-                await eip191Signer.signDataWithIntendedValidator(
-                  context.keyManager.address,
-                  encodedMessage,
-                  LOCAL_PRIVATE_KEYS.ACCOUNT1
-                );
+              let { signature } = await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT1,
+              );
 
               await context.keyManager
                 .connect(relayer)
@@ -544,7 +471,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   signedMessageParams.nonce,
                   signedMessageParams.validityTimestamps,
                   signedMessageParams.payload,
-                  { value: valueToSendFromRelayer }
+                  { value: valueToSendFromRelayer },
                 );
 
               const result = await targetContract.callStatic.getName();
@@ -553,30 +480,29 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             it("should revert with 'NotAllowedCall' error if signer does not have any listed under its allowed calls", async () => {
               let nameToSet = "Alice";
-              let targetContractPayload =
-                targetContract.interface.encodeFunctionData("setNamePayable", [
-                  nameToSet,
-                ]);
+              let targetContractPayload = targetContract.interface.encodeFunctionData(
+                "setNamePayable",
+                [nameToSet],
+              );
 
               let requiredValueForExecution = 51; // specified in `setNamePayable(..)`
 
               let latestNonce = await context.keyManager.callStatic.getNonce(
                 signerNoAllowedCalls.address,
-                0
+                0,
               );
 
               const validityTimestamps = 0;
 
-              let executeRelayCallPayload =
-                context.universalProfile.interface.encodeFunctionData(
-                  "execute",
-                  [
-                    OPERATION_TYPES.CALL,
-                    targetContract.address,
-                    requiredValueForExecution,
-                    targetContractPayload,
-                  ]
-                );
+              let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+                "execute",
+                [
+                  OPERATION_TYPES.CALL,
+                  targetContract.address,
+                  requiredValueForExecution,
+                  targetContractPayload,
+                ],
+              );
 
               let valueToSendFromRelayer = 51;
 
@@ -590,14 +516,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               };
 
               let encodedMessage = ethers.utils.solidityPack(
-                [
-                  "uint256",
-                  "uint256",
-                  "uint256",
-                  "uint256",
-                  "uint256",
-                  "bytes",
-                ],
+                ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
                 [
                   signedMessageParams.lsp6Version,
                   signedMessageParams.chainId,
@@ -605,17 +524,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   signedMessageParams.validityTimestamps,
                   signedMessageParams.msgValue,
                   signedMessageParams.payload,
-                ]
+                ],
               );
 
               let eip191Signer = new EIP191Signer();
 
-              let { signature } =
-                await eip191Signer.signDataWithIntendedValidator(
-                  context.keyManager.address,
-                  encodedMessage,
-                  LOCAL_PRIVATE_KEYS.ACCOUNT3
-                );
+              let { signature } = await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT3,
+              );
 
               await expect(
                 context.keyManager
@@ -625,13 +543,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
                     signedMessageParams.nonce,
                     signedMessageParams.validityTimestamps,
                     signedMessageParams.payload,
-                    { value: valueToSendFromRelayer }
-                  )
+                    { value: valueToSendFromRelayer },
+                  ),
               )
-                .to.be.revertedWithCustomError(
-                  context.keyManager,
-                  "NoCallsAllowed"
-                )
+                .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
                 .withArgs(signerNoAllowedCalls.address);
             });
           });
@@ -647,13 +562,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               const endingTimestamp = now - 1000;
 
-              const nonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                1
-              );
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 1);
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
-                endingTimestamp
+                endingTimestamp,
               );
 
               const calldata = "0xcafecafe";
@@ -664,22 +576,14 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 validityTimestamps,
                 signerPrivateKey,
                 value,
-                calldata
+                calldata,
               );
 
               await expect(
                 context.keyManager
                   .connect(relayer)
-                  .executeRelayCall(
-                    signature,
-                    nonce,
-                    validityTimestamps,
-                    calldata
-                  )
-              ).to.be.revertedWithCustomError(
-                context.keyManager,
-                "RelayCallExpired"
-              );
+                  .executeRelayCall(signature, nonce, validityTimestamps, calldata),
+              ).to.be.revertedWithCustomError(context.keyManager, "RelayCallExpired");
             });
           });
 
@@ -690,13 +594,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const endingTimestamp = now - 2000;
               const startingTimestamp = now - 1500;
 
-              const nonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                2
-              );
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 2);
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
-                endingTimestamp
+                endingTimestamp,
               );
               const calldata = "0xcafecafe";
               const value = 0;
@@ -706,31 +607,20 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 validityTimestamps,
                 signerPrivateKey,
                 value,
-                calldata
+                calldata,
               );
 
               await expect(
                 context.keyManager
                   .connect(relayer)
-                  .executeRelayCall(
-                    signature,
-                    nonce,
-                    validityTimestamps,
-                    calldata
-                  )
-              ).to.be.revertedWithCustomError(
-                context.keyManager,
-                "RelayCallExpired"
-              );
+                  .executeRelayCall(signature, nonce, validityTimestamps, calldata),
+              ).to.be.revertedWithCustomError(context.keyManager, "RelayCallExpired");
             });
           });
 
           describe("`now` is lesser than `startingTimestamp` and `now` is lesser than `endingTimestamp`", () => {
             it("reverts", async () => {
-              const nonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                3
-              );
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 3);
 
               const now = await time.latest();
 
@@ -739,7 +629,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
-                endingTimestamp
+                endingTimestamp,
               );
 
               const calldata = "0xcafecafe";
@@ -750,22 +640,14 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 validityTimestamps,
                 signerPrivateKey,
                 value,
-                calldata
+                calldata,
               );
 
               await expect(
                 context.keyManager
                   .connect(relayer)
-                  .executeRelayCall(
-                    signature,
-                    nonce,
-                    validityTimestamps,
-                    calldata
-                  )
-              ).to.be.revertedWithCustomError(
-                context.keyManager,
-                "RelayCallBeforeStartTime"
-              );
+                  .executeRelayCall(signature, nonce, validityTimestamps, calldata),
+              ).to.be.revertedWithCustomError(context.keyManager, "RelayCallBeforeStartTime");
             });
           });
 
@@ -776,13 +658,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const startingTimestamp = now + 1000;
               const endingTimestamp = now - 1000;
 
-              const nonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                4
-              );
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 4);
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
-                endingTimestamp
+                endingTimestamp,
               );
               const calldata = "0xcafecafe";
               const value = 0;
@@ -792,22 +671,14 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 validityTimestamps,
                 signerPrivateKey,
                 value,
-                calldata
+                calldata,
               );
 
               await expect(
                 context.keyManager
                   .connect(relayer)
-                  .executeRelayCall(
-                    signature,
-                    nonce,
-                    validityTimestamps,
-                    calldata
-                  )
-              ).to.be.revertedWithCustomError(
-                context.keyManager,
-                "RelayCallBeforeStartTime"
-              );
+                  .executeRelayCall(signature, nonce, validityTimestamps, calldata),
+              ).to.be.revertedWithCustomError(context.keyManager, "RelayCallBeforeStartTime");
             });
           });
 
@@ -818,13 +689,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const startingTimestamp = now + 1000;
               const endingTimestamp = now;
 
-              const nonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                5
-              );
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 5);
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
-                endingTimestamp
+                endingTimestamp,
               );
               const calldata = "0xcafecafe";
               const value = 0;
@@ -834,22 +702,14 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 validityTimestamps,
                 signerPrivateKey,
                 value,
-                calldata
+                calldata,
               );
 
               await expect(
                 context.keyManager
                   .connect(relayer)
-                  .executeRelayCall(
-                    signature,
-                    nonce,
-                    validityTimestamps,
-                    calldata
-                  )
-              ).to.be.revertedWithCustomError(
-                context.keyManager,
-                "RelayCallBeforeStartTime"
-              );
+                  .executeRelayCall(signature, nonce, validityTimestamps, calldata),
+              ).to.be.revertedWithCustomError(context.keyManager, "RelayCallBeforeStartTime");
             });
           });
         });
@@ -862,26 +722,17 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const startingTimestamp = now;
               const endingTimestamp = now + 1000;
 
-              const nonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                6
-              );
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 6);
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
-                endingTimestamp
+                endingTimestamp,
               );
-              const calldata =
-                context.universalProfile.interface.encodeFunctionData(
-                  "execute",
-                  [
-                    0,
-                    targetContract.address,
-                    0,
-                    targetContract.interface.encodeFunctionData("setNumber", [
-                      nonce,
-                    ]),
-                  ]
-                );
+              const calldata = context.universalProfile.interface.encodeFunctionData("execute", [
+                0,
+                targetContract.address,
+                0,
+                targetContract.interface.encodeFunctionData("setNumber", [nonce]),
+              ]);
               const value = 0;
               const signature = await signLSP6ExecuteRelayCall(
                 context.keyManager,
@@ -889,17 +740,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 validityTimestamps,
                 signerPrivateKey,
                 value,
-                calldata
+                calldata,
               );
 
               await context.keyManager
                 .connect(relayer)
-                .executeRelayCall(
-                  signature,
-                  nonce,
-                  validityTimestamps,
-                  calldata
-                );
+                .executeRelayCall(signature, nonce, validityTimestamps, calldata);
 
               expect(await targetContract.getNumber()).to.equal(nonce);
             });
@@ -912,13 +758,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const startingTimestamp = now + 1000;
               const endingTimestamp = now + 1500;
 
-              const nonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                7
-              );
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 7);
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
-                endingTimestamp
+                endingTimestamp,
               );
               const calldata = "0xcafecafe";
               const value = 0;
@@ -928,22 +771,14 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 validityTimestamps,
                 signerPrivateKey,
                 value,
-                calldata
+                calldata,
               );
 
               await expect(
                 context.keyManager
                   .connect(relayer)
-                  .executeRelayCall(
-                    signature,
-                    nonce,
-                    validityTimestamps,
-                    calldata
-                  )
-              ).to.be.revertedWithCustomError(
-                context.keyManager,
-                "RelayCallBeforeStartTime"
-              );
+                  .executeRelayCall(signature, nonce, validityTimestamps, calldata),
+              ).to.be.revertedWithCustomError(context.keyManager, "RelayCallBeforeStartTime");
             });
           });
 
@@ -954,13 +789,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const startingTimestamp = now - 1500;
               const endingTimestamp = now - 1000;
 
-              const nonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                8
-              );
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 8);
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
-                endingTimestamp
+                endingTimestamp,
               );
               const calldata = "0xcafecafe";
               const value = 0;
@@ -970,22 +802,14 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 validityTimestamps,
                 signerPrivateKey,
                 value,
-                calldata
+                calldata,
               );
 
               await expect(
                 context.keyManager
                   .connect(relayer)
-                  .executeRelayCall(
-                    signature,
-                    nonce,
-                    validityTimestamps,
-                    calldata
-                  )
-              ).to.be.revertedWithCustomError(
-                context.keyManager,
-                "RelayCallExpired"
-              );
+                  .executeRelayCall(signature, nonce, validityTimestamps, calldata),
+              ).to.be.revertedWithCustomError(context.keyManager, "RelayCallExpired");
             });
           });
 
@@ -996,26 +820,17 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const startingTimestamp = now - 1000;
               const endingTimestamp = now + 1500;
 
-              const nonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                9
-              );
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 9);
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
-                endingTimestamp
+                endingTimestamp,
               );
-              const calldata =
-                context.universalProfile.interface.encodeFunctionData(
-                  "execute",
-                  [
-                    0,
-                    targetContract.address,
-                    0,
-                    targetContract.interface.encodeFunctionData("setNumber", [
-                      nonce,
-                    ]),
-                  ]
-                );
+              const calldata = context.universalProfile.interface.encodeFunctionData("execute", [
+                0,
+                targetContract.address,
+                0,
+                targetContract.interface.encodeFunctionData("setNumber", [nonce]),
+              ]);
               const value = 0;
               const signature = await signLSP6ExecuteRelayCall(
                 context.keyManager,
@@ -1023,17 +838,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 validityTimestamps,
                 signerPrivateKey,
                 value,
-                calldata
+                calldata,
               );
 
               await context.keyManager
                 .connect(relayer)
-                .executeRelayCall(
-                  signature,
-                  nonce,
-                  validityTimestamps,
-                  calldata
-                );
+                .executeRelayCall(signature, nonce, validityTimestamps, calldata);
 
               expect(await targetContract.getNumber()).to.equal(nonce);
             });
@@ -1046,27 +856,18 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const startingTimestamp = now - 1000;
               const endingTimestamp = now;
 
-              const nonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                10
-              );
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 10);
 
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
-                endingTimestamp
+                endingTimestamp,
               );
-              const calldata =
-                context.universalProfile.interface.encodeFunctionData(
-                  "execute",
-                  [
-                    0,
-                    targetContract.address,
-                    0,
-                    targetContract.interface.encodeFunctionData("setNumber", [
-                      nonce,
-                    ]),
-                  ]
-                );
+              const calldata = context.universalProfile.interface.encodeFunctionData("execute", [
+                0,
+                targetContract.address,
+                0,
+                targetContract.interface.encodeFunctionData("setNumber", [nonce]),
+              ]);
               const value = 0;
               const signature = await signLSP6ExecuteRelayCall(
                 context.keyManager,
@@ -1074,19 +875,14 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 validityTimestamps,
                 signerPrivateKey,
                 value,
-                calldata
+                calldata,
               );
 
               await time.setNextBlockTimestamp(now);
 
               await context.keyManager
                 .connect(relayer)
-                .executeRelayCall(
-                  signature,
-                  nonce,
-                  validityTimestamps,
-                  calldata
-                );
+                .executeRelayCall(signature, nonce, validityTimestamps, calldata);
 
               expect(await targetContract.getNumber()).to.equal(nonce);
             });
@@ -1101,13 +897,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const startingTimestamp = now - 100;
               const endingTimestamp = now - 100;
 
-              const nonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                11
-              );
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 11);
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
-                endingTimestamp
+                endingTimestamp,
               );
               const calldata = "0xcafecafe";
               const value = 0;
@@ -1117,22 +910,14 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 validityTimestamps,
                 signerPrivateKey,
                 value,
-                calldata
+                calldata,
               );
 
               await expect(
                 context.keyManager
                   .connect(relayer)
-                  .executeRelayCall(
-                    signature,
-                    nonce,
-                    validityTimestamps,
-                    calldata
-                  )
-              ).to.be.revertedWithCustomError(
-                context.keyManager,
-                "RelayCallExpired"
-              );
+                  .executeRelayCall(signature, nonce, validityTimestamps, calldata),
+              ).to.be.revertedWithCustomError(context.keyManager, "RelayCallExpired");
             });
           });
 
@@ -1143,13 +928,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const startingTimestamp = now + 100;
               const endingTimestamp = now + 100;
 
-              const nonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                12
-              );
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 12);
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
-                endingTimestamp
+                endingTimestamp,
               );
               const calldata = "0xcafecafe";
               const value = 0;
@@ -1159,22 +941,14 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 validityTimestamps,
                 signerPrivateKey,
                 value,
-                calldata
+                calldata,
               );
 
               await expect(
                 context.keyManager
                   .connect(relayer)
-                  .executeRelayCall(
-                    signature,
-                    nonce,
-                    validityTimestamps,
-                    calldata
-                  )
-              ).to.be.revertedWithCustomError(
-                context.keyManager,
-                "RelayCallBeforeStartTime"
-              );
+                  .executeRelayCall(signature, nonce, validityTimestamps, calldata),
+              ).to.be.revertedWithCustomError(context.keyManager, "RelayCallBeforeStartTime");
             });
           });
 
@@ -1185,26 +959,17 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const startingTimestamp = now;
               const endingTimestamp = now;
 
-              const nonce = await context.keyManager.callStatic.getNonce(
-                signer.address,
-                13
-              );
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 13);
               const validityTimestamps = createValidityTimestamps(
                 startingTimestamp,
-                endingTimestamp
+                endingTimestamp,
               );
-              const calldata =
-                context.universalProfile.interface.encodeFunctionData(
-                  "execute",
-                  [
-                    0,
-                    targetContract.address,
-                    0,
-                    targetContract.interface.encodeFunctionData("setNumber", [
-                      nonce,
-                    ]),
-                  ]
-                );
+              const calldata = context.universalProfile.interface.encodeFunctionData("execute", [
+                0,
+                targetContract.address,
+                0,
+                targetContract.interface.encodeFunctionData("setNumber", [nonce]),
+              ]);
               const value = 0;
               const signature = await signLSP6ExecuteRelayCall(
                 context.keyManager,
@@ -1212,19 +977,14 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 validityTimestamps,
                 signerPrivateKey,
                 value,
-                calldata
+                calldata,
               );
 
               await time.setNextBlockTimestamp(now);
 
               await context.keyManager
                 .connect(relayer)
-                .executeRelayCall(
-                  signature,
-                  nonce,
-                  validityTimestamps,
-                  calldata
-                );
+                .executeRelayCall(signature, nonce, validityTimestamps, calldata);
 
               expect(await targetContract.getNumber()).to.equal(nonce);
             });
@@ -1233,20 +993,14 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         describe("when `validityTimestamps == 0`", () => {
           it("passes", async () => {
-            const nonce = await context.keyManager.callStatic.getNonce(
-              signer.address,
-              14
-            );
+            const nonce = await context.keyManager.callStatic.getNonce(signer.address, 14);
             const validityTimestamps = 0;
-            const calldata =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                0,
-                targetContract.address,
-                0,
-                targetContract.interface.encodeFunctionData("setNumber", [
-                  nonce,
-                ]),
-              ]);
+            const calldata = context.universalProfile.interface.encodeFunctionData("execute", [
+              0,
+              targetContract.address,
+              0,
+              targetContract.interface.encodeFunctionData("setNumber", [nonce]),
+            ]);
             const value = 0;
             const signature = await signLSP6ExecuteRelayCall(
               context.keyManager,
@@ -1254,7 +1008,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               validityTimestamps,
               signerPrivateKey,
               value,
-              calldata
+              calldata,
             );
 
             await context.keyManager
@@ -1283,18 +1037,15 @@ export const shouldBehaveLikeExecuteRelayCall = (
       tokenRecipient = context.accounts[2];
 
       // deploy token contract
-      tokenContract = await new LSP7Mintable__factory(
-        context.accounts[0]
-      ).deploy(
+      tokenContract = await new LSP7Mintable__factory(context.accounts[0]).deploy(
         "My LSP7 Token",
         "LSP7",
         context.universalProfile.address,
-        false
+        false,
       );
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
       ];
 
       const permissionsValues = [ALL_PERMISSIONS];
@@ -1304,11 +1055,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
     it("should revert when there are not the same number of elements for each parameters", async () => {
       // these are dummy values parameters. The aim is to check that it reverts in the first place.
-      const signatures = [
-        "0x" + "aa".repeat(65),
-        "0x" + "bb".repeat(65),
-        "0x" + "cc".repeat(65),
-      ];
+      const signatures = ["0x" + "aa".repeat(65), "0x" + "bb".repeat(65), "0x" + "cc".repeat(65)];
       const nonces = [0, 1, 2];
       const values = [0, 0, 0];
       const validityTimestamps = [0, 0, 0];
@@ -1317,16 +1064,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
       await expect(
         context.keyManager
           .connect(context.owner)
-          .executeRelayCallBatch(
-            signatures,
-            nonces,
-            validityTimestamps,
-            values,
-            payloads
-          )
+          .executeRelayCallBatch(signatures, nonces, validityTimestamps, values, payloads),
       ).to.be.revertedWithCustomError(
         context.keyManager,
-        "BatchExecuteRelayCallParamsLengthMismatch"
+        "BatchExecuteRelayCallParamsLengthMismatch",
       );
     });
 
@@ -1334,18 +1075,14 @@ export const shouldBehaveLikeExecuteRelayCall = (
       const recipient = context.accounts[1].address;
       const amountForRecipient = ethers.utils.parseEther("1");
 
-      const transferLyxPayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          recipient,
-          amountForRecipient,
-          "0x",
-        ]);
+      const transferLyxPayload = context.universalProfile.interface.encodeFunctionData("execute", [
+        OPERATION_TYPES.CALL,
+        recipient,
+        amountForRecipient,
+        "0x",
+      ]);
 
-      const ownerNonce = await context.keyManager.getNonce(
-        context.owner.address,
-        0
-      );
+      const ownerNonce = await context.keyManager.getNonce(context.owner.address, 0);
 
       const validityTimestamps = 0;
 
@@ -1355,7 +1092,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         validityTimestamps,
         LOCAL_PRIVATE_KEYS.ACCOUNT0,
         0,
-        transferLyxPayload
+        transferLyxPayload,
       );
 
       // these steps (before running the batch executeRelayCall([],[],[]) on the KeyManager)
@@ -1379,18 +1116,17 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       let encodedMessage = ethers.utils.solidityPack(
         ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
-        [6, 31337, ownerNonce.add(1), validityTimestamps, 0, transferLyxPayload]
+        [6, 31337, ownerNonce.add(1), validityTimestamps, 0, transferLyxPayload],
       );
 
-      const hashedDataWithIntendedValidator =
-        eip191.hashDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage
-        );
+      const hashedDataWithIntendedValidator = eip191.hashDataWithIntendedValidator(
+        context.keyManager.address,
+        encodedMessage,
+      );
 
       const incorrectRecoveredAddress = await eip191.recover(
         hashedDataWithIntendedValidator,
-        transferLyxSignature
+        transferLyxSignature,
       );
 
       // the transaction will revert with InvalidNonce because it will check the nonce of
@@ -1403,15 +1139,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
             [ownerNonce, ownerNonce.add(1)],
             [validityTimestamps, validityTimestamps],
             [0, 0],
-            [transferLyxPayload, transferLyxPayload]
-          )
+            [transferLyxPayload, transferLyxPayload],
+          ),
       )
         .to.be.revertedWithCustomError(context.keyManager, "InvalidRelayNonce")
-        .withArgs(
-          incorrectRecoveredAddress,
-          ownerNonce.add(1),
-          transferLyxSignature
-        );
+        .withArgs(incorrectRecoveredAddress, ownerNonce.add(1), transferLyxSignature);
     });
 
     it("should 1) give the permission to someone to mint, 2) let the controller mint, 3) remove the permission to the controller to mint", async () => {
@@ -1423,13 +1155,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
       const validityTimestamps = 0;
 
       // step 1 - give minter permissions to mint
-      const giveMinterPermissionsPayload =
-        context.universalProfile.interface.encodeFunctionData("setDataBatch", [
+      const giveMinterPermissionsPayload = context.universalProfile.interface.encodeFunctionData(
+        "setDataBatch",
+        [
           [
-            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              minter.address.substring(2),
-            ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-              minter.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + minter.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + minter.address.substring(2),
           ],
           [
             PERMISSIONS.CALL,
@@ -1437,15 +1168,13 @@ export const shouldBehaveLikeExecuteRelayCall = (
               [CALLTYPE.CALL],
               [tokenContract.address],
               [INTERFACE_IDS.LSP7DigitalAsset],
-              [tokenContract.interface.getSighash("mint")]
+              [tokenContract.interface.getSighash("mint")],
             ),
           ],
-        ]);
-
-      const ownerNonce = await context.keyManager.getNonce(
-        context.owner.address,
-        0
+        ],
       );
+
+      const ownerNonce = await context.keyManager.getNonce(context.owner.address, 0);
 
       const ownerGivePermissionsSignature = await signLSP6ExecuteRelayCall(
         context.keyManager,
@@ -1453,21 +1182,22 @@ export const shouldBehaveLikeExecuteRelayCall = (
         validityTimestamps,
         LOCAL_PRIVATE_KEYS.ACCOUNT0,
         0,
-        giveMinterPermissionsPayload
+        giveMinterPermissionsPayload,
       );
 
       // Step 2 - let minter mint
-      const minterMintPayload = tokenContract.interface.encodeFunctionData(
-        "mint",
-        [tokenRecipient.address, tokensToMint, true, "0x"]
-      );
-      const executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          tokenContract.address,
-          0,
-          minterMintPayload,
-        ]);
+      const minterMintPayload = tokenContract.interface.encodeFunctionData("mint", [
+        tokenRecipient.address,
+        tokensToMint,
+        true,
+        "0x",
+      ]);
+      const executePayload = context.universalProfile.interface.encodeFunctionData("execute", [
+        OPERATION_TYPES.CALL,
+        tokenContract.address,
+        0,
+        minterMintPayload,
+      ]);
 
       const minterNonce = await context.keyManager.getNonce(minter.address, 0);
 
@@ -1477,20 +1207,20 @@ export const shouldBehaveLikeExecuteRelayCall = (
         validityTimestamps,
         LOCAL_PRIVATE_KEYS.ACCOUNT1,
         0,
-        executePayload
+        executePayload,
       );
 
       // Step 3 - remove minter permissions to mint
-      const removeMinterPermissionsPayload =
-        context.universalProfile.interface.encodeFunctionData("setDataBatch", [
+      const removeMinterPermissionsPayload = context.universalProfile.interface.encodeFunctionData(
+        "setDataBatch",
+        [
           [
-            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              minter.address.substring(2),
-            ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-              minter.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + minter.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + minter.address.substring(2),
           ],
           ["0x", "0x"],
-        ]);
+        ],
+      );
       const newOwnerNonce = ownerNonce.add(1);
 
       const ownerRemovePermissionsSignature = await signLSP6ExecuteRelayCall(
@@ -1499,40 +1229,28 @@ export const shouldBehaveLikeExecuteRelayCall = (
         validityTimestamps,
         LOCAL_PRIVATE_KEYS.ACCOUNT0,
         0,
-        removeMinterPermissionsPayload
+        removeMinterPermissionsPayload,
       );
 
       await context.keyManager
         .connect(context.owner)
         .executeRelayCallBatch(
-          [
-            ownerGivePermissionsSignature,
-            minterMintSignature,
-            ownerRemovePermissionsSignature,
-          ],
+          [ownerGivePermissionsSignature, minterMintSignature, ownerRemovePermissionsSignature],
           [ownerNonce, minterNonce, newOwnerNonce],
           [validityTimestamps, validityTimestamps, validityTimestamps],
           [0, 0, 0],
-          [
-            giveMinterPermissionsPayload,
-            executePayload,
-            removeMinterPermissionsPayload,
-          ]
+          [giveMinterPermissionsPayload, executePayload, removeMinterPermissionsPayload],
         );
 
       // CHECK that the recipient received its tokens
-      expect(await tokenContract.balanceOf(tokenRecipient.address)).to.equal(
-        tokensToMint
-      );
+      expect(await tokenContract.balanceOf(tokenRecipient.address)).to.equal(tokensToMint);
 
       // CHECK that the minter does not have permissions anymore
       expect(
         await context.universalProfile.getDataBatch([
-          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            minter.address.substring(2),
-          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-            minter.address.substring(2),
-        ])
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + minter.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + minter.address.substring(2),
+        ]),
       ).to.deep.equal(["0x", "0x"]);
 
       // CHECK that the minter cannot mint anymore
@@ -1561,40 +1279,28 @@ export const shouldBehaveLikeExecuteRelayCall = (
           ];
 
           const totalValues = values.reduce((accumulator, currentValue) =>
-            accumulator.add(currentValue)
+            accumulator.add(currentValue),
           );
 
           // give to much and check that no funds can remain on the Key Manager
           const amountToFund = totalValues.sub(1);
 
-          const firstLyxTransfer =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              firstRecipient,
-              transferAmounts[0],
-              "0x",
-            ]);
-
-          const secondLyxTransfer =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              secondRecipient,
-              transferAmounts[1],
-              "0x",
-            ]);
-
-          const thirdLyxTransfer =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              thirdRecipient,
-              transferAmounts[2],
-              "0x",
-            ]);
-
-          const ownerNonce = await context.keyManager.getNonce(
-            context.owner.address,
-            0
+          const firstLyxTransfer = context.universalProfile.interface.encodeFunctionData(
+            "execute",
+            [OPERATION_TYPES.CALL, firstRecipient, transferAmounts[0], "0x"],
           );
+
+          const secondLyxTransfer = context.universalProfile.interface.encodeFunctionData(
+            "execute",
+            [OPERATION_TYPES.CALL, secondRecipient, transferAmounts[1], "0x"],
+          );
+
+          const thirdLyxTransfer = context.universalProfile.interface.encodeFunctionData(
+            "execute",
+            [OPERATION_TYPES.CALL, thirdRecipient, transferAmounts[2], "0x"],
+          );
+
+          const ownerNonce = await context.keyManager.getNonce(context.owner.address, 0);
 
           const validityTimestamps = 0;
 
@@ -1604,7 +1310,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[0],
-            firstLyxTransfer
+            firstLyxTransfer,
           );
           const secondTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
@@ -1612,7 +1318,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[1],
-            secondLyxTransfer
+            secondLyxTransfer,
           );
           const thirdTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
@@ -1620,29 +1326,22 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[2],
-            thirdLyxTransfer
+            thirdLyxTransfer,
           );
 
           await expect(
             context.keyManager
               .connect(context.owner)
               .executeRelayCallBatch(
-                [
-                  firstTransferLyxSignature,
-                  secondTransferLyxSignature,
-                  thirdTransferLyxSignature,
-                ],
+                [firstTransferLyxSignature, secondTransferLyxSignature, thirdTransferLyxSignature],
                 [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
                 [validityTimestamps, validityTimestamps, validityTimestamps],
                 values,
                 [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
-                { value: amountToFund }
-              )
+                { value: amountToFund },
+              ),
           )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "LSP6BatchInsufficientValueSent"
-            )
+            .to.be.revertedWithCustomError(context.keyManager, "LSP6BatchInsufficientValueSent")
             .withArgs(totalValues, amountToFund);
         });
       });
@@ -1666,40 +1365,28 @@ export const shouldBehaveLikeExecuteRelayCall = (
           ];
 
           const totalValues = values.reduce((accumulator, currentValue) =>
-            accumulator.add(currentValue)
+            accumulator.add(currentValue),
           );
 
           // give to much and check that no funds can remain on the Key Manager
           const amountToFund = totalValues.add(1);
 
-          const firstLyxTransfer =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              firstRecipient,
-              transferAmounts[0],
-              "0x",
-            ]);
-
-          const secondLyxTransfer =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              secondRecipient,
-              transferAmounts[1],
-              "0x",
-            ]);
-
-          const thirdLyxTransfer =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              thirdRecipient,
-              transferAmounts[2],
-              "0x",
-            ]);
-
-          const ownerNonce = await context.keyManager.getNonce(
-            context.owner.address,
-            0
+          const firstLyxTransfer = context.universalProfile.interface.encodeFunctionData(
+            "execute",
+            [OPERATION_TYPES.CALL, firstRecipient, transferAmounts[0], "0x"],
           );
+
+          const secondLyxTransfer = context.universalProfile.interface.encodeFunctionData(
+            "execute",
+            [OPERATION_TYPES.CALL, secondRecipient, transferAmounts[1], "0x"],
+          );
+
+          const thirdLyxTransfer = context.universalProfile.interface.encodeFunctionData(
+            "execute",
+            [OPERATION_TYPES.CALL, thirdRecipient, transferAmounts[2], "0x"],
+          );
+
+          const ownerNonce = await context.keyManager.getNonce(context.owner.address, 0);
 
           const validityTimestamps = 0;
 
@@ -1709,7 +1396,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[0],
-            firstLyxTransfer
+            firstLyxTransfer,
           );
           const secondTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
@@ -1717,7 +1404,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[1],
-            secondLyxTransfer
+            secondLyxTransfer,
           );
           const thirdTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
@@ -1725,29 +1412,22 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[2],
-            thirdLyxTransfer
+            thirdLyxTransfer,
           );
 
           await expect(
             context.keyManager
               .connect(context.owner)
               .executeRelayCallBatch(
-                [
-                  firstTransferLyxSignature,
-                  secondTransferLyxSignature,
-                  thirdTransferLyxSignature,
-                ],
+                [firstTransferLyxSignature, secondTransferLyxSignature, thirdTransferLyxSignature],
                 [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
                 [validityTimestamps, validityTimestamps, validityTimestamps],
                 values,
                 [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
-                { value: amountToFund }
-              )
+                { value: amountToFund },
+              ),
           )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "LSP6BatchExcessiveValueSent"
-            )
+            .to.be.revertedWithCustomError(context.keyManager, "LSP6BatchExcessiveValueSent")
             .withArgs(totalValues, amountToFund);
         });
       });
@@ -1771,37 +1451,25 @@ export const shouldBehaveLikeExecuteRelayCall = (
           ];
 
           const amountToFund = values.reduce((accumulator, currentValue) =>
-            accumulator.add(currentValue)
+            accumulator.add(currentValue),
           );
 
-          const firstLyxTransfer =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              firstRecipient,
-              transferAmounts[0],
-              "0x",
-            ]);
-
-          const secondLyxTransfer =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              secondRecipient,
-              transferAmounts[1],
-              "0x",
-            ]);
-
-          const thirdLyxTransfer =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              thirdRecipient,
-              transferAmounts[2],
-              "0x",
-            ]);
-
-          const ownerNonce = await context.keyManager.getNonce(
-            context.owner.address,
-            0
+          const firstLyxTransfer = context.universalProfile.interface.encodeFunctionData(
+            "execute",
+            [OPERATION_TYPES.CALL, firstRecipient, transferAmounts[0], "0x"],
           );
+
+          const secondLyxTransfer = context.universalProfile.interface.encodeFunctionData(
+            "execute",
+            [OPERATION_TYPES.CALL, secondRecipient, transferAmounts[1], "0x"],
+          );
+
+          const thirdLyxTransfer = context.universalProfile.interface.encodeFunctionData(
+            "execute",
+            [OPERATION_TYPES.CALL, thirdRecipient, transferAmounts[2], "0x"],
+          );
+
+          const ownerNonce = await context.keyManager.getNonce(context.owner.address, 0);
 
           const validityTimestamps = 0;
 
@@ -1811,7 +1479,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[0],
-            firstLyxTransfer
+            firstLyxTransfer,
           );
           const secondTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
@@ -1819,7 +1487,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[1],
-            secondLyxTransfer
+            secondLyxTransfer,
           );
           const thirdTransferLyxSignature = await signLSP6ExecuteRelayCall(
             context.keyManager,
@@ -1827,32 +1495,23 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             values[2],
-            thirdLyxTransfer
+            thirdLyxTransfer,
           );
 
           let tx = await context.keyManager
             .connect(context.owner)
             .executeRelayCallBatch(
-              [
-                firstTransferLyxSignature,
-                secondTransferLyxSignature,
-                thirdTransferLyxSignature,
-              ],
+              [firstTransferLyxSignature, secondTransferLyxSignature, thirdTransferLyxSignature],
               [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
               [validityTimestamps, validityTimestamps, validityTimestamps],
               values,
               [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
-              { value: amountToFund }
+              { value: amountToFund },
             );
 
           await expect(tx).to.changeEtherBalances(
-            [
-              context.universalProfile.address,
-              firstRecipient,
-              secondRecipient,
-              thirdRecipient,
-            ],
-            [0, values[0], values[1], values[2]]
+            [context.universalProfile.address, firstRecipient, secondRecipient, thirdRecipient],
+            [0, values[0], values[1], values[2]],
           );
         });
       });
@@ -1860,9 +1519,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
     describe("when one of the payload reverts", () => {
       it("should revert the whole transaction if first payload reverts", async () => {
-        const upBalance = await provider.getBalance(
-          context.universalProfile.address
-        );
+        const upBalance = await provider.getBalance(context.universalProfile.address);
 
         const validAmount = ethers.utils.parseEther("1");
         expect(validAmount).to.be.lt(upBalance); // sanity check
@@ -1872,34 +1529,22 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         const randomRecipient = ethers.Wallet.createRandom().address;
 
-        const failingTransferPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            randomRecipient,
-            invalidAmount,
-            "0x",
-          ]);
-
-        const firstTransferPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            randomRecipient,
-            validAmount,
-            "0x",
-          ]);
-
-        const secondTransferPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            randomRecipient,
-            validAmount,
-            "0x",
-          ]);
-
-        const ownerNonce = await context.keyManager.getNonce(
-          context.owner.address,
-          0
+        const failingTransferPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATION_TYPES.CALL, randomRecipient, invalidAmount, "0x"],
         );
+
+        const firstTransferPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"],
+        );
+
+        const secondTransferPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"],
+        );
+
+        const ownerNonce = await context.keyManager.getNonce(context.owner.address, 0);
 
         const nonces = [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)];
 
@@ -1912,7 +1557,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             0,
-            failingTransferPayload
+            failingTransferPayload,
           ),
           signLSP6ExecuteRelayCall(
             context.keyManager,
@@ -1920,7 +1565,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             0,
-            firstTransferPayload
+            firstTransferPayload,
           ),
           signLSP6ExecuteRelayCall(
             context.keyManager,
@@ -1928,7 +1573,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             0,
-            secondTransferPayload
+            secondTransferPayload,
           ),
         ];
 
@@ -1943,18 +1588,13 @@ export const shouldBehaveLikeExecuteRelayCall = (
               nonces,
               [validityTimestamps, validityTimestamps, validityTimestamps],
               [0, 0, 0],
-              payloads
-            )
-        ).to.be.revertedWithCustomError(
-          context.universalProfile,
-          "ERC725X_InsufficientBalance"
-        );
+              payloads,
+            ),
+        ).to.be.revertedWithCustomError(context.universalProfile, "ERC725X_InsufficientBalance");
       });
 
       it("should revert the whole transaction if last payload reverts", async () => {
-        const upBalance = await provider.getBalance(
-          context.universalProfile.address
-        );
+        const upBalance = await provider.getBalance(context.universalProfile.address);
 
         const validAmount = ethers.utils.parseEther("1");
         expect(validAmount).to.be.lt(upBalance); // sanity check
@@ -1964,34 +1604,22 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         const randomRecipient = ethers.Wallet.createRandom().address;
 
-        const failingTransferPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            randomRecipient,
-            invalidAmount,
-            "0x",
-          ]);
-
-        const firstTransferPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            randomRecipient,
-            validAmount,
-            "0x",
-          ]);
-
-        const secondTransferPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            randomRecipient,
-            validAmount,
-            "0x",
-          ]);
-
-        const ownerNonce = await context.keyManager.getNonce(
-          context.owner.address,
-          0
+        const failingTransferPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATION_TYPES.CALL, randomRecipient, invalidAmount, "0x"],
         );
+
+        const firstTransferPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"],
+        );
+
+        const secondTransferPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"],
+        );
+
+        const ownerNonce = await context.keyManager.getNonce(context.owner.address, 0);
 
         const nonces = [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)];
         const values = [0, 0, 0];
@@ -2005,7 +1633,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             0,
-            firstTransferPayload
+            firstTransferPayload,
           ),
           signLSP6ExecuteRelayCall(
             context.keyManager,
@@ -2013,7 +1641,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             0,
-            secondTransferPayload
+            secondTransferPayload,
           ),
           signLSP6ExecuteRelayCall(
             context.keyManager,
@@ -2021,7 +1649,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
             0,
-            failingTransferPayload
+            failingTransferPayload,
           ),
         ];
 
@@ -2036,12 +1664,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
               nonces,
               [validityTimestamps, validityTimestamps, validityTimestamps],
               values,
-              payloads
-            )
-        ).to.be.revertedWithCustomError(
-          context.universalProfile,
-          "ERC725X_InsufficientBalance"
-        );
+              payloads,
+            ),
+        ).to.be.revertedWithCustomError(context.universalProfile, "ERC725X_InsufficientBalance");
       });
     });
   });

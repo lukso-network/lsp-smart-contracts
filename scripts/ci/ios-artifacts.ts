@@ -60,7 +60,7 @@ public final class LSPSmartContracts {
   fs.appendFile(upSwiftFile, swiftFileContent, (err) => {
     if (err) console.log(err);
     console.log(
-      `\u2713 \uF8FF Successfully created Swift contract ABIs (see file: ${upSwiftFile})`
+      `\u2713 \uF8FF Successfully created Swift contract ABIs (see file: ${upSwiftFile})`,
     );
   });
 });

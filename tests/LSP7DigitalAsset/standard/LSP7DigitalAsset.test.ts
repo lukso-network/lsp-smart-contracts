@@ -28,7 +28,7 @@ describe("LSP7DigitalAsset with constructor", () => {
     const lsp7 = await new LSP7Tester__factory(accounts.owner).deploy(
       deployParams.name,
       deployParams.symbol,
-      deployParams.newOwner
+      deployParams.newOwner,
     );
 
     // mint tokens for the owner
@@ -67,8 +67,8 @@ describe("LSP7DigitalAsset with constructor", () => {
         new LSP7Tester__factory(accounts[0]).deploy(
           deployParams.name,
           deployParams.symbol,
-          deployParams.newOwner
-        )
+          deployParams.newOwner,
+        ),
       ).to.be.revertedWith("Ownable: new owner is the zero address");
     });
 
@@ -91,9 +91,7 @@ describe("LSP7DigitalAsset with constructor", () => {
   });
 
   describe("when testing deployed contract", () => {
-    shouldBehaveLikeLSP4DigitalAssetMetadata(
-      buildLSP4DigitalAssetMetadataTestContext
-    );
+    shouldBehaveLikeLSP4DigitalAssetMetadata(buildLSP4DigitalAssetMetadataTestContext);
     shouldBehaveLikeLSP7(buildTestContext);
   });
 });

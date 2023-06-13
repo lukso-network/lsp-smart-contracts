@@ -1,8 +1,5 @@
 import { expect } from "chai";
-import {
-  LSP8EnumerableInitTester,
-  LSP8EnumerableInitTester__factory,
-} from "../../../types";
+import { LSP8EnumerableInitTester, LSP8EnumerableInitTester__factory } from "../../../types";
 
 import { shouldInitializeLikeLSP8 } from "../LSP8IdentifiableDigitalAsset.behaviour";
 import {
@@ -25,12 +22,8 @@ describe("LSP8EnumerableInit with proxy", () => {
     const LSP8EnumerableInit: LSP8EnumerableInitTester =
       await new LSP8EnumerableInitTester__factory(accounts.owner).deploy();
 
-    const lsp8EnumerableProxy = await deployProxy(
-      LSP8EnumerableInit.address,
-      accounts.owner
-    );
-    const lsp8Enumerable: LSP8EnumerableInitTester =
-      LSP8EnumerableInit.attach(lsp8EnumerableProxy);
+    const lsp8EnumerableProxy = await deployProxy(LSP8EnumerableInit.address, accounts.owner);
+    const lsp8Enumerable: LSP8EnumerableInitTester = LSP8EnumerableInit.attach(lsp8EnumerableProxy);
 
     return { accounts, lsp8Enumerable, deployParams };
   };
@@ -39,7 +32,7 @@ describe("LSP8EnumerableInit with proxy", () => {
     return context.lsp8Enumerable["initialize(string,string,address)"](
       context.deployParams.name,
       context.deployParams.symbol,
-      context.deployParams.newOwner
+      context.deployParams.newOwner,
     );
   };
 
@@ -65,7 +58,7 @@ describe("LSP8EnumerableInit with proxy", () => {
     describe("when calling initialize more than once", () => {
       it("should revert", async () => {
         await expect(initializeProxy(context)).to.be.revertedWith(
-          "Initializable: contract is already initialized"
+          "Initializable: contract is already initialized",
         );
       });
     });
@@ -76,7 +69,7 @@ describe("LSP8EnumerableInit with proxy", () => {
       buildTestContext().then(async (context) => {
         await initializeProxy(context);
         return context;
-      })
+      }),
     );
   });
 });
