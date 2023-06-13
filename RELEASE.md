@@ -27,7 +27,7 @@ $ git push origin develop
 
 A NPM and GitHub release is created when a version change in `package.json` is merged into `main`.
 
-A git tag will then be created, a GitHub Release created with the description of the PR to `main` as the release notes with the appended `CHANGELOG.md` content, and iOS and Android Artifacts attached.
+A git tag will then be created, a GitHub Release created with the description of the PR to `main` as the release notes with the appended `CHANGELOG.md` content.
 At last a release will be published in NPM automatically.
 
 &nbsp;

@@ -35,14 +35,6 @@ bower_components
 # node-waf configuration
 .lock-wscript
 
-# Generated jar files
-jar/
-src/
-java/
-
-# Generated swift files
-ios/
-
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
@@ -128,7 +120,6 @@ deployments
 scripts/java/github.properties
 scripts/java/.gradle
 scripts/java/.idea
-android/
 
 .idea
 
