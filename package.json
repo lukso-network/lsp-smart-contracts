@@ -70,8 +70,6 @@
     "clean": "hardhat clean && rm -rf module common",
     "build": "hardhat dodoc && prettier -w ./docs",
     "build:js": "vite build && dts-bundle-generator --config dtsconfig.json",
-    "build:android": "ts-node ./scripts/ci/android-artifacts.ts && ./scripts/ci/generate-java-wrapper.sh",
-    "build:ios": "mkdir ios && ts-node ./scripts/ci/ios-artifacts.ts",
     "package": "hardhat prepare-package",
     "release": "run-s clean build package && standard-version",
     "remixd": "remixd -s . --remix-ide",
