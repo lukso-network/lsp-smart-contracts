@@ -1,8 +1,8 @@
-import { expect } from "chai";
-import { BigNumber } from "ethers";
+import { expect } from 'chai';
+import { BigNumber } from 'ethers';
 
-import { LSP6TestContext, LSP6InternalsTestContext } from "../utils/context";
-import { INTERFACE_IDS } from "../../constants";
+import { LSP6TestContext, LSP6InternalsTestContext } from '../utils/context';
+import { INTERFACE_IDS } from '../../constants';
 
 import {
   // Admin
@@ -44,77 +44,77 @@ import {
   testReadingPermissionsInternals,
   testSetDataInternals,
   testExecuteInternals,
-} from "./index";
+} from './index';
 
 export const shouldBehaveLikeLSP6 = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
 ) => {
-  describe("CHANGEOWNER", () => {
+  describe('CHANGEOWNER', () => {
     shouldBehaveLikePermissionChangeOwner(buildContext);
   });
 
-  describe("Set Permissions", () => {
+  describe('Set Permissions', () => {
     shouldBehaveLikePermissionChangeOrAddController(buildContext);
     shouldBehaveLikeSettingAllowedCalls(buildContext);
     shouldBehaveLikeSetAllowedERC725YDataKeys(buildContext);
   });
 
-  describe("CHANGE / ADD extensions", () => {
+  describe('CHANGE / ADD extensions', () => {
     shouldBehaveLikePermissionChangeOrAddExtensions(buildContext);
   });
 
-  describe("CHANGE / ADD UniversalReceiverDelegate", () => {
+  describe('CHANGE / ADD UniversalReceiverDelegate', () => {
     shouldBehaveLikePermissionChangeOrAddURD(buildContext);
   });
 
-  describe("SETDATA", () => {
+  describe('SETDATA', () => {
     shouldBehaveLikePermissionSetData(buildContext);
   });
 
-  describe("AllowedERC725YDataKeys", () => {
+  describe('AllowedERC725YDataKeys', () => {
     shouldBehaveLikeAllowedERC725YDataKeys(buildContext);
   });
 
-  describe("Invalid Execute payloads", () => {
+  describe('Invalid Execute payloads', () => {
     testInvalidExecutePayloads(buildContext);
   });
 
-  describe("TRANSFERVALUE", () => {
+  describe('TRANSFERVALUE', () => {
     shouldBehaveLikePermissionTransferValue(buildContext);
   });
 
-  describe("CALL", () => {
+  describe('CALL', () => {
     shouldBehaveLikePermissionCall(buildContext);
   });
 
-  describe("STATICCALL", () => {
+  describe('STATICCALL', () => {
     shouldBehaveLikePermissionStaticCall(buildContext);
   });
 
-  describe("DELEGATECALL", () => {
+  describe('DELEGATECALL', () => {
     shouldBehaveLikePermissionDelegateCall(buildContext);
   });
 
-  describe("DEPLOY", () => {
+  describe('DEPLOY', () => {
     shouldBehaveLikePermissionDeploy(buildContext);
   });
 
-  describe("Batch `execute([])`", () => {
+  describe('Batch `execute([])`', () => {
     shouldBehaveLikeBatchExecute(buildContext);
   });
 
-  describe("ALLOWED CALLS", () => {
+  describe('ALLOWED CALLS', () => {
     shouldBehaveLikeAllowedAddresses(buildContext);
     shouldBehaveLikeAllowedFunctions(buildContext);
     shouldBehaveLikeAllowedStandards(buildContext);
   });
 
-  describe("Single + Batch Meta Transactions", () => {
+  describe('Single + Batch Meta Transactions', () => {
     shouldBehaveLikeExecuteRelayCall(buildContext);
     shouldBehaveLikeMultiChannelNonce(buildContext);
   });
 
-  describe("SIGN (ERC1271)", () => {
+  describe('SIGN (ERC1271)', () => {
     shouldBehaveLikePermissionSign(buildContext);
   });
 };
@@ -126,28 +126,28 @@ export const shouldInitializeLikeLSP6 = (buildContext: () => Promise<LSP6TestCon
     context = await buildContext();
   });
 
-  describe("when the contract was initialized", () => {
-    it("should support ERC165 interface", async () => {
+  describe('when the contract was initialized', () => {
+    it('should support ERC165 interface', async () => {
       const result = await context.keyManager.supportsInterface(INTERFACE_IDS.ERC165);
       expect(result).to.be.true;
     });
 
-    it("should support ERC1271 interface", async () => {
+    it('should support ERC1271 interface', async () => {
       const result = await context.keyManager.supportsInterface(INTERFACE_IDS.ERC1271);
       expect(result).to.be.true;
     });
 
-    it("should support LSP6 interface", async () => {
+    it('should support LSP6 interface', async () => {
       const result = await context.keyManager.supportsInterface(INTERFACE_IDS.LSP6KeyManager);
       expect(result).to.be.true;
     });
 
-    it("should support LSP20CallVerifier interface", async () => {
+    it('should support LSP20CallVerifier interface', async () => {
       const result = await context.keyManager.supportsInterface(INTERFACE_IDS.LSP20CallVerifier);
       expect(result).to.be.true;
     });
 
-    it("should be linked to the right ERC725 account contract", async () => {
+    it('should be linked to the right ERC725 account contract', async () => {
       let account = await context.keyManager.target();
       expect(account).to.equal(context.universalProfile.address);
     });

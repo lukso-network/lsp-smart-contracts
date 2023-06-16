@@ -1,14 +1,14 @@
-import { ethers } from "hardhat";
-import { LSP1UniversalReceiverDelegateUP, UniversalProfile, LSP6KeyManager } from "../../types";
+import { ethers } from 'hardhat';
+import { LSP1UniversalReceiverDelegateUP, UniversalProfile, LSP6KeyManager } from '../../types';
 
-import { setupProfileWithKeyManagerWithURD } from "../utils/fixtures";
+import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 
 import {
   LSP1DelegateTestContext,
   shouldBehaveLikeLSP1Delegate,
   shouldInitializeLikeLSP1Delegate,
   LSP1TestAccounts,
-} from "./LSP1UniversalReceiverDelegateUP.behaviour";
+} from './LSP1UniversalReceiverDelegateUP.behaviour';
 
 async function getNamedAccounts(): Promise<LSP1TestAccounts> {
   const [owner1, owner2, random, any] = await ethers.getSigners();
@@ -20,8 +20,8 @@ async function getNamedAccounts(): Promise<LSP1TestAccounts> {
   };
 }
 
-describe("LSP1UniversalReceiverDelegateUP", () => {
-  describe("when testing deployed contract", () => {
+describe('LSP1UniversalReceiverDelegateUP', () => {
+  describe('when testing deployed contract', () => {
     const buildLSP1DelegateTestContext = async (): Promise<LSP1DelegateTestContext> => {
       const accounts = await getNamedAccounts();
 
@@ -44,14 +44,14 @@ describe("LSP1UniversalReceiverDelegateUP", () => {
       };
     };
 
-    describe("when deploying the contract", () => {
+    describe('when deploying the contract', () => {
       let context: LSP1DelegateTestContext;
 
       before(async () => {
         context = await buildLSP1DelegateTestContext();
       });
 
-      describe("when initializing the contract", () => {
+      describe('when initializing the contract', () => {
         shouldInitializeLikeLSP1Delegate(async () => {
           const { lsp1universalReceiverDelegateUP } = context;
 
@@ -62,7 +62,7 @@ describe("LSP1UniversalReceiverDelegateUP", () => {
       });
     });
 
-    describe("when testing deployed contract", () => {
+    describe('when testing deployed contract', () => {
       shouldBehaveLikeLSP1Delegate(buildLSP1DelegateTestContext);
     });
   });

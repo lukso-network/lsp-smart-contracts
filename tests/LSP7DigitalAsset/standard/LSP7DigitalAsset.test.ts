@@ -1,27 +1,27 @@
-import { ethers } from "hardhat";
-import { expect } from "chai";
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
 
-import { LSP7Tester__factory, LSP7DigitalAsset } from "../../../types";
+import { LSP7Tester__factory, LSP7DigitalAsset } from '../../../types';
 
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP7,
   shouldInitializeLikeLSP7,
   LSP7TestContext,
-} from "../LSP7DigitalAsset.behaviour";
+} from '../LSP7DigitalAsset.behaviour';
 
 import {
   LS4DigitalAssetMetadataTestContext,
   shouldBehaveLikeLSP4DigitalAssetMetadata,
-} from "../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour";
+} from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour';
 
-describe("LSP7DigitalAsset with constructor", () => {
+describe('LSP7DigitalAsset with constructor', () => {
   const buildTestContext = async (): Promise<LSP7TestContext> => {
     const accounts = await getNamedAccounts();
-    const initialSupply = ethers.BigNumber.from("3");
+    const initialSupply = ethers.BigNumber.from('3');
     const deployParams = {
-      name: "LSP7 - deployed with constructor",
-      symbol: "Token",
+      name: 'LSP7 - deployed with constructor',
+      symbol: 'Token',
       newOwner: accounts.owner.address,
     };
 
@@ -32,7 +32,7 @@ describe("LSP7DigitalAsset with constructor", () => {
     );
 
     // mint tokens for the owner
-    await lsp7.mint(accounts.owner.address, initialSupply, true, "0x");
+    await lsp7.mint(accounts.owner.address, initialSupply, true, '0x');
 
     return { accounts, lsp7, deployParams, initialSupply };
   };
@@ -53,13 +53,13 @@ describe("LSP7DigitalAsset with constructor", () => {
       };
     };
 
-  describe("when deploying the contract", () => {
-    it("should revert when deploying with address(0) as owner", async () => {
+  describe('when deploying the contract', () => {
+    it('should revert when deploying with address(0) as owner', async () => {
       const accounts = await ethers.getSigners();
 
       const deployParams = {
-        name: "LSP7 - deployed with constructor",
-        symbol: "Token",
+        name: 'LSP7 - deployed with constructor',
+        symbol: 'Token',
         newOwner: ethers.constants.AddressZero,
       };
 
@@ -69,10 +69,10 @@ describe("LSP7DigitalAsset with constructor", () => {
           deployParams.symbol,
           deployParams.newOwner,
         ),
-      ).to.be.revertedWith("Ownable: new owner is the zero address");
+      ).to.be.revertedWith('Ownable: new owner is the zero address');
     });
 
-    describe("once the contract was deployed", () => {
+    describe('once the contract was deployed', () => {
       let context: LSP7TestContext;
 
       before(async () => {
@@ -90,7 +90,7 @@ describe("LSP7DigitalAsset with constructor", () => {
     });
   });
 
-  describe("when testing deployed contract", () => {
+  describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP4DigitalAssetMetadata(buildLSP4DigitalAssetMetadataTestContext);
     shouldBehaveLikeLSP7(buildTestContext);
   });

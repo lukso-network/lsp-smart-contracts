@@ -1,19 +1,19 @@
-import { BigNumber, BytesLike } from "ethers";
-import { ethers } from "hardhat";
-import { LSP6KeyManager } from "../../types";
+import { BigNumber, BytesLike } from 'ethers';
+import { ethers } from 'hardhat';
+import { LSP6KeyManager } from '../../types';
 
 // constants
-import { LSP6_VERSION } from "../../constants";
-import { EIP191Signer } from "@lukso/eip191-signer.js";
+import { LSP6_VERSION } from '../../constants';
+import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 export const abiCoder = ethers.utils.defaultAbiCoder;
 export const provider = ethers.provider;
 
-export const AddressOffset = "000000000000000000000000";
-export const EMPTY_PAYLOAD = "0x";
+export const AddressOffset = '000000000000000000000000';
+export const EMPTY_PAYLOAD = '0x';
 
 export const LSP1_HOOK_PLACEHOLDER =
-  "0xffffffffffffffff0000000000000000aaaaaaaaaaaaaaaa1111111111111111";
+  '0xffffffffffffffff0000000000000000aaaaaaaaaaaaaaaa1111111111111111';
 
 /**
  * Private keys for the accounts used in the tests.
@@ -24,27 +24,27 @@ export const LSP1_HOOK_PLACEHOLDER =
  *          Any funds sent to them on Mainnet or any other live network WILL BE LOST.
  */
 export const LOCAL_PRIVATE_KEYS = {
-  ACCOUNT0: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-  ACCOUNT1: "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d",
-  ACCOUNT2: "0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a",
-  ACCOUNT3: "0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6",
-  ACCOUNT4: "0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a",
-  ACCOUNT5: "0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba",
-  ACCOUNT6: "0x92db14e403b83dfe3df233f83dfa3a0d7096f21ca9b0d6d6b8d88b2b4ec1564e",
-  ACCOUNT7: "0x030ab56c9834360e1c0dba6b9a955b6e127f3166cda462c2472f67e1ba773053",
+  ACCOUNT0: '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
+  ACCOUNT1: '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d',
+  ACCOUNT2: '0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a',
+  ACCOUNT3: '0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6',
+  ACCOUNT4: '0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a',
+  ACCOUNT5: '0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba',
+  ACCOUNT6: '0x92db14e403b83dfe3df233f83dfa3a0d7096f21ca9b0d6d6b8d88b2b4ec1564e',
+  ACCOUNT7: '0x030ab56c9834360e1c0dba6b9a955b6e127f3166cda462c2472f67e1ba773053',
 };
 
 // bytes32 arraylength
 export const ARRAY_LENGTH = {
-  ZERO: "0x00000000000000000000000000000000",
-  ONE: "0x00000000000000000000000000000001",
-  TWO: "0x00000000000000000000000000000002",
-  THREE: "0x00000000000000000000000000000003",
-  FOUR: "0x00000000000000000000000000000004",
-  FIVE: "0x00000000000000000000000000000005",
-  SIX: "0x00000000000000000000000000000006",
-  SEVEN: "0x00000000000000000000000000000007",
-  EIGHT: "0x00000000000000000000000000000008",
+  ZERO: '0x00000000000000000000000000000000',
+  ONE: '0x00000000000000000000000000000001',
+  TWO: '0x00000000000000000000000000000002',
+  THREE: '0x00000000000000000000000000000003',
+  FOUR: '0x00000000000000000000000000000004',
+  FIVE: '0x00000000000000000000000000000005',
+  SIX: '0x00000000000000000000000000000006',
+  SEVEN: '0x00000000000000000000000000000007',
+  EIGHT: '0x00000000000000000000000000000008',
 };
 
 export function getRandomAddresses(count: Number): string[] {
@@ -82,7 +82,7 @@ export function combineCallTypes(..._callTypes: string[]) {
 }
 
 export function encodeCompactBytesArray(inputKeys: BytesLike[]) {
-  let compactBytesArray = "0x";
+  let compactBytesArray = '0x';
   for (let i = 0; i < inputKeys.length; i++) {
     compactBytesArray +=
       ethers.utils
@@ -98,10 +98,10 @@ export function decodeCompactBytes(compactBytesArray: BytesLike) {
   let keysToExport: BytesLike[] = [];
   while (pointer < compactBytesArray.length) {
     const length = ethers.BigNumber.from(
-      "0x" + compactBytesArray.toString().substring(pointer, pointer + 4),
+      '0x' + compactBytesArray.toString().substring(pointer, pointer + 4),
     ).toNumber();
     keysToExport.push(
-      "0x" + compactBytesArray.toString().substring(pointer + 4, pointer + 2 * (length + 2)),
+      '0x' + compactBytesArray.toString().substring(pointer + 4, pointer + 2 * (length + 2)),
     );
 
     pointer += 2 * (length + 2);
@@ -115,7 +115,7 @@ export function combineAllowedCalls(
   _allowedStandards: string[],
   _allowedFunctions: string[],
 ) {
-  let result: string = "0x0020";
+  let result: string = '0x0020';
 
   for (let ii = 0; ii < _allowedStandards.length; ii++) {
     // remove "0x" prefixes
@@ -127,7 +127,7 @@ export function combineAllowedCalls(
     result = result + allowedInteractions + allowedAddress + allowedStandard + allowedFunction;
 
     if (ii != _allowedStandards.length - 1) {
-      result = result + "0020";
+      result = result + '0020';
     }
   }
 
@@ -162,7 +162,7 @@ export async function signLSP6ExecuteRelayCall(
   };
 
   let encodedMessage = ethers.utils.solidityPack(
-    ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+    ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
     [
       signedMessageParams.lsp6Version,
       signedMessageParams.chainId,

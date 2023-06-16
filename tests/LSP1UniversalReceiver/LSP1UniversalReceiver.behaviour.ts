@@ -1,6 +1,6 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 // types
 import {
@@ -8,13 +8,13 @@ import {
   UniversalReceiverTester,
   UniversalReceiverDelegateRevert__factory,
   UniversalReceiverDelegateRevert,
-} from "../../types";
+} from '../../types';
 
 // helpers
-import { abiCoder, LSP1_HOOK_PLACEHOLDER } from "../utils/helpers";
+import { abiCoder, LSP1_HOOK_PLACEHOLDER } from '../utils/helpers';
 
 // constants
-import { ERC725YDataKeys } from "../../constants";
+import { ERC725YDataKeys } from '../../constants';
 
 export type LSP1TestContext = {
   accounts: SignerWithAddress[];
@@ -27,17 +27,17 @@ export type LSP1TestContext = {
 export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext>) => {
   let context: LSP1TestContext;
 
-  describe("when calling the `universalReceiver(...)` function", () => {
+  describe('when calling the `universalReceiver(...)` function', () => {
     const valueSent = 0;
 
     before(async () => {
       context = await buildContext();
     });
 
-    describe("from an EOA", () => {
-      it("should emit a UniversalReceiver(...) event with correct topics", async () => {
+    describe('from an EOA', () => {
+      it('should emit a UniversalReceiver(...) event with correct topics', async () => {
         const caller = context.accounts[2];
-        const data = "0xaabbccdd";
+        const data = '0xaabbccdd';
 
         await expect(
           context.lsp1Implementation
@@ -46,7 +46,7 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
               value: valueSent,
             }),
         )
-          .to.emit(context.lsp1Implementation, "UniversalReceiver")
+          .to.emit(context.lsp1Implementation, 'UniversalReceiver')
           .withArgs(
             // from
             caller.address,
@@ -57,21 +57,21 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
             // receivedData
             data,
             // returnedValue
-            abiCoder.encode(["bytes", "bytes"], ["0x", "0x"]),
+            abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
           );
       });
     });
 
-    describe("from a Contract", () => {
-      describe("via a contract call - `contract.universalReceiver(...)`", () => {
-        it("should emit an UniversalReceiver(...) event", async () => {
+    describe('from a Contract', () => {
+      describe('via a contract call - `contract.universalReceiver(...)`', () => {
+        it('should emit an UniversalReceiver(...) event', async () => {
           await expect(
             context.lsp1Checker.checkImplementation(
               context.lsp1Implementation.address,
               LSP1_HOOK_PLACEHOLDER,
             ),
           )
-            .to.emit(context.lsp1Implementation, "UniversalReceiver")
+            .to.emit(context.lsp1Implementation, 'UniversalReceiver')
             .withArgs(
               // from
               context.lsp1Checker.address,
@@ -80,22 +80,22 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
               // typeId
               LSP1_HOOK_PLACEHOLDER,
               // receivedData
-              "0x",
+              '0x',
               // returnedValue
-              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"]),
+              abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
             );
         });
       });
 
-      describe("via a low-level call - `address(contract).call(...)`", () => {
-        it("should emit an UniversalReceiver(...) event", async () => {
+      describe('via a low-level call - `address(contract).call(...)`', () => {
+        it('should emit an UniversalReceiver(...) event', async () => {
           await expect(
             context.lsp1Checker.checkImplementationLowLevelCall(
               context.lsp1Implementation.address,
               LSP1_HOOK_PLACEHOLDER,
             ),
           )
-            .to.emit(context.lsp1Implementation, "UniversalReceiver")
+            .to.emit(context.lsp1Implementation, 'UniversalReceiver')
             .withArgs(
               // from
               context.lsp1Checker.address,
@@ -104,9 +104,9 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
               // typeId
               LSP1_HOOK_PLACEHOLDER,
               // receivedData
-              "0x",
+              '0x',
               // returnedValue
-              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"]),
+              abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
             );
         });
       });
@@ -119,10 +119,10 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
        */
     });
 
-    describe("to test typeId delegate feature", () => {
+    describe('to test typeId delegate feature', () => {
       let revertableURD: UniversalReceiverDelegateRevert;
 
-      describe("when setting a revertable typeId", () => {
+      describe('when setting a revertable typeId', () => {
         before(async () => {
           context = await buildContext();
 
@@ -139,59 +139,59 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
             );
         });
 
-        it("should revert", async () => {
+        it('should revert', async () => {
           const caller = context.accounts[2];
-          const data = "0xaabbccdd";
+          const data = '0xaabbccdd';
 
           await expect(
             context.lsp1Implementation
               .connect(caller)
               .universalReceiver(LSP1_HOOK_PLACEHOLDER, data),
-          ).to.be.revertedWith("I Revert");
+          ).to.be.revertedWith('I Revert');
         });
       });
     });
   });
 
-  describe("when calling the `universalReceiver(...)` function while sending native tokens", () => {
-    const valueSent = ethers.utils.parseEther("3");
+  describe('when calling the `universalReceiver(...)` function while sending native tokens', () => {
+    const valueSent = ethers.utils.parseEther('3');
 
     before(async () => {
       context = await buildContext();
     });
 
-    describe("from an EOA", () => {
-      it("should emit a UniversalReceiver(...) event with correct topics", async () => {
+    describe('from an EOA', () => {
+      it('should emit a UniversalReceiver(...) event with correct topics', async () => {
         let caller = context.accounts[2];
 
         await expect(
           context.lsp1Implementation
             .connect(caller)
-            .universalReceiver(LSP1_HOOK_PLACEHOLDER, "0x", {
+            .universalReceiver(LSP1_HOOK_PLACEHOLDER, '0x', {
               value: valueSent,
             }),
         )
-          .to.emit(context.lsp1Implementation, "UniversalReceiver")
+          .to.emit(context.lsp1Implementation, 'UniversalReceiver')
           .withArgs(
             caller.address,
             valueSent,
             LSP1_HOOK_PLACEHOLDER,
-            "0x",
-            abiCoder.encode(["bytes", "bytes"], ["0x", "0x"]),
+            '0x',
+            abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
           );
       });
     });
 
-    describe("from a Contract", () => {
+    describe('from a Contract', () => {
       before(async () => {
         await context.accounts[0].sendTransaction({
           to: context.lsp1Checker.address,
-          value: ethers.utils.parseEther("50"),
+          value: ethers.utils.parseEther('50'),
         });
       });
 
-      describe("via a contract call - `contract.universalReceiver(...)`", () => {
-        it("should emit an UniversalReceiver(...) event", async () => {
+      describe('via a contract call - `contract.universalReceiver(...)`', () => {
+        it('should emit an UniversalReceiver(...) event', async () => {
           await expect(
             context.lsp1Checker.checkImplementation(
               context.lsp1Implementation.address,
@@ -199,7 +199,7 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
               { value: valueSent },
             ),
           )
-            .to.emit(context.lsp1Implementation, "UniversalReceiver")
+            .to.emit(context.lsp1Implementation, 'UniversalReceiver')
             .withArgs(
               // from
               context.lsp1Checker.address,
@@ -208,15 +208,15 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
               // typeId
               LSP1_HOOK_PLACEHOLDER,
               // receivedData
-              "0x",
+              '0x',
               // returnedValue
-              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"]),
+              abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
             );
         });
       });
 
-      describe("via a low-level call - `address(contract).call(...)`", () => {
-        it("should emit an UniversalReceiver(...) event", async () => {
+      describe('via a low-level call - `address(contract).call(...)`', () => {
+        it('should emit an UniversalReceiver(...) event', async () => {
           await expect(
             context.lsp1Checker.checkImplementationLowLevelCall(
               context.lsp1Implementation.address,
@@ -224,7 +224,7 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
               { value: valueSent },
             ),
           )
-            .to.emit(context.lsp1Implementation, "UniversalReceiver")
+            .to.emit(context.lsp1Implementation, 'UniversalReceiver')
             .withArgs(
               // from
               context.lsp1Checker.address,
@@ -233,9 +233,9 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
               // typeId
               LSP1_HOOK_PLACEHOLDER,
               // receivedData
-              "0x",
+              '0x',
               // returnedValue
-              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"]),
+              abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
             );
         });
       });

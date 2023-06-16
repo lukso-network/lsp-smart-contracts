@@ -1,6 +1,6 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployFunction } from "hardhat-deploy/types";
-import { ethers } from "hardhat";
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { DeployFunction } from 'hardhat-deploy/types';
+import { ethers } from 'hardhat';
 
 const deployUniversalReceiverDelegateVault: DeployFunction = async ({
   deployments,
@@ -9,7 +9,7 @@ const deployUniversalReceiverDelegateVault: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
-  await deploy("LSP1UniversalReceiverDelegateVault", {
+  await deploy('LSP1UniversalReceiverDelegateVault', {
     from: owner,
     gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei
     log: true,
@@ -17,4 +17,4 @@ const deployUniversalReceiverDelegateVault: DeployFunction = async ({
 };
 
 export default deployUniversalReceiverDelegateVault;
-deployUniversalReceiverDelegateVault.tags = ["LSP1UniversalReceiverDelegateVault"];
+deployUniversalReceiverDelegateVault.tags = ['LSP1UniversalReceiverDelegateVault'];

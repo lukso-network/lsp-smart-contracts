@@ -1,6 +1,6 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { ethers } from "hardhat";
-import { expect } from "chai";
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
 
 import {
   LSP8CompatibleERC721Tester,
@@ -20,12 +20,12 @@ import {
   TokenReceiverWithoutLSP1WithERC721ReceivedInvalid__factory,
   TokenReceiverWithoutLSP1WithERC721Received,
   TokenReceiverWithoutLSP1WithERC721Received__factory,
-} from "../../types";
-import { tokenIdAsBytes32 } from "../utils/tokens";
-import { ERC725YDataKeys, INTERFACE_IDS, SupportedStandards } from "../../constants";
+} from '../../types';
+import { tokenIdAsBytes32 } from '../utils/tokens';
+import { ERC725YDataKeys, INTERFACE_IDS, SupportedStandards } from '../../constants';
 
-import type { BytesLike, Contract } from "ethers";
-import type { TransactionResponse } from "@ethersproject/abstract-provider";
+import type { BytesLike, Contract } from 'ethers';
+import type { TransactionResponse } from '@ethersproject/abstract-provider';
 
 export type LSP8CompatibleERC721TestAccounts = {
   owner: SignerWithAddress;
@@ -58,8 +58,8 @@ export type ExpectedError = {
   args: string[];
 };
 
-const mintedTokenId = "10";
-const neverMintedTokenId = "1010110";
+const mintedTokenId = '10';
+const neverMintedTokenId = '1010110';
 
 export const shouldBehaveLikeLSP8CompatibleERC721 = (
   buildContext: () => Promise<LSP8CompatibleERC721TestContext>,
@@ -70,50 +70,50 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
     context = await buildContext();
   });
 
-  describe("when checking supported ERC165 interfaces", () => {
-    it("should support ERC721", async () => {
+  describe('when checking supported ERC165 interfaces', () => {
+    it('should support ERC721', async () => {
       expect(await context.lsp8CompatibleERC721.supportsInterface(INTERFACE_IDS.ERC721)).to.equal(
         true,
       );
     });
 
-    it("should support ERC721Metadata", async () => {
+    it('should support ERC721Metadata', async () => {
       expect(
         await context.lsp8CompatibleERC721.supportsInterface(INTERFACE_IDS.ERC721Metadata),
       ).to.equal(true);
     });
   });
 
-  describe("name", () => {
-    it("should allow reading name", async () => {
+  describe('name', () => {
+    it('should allow reading name', async () => {
       // using compatibility getter -> returns(string)
       const nameAsString = await context.lsp8CompatibleERC721.name();
       expect(nameAsString).to.equal(context.deployParams.name);
 
       // using getData -> returns(bytes)
-      const nameAsBytes = await context.lsp8CompatibleERC721["getData(bytes32)"](
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenName")),
+      const nameAsBytes = await context.lsp8CompatibleERC721['getData(bytes32)'](
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('LSP4TokenName')),
       );
       expect(ethers.utils.toUtf8String(nameAsBytes)).to.equal(context.deployParams.name);
     });
   });
 
-  describe("symbol", () => {
-    it("should allow reading symbol", async () => {
+  describe('symbol', () => {
+    it('should allow reading symbol', async () => {
       // using compatibility getter -> returns(string)
       const symbolAsString = await context.lsp8CompatibleERC721.symbol();
       expect(symbolAsString).to.equal(context.deployParams.symbol);
 
       // using getData -> returns(bytes)
-      const symbolAsBytes = await context.lsp8CompatibleERC721["getData(bytes32)"](
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenSymbol")),
+      const symbolAsBytes = await context.lsp8CompatibleERC721['getData(bytes32)'](
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('LSP4TokenSymbol')),
       );
       expect(ethers.utils.toUtf8String(symbolAsBytes)).to.equal(context.deployParams.symbol);
     });
   });
 
-  describe("tokenURI", () => {
-    it("should allow reading tokenURI", async () => {
+  describe('tokenURI', () => {
+    it('should allow reading tokenURI', async () => {
       // using compatibility getter -> returns(string)
       const tokenURIAsString = await context.lsp8CompatibleERC721.tokenURI(mintedTokenId);
       // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36 + 2 for prefix = 38
@@ -123,28 +123,28 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
       );
 
       // using getData -> returns(bytes)
-      const lsp4MetadataValueAsBytes = await context.lsp8CompatibleERC721["getData(bytes32)"](
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4Metadata")),
+      const lsp4MetadataValueAsBytes = await context.lsp8CompatibleERC721['getData(bytes32)'](
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('LSP4Metadata')),
       );
       expect(lsp4MetadataValueAsBytes).to.equal(context.deployParams.lsp4MetadataValue);
     });
   });
 
-  describe("ownerOf", () => {
-    describe("when tokenId has not been minted", () => {
-      it("should revert", async () => {
+  describe('ownerOf', () => {
+    describe('when tokenId has not been minted', () => {
+      it('should revert', async () => {
         await expect(context.lsp8CompatibleERC721.ownerOf(neverMintedTokenId))
-          .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, "LSP8NonExistentTokenId")
+          .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8NonExistentTokenId')
           .withArgs(tokenIdAsBytes32(neverMintedTokenId));
       });
     });
 
-    describe("when tokenId has been minted", () => {
-      it("should return owner address", async () => {
+    describe('when tokenId has been minted', () => {
+      it('should return owner address', async () => {
         await context.lsp8CompatibleERC721.mint(
           context.accounts.owner.address,
           mintedTokenId,
-          ethers.utils.toUtf8Bytes("mint a token for the owner"),
+          ethers.utils.toUtf8Bytes('mint a token for the owner'),
         );
 
         expect(await context.lsp8CompatibleERC721.ownerOf(mintedTokenId)).to.equal(
@@ -154,36 +154,36 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
     });
   });
 
-  describe("approve", () => {
-    describe("when tokenId has not been minted", () => {
-      it("should revert", async () => {
+  describe('approve', () => {
+    describe('when tokenId has not been minted', () => {
+      it('should revert', async () => {
         await expect(
           context.lsp8CompatibleERC721
             .connect(context.accounts.anyone)
             .approve(context.accounts.operator.address, neverMintedTokenId),
         )
-          .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, "LSP8NonExistentTokenId")
+          .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8NonExistentTokenId')
           .withArgs(tokenIdAsBytes32(neverMintedTokenId));
       });
     });
 
-    describe("when the tokenId has been minted", () => {
+    describe('when the tokenId has been minted', () => {
       beforeEach(async () => {
         await context.lsp8CompatibleERC721.mint(
           context.accounts.owner.address,
           mintedTokenId,
-          ethers.utils.toUtf8Bytes("mint a token for the owner"),
+          ethers.utils.toUtf8Bytes('mint a token for the owner'),
         );
       });
 
-      describe("when caller is not owner of tokenId", () => {
-        it("should revert", async () => {
+      describe('when caller is not owner of tokenId', () => {
+        it('should revert', async () => {
           await expect(
             context.lsp8CompatibleERC721
               .connect(context.accounts.anyone)
               .approve(context.accounts.operator.address, mintedTokenId),
           )
-            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, "LSP8NotTokenOwner")
+            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8NotTokenOwner')
             .withArgs(
               context.accounts.owner.address,
               tokenIdAsBytes32(mintedTokenId),
@@ -192,26 +192,26 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         });
       });
 
-      describe("when caller is owner of tokenId", () => {
-        describe("when operator is not the zero address", () => {
-          it("should succeed", async () => {
+      describe('when caller is owner of tokenId', () => {
+        describe('when operator is not the zero address', () => {
+          it('should succeed', async () => {
             const operator = context.accounts.operator.address;
             const tokenId = mintedTokenId;
 
             const tx = await context.lsp8CompatibleERC721.approve(operator, tokenId);
 
             await expect(tx)
-              .to.emit(context.lsp8CompatibleERC721, "AuthorizedOperator")
+              .to.emit(context.lsp8CompatibleERC721, 'AuthorizedOperator')
               .withArgs(operator, context.accounts.owner.address, tokenIdAsBytes32(tokenId));
 
             await expect(tx)
-              .to.emit(context.lsp8CompatibleERC721, "Approval")
+              .to.emit(context.lsp8CompatibleERC721, 'Approval')
               .withArgs(context.accounts.owner.address, operator, ethers.BigNumber.from(tokenId));
           });
         });
 
-        describe("when operator is the zero address", () => {
-          it("should revert", async () => {
+        describe('when operator is the zero address', () => {
+          it('should revert', async () => {
             const operator = ethers.constants.AddressZero;
             const tokenId = mintedTokenId;
 
@@ -219,7 +219,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               context.lsp8CompatibleERC721.approve(operator, tokenId),
             ).to.be.revertedWithCustomError(
               context.lsp8CompatibleERC721,
-              "LSP8CannotUseAddressZeroAsOperator",
+              'LSP8CannotUseAddressZeroAsOperator',
             );
           });
         });
@@ -227,13 +227,13 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
     });
   });
 
-  describe("setApprovalForAll", () => {
+  describe('setApprovalForAll', () => {
     const tokenIds = [
-      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("NFT 1")),
-      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("NFT 2")),
-      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("NFT 3")),
-      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("NFT 4")),
-      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("NFT 5")),
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NFT 1')),
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NFT 2')),
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NFT 3')),
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NFT 4')),
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NFT 5')),
     ];
 
     beforeEach(async () => {
@@ -254,16 +254,16 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         .setApprovalForAll(context.accounts.operator.address, true);
     });
 
-    describe("when calling setApprovalForAll with true", () => {
-      it("should revert when trying to pass caller address as operator", async () => {
+    describe('when calling setApprovalForAll with true', () => {
+      it('should revert when trying to pass caller address as operator', async () => {
         await expect(
           context.lsp8CompatibleERC721
             .connect(context.accounts.owner)
             .setApprovalForAll(context.accounts.owner.address, true),
-        ).to.be.revertedWith("LSP8CompatibleERC721: approve to caller");
+        ).to.be.revertedWith('LSP8CompatibleERC721: approve to caller');
       });
 
-      it("should have emitted an ApprovalForAll event", async () => {
+      it('should have emitted an ApprovalForAll event', async () => {
         const txParams = {
           to: context.accounts.owner.address,
           tokenId: 5,
@@ -279,12 +279,12 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           .setApprovalForAll(context.accounts.operator.address, true);
 
         expect(tx)
-          .to.emit(context.lsp8CompatibleERC721, "ApprovalForAll")
+          .to.emit(context.lsp8CompatibleERC721, 'ApprovalForAll')
           .withArgs(context.accounts.owner.address, context.accounts.operator.address, true);
       });
 
-      describe("when calling isApprovedForAll", () => {
-        it("should return true for operator", async () => {
+      describe('when calling isApprovedForAll', () => {
+        it('should return true for operator', async () => {
           const result = await context.lsp8CompatibleERC721.isApprovedForAll(
             context.accounts.owner.address,
             context.accounts.operator.address,
@@ -293,7 +293,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           expect(result).to.be.true;
         });
 
-        it("should return false for non-operator", async () => {
+        it('should return false for non-operator', async () => {
           const result = await context.lsp8CompatibleERC721.isApprovedForAll(
             context.accounts.owner.address,
             context.accounts.anyone.address,
@@ -304,7 +304,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
       });
     });
 
-    describe("when operator transfer tokenId", () => {
+    describe('when operator transfer tokenId', () => {
       [
         { tokenId: tokenIds[0] },
         { tokenId: tokenIds[1] },
@@ -313,7 +313,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         { tokenId: tokenIds[4] },
       ].forEach((testCase) => {
         describe(`for tokenId ${testCase.tokenId}:`, () => {
-          it("should have transferred successfully with `transferFrom(...)` (changed token owner)", async () => {
+          it('should have transferred successfully with `transferFrom(...)` (changed token owner)', async () => {
             const sender = context.accounts.owner.address;
             const recipient = context.accounts.tokenReceiver.address;
 
@@ -325,7 +325,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
             expect(newTokenOwner).to.equal(context.accounts.tokenReceiver.address);
           });
 
-          it("should have emitted a Transfer event", async () => {
+          it('should have emitted a Transfer event', async () => {
             const sender = context.accounts.owner.address;
             const recipient = context.accounts.tokenReceiver.address;
 
@@ -334,18 +334,18 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               .transferFrom(sender, recipient, testCase.tokenId);
 
             expect(tx)
-              .to.emit(context.lsp8CompatibleERC721, "Transfer(address,address,uint256)")
+              .to.emit(context.lsp8CompatibleERC721, 'Transfer(address,address,uint256)')
               .withArgs(sender, recipient, testCase.tokenId);
           });
 
-          it("should have cleared operators array", async () => {
+          it('should have cleared operators array', async () => {
             // add 3 x individual operators per tokenId to test if the operators array is cleared
             // once the tokenId has been transferred by operator that is approvedForAll
             // const operatorsPerTokenIds = getRandomAddresses(1);
             const operatorsPerTokenIdsBefore = [
-              "0xcafecafecafecafecafecafecafecafecafecafe",
-              "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
-              "0xf00df00df00df00df00df00df00df00df00df00d",
+              '0xcafecafecafecafecafecafecafecafecafecafe',
+              '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef',
+              '0xf00df00df00df00df00df00df00df00df00df00d',
             ];
 
             await context.lsp8CompatibleERC721
@@ -377,7 +377,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
       });
     });
 
-    describe("when calling setApprovalForAll with false (removing operator full approval)", () => {
+    describe('when calling setApprovalForAll with false (removing operator full approval)', () => {
       beforeEach(async () => {
         await context.lsp8CompatibleERC721
           .connect(context.accounts.owner)
@@ -391,7 +391,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         { tokenId: tokenIds[3] },
         { tokenId: tokenIds[4] },
       ].forEach((testCase) => {
-        it("should return false when calling isApprovedForAll for operator", async () => {
+        it('should return false when calling isApprovedForAll for operator', async () => {
           const result = await context.lsp8CompatibleERC721.isApprovedForAll(
             context.accounts.owner.address,
             context.accounts.operator.address,
@@ -415,41 +415,41 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 testCase.tokenId,
               ),
           )
-            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, "LSP8NotTokenOperator")
+            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8NotTokenOperator')
             .withArgs(tokenIdAsBytes32, context.accounts.operator.address);
         });
       });
     });
   });
 
-  describe("getApproved", () => {
-    describe("when tokenId has not been minted", () => {
-      it("should revert", async () => {
+  describe('getApproved', () => {
+    describe('when tokenId has not been minted', () => {
+      it('should revert', async () => {
         await expect(context.lsp8CompatibleERC721.getApproved(neverMintedTokenId))
-          .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, "LSP8NonExistentTokenId")
+          .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8NonExistentTokenId')
           .withArgs(tokenIdAsBytes32(neverMintedTokenId));
       });
     });
 
-    describe("when tokenId has been minted", () => {
+    describe('when tokenId has been minted', () => {
       beforeEach(async () => {
         await context.lsp8CompatibleERC721.mint(
           context.accounts.owner.address,
           mintedTokenId,
-          ethers.utils.toUtf8Bytes("mint a token for the owner"),
+          ethers.utils.toUtf8Bytes('mint a token for the owner'),
         );
       });
 
-      describe("when there have been no approvals for the tokenId", () => {
-        it("should return address(0)", async () => {
+      describe('when there have been no approvals for the tokenId', () => {
+        it('should return address(0)', async () => {
           expect(await context.lsp8CompatibleERC721.getApproved(mintedTokenId)).to.equal(
             ethers.constants.AddressZero,
           );
         });
       });
 
-      describe("when one account has been approved for the tokenId", () => {
-        it("should return the operator address", async () => {
+      describe('when one account has been approved for the tokenId', () => {
+        it('should return the operator address', async () => {
           await context.lsp8CompatibleERC721.approve(
             context.accounts.operator.address,
             tokenIdAsBytes32(mintedTokenId),
@@ -461,8 +461,8 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         });
       });
 
-      describe("when many context.accounts have been approved for the tokenId", () => {
-        it("should return the last new authorized operator", async () => {
+      describe('when many context.accounts have been approved for the tokenId', () => {
+        it('should return the last new authorized operator', async () => {
           const operatorFirstAndThirdCall = context.accounts.operator.address;
           const operatorSecondCall = context.accounts.anotherOperator.address;
 
@@ -483,13 +483,13 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
     });
   });
 
-  describe("mint", () => {
-    describe("when a token is minted", () => {
-      it("should have expected events", async () => {
+  describe('mint', () => {
+    describe('when a token is minted', () => {
+      it('should have expected events', async () => {
         const txParams = {
           to: context.accounts.owner.address,
           tokenId: mintedTokenId,
-          data: ethers.utils.toUtf8Bytes("mint a token for the owner"),
+          data: ethers.utils.toUtf8Bytes('mint a token for the owner'),
         };
         const operator = context.accounts.owner;
 
@@ -500,7 +500,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         await expect(tx)
           .to.emit(
             context.lsp8CompatibleERC721,
-            "Transfer(address,address,address,bytes32,bool,bytes)",
+            'Transfer(address,address,address,bytes32,bool,bytes)',
           )
           .withArgs(
             operator.address,
@@ -512,7 +512,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           );
 
         await expect(tx)
-          .to.emit(context.lsp8CompatibleERC721, "Transfer(address,address,uint256)")
+          .to.emit(context.lsp8CompatibleERC721, 'Transfer(address,address,uint256)')
           .withArgs(
             ethers.constants.AddressZero,
             txParams.to,
@@ -522,20 +522,20 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
     });
   });
 
-  describe("burn", () => {
-    describe("when a token is burned", () => {
+  describe('burn', () => {
+    describe('when a token is burned', () => {
       beforeEach(async () => {
         await context.lsp8CompatibleERC721.mint(
           context.accounts.owner.address,
           mintedTokenId,
-          ethers.utils.toUtf8Bytes("mint a token for the owner"),
+          ethers.utils.toUtf8Bytes('mint a token for the owner'),
         );
       });
 
-      it("should have expected events", async () => {
+      it('should have expected events', async () => {
         const txParams = {
           tokenId: mintedTokenId,
-          data: ethers.utils.toUtf8Bytes("burn a token from the owner"),
+          data: ethers.utils.toUtf8Bytes('burn a token from the owner'),
         };
         const operator = context.accounts.owner;
 
@@ -546,7 +546,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         await expect(tx)
           .to.emit(
             context.lsp8CompatibleERC721,
-            "Transfer(address,address,address,bytes32,bool,bytes)",
+            'Transfer(address,address,address,bytes32,bool,bytes)',
           )
           .withArgs(
             operator.address,
@@ -557,7 +557,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
             ethers.utils.hexlify(txParams.data),
           );
         await expect(tx)
-          .to.emit(context.lsp8CompatibleERC721, "Transfer(address,address,uint256)")
+          .to.emit(context.lsp8CompatibleERC721, 'Transfer(address,address,uint256)')
           .withArgs(
             operator.address,
             ethers.constants.AddressZero,
@@ -567,7 +567,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
     });
   });
 
-  describe("transfers", () => {
+  describe('transfers', () => {
     type TestDeployedContracts = {
       tokenReceiverWithLSP1: TokenReceiverWithLSP1;
       tokenReceiverWithoutLSP1: TokenReceiverWithoutLSP1;
@@ -628,7 +628,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
       await context.lsp8CompatibleERC721.mint(
         context.accounts.owner.address,
         mintedTokenId,
-        ethers.utils.toUtf8Bytes("mint a token for the owner"),
+        ethers.utils.toUtf8Bytes('mint a token for the owner'),
       );
 
       // setup so we can observe approvals being cleared during transfer tests
@@ -662,7 +662,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
       await expect(tx)
         .to.emit(
           context.lsp8CompatibleERC721,
-          "Transfer(address,address,address,bytes32,bool,bytes)",
+          'Transfer(address,address,address,bytes32,bool,bytes)',
         )
         .withArgs(
           operator,
@@ -674,11 +674,11 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         );
 
       await expect(tx)
-        .to.emit(context.lsp8CompatibleERC721, "Transfer(address,address,uint256)")
+        .to.emit(context.lsp8CompatibleERC721, 'Transfer(address,address,uint256)')
         .withArgs(from, to, ethers.BigNumber.from(tokenId));
 
       await expect(tx)
-        .to.emit(context.lsp8CompatibleERC721, "RevokedOperator")
+        .to.emit(context.lsp8CompatibleERC721, 'RevokedOperator')
         .withArgs(context.accounts.operator.address, from, tokenIdAsBytes32(tokenId));
 
       // post-conditions
@@ -722,14 +722,14 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
       expect(postOwnerOf).to.equal(preOwnerOf);
     };
 
-    describe("transferFrom", () => {
-      const transferFn = "transferFrom";
+    describe('transferFrom', () => {
+      const transferFn = 'transferFrom';
       const allowNonLSP1Recipient = true;
-      const expectedData = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(""));
+      const expectedData = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(''));
 
-      describe("when the from address is the tokenId owner", () => {
-        describe("when `to` is an EOA", () => {
-          it("should allow transfering the tokenId", async () => {
+      describe('when the from address is the tokenId owner', () => {
+        describe('when `to` is an EOA', () => {
+          it('should allow transfering the tokenId', async () => {
             const txParams = {
               operator: context.accounts.owner.address,
               from: context.accounts.owner.address,
@@ -746,9 +746,9 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           });
         });
 
-        describe("when `to` is a contract", () => {
-          describe("when receiving contract supports LSP1", () => {
-            it("should allow transfering the tokenId", async () => {
+        describe('when `to` is a contract', () => {
+          describe('when receiving contract supports LSP1', () => {
+            it('should allow transfering the tokenId', async () => {
               const txParams = {
                 operator: context.accounts.owner.address,
                 from: context.accounts.owner.address,
@@ -765,8 +765,8 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
             });
           });
 
-          describe("when receiving contract does not support LSP1", () => {
-            it("should allow transfering the tokenId", async () => {
+          describe('when receiving contract does not support LSP1', () => {
+            it('should allow transfering the tokenId', async () => {
               const txParams = {
                 operator: context.accounts.owner.address,
                 from: context.accounts.owner.address,
@@ -785,8 +785,8 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         });
       });
 
-      describe("when the from address is not the tokenId owner", () => {
-        it("should revert", async () => {
+      describe('when the from address is not the tokenId owner', () => {
+        it('should revert', async () => {
           const txParams = {
             operator: context.accounts.owner.address,
             from: context.accounts.anyone.address,
@@ -800,7 +800,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           await expect(
             context.lsp8CompatibleERC721[transferFn](txParams.from, txParams.to, txParams.tokenId),
           )
-            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, "LSP8NotTokenOwner")
+            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8NotTokenOwner')
             .withArgs(
               context.accounts.owner.address,
               tokenIdAsBytes32(txParams.tokenId).toString(),
@@ -814,12 +814,12 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
       });
     });
 
-    describe("safeTransferFrom(address,address,uint256)", () => {
-      const transferFn = "safeTransferFrom(address,address,uint256)";
+    describe('safeTransferFrom(address,address,uint256)', () => {
+      const transferFn = 'safeTransferFrom(address,address,uint256)';
 
-      describe("when the from address is the tokenId owner", () => {
-        describe("when `to` is an EOA", () => {
-          it("should pass", async () => {
+      describe('when the from address is the tokenId owner', () => {
+        describe('when `to` is an EOA', () => {
+          it('should pass', async () => {
             const txParams = {
               operator: context.accounts.owner.address,
               from: context.accounts.owner.address,
@@ -827,14 +827,14 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               tokenId: mintedTokenId,
             };
 
-            await transferSuccessScenario(txParams, transferFn, true, "0x");
+            await transferSuccessScenario(txParams, transferFn, true, '0x');
           });
         });
 
-        describe("when `to` is a contract", () => {
-          describe("when the receiving contract supports LSP1", () => {
-            describe("when the receiving contract does not implement `onERC721Received`", () => {
-              it("should fail and revert", async () => {
+        describe('when `to` is a contract', () => {
+          describe('when the receiving contract supports LSP1', () => {
+            describe('when the receiving contract does not implement `onERC721Received`', () => {
+              it('should fail and revert', async () => {
                 const txParams = {
                   from: context.accounts.owner.address,
                   to: deployedContracts.tokenReceiverWithLSP1WithoutERC721Receiver.address,
@@ -842,7 +842,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 };
 
                 await expect(
-                  context.lsp8CompatibleERC721["safeTransferFrom(address,address,uint256)"](
+                  context.lsp8CompatibleERC721['safeTransferFrom(address,address,uint256)'](
                     txParams.from,
                     txParams.to,
                     txParams.tokenId,
@@ -851,8 +851,8 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               });
             });
 
-            describe("when the receiving contract implements `onERC721Received`", () => {
-              it("should fail if the `onERC721Received` function reverts + bubble up the error", async () => {
+            describe('when the receiving contract implements `onERC721Received`', () => {
+              it('should fail if the `onERC721Received` function reverts + bubble up the error', async () => {
                 const txParams = {
                   from: context.accounts.owner.address,
                   to: deployedContracts.tokenReceiverWithLSP1WithERC721ReceivedRevert.address,
@@ -860,17 +860,17 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 };
 
                 await expect(
-                  context.lsp8CompatibleERC721["safeTransferFrom(address,address,uint256)"](
+                  context.lsp8CompatibleERC721['safeTransferFrom(address,address,uint256)'](
                     txParams.from,
                     txParams.to,
                     txParams.tokenId,
                   ),
                 ).to.be.revertedWith(
-                  "TokenReceiverWithLSP1WithERC721ReceivedRevert: transfer rejected",
+                  'TokenReceiverWithLSP1WithERC721ReceivedRevert: transfer rejected',
                 );
               });
 
-              it("should fail and revert if the `onERC721Received` function does not returns the correct bytes4 magic value", async () => {
+              it('should fail and revert if the `onERC721Received` function does not returns the correct bytes4 magic value', async () => {
                 const txParams = {
                   from: context.accounts.owner.address,
                   to: deployedContracts.tokenReceiverWithLSP1WithERC721ReceivedInvalid.address,
@@ -878,17 +878,17 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 };
 
                 await expect(
-                  context.lsp8CompatibleERC721["safeTransferFrom(address,address,uint256)"](
+                  context.lsp8CompatibleERC721['safeTransferFrom(address,address,uint256)'](
                     txParams.from,
                     txParams.to,
                     txParams.tokenId,
                   ),
                 ).to.be.revertedWith(
-                  "LSP8CompatibleERC721: transfer to non ERC721Receiver implementer",
+                  'LSP8CompatibleERC721: transfer to non ERC721Receiver implementer',
                 );
               });
 
-              it("should pass if the `onERC721Received` function returns the correct bytes4 magic value", async () => {
+              it('should pass if the `onERC721Received` function returns the correct bytes4 magic value', async () => {
                 const txParams = {
                   operator: context.accounts.owner.address,
                   from: context.accounts.owner.address,
@@ -896,14 +896,14 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                   tokenId: mintedTokenId,
                 };
 
-                await transferSuccessScenario(txParams, transferFn, true, "0x");
+                await transferSuccessScenario(txParams, transferFn, true, '0x');
               });
             });
           });
 
-          describe("when the receiving contract does not support LSP1", () => {
-            describe("when the receiving contract does not implement `onERC721Received`", () => {
-              it("should fail and revert", async () => {
+          describe('when the receiving contract does not support LSP1', () => {
+            describe('when the receiving contract does not implement `onERC721Received`', () => {
+              it('should fail and revert', async () => {
                 const txParams = {
                   operator: context.accounts.owner.address,
                   from: context.accounts.owner.address,
@@ -912,7 +912,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 };
 
                 await expect(
-                  context.lsp8CompatibleERC721["safeTransferFrom(address,address,uint256)"](
+                  context.lsp8CompatibleERC721['safeTransferFrom(address,address,uint256)'](
                     txParams.from,
                     txParams.to,
                     txParams.tokenId,
@@ -921,8 +921,8 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               });
             });
 
-            describe("when the receiving contract implements `onERC721Received`", () => {
-              it("should fail if the `onERC721Received` function reverts + bubble up the error", async () => {
+            describe('when the receiving contract implements `onERC721Received`', () => {
+              it('should fail if the `onERC721Received` function reverts + bubble up the error', async () => {
                 const txParams = {
                   from: context.accounts.owner.address,
                   to: deployedContracts.tokenReceiverWithoutLSP1WithERC721ReceivedRevert.address,
@@ -930,17 +930,17 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 };
 
                 await expect(
-                  context.lsp8CompatibleERC721["safeTransferFrom(address,address,uint256)"](
+                  context.lsp8CompatibleERC721['safeTransferFrom(address,address,uint256)'](
                     txParams.from,
                     txParams.to,
                     txParams.tokenId,
                   ),
                 ).to.be.revertedWith(
-                  "TokenReceiverWithLSP1WithERC721ReceivedRevert: transfer rejected",
+                  'TokenReceiverWithLSP1WithERC721ReceivedRevert: transfer rejected',
                 );
               });
 
-              it("should fail and revert if the `onERC721Received` function does not returns the correct bytes4 magic value", async () => {
+              it('should fail and revert if the `onERC721Received` function does not returns the correct bytes4 magic value', async () => {
                 const txParams = {
                   from: context.accounts.owner.address,
                   to: deployedContracts.tokenReceiverWithoutLSP1WithERC721ReceivedInvalid.address,
@@ -948,17 +948,17 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 };
 
                 await expect(
-                  context.lsp8CompatibleERC721["safeTransferFrom(address,address,uint256)"](
+                  context.lsp8CompatibleERC721['safeTransferFrom(address,address,uint256)'](
                     txParams.from,
                     txParams.to,
                     txParams.tokenId,
                   ),
                 ).to.be.revertedWith(
-                  "LSP8CompatibleERC721: transfer to non ERC721Receiver implementer",
+                  'LSP8CompatibleERC721: transfer to non ERC721Receiver implementer',
                 );
               });
 
-              it("should pass if the `onERC721Received` function returns the correct bytes4 magic value", async () => {
+              it('should pass if the `onERC721Received` function returns the correct bytes4 magic value', async () => {
                 const txParams = {
                   operator: context.accounts.owner.address,
                   from: context.accounts.owner.address,
@@ -966,15 +966,15 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                   tokenId: mintedTokenId,
                 };
 
-                await transferSuccessScenario(txParams, transferFn, true, "0x");
+                await transferSuccessScenario(txParams, transferFn, true, '0x');
               });
             });
           });
         });
       });
 
-      describe("when the from address is not the tokenId owner", () => {
-        it("should revert", async () => {
+      describe('when the from address is not the tokenId owner', () => {
+        it('should revert', async () => {
           const txParams = {
             operator: context.accounts.owner.address,
             from: context.accounts.anyone.address,
@@ -988,7 +988,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           await expect(
             context.lsp8CompatibleERC721[transferFn](txParams.from, txParams.to, txParams.tokenId),
           )
-            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, "LSP8NotTokenOwner")
+            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8NotTokenOwner')
             .withArgs(
               context.accounts.owner.address,
               tokenIdAsBytes32(txParams.tokenId).toString(),
@@ -1002,15 +1002,15 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
       });
     });
 
-    describe("safeTransferFrom(address,address,uint256,bytes)", () => {
-      const transferFn = "safeTransferFrom(address,address,uint256,bytes)";
+    describe('safeTransferFrom(address,address,uint256,bytes)', () => {
+      const transferFn = 'safeTransferFrom(address,address,uint256,bytes)';
       const expectedData = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(`custom-data-${Date.now()}`),
       );
 
-      describe("when the from address is the tokenId owner", () => {
-        describe("when `to` is an EOA", () => {
-          it("should pass", async () => {
+      describe('when the from address is the tokenId owner', () => {
+        describe('when `to` is an EOA', () => {
+          it('should pass', async () => {
             const txParams = {
               operator: context.accounts.owner.address,
               from: context.accounts.owner.address,
@@ -1023,10 +1023,10 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           });
         });
 
-        describe("when `to` is a contract", () => {
-          describe("when the receiving contract supports LSP1", () => {
-            describe("when the receiving contract does not implement `onERC721Received`", () => {
-              it("should fail and revert", async () => {
+        describe('when `to` is a contract', () => {
+          describe('when the receiving contract supports LSP1', () => {
+            describe('when the receiving contract does not implement `onERC721Received`', () => {
+              it('should fail and revert', async () => {
                 const txParams = {
                   from: context.accounts.owner.address,
                   to: deployedContracts.tokenReceiverWithLSP1WithoutERC721Receiver.address,
@@ -1035,7 +1035,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 };
 
                 await expect(
-                  context.lsp8CompatibleERC721["safeTransferFrom(address,address,uint256)"](
+                  context.lsp8CompatibleERC721['safeTransferFrom(address,address,uint256)'](
                     txParams.from,
                     txParams.to,
                     txParams.tokenId,
@@ -1044,8 +1044,8 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               });
             });
 
-            describe("when the receiving contract implements `onERC721Received`", () => {
-              it("should fail if the `onERC721Received` function reverts + bubble up the error", async () => {
+            describe('when the receiving contract implements `onERC721Received`', () => {
+              it('should fail if the `onERC721Received` function reverts + bubble up the error', async () => {
                 const txParams = {
                   from: context.accounts.owner.address,
                   to: deployedContracts.tokenReceiverWithLSP1WithERC721ReceivedRevert.address,
@@ -1054,17 +1054,17 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 };
 
                 await expect(
-                  context.lsp8CompatibleERC721["safeTransferFrom(address,address,uint256)"](
+                  context.lsp8CompatibleERC721['safeTransferFrom(address,address,uint256)'](
                     txParams.from,
                     txParams.to,
                     txParams.tokenId,
                   ),
                 ).to.be.revertedWith(
-                  "TokenReceiverWithLSP1WithERC721ReceivedRevert: transfer rejected",
+                  'TokenReceiverWithLSP1WithERC721ReceivedRevert: transfer rejected',
                 );
               });
 
-              it("should fail and revert if the `onERC721Received` function does not returns the correct bytes4 magic value", async () => {
+              it('should fail and revert if the `onERC721Received` function does not returns the correct bytes4 magic value', async () => {
                 const txParams = {
                   from: context.accounts.owner.address,
                   to: deployedContracts.tokenReceiverWithLSP1WithERC721ReceivedInvalid.address,
@@ -1073,17 +1073,17 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 };
 
                 await expect(
-                  context.lsp8CompatibleERC721["safeTransferFrom(address,address,uint256)"](
+                  context.lsp8CompatibleERC721['safeTransferFrom(address,address,uint256)'](
                     txParams.from,
                     txParams.to,
                     txParams.tokenId,
                   ),
                 ).to.be.revertedWith(
-                  "LSP8CompatibleERC721: transfer to non ERC721Receiver implementer",
+                  'LSP8CompatibleERC721: transfer to non ERC721Receiver implementer',
                 );
               });
 
-              it("should pass if the `onERC721Received` function returns the correct bytes4 magic value", async () => {
+              it('should pass if the `onERC721Received` function returns the correct bytes4 magic value', async () => {
                 const txParams = {
                   operator: context.accounts.owner.address,
                   from: context.accounts.owner.address,
@@ -1097,9 +1097,9 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
             });
           });
 
-          describe("when the receiving contract does not support LSP1", () => {
-            describe("when the receiving contract does not implement `onERC721Received`", () => {
-              it("should fail and revert", async () => {
+          describe('when the receiving contract does not support LSP1', () => {
+            describe('when the receiving contract does not implement `onERC721Received`', () => {
+              it('should fail and revert', async () => {
                 const txParams = {
                   operator: context.accounts.owner.address,
                   from: context.accounts.owner.address,
@@ -1109,7 +1109,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 };
 
                 await expect(
-                  context.lsp8CompatibleERC721["safeTransferFrom(address,address,uint256)"](
+                  context.lsp8CompatibleERC721['safeTransferFrom(address,address,uint256)'](
                     txParams.from,
                     txParams.to,
                     txParams.tokenId,
@@ -1118,8 +1118,8 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               });
             });
 
-            describe("when the receiving contract implements `onERC721Received`", () => {
-              it("should fail if the `onERC721Received` function reverts + bubble up the error", async () => {
+            describe('when the receiving contract implements `onERC721Received`', () => {
+              it('should fail if the `onERC721Received` function reverts + bubble up the error', async () => {
                 const txParams = {
                   from: context.accounts.owner.address,
                   to: deployedContracts.tokenReceiverWithoutLSP1WithERC721ReceivedRevert.address,
@@ -1128,17 +1128,17 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 };
 
                 await expect(
-                  context.lsp8CompatibleERC721["safeTransferFrom(address,address,uint256)"](
+                  context.lsp8CompatibleERC721['safeTransferFrom(address,address,uint256)'](
                     txParams.from,
                     txParams.to,
                     txParams.tokenId,
                   ),
                 ).to.be.revertedWith(
-                  "TokenReceiverWithLSP1WithERC721ReceivedRevert: transfer rejected",
+                  'TokenReceiverWithLSP1WithERC721ReceivedRevert: transfer rejected',
                 );
               });
 
-              it("should fail and revert if the `onERC721Received` function does not returns the correct bytes4 magic value", async () => {
+              it('should fail and revert if the `onERC721Received` function does not returns the correct bytes4 magic value', async () => {
                 const txParams = {
                   from: context.accounts.owner.address,
                   to: deployedContracts.tokenReceiverWithoutLSP1WithERC721ReceivedInvalid.address,
@@ -1147,17 +1147,17 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 };
 
                 await expect(
-                  context.lsp8CompatibleERC721["safeTransferFrom(address,address,uint256)"](
+                  context.lsp8CompatibleERC721['safeTransferFrom(address,address,uint256)'](
                     txParams.from,
                     txParams.to,
                     txParams.tokenId,
                   ),
                 ).to.be.revertedWith(
-                  "LSP8CompatibleERC721: transfer to non ERC721Receiver implementer",
+                  'LSP8CompatibleERC721: transfer to non ERC721Receiver implementer',
                 );
               });
 
-              it("should pass if the `onERC721Received` function returns the correct bytes4 magic value", async () => {
+              it('should pass if the `onERC721Received` function returns the correct bytes4 magic value', async () => {
                 const txParams = {
                   operator: context.accounts.owner.address,
                   from: context.accounts.owner.address,
@@ -1173,8 +1173,8 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         });
       });
 
-      describe("when the from address is not the tokenId owner", () => {
-        it("should revert", async () => {
+      describe('when the from address is not the tokenId owner', () => {
+        it('should revert', async () => {
           const txParams = {
             operator: context.accounts.owner.address,
             from: context.accounts.anyone.address,
@@ -1194,7 +1194,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               txParams.data,
             ),
           )
-            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, "LSP8NotTokenOwner")
+            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8NotTokenOwner')
             .withArgs(
               context.accounts.owner.address,
               tokenIdAsBytes32(txParams.tokenId).toString(),
@@ -1225,8 +1225,8 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
     context = await buildContext();
   });
 
-  describe("when the contract was initialized", () => {
-    it("should have registered its ERC165 interface", async () => {
+  describe('when the contract was initialized', () => {
+    it('should have registered its ERC165 interface', async () => {
       expect(
         await context.lsp8CompatibleERC721.supportsInterface(
           INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
@@ -1236,9 +1236,9 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
       expect(await context.lsp8CompatibleERC721.supportsInterface(INTERFACE_IDS.ERC721Metadata));
     });
 
-    it("should have set expected entries with ERC725Y.setData", async () => {
+    it('should have set expected entries with ERC725Y.setData', async () => {
       await expect(context.initializeTransaction)
-        .to.emit(context.lsp8CompatibleERC721, "DataChanged")
+        .to.emit(context.lsp8CompatibleERC721, 'DataChanged')
         .withArgs(
           SupportedStandards.LSP4DigitalAsset.key,
           SupportedStandards.LSP4DigitalAsset.value,
@@ -1247,21 +1247,21 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
         await context.lsp8CompatibleERC721.getData(SupportedStandards.LSP4DigitalAsset.key),
       ).to.equal(SupportedStandards.LSP4DigitalAsset.value);
 
-      const nameKey = ERC725YDataKeys.LSP4["LSP4TokenName"];
+      const nameKey = ERC725YDataKeys.LSP4['LSP4TokenName'];
       const expectedNameValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.name),
       );
       await expect(context.initializeTransaction)
-        .to.emit(context.lsp8CompatibleERC721, "DataChanged")
+        .to.emit(context.lsp8CompatibleERC721, 'DataChanged')
         .withArgs(nameKey, expectedNameValue);
       expect(await context.lsp8CompatibleERC721.getData(nameKey)).to.equal(expectedNameValue);
 
-      const symbolKey = ERC725YDataKeys.LSP4["LSP4TokenSymbol"];
+      const symbolKey = ERC725YDataKeys.LSP4['LSP4TokenSymbol'];
       const expectedSymbolValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.symbol),
       );
       await expect(context.initializeTransaction)
-        .to.emit(context.lsp8CompatibleERC721, "DataChanged")
+        .to.emit(context.lsp8CompatibleERC721, 'DataChanged')
         .withArgs(symbolKey, expectedSymbolValue);
       expect(await context.lsp8CompatibleERC721.getData(symbolKey)).to.equal(expectedSymbolValue);
     });

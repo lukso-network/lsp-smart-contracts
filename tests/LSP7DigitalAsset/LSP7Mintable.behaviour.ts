@@ -1,17 +1,17 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { ethers } from "hardhat";
-import { expect } from "chai";
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
 import {
   LSP7Mintable,
   UniversalProfile,
   LSP6KeyManager,
   UniversalReceiverDelegateTokenReentrant__factory,
-} from "../../types";
+} from '../../types';
 
-import { setupProfileWithKeyManagerWithURD } from "../utils/fixtures";
+import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 
-import { PERMISSIONS, ERC725YDataKeys, OPERATION_TYPES, CALLTYPE } from "../../constants";
-import { combineAllowedCalls, combinePermissions } from "../utils/helpers";
+import { PERMISSIONS, ERC725YDataKeys, OPERATION_TYPES, CALLTYPE } from '../../constants';
+import { combineAllowedCalls, combinePermissions } from '../utils/helpers';
 
 export type LSP7MintableTestAccounts = {
   owner: SignerWithAddress;
@@ -46,24 +46,24 @@ export const shouldBehaveLikeLSP7Mintable = (
     context = await buildContext();
   });
 
-  describe("when owner minting tokens", () => {
-    it("should increase the total supply", async () => {
-      const amountToMint = ethers.BigNumber.from("100");
+  describe('when owner minting tokens', () => {
+    it('should increase the total supply', async () => {
+      const amountToMint = ethers.BigNumber.from('100');
       const preTotalSupply = await context.lsp7Mintable.totalSupply();
 
       await context.lsp7Mintable.mint(
         context.accounts.tokenReceiver.address,
         amountToMint,
         true, // beneficiary is an EOA, so we need to allowNonLSP1Recipient minting
-        "0x",
+        '0x',
       );
 
       let postTotalSupply = await context.lsp7Mintable.totalSupply();
       expect(postTotalSupply).to.equal(preTotalSupply.add(amountToMint));
     });
 
-    it("should increase the tokenReceiver balance", async () => {
-      const amountToMint = ethers.BigNumber.from("100");
+    it('should increase the tokenReceiver balance', async () => {
+      const amountToMint = ethers.BigNumber.from('100');
 
       const tokenReceiverBalance = await context.lsp7Mintable.balanceOf(
         context.accounts.tokenReceiver.address,
@@ -73,20 +73,20 @@ export const shouldBehaveLikeLSP7Mintable = (
     });
   });
 
-  describe("when non-owner minting tokens", () => {
-    it("should revert", async () => {
-      const amountToMint = ethers.BigNumber.from("100");
+  describe('when non-owner minting tokens', () => {
+    it('should revert', async () => {
+      const amountToMint = ethers.BigNumber.from('100');
 
       // use any other account
       const nonOwner = context.accounts.tokenReceiver;
 
       await expect(
-        context.lsp7Mintable.connect(nonOwner).mint(nonOwner.address, amountToMint, true, "0x"),
-      ).to.be.revertedWith("Ownable: caller is not the owner");
+        context.lsp7Mintable.connect(nonOwner).mint(nonOwner.address, amountToMint, true, '0x'),
+      ).to.be.revertedWith('Ownable: caller is not the owner');
     });
   });
 
-  describe("when owner try to re-enter mint function through the UniversalReceiverDelegate", () => {
+  describe('when owner try to re-enter mint function through the UniversalReceiverDelegate', () => {
     let universalProfile;
     let lsp6KeyManager;
 
@@ -104,11 +104,11 @@ export const shouldBehaveLikeLSP7Mintable = (
         context.accounts.profileOwner,
       ).deploy();
 
-      const setDataPayload = universalProfile.interface.encodeFunctionData("setDataBatch", [
+      const setDataPayload = universalProfile.interface.encodeFunctionData('setDataBatch', [
         [
-          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
             URDTokenReentrant.address.substring(2),
-          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             URDTokenReentrant.address.substring(2),
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
         ],
@@ -117,8 +117,8 @@ export const shouldBehaveLikeLSP7Mintable = (
           combineAllowedCalls(
             [CALLTYPE.CALL],
             [context.lsp7Mintable.address],
-            ["0xffffffff"],
-            ["0xffffffff"],
+            ['0xffffffff'],
+            ['0xffffffff'],
           ),
           URDTokenReentrant.address,
         ],
@@ -127,25 +127,25 @@ export const shouldBehaveLikeLSP7Mintable = (
       await lsp6KeyManager.connect(context.accounts.profileOwner).execute(setDataPayload);
     });
 
-    it("should pass", async () => {
+    it('should pass', async () => {
       const firstAmount = 50;
       const secondAmount = 150;
 
-      const reentrantMintPayload = context.lsp7Mintable.interface.encodeFunctionData("mint", [
+      const reentrantMintPayload = context.lsp7Mintable.interface.encodeFunctionData('mint', [
         universalProfile.address,
         firstAmount,
         false,
-        "0x",
+        '0x',
       ]);
 
-      const mintPayload = context.lsp7Mintable.interface.encodeFunctionData("mint", [
+      const mintPayload = context.lsp7Mintable.interface.encodeFunctionData('mint', [
         universalProfile.address,
         secondAmount,
         false,
         reentrantMintPayload,
       ]);
 
-      const executePayload = universalProfile.interface.encodeFunctionData("execute", [
+      const executePayload = universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
         context.lsp7Mintable.address,
         0,

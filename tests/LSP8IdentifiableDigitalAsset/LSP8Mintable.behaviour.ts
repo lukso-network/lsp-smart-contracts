@@ -1,17 +1,17 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { ethers } from "hardhat";
-import { expect } from "chai";
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
 import {
   LSP8Mintable,
   UniversalProfile,
   LSP6KeyManager,
   UniversalReceiverDelegateTokenReentrant__factory,
-} from "../../types";
+} from '../../types';
 
-import { setupProfileWithKeyManagerWithURD } from "../utils/fixtures";
+import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 
-import { PERMISSIONS, ERC725YDataKeys, OPERATION_TYPES, CALLTYPE } from "../../constants";
-import { combineAllowedCalls, combinePermissions } from "../utils/helpers";
+import { PERMISSIONS, ERC725YDataKeys, OPERATION_TYPES, CALLTYPE } from '../../constants';
+import { combineAllowedCalls, combinePermissions } from '../utils/helpers';
 
 export type LSP8MintableTestAccounts = {
   owner: SignerWithAddress;
@@ -45,8 +45,8 @@ export const shouldBehaveLikeLSP8Mintable = (
     context = await buildContext();
   });
 
-  describe("when owner minting tokens", () => {
-    it("total supply should have increased", async () => {
+  describe('when owner minting tokens', () => {
+    it('total supply should have increased', async () => {
       const randomTokenId = ethers.utils.randomBytes(32);
 
       const preMintTotalSupply = await context.lsp8Mintable.totalSupply();
@@ -55,14 +55,14 @@ export const shouldBehaveLikeLSP8Mintable = (
         context.accounts.tokenReceiver.address,
         randomTokenId,
         true, // beneficiary is an EOA, so we need to allowNonLSP1Recipient minting
-        "0x",
+        '0x',
       );
 
       let postMintTotalSupply = await context.lsp8Mintable.totalSupply();
       expect(postMintTotalSupply).to.equal(preMintTotalSupply.add(1));
     });
 
-    it("tokenReceiver balance should have increased", async () => {
+    it('tokenReceiver balance should have increased', async () => {
       const tokenReceiverBalance = await context.lsp8Mintable.balanceOf(
         context.accounts.tokenReceiver.address,
       );
@@ -71,8 +71,8 @@ export const shouldBehaveLikeLSP8Mintable = (
     });
   });
 
-  describe("when non-owner minting tokens", () => {
-    it("should revert", async () => {
+  describe('when non-owner minting tokens', () => {
+    it('should revert', async () => {
       const randomTokenId = ethers.utils.randomBytes(32);
 
       // use any other account
@@ -81,12 +81,12 @@ export const shouldBehaveLikeLSP8Mintable = (
       await expect(
         context.lsp8Mintable
           .connect(nonOwner)
-          .mint(context.accounts.tokenReceiver.address, randomTokenId, true, "0x"),
-      ).to.be.revertedWith("Ownable: caller is not the owner");
+          .mint(context.accounts.tokenReceiver.address, randomTokenId, true, '0x'),
+      ).to.be.revertedWith('Ownable: caller is not the owner');
     });
   });
 
-  describe("when owner try to re-enter function through the UniversalReceiverDelegate", () => {
+  describe('when owner try to re-enter function through the UniversalReceiverDelegate', () => {
     let universalProfile;
     let lsp6KeyManager;
 
@@ -104,11 +104,11 @@ export const shouldBehaveLikeLSP8Mintable = (
         context.accounts.profileOwner,
       ).deploy();
 
-      const setDataPayload = universalProfile.interface.encodeFunctionData("setDataBatch", [
+      const setDataPayload = universalProfile.interface.encodeFunctionData('setDataBatch', [
         [
-          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
             URDTokenReentrant.address.substring(2),
-          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             URDTokenReentrant.address.substring(2),
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
         ],
@@ -117,8 +117,8 @@ export const shouldBehaveLikeLSP8Mintable = (
           combineAllowedCalls(
             [CALLTYPE.CALL],
             [context.lsp8Mintable.address],
-            ["0xffffffff"],
-            ["0xffffffff"],
+            ['0xffffffff'],
+            ['0xffffffff'],
           ),
           URDTokenReentrant.address,
         ],
@@ -126,25 +126,25 @@ export const shouldBehaveLikeLSP8Mintable = (
 
       await lsp6KeyManager.connect(context.accounts.profileOwner).execute(setDataPayload);
     });
-    it("should pass", async () => {
+    it('should pass', async () => {
       const randomTokenId = ethers.utils.randomBytes(32);
       const secondRandomTokenId = ethers.utils.randomBytes(32);
 
-      const reentrantMintPayload = context.lsp8Mintable.interface.encodeFunctionData("mint", [
+      const reentrantMintPayload = context.lsp8Mintable.interface.encodeFunctionData('mint', [
         universalProfile.address,
         secondRandomTokenId,
         false,
-        "0x",
+        '0x',
       ]);
 
-      const mintPayload = context.lsp8Mintable.interface.encodeFunctionData("mint", [
+      const mintPayload = context.lsp8Mintable.interface.encodeFunctionData('mint', [
         universalProfile.address,
         randomTokenId,
         false,
         reentrantMintPayload,
       ]);
 
-      const executePayload = universalProfile.interface.encodeFunctionData("execute", [
+      const executePayload = universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
         context.lsp8Mintable.address,
         0,

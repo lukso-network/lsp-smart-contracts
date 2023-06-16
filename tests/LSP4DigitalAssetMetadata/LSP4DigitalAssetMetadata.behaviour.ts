@@ -1,12 +1,12 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
 
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 // LSP7 + LSP8
-import { LSP7DigitalAsset, LSP8IdentifiableDigitalAsset, LSP9Vault } from "../../types";
+import { LSP7DigitalAsset, LSP8IdentifiableDigitalAsset, LSP9Vault } from '../../types';
 
 // constants
-import { ERC725YDataKeys } from "../../constants";
+import { ERC725YDataKeys } from '../../constants';
 
 export type LS4DigitalAssetMetadataTestContext = {
   accounts: SignerWithAddress[];
@@ -23,32 +23,32 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
     context = await buildContext();
   });
 
-  describe("when setting data on ERC725Y storage", () => {
-    it("should revert when trying to edit Token Name", async () => {
-      const key = ERC725YDataKeys.LSP4["LSP4TokenName"];
-      const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Overriden Token Name"));
+  describe('when setting data on ERC725Y storage', () => {
+    it('should revert when trying to edit Token Name', async () => {
+      const key = ERC725YDataKeys.LSP4['LSP4TokenName'];
+      const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Overriden Token Name'));
 
       expect(
         context.contract.connect(context.deployParams.owner).setData(key, value),
-      ).to.be.revertedWithCustomError(context.contract, "LSP4TokenNameNotEditable");
+      ).to.be.revertedWithCustomError(context.contract, 'LSP4TokenNameNotEditable');
     });
 
-    it("should revert when trying to edit Token Symbol", async () => {
-      const key = ERC725YDataKeys.LSP4["LSP4TokenSymbol"];
-      const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("BAD"));
+    it('should revert when trying to edit Token Symbol', async () => {
+      const key = ERC725YDataKeys.LSP4['LSP4TokenSymbol'];
+      const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('BAD'));
 
       expect(
         context.contract.connect(context.deployParams.owner).setData(key, value),
-      ).to.be.revertedWithCustomError(context.contract, "LSP4TokenSymbolNotEditable");
+      ).to.be.revertedWithCustomError(context.contract, 'LSP4TokenSymbolNotEditable');
     });
 
-    describe("when setting a data key with a value less than 256 bytes", () => {
-      it("should emit DataChanged event with the whole data value", async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+    describe('when setting a data key with a value less than 256 bytes', () => {
+      it('should emit DataChanged event with the whole data value', async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
         let value = ethers.utils.hexlify(ethers.utils.randomBytes(200));
 
         await expect(context.contract.connect(context.deployParams.owner).setData(key, value))
-          .to.emit(context.contract, "DataChanged")
+          .to.emit(context.contract, 'DataChanged')
           .withArgs(key, value);
 
         const result = await context.contract.getData(key);
@@ -56,13 +56,13 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
       });
     });
 
-    describe("when setting a data key with a value more than 256 bytes", () => {
-      it("should emit DataChanged event with only the first 256 bytes of the value", async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+    describe('when setting a data key with a value more than 256 bytes', () => {
+      it('should emit DataChanged event with only the first 256 bytes of the value', async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
         let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
         await expect(context.contract.connect(context.deployParams.owner).setData(key, value))
-          .to.emit(context.contract, "DataChanged")
+          .to.emit(context.contract, 'DataChanged')
           .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
 
         const result = await context.contract.getData(key);
@@ -70,13 +70,13 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
       });
     });
 
-    describe("when setting a data key with a value exactly 256 bytes long", () => {
-      it("should emit DataChanged event with the whole data value", async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+    describe('when setting a data key with a value exactly 256 bytes long', () => {
+      it('should emit DataChanged event with the whole data value', async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
         let value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
 
         await expect(context.contract.connect(context.deployParams.owner).setData(key, value))
-          .to.emit(context.contract, "DataChanged")
+          .to.emit(context.contract, 'DataChanged')
           .withArgs(key, value);
 
         const result = await context.contract.getData(key);
