@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import { task } from "hardhat/config";
-import { HardhatPluginError } from "hardhat/plugins";
 import { TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
 import { ethers } from "ethers";
 import pluralize from "pluralize";
