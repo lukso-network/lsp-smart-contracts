@@ -4,9 +4,7 @@ pragma solidity ^0.8.5;
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
-import {
-    ILSP20CallVerification as ILSP20
-} from "../LSP20CallVerification/ILSP20CallVerification.sol";
+import {ILSP20CallVerifier as ILSP20} from "../LSP20CallVerification/ILSP20CallVerifier.sol";
 
 // modules
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
