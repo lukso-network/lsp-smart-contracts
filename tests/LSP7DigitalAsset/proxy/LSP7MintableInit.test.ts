@@ -1,24 +1,24 @@
-import { ethers } from "hardhat";
-import { expect } from "chai";
-import { LSP7MintableInit, LSP7MintableInit__factory } from "../../../types";
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
+import { LSP7MintableInit, LSP7MintableInit__factory } from '../../../types';
 
-import { shouldInitializeLikeLSP7 } from "../LSP7DigitalAsset.behaviour";
+import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour';
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP7Mintable,
   LSP7MintableTestContext,
   LSP7MintableDeployParams,
-} from "../LSP7Mintable.behaviour";
+} from '../LSP7Mintable.behaviour';
 
-import { deployProxy } from "../../utils/fixtures";
+import { deployProxy } from '../../utils/fixtures';
 
-describe("LSP7MintableInit with proxy", () => {
+describe('LSP7MintableInit with proxy', () => {
   const buildTestContext = async () => {
     const accounts = await getNamedAccounts();
 
     const deployParams: LSP7MintableDeployParams = {
-      name: "LSP7 Mintable - deployed with proxy",
-      symbol: "LSP7 MNTBL",
+      name: 'LSP7 Mintable - deployed with proxy',
+      symbol: 'LSP7 MNTBL',
       newOwner: accounts.owner.address,
       isNFT: false,
     };
@@ -34,7 +34,7 @@ describe("LSP7MintableInit with proxy", () => {
   };
 
   const initializeProxy = async (context: LSP7MintableTestContext) => {
-    return context.lsp7Mintable["initialize(string,string,address,bool)"](
+    return context.lsp7Mintable['initialize(string,string,address,bool)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
@@ -42,8 +42,8 @@ describe("LSP7MintableInit with proxy", () => {
     );
   };
 
-  describe("when deploying the base implementation contract", () => {
-    it("prevent any address from calling the initialize(...) function on the implementation", async () => {
+  describe('when deploying the base implementation contract', () => {
+    it('prevent any address from calling the initialize(...) function on the implementation', async () => {
       const accounts = await ethers.getSigners();
 
       const lsp7MintableInit = await new LSP7MintableInit__factory(accounts[0]).deploy();
@@ -51,24 +51,24 @@ describe("LSP7MintableInit with proxy", () => {
       const randomCaller = accounts[1];
 
       await expect(
-        lsp7MintableInit["initialize(string,string,address,bool)"](
-          "XXXXXXXXXXX",
-          "XXX",
+        lsp7MintableInit['initialize(string,string,address,bool)'](
+          'XXXXXXXXXXX',
+          'XXX',
           randomCaller.address,
           false,
         ),
-      ).to.be.revertedWith("Initializable: contract is already initialized");
+      ).to.be.revertedWith('Initializable: contract is already initialized');
     });
   });
 
-  describe("when deploying the contract as proxy", () => {
+  describe('when deploying the contract as proxy', () => {
     let context: LSP7MintableTestContext;
 
     before(async () => {
       context = await buildTestContext();
     });
 
-    describe("when initializing the contract", () => {
+    describe('when initializing the contract', () => {
       shouldInitializeLikeLSP7(async () => {
         const { lsp7Mintable: lsp7, deployParams } = context;
         const initializeTransaction = await initializeProxy(context);
@@ -81,16 +81,16 @@ describe("LSP7MintableInit with proxy", () => {
       });
     });
 
-    describe("when calling initialize more than once", () => {
-      it("should revert", async () => {
+    describe('when calling initialize more than once', () => {
+      it('should revert', async () => {
         await expect(initializeProxy(context)).to.be.revertedWith(
-          "Initializable: contract is already initialized",
+          'Initializable: contract is already initialized',
         );
       });
     });
   });
 
-  describe("when testing deployed contract", () => {
+  describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP7Mintable(() =>
       buildTestContext().then(async (context) => {
         await initializeProxy(context);

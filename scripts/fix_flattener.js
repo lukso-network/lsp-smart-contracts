@@ -1,14 +1,14 @@
-const fs = require("fs");
+const fs = require('fs');
 
-let file = "./flat_contracts/UniversalProfile_flat.sol";
+let file = './flat_contracts/UniversalProfile_flat.sol';
 
-fs.readFile(file, "utf8", (err, data) => {
+fs.readFile(file, 'utf8', (err, data) => {
   if (err) {
     console.error(err);
   }
 
   // create an array of lines
-  let lines = data.split("\n").slice(0);
+  let lines = data.split('\n').slice(0);
 
   let removeDuplicates = (substr, lines) => {
     let substrCount = 0;
@@ -25,11 +25,11 @@ fs.readFile(file, "utf8", (err, data) => {
   removeDuplicates(/^\/\/\WSPDX-License-Identifier/, lines);
   removeDuplicates(/^pragma/, lines);
 
-  data = lines.join("\n");
+  data = lines.join('\n');
 
   console.log(data);
 
   fs.writeFile(file, data, (err) => {
-    err | console.log("Duplicate pragma and SPDX statements removed successfully !");
+    err | console.log('Duplicate pragma and SPDX statements removed successfully !');
   });
 });

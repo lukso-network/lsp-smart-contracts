@@ -1,9 +1,9 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { calculateCreate2 } from "eth-create2-calculator";
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { calculateCreate2 } from 'eth-create2-calculator';
 
-import { TargetContract__factory } from "../../../../types";
+import { TargetContract__factory } from '../../../../types';
 
 // constants
 import {
@@ -12,13 +12,13 @@ import {
   LSP6_VERSION,
   PERMISSIONS,
   OPERATION_TYPES,
-} from "../../../../constants";
+} from '../../../../constants';
 
 // setup
-import { LSP6TestContext } from "../../../utils/context";
-import { setupKeyManager } from "../../../utils/fixtures";
+import { LSP6TestContext } from '../../../utils/context';
+import { setupKeyManager } from '../../../utils/fixtures';
 
-import { LOCAL_PRIVATE_KEYS } from "../../../utils/helpers";
+import { LOCAL_PRIVATE_KEYS } from '../../../utils/helpers';
 
 export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
@@ -32,10 +32,10 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
     addressCannotDeploy = context.accounts[2];
 
     const permissionKeys = [
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
         addressCanDeploy.address.substring(2),
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
         addressCannotDeploy.address.substring(2),
     ];
 
@@ -44,11 +44,11 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
     await setupKeyManager(context, permissionKeys, permissionsValues);
   });
 
-  describe("when caller has ALL PERMISSIONS", () => {
-    it("should be allowed to deploy a contract TargetContract via CREATE", async () => {
+  describe('when caller has ALL PERMISSIONS', () => {
+    it('should be allowed to deploy a contract TargetContract via CREATE', async () => {
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
-      const expectedContractAddress = await context.universalProfile.callStatic["execute"](
+      const expectedContractAddress = await context.universalProfile.callStatic['execute'](
         OPERATION_TYPES.CREATE, // operation type
         ethers.constants.AddressZero, // recipient
         0, // value
@@ -63,16 +63,16 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
           contractBytecodeToDeploy,
         ),
       )
-        .to.emit(context.universalProfile, "ContractCreated")
+        .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
           ethers.utils.getAddress(expectedContractAddress),
           0,
-          ethers.utils.hexZeroPad("0x00", 32),
+          ethers.utils.hexZeroPad('0x00', 32),
         );
     });
 
-    it("should be allowed to deploy a contract TargetContract via CREATE2", async () => {
+    it('should be allowed to deploy a contract TargetContract via CREATE2', async () => {
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
       let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
@@ -92,13 +92,13 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
             contractBytecodeToDeploy + salt.substring(2),
           ),
       )
-        .to.emit(context.universalProfile, "ContractCreated")
+        .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(OPERATION_TYPES.CREATE2, ethers.utils.getAddress(preComputedAddress), 0, salt);
     });
   });
 
-  describe("when caller is an address with permission DEPLOY", () => {
-    it("should be allowed to deploy a contract TargetContract via CREATE", async () => {
+  describe('when caller is an address with permission DEPLOY', () => {
+    it('should be allowed to deploy a contract TargetContract via CREATE', async () => {
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
       const expectedContractAddress = await context.universalProfile
@@ -120,18 +120,18 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
             contractBytecodeToDeploy,
           ),
       )
-        .to.emit(context.universalProfile, "ContractCreated")
+        .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
           ethers.utils.getAddress(expectedContractAddress),
           0,
-          ethers.utils.hexZeroPad("0x00", 32),
+          ethers.utils.hexZeroPad('0x00', 32),
         );
     });
 
-    it("should be allowed to deploy a contract TargetContract via CREATE2", async () => {
+    it('should be allowed to deploy a contract TargetContract via CREATE2', async () => {
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      let salt = "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+      let salt = '0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe';
 
       let preComputedAddress = calculateCreate2(
         context.universalProfile.address,
@@ -149,14 +149,14 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
             contractBytecodeToDeploy + salt.substring(2),
           ),
       )
-        .to.emit(context.universalProfile, "ContractCreated")
+        .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(OPERATION_TYPES.CREATE2, ethers.utils.getAddress(preComputedAddress), 0, salt);
     });
   });
 
-  describe("when caller is an address that does not have the permission DEPLOY", () => {
-    describe("-> interacting via execute(...)", () => {
-      it("should revert when trying to deploy a contract via CREATE", async () => {
+  describe('when caller is an address that does not have the permission DEPLOY', () => {
+    describe('-> interacting via execute(...)', () => {
+      it('should revert when trying to deploy a contract via CREATE', async () => {
         let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
         await expect(
@@ -169,13 +169,13 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
               contractBytecodeToDeploy,
             ),
         )
-          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(addressCannotDeploy.address, "DEPLOY");
+          .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+          .withArgs(addressCannotDeploy.address, 'DEPLOY');
       });
 
-      it("should revert when trying to deploy a contract via CREATE2", async () => {
+      it('should revert when trying to deploy a contract via CREATE2', async () => {
         let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-        let salt = "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+        let salt = '0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe';
 
         await expect(
           context.universalProfile
@@ -187,8 +187,8 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
               contractBytecodeToDeploy + salt.substring(2),
             ),
         )
-          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(addressCannotDeploy.address, "DEPLOY");
+          .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+          .withArgs(addressCannotDeploy.address, 'DEPLOY');
       });
     });
   });

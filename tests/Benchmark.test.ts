@@ -1,8 +1,8 @@
-import fs from "fs";
-import { ethers } from "hardhat";
-import { expect } from "chai";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { Align, getMarkdownTable, Row } from "markdown-table-ts";
+import fs from 'fs';
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { Align, getMarkdownTable, Row } from 'markdown-table-ts';
 
 import {
   LSP6KeyManager__factory,
@@ -12,7 +12,7 @@ import {
   LSP8Mintable__factory,
   UniversalProfile,
   UniversalProfile__factory,
-} from "../types";
+} from '../types';
 
 import {
   ALL_PERMISSIONS,
@@ -21,12 +21,12 @@ import {
   OPERATION_TYPES,
   PERMISSIONS,
   CALLTYPE,
-} from "../constants";
-import { LSP6TestContext } from "./utils/context";
-import { setupKeyManager, setupProfileWithKeyManagerWithURD } from "./utils/fixtures";
-import { combineAllowedCalls, combinePermissions, encodeCompactBytesArray } from "./utils/helpers";
-import { BigNumber } from "ethers";
-import { token } from "../types/@openzeppelin/contracts";
+} from '../constants';
+import { LSP6TestContext } from './utils/context';
+import { setupKeyManager, setupProfileWithKeyManagerWithURD } from './utils/fixtures';
+import { combineAllowedCalls, combinePermissions, encodeCompactBytesArray } from './utils/helpers';
+import { BigNumber } from 'ethers';
+import { token } from '../types/@openzeppelin/contracts';
 
 export type UniversalProfileContext = {
   accounts: SignerWithAddress[];
@@ -74,97 +74,97 @@ let restrictedControllerExecuteTable;
 let mainControllerSetDataTable;
 let restrictedControllerSetDataTable;
 
-describe("⛽📊 Gas Benchmark", () => {
-  describe("UniversalProfile", () => {
+describe('⛽📊 Gas Benchmark', () => {
+  describe('UniversalProfile', () => {
     let context: UniversalProfileContext;
     let executeUP: Row[] = [];
     let setDataUP: Row[] = [];
     let tokensUP: Row[] = [];
 
-    describe("execute", () => {
-      describe("execute Single", () => {
+    describe('execute', () => {
+      describe('execute Single', () => {
         before(async () => {
-          context = await buildUniversalProfileContext(ethers.utils.parseEther("50"));
+          context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
         });
 
-        it("Transfer 1 LYX to an EOA without data", async () => {
+        it('Transfer 1 LYX to an EOA without data', async () => {
           const tx = await context.universalProfile
             .connect(context.owner)
             .execute(
               OPERATION_TYPES.CALL,
               context.accounts[1].address,
-              ethers.utils.parseEther("1"),
-              "0x",
+              ethers.utils.parseEther('1'),
+              '0x',
             );
 
           const receipt = await tx.wait();
 
           executeUP.push([
-            "Transfer 1 LYX to an EOA without data",
+            'Transfer 1 LYX to an EOA without data',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Transfer 1 LYX to a UP without data", async () => {
+        it('Transfer 1 LYX to a UP without data', async () => {
           const tx = await context.universalProfile
             .connect(context.owner)
             .execute(
               OPERATION_TYPES.CALL,
               context.universalProfile.address,
-              ethers.utils.parseEther("1"),
-              "0x",
+              ethers.utils.parseEther('1'),
+              '0x',
             );
 
           const receipt = await tx.wait();
 
           executeUP.push([
-            "Transfer 1 LYX to a UP without data",
+            'Transfer 1 LYX to a UP without data',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Transfer 1 LYX to an EOA with 256 bytes of data", async () => {
+        it('Transfer 1 LYX to an EOA with 256 bytes of data', async () => {
           const tx = await context.universalProfile
             .connect(context.owner)
             .execute(
               OPERATION_TYPES.CALL,
               context.accounts[1].address,
-              ethers.utils.parseEther("1"),
+              ethers.utils.parseEther('1'),
               generateRandomData(256),
             );
 
           const receipt = await tx.wait();
 
           executeUP.push([
-            "Transfer 1 LYX to an EOA with 256 bytes of data",
+            'Transfer 1 LYX to an EOA with 256 bytes of data',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Transfer 1 LYX to a UP with 256 bytes of data", async () => {
+        it('Transfer 1 LYX to a UP with 256 bytes of data', async () => {
           const tx = await context.universalProfile
             .connect(context.owner)
             .execute(
               OPERATION_TYPES.CALL,
               context.universalProfile.address,
-              ethers.utils.parseEther("1"),
-              ethers.utils.hexConcat(["0x00000000", generateRandomData(252)]),
+              ethers.utils.parseEther('1'),
+              ethers.utils.hexConcat(['0x00000000', generateRandomData(252)]),
             );
 
           const receipt = await tx.wait();
 
           executeUP.push([
-            "Transfer 1 LYX to a UP with 256 bytes of data",
+            'Transfer 1 LYX to a UP with 256 bytes of data',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
       });
 
-      describe("execute Array", () => {
+      describe('execute Array', () => {
         let universalProfile1, universalProfile2, universalProfile3;
 
         before(async () => {
-          context = await buildUniversalProfileContext(ethers.utils.parseEther("50"));
+          context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
 
           universalProfile1 = await new UniversalProfile__factory(context.owner).deploy(
             context.accounts[2].address,
@@ -179,7 +179,7 @@ describe("⛽📊 Gas Benchmark", () => {
           );
         });
 
-        it("Transfer 0.1 LYX to 3x EOA without data", async () => {
+        it('Transfer 0.1 LYX to 3x EOA without data', async () => {
           const tx = await context.universalProfile
             .connect(context.owner)
             .executeBatch(
@@ -190,44 +190,44 @@ describe("⛽📊 Gas Benchmark", () => {
                 context.accounts[3].address,
               ],
               [
-                ethers.utils.parseEther("0.1"),
-                ethers.utils.parseEther("0.1"),
-                ethers.utils.parseEther("0.1"),
+                ethers.utils.parseEther('0.1'),
+                ethers.utils.parseEther('0.1'),
+                ethers.utils.parseEther('0.1'),
               ],
-              ["0x", "0x", "0x"],
+              ['0x', '0x', '0x'],
             );
 
           const receipt = await tx.wait();
 
           executeUP.push([
-            "Transfer 0.1 LYX to 3x EOA without data",
+            'Transfer 0.1 LYX to 3x EOA without data',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Transfer 0.1 LYX to 3x UP without data", async () => {
+        it('Transfer 0.1 LYX to 3x UP without data', async () => {
           const tx = await context.universalProfile
             .connect(context.owner)
             .executeBatch(
               [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
               [universalProfile1.address, universalProfile2.address, universalProfile3.address],
               [
-                ethers.utils.parseEther("0.1"),
-                ethers.utils.parseEther("0.1"),
-                ethers.utils.parseEther("0.1"),
+                ethers.utils.parseEther('0.1'),
+                ethers.utils.parseEther('0.1'),
+                ethers.utils.parseEther('0.1'),
               ],
-              ["0x", "0x", "0x"],
+              ['0x', '0x', '0x'],
             );
 
           const receipt = await tx.wait();
 
           executeUP.push([
-            "Transfer 0.1 LYX to 3x UP without data",
+            'Transfer 0.1 LYX to 3x UP without data',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Transfer 0.1 LYX to 3x EOA with 256 bytes of data", async () => {
+        it('Transfer 0.1 LYX to 3x EOA with 256 bytes of data', async () => {
           const tx = await context.universalProfile
             .connect(context.owner)
             .executeBatch(
@@ -238,9 +238,9 @@ describe("⛽📊 Gas Benchmark", () => {
                 context.accounts[3].address,
               ],
               [
-                ethers.utils.parseEther("0.1"),
-                ethers.utils.parseEther("0.1"),
-                ethers.utils.parseEther("0.1"),
+                ethers.utils.parseEther('0.1'),
+                ethers.utils.parseEther('0.1'),
+                ethers.utils.parseEther('0.1'),
               ],
               [generateRandomData(256), generateRandomData(256), generateRandomData(256)],
             );
@@ -248,14 +248,14 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           executeUP.push([
-            "Transfer 0.1 LYX to 3x EOA with 256 bytes of data",
+            'Transfer 0.1 LYX to 3x EOA with 256 bytes of data',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Transfer 0.1 LYX to 3x UP with 256 bytes of data", async () => {
+        it('Transfer 0.1 LYX to 3x UP with 256 bytes of data', async () => {
           const random256BytesData = ethers.utils.hexConcat([
-            "0x00000000",
+            '0x00000000',
             generateRandomData(252),
           ]);
 
@@ -265,9 +265,9 @@ describe("⛽📊 Gas Benchmark", () => {
               [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
               [universalProfile1.address, universalProfile2.address, universalProfile3.address],
               [
-                ethers.utils.parseEther("0.1"),
-                ethers.utils.parseEther("0.1"),
-                ethers.utils.parseEther("0.1"),
+                ethers.utils.parseEther('0.1'),
+                ethers.utils.parseEther('0.1'),
+                ethers.utils.parseEther('0.1'),
               ],
               [random256BytesData, random256BytesData, random256BytesData],
             );
@@ -275,7 +275,7 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           executeUP.push([
-            "Transfer 0.1 LYX to 3x EOA with 256 bytes of data",
+            'Transfer 0.1 LYX to 3x EOA with 256 bytes of data',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
@@ -284,7 +284,7 @@ describe("⛽📊 Gas Benchmark", () => {
       after(async () => {
         UniversalProfileExecuteTable = getMarkdownTable({
           table: {
-            head: ["`execute` scenarios - 👑 UP Owner", "⛽ Gas Usage"],
+            head: ['`execute` scenarios - 👑 UP Owner', '⛽ Gas Usage'],
             body: executeUP,
           },
           alignment: [Align.Left, Align.Center],
@@ -292,69 +292,69 @@ describe("⛽📊 Gas Benchmark", () => {
       });
     });
 
-    describe("setData", () => {
-      describe("setData Single", () => {
+    describe('setData', () => {
+      describe('setData Single', () => {
         before(async () => {
-          context = await buildUniversalProfileContext(ethers.utils.parseEther("50"));
+          context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
         });
 
-        it("Set a 20 bytes long value", async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+        it('Set a 20 bytes long value', async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
           let value = generateRandomData(20);
 
           const tx = await context.universalProfile.setData(key, value);
 
           const receipt = await tx.wait();
 
-          setDataUP.push(["Set a 20 bytes long value", receipt.gasUsed.toNumber().toString()]);
+          setDataUP.push(['Set a 20 bytes long value', receipt.gasUsed.toNumber().toString()]);
         });
 
-        it("Set a 60 bytes long value", async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Other Key"));
+        it('Set a 60 bytes long value', async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Other Key'));
           let value = generateRandomData(60);
 
           const tx = await context.universalProfile.setData(key, value);
 
           const receipt = await tx.wait();
 
-          setDataUP.push(["Set a 60 bytes long value", receipt.gasUsed.toNumber().toString()]);
+          setDataUP.push(['Set a 60 bytes long value', receipt.gasUsed.toNumber().toString()]);
         });
 
-        it("Set a 160 bytes long value", async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Third Key"));
+        it('Set a 160 bytes long value', async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Third Key'));
           let value = generateRandomData(160);
 
           const tx = await context.universalProfile.setData(key, value);
 
           const receipt = await tx.wait();
 
-          setDataUP.push(["Set a 160 bytes long value", receipt.gasUsed.toNumber().toString()]);
+          setDataUP.push(['Set a 160 bytes long value', receipt.gasUsed.toNumber().toString()]);
         });
 
-        it("Set a 300 bytes long value", async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Fourth Key"));
+        it('Set a 300 bytes long value', async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fourth Key'));
           let value = generateRandomData(300);
 
           const tx = await context.universalProfile.setData(key, value);
 
           const receipt = await tx.wait();
 
-          setDataUP.push(["Set a 300 bytes long value", receipt.gasUsed.toNumber().toString()]);
+          setDataUP.push(['Set a 300 bytes long value', receipt.gasUsed.toNumber().toString()]);
         });
 
-        it("Set a 600 bytes long value", async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Fifth Key"));
+        it('Set a 600 bytes long value', async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fifth Key'));
           let value = generateRandomData(600);
 
           const tx = await context.universalProfile.setData(key, value);
 
           const receipt = await tx.wait();
 
-          setDataUP.push(["Set a 600 bytes long value", receipt.gasUsed.toNumber().toString()]);
+          setDataUP.push(['Set a 600 bytes long value', receipt.gasUsed.toNumber().toString()]);
         });
 
-        it("Change the value of a data key already set", async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Fifth Key"));
+        it('Change the value of a data key already set', async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fifth Key'));
           let value1 = generateRandomData(20);
           let value2 = generateRandomData(20);
 
@@ -365,38 +365,38 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "Change the value of a data key already set",
+            'Change the value of a data key already set',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Remove the value of a data key already set", async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Fifth Key"));
+        it('Remove the value of a data key already set', async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fifth Key'));
           let value = generateRandomData(20);
 
           await context.universalProfile.setData(key, value);
 
-          const tx = await context.universalProfile.setData(key, "0x");
+          const tx = await context.universalProfile.setData(key, '0x');
 
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "Remove the value of a data key already set",
+            'Remove the value of a data key already set',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
       });
 
-      describe("setData Array", () => {
+      describe('setData Array', () => {
         before(async () => {
-          context = await buildUniversalProfileContext(ethers.utils.parseEther("50"));
+          context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
         });
 
-        it("Set 2 data keys of 20 bytes long value", async () => {
-          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key1"));
+        it('Set 2 data keys of 20 bytes long value', async () => {
+          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key1'));
           let value1 = generateRandomData(20);
 
-          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key2"));
+          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key2'));
           let value2 = generateRandomData(20);
 
           const tx = await context.universalProfile.setDataBatch([key1, key2], [value1, value2]);
@@ -404,16 +404,16 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "Set 2 data keys of 20 bytes long value",
+            'Set 2 data keys of 20 bytes long value',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Set 2 data keys of 100 bytes long value", async () => {
-          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key3"));
+        it('Set 2 data keys of 100 bytes long value', async () => {
+          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key3'));
           let value1 = generateRandomData(100);
 
-          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key4"));
+          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key4'));
           let value2 = generateRandomData(100);
 
           const tx = await context.universalProfile.setDataBatch([key1, key2], [value1, value2]);
@@ -421,19 +421,19 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "Set 2 data keys of 100 bytes long value",
+            'Set 2 data keys of 100 bytes long value',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Set 3 data keys of 20 bytes long value", async () => {
-          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key5"));
+        it('Set 3 data keys of 20 bytes long value', async () => {
+          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key5'));
           let value1 = generateRandomData(20);
 
-          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key6"));
+          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key6'));
           let value2 = generateRandomData(20);
 
-          let key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key7"));
+          let key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key7'));
           let value3 = generateRandomData(20);
 
           const tx = await context.universalProfile.setDataBatch(
@@ -444,19 +444,19 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "Set 3 data keys of 20 bytes long value",
+            'Set 3 data keys of 20 bytes long value',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Change the value of three data keys already set of 20 bytes long value", async () => {
-          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key8"));
+        it('Change the value of three data keys already set of 20 bytes long value', async () => {
+          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key8'));
           let value1 = generateRandomData(20);
 
-          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key9"));
+          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key9'));
           let value2 = generateRandomData(20);
 
-          let key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key10"));
+          let key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key10'));
           let value3 = generateRandomData(20);
 
           await context.universalProfile.setDataBatch([key1, key2, key3], [value1, value2, value3]);
@@ -469,32 +469,32 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "Change the value of three data keys already set of 20 bytes long value",
+            'Change the value of three data keys already set of 20 bytes long value',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("Remove the value of three data keys already set", async () => {
-          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key11"));
+        it('Remove the value of three data keys already set', async () => {
+          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key11'));
           let value1 = generateRandomData(20);
 
-          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key12"));
+          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key12'));
           let value2 = generateRandomData(20);
 
-          let key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key13"));
+          let key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key13'));
           let value3 = generateRandomData(20);
 
           await context.universalProfile.setDataBatch([key1, key2, key3], [value1, value2, value3]);
 
           const tx = await context.universalProfile.setDataBatch(
             [key1, key2, key3],
-            ["0x", "0x", "0x"],
+            ['0x', '0x', '0x'],
           );
 
           const receipt = await tx.wait();
 
           setDataUP.push([
-            "Remove the value of three data keys already set",
+            'Remove the value of three data keys already set',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
@@ -503,7 +503,7 @@ describe("⛽📊 Gas Benchmark", () => {
       after(async () => {
         UniversalProfileSetDataTable = getMarkdownTable({
           table: {
-            head: ["`setData` scenarios - 👑 UP Owner", "⛽ Gas Usage"],
+            head: ['`setData` scenarios - 👑 UP Owner', '⛽ Gas Usage'],
             body: setDataUP,
           },
           alignment: [Align.Left, Align.Center],
@@ -511,25 +511,25 @@ describe("⛽📊 Gas Benchmark", () => {
       });
     });
 
-    describe("Tokens", () => {
+    describe('Tokens', () => {
       let lsp7Token: LSP7Mintable;
       let lsp8Token: LSP8Mintable;
       let universalProfile1;
 
       before(async () => {
-        context = await buildUniversalProfileContext(ethers.utils.parseEther("50"));
+        context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
         // deploy a LSP7 token
         lsp7Token = await new LSP7Mintable__factory(context.owner).deploy(
-          "Token",
-          "MTKN",
+          'Token',
+          'MTKN',
           context.owner.address,
           false,
         );
 
         // deploy a LSP7 token
         lsp8Token = await new LSP8Mintable__factory(context.owner).deploy(
-          "Token",
-          "MTKN",
+          'Token',
+          'MTKN',
           context.owner.address,
         );
 
@@ -538,36 +538,36 @@ describe("⛽📊 Gas Benchmark", () => {
         );
       });
 
-      describe("LSP7DigitalAsset", () => {
-        it("when minting LSP7Token to a UP without data", async () => {
-          const tx = await lsp7Token.mint(context.universalProfile.address, 20, false, "0x");
+      describe('LSP7DigitalAsset', () => {
+        it('when minting LSP7Token to a UP without data', async () => {
+          const tx = await lsp7Token.mint(context.universalProfile.address, 20, false, '0x');
 
           const receipt = await tx.wait();
 
           tokensUP.push([
-            "Minting a LSP7Token to a UP (No Delegate) from an EOA",
+            'Minting a LSP7Token to a UP (No Delegate) from an EOA',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("when minting LSP7Token to a EOA without data", async () => {
-          const tx = await lsp7Token.mint(context.accounts[5].address, 20, true, "0x");
+        it('when minting LSP7Token to a EOA without data', async () => {
+          const tx = await lsp7Token.mint(context.accounts[5].address, 20, true, '0x');
 
           const receipt = await tx.wait();
 
           tokensUP.push([
-            "Minting a LSP7Token to an EOA from an EOA",
+            'Minting a LSP7Token to an EOA from an EOA',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("when transferring LSP7Token from a UP to a UP without data", async () => {
-          const lsp7TransferPayload = lsp7Token.interface.encodeFunctionData("transfer", [
+        it('when transferring LSP7Token from a UP to a UP without data', async () => {
+          const lsp7TransferPayload = lsp7Token.interface.encodeFunctionData('transfer', [
             context.universalProfile.address,
             universalProfile1.address,
             5,
             false,
-            "0x",
+            '0x',
           ]);
 
           const tx = await context.universalProfile
@@ -577,54 +577,54 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           tokensUP.push([
-            "Transferring an LSP7Token from a UP to another UP (No Delegate)",
+            'Transferring an LSP7Token from a UP to another UP (No Delegate)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
       });
 
-      describe("LSP8IdentifiableDigitalAsset", () => {
+      describe('LSP8IdentifiableDigitalAsset', () => {
         let metaNFTList: string[] = [
-          "0x0000000000000000000000000000000000000000000000000000000000000001",
-          "0x0000000000000000000000000000000000000000000000000000000000000002",
-          "0x0000000000000000000000000000000000000000000000000000000000000003",
-          "0x0000000000000000000000000000000000000000000000000000000000000004",
+          '0x0000000000000000000000000000000000000000000000000000000000000001',
+          '0x0000000000000000000000000000000000000000000000000000000000000002',
+          '0x0000000000000000000000000000000000000000000000000000000000000003',
+          '0x0000000000000000000000000000000000000000000000000000000000000004',
         ];
 
-        it("when minting LSP8Token to a UP without data", async () => {
+        it('when minting LSP8Token to a UP without data', async () => {
           const tx = await lsp8Token.mint(
             context.universalProfile.address,
             metaNFTList[0],
             false,
-            "0x",
+            '0x',
           );
 
           const receipt = await tx.wait();
 
           tokensUP.push([
-            "Minting a LSP8Token to a UP (No Delegate) from an EOA",
+            'Minting a LSP8Token to a UP (No Delegate) from an EOA',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("when minting LSP8Token to a EOA without data", async () => {
-          const tx = await lsp8Token.mint(context.accounts[5].address, metaNFTList[1], true, "0x");
+        it('when minting LSP8Token to a EOA without data', async () => {
+          const tx = await lsp8Token.mint(context.accounts[5].address, metaNFTList[1], true, '0x');
 
           const receipt = await tx.wait();
 
           tokensUP.push([
-            "Minting a LSP8Token to an EOA from an EOA",
+            'Minting a LSP8Token to an EOA from an EOA',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("when transferring LSP8Token from a UP to a UP without data", async () => {
-          const lsp8TransferPayload = lsp8Token.interface.encodeFunctionData("transfer", [
+        it('when transferring LSP8Token from a UP to a UP without data', async () => {
+          const lsp8TransferPayload = lsp8Token.interface.encodeFunctionData('transfer', [
             context.universalProfile.address,
             universalProfile1.address,
             metaNFTList[0],
             false,
-            "0x",
+            '0x',
           ]);
 
           const tx = await context.universalProfile
@@ -634,7 +634,7 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           tokensUP.push([
-            "Transferring an LSP8Token from a UP to another UP (No Delegate)",
+            'Transferring an LSP8Token from a UP to another UP (No Delegate)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
@@ -643,7 +643,7 @@ describe("⛽📊 Gas Benchmark", () => {
       after(async () => {
         UniversalProfileTokensTable = getMarkdownTable({
           table: {
-            head: ["`Tokens` scenarios - 👑 UP Owner", "⛽ Gas Usage"],
+            head: ['`Tokens` scenarios - 👑 UP Owner', '⛽ Gas Usage'],
             body: tokensUP,
           },
           alignment: [Align.Left, Align.Center],
@@ -652,9 +652,9 @@ describe("⛽📊 Gas Benchmark", () => {
     });
   });
 
-  describe("KeyManager", () => {
-    describe("`execute(...)` via Key Manager", () => {
-      describe("main controller (this browser extension)", () => {
+  describe('KeyManager', () => {
+    describe('`execute(...)` via Key Manager', () => {
+      describe('main controller (this browser extension)', () => {
         let casesExecuteMainController: Row[] = [];
 
         let context: LSP6TestContext;
@@ -667,14 +667,14 @@ describe("⛽📊 Gas Benchmark", () => {
         let lsp8MetaNFT: LSP8Mintable;
 
         let nftList: string[] = [
-          "0x0000000000000000000000000000000000000000000000000000000000000001",
-          "0x0000000000000000000000000000000000000000000000000000000000000002",
-          "0x0000000000000000000000000000000000000000000000000000000000000003",
-          "0x0000000000000000000000000000000000000000000000000000000000000004",
+          '0x0000000000000000000000000000000000000000000000000000000000000001',
+          '0x0000000000000000000000000000000000000000000000000000000000000002',
+          '0x0000000000000000000000000000000000000000000000000000000000000003',
+          '0x0000000000000000000000000000000000000000000000000000000000000004',
         ];
 
         before(async () => {
-          context = await buildLSP6TestContext(ethers.utils.parseEther("50"));
+          context = await buildLSP6TestContext(ethers.utils.parseEther('50'));
 
           recipientEOA = context.accounts[1];
           let deployedContracts = await setupProfileWithKeyManagerWithURD(context.accounts[2]);
@@ -686,55 +686,55 @@ describe("⛽📊 Gas Benchmark", () => {
 
           // deploy a LSP7 token
           lsp7MetaCoin = await new LSP7Mintable__factory(context.owner).deploy(
-            "MetaCoin",
-            "MTC",
+            'MetaCoin',
+            'MTC',
             context.owner.address,
             false,
           );
 
           // deploy a LSP8 NFT
           lsp8MetaNFT = await new LSP8Mintable__factory(context.owner).deploy(
-            "MetaNFT",
-            "MNF",
+            'MetaNFT',
+            'MNF',
             context.owner.address,
           );
 
           // mint some tokens to the UP
-          await lsp7MetaCoin.mint(context.universalProfile.address, 1000, false, "0x");
+          await lsp7MetaCoin.mint(context.universalProfile.address, 1000, false, '0x');
 
           // mint some NFTs to the UP
           nftList.forEach(async (nft) => {
-            await lsp8MetaNFT.mint(context.universalProfile.address, nft, false, "0x");
+            await lsp8MetaNFT.mint(context.universalProfile.address, nft, false, '0x');
           });
         });
 
-        it("transfer some LYXes to an EOA", async () => {
-          const lyxAmount = ethers.utils.parseEther("3");
+        it('transfer some LYXes to an EOA', async () => {
+          const lyxAmount = ethers.utils.parseEther('3');
 
           // prettier-ignore
           const tx = await context.universalProfile.connect(context.owner).execute(OPERATION_TYPES.CALL, recipientEOA.address, lyxAmount, "0x");
           const receipt = await tx.wait();
 
           casesExecuteMainController.push([
-            "transfer LYX to an EOA",
+            'transfer LYX to an EOA',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("transfers some LYXes to a UP", async () => {
-          const lyxAmount = ethers.utils.parseEther("3");
+        it('transfers some LYXes to a UP', async () => {
+          const lyxAmount = ethers.utils.parseEther('3');
 
           // prettier-ignore
           const tx = await context.universalProfile.connect(context.owner).execute(OPERATION_TYPES.CALL, aliceUP.address, lyxAmount, "0x");
           const receipt = await tx.wait();
 
           casesExecuteMainController.push([
-            "transfer LYX to a UP",
+            'transfer LYX to a UP',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("transfers some tokens (LSP7) to an EOA (no data)", async () => {
+        it('transfers some tokens (LSP7) to an EOA (no data)', async () => {
           const tokenAmount = 100;
 
           // prettier-ignore
@@ -753,12 +753,12 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           casesExecuteMainController.push([
-            "transfer tokens (LSP7) to an EOA (no data)",
+            'transfer tokens (LSP7) to an EOA (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("transfer some tokens (LSP7) to a UP (no data)", async () => {
+        it('transfer some tokens (LSP7) to a UP (no data)', async () => {
           const tokenAmount = 100;
 
           // prettier-ignore
@@ -777,12 +777,12 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           casesExecuteMainController.push([
-            "transfer tokens (LSP7) to a UP (no data)",
+            'transfer tokens (LSP7) to a UP (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("transfer a NFT (LSP8) to a EOA (no data)", async () => {
+        it('transfer a NFT (LSP8) to a EOA (no data)', async () => {
           const nftId = nftList[0];
 
           // prettier-ignore
@@ -801,12 +801,12 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           casesExecuteMainController.push([
-            "transfer a NFT (LSP8) to a EOA (no data)",
+            'transfer a NFT (LSP8) to a EOA (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("transfer a NFT (LSP8) to a UP (no data)", async () => {
+        it('transfer a NFT (LSP8) to a UP (no data)', async () => {
           const nftId = nftList[1];
 
           // prettier-ignore
@@ -825,7 +825,7 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           casesExecuteMainController.push([
-            "transfer a NFT (LSP8) to a UP (no data)",
+            'transfer a NFT (LSP8) to a UP (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
@@ -833,7 +833,7 @@ describe("⛽📊 Gas Benchmark", () => {
         after(async () => {
           mainControllerExecuteTable = getMarkdownTable({
             table: {
-              head: ["`execute` scenarios - 👑 main controller", "⛽ Gas Usage"],
+              head: ['`execute` scenarios - 👑 main controller', '⛽ Gas Usage'],
               body: casesExecuteMainController,
             },
             alignment: [Align.Left, Align.Center],
@@ -841,7 +841,7 @@ describe("⛽📊 Gas Benchmark", () => {
         });
       });
 
-      describe("controllers with some restrictions", () => {
+      describe('controllers with some restrictions', () => {
         let casesExecuteRestrictedController: Row[] = [];
         let context: LSP6TestContext;
 
@@ -859,21 +859,21 @@ describe("⛽📊 Gas Benchmark", () => {
         let lsp8MetaNFT: LSP8Mintable, lsp8LyxPunks: LSP8Mintable;
 
         const metaNFTList: string[] = [
-          "0x0000000000000000000000000000000000000000000000000000000000000001",
-          "0x0000000000000000000000000000000000000000000000000000000000000002",
-          "0x0000000000000000000000000000000000000000000000000000000000000003",
-          "0x0000000000000000000000000000000000000000000000000000000000000004",
+          '0x0000000000000000000000000000000000000000000000000000000000000001',
+          '0x0000000000000000000000000000000000000000000000000000000000000002',
+          '0x0000000000000000000000000000000000000000000000000000000000000003',
+          '0x0000000000000000000000000000000000000000000000000000000000000004',
         ];
 
         const lyxPunksList: string[] = [
-          "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-          "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
-          "0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead",
-          "0xf00df00df00df00df00df00df00df00df00df00df00df00df00df00df00df00d",
+          '0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe',
+          '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef',
+          '0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead',
+          '0xf00df00df00df00df00df00df00df00df00df00df00df00df00df00df00df00d',
         ];
 
         before(async () => {
-          context = await buildLSP6TestContext(ethers.utils.parseEther("50"));
+          context = await buildLSP6TestContext(ethers.utils.parseEther('50'));
 
           recipientEOA = context.accounts[1];
 
@@ -888,35 +888,35 @@ describe("⛽📊 Gas Benchmark", () => {
           canTransferTwoTokens = context.accounts[3];
 
           lsp7MetaCoin = await new LSP7Mintable__factory(context.owner).deploy(
-            "MetaCoin",
-            "MTC",
+            'MetaCoin',
+            'MTC',
             context.owner.address,
             false,
           );
 
           lsp7LyxDai = await new LSP7Mintable__factory(context.owner).deploy(
-            "LyxDai",
-            "LDAI",
+            'LyxDai',
+            'LDAI',
             context.owner.address,
             false,
           );
 
           [lsp7MetaCoin, lsp7LyxDai].forEach(async (token) => {
-            await token.mint(context.universalProfile.address, 1000, false, "0x");
+            await token.mint(context.universalProfile.address, 1000, false, '0x');
           });
 
           // LSP8 NFT transfer scenarios
           canTransferTwoNFTs = context.accounts[4];
 
           lsp8MetaNFT = await new LSP8Mintable__factory(context.owner).deploy(
-            "MetaNFT",
-            "MNF",
+            'MetaNFT',
+            'MNF',
             context.owner.address,
           );
 
           lsp8LyxPunks = await new LSP8Mintable__factory(context.owner).deploy(
-            "LyxPunks",
-            "LPK",
+            'LyxPunks',
+            'LPK',
             context.owner.address,
           );
 
@@ -926,7 +926,7 @@ describe("⛽📊 Gas Benchmark", () => {
           ].forEach(async (nftContract) => {
             // mint some NFTs to the UP
             nftContract.tokenIds.forEach(async (nft) => {
-              await lsp8MetaNFT.mint(context.universalProfile.address, nft, false, "0x");
+              await lsp8MetaNFT.mint(context.universalProfile.address, nft, false, '0x');
             });
           });
 
@@ -962,21 +962,21 @@ describe("⛽📊 Gas Benchmark", () => {
           )
         });
 
-        it("transfer some LYXes to an EOA - restricted to 1 x allowed address only (TRANSFERVALUE + 1x AllowedCalls)", async () => {
+        it('transfer some LYXes to an EOA - restricted to 1 x allowed address only (TRANSFERVALUE + 1x AllowedCalls)', async () => {
           const lyxAmount = 10;
 
           const tx = await context.universalProfile
             .connect(canTransferValueToOneAddress)
-            .execute(OPERATION_TYPES.CALL, allowedAddressToTransferValue, lyxAmount, "0x");
+            .execute(OPERATION_TYPES.CALL, allowedAddressToTransferValue, lyxAmount, '0x');
           const receipt = await tx.wait();
 
           casesExecuteRestrictedController.push([
-            "transfer some LYXes to an EOA - restricted to 1 x allowed address only (TRANSFERVALUE + 1x AllowedCalls)",
+            'transfer some LYXes to an EOA - restricted to 1 x allowed address only (TRANSFERVALUE + 1x AllowedCalls)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("transfers some tokens (LSP7) to an EOA - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
+        it('transfers some tokens (LSP7) to an EOA - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)', async () => {
           const tokenAmount = 100;
 
           // prettier-ignore
@@ -995,12 +995,12 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           casesExecuteRestrictedController.push([
-            "transfers some tokens (LSP7) to an EOA - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)",
+            'transfers some tokens (LSP7) to an EOA - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("transfers some tokens (LSP7) to an other UP - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
+        it('transfers some tokens (LSP7) to an other UP - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)', async () => {
           const tokenAmount = 100;
 
           // prettier-ignore
@@ -1019,12 +1019,12 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           casesExecuteRestrictedController.push([
-            "transfers some tokens (LSP7) to an other UP - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)",
+            'transfers some tokens (LSP7) to an other UP - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("transfers a NFT (LSP8) to an EOA - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
+        it('transfers a NFT (LSP8) to an EOA - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)', async () => {
           const nftId = metaNFTList[0];
 
           // prettier-ignore
@@ -1043,12 +1043,12 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           casesExecuteRestrictedController.push([
-            "transfers a NFT (LSP8) to an EOA - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)",
+            'transfers a NFT (LSP8) to an EOA - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("transfers a NFT (LSP8) to an other UP - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
+        it('transfers a NFT (LSP8) to an other UP - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)', async () => {
           const nftId = metaNFTList[1];
 
           // prettier-ignore
@@ -1067,7 +1067,7 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           casesExecuteRestrictedController.push([
-            "transfers a NFT (LSP8) to an other UP - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)",
+            'transfers a NFT (LSP8) to an other UP - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
@@ -1075,7 +1075,7 @@ describe("⛽📊 Gas Benchmark", () => {
         after(async () => {
           restrictedControllerExecuteTable = getMarkdownTable({
             table: {
-              head: ["`execute` scenarios - 🛃 restricted controller", "⛽ Gas Usage"],
+              head: ['`execute` scenarios - 🛃 restricted controller', '⛽ Gas Usage'],
               body: casesExecuteRestrictedController,
             },
             alignment: [Align.Left, Align.Center],
@@ -1084,23 +1084,23 @@ describe("⛽📊 Gas Benchmark", () => {
       });
     });
 
-    describe("`setData(...)` via Key Manager", () => {
+    describe('`setData(...)` via Key Manager', () => {
       let context: LSP6TestContext;
 
       let controllerCanSetData: SignerWithAddress,
         controllerCanSetDataAndAddController: SignerWithAddress;
 
       const allowedERC725YDataKeys = [
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key1")),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key2")),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key3")),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key4")),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key5")),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key6")),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key7")),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key8")),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key9")),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key10")),
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key1')),
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key2')),
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key3')),
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key4')),
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key5')),
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key6')),
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key7')),
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key8')),
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key9')),
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key10')),
       ];
 
       before(async () => {
@@ -1138,13 +1138,13 @@ describe("⛽📊 Gas Benchmark", () => {
         await setupKeyManager(context, permissionKeys, permissionValues);
       });
 
-      describe("main controller (this browser extension) has SUPER_SETDATA ", () => {
+      describe('main controller (this browser extension) has SUPER_SETDATA ', () => {
         let benchmarkCasesSetDataMainController: Row[] = [];
 
-        it("updates profile details (LSP3Profile metadata)", async () => {
-          const dataKey = ERC725YDataKeys.LSP3["LSP3Profile"];
+        it('updates profile details (LSP3Profile metadata)', async () => {
+          const dataKey = ERC725YDataKeys.LSP3['LSP3Profile'];
           const dataValue =
-            "0x6f357c6a820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361696670733a2f2f516d597231564a4c776572673670456f73636468564775676f3339706136727963455a4c6a7452504466573834554178";
+            '0x6f357c6a820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361696670733a2f2f516d597231564a4c776572673670456f73636468564775676f3339706136727963455a4c6a7452504466573834554178';
 
           const tx = await context.universalProfile
             .connect(context.owner)
@@ -1152,7 +1152,7 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           benchmarkCasesSetDataMainController.push([
-            "updates profile details (LSP3Profile metadata)",
+            'updates profile details (LSP3Profile metadata)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
@@ -1164,8 +1164,8 @@ describe("⛽📊 Gas Benchmark", () => {
       `, async () => {
           const newController = context.accounts[3];
 
-          const AddressPermissionsArrayLength = await context.universalProfile["getData(bytes32)"](
-            ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+          const AddressPermissionsArrayLength = await context.universalProfile['getData(bytes32)'](
+            ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
           );
 
           // prettier-ignore
@@ -1191,18 +1191,18 @@ describe("⛽📊 Gas Benchmark", () => {
           expect(await context.universalProfile.getDataBatch(dataKeys)).to.deep.equal(dataValues);
 
           benchmarkCasesSetDataMainController.push([
-            "give permissions to a controller (AddressPermissions[] + AddressPermissions[index] + AddressPermissions:Permissions:<controller-address>)",
+            'give permissions to a controller (AddressPermissions[] + AddressPermissions[index] + AddressPermissions:Permissions:<controller-address>)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("restrict a controller to some specific ERC725Y Data Keys", async () => {
+        it('restrict a controller to some specific ERC725Y Data Keys', async () => {
           const controllerToEdit = context.accounts[3];
 
           const allowedDataKeys = [
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Allowed ERC725Y Data Key 1")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Allowed ERC725Y Data Key 2")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Allowed ERC725Y Data Key 3")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Allowed ERC725Y Data Key 1')),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Allowed ERC725Y Data Key 2')),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Allowed ERC725Y Data Key 3')),
           ];
 
           // prettier-ignore
@@ -1221,12 +1221,12 @@ describe("⛽📊 Gas Benchmark", () => {
           expect(await context.universalProfile.getData(dataKey)).to.equal(dataValue);
 
           benchmarkCasesSetDataMainController.push([
-            "restrict a controller to some specific ERC725Y Data Keys",
+            'restrict a controller to some specific ERC725Y Data Keys',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("restrict a controller to interact only with 3x specific addresses", async () => {
+        it('restrict a controller to interact only with 3x specific addresses', async () => {
           const controllerToEdit = context.accounts[3];
 
           const allowedAddresses = [
@@ -1241,8 +1241,8 @@ describe("⛽📊 Gas Benchmark", () => {
           const dataValue = combineAllowedCalls(
             [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
             [allowedAddresses[0], allowedAddresses[1], allowedAddresses[2]],
-            ["0xffffffff", "0xffffffff", "0xffffffff"],
-            ["0xffffffff", "0xffffffff", "0xffffffff"],
+            ['0xffffffff', '0xffffffff', '0xffffffff'],
+            ['0xffffffff', '0xffffffff', '0xffffffff'],
           );
 
           let tx = await context.universalProfile
@@ -1254,7 +1254,7 @@ describe("⛽📊 Gas Benchmark", () => {
           expect(await context.universalProfile.getData(dataKey)).to.equal(dataValue);
 
           benchmarkCasesSetDataMainController.push([
-            "restrict a controller to interact only with 3x specific addresses",
+            'restrict a controller to interact only with 3x specific addresses',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
@@ -1266,8 +1266,8 @@ describe("⛽📊 Gas Benchmark", () => {
       `, async () => {
           const newController = context.accounts[3];
 
-          const AddressPermissionsArrayLength = await context.universalProfile["getData(bytes32)"](
-            ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+          const AddressPermissionsArrayLength = await context.universalProfile['getData(bytes32)'](
+            ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
           );
 
           // prettier-ignore
@@ -1291,12 +1291,12 @@ describe("⛽📊 Gas Benchmark", () => {
           let receipt = await tx.wait();
 
           benchmarkCasesSetDataMainController.push([
-            "remove a controller (its permissions + its address from the AddressPermissions[] array)",
+            'remove a controller (its permissions + its address from the AddressPermissions[] array)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("write 5x LSP12 Issued Assets", async () => {
+        it('write 5x LSP12 Issued Assets', async () => {
           // prettier-ignore
           const issuedAssetsDataKeys = [
             ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length,
@@ -1310,7 +1310,7 @@ describe("⛽📊 Gas Benchmark", () => {
           // these are just random placeholder values
           // they should be replaced with actual token contract address
           const issuedAssetsDataValues = [
-            "0x0000000000000000000000000000000000000000000000000000000000000005",
+            '0x0000000000000000000000000000000000000000000000000000000000000005',
             context.accounts[5].address,
             context.accounts[6].address,
             context.accounts[7].address,
@@ -1329,7 +1329,7 @@ describe("⛽📊 Gas Benchmark", () => {
           );
 
           benchmarkCasesSetDataMainController.push([
-            "write 5x LSP12 Issued Assets",
+            'write 5x LSP12 Issued Assets',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
@@ -1337,7 +1337,7 @@ describe("⛽📊 Gas Benchmark", () => {
         after(async () => {
           mainControllerSetDataTable = getMarkdownTable({
             table: {
-              head: ["`setData` scenarios - 👑 main controller", "⛽ Gas Usage"],
+              head: ['`setData` scenarios - 👑 main controller', '⛽ Gas Usage'],
               body: benchmarkCasesSetDataMainController,
             },
             alignment: [Align.Left, Align.Center],
@@ -1345,12 +1345,12 @@ describe("⛽📊 Gas Benchmark", () => {
         });
       });
 
-      describe("a controller (EOA) can SETDATA, ADDCONTROLLER and on 10x AllowedERC725YKeys", () => {
+      describe('a controller (EOA) can SETDATA, ADDCONTROLLER and on 10x AllowedERC725YKeys', () => {
         let benchmarkCasesSetDataRestrictedController: Row[] = [];
 
-        it("`setData(bytes32,bytes)` -> updates 1x data key", async () => {
+        it('`setData(bytes32,bytes)` -> updates 1x data key', async () => {
           const dataKey = allowedERC725YDataKeys[5];
-          const dataValue = "0xaabbccdd";
+          const dataValue = '0xaabbccdd';
 
           const tx = await context.universalProfile
             .connect(controllerCanSetData)
@@ -1358,14 +1358,14 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           benchmarkCasesSetDataRestrictedController.push([
-            "`setData(bytes32,bytes)` -> updates 1x data key",
+            '`setData(bytes32,bytes)` -> updates 1x data key',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("`setData(bytes32[],bytes[])` -> updates 3x data keys (first x3)", async () => {
+        it('`setData(bytes32[],bytes[])` -> updates 3x data keys (first x3)', async () => {
           const dataKeys = allowedERC725YDataKeys.slice(0, 3);
-          const dataValues = ["0xaabbccdd", "0xaabbccdd", "0xaabbccdd"];
+          const dataValues = ['0xaabbccdd', '0xaabbccdd', '0xaabbccdd'];
 
           const tx = await context.universalProfile
             .connect(controllerCanSetData)
@@ -1373,14 +1373,14 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           benchmarkCasesSetDataRestrictedController.push([
-            "`setData(bytes32[],bytes[])` -> updates 3x data keys (first x3)",
+            '`setData(bytes32[],bytes[])` -> updates 3x data keys (first x3)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("`setData(bytes32[],bytes[])` -> updates 3x data keys (middle x3)", async () => {
+        it('`setData(bytes32[],bytes[])` -> updates 3x data keys (middle x3)', async () => {
           const dataKeys = allowedERC725YDataKeys.slice(3, 6);
-          const dataValues = ["0xaabbccdd", "0xaabbccdd", "0xaabbccdd"];
+          const dataValues = ['0xaabbccdd', '0xaabbccdd', '0xaabbccdd'];
 
           const tx = await context.universalProfile
             .connect(controllerCanSetData)
@@ -1388,14 +1388,14 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           benchmarkCasesSetDataRestrictedController.push([
-            "`setData(bytes32[],bytes[])` -> updates 3x data keys (middle x3)",
+            '`setData(bytes32[],bytes[])` -> updates 3x data keys (middle x3)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("`setData(bytes32[],bytes[])` -> updates 3x data keys (last x3)", async () => {
+        it('`setData(bytes32[],bytes[])` -> updates 3x data keys (last x3)', async () => {
           const dataKeys = allowedERC725YDataKeys.slice(7, 10);
-          const dataValues = ["0xaabbccdd", "0xaabbccdd", "0xaabbccdd"];
+          const dataValues = ['0xaabbccdd', '0xaabbccdd', '0xaabbccdd'];
 
           const tx = await context.universalProfile
             .connect(controllerCanSetData)
@@ -1403,26 +1403,26 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           benchmarkCasesSetDataRestrictedController.push([
-            "`setData(bytes32[],bytes[])` -> updates 3x data keys (last x3)",
+            '`setData(bytes32[],bytes[])` -> updates 3x data keys (last x3)',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
 
-        it("`setData(bytes32[],bytes[])` -> updates 2x data keys + add 3x new controllers (including setting the array length + indexes under AddressPermissions[index])", async () => {
+        it('`setData(bytes32[],bytes[])` -> updates 2x data keys + add 3x new controllers (including setting the array length + indexes under AddressPermissions[index])', async () => {
           const dataKeys = [
             allowedERC725YDataKeys[0],
             allowedERC725YDataKeys[1],
-            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
               context.accounts[3].address.substring(2),
-            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
               context.accounts[4].address.substring(2),
-            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
               context.accounts[5].address.substring(2),
           ];
 
           const dataValues = [
-            "0xaabbccdd",
-            "0xaabbccdd",
+            '0xaabbccdd',
+            '0xaabbccdd',
             PERMISSIONS.SETDATA,
             PERMISSIONS.SETDATA,
             PERMISSIONS.SETDATA,
@@ -1434,7 +1434,7 @@ describe("⛽📊 Gas Benchmark", () => {
           const receipt = await tx.wait();
 
           benchmarkCasesSetDataRestrictedController.push([
-            "`setData(bytes32[],bytes[])` -> updates 2x data keys + add 3x new controllers (including setting the array length + indexes under AddressPermissions[index])",
+            '`setData(bytes32[],bytes[])` -> updates 2x data keys + add 3x new controllers (including setting the array length + indexes under AddressPermissions[index])',
             receipt.gasUsed.toNumber().toString(),
           ]);
         });
@@ -1442,7 +1442,7 @@ describe("⛽📊 Gas Benchmark", () => {
         after(async () => {
           restrictedControllerSetDataTable = getMarkdownTable({
             table: {
-              head: ["`setData` scenarios - 🛃 restricted controller", "⛽ Gas Usage"],
+              head: ['`setData` scenarios - 🛃 restricted controller', '⛽ Gas Usage'],
               body: benchmarkCasesSetDataRestrictedController,
             },
             alignment: [Align.Left, Align.Center],
@@ -1516,7 +1516,7 @@ ${restrictedControllerSetDataTable}
 
 </details>
 `;
-    const file = "benchmark.md";
+    const file = 'benchmark.md';
 
     fs.writeFileSync(file, markdown);
   });

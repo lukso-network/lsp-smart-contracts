@@ -1,7 +1,7 @@
-import { HardhatUserConfig } from "hardhat/config";
-import { NetworkUserConfig } from "hardhat/types";
-import { config as dotenvConfig } from "dotenv";
-import { resolve } from "path";
+import { HardhatUserConfig } from 'hardhat/config';
+import { NetworkUserConfig } from 'hardhat/types';
+import { config as dotenvConfig } from 'dotenv';
+import { resolve } from 'path';
 
 /**
  * this package includes:
@@ -12,41 +12,41 @@ import { resolve } from "path";
  *  - @typechain/hardhat
  *  - solidity-coverage
  */
-import "@nomicfoundation/hardhat-toolbox";
+import '@nomicfoundation/hardhat-toolbox';
 
 // additional hardhat plugins
-import "hardhat-packager";
-import "hardhat-contract-sizer";
-import "hardhat-deploy";
-import "./scripts/ci/docs-generate";
+import 'hardhat-packager';
+import 'hardhat-contract-sizer';
+import 'hardhat-deploy';
+import './scripts/ci/docs-generate';
 
 // Typescript types for web3.js
-import "@nomiclabs/hardhat-web3";
+import '@nomiclabs/hardhat-web3';
 
 /**
  * @dev uncomment to generate contract docs in Markdown
  */
-import "@b00ste/hardhat-dodoc";
-import { dodocConfig } from "./dodoc/config";
+import '@b00ste/hardhat-dodoc';
+import { dodocConfig } from './dodoc/config';
 
-dotenvConfig({ path: resolve(__dirname, "./.env") });
+dotenvConfig({ path: resolve(__dirname, './.env') });
 
 function getTestnetChainConfig(): NetworkUserConfig {
   const config: NetworkUserConfig = {
     live: true,
-    url: "https://rpc.testnet.lukso.network",
+    url: 'https://rpc.testnet.lukso.network',
     chainId: 4201,
   };
 
   if (process.env.CONTRACT_VERIFICATION_TESTNET_PK !== undefined) {
-    config["accounts"] = [process.env.CONTRACT_VERIFICATION_TESTNET_PK];
+    config['accounts'] = [process.env.CONTRACT_VERIFICATION_TESTNET_PK];
   }
 
   return config;
 }
 
 const config: HardhatUserConfig = {
-  defaultNetwork: "hardhat",
+  defaultNetwork: 'hardhat',
   networks: {
     hardhat: {
       live: false,
@@ -59,28 +59,28 @@ const config: HardhatUserConfig = {
     owner: 0,
   },
   etherscan: {
-    apiKey: "no-api-key-needed",
+    apiKey: 'no-api-key-needed',
     customChains: [
       {
-        network: "luksoTestnet",
+        network: 'luksoTestnet',
         chainId: 4201,
         urls: {
-          apiURL: "https://explorer.execution.testnet.lukso.network/api",
-          browserURL: "https://explorer.execution.testnet.lukso.network/",
+          apiURL: 'https://explorer.execution.testnet.lukso.network/api',
+          browserURL: 'https://explorer.execution.testnet.lukso.network/',
         },
       },
     ],
   },
   gasReporter: {
     enabled: true,
-    currency: "USD",
+    currency: 'USD',
     gasPrice: 21,
-    excludeContracts: ["Helpers/"],
-    src: "./contracts",
+    excludeContracts: ['Helpers/'],
+    src: './contracts',
     showMethodSig: true,
   },
   solidity: {
-    version: "0.8.15",
+    version: '0.8.15',
     settings: {
       optimizer: {
         enabled: true,
@@ -93,8 +93,8 @@ const config: HardhatUserConfig = {
         runs: 1000,
       },
       outputSelection: {
-        "*": {
-          "*": ["storageLayout"],
+        '*': {
+          '*': ['storageLayout'],
         },
       },
     },
@@ -104,64 +104,64 @@ const config: HardhatUserConfig = {
     contracts: [
       // Standard version
       // ------------------
-      "UniversalProfile",
-      "LSP0ERC725Account",
-      "LSP1UniversalReceiverDelegateUP",
-      "LSP1UniversalReceiverDelegateVault",
-      "LSP4DigitalAssetMetadata",
-      "LSP6KeyManager",
-      "LSP7DigitalAsset",
-      "LSP7CappedSupply",
-      "LSP7Mintable",
-      "LSP8IdentifiableDigitalAsset",
-      "LSP8CappedSupply",
-      "LSP8Mintable",
-      "LSP9Vault",
-      "LSP11BasicSocialRecovery",
+      'UniversalProfile',
+      'LSP0ERC725Account',
+      'LSP1UniversalReceiverDelegateUP',
+      'LSP1UniversalReceiverDelegateVault',
+      'LSP4DigitalAssetMetadata',
+      'LSP6KeyManager',
+      'LSP7DigitalAsset',
+      'LSP7CappedSupply',
+      'LSP7Mintable',
+      'LSP8IdentifiableDigitalAsset',
+      'LSP8CappedSupply',
+      'LSP8Mintable',
+      'LSP9Vault',
+      'LSP11BasicSocialRecovery',
       // Proxy version
       // ------------------
-      "UniversalProfileInit",
-      "LSP0ERC725AccountInit",
-      "LSP4DigitalAssetMetadataInitAbstract",
-      "LSP6KeyManagerInit",
-      "LSP7DigitalAssetInitAbstract",
-      "LSP7CappedSupplyInitAbstract",
-      "LSP7MintableInit",
-      "LSP8IdentifiableDigitalAssetInitAbstract",
-      "LSP8CappedSupplyInitAbstract",
-      "LSP8MintableInit",
-      "LSP9VaultInit",
-      "LSP11BasicSocialRecoveryInit",
+      'UniversalProfileInit',
+      'LSP0ERC725AccountInit',
+      'LSP4DigitalAssetMetadataInitAbstract',
+      'LSP6KeyManagerInit',
+      'LSP7DigitalAssetInitAbstract',
+      'LSP7CappedSupplyInitAbstract',
+      'LSP7MintableInit',
+      'LSP8IdentifiableDigitalAssetInitAbstract',
+      'LSP8CappedSupplyInitAbstract',
+      'LSP8MintableInit',
+      'LSP9VaultInit',
+      'LSP11BasicSocialRecoveryInit',
       // ERC Compatible tokens
       // ------------------
-      "LSP4Compatibility",
-      "LSP7CompatibleERC20",
-      "LSP7CompatibleERC20InitAbstract",
-      "LSP7CompatibleERC20Mintable",
-      "LSP7CompatibleERC20MintableInit",
-      "LSP8CompatibleERC721",
-      "LSP8CompatibleERC721InitAbstract",
-      "LSP8CompatibleERC721Mintable",
-      "LSP8CompatibleERC721MintableInit",
+      'LSP4Compatibility',
+      'LSP7CompatibleERC20',
+      'LSP7CompatibleERC20InitAbstract',
+      'LSP7CompatibleERC20Mintable',
+      'LSP7CompatibleERC20MintableInit',
+      'LSP8CompatibleERC721',
+      'LSP8CompatibleERC721InitAbstract',
+      'LSP8CompatibleERC721Mintable',
+      'LSP8CompatibleERC721MintableInit',
       // Legacy L14
       // ------------------
-      "UniversalReceiverAddressStore",
+      'UniversalReceiverAddressStore',
       // Tools
       // ------------------
-      "Create2Factory",
-      "LSP16UniversalFactory",
+      'Create2Factory',
+      'LSP16UniversalFactory',
     ],
     // Whether to include the TypeChain factories or not.
     // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
     includeFactories: true,
   },
   paths: {
-    artifacts: "artifacts",
-    tests: "tests",
+    artifacts: 'artifacts',
+    tests: 'tests',
   },
   typechain: {
-    outDir: "types",
-    target: "ethers-v5",
+    outDir: 'types',
+    target: 'ethers-v5',
   },
   dodoc: dodocConfig,
 };

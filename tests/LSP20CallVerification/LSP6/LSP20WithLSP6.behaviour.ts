@@ -1,5 +1,5 @@
-import { BigNumber } from "ethers";
-import { LSP6TestContext } from "../../utils/context";
+import { BigNumber } from 'ethers';
+import { LSP6TestContext } from '../../utils/context';
 
 import {
   // Admin
@@ -29,68 +29,68 @@ import {
   // other scenarios
   testSecurityScenarios,
   otherTestScenarios,
-} from "./index";
+} from './index';
 
 export const shouldBehaveLikeLSP6 = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
 ) => {
-  describe("CHANGEOWNER", () => {
+  describe('CHANGEOWNER', () => {
     shouldBehaveLikePermissionChangeOwner(buildContext);
   });
 
-  describe("Set Permissions", () => {
+  describe('Set Permissions', () => {
     shouldBehaveLikePermissionChangeOrAddController(buildContext);
     shouldBehaveLikeSetAllowedCalls(buildContext);
     shouldBehaveLikeSetAllowedERC725YDataKeys(buildContext);
   });
 
-  describe("CHANGE / ADD extensions", () => {
+  describe('CHANGE / ADD extensions', () => {
     shouldBehaveLikePermissionChangeOrAddExtensions(buildContext);
   });
 
-  describe("CHANGE / ADD UniversalReceiverDelegate", () => {
+  describe('CHANGE / ADD UniversalReceiverDelegate', () => {
     shouldBehaveLikePermissionChangeOrAddURD(buildContext);
   });
 
-  describe("SETDATA", () => {
+  describe('SETDATA', () => {
     shouldBehaveLikePermissionSetData(buildContext);
   });
 
-  describe("AllowedERC725YDataKeys", () => {
+  describe('AllowedERC725YDataKeys', () => {
     shouldBehaveLikeAllowedERC725YDataKeys(buildContext);
   });
 
-  describe("CALL", () => {
+  describe('CALL', () => {
     shouldBehaveLikePermissionCall(buildContext);
   });
 
-  describe("STATICCALL", () => {
+  describe('STATICCALL', () => {
     shouldBehaveLikePermissionStaticCall(buildContext);
   });
 
-  describe("DELEGATECALL", () => {
+  describe('DELEGATECALL', () => {
     shouldBehaveLikePermissionDelegateCall(buildContext);
   });
 
-  describe("DEPLOY", () => {
+  describe('DEPLOY', () => {
     shouldBehaveLikePermissionDeploy(buildContext);
   });
 
-  describe("TRANSFERVALUE", () => {
+  describe('TRANSFERVALUE', () => {
     shouldBehaveLikePermissionTransferValue(buildContext);
   });
 
-  describe("ALLOWED CALLS", () => {
+  describe('ALLOWED CALLS', () => {
     shouldBehaveLikeAllowedAddresses(buildContext);
     shouldBehaveLikeAllowedFunctions(buildContext);
     shouldBehaveLikeAllowedStandards(buildContext);
   });
 
-  describe("miscellaneous", () => {
+  describe('miscellaneous', () => {
     otherTestScenarios(buildContext);
   });
 
-  describe("Security", () => {
+  describe('Security', () => {
     testSecurityScenarios(buildContext);
   });
 };

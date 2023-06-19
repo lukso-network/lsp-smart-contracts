@@ -1,9 +1,9 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { EIP191Signer } from "@lukso/eip191-signer.js";
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import { TargetContract, TargetContract__factory } from "../../../types";
+import { TargetContract, TargetContract__factory } from '../../../types';
 
 // constants
 import {
@@ -13,12 +13,12 @@ import {
   LSP6_VERSION,
   PERMISSIONS,
   CALLTYPE,
-} from "../../../constants";
+} from '../../../constants';
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
-import { LOCAL_PRIVATE_KEYS, combineAllowedCalls } from "../../utils/helpers";
+import { LSP6TestContext } from '../../utils/context';
+import { setupKeyManager } from '../../utils/fixtures';
+import { LOCAL_PRIVATE_KEYS, combineAllowedCalls } from '../../utils/helpers';
 
 export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
@@ -35,11 +35,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
     targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
     const permissionKeys = [
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + signer.address.substring(2),
-      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + signer.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + signer.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + signer.address.substring(2),
       // TODO: why the allowed calls for this controller are set twice? duplicate?
-      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + signer.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + signer.address.substring(2),
     ];
 
     const permissionsValues = [
@@ -48,36 +48,36 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
       combineAllowedCalls(
         [CALLTYPE.CALL],
         [targetContract.address],
-        ["0xffffffff"],
-        ["0xffffffff"],
+        ['0xffffffff'],
+        ['0xffffffff'],
       ),
       combineAllowedCalls(
         [CALLTYPE.CALL],
         [targetContract.address],
-        ["0xffffffff"],
-        ["0xffffffff"],
+        ['0xffffffff'],
+        ['0xffffffff'],
       ),
     ];
 
     await setupKeyManager(context, permissionKeys, permissionsValues);
   });
 
-  describe("when calling `getNonce(...)` with a channel ID greater than 2 ** 128", () => {
-    it("should revert", async () => {
+  describe('when calling `getNonce(...)` with a channel ID greater than 2 ** 128', () => {
+    it('should revert', async () => {
       let channelId = ethers.BigNumber.from(2).pow(129);
 
       await expect(context.keyManager.getNonce(signer.address, channelId)).to.be.revertedWithPanic;
     });
   });
 
-  describe("testing sequential nonces (channel = 0)", () => {
+  describe('testing sequential nonces (channel = 0)', () => {
     const channelId = 0;
 
     [
-      { callNb: "First", newName: "Yamen", expectedNonce: 1 },
-      { callNb: "Second", newName: "Nour", expectedNonce: 2 },
-      { callNb: "Third", newName: "Huss", expectedNonce: 3 },
-      { callNb: "Fourth", newName: "Moussa", expectedNonce: 4 },
+      { callNb: 'First', newName: 'Yamen', expectedNonce: 1 },
+      { callNb: 'Second', newName: 'Nour', expectedNonce: 2 },
+      { callNb: 'Third', newName: 'Huss', expectedNonce: 3 },
+      { callNb: 'Fourth', newName: 'Moussa', expectedNonce: 4 },
     ].forEach(({ callNb, newName, expectedNonce }) => {
       // prettier-ignore
       it(`${callNb} call > nonce should increment from ${expectedNonce - 1} to ${expectedNonce}`, async () => {
@@ -145,12 +145,12 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
     });
   });
 
-  describe("out of order execution (channel = n)", () => {
+  describe('out of order execution (channel = n)', () => {
     let nonces = [0, 1];
 
-    describe("channel 1", () => {
+    describe('channel 1', () => {
       let channelId = 1;
-      let names = ["Fabian", "Yamen"];
+      let names = ['Fabian', 'Yamen'];
 
       it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
         let nonceBefore = await context.keyManager.callStatic.getNonce(signer.address, channelId);
@@ -159,11 +159,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
 
         let newName = names[0];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+        let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
           newName,
         ]);
         let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          'execute',
           [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
         );
 
@@ -171,7 +171,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
@@ -210,11 +210,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
 
         let newName = names[1];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+        let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
           newName,
         ]);
         let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          'execute',
           [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
         );
 
@@ -222,7 +222,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
@@ -255,9 +255,9 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
       });
     });
 
-    describe("channel 2", () => {
+    describe('channel 2', () => {
       let channelId = 2;
-      let names = ["Hugo", "Reto"];
+      let names = ['Hugo', 'Reto'];
 
       it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
         let nonceBefore = await context.keyManager.getNonce(signer.address, channelId);
@@ -266,11 +266,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
 
         let newName = names[0];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+        let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
           newName,
         ]);
         let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          'execute',
           [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
         );
 
@@ -278,7 +278,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
@@ -317,11 +317,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
 
         let newName = names[1];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+        let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
           newName,
         ]);
         let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          'execute',
           [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
         );
 
@@ -329,7 +329,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
@@ -362,9 +362,9 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
       });
     });
 
-    describe("channel 3", () => {
+    describe('channel 3', () => {
       let channelId = 3;
-      let names = ["Jean", "Lenny"];
+      let names = ['Jean', 'Lenny'];
 
       it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
         let nonceBefore = await context.keyManager.getNonce(signer.address, channelId);
@@ -373,11 +373,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
 
         let newName = names[0];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+        let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
           newName,
         ]);
         let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          'execute',
           [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
         );
 
@@ -385,7 +385,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
@@ -424,11 +424,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
 
         let newName = names[1];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+        let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
           newName,
         ]);
         let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          'execute',
           [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
         );
 
@@ -436,7 +436,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,
@@ -469,21 +469,21 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
       });
     });
 
-    describe("channel 15", () => {
+    describe('channel 15', () => {
       let channelId = 15;
 
-      it("First call > nonce should increment from 0 to 1", async () => {
+      it('First call > nonce should increment from 0 to 1', async () => {
         let nonceBefore = await context.keyManager.getNonce(signer.address, channelId);
 
         const validityTimestamps = 0;
 
-        let newName = "Lukasz";
+        let newName = 'Lukasz';
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+        let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
           newName,
         ]);
         let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          'execute',
           [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
         );
 
@@ -491,7 +491,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP6_VERSION,
             HARDHAT_CHAINID,

@@ -1,17 +1,17 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
-import { EIP191Signer } from "@lukso/eip191-signer.js";
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import {
   EIP191SignerTester__factory,
   UniversalProfile__factory,
   LSP6KeyManager__factory,
-} from "../../types";
+} from '../../types';
 
-describe("EIP191Signer", () => {
-  describe("when using `toDataWithIntendedValidator(...)`", () => {
-    it("should return the same hash than the EIP191Signer library", async () => {
-      const data = "example";
+describe('EIP191Signer', () => {
+  describe('when using `toDataWithIntendedValidator(...)`', () => {
+    it('should return the same hash than the EIP191Signer library', async () => {
+      const data = 'example';
 
       const accounts = await ethers.getSigners();
       const owner = accounts[0];

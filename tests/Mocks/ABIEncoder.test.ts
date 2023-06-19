@@ -1,9 +1,9 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { ethers } from "hardhat";
-import { expect } from "chai";
-import { ABIEncoder, ABIEncoder__factory } from "../../types";
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
+import { ABIEncoder, ABIEncoder__factory } from '../../types';
 
-describe("ABI Encoder Contract", () => {
+describe('ABI Encoder Contract', () => {
   let accounts: SignerWithAddress[];
   let contract: ABIEncoder;
 
@@ -24,146 +24,146 @@ describe("ABI Encoder Contract", () => {
     return gasUsed.toNumber();
   };
 
-  describe("Checking the encoding works", () => {
-    it("Encoding empty bytes", async () => {
+  describe('Checking the encoding works', () => {
+    it('Encoding empty bytes', async () => {
       const txParams = {
-        a: "0x",
-        b: "0x",
+        a: '0x',
+        b: '0x',
       };
 
       await verifyResult(txParams.a, txParams.b);
     });
 
-    it("Encoding one empty bytes with non empty bytes", async () => {
+    it('Encoding one empty bytes with non empty bytes', async () => {
       const txParams = {
-        a: "0xaabbccdd",
-        b: "0x",
+        a: '0xaabbccdd',
+        b: '0x',
       };
 
       await verifyResult(txParams.a, txParams.b);
     });
 
-    it("Encoding non empty bytes with non empty bytes", async () => {
+    it('Encoding non empty bytes with non empty bytes', async () => {
       const txParams = {
-        a: "0xaabbccdd",
-        b: "0xaabbccdd",
+        a: '0xaabbccdd',
+        b: '0xaabbccdd',
       };
 
       await verifyResult(txParams.a, txParams.b);
     });
   });
 
-  describe("Checking the gas cost", () => {
-    describe("General cases", () => {
-      it("Encoding small amount of bytes in one param", async () => {
+  describe('Checking the gas cost', () => {
+    describe('General cases', () => {
+      it('Encoding small amount of bytes in one param', async () => {
         const txParams = {
-          a: "0xaabbccdd",
-          b: "0x",
+          a: '0xaabbccdd',
+          b: '0x',
         };
 
         const result = await checkGasCost(txParams.a, txParams.b);
       });
 
-      it("Encoding larger amount of bytes in one param", async () => {
+      it('Encoding larger amount of bytes in one param', async () => {
         const txParams = {
-          a: "0xaabbccddaabbccddaabbccddaabbccddaabbccdd",
-          b: "0x",
+          a: '0xaabbccddaabbccddaabbccddaabbccddaabbccdd',
+          b: '0x',
         };
 
         const result = await checkGasCost(txParams.a, txParams.b);
       });
 
-      it("Encoding very large amount of bytes in one param", async () => {
+      it('Encoding very large amount of bytes in one param', async () => {
         const txParams = {
-          a: "0xaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccdd",
-          b: "0x",
+          a: '0xaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccdd',
+          b: '0x',
         };
 
         const result = await checkGasCost(txParams.a, txParams.b);
       });
 
-      it("Encoding small amount of bytes in both param", async () => {
+      it('Encoding small amount of bytes in both param', async () => {
         const txParams = {
-          a: "0xaabbccdd",
-          b: "0xaabbccdd",
+          a: '0xaabbccdd',
+          b: '0xaabbccdd',
         };
 
         const result = await checkGasCost(txParams.a, txParams.b);
       });
 
-      it("Encoding larger amount of bytes in both param", async () => {
+      it('Encoding larger amount of bytes in both param', async () => {
         const txParams = {
-          a: "0xaabbccddaabbccddaabbccddaabbccddaabbccdd",
-          b: "0xaabbccddaabbccddaabbccddaabbccddaabbccdd",
+          a: '0xaabbccddaabbccddaabbccddaabbccddaabbccdd',
+          b: '0xaabbccddaabbccddaabbccddaabbccddaabbccdd',
         };
 
         const result = await checkGasCost(txParams.a, txParams.b);
       });
 
-      it("Encoding very large amount of bytes in both param", async () => {
+      it('Encoding very large amount of bytes in both param', async () => {
         const txParams = {
-          a: "0xaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccdd",
-          b: "0xaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccdd",
+          a: '0xaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccdd',
+          b: '0xaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccdd',
         };
 
         const result = await checkGasCost(txParams.a, txParams.b);
       });
     });
 
-    describe("LSP1 Specific Cases", () => {
-      it("Encoding URD response when typeId out of scope with empty bytes", async () => {
+    describe('LSP1 Specific Cases', () => {
+      it('Encoding URD response when typeId out of scope with empty bytes', async () => {
         const txParams = {
-          a: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")),
-          b: "0x",
+          a: ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: typeId out of scope')),
+          b: '0x',
         };
 
         const result = await checkGasCost(txParams.a, txParams.b);
       });
 
-      it("Encoding URD response when owner is not a KM with empty bytes", async () => {
+      it('Encoding URD response when owner is not a KM with empty bytes', async () => {
         const txParams = {
           a: ethers.utils.hexlify(
-            ethers.utils.toUtf8Bytes("LSP1: account owner is not a LSP6KeyManager"),
+            ethers.utils.toUtf8Bytes('LSP1: account owner is not a LSP6KeyManager'),
           ),
-          b: "0x",
+          b: '0x',
         };
 
         const result = await checkGasCost(txParams.a, txParams.b);
       });
 
-      it("Encoding URD response when asset already exist with empty bytes", async () => {
+      it('Encoding URD response when asset already exist with empty bytes', async () => {
         const txParams = {
           a: ethers.utils.hexlify(
-            ethers.utils.toUtf8Bytes("LSP1: asset received is already registered"),
+            ethers.utils.toUtf8Bytes('LSP1: asset received is already registered'),
           ),
-          b: "0x",
+          b: '0x',
         };
 
         const result = await checkGasCost(txParams.a, txParams.b);
       });
 
-      it("Encoding URD response when asset is not registered with empty bytes", async () => {
+      it('Encoding URD response when asset is not registered with empty bytes', async () => {
         const txParams = {
-          a: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("LSP1: asset sent is not registered")),
-          b: "0x",
+          a: ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: asset sent is not registered')),
+          b: '0x',
         };
 
         const result = await checkGasCost(txParams.a, txParams.b);
       });
 
-      it("Encoding URD response when full balance was not sent with empty bytes", async () => {
+      it('Encoding URD response when full balance was not sent with empty bytes', async () => {
         const txParams = {
-          a: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("LSP1: full balance is not sent")),
-          b: "0x",
+          a: ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: full balance is not sent')),
+          b: '0x',
         };
 
         const result = await checkGasCost(txParams.a, txParams.b);
       });
 
-      it("Encoding URD response when the data is successfully set with empty bytes", async () => {
+      it('Encoding URD response when the data is successfully set with empty bytes', async () => {
         const txParams = {
-          a: "0x",
-          b: "0x",
+          a: '0x',
+          b: '0x',
         };
 
         const result = await checkGasCost(txParams.a, txParams.b);

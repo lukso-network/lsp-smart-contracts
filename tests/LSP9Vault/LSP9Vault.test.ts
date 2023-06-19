@@ -1,30 +1,30 @@
-import { ethers } from "hardhat";
-import { expect } from "chai";
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
 
 import {
   LSP14TestContext,
   shouldBehaveLikeLSP14,
-} from "../LSP14Ownable2Step/LSP14Ownable2Step.behaviour";
+} from '../LSP14Ownable2Step/LSP14Ownable2Step.behaviour';
 
-import { LSP9Vault__factory, UniversalProfile, LSP6KeyManager } from "../../types";
+import { LSP9Vault__factory, UniversalProfile, LSP6KeyManager } from '../../types';
 
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP9,
   shouldInitializeLikeLSP9,
   LSP9TestContext,
-} from "./LSP9Vault.behaviour";
+} from './LSP9Vault.behaviour';
 
 import {
   LSP17TestContext,
   shouldBehaveLikeLSP17,
-} from "../LSP17ContractExtension/LSP17Extendable.behaviour";
+} from '../LSP17ContractExtension/LSP17Extendable.behaviour';
 
-import { setupProfileWithKeyManagerWithURD } from "../utils/fixtures";
-import { provider } from "../utils/helpers";
-import { BigNumber } from "ethers";
+import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
+import { provider } from '../utils/helpers';
+import { BigNumber } from 'ethers';
 
-describe("LSP9Vault with constructor", () => {
+describe('LSP9Vault with constructor', () => {
   const buildTestContext = async (initialFunding?: number): Promise<LSP9TestContext> => {
     const accounts = await getNamedAccounts();
     const deployParams = {
@@ -61,7 +61,7 @@ describe("LSP9Vault with constructor", () => {
       value: initialFunding,
     });
 
-    const onlyOwnerRevertString = "Only Owner or reentered Universal Receiver Delegate allowed";
+    const onlyOwnerRevertString = 'Only Owner or reentered Universal Receiver Delegate allowed';
 
     return {
       accounts,
@@ -83,7 +83,7 @@ describe("LSP9Vault with constructor", () => {
 
   [{ initialFunding: undefined }, { initialFunding: 0 }, { initialFunding: 5 }].forEach(
     (testCase) => {
-      describe("when deploying the contract with or without value", () => {
+      describe('when deploying the contract with or without value', () => {
         let context: LSP9TestContext;
 
         before(async () => {
@@ -98,8 +98,8 @@ describe("LSP9Vault with constructor", () => {
     },
   );
 
-  describe("when deploying the contract", () => {
-    describe("when initializing the contract", () => {
+  describe('when deploying the contract', () => {
+    describe('when initializing the contract', () => {
       shouldInitializeLikeLSP9(async () => {
         let context = await buildTestContext();
         const { lsp9Vault, deployParams } = context;
@@ -113,7 +113,7 @@ describe("LSP9Vault with constructor", () => {
     });
   });
 
-  describe("when testing deployed contract", () => {
+  describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP9(buildTestContext);
     shouldBehaveLikeLSP14(buildLSP14TestContext);
     shouldBehaveLikeLSP17(buildLSP17TestContext);

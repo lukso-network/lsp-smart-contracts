@@ -1,23 +1,23 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { EIP191Signer } from "@lukso/eip191-signer.js";
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 // constants
-import { ERC725YDataKeys, ALL_PERMISSIONS, PERMISSIONS, ERC1271_VALUES } from "../../../constants";
+import { ERC725YDataKeys, ALL_PERMISSIONS, PERMISSIONS, ERC1271_VALUES } from '../../../constants';
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from '../../utils/context';
+import { setupKeyManager } from '../../utils/fixtures';
 
-import { LOCAL_PRIVATE_KEYS } from "../../utils/helpers";
+import { LOCAL_PRIVATE_KEYS } from '../../utils/helpers';
 
 export const shouldBehaveLikePermissionSign = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
   let signer: SignerWithAddress, nonSigner: SignerWithAddress, noPermissionsSet: SignerWithAddress;
 
-  const dataToSign = "0xcafecafe";
+  const dataToSign = '0xcafecafe';
 
   before(async () => {
     context = await buildContext();
@@ -27,9 +27,9 @@ export const shouldBehaveLikePermissionSign = (buildContext: () => Promise<LSP6T
     noPermissionsSet = context.accounts[3];
 
     const permissionsKeys = [
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + signer.address.substring(2),
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + nonSigner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + signer.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + nonSigner.address.substring(2),
     ];
 
     const permissionsValues = [ALL_PERMISSIONS, PERMISSIONS.SIGN, PERMISSIONS.CALL];
@@ -37,9 +37,9 @@ export const shouldBehaveLikePermissionSign = (buildContext: () => Promise<LSP6T
     await setupKeyManager(context, permissionsKeys, permissionsValues);
   });
 
-  describe("when address has ALL PERMISSIONS", () => {
-    describe("should verify the signature, regardless of how it was signed", () => {
-      it("e.g: with Ethereum signed message", async () => {
+  describe('when address has ALL PERMISSIONS', () => {
+    describe('should verify the signature, regardless of how it was signed', () => {
+      it('e.g: with Ethereum signed message', async () => {
         const messageHash = ethers.utils.hashMessage(dataToSign);
         const signature = await signer.signMessage(dataToSign);
 
@@ -65,9 +65,9 @@ export const shouldBehaveLikePermissionSign = (buildContext: () => Promise<LSP6T
     });
   });
 
-  describe("when address has permission SIGN", () => {
-    describe("should verify the signature, regardless of how it was signed", () => {
-      it("e.g: Ethereum signed message", async () => {
+  describe('when address has permission SIGN', () => {
+    describe('should verify the signature, regardless of how it was signed', () => {
+      it('e.g: Ethereum signed message', async () => {
         const messageHash = ethers.utils.hashMessage(dataToSign);
         const signature = await signer.signMessage(dataToSign);
 
@@ -92,9 +92,9 @@ export const shouldBehaveLikePermissionSign = (buildContext: () => Promise<LSP6T
     });
   });
 
-  describe("when address does not have permission SIGN", () => {
-    describe("should fail when verifying a signature, regardless of how it was signed", () => {
-      it("e.g: with Ethereum signed message", async () => {
+  describe('when address does not have permission SIGN', () => {
+    describe('should fail when verifying a signature, regardless of how it was signed', () => {
+      it('e.g: with Ethereum signed message', async () => {
         const messageHash = ethers.utils.hashMessage(dataToSign);
         const signature = await nonSigner.signMessage(dataToSign);
 

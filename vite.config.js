@@ -1,35 +1,35 @@
 // vite.config.js
-import { defineConfig } from "vite";
-import Checker from "vite-plugin-checker";
-import esbuild from "rollup-plugin-esbuild";
-import tsconfigPaths from "vite-tsconfig-paths";
+import { defineConfig } from 'vite';
+import Checker from 'vite-plugin-checker';
+import esbuild from 'rollup-plugin-esbuild';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [
     tsconfigPaths({
-      projects: ["./tsconfig.module.json"],
+      projects: ['./tsconfig.module.json'],
     }),
     Checker({ typescript: true }),
   ],
   build: {
-    target: "esnext",
+    target: 'esnext',
     lib: {
       entry: {
-        constants: "./constants.ts",
+        constants: './constants.ts',
       },
-      formats: ["es", "cjs"],
+      formats: ['es', 'cjs'],
     },
     minify: false,
     rollupOptions: {
       output: {
-        entryFileNames: "[name].[format].js",
-        chunkFileNames: "[name].[format].js",
-        assetFileNames: "[name].[ext]",
+        entryFileNames: '[name].[format].js',
+        chunkFileNames: '[name].[format].js',
+        assetFileNames: '[name].[ext]',
       },
-      external: ["peer-dependency"],
+      external: ['peer-dependency'],
       plugins: [
         esbuild({
-          target: "esnext",
+          target: 'esnext',
         }),
       ],
     },
