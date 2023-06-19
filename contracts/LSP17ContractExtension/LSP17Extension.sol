@@ -8,8 +8,10 @@ import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {_INTERFACEID_LSP17_EXTENSION} from "./LSP17Constants.sol";
 
 /**
- * @title Implementation of the extension logic according to LSP17ContractExtension
- * @dev To be inherited to provide context of the msg variable related to the extendable contract
+ * @title Module to create a contract that can act as an extension.
+ *
+ * @dev Implementation of the extension logic according to LSP17ContractExtension.
+ * This module can be inherited to provide context of the msg variable related to the extendable contract
  */
 abstract contract LSP17Extension is ERC165 {
     /**

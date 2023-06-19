@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 
 /**
- * @dev Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
+ * @title Interface of the LSP6 - Key Manager standard, a contract acting as a controller of an ERC725 Account using predfined permissions.
  */
 interface ILSP6KeyManager is
     IERC1271

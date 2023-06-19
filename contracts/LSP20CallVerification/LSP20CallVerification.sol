@@ -9,7 +9,8 @@ import {ILSP20CallVerifier as ILSP20} from "./ILSP20CallVerifier.sol";
 import "./LSP20Errors.sol";
 
 /**
- * @title Implementation of contract calling the verification functions according to LSP20CallVerification
+ * @title Implementation of a contract calling the verification functions according to LSP20 - Call Verification standard.
+ *
  * @dev Module to be inherited used to verify the execution of functions according to a verifier address.
  * Verification can happen before or after execution based on a magicValue.
  */

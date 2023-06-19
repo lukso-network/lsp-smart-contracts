@@ -9,7 +9,7 @@ import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalRec
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 
 /**
- * @title Interface of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
+ * @title Interface of LSP9 - Vault standard, a blockchain vault that can hold assets and interact with other smart contracts.
  * @dev this interface implicitly inherits: IERC165, IERC725X, IERC725Y, ILSP1UniversalReceiver, ILSP14Ownable2Step
  */
 interface ILSP9Vault {

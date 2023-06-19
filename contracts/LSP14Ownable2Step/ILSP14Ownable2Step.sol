@@ -2,8 +2,7 @@
 pragma solidity ^0.8.4;
 
 /**
- * @dev Extended version of Ownable (EIP173) in which, transferring or renouncing ownership
- * of the contract works in 2 steps.
+ * @title Interface of the LSP14 - Ownable 2-step standard, an extension of the EIP173 (Ownable) standard with 2-step process to transfer or renounce ownership.
  */
 interface ILSP14Ownable2Step {
     /**
