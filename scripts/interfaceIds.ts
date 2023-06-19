@@ -76,7 +76,7 @@ async function main() {
       }
     }
 
-    table.push([contract, interfaceId, description]);
+    table.push([`**${contract}**`, `\`${interfaceId}\``, description]);
   }
 
   const result = getMarkdownTable({
