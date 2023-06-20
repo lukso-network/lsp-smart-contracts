@@ -18,8 +18,8 @@ import {
   FirstCallReturnInvalidMagicValue,
   FirstCallReturnInvalidMagicValue__factory,
   LSP0ERC725Account,
-  ILSP20CallVerification,
-  ILSP20CallVerification__factory,
+  ILSP20CallVerifier,
+  ILSP20CallVerifier__factory,
 } from "../../types";
 
 // constants
@@ -377,7 +377,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {
-          firstCallReturnMagicValueContract = await smock.fake(ILSP20CallVerification__factory.abi);
+          firstCallReturnMagicValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
           firstCallReturnMagicValueContract.lsp20VerifyCall.returns(
             LSP20_MAGIC_VALUES.VERIFY_CALL.NO_POST_VERIFICATION,
           );
@@ -405,7 +405,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {
-          firstCallReturnMagicValueContract = await smock.fake(ILSP20CallVerification__factory.abi);
+          firstCallReturnMagicValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
           firstCallReturnMagicValueContract.lsp20VerifyCall.returns(
             LSP20_MAGIC_VALUES.VERIFY_CALL.NO_POST_VERIFICATION +
               "0".repeat(56) +
@@ -434,11 +434,11 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe("that implements verifyCall and verifyCallResult and both return magic value", () => {
-        let bothCallReturnMagicValueContract: FakeContract<ILSP20CallVerification>;
+        let bothCallReturnMagicValueContract: FakeContract<ILSP20CallVerifier>;
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {
-          bothCallReturnMagicValueContract = await smock.fake(ILSP20CallVerification__factory.abi);
+          bothCallReturnMagicValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
           bothCallReturnMagicValueContract.lsp20VerifyCall.returns(
             LSP20_MAGIC_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION,
           );
@@ -465,11 +465,11 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe("that implements verifyCall and verifyCallResult and both return magic value plus additional data", () => {
-        let bothCallReturnMagicValueContract: FakeContract<ILSP20CallVerification>;
+        let bothCallReturnMagicValueContract: FakeContract<ILSP20CallVerifier>;
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {
-          bothCallReturnMagicValueContract = await smock.fake(ILSP20CallVerification__factory.abi);
+          bothCallReturnMagicValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
           bothCallReturnMagicValueContract.lsp20VerifyCall.returns(
             LSP20_MAGIC_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION +
               "0".repeat(56) +
@@ -504,11 +504,11 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe("that implements verifyCallResult but return invalid magicValue", () => {
-        let secondCallReturnFailureContract: FakeContract<ILSP20CallVerification>;
+        let secondCallReturnFailureContract: FakeContract<ILSP20CallVerifier>;
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {
-          secondCallReturnFailureContract = await smock.fake(ILSP20CallVerification__factory.abi);
+          secondCallReturnFailureContract = await smock.fake(ILSP20CallVerifier__factory.abi);
           secondCallReturnFailureContract.lsp20VerifyCall.returns(
             LSP20_MAGIC_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION,
           );
@@ -530,13 +530,11 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe("that implements verifyCallResult but return an expanded magic value", () => {
-        let secondCallReturnExpandedValueContract: FakeContract<ILSP20CallVerification>;
+        let secondCallReturnExpandedValueContract: FakeContract<ILSP20CallVerifier>;
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {
-          secondCallReturnExpandedValueContract = await smock.fake(
-            ILSP20CallVerification__factory.abi,
-          );
+          secondCallReturnExpandedValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
           secondCallReturnExpandedValueContract.lsp20VerifyCall.returns(
             LSP20_MAGIC_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION,
           );
