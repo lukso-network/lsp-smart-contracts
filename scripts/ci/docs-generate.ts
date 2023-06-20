@@ -37,7 +37,7 @@ function collect(items: any) {
     return undefined;
   }
   let collection;
-  for (const [sig, { hash, ...item }] of Object.entries(items) as [string, any]) {
+  for (const [, { hash, ...item }] of Object.entries(items) as [string, any]) {
     if (!collection) {
       collection = {};
     }
@@ -100,13 +100,6 @@ task('ts-gen', 'Generate NatSpec documentation automatically on compilation')
     if (!args.noCompile) {
       await hre.run(TASK_COMPILE, { noDocgen: true });
     }
-
-    const config = {
-      clear: true,
-      except: [],
-    };
-
-    const output = {};
 
     const contractNames = await hre.artifacts.getAllFullyQualifiedNames();
 
@@ -261,15 +254,19 @@ task('ts-gen', 'Generate NatSpec documentation automatically on compilation')
 
       const { events = {}, methods = {}, errors = {}, stateVariables } = membersByType;
       const {
-        events: _events, // Ignore
-        errors: _errors, // Ignore
-        methods: _methods, // Ignore
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        events: _events,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        errors: _errors,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        methods: _methods,
         ...contract
       } = devdoc;
 
       const wholeContract = { ...contract, constructor, fallback, receive };
       for (const name of ['constructor', 'fallback', 'receive']) {
         if (wholeContract[name]) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { hash, ...rest } = wholeContract[name];
           wholeContract[name] = rest;
         }
@@ -294,5 +291,6 @@ export const StateVariables = ${serialize(allStateVariables)};
       ),
     );
     console.log(`Successfully generated ${devdocCount} json files in devdocs`);
+    console.log(`Successfully generated ${userdocCount} json files in userdocs`);
     console.log(`Successfully generated ./contracts.ts for ${contractCount} contracts`);
   });

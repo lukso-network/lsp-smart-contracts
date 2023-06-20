@@ -49,7 +49,7 @@ async function main() {
       const source = `contracts/${folder}/${lspInterface}.sol:${lspInterface}`;
       const build = await hre.artifacts.getBuildInfo(source);
 
-      const [path, name] = source.split(':');
+      const [path] = source.split(':');
 
       const devdoc = build?.output?.contracts?.[path]?.[lspInterface]['devdoc'];
 
@@ -58,7 +58,7 @@ async function main() {
         const source = `contracts/${folder}/${contract}.sol:${contract}`;
         const build = await hre.artifacts.getBuildInfo(source);
 
-        const [path, name] = source.split(':');
+        const [path] = source.split(':');
 
         const contractDevDoc = build?.output?.contracts?.[path]?.[contract]['devdoc'];
 

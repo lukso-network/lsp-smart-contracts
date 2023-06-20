@@ -26,7 +26,6 @@ import { LSP6TestContext } from './utils/context';
 import { setupKeyManager, setupProfileWithKeyManagerWithURD } from './utils/fixtures';
 import { combineAllowedCalls, combinePermissions, encodeCompactBytesArray } from './utils/helpers';
 import { BigNumber } from 'ethers';
-import { token } from '../types/@openzeppelin/contracts';
 
 export type UniversalProfileContext = {
   accounts: SignerWithAddress[];

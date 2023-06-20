@@ -1304,9 +1304,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         const key = bytes20DynamicKey;
         const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('some value for ' + key));
 
-        const tx = await context.universalProfile
-          .connect(controllerCanSetSomeKeys)
-          .setData(key, value);
+        await context.universalProfile.connect(controllerCanSetSomeKeys).setData(key, value);
 
         const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);

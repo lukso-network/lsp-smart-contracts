@@ -72,7 +72,6 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
     describe('when caller has nothing listed under allowedCalls', () => {
       describe('when calling a contract', () => {
         it('should revert when calling any function (eg: `setName(...)`)', async () => {
-          const initialName = await targetContract.callStatic.getName();
           const newName = 'Updated Name';
 
           const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [

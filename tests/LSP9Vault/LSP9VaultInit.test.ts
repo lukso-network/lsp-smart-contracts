@@ -1,17 +1,9 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import {
-  LSP14TestContext,
-  shouldBehaveLikeLSP14,
-} from '../LSP14Ownable2Step/LSP14Ownable2Step.behaviour';
+import { shouldBehaveLikeLSP14 } from '../LSP14Ownable2Step/LSP14Ownable2Step.behaviour';
 
-import {
-  LSP9Vault__factory,
-  LSP9VaultInit__factory,
-  UniversalProfile,
-  LSP6KeyManager,
-} from '../../types';
+import { LSP9VaultInit__factory, UniversalProfile, LSP6KeyManager } from '../../types';
 
 import {
   getNamedAccounts,
@@ -26,7 +18,6 @@ import {
 } from '../LSP17ContractExtension/LSP17Extendable.behaviour';
 
 import { deployProxy, setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
-import { provider } from '../utils/helpers';
 import { BigNumber } from 'ethers';
 
 describe('LSP9VaultInit with proxy', () => {
@@ -43,9 +34,7 @@ describe('LSP9VaultInit with proxy', () => {
     const lsp9VaultProxy = await deployProxy(lsp9VaultInit.address, accounts.owner);
     const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy);
 
-    const [UP1, KM1, lsp1universalReceiverDelegateUP] = await setupProfileWithKeyManagerWithURD(
-      accounts.owner,
-    );
+    const [UP1, KM1] = await setupProfileWithKeyManagerWithURD(accounts.owner);
 
     const universalProfile = UP1 as UniversalProfile;
     const lsp6KeyManager = KM1 as LSP6KeyManager;

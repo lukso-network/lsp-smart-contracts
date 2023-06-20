@@ -1147,9 +1147,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
     });
 
     it('should 1) give the permission to someone to mint, 2) let the controller mint, 3) remove the permission to the controller to mint', async () => {
-      let signatures: string[];
-      let nonces: BigNumber[];
-      let payloads: string[];
       const tokensToMint = 1_000;
 
       const validityTimestamps = 0;

@@ -9,7 +9,6 @@ import { TargetContract__factory } from '../../../../types';
 import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
-  LSP6_VERSION,
   PERMISSIONS,
   OPERATION_TYPES,
 } from '../../../../constants';
@@ -17,8 +16,6 @@ import {
 // setup
 import { LSP6TestContext } from '../../../utils/context';
 import { setupKeyManager } from '../../../utils/fixtures';
-
-import { LOCAL_PRIVATE_KEYS } from '../../../utils/helpers';
 
 export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;

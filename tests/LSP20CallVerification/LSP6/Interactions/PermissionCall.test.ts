@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import {
   FallbackInitializer,
@@ -17,7 +16,6 @@ import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
-  LSP6_VERSION,
   OPERATION_TYPES,
   CALLTYPE,
 } from '../../../../constants';
@@ -119,13 +117,6 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
 
       it('should fail with `NotAuthorised` error when `to` is a contract', async () => {
         const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
-
-        const payload = context.universalProfile.interface.encodeFunctionData('execute', [
-          OPERATION_TYPES.CALL,
-          targetContract.address,
-          0,
-          '0x',
-        ]);
 
         await expect(
           context.universalProfile

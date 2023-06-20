@@ -64,7 +64,7 @@ export const shouldBehaveLikeBatchExecute = (
 
   describe('example scenarios', () => {
     it('should send LYX to 3x different addresses', async () => {
-      const { universalProfile, owner } = context;
+      const { universalProfile } = context;
 
       const recipients = [
         context.accounts[1].address,

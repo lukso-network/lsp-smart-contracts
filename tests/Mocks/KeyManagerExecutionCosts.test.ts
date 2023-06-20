@@ -13,7 +13,6 @@ import {
 
 import { LSP6TestContext } from '../utils/context';
 import {
-  abiCoder,
   provider,
   combinePermissions,
   combineAllowedCalls,

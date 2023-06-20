@@ -20,7 +20,7 @@ describe('ABI Encoder Contract', () => {
   };
 
   const checkGasCost = async (txParameterA, txParameterB) => {
-    const [c, gasUsed] = await contract.callStatic.encode(txParameterA, txParameterB);
+    const [, gasUsed] = await contract.callStatic.encode(txParameterA, txParameterB);
     return gasUsed.toNumber();
   };
 
@@ -61,7 +61,7 @@ describe('ABI Encoder Contract', () => {
           b: '0x',
         };
 
-        const result = await checkGasCost(txParams.a, txParams.b);
+        await checkGasCost(txParams.a, txParams.b);
       });
 
       it('Encoding larger amount of bytes in one param', async () => {
@@ -70,7 +70,7 @@ describe('ABI Encoder Contract', () => {
           b: '0x',
         };
 
-        const result = await checkGasCost(txParams.a, txParams.b);
+        await checkGasCost(txParams.a, txParams.b);
       });
 
       it('Encoding very large amount of bytes in one param', async () => {
@@ -79,7 +79,7 @@ describe('ABI Encoder Contract', () => {
           b: '0x',
         };
 
-        const result = await checkGasCost(txParams.a, txParams.b);
+        await checkGasCost(txParams.a, txParams.b);
       });
 
       it('Encoding small amount of bytes in both param', async () => {
@@ -88,7 +88,7 @@ describe('ABI Encoder Contract', () => {
           b: '0xaabbccdd',
         };
 
-        const result = await checkGasCost(txParams.a, txParams.b);
+        await checkGasCost(txParams.a, txParams.b);
       });
 
       it('Encoding larger amount of bytes in both param', async () => {
@@ -97,7 +97,7 @@ describe('ABI Encoder Contract', () => {
           b: '0xaabbccddaabbccddaabbccddaabbccddaabbccdd',
         };
 
-        const result = await checkGasCost(txParams.a, txParams.b);
+        await checkGasCost(txParams.a, txParams.b);
       });
 
       it('Encoding very large amount of bytes in both param', async () => {
@@ -106,7 +106,7 @@ describe('ABI Encoder Contract', () => {
           b: '0xaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccdd',
         };
 
-        const result = await checkGasCost(txParams.a, txParams.b);
+        await checkGasCost(txParams.a, txParams.b);
       });
     });
 
@@ -117,7 +117,7 @@ describe('ABI Encoder Contract', () => {
           b: '0x',
         };
 
-        const result = await checkGasCost(txParams.a, txParams.b);
+        await checkGasCost(txParams.a, txParams.b);
       });
 
       it('Encoding URD response when owner is not a KM with empty bytes', async () => {
@@ -128,7 +128,7 @@ describe('ABI Encoder Contract', () => {
           b: '0x',
         };
 
-        const result = await checkGasCost(txParams.a, txParams.b);
+        await checkGasCost(txParams.a, txParams.b);
       });
 
       it('Encoding URD response when asset already exist with empty bytes', async () => {
@@ -139,7 +139,7 @@ describe('ABI Encoder Contract', () => {
           b: '0x',
         };
 
-        const result = await checkGasCost(txParams.a, txParams.b);
+        await checkGasCost(txParams.a, txParams.b);
       });
 
       it('Encoding URD response when asset is not registered with empty bytes', async () => {
@@ -148,7 +148,7 @@ describe('ABI Encoder Contract', () => {
           b: '0x',
         };
 
-        const result = await checkGasCost(txParams.a, txParams.b);
+        await checkGasCost(txParams.a, txParams.b);
       });
 
       it('Encoding URD response when full balance was not sent with empty bytes', async () => {
@@ -157,7 +157,7 @@ describe('ABI Encoder Contract', () => {
           b: '0x',
         };
 
-        const result = await checkGasCost(txParams.a, txParams.b);
+        await checkGasCost(txParams.a, txParams.b);
       });
 
       it('Encoding URD response when the data is successfully set with empty bytes', async () => {
@@ -166,7 +166,7 @@ describe('ABI Encoder Contract', () => {
           b: '0x',
         };
 
-        const result = await checkGasCost(txParams.a, txParams.b);
+        await checkGasCost(txParams.a, txParams.b);
       });
     });
   });

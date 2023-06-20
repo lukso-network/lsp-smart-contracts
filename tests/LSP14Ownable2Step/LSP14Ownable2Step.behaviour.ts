@@ -396,16 +396,13 @@ export const shouldBehaveLikeLSP14 = (
       });
 
       describe('when called after the delay and before the confirmation period end', () => {
-        let renounceOwnershipFirstTx: ContractTransaction;
         let renounceOwnershipSecondTx: ContractTransaction;
 
         before(async () => {
           context = await buildContext(ethers.utils.parseEther('20'));
 
           // Call renounceOwnership for the first time
-          renounceOwnershipFirstTx = await context.contract
-            .connect(context.deployParams.owner)
-            .renounceOwnership();
+          await context.contract.connect(context.deployParams.owner).renounceOwnership();
 
           // Skip 199 block to reach the time where renouncing ownership can happen
           await network.provider.send('hardhat_mine', [ethers.utils.hexValue(199)]);

@@ -1540,9 +1540,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           value,
         ]);
 
-        const tx = await context.keyManager
-          .connect(controllerCanSetSomeKeys)
-          .execute(setDataPayload);
+        await context.keyManager.connect(controllerCanSetSomeKeys).execute(setDataPayload);
 
         const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);

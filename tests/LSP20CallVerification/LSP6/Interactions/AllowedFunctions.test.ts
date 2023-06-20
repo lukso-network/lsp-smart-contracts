@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import {
   LSP7Mintable,
@@ -16,7 +15,6 @@ import {
 import {
   ERC725YDataKeys,
   OPERATION_TYPES,
-  LSP6_VERSION,
   PERMISSIONS,
   INTERFACE_IDS,
   CALLTYPE,
@@ -27,7 +25,7 @@ import { LSP6TestContext } from '../../../utils/context';
 import { setupKeyManager } from '../../../utils/fixtures';
 
 // helpers
-import { LOCAL_PRIVATE_KEYS, combineAllowedCalls } from '../../../utils/helpers';
+import { combineAllowedCalls } from '../../../utils/helpers';
 
 export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
@@ -72,7 +70,6 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
     describe('when caller has nothing listed under allowedCalls', () => {
       describe('when calling a contract', () => {
         it('should revert when calling any function (eg: `setName(...)`)', async () => {
-          const initialName = await targetContract.callStatic.getName();
           const newName = 'Updated Name';
 
           const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [

@@ -1,10 +1,10 @@
+import keccak256 from 'keccak256';
+import { MerkleTree } from 'merkletreejs';
+
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-const keccak256 = require('keccak256');
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { NFTStorageMerkle, NFTStorageMerkle__factory } from '../../types';
-
-const { MerkleTree } = require('merkletreejs');
 
 describe('NFTStorageMerkle', () => {
   describe('Testing Merkle Tree', () => {

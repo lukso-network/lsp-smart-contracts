@@ -40,14 +40,12 @@ export type LSP17TestContext = {
 
 export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestContext>) => {
   let context: LSP17TestContext;
-  let newOwner: SignerWithAddress;
   let notExistingFunctionSignature,
     onERC721ReceivedFunctionSelector,
     checkMsgVariableFunctionSelector,
     nameFunctionSelector,
     ageFunctionSelector,
     transferFunctionSelector,
-    sendDataFunctionSignature,
     reenterAccountFunctionSelector,
     revertStringFunctionSelector,
     revertCustomFunctionSelector,
@@ -59,7 +57,6 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
     ageFunctionExtensionHandlerKey,
     transferFunctionExtensionHandlerKey,
     reenterAccountFunctionExtensionHandlerKey,
-    mintFunctionExtensionHandlerKey,
     revertStringFunctionExtensionHandlerKey,
     revertCustomFunctionExtensionHandlerKey,
     emitEventFunctionExtensionHandlerKey,
@@ -68,7 +65,6 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
   before(async () => {
     context = await buildContext();
-    newOwner = context.accounts[1];
 
     // withdraw()
     notExistingFunctionSignature = '0x3ccfd60b';

@@ -207,7 +207,9 @@ export async function getLSP5MapAndArrayKeysValue(account, token) {
   ]);
 
   const arrayKey = ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length;
-  let [arrayLength, elementAddress] = await account.getDataBatch([arrayKey, elementInArrayKey]);
+  const [arrayLength, _elementAddress] = await account.getDataBatch([arrayKey, elementInArrayKey]);
+
+  let elementAddress = _elementAddress;
 
   if (elementAddress != '0x') {
     elementAddress = ethers.utils.getAddress(elementAddress);

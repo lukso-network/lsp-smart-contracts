@@ -24,7 +24,7 @@ jobs:
       - name: 🔍 Run Solidity Linter
         run: npm run lint:solidity
 
-      - name: Run ESLint on JS/TS files
+      - name: 🎨 Run ESLint on JS/TS files
         run: npm run lint
 
       # This will also generate the Typechain types used by the Chai tests

@@ -72,7 +72,9 @@ async function getLSP10MapAndArrayKeysValue(account, lsp9Vault) {
   ]);
 
   const arrayKey = ERC725YDataKeys.LSP10['LSP10Vaults[]'].length;
-  let [arrayLength, elementAddress] = await account.getDataBatch([arrayKey, elementInArrayKey]);
+  const [arrayLength, _elementAddress] = await account.getDataBatch([arrayKey, elementInArrayKey]);
+
+  let elementAddress = _elementAddress;
 
   if (elementAddress != '0x') {
     elementAddress = ethers.utils.getAddress(elementAddress);
@@ -973,10 +975,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         const [genericExecutorResult] = abiCoder.decode(['bytes'], universalReceiverResult);
 
-        const [resultDelegate, resultTypeID] = abiCoder.decode(
-          ['bytes', 'bytes'],
-          genericExecutorResult,
-        );
+        const [resultDelegate] = abiCoder.decode(['bytes', 'bytes'], genericExecutorResult);
 
         expect(resultDelegate).to.equal(
           ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: asset sent is not registered')),
@@ -2117,10 +2116,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         const [genericExecutorResult] = abiCoder.decode(['bytes'], universalReceiverResult);
 
-        const [resultDelegate, resultTypeID] = abiCoder.decode(
-          ['bytes', 'bytes'],
-          genericExecutorResult,
-        );
+        const [resultDelegate] = abiCoder.decode(['bytes', 'bytes'], genericExecutorResult);
 
         expect(resultDelegate).to.equal(
           ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: asset sent is not registered')),

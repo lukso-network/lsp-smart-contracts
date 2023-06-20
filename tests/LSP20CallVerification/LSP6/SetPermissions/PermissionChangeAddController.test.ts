@@ -57,10 +57,6 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
     const permissionArrayIndexToAdd =
       ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '00000000000000000000000000000006';
 
-    // this data key is hardcoded for readability
-    const permissionArrayIndexToEdit =
-      ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '00000000000000000000000000000004';
-
     let canOnlyAddController: SignerWithAddress,
       canOnlyEditPermissions: SignerWithAddress,
       canOnlySetData: SignerWithAddress,

@@ -130,10 +130,7 @@ export const testAllowedCallsInternals = (
   describe('testing 2 x addresses encoded as LSP2 CompactBytesArray under `AllowedCalls`', () => {
     let canCallOnlyTwoAddresses: SignerWithAddress, canCallNoAllowedCalls: SignerWithAddress;
 
-    let allowedEOA: SignerWithAddress,
-      notAllowedEOA: SignerWithAddress,
-      allowedTargetContract: TargetContract,
-      notAllowedTargetContract: TargetContract;
+    let allowedEOA: SignerWithAddress, allowedTargetContract: TargetContract;
 
     let encodedAllowedCalls: string;
 
@@ -143,11 +140,8 @@ export const testAllowedCallsInternals = (
       canCallOnlyTwoAddresses = context.accounts[1];
       canCallNoAllowedCalls = context.accounts[2];
       allowedEOA = context.accounts[3];
-      notAllowedEOA = context.accounts[4];
 
       allowedTargetContract = await new TargetContract__factory(context.accounts[0]).deploy();
-
-      notAllowedTargetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
       // addresses need to be put in lower case for the encoding otherwise:
       //  - the encoding will return them checksummed

@@ -1,5 +1,5 @@
 {
-  "ignorePatterns": ["artifacts/", "cache/", "types/"],
+  "ignorePatterns": ["artifacts/", "cache/", "dist/", "types/", "contracts.ts"],
   "extends": [
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended"

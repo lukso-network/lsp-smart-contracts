@@ -15,7 +15,7 @@ import { LOCAL_PRIVATE_KEYS } from '../../utils/helpers';
 export const shouldBehaveLikePermissionSign = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
-  let signer: SignerWithAddress, nonSigner: SignerWithAddress, noPermissionsSet: SignerWithAddress;
+  let signer: SignerWithAddress, nonSigner: SignerWithAddress;
 
   const dataToSign = '0xcafecafe';
 
@@ -24,7 +24,6 @@ export const shouldBehaveLikePermissionSign = (buildContext: () => Promise<LSP6T
 
     signer = context.accounts[1];
     nonSigner = context.accounts[2];
-    noPermissionsSet = context.accounts[3];
 
     const permissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),

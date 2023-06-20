@@ -3,7 +3,7 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 // constants
-import { ERC725YDataKeys, ALL_PERMISSIONS, PERMISSIONS } from '../../../constants';
+import { ERC725YDataKeys, PERMISSIONS } from '../../../constants';
 
 // helpers
 import { encodeCompactBytesArray } from '../../utils/helpers';
