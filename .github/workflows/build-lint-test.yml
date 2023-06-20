@@ -25,7 +25,7 @@ jobs:
         run: npm run linter
 
       - name: 🎨 Check Prettier Style
-        run: npx prettier --check .
+        run: npm run format:check
 
       # This will also generate the Typechain types used by the Chai tests
       - name: 🏗️ Build contract artifacts

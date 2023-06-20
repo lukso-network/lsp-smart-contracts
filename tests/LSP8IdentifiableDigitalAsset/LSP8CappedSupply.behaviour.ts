@@ -1,9 +1,9 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { ethers } from "hardhat";
-import { expect } from "chai";
-import { LSP8CappedSupplyTester } from "../../types";
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
+import { LSP8CappedSupplyTester } from '../../types';
 
-import type { BigNumber, BytesLike } from "ethers";
+import type { BigNumber, BytesLike } from 'ethers';
 
 export type LSP8CappedSupplyTestAccounts = {
   owner: SignerWithAddress;
@@ -40,15 +40,15 @@ export const shouldBehaveLikeLSP8CappedSupply = (
       .map((_, i) => ethers.utils.keccak256(ethers.BigNumber.from(i).toHexString()));
   });
 
-  describe("tokenSupplyCap", () => {
-    it("should allow reading tokenSupplyCap", async () => {
+  describe('tokenSupplyCap', () => {
+    it('should allow reading tokenSupplyCap', async () => {
       const tokenSupplyCap = await context.lsp8CappedSupply.tokenSupplyCap();
       expect(tokenSupplyCap).to.equal(context.deployParams.tokenSupplyCap);
     });
   });
 
-  describe("when minting tokens", () => {
-    it("should allow minting amount up to tokenSupplyCap", async () => {
+  describe('when minting tokens', () => {
+    it('should allow minting amount up to tokenSupplyCap', async () => {
       const preTokenSupplyCap = await context.lsp8CappedSupply.tokenSupplyCap();
       const preTotalSupply = await context.lsp8CappedSupply.totalSupply();
       expect(preTokenSupplyCap.sub(preTotalSupply)).to.equal(String(mintedTokenIds.length));
@@ -68,10 +68,10 @@ export const shouldBehaveLikeLSP8CappedSupply = (
       expect(postTotalSupply.sub(postTokenSupplyCap)).to.equal(ethers.constants.Zero);
     });
 
-    describe("when cap has been reached", () => {
-      const anotherTokenId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("VIP token"));
+    describe('when cap has been reached', () => {
+      const anotherTokenId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('VIP token'));
 
-      it("should error when minting more than tokenSupplyCapTokens", async () => {
+      it('should error when minting more than tokenSupplyCapTokens', async () => {
         await Promise.all(
           mintedTokenIds.map((tokenId) =>
             context.lsp8CappedSupply.mint(context.accounts.tokenReceiver.address, tokenId),
@@ -86,11 +86,11 @@ export const shouldBehaveLikeLSP8CappedSupply = (
           context.lsp8CappedSupply.mint(context.accounts.tokenReceiver.address, anotherTokenId),
         ).to.be.revertedWithCustomError(
           context.lsp8CappedSupply,
-          "LSP8CappedSupplyCannotMintOverCap",
+          'LSP8CappedSupplyCannotMintOverCap',
         );
       });
 
-      it("should allow minting after burning", async () => {
+      it('should allow minting after burning', async () => {
         await Promise.all(
           mintedTokenIds.map((tokenId) =>
             context.lsp8CappedSupply.mint(context.accounts.tokenReceiver.address, tokenId),

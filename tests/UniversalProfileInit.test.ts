@@ -1,40 +1,40 @@
-import { ethers } from "hardhat";
-import { expect } from "chai";
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
 import {
   LSP0ERC725Account,
   UniversalProfileInit__factory,
   UniversalReceiverTester__factory,
-} from "../types";
-import { deployProxy } from "./utils/fixtures";
+} from '../types';
+import { deployProxy } from './utils/fixtures';
 
 import {
   LSP1TestContext,
   shouldBehaveLikeLSP1,
-} from "./LSP1UniversalReceiver/LSP1UniversalReceiver.behaviour";
+} from './LSP1UniversalReceiver/LSP1UniversalReceiver.behaviour';
 
 import {
   LSP17TestContext,
   shouldBehaveLikeLSP17,
-} from "./LSP17ContractExtension/LSP17Extendable.behaviour";
+} from './LSP17ContractExtension/LSP17Extendable.behaviour';
 
 import {
   LSP20TestContext,
   shouldBehaveLikeLSP20,
-} from "./LSP20CallVerification/LSP20CallVerification.behaviour";
+} from './LSP20CallVerification/LSP20CallVerification.behaviour';
 
 import {
   LSP3TestContext,
   shouldInitializeLikeLSP3,
   shouldBehaveLikeLSP3,
-} from "./UniversalProfile.behaviour";
-import { provider } from "./utils/helpers";
-import { BigNumber } from "ethers";
+} from './UniversalProfile.behaviour';
+import { provider } from './utils/helpers';
+import { BigNumber } from 'ethers';
 import {
   LSP14CombinedWithLSP20TestContext,
   shouldBehaveLikeLSP14WithLSP20,
-} from "./LSP20CallVerification/LSP20WithLSP14.behaviour";
+} from './LSP20CallVerification/LSP20WithLSP14.behaviour';
 
-describe("UniversalProfileInit with proxy", () => {
+describe('UniversalProfileInit with proxy', () => {
   let universalProfileInit;
   let accounts;
 
@@ -57,7 +57,7 @@ describe("UniversalProfileInit with proxy", () => {
   };
 
   const initializeProxy = async (context: LSP3TestContext) => {
-    return context.universalProfile["initialize(address)"](context.deployParams.owner.address, {
+    return context.universalProfile['initialize(address)'](context.deployParams.owner.address, {
       value: context.deployParams.initialFunding,
     });
   };
@@ -86,7 +86,7 @@ describe("UniversalProfileInit with proxy", () => {
 
     const universalProfile = universalProfileInit.attach(universalProfileProxy);
 
-    const onlyOwnerRevertString = "Ownable: caller is not the owner";
+    const onlyOwnerRevertString = 'Ownable: caller is not the owner';
 
     return {
       accounts,
@@ -123,19 +123,19 @@ describe("UniversalProfileInit with proxy", () => {
     return { accounts, universalProfile: universalProfile, deployParams };
   };
 
-  describe("when deploying the base implementation contract", () => {
-    it("prevent any address from calling the initialize(...) function on the implementation", async () => {
+  describe('when deploying the base implementation contract', () => {
+    it('prevent any address from calling the initialize(...) function on the implementation', async () => {
       const randomCaller = accounts[1];
 
       await expect(universalProfileInit.initialize(randomCaller.address)).to.be.revertedWith(
-        "Initializable: contract is already initialized",
+        'Initializable: contract is already initialized',
       );
     });
   });
 
   [{ initialFunding: undefined }, { initialFunding: 0 }, { initialFunding: 5 }].forEach(
     (testCase) => {
-      describe("when deploying + intializing the proxy contract with or without value", () => {
+      describe('when deploying + intializing the proxy contract with or without value', () => {
         it(`should have initialized with the correct funding amount (${testCase.initialFunding})`, async () => {
           let context = await buildLSP3TestContext(testCase.initialFunding);
           await initializeProxy(context);
@@ -146,18 +146,18 @@ describe("UniversalProfileInit with proxy", () => {
     },
   );
 
-  describe("when calling `initialize(...)` more than once", () => {
-    it("should revert", async () => {
+  describe('when calling `initialize(...)` more than once', () => {
+    it('should revert', async () => {
       let context = await buildLSP3TestContext();
       await initializeProxy(context);
 
       await expect(initializeProxy(context)).to.be.revertedWith(
-        "Initializable: contract is already initialized",
+        'Initializable: contract is already initialized',
       );
     });
   });
 
-  describe("when deploying + initializing the proxy contract", () => {
+  describe('when deploying + initializing the proxy contract', () => {
     shouldInitializeLikeLSP3(async () => {
       let context = await buildLSP3TestContext();
       await initializeProxy(context);
@@ -165,7 +165,7 @@ describe("UniversalProfileInit with proxy", () => {
     });
   });
 
-  describe("when testing deployed contract", () => {
+  describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP3(async (initialFunding?: number) => {
       let context = await buildLSP3TestContext(initialFunding);
       await initializeProxy(context);

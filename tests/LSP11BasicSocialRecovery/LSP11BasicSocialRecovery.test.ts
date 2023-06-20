@@ -1,18 +1,18 @@
-import { LSP11BasicSocialRecovery__factory, LSP6KeyManager, UniversalProfile } from "../../types";
+import { LSP11BasicSocialRecovery__factory, LSP6KeyManager, UniversalProfile } from '../../types';
 
 import {
   getNamedAccounts,
   shouldInitializeLikeLSP11,
   LSP11TestContext,
   shouldBehaveLikeLSP11,
-} from "./LSP11BasicSocialRecovery.behaviour";
+} from './LSP11BasicSocialRecovery.behaviour';
 
 import {
   setupProfileWithKeyManagerWithURD,
   grantLSP11PermissionViaKeyManager,
-} from "../utils/fixtures";
+} from '../utils/fixtures';
 
-describe("LSP11BasicSocialRecovery with constructor", () => {
+describe('LSP11BasicSocialRecovery with constructor', () => {
   let context: LSP11TestContext;
 
   const buildTestContext = async (): Promise<LSP11TestContext> => {
@@ -52,8 +52,8 @@ describe("LSP11BasicSocialRecovery with constructor", () => {
     context = await buildTestContext();
   });
 
-  describe("When deploying the contract", () => {
-    describe("When initializing the contract", () => {
+  describe('When deploying the contract', () => {
+    describe('When initializing the contract', () => {
       shouldInitializeLikeLSP11(async () => {
         const { lsp11BasicSocialRecovery, deployParams } = context;
         return {
@@ -65,7 +65,7 @@ describe("LSP11BasicSocialRecovery with constructor", () => {
     });
   });
 
-  describe("When testing deployed contract", () => {
+  describe('When testing deployed contract', () => {
     shouldBehaveLikeLSP11(buildTestContext);
   });
 });

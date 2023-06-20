@@ -1,24 +1,24 @@
-import { ethers } from "hardhat";
-import { expect } from "chai";
-import { LSP8CappedSupplyInitTester__factory } from "../../../types";
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
+import { LSP8CappedSupplyInitTester__factory } from '../../../types';
 
-import { shouldInitializeLikeLSP8 } from "../LSP8IdentifiableDigitalAsset.behaviour";
+import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {
   shouldBehaveLikeLSP8CappedSupply,
   LSP8CappedSupplyTestContext,
   getNamedAccounts,
-} from "../LSP8CappedSupply.behaviour";
+} from '../LSP8CappedSupply.behaviour';
 
-import { deployProxy } from "../../utils/fixtures";
+import { deployProxy } from '../../utils/fixtures';
 
-describe("LSP8CappedSupplyInit with proxy", () => {
+describe('LSP8CappedSupplyInit with proxy', () => {
   const buildTestContext = async () => {
     const accounts = await getNamedAccounts();
     const deployParams = {
-      name: "LSP8 capped supply - deployed with proxy",
-      symbol: "CAP",
+      name: 'LSP8 capped supply - deployed with proxy',
+      symbol: 'CAP',
       newOwner: accounts.owner.address,
-      tokenSupplyCap: ethers.BigNumber.from("2"),
+      tokenSupplyCap: ethers.BigNumber.from('2'),
     };
     const lsp8CappedSupplyInit = await new LSP8CappedSupplyInitTester__factory(
       accounts.owner,
@@ -30,7 +30,7 @@ describe("LSP8CappedSupplyInit with proxy", () => {
   };
 
   const initializeProxy = async (context: LSP8CappedSupplyTestContext) => {
-    return context.lsp8CappedSupply["initialize(string,string,address,uint256)"](
+    return context.lsp8CappedSupply['initialize(string,string,address,uint256)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
@@ -38,14 +38,14 @@ describe("LSP8CappedSupplyInit with proxy", () => {
     );
   };
 
-  describe("when deploying the contract as proxy", () => {
+  describe('when deploying the contract as proxy', () => {
     let context: LSP8CappedSupplyTestContext;
 
     before(async () => {
       context = await buildTestContext();
     });
 
-    describe("when initializing the contract", () => {
+    describe('when initializing the contract', () => {
       shouldInitializeLikeLSP8(async () => {
         const { lsp8CappedSupply: lsp8, deployParams } = context;
         const initializeTransaction = await initializeProxy(context);
@@ -58,16 +58,16 @@ describe("LSP8CappedSupplyInit with proxy", () => {
       });
     });
 
-    describe("when calling initialize more than once", () => {
-      it("should revert", async () => {
+    describe('when calling initialize more than once', () => {
+      it('should revert', async () => {
         await expect(initializeProxy(context)).to.be.revertedWith(
-          "Initializable: contract is already initialized",
+          'Initializable: contract is already initialized',
         );
       });
     });
   });
 
-  describe("when testing deployed contract", () => {
+  describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP8CappedSupply(() =>
       buildTestContext().then(async (context) => {
         await initializeProxy(context);

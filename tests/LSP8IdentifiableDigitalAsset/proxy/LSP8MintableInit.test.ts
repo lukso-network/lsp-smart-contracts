@@ -1,22 +1,22 @@
-import { ethers } from "hardhat";
-import { expect } from "chai";
-import { LSP8MintableInit, LSP8MintableInit__factory } from "../../../types";
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
+import { LSP8MintableInit, LSP8MintableInit__factory } from '../../../types';
 
-import { shouldInitializeLikeLSP8 } from "../LSP8IdentifiableDigitalAsset.behaviour";
+import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {
   shouldBehaveLikeLSP8Mintable,
   LSP8MintableTestContext,
   getNamedAccounts,
-} from "../LSP8Mintable.behaviour";
+} from '../LSP8Mintable.behaviour';
 
-import { deployProxy } from "../../utils/fixtures";
+import { deployProxy } from '../../utils/fixtures';
 
-describe("LSP8MintableInit with proxy", () => {
+describe('LSP8MintableInit with proxy', () => {
   const buildTestContext = async () => {
     const accounts = await getNamedAccounts();
     const deployParams = {
-      name: "LSP8 Mintable - deployed with proxy",
-      symbol: "MNTBL",
+      name: 'LSP8 Mintable - deployed with proxy',
+      symbol: 'MNTBL',
       newOwner: accounts.owner.address,
     };
 
@@ -31,15 +31,15 @@ describe("LSP8MintableInit with proxy", () => {
   };
 
   const initializeProxy = async (context: LSP8MintableTestContext) => {
-    return context.lsp8Mintable["initialize(string,string,address)"](
+    return context.lsp8Mintable['initialize(string,string,address)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
     );
   };
 
-  describe("when deploying the base implementation contract", () => {
-    it("prevent any address from calling the initialize(...) function on the implementation", async () => {
+  describe('when deploying the base implementation contract', () => {
+    it('prevent any address from calling the initialize(...) function on the implementation', async () => {
       const accounts = await ethers.getSigners();
 
       const lsp8Mintable = await new LSP8MintableInit__factory(accounts[0]).deploy();
@@ -47,23 +47,23 @@ describe("LSP8MintableInit with proxy", () => {
       const randomCaller = accounts[1];
 
       await expect(
-        lsp8Mintable["initialize(string,string,address)"](
-          "XXXXXXXXXXX",
-          "XXX",
+        lsp8Mintable['initialize(string,string,address)'](
+          'XXXXXXXXXXX',
+          'XXX',
           randomCaller.address,
         ),
-      ).to.be.revertedWith("Initializable: contract is already initialized");
+      ).to.be.revertedWith('Initializable: contract is already initialized');
     });
   });
 
-  describe("when deploying the contract as proxy", () => {
+  describe('when deploying the contract as proxy', () => {
     let context: LSP8MintableTestContext;
 
     before(async () => {
       context = await buildTestContext();
     });
 
-    describe("when initializing the contract", () => {
+    describe('when initializing the contract', () => {
       shouldInitializeLikeLSP8(async () => {
         const { lsp8Mintable: lsp8, deployParams } = context;
         const initializeTransaction = await initializeProxy(context);
@@ -76,16 +76,16 @@ describe("LSP8MintableInit with proxy", () => {
       });
     });
 
-    describe("when calling initialize more than once", () => {
-      it("should revert", async () => {
+    describe('when calling initialize more than once', () => {
+      it('should revert', async () => {
         await expect(initializeProxy(context)).to.be.revertedWith(
-          "Initializable: contract is already initialized",
+          'Initializable: contract is already initialized',
         );
       });
     });
   });
 
-  describe("when testing deployed contract", () => {
+  describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP8Mintable(() =>
       buildTestContext().then(async (context) => {
         await initializeProxy(context);

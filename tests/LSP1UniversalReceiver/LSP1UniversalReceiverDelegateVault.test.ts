@@ -1,18 +1,18 @@
-import { ERC725YDataKeys, OPERATION_TYPES } from "../../constants";
+import { ERC725YDataKeys, OPERATION_TYPES } from '../../constants';
 import {
   LSP1UniversalReceiverDelegateVault__factory,
   UniversalProfile__factory,
   LSP9Vault__factory,
-} from "../../types";
+} from '../../types';
 
 import {
   LSP1TestContext,
   getNamedAccounts,
   shouldBehaveLikeLSP1Delegate,
-} from "./LSP1UniversalReceiverDelegateVault.behaviour";
+} from './LSP1UniversalReceiverDelegateVault.behaviour';
 
-describe("LSP1UniversalReceiverDelegateVault", () => {
-  describe("when testing deployed contract", () => {
+describe('LSP1UniversalReceiverDelegateVault', () => {
+  describe('when testing deployed contract', () => {
     const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
       const accounts = await getNamedAccounts();
 
@@ -35,7 +35,7 @@ describe("LSP1UniversalReceiverDelegateVault", () => {
 
       // Setting lsp1UniversalReceiverDelegateVault as URD for the Vault
 
-      const abi = lsp9Vault1.interface.encodeFunctionData("setData", [
+      const abi = lsp9Vault1.interface.encodeFunctionData('setData', [
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
         lsp1universalReceiverDelegateVault.address,
       ]);
