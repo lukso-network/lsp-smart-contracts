@@ -14,7 +14,7 @@ task(TASK_COMPILE)
     "Don't generate documentation after running this task, even if runOnCompile option is enabled",
   )
   .setAction(async function (args, hre, runSuper) {
-    for (let compiler of hre.config.solidity.compilers) {
+    for (const compiler of hre.config.solidity.compilers) {
       compiler.settings.outputSelection['*']['*'].push('devdoc');
       compiler.settings.outputSelection['*']['*'].push('userdoc');
     }
@@ -141,7 +141,7 @@ task('ts-gen', 'Generate NatSpec documentation automatically on compilation')
     let contractCount = 0;
     let userdocCount = 0;
     let devdocCount = 0;
-    for (let contractName of contractNames) {
+    for (const contractName of contractNames) {
       const [source, name] = contractName.split(':');
 
       if (!contracts.has(name)) {

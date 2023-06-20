@@ -58,7 +58,7 @@ export const shouldBehaveLikeLSP8Mintable = (
         '0x',
       );
 
-      let postMintTotalSupply = await context.lsp8Mintable.totalSupply();
+      const postMintTotalSupply = await context.lsp8Mintable.totalSupply();
       expect(postMintTotalSupply).to.equal(preMintTotalSupply.add(1));
     });
 

@@ -51,7 +51,7 @@ async function main() {
 
       const [path, name] = source.split(':');
 
-      let devdoc = build?.output?.contracts?.[path]?.[lspInterface]['devdoc'];
+      const devdoc = build?.output?.contracts?.[path]?.[lspInterface]['devdoc'];
 
       if (!devdoc) {
         // search in the first implementation contract

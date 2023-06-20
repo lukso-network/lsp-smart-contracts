@@ -90,16 +90,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
       describe('When testing msg.value', () => {
         describe('When sending more than the signed msg.value', () => {
           it('should revert by recovering a non permissioned address', async () => {
-            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+            const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
               [OPERATION_TYPES.CALL, random.address, 0, '0x'],
             );
 
-            let latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
+            const latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
 
             const validityTimestamps = 0;
 
-            let valueToSign = 5;
+            const valueToSign = 5;
 
             const signedMessageParams = {
               lsp6Version: LSP6_VERSION,
@@ -110,9 +110,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
               payload: executeRelayCallPayload,
             };
 
-            let valueToSendFromRelayer = 10;
+            const valueToSendFromRelayer = 10;
 
-            let encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 signedMessageParams.lsp6Version,
@@ -124,9 +124,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
               ],
             );
 
-            let eip191Signer = new EIP191Signer();
+            const eip191Signer = new EIP191Signer();
 
-            let { signature } = await eip191Signer.signDataWithIntendedValidator(
+            const { signature } = await eip191Signer.signDataWithIntendedValidator(
               context.keyManager.address,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT1,
@@ -148,16 +148,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         describe('When sending 0 while msg.value signed > 0', () => {
           it('should revert by recovering a non permissioned address', async () => {
-            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+            const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
               [OPERATION_TYPES.CALL, random.address, 0, '0x'],
             );
 
-            let latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
+            const latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
 
             const validityTimestamps = 0;
 
-            let valueToSign = 5;
+            const valueToSign = 5;
 
             const signedMessageParams = {
               lsp6Version: LSP6_VERSION,
@@ -168,9 +168,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
               payload: executeRelayCallPayload,
             };
 
-            let valueToSendFromRelayer = 0;
+            const valueToSendFromRelayer = 0;
 
-            let encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 signedMessageParams.lsp6Version,
@@ -182,9 +182,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
               ],
             );
 
-            let eip191Signer = new EIP191Signer();
+            const eip191Signer = new EIP191Signer();
 
-            let { signature } = await eip191Signer.signDataWithIntendedValidator(
+            const { signature } = await eip191Signer.signDataWithIntendedValidator(
               context.keyManager.address,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT1,
@@ -206,16 +206,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         describe('When sending exact msg.value like the one that is signed', () => {
           it('should pass if signer has the `to` address in its allowed calls', async () => {
-            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+            const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
               [OPERATION_TYPES.CALL, random.address, 0, '0x'],
             );
 
-            let latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
+            const latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
 
             const validityTimestamps = 0;
 
-            let valueToSendFromRelayer = 10;
+            const valueToSendFromRelayer = 10;
 
             const signedMessageParams = {
               lsp6Version: LSP6_VERSION,
@@ -226,7 +226,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               payload: executeRelayCallPayload,
             };
 
-            let encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 signedMessageParams.lsp6Version,
@@ -240,9 +240,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             const balanceOfUpBefore = await provider.getBalance(context.universalProfile.address);
 
-            let eip191Signer = new EIP191Signer();
+            const eip191Signer = new EIP191Signer();
 
-            let { signature } = await eip191Signer.signDataWithIntendedValidator(
+            const { signature } = await eip191Signer.signDataWithIntendedValidator(
               context.keyManager.address,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT1,
@@ -272,19 +272,19 @@ export const shouldBehaveLikeExecuteRelayCall = (
           });
 
           it('should fail if signer has nothing listed in its allowed calls', async () => {
-            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+            const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
               [OPERATION_TYPES.CALL, random.address, 0, '0x'],
             );
 
-            let latestNonce = await context.keyManager.callStatic.getNonce(
+            const latestNonce = await context.keyManager.callStatic.getNonce(
               signerNoAllowedCalls.address,
               0,
             );
 
             const validityTimestamps = 0;
 
-            let valueToSendFromRelayer = 10;
+            const valueToSendFromRelayer = 10;
 
             const signedMessageParams = {
               lsp6Version: LSP6_VERSION,
@@ -295,7 +295,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               payload: executeRelayCallPayload,
             };
 
-            let encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 signedMessageParams.lsp6Version,
@@ -307,9 +307,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
               ],
             );
 
-            let eip191Signer = new EIP191Signer();
+            const eip191Signer = new EIP191Signer();
 
-            let { signature } = await eip191Signer.signDataWithIntendedValidator(
+            const { signature } = await eip191Signer.signDataWithIntendedValidator(
               context.keyManager.address,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT3,
@@ -334,19 +334,19 @@ export const shouldBehaveLikeExecuteRelayCall = (
         describe('When UP have 0 value and interacting with contract that require value', () => {
           describe("When relayer don't fund the UP so it's balance is greater than the value param of execute(..)", () => {
             it('should revert', async () => {
-              let nameToSet = 'Alice';
-              let targetContractPayload = targetContract.interface.encodeFunctionData(
+              const nameToSet = 'Alice';
+              const targetContractPayload = targetContract.interface.encodeFunctionData(
                 'setNamePayable',
                 [nameToSet],
               );
 
-              let requiredValueForExecution = 51; // specified in `setNamePayable(..)`
+              const requiredValueForExecution = 51; // specified in `setNamePayable(..)`
 
-              let latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
+              const latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
 
               const validityTimestamps = 0;
 
-              let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+              const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
                 'execute',
                 [
                   OPERATION_TYPES.CALL,
@@ -356,7 +356,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 ],
               );
 
-              let valueToSendFromRelayer = 0;
+              const valueToSendFromRelayer = 0;
 
               const signedMessageParams = {
                 lsp6Version: LSP6_VERSION,
@@ -367,7 +367,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 payload: executeRelayCallPayload,
               };
 
-              let encodedMessage = ethers.utils.solidityPack(
+              const encodedMessage = ethers.utils.solidityPack(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
                   signedMessageParams.lsp6Version,
@@ -379,9 +379,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 ],
               );
 
-              let eip191Signer = new EIP191Signer();
+              const eip191Signer = new EIP191Signer();
 
-              let { signature } = await eip191Signer.signDataWithIntendedValidator(
+              const { signature } = await eip191Signer.signDataWithIntendedValidator(
                 context.keyManager.address,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT1,
@@ -411,19 +411,19 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe("When relayer fund the UP so it's balance is greater than the value param of execute(..)", () => {
             it('should pass if signer has the target contract address in its list of allowed calls', async () => {
-              let nameToSet = 'Alice';
-              let targetContractPayload = targetContract.interface.encodeFunctionData(
+              const nameToSet = 'Alice';
+              const targetContractPayload = targetContract.interface.encodeFunctionData(
                 'setNamePayable',
                 [nameToSet],
               );
 
-              let requiredValueForExecution = 51; // specified in `setNamePayable(..)`
+              const requiredValueForExecution = 51; // specified in `setNamePayable(..)`
 
-              let latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
+              const latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
 
               const validityTimestamps = 0;
 
-              let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+              const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
                 'execute',
                 [
                   OPERATION_TYPES.CALL,
@@ -433,7 +433,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 ],
               );
 
-              let valueToSendFromRelayer = 51;
+              const valueToSendFromRelayer = 51;
 
               const signedMessageParams = {
                 lsp6Version: LSP6_VERSION,
@@ -444,7 +444,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 payload: executeRelayCallPayload,
               };
 
-              let encodedMessage = ethers.utils.solidityPack(
+              const encodedMessage = ethers.utils.solidityPack(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
                   signedMessageParams.lsp6Version,
@@ -456,9 +456,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 ],
               );
 
-              let eip191Signer = new EIP191Signer();
+              const eip191Signer = new EIP191Signer();
 
-              let { signature } = await eip191Signer.signDataWithIntendedValidator(
+              const { signature } = await eip191Signer.signDataWithIntendedValidator(
                 context.keyManager.address,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT1,
@@ -479,22 +479,22 @@ export const shouldBehaveLikeExecuteRelayCall = (
             });
 
             it("should revert with 'NotAllowedCall' error if signer does not have any listed under its allowed calls", async () => {
-              let nameToSet = 'Alice';
-              let targetContractPayload = targetContract.interface.encodeFunctionData(
+              const nameToSet = 'Alice';
+              const targetContractPayload = targetContract.interface.encodeFunctionData(
                 'setNamePayable',
                 [nameToSet],
               );
 
-              let requiredValueForExecution = 51; // specified in `setNamePayable(..)`
+              const requiredValueForExecution = 51; // specified in `setNamePayable(..)`
 
-              let latestNonce = await context.keyManager.callStatic.getNonce(
+              const latestNonce = await context.keyManager.callStatic.getNonce(
                 signerNoAllowedCalls.address,
                 0,
               );
 
               const validityTimestamps = 0;
 
-              let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+              const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
                 'execute',
                 [
                   OPERATION_TYPES.CALL,
@@ -504,7 +504,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 ],
               );
 
-              let valueToSendFromRelayer = 51;
+              const valueToSendFromRelayer = 51;
 
               const signedMessageParams = {
                 lsp6Version: LSP6_VERSION,
@@ -515,7 +515,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 payload: executeRelayCallPayload,
               };
 
-              let encodedMessage = ethers.utils.solidityPack(
+              const encodedMessage = ethers.utils.solidityPack(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
                   signedMessageParams.lsp6Version,
@@ -527,9 +527,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 ],
               );
 
-              let eip191Signer = new EIP191Signer();
+              const eip191Signer = new EIP191Signer();
 
-              let { signature } = await eip191Signer.signDataWithIntendedValidator(
+              const { signature } = await eip191Signer.signDataWithIntendedValidator(
                 context.keyManager.address,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT3,
@@ -1114,7 +1114,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
       // Therefore, the Key Manager try to verify the nonce of a different address than the one that signed the message, and the nonce is invalid.
       const eip191 = new EIP191Signer();
 
-      let encodedMessage = ethers.utils.solidityPack(
+      const encodedMessage = ethers.utils.solidityPack(
         ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
         [6, 31337, ownerNonce.add(1), validityTimestamps, 0, transferLyxPayload],
       );
@@ -1498,7 +1498,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             thirdLyxTransfer,
           );
 
-          let tx = await context.keyManager
+          const tx = await context.keyManager
             .connect(context.owner)
             .executeRelayCallBatch(
               [firstTransferLyxSignature, secondTransferLyxSignature, thirdTransferLyxSignature],

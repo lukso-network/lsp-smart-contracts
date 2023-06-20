@@ -133,8 +133,8 @@ describe('LSP9VaultInit with proxy', () => {
     );
 
     shouldBehaveLikeLSP14(async (initialFunding?: number | BigNumber) => {
-      let context = await buildTestContext(initialFunding);
-      let accounts = await ethers.getSigners();
+      const context = await buildTestContext(initialFunding);
+      const accounts = await ethers.getSigners();
       await initializeProxy(context);
 
       const onlyOwnerRevertString = 'Only Owner or reentered Universal Receiver Delegate allowed';
@@ -148,7 +148,7 @@ describe('LSP9VaultInit with proxy', () => {
     });
 
     shouldBehaveLikeLSP17(async () => {
-      let fallbackExtensionContext = await buildLSP17TestContext();
+      const fallbackExtensionContext = await buildLSP17TestContext();
 
       await fallbackExtensionContext.contract['initialize(address)'](
         fallbackExtensionContext.deployParams.owner.address,

@@ -162,7 +162,7 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
 
     describe('from an EOA', () => {
       it('should emit a UniversalReceiver(...) event with correct topics', async () => {
-        let caller = context.accounts[2];
+        const caller = context.accounts[2];
 
         await expect(
           context.lsp1Implementation

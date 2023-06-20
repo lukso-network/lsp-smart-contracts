@@ -63,12 +63,12 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       // Doing a delegatecall to the setData function of another UP
       // should update the ERC725Y storage of the UP making the delegatecall
-      let delegateCallPayload = erc725YDelegateCallContract.interface.encodeFunctionData(
+      const delegateCallPayload = erc725YDelegateCallContract.interface.encodeFunctionData(
         'updateStorage',
         [key, value],
       );
 
-      let executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
+      const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.DELEGATECALL,
         erc725YDelegateCallContract.address,
         0,
@@ -91,12 +91,12 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       // Doing a delegatecall to the setData function of another UP
       // should update the ERC725Y storage of the UP making the delegatecall
-      let delegateCallPayload = erc725YDelegateCallContract.interface.encodeFunctionData(
+      const delegateCallPayload = erc725YDelegateCallContract.interface.encodeFunctionData(
         'updateStorage',
         [key, value],
       );
 
-      let executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
+      const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.DELEGATECALL,
         erc725YDelegateCallContract.address,
         0,
@@ -119,12 +119,12 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       // Doing a delegatecall to the setData function of another UP
       // should update the ERC725Y storage of the UP making the delegatecall
-      let delegateCallPayload = erc725YDelegateCallContract.interface.encodeFunctionData(
+      const delegateCallPayload = erc725YDelegateCallContract.interface.encodeFunctionData(
         'setDataBatch',
         [[key], [value]],
       );
 
-      let executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
+      const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.DELEGATECALL,
         erc725YDelegateCallContract.address,
         0,
@@ -207,18 +207,16 @@ export const shouldBehaveLikePermissionDelegateCall = (
             expect(currentStorage).to.equal('0x');
 
             // prettier-ignore
-            let delegateCallPayload = randomContracts[ii].interface.encodeFunctionData(
+            const delegateCallPayload = randomContracts[ii].interface.encodeFunctionData(
               "updateStorage", [
               key,
               value,
             ]);
 
-            let executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
-              OPERATION_TYPES.DELEGATECALL,
-              randomContracts[ii].address,
-              0,
-              delegateCallPayload,
-            ]);
+            const executePayload = context.universalProfile.interface.encodeFunctionData(
+              'execute',
+              [OPERATION_TYPES.DELEGATECALL, randomContracts[ii].address, 0, delegateCallPayload],
+            );
 
             await expect(
               context.keyManager.connect(caller).execute(executePayload),
@@ -245,13 +243,13 @@ export const shouldBehaveLikePermissionDelegateCall = (
         expect(currentStorage).to.equal('0x');
 
         // prettier-ignore
-        let delegateCallPayload = allowedDelegateCallContracts[0].interface.encodeFunctionData(
+        const delegateCallPayload = allowedDelegateCallContracts[0].interface.encodeFunctionData(
           "updateStorage", [
           key,
           value,
         ]);
 
-        let executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
+        const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.DELEGATECALL,
           allowedDelegateCallContracts[0].address,
           0,
@@ -276,13 +274,13 @@ export const shouldBehaveLikePermissionDelegateCall = (
         expect(currentStorage).to.equal('0x');
 
         // prettier-ignore
-        let delegateCallPayload = allowedDelegateCallContracts[1].interface.encodeFunctionData(
+        const delegateCallPayload = allowedDelegateCallContracts[1].interface.encodeFunctionData(
           "updateStorage", [
           key,
           value,
         ]);
 
-        let executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
+        const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.DELEGATECALL,
           allowedDelegateCallContracts[1].address,
           0,

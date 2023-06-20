@@ -36,7 +36,7 @@ export const otherTestScenarios = (buildContext: () => Promise<LSP6TestContext>)
 
   describe('wrong operation type', () => {
     it('Should revert because of wrong operation type when caller has ALL PERMISSIONS', async () => {
-      let targetPayload = targetContract.interface.encodeFunctionData('setName', ['new name']);
+      const targetPayload = targetContract.interface.encodeFunctionData('setName', ['new name']);
 
       const INVALID_OPERATION_TYPE = 8;
 
@@ -48,7 +48,7 @@ export const otherTestScenarios = (buildContext: () => Promise<LSP6TestContext>)
     });
 
     it('Should revert because of wrong operation type when caller has not ALL PERMISSIONS', async () => {
-      let targetPayload = targetContract.interface.encodeFunctionData('setName', ['new name']);
+      const targetPayload = targetContract.interface.encodeFunctionData('setName', ['new name']);
 
       const INVALID_OPERATION_TYPE = 8;
 

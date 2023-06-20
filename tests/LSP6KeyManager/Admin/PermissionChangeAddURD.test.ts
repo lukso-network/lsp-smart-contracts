@@ -151,7 +151,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -168,7 +168,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -185,7 +185,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: '0x',
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -204,7 +204,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -223,7 +223,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -242,7 +242,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: '0x',
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -263,7 +263,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -280,7 +280,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -301,7 +301,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -322,7 +322,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: '0x',
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -345,7 +345,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -366,7 +366,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateD,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -384,7 +384,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: '0x',
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -406,7 +406,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -419,7 +419,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -435,7 +435,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -451,7 +451,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: '0x',
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -471,7 +471,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -485,7 +485,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -501,7 +501,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -517,7 +517,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: '0x',
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -537,7 +537,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -551,7 +551,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -567,7 +567,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: universalReceiverDelegateA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -583,7 +583,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValue: '0x',
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -611,7 +611,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             ],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
             payloadParam.dataKeys,
             payloadParam.dataValues,
           ]);
@@ -637,7 +637,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             ],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
             payloadParam.dataKeys,
             payloadParam.dataValues,
           ]);
@@ -659,7 +659,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValues: ['0x', ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16), '0x'],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
             payloadParam.dataKeys,
             payloadParam.dataValues,
           ]);
@@ -688,7 +688,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -711,7 +711,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateA, '0xaabbccdd'],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -734,7 +734,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateA, universalReceiverDelegateB],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -760,7 +760,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValues: ['0x', '0x'],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
             payloadParam.dataKeys,
             payloadParam.dataValues,
           ]);
@@ -774,7 +774,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateA, universalReceiverDelegateB],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -794,7 +794,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateC, universalReceiverDelegateD],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -820,7 +820,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateA, '0xaabbccdd'],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -851,7 +851,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -884,7 +884,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -916,7 +916,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -944,7 +944,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: ['0x', '0x', '0x'],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -966,7 +966,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateC, universalReceiverDelegateD],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -992,7 +992,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateA, '0xaabbccdd'],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -1014,7 +1014,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateC, universalReceiverDelegateD],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -1034,7 +1034,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateA, '0xaabbccdd'],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -1057,7 +1057,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateC, universalReceiverDelegateD],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -1078,7 +1078,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataValues: [universalReceiverDelegateA, '0xaabbccdd'],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -1101,7 +1101,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -1118,10 +1118,10 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
                 dataValues: [universalReceiverDelegateA, '0xaabbccdd'],
               };
 
-              let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
-                payloadParam.dataKeys,
-                payloadParam.dataValues,
-              ]);
+              const payload = context.universalProfile.interface.encodeFunctionData(
+                'setDataBatch',
+                [payloadParam.dataKeys, payloadParam.dataValues],
+              );
 
               await context.keyManager.connect(canOnlySetData).execute(payload);
 

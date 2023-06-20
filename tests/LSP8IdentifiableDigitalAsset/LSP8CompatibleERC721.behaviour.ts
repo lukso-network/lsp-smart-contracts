@@ -274,7 +274,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           .connect(context.accounts.owner)
           .mint(txParams.to, txParams.tokenId, txParams.data);
 
-        let tx = await context.lsp8CompatibleERC721
+        const tx = await context.lsp8CompatibleERC721
           .connect(context.accounts.owner)
           .setApprovalForAll(context.accounts.operator.address, true);
 

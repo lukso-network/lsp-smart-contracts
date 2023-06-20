@@ -84,7 +84,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
   describe('When testing EOA call to URD through the UR function', () => {
     describe('when calling with tokens typeId', () => {
       it('should revert with custom error', async () => {
-        let URD_TypeIds = [
+        const URD_TypeIds = [
           LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification,
           LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
           LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification,
@@ -108,13 +108,13 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
     describe('when calling with vaults sender and recipient typeIds', () => {
       it('should pass and return typeId out of scope return value', async () => {
-        let Vault_TypeIds = [
+        const Vault_TypeIds = [
           LSP1_TYPE_IDS.LSP14OwnershipTransferred_RecipientNotification,
           LSP1_TYPE_IDS.LSP14OwnershipTransferred_SenderNotification,
         ];
 
         for (let i = 0; i < Vault_TypeIds.length; i++) {
-          let result = await context.lsp9Vault1
+          const result = await context.lsp9Vault1
             .connect(context.accounts.any)
             .callStatic.universalReceiver(Vault_TypeIds[i], '0x');
 
@@ -131,7 +131,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
     describe('when calling with random bytes32 typeId', () => {
       it('should pass and return typeId out of scope return value', async () => {
-        let result = await context.lsp9Vault1
+        const result = await context.lsp9Vault1
           .connect(context.accounts.any)
           .callStatic.universalReceiver(LSP1_HOOK_PLACEHOLDER, '0x');
 

@@ -213,7 +213,7 @@ export const ERC725YDataKeys = {
  * @dev LSP6 version number for signing `executeRelayCall(...)` transaction using EIP191
  * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#executerelaycall
  */
-export const LSP6_VERSION: number = 6;
+export const LSP6_VERSION = 6;
 
 /**
  * @dev The types of calls for an AllowedCall
@@ -228,8 +228,7 @@ export const CALLTYPE = {
 /**
  * @dev `bytes32` hex value for all the LSP6 permissions excluding REENTRANCY, DELEGATECALL and SUPER_DELEGATECALL for security (these should be set manually)
  */
-export const ALL_PERMISSIONS: string =
-  '0x00000000000000000000000000000000000000000000000000000000003f3f7f';
+export const ALL_PERMISSIONS = '0x00000000000000000000000000000000000000000000000000000000003f3f7f';
 
 export type LSP6PermissionName = keyof typeof PERMISSIONS;
 

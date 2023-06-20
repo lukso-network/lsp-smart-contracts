@@ -35,9 +35,9 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
   const buildLSP4DigitalAssetMetadataTestContext =
     async (): Promise<LS4DigitalAssetMetadataTestContext> => {
       const { lsp8 } = await buildTestContext();
-      let accounts = await ethers.getSigners();
+      const accounts = await ethers.getSigners();
 
-      let deployParams = {
+      const deployParams = {
         owner: accounts[0],
       };
 

@@ -73,7 +73,7 @@
     "package": "hardhat prepare-package",
     "release": "run-s clean build package && standard-`version",
     "remixd": "remixd -s . --remix-ide",
-    "lint": "eslint . --ext .ts,.js,.sol",
+    "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "format": "prettier --write ."
   },

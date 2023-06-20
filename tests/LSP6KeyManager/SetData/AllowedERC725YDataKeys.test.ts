@@ -66,7 +66,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             controllerCanSetOneKey.address.substring(2),
         );
-        let decodedResult = decodeCompactBytes(result);
+        const decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.have.lengthOf(1);
       });
@@ -76,7 +76,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             controllerCanSetManyKeys.address.substring(2),
         );
-        let decodedResult = decodeCompactBytes(result);
+        const decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.have.lengthOf(3);
       });
@@ -86,7 +86,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             controllerCanSetOneKey.address.substring(2),
         );
-        let decodedResult = decodeCompactBytes(result);
+        const decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.include(customKey1);
       });
@@ -96,7 +96,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             controllerCanSetManyKeys.address.substring(2),
         );
-        let decodedResult = decodeCompactBytes(result);
+        const decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.contain(customKey2);
         expect(decodedResult).to.contain(customKey3);
@@ -107,10 +107,10 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
     describe('when address can set only one key', () => {
       describe('when setting one key', () => {
         it('should pass when setting the right key', async () => {
-          let key = customKey1;
-          let newValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
+          const key = customKey1;
+          const newValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             newValue,
           ]);
@@ -121,10 +121,10 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         });
 
         it('should fail when setting the wrong key', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NotAllowedKey'));
-          let newValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NotAllowedKey'));
+          const newValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             newValue,
           ]);
@@ -137,18 +137,18 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
       describe('when setting multiple keys', () => {
         it('should fail when the list contains none of the allowed keys', async () => {
-          let keys = [
+          const keys = [
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes('YYYYYYYYYY')),
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ZZZZZZZZZZ')),
           ];
-          let values = [
+          const values = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value YYYYYYYY')),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value ZZZZZZZZ')),
           ];
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData(
             'setDataBatch',
             [keys, values],
           );
@@ -159,18 +159,18 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         });
 
         it('should fail, even if the list contains the allowed key', async () => {
-          let keys = [
+          const keys = [
             customKey1,
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes('YYYYYYYYYY')),
           ];
-          let values = [
+          const values = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 1')),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value YYYYYYYY')),
           ];
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData(
             'setDataBatch',
             [keys, values],
           );
@@ -184,40 +184,40 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
     describe('when address can set multiple keys', () => {
       it('should pass when the input is all the allowed keys', async () => {
-        let keys = [customKey2, customKey3, customKey4];
-        let values = [
+        const keys = [customKey2, customKey3, customKey4];
+        const values = [
           ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data 1')),
           ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data 2')),
           ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data 3')),
         ];
 
-        let setDataPayload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
-          keys,
-          values,
-        ]);
+        const setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          'setDataBatch',
+          [keys, values],
+        );
         await context.keyManager.connect(controllerCanSetManyKeys).execute(setDataPayload);
 
-        let result = await context.universalProfile.getDataBatch(keys);
+        const result = await context.universalProfile.getDataBatch(keys);
 
         expect(result).to.deep.equal(values);
       });
 
       it('should fail when the input contains none of the allowed keys', async () => {
-        let keys = [
+        const keys = [
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes('YYYYYYYYYY')),
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ZZZZZZZZZZ')),
         ];
-        let values = [
+        const values = [
           ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
           ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value YYYYYYYY')),
           ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value ZZZZZZZZ')),
         ];
 
-        let setDataPayload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
-          keys,
-          values,
-        ]);
+        const setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          'setDataBatch',
+          [keys, values],
+        );
 
         await expect(context.keyManager.connect(controllerCanSetManyKeys).execute(setDataPayload))
           .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedERC725YDataKey')
@@ -226,10 +226,10 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
       describe('when setting one key', () => {
         it('should pass when trying to set the 1st allowed key', async () => {
-          let key = customKey2;
-          let newValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
+          const key = customKey2;
+          const newValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             newValue,
           ]);
@@ -240,10 +240,10 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         });
 
         it('should pass when trying to set the 2nd allowed key', async () => {
-          let key = customKey3;
-          let newValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
+          const key = customKey3;
+          const newValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             newValue,
           ]);
@@ -254,10 +254,10 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         });
 
         it('should pass when trying to set the 3rd allowed key', async () => {
-          let key = customKey4;
-          let newValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
+          const key = customKey4;
+          const newValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             newValue,
           ]);
@@ -268,10 +268,10 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         });
 
         it('should fail when setting a not-allowed Singleton key', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NotAllowedKey'));
-          let newValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NotAllowedKey'));
+          const newValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             newValue,
           ]);
@@ -285,53 +285,53 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
       describe('when setting 2 x keys', () => {
         describe('should pass when', () => {
           it('the input is the first two (subset) allowed keys', async () => {
-            let keys = [customKey2, customKey3];
-            let values = [
+            const keys = [customKey2, customKey3];
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data 1')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data 2')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
             await context.keyManager.connect(controllerCanSetManyKeys).execute(setDataPayload);
 
-            let result = await context.universalProfile.getDataBatch(keys);
+            const result = await context.universalProfile.getDataBatch(keys);
             expect(result).to.deep.equal(values);
           });
 
           it('the input is the last two (subset) allowed keys', async () => {
-            let keys = [customKey3, customKey4];
-            let values = [
+            const keys = [customKey3, customKey4];
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data 1')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data 2')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
             await context.keyManager.connect(controllerCanSetManyKeys).execute(setDataPayload);
 
-            let result = await context.universalProfile.getDataBatch(keys);
+            const result = await context.universalProfile.getDataBatch(keys);
             expect(result).to.deep.equal(values);
           });
 
           it('the input is the first + last (subset) allowed keys', async () => {
-            let keys = [customKey2, customKey4];
-            let values = [
+            const keys = [customKey2, customKey4];
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data 1')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data 2')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
             await context.keyManager.connect(controllerCanSetManyKeys).execute(setDataPayload);
 
-            let result = await context.universalProfile.getDataBatch(keys);
+            const result = await context.universalProfile.getDataBatch(keys);
             expect(result).to.deep.equal(values);
           });
         });
@@ -340,18 +340,18 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
       describe('when setting 3 x keys', () => {
         describe('should fail when', () => {
           it('1st key in input = 1st allowed key. Other 2 keys = not allowed', async () => {
-            let keys = [
+            const keys = [
               customKey2,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('YYYYYYYYYY')),
             ];
-            let values = [
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 2')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value YYYYYYYY')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
@@ -364,18 +364,18 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           });
 
           it('2nd key in input = 1st allowed key. Other 2 keys = not allowed', async () => {
-            let keys = [
+            const keys = [
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
               customKey2,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('YYYYYYYYYY')),
             ];
-            let values = [
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 2')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value YYYYYYYY')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
@@ -388,18 +388,18 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           });
 
           it('3rd key in input = 1st allowed key. Other 2 keys = not allowed', async () => {
-            let keys = [
+            const keys = [
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('YYYYYYYYYY')),
               customKey2,
             ];
-            let values = [
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value YYYYYYYY')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 2')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
@@ -412,18 +412,18 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           });
 
           it('1st key in input = 2nd allowed key. Other 2 keys = not allowed', async () => {
-            let keys = [
+            const keys = [
               customKey3,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('YYYYYYYYYY')),
             ];
-            let values = [
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 2')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value YYYYYYYY')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
@@ -436,18 +436,18 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           });
 
           it('2nd key in input = 2nd allowed key. Other 2 keys = not allowed', async () => {
-            let keys = [
+            const keys = [
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
               customKey3,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('YYYYYYYYYY')),
             ];
-            let values = [
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 3')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value YYYYYYYY')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
@@ -460,18 +460,18 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           });
 
           it('3rd key in input = 2nd allowed key. Other 2 keys = not allowed', async () => {
-            let keys = [
+            const keys = [
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('YYYYYYYYYY')),
               customKey3,
             ];
-            let values = [
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value YYYYYYYY')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 3')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
@@ -484,18 +484,18 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           });
 
           it('1st key in input = 3rd allowed key. Other 2 keys = not allowed', async () => {
-            let keys = [
+            const keys = [
               customKey4,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('YYYYYYYYYY')),
             ];
-            let values = [
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 4')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value YYYYYYYY')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
@@ -508,18 +508,18 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           });
 
           it('2nd key in input = 3rd allowed key. Other 2 keys = not allowed', async () => {
-            let keys = [
+            const keys = [
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
               customKey4,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('YYYYYYYYYY')),
             ];
-            let values = [
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 4')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value YYYYYYYY')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
@@ -532,18 +532,18 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           });
 
           it('3rd key in input = 3rd allowed key. Other 2 keys = not allowed', async () => {
-            let keys = [
+            const keys = [
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('YYYYYYYYYY')),
               customKey4,
             ];
-            let values = [
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value YYYYYYYY')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 4')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
@@ -556,19 +556,19 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           });
 
           it('1st key in input = not allowed key. Other 2 keys = allowed', async () => {
-            let keys = [
+            const keys = [
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
               customKey2,
               customKey3,
             ];
 
-            let values = [
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 2')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 3')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
@@ -581,18 +581,18 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           });
 
           it('2nd key in input = not allowed key. Other 2 keys = allowed', async () => {
-            let keys = [
+            const keys = [
               customKey2,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
               customKey3,
             ];
-            let values = [
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 2')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 3')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
@@ -605,19 +605,19 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           });
 
           it('3rd key in input = not allowed key. Other 2 keys = allowed', async () => {
-            let keys = [
+            const keys = [
               customKey2,
               customKey3,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
             ];
 
-            let values = [
+            const values = [
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 2')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 3')),
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
             ];
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setDataBatch',
               [keys, values],
             );
@@ -635,20 +635,20 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         describe('when input is bigger than the number of allowed keys', () => {
           describe('should fail when', () => {
             it('input = all the allowed keys + 1 x not-allowed key', async () => {
-              let keys = [
+              const keys = [
                 customKey2,
                 customKey3,
                 customKey4,
                 ethers.utils.keccak256(ethers.utils.toUtf8Bytes('XXXXXXXXXX')),
               ];
-              let values = [
+              const values = [
                 ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some Data for customKey2')),
                 ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some Data for customKey3')),
                 ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some Data for customKey4')),
                 ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value XXXXXXXX')),
               ];
 
-              let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+              const setDataPayload = context.universalProfile.interface.encodeFunctionData(
                 'setDataBatch',
                 [keys, values],
               );
@@ -661,7 +661,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
             });
 
             it('input = all the allowed keys + 5 x not-allowed key', async () => {
-              let keys = [
+              const keys = [
                 customKey2,
                 customKey3,
                 customKey4,
@@ -671,7 +671,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
                 ethers.utils.keccak256(ethers.utils.toUtf8Bytes('AAAAAAAAAA')),
                 ethers.utils.keccak256(ethers.utils.toUtf8Bytes('BBBBBBBBBB')),
               ];
-              let values = [
+              const values = [
                 ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 2')),
                 ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 3')),
                 ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Custom Value 4')),
@@ -682,7 +682,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
                 ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Value BBBBBBBB')),
               ];
 
-              let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+              const setDataPayload = context.universalProfile.interface.encodeFunctionData(
                 'setDataBatch',
                 [keys, values],
               );
@@ -697,7 +697,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
           describe('should pass when', () => {
             it('input contains all the allowed keys as DUPLICATE', async () => {
-              let keys = [
+              const keys = [
                 customKey2,
                 customKey4,
                 customKey3,
@@ -708,7 +708,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
                 customKey3,
                 customKey4,
               ];
-              let values = [
+              const values = [
                 ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some Data for customKey2')),
                 ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some Data for customKey4')),
                 ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some Data for customKey3')),
@@ -732,14 +732,14 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
                 ),
               ];
 
-              let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+              const setDataPayload = context.universalProfile.interface.encodeFunctionData(
                 'setDataBatch',
                 [keys, values],
               );
 
               await context.keyManager.connect(controllerCanSetManyKeys).execute(setDataPayload);
 
-              let result = await context.universalProfile.getDataBatch([
+              const result = await context.universalProfile.getDataBatch([
                 customKey2,
                 customKey3,
                 customKey4,
@@ -760,10 +760,10 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
     describe('when address can set any key', () => {
       describe('when setting one key', () => {
         it('should pass when setting any random key', async () => {
-          let key = ethers.utils.hexlify(ethers.utils.randomBytes(32));
-          let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
+          const key = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+          const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -776,24 +776,24 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
       describe('when setting multiple keys', () => {
         it('should pass when setting any multiple keys', async () => {
-          let keys = [
+          const keys = [
             ethers.utils.hexlify(ethers.utils.randomBytes(32)),
             ethers.utils.hexlify(ethers.utils.randomBytes(32)),
             ethers.utils.hexlify(ethers.utils.randomBytes(32)),
           ];
-          let values = [
+          const values = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data 1')),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data 2')),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data 3')),
           ];
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData(
             'setDataBatch',
             [keys, values],
           );
           await context.keyManager.connect(context.owner).execute(setDataPayload);
 
-          let result = await context.universalProfile.getDataBatch(keys);
+          const result = await context.universalProfile.getDataBatch(keys);
 
           expect(result).to.deep.equal(values);
         });
@@ -841,10 +841,10 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
     describe("when address can set Mapping keys starting with a 'SupportedStandards:...'", () => {
       describe('when setting one key', () => {
         it('should pass when setting SupportedStandards:LSPX', async () => {
-          let mappingKey = LSPXKey;
-          let mappingValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0x24ae6f23'));
+          const mappingKey = LSPXKey;
+          const mappingValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0x24ae6f23'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             mappingKey,
             mappingValue,
           ]);
@@ -856,10 +856,10 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         });
 
         it('should pass when overriding SupportedStandards:LSPX', async () => {
-          let mappingKey = LSPXKey;
-          let mappingValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0x24ae6f23'));
+          const mappingKey = LSPXKey;
+          const mappingValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0x24ae6f23'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             mappingKey,
             mappingValue,
           ]);
@@ -871,10 +871,10 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         });
 
         it('should pass when setting SupportedStandards:LSPY', async () => {
-          let mappingKey = LSPYKey;
-          let mappingValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0x5e8d18c5'));
+          const mappingKey = LSPYKey;
+          const mappingValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0x5e8d18c5'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             mappingKey,
             mappingValue,
           ]);
@@ -885,10 +885,10 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         });
 
         it('should pass when setting SupportedStandards:LSPZ', async () => {
-          let mappingKey = LSPZKey;
-          let mappingValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0x25b71a36'));
+          const mappingKey = LSPZKey;
+          const mappingValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0x25b71a36'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             mappingKey,
             mappingValue,
           ]);
@@ -901,11 +901,11 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
         it('should fail when setting any other not-allowed Mapping key', async () => {
           // CustomMapping:...
-          let notAllowedMappingKey =
+          const notAllowedMappingKey =
             '0xb8a73e856fea3d5a518029e588a713f300000000000000000000000000000000';
-          let notAllowedMappingValue = '0xbeefbeef';
+          const notAllowedMappingValue = '0xbeefbeef';
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             notAllowedMappingKey,
             notAllowedMappingValue,
           ]);
@@ -920,86 +920,86 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
       describe('when setting multiple keys', () => {
         it('(2 x keys) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
-          let mappingKeys = [LSPYKey, LSPZKey];
-          let mappingValues = ['0x5e8d18c5', '0x5e8d18c5'];
+          const mappingKeys = [LSPYKey, LSPZKey];
+          const mappingValues = ['0x5e8d18c5', '0x5e8d18c5'];
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData(
             'setDataBatch',
             [mappingKeys, mappingValues],
           );
 
           await context.keyManager.connect(controllerCanSetMappingKeys).execute(setDataPayload);
 
-          let result = await context.universalProfile.getDataBatch(mappingKeys);
+          const result = await context.universalProfile.getDataBatch(mappingKeys);
           expect(result).to.deep.equal(mappingValues);
         });
 
         it('(2 x keys) (override) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
-          let mappingKeys = [LSPYKey, LSPZKey];
-          let mappingValues = ['0x5e8d18c5', '0x5e8d18c5'];
+          const mappingKeys = [LSPYKey, LSPZKey];
+          const mappingValues = ['0x5e8d18c5', '0x5e8d18c5'];
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData(
             'setDataBatch',
             [mappingKeys, mappingValues],
           );
 
           await context.keyManager.connect(controllerCanSetMappingKeys).execute(setDataPayload);
 
-          let result = await context.universalProfile.getDataBatch(mappingKeys);
+          const result = await context.universalProfile.getDataBatch(mappingKeys);
           expect(result).to.deep.equal(mappingValues);
         });
 
         it('(3 x keys) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
-          let mappingKeys = [
+          const mappingKeys = [
             '0xeafec4d89fa9619884b6b89135626455000000000000000000000000aaaaaaaa',
             '0xeafec4d89fa9619884b6b89135626455000000000000000000000000bbbbbbbb',
             '0xeafec4d89fa9619884b6b89135626455000000000000000000000000cccccccc',
           ];
-          let mappingValues = ['0xaaaaaaaa', '0xbbbbbbbb', '0xcccccccc'];
+          const mappingValues = ['0xaaaaaaaa', '0xbbbbbbbb', '0xcccccccc'];
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData(
             'setDataBatch',
             [mappingKeys, mappingValues],
           );
 
           await context.keyManager.connect(controllerCanSetMappingKeys).execute(setDataPayload);
 
-          let result = await context.universalProfile.getDataBatch(mappingKeys);
+          const result = await context.universalProfile.getDataBatch(mappingKeys);
           expect(result).to.deep.equal(mappingValues);
         });
 
         it('(3 x keys) (override) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
-          let mappingKeys = [
+          const mappingKeys = [
             '0xeafec4d89fa9619884b6b89135626455000000000000000000000000aaaaaaaa',
             '0xeafec4d89fa9619884b6b89135626455000000000000000000000000bbbbbbbb',
             '0xeafec4d89fa9619884b6b89135626455000000000000000000000000cccccccc',
           ];
-          let mappingValues = ['0xaaaaaaaa', '0xbbbbbbbb', '0xcccccccc'];
+          const mappingValues = ['0xaaaaaaaa', '0xbbbbbbbb', '0xcccccccc'];
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData(
             'setDataBatch',
             [mappingKeys, mappingValues],
           );
 
           await context.keyManager.connect(controllerCanSetMappingKeys).execute(setDataPayload);
 
-          let result = await context.universalProfile.getDataBatch(mappingKeys);
+          const result = await context.universalProfile.getDataBatch(mappingKeys);
           expect(result).to.deep.equal(mappingValues);
         });
 
         it('should fail when the list contains none of the allowed Mapping keys', async () => {
-          let randomMappingKeys = [
+          const randomMappingKeys = [
             '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00000000000000000000000011111111',
             '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00000000000000000000000022222222',
             '0xcccccccccccccccccccccccccccccccc00000000000000000000000022222222',
           ];
-          let randomMappingValues = [
+          const randomMappingValues = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Random Mapping Value 1')),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Random Mapping Value 2')),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Random Mapping Value 3')),
           ];
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData(
             'setDataBatch',
             [randomMappingKeys, randomMappingValues],
           );
@@ -1012,18 +1012,18 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         });
 
         it('should fail, even if the list contains some keys starting with `SupportedStandards`', async () => {
-          let mappingKeys = [
+          const mappingKeys = [
             LSPXKey,
             '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00000000000000000000000022222222',
             '0xcccccccccccccccccccccccccccccccc00000000000000000000000022222222',
           ];
-          let mappingValues = [
+          const mappingValues = [
             '0x24ae6f23',
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Random Mapping Value 1')),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Random Mapping Value 2')),
           ];
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData(
             'setDataBatch',
             [mappingKeys, mappingValues],
           );
@@ -1040,13 +1040,13 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
     describe('when address can set any key', () => {
       describe('when setting one key', () => {
         it('should pass when setting any random Mapping key', async () => {
-          let randomMappingKey =
+          const randomMappingKey =
             '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00000000000000000000000011111111';
-          let randomMappingValue = ethers.utils.hexlify(
+          const randomMappingValue = ethers.utils.hexlify(
             ethers.utils.toUtf8Bytes('Random Mapping Value'),
           );
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             randomMappingKey,
             randomMappingValue,
           ]);
@@ -1060,24 +1060,24 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
       describe('when setting multiple keys', () => {
         it('should pass when setting any random set of Mapping keys', async () => {
-          let randomMappingKeys = [
+          const randomMappingKeys = [
             '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00000000000000000000000011111111',
             '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00000000000000000000000022222222',
             '0xcccccccccccccccccccccccccccccccc00000000000000000000000022222222',
           ];
-          let randomMappingValues = [
+          const randomMappingValues = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Random Mapping Value 1')),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Random Mapping Value 2')),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Random Mapping Value 3')),
           ];
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData(
             'setDataBatch',
             [randomMappingKeys, randomMappingValues],
           );
           await context.keyManager.connect(context.owner).execute(setDataPayload);
 
-          let result = await context.universalProfile.getDataBatch(randomMappingKeys);
+          const result = await context.universalProfile.getDataBatch(randomMappingKeys);
 
           expect(result).to.deep.equal(randomMappingValues);
         });
@@ -1126,11 +1126,11 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
     describe("when address can set Array element in 'MyArray[]", () => {
       describe('when setting one key', () => {
         it('should pass when setting array key length MyArray[]', async () => {
-          let key = arrayKeyLength;
+          const key = arrayKeyLength;
           // eg: MyArray[].length = 10 elements
-          let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0x0a'));
+          const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0x0a'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -1142,10 +1142,10 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         });
 
         it('should pass when setting 1st array element MyArray[0]', async () => {
-          let key = arrayKeyElement1;
-          let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0xaaaaaaaa'));
+          const key = arrayKeyElement1;
+          const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0xaaaaaaaa'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -1157,10 +1157,10 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         });
 
         it('should pass when setting 2nd array element MyArray[1]', async () => {
-          let key = arrayKeyElement2;
-          let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0xbbbbbbbb'));
+          const key = arrayKeyElement2;
+          const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0xbbbbbbbb'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -1172,10 +1172,10 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         });
 
         it('should pass when setting 3rd array element MyArray[3]', async () => {
-          let key = arrayKeyElement3;
-          let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0xcccccccc'));
+          const key = arrayKeyElement3;
+          const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('0xcccccccc'));
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -1187,9 +1187,9 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         });
 
         it('should fail when setting elements of a not-allowed Array (eg: LSP5ReceivedAssets)', async () => {
-          let notAllowedArrayKey = ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length;
+          const notAllowedArrayKey = ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length;
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
             notAllowedArrayKey,
             '0x00',
           ]);
@@ -1204,28 +1204,28 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
       describe('when setting multiple keys', () => {
         it('should pass when all the keys in the list are from the allowed array MyArray[]', async () => {
-          let keys = [arrayKeyElement1, arrayKeyElement2];
-          let values = ['0xaaaaaaaa', '0xbbbbbbbb'];
+          const keys = [arrayKeyElement1, arrayKeyElement2];
+          const values = ['0xaaaaaaaa', '0xbbbbbbbb'];
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData(
             'setDataBatch',
             [keys, values],
           );
 
           await context.keyManager.connect(controllerCanSetArrayKeys).execute(setDataPayload);
 
-          let result = await context.universalProfile.getDataBatch(keys);
+          const result = await context.universalProfile.getDataBatch(keys);
           expect(result).to.deep.equal(values);
         });
 
         it('should fail when the list contains elements keys of a non-allowed Array (RandomArray[])', async () => {
-          let randomArrayKeys = [
+          const randomArrayKeys = [
             '0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000000',
             '0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000001',
             '0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000002',
           ];
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData(
             'setDataBatch',
             [randomArrayKeys, ['0xdeadbeef', '0xdeadbeef', '0xdeadbeef']],
           );
@@ -1238,15 +1238,15 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         });
 
         it('should fail, even if the list contains a mix of allowed + not-allowed array element keys (MyArray[] + RandomArray[])', async () => {
-          let keys = [
+          const keys = [
             arrayKeyElement1,
             arrayKeyElement2,
             '0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000000',
             '0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000001',
           ];
-          let values = ['0xaaaaaaaa', '0xbbbbbbbb', '0xdeadbeef', '0xdeadbeef'];
+          const values = ['0xaaaaaaaa', '0xbbbbbbbb', '0xdeadbeef', '0xdeadbeef'];
 
-          let setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData(
             'setDataBatch',
             [keys, values],
           );

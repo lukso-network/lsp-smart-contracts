@@ -433,11 +433,11 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
     describe('when interacting via `execute(...)`', () => {
       describe('when caller has ALL PERMISSIONS', () => {
         it('should pass and change state at the target contract', async () => {
-          let argument = 'new name';
+          const argument = 'new name';
 
-          let targetPayload = targetContract.interface.encodeFunctionData('setName', [argument]);
+          const targetPayload = targetContract.interface.encodeFunctionData('setName', [argument]);
 
-          let payload = context.universalProfile.interface.encodeFunctionData('execute', [
+          const payload = context.universalProfile.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
             targetContract.address,
             0,
@@ -452,51 +452,47 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
 
         describe('when calling a function that returns some value', () => {
           it('should return the value to the Key Manager <- UP <- targetContract.getName()', async () => {
-            let expectedName = await targetContract.callStatic.getName();
+            const expectedName = await targetContract.callStatic.getName();
 
-            let targetContractPayload = targetContract.interface.encodeFunctionData('getName');
+            const targetContractPayload = targetContract.interface.encodeFunctionData('getName');
 
-            let executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]);
+            const executePayload = context.universalProfile.interface.encodeFunctionData(
+              'execute',
+              [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+            );
 
-            let result = await context.keyManager
+            const result = await context.keyManager
               .connect(context.owner)
               .callStatic.execute(executePayload);
 
-            let [decodedResult] = abiCoder.decode(['string'], result);
+            const [decodedResult] = abiCoder.decode(['string'], result);
             expect(decodedResult).to.equal(expectedName);
           });
 
           it('Should return the value to the Key Manager <- UP <- targetContract.getNumber()', async () => {
-            let expectedNumber = await targetContract.callStatic.getNumber();
+            const expectedNumber = await targetContract.callStatic.getNumber();
 
-            let targetContractPayload = targetContract.interface.encodeFunctionData('getNumber');
+            const targetContractPayload = targetContract.interface.encodeFunctionData('getNumber');
 
-            let executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]);
+            const executePayload = context.universalProfile.interface.encodeFunctionData(
+              'execute',
+              [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+            );
 
-            let result = await context.keyManager
+            const result = await context.keyManager
               .connect(context.owner)
               .callStatic.execute(executePayload);
 
-            let [decodedResult] = abiCoder.decode(['uint256'], result);
+            const [decodedResult] = abiCoder.decode(['uint256'], result);
             expect(decodedResult).to.equal(expectedNumber);
           });
         });
 
         describe('when calling a function that reverts', () => {
           it('should revert', async () => {
-            let targetContractPayload = targetContract.interface.encodeFunctionData('revertCall');
+            const targetContractPayload = targetContract.interface.encodeFunctionData('revertCall');
 
-            let payload = context.universalProfile.interface.encodeFunctionData('execute', [
+            const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
               targetContract.address,
               0,
@@ -513,11 +509,13 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
       describe('when caller has permission CALL', () => {
         describe('when caller has no allowed calls set', () => {
           it('should revert with `NotAllowedCall(...)` error', async () => {
-            let argument = 'another name';
+            const argument = 'another name';
 
-            let targetPayload = targetContract.interface.encodeFunctionData('setName', [argument]);
+            const targetPayload = targetContract.interface.encodeFunctionData('setName', [
+              argument,
+            ]);
 
-            let payload = context.universalProfile.interface.encodeFunctionData('execute', [
+            const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
               targetContract.address,
               0,
@@ -534,11 +532,13 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
 
         describe('when caller has some allowed calls set', () => {
           it('should pass and change state at the target contract', async () => {
-            let argument = 'another name';
+            const argument = 'another name';
 
-            let targetPayload = targetContract.interface.encodeFunctionData('setName', [argument]);
+            const targetPayload = targetContract.interface.encodeFunctionData('setName', [
+              argument,
+            ]);
 
-            let payload = context.universalProfile.interface.encodeFunctionData('execute', [
+            const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
               targetContract.address,
               0,
@@ -555,11 +555,11 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
 
       describe('when caller does not have permission CALL', () => {
         it('should revert', async () => {
-          let argument = 'another name';
+          const argument = 'another name';
 
-          let targetPayload = targetContract.interface.encodeFunctionData('setName', [argument]);
+          const targetPayload = targetContract.interface.encodeFunctionData('setName', [argument]);
 
-          let payload = context.universalProfile.interface.encodeFunctionData('execute', [
+          const payload = context.universalProfile.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
             targetContract.address,
             0,
@@ -580,27 +580,27 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
       describe('when signer has ALL PERMISSIONS', () => {
         describe('when signing tx with EIP191Signer `\\x19\\x00` prefix', () => {
           it('should execute successfully', async () => {
-            let newName = 'New Name';
+            const newName = 'New Name';
 
-            let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
+            const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
               newName,
             ]);
-            let nonce = await context.keyManager.callStatic.getNonce(
+            const nonce = await context.keyManager.callStatic.getNonce(
               context.owner.address,
               channelId,
             );
 
             const validityTimestamps = 0;
 
-            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+            const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
               [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
             );
 
             const HARDHAT_CHAINID = 31337;
-            let valueToSend = 0;
+            const valueToSend = 0;
 
-            let encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP6_VERSION,
@@ -635,29 +635,29 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
 
         describe('when signing with Ethereum Signed Message prefix', () => {
           it('should retrieve the incorrect signer address and revert with `InvalidRelayNonce` error', async () => {
-            let newName = 'New Name';
+            const newName = 'New Name';
 
-            let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
+            const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
               newName,
             ]);
-            let nonce = await context.keyManager.callStatic.getNonce(
+            const nonce = await context.keyManager.callStatic.getNonce(
               context.owner.address,
               channelId,
             );
 
             const validityTimestamps = 0;
 
-            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+            const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
               [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
             );
 
             const HARDHAT_CHAINID = 31337;
-            let valueToSend = 0;
+            const valueToSend = 0;
 
             const eip191Signer = new EIP191Signer();
 
-            let encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP6_VERSION,
@@ -698,28 +698,28 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
         describe('when signing tx with EIP191Signer `\\x19\\x00` prefix', () => {
           describe('when caller has some allowed calls set', () => {
             it('should execute successfully', async () => {
-              let newName = 'Another name';
+              const newName = 'Another name';
 
-              let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
+              const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
                 newName,
               ]);
 
-              let nonce = await context.keyManager.callStatic.getNonce(
+              const nonce = await context.keyManager.callStatic.getNonce(
                 addressCanMakeCallWithAllowedCalls.address,
                 channelId,
               );
 
               const validityTimestamps = 0;
 
-              let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+              const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
                 'execute',
                 [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
               );
 
               const HARDHAT_CHAINID = 31337;
-              let valueToSend = 0;
+              const valueToSend = 0;
 
-              let encodedMessage = ethers.utils.solidityPack(
+              const encodedMessage = ethers.utils.solidityPack(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
                   LSP6_VERSION,
@@ -754,27 +754,27 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
 
           describe('when caller has no allowed calls set', () => {
             it('should revert with `NotAllowedCall(...)` error', async () => {
-              let newName = 'Another name';
+              const newName = 'Another name';
 
-              let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
+              const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
                 newName,
               ]);
-              let nonce = await context.keyManager.callStatic.getNonce(
+              const nonce = await context.keyManager.callStatic.getNonce(
                 addressCanMakeCallNoAllowedCalls.address,
                 channelId,
               );
 
               const validityTimestamps = 0;
 
-              let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+              const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
                 'execute',
                 [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
               );
 
               const HARDHAT_CHAINID = 31337;
-              let valueToSend = 0;
+              const valueToSend = 0;
 
-              let encodedMessage = ethers.utils.solidityPack(
+              const encodedMessage = ethers.utils.solidityPack(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
                   LSP6_VERSION,
@@ -811,27 +811,27 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
 
         describe('when signing tx with Ethereum Signed Message prefix', () => {
           it('should retrieve the incorrect signer address and revert with `InvalidRelayNonce` error', async () => {
-            let newName = 'Another name';
+            const newName = 'Another name';
 
-            let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
+            const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
               newName,
             ]);
-            let nonce = await context.keyManager.callStatic.getNonce(
+            const nonce = await context.keyManager.callStatic.getNonce(
               addressCanMakeCallWithAllowedCalls.address,
               channelId,
             );
 
             const validityTimestamps = 0;
 
-            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+            const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
               [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
             );
 
             const HARDHAT_CHAINID = 31337;
-            let valueToSend = 0;
+            const valueToSend = 0;
 
-            let encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP6_VERSION,
@@ -843,7 +843,7 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
               ],
             );
 
-            let signature = await addressCanMakeCallWithAllowedCalls.signMessage(encodedMessage);
+            const signature = await addressCanMakeCallWithAllowedCalls.signMessage(encodedMessage);
 
             const eip191Signer = new EIP191Signer();
             const incorrectSignerAddress = eip191Signer.recover(
@@ -874,25 +874,25 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
           it('should revert with `NotAuthorised` and permission CALL error', async () => {
             const initialName = await targetContract.callStatic.getName();
 
-            let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
+            const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
               'Random name',
             ]);
-            let nonce = await context.keyManager.callStatic.getNonce(
+            const nonce = await context.keyManager.callStatic.getNonce(
               addressCannotMakeCall.address,
               channelId,
             );
 
             const validityTimestamps = 0;
 
-            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+            const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
               [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
             );
 
             const HARDHAT_CHAINID = 31337;
-            let valueToSend = 0;
+            const valueToSend = 0;
 
-            let encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP6_VERSION,
@@ -934,25 +934,25 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
           it('should retrieve the incorrect signer address and revert with `NoPermissionSet`', async () => {
             const initialName = await targetContract.callStatic.getName();
 
-            let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
+            const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
               'Random name',
             ]);
-            let nonce = await context.keyManager.callStatic.getNonce(
+            const nonce = await context.keyManager.callStatic.getNonce(
               addressCannotMakeCall.address,
               channelId,
             );
 
             const validityTimestamps = 0;
 
-            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+            const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
               [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
             );
 
             const HARDHAT_CHAINID = 31337;
-            let valueToSend = 0;
+            const valueToSend = 0;
 
-            let encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP6_VERSION,
@@ -1017,11 +1017,11 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
     });
 
     it('Should revert when caller has no permissions set', async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
+      const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
         'New Contract Name',
       ]);
 
-      let executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
+      const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
         targetContract.address,
         0,
@@ -1034,12 +1034,12 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
     });
 
     it('Should revert when caller calls the KeyManager through execute', async () => {
-      let lsp20VerifyCallPayload = context.keyManager.interface.encodeFunctionData(
+      const lsp20VerifyCallPayload = context.keyManager.interface.encodeFunctionData(
         'lsp20VerifyCall',
         [context.accounts[2].address, 0, '0xaabbccdd'], // random arguments
       );
 
-      let executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
+      const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
         context.keyManager.address,
         0,

@@ -548,7 +548,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             ],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
             payloadParam.dataKeys,
             payloadParam.dataValues,
           ]);
@@ -576,7 +576,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             ],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
             payloadParam.dataKeys,
             payloadParam.dataValues,
           ]);
@@ -600,7 +600,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValues: ['0x', ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16), '0x'],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
             payloadParam.dataKeys,
             payloadParam.dataValues,
           ]);
@@ -692,7 +692,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataValues: ['0x', '0x'],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
             payloadParam.dataKeys,
             payloadParam.dataValues,
           ]);
@@ -1014,10 +1014,10 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
                 dataValues: [universalReceiverDelegateA, '0xaabbccdd'],
               };
 
-              let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
-                payloadParam.dataKeys,
-                payloadParam.dataValues,
-              ]);
+              const payload = context.universalProfile.interface.encodeFunctionData(
+                'setDataBatch',
+                [payloadParam.dataKeys, payloadParam.dataValues],
+              );
 
               await context.universalProfile
                 .connect(canOnlySetData)

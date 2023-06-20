@@ -36,7 +36,7 @@ describe('LSP6KeyManager with proxy', () => {
 
   describe('when deploying the base LSP6KeyManagerInit implementation', () => {
     it('should prevent any address from calling the `initialize(...)` function on the base contract', async () => {
-      let context = await buildProxyTestContext();
+      const context = await buildProxyTestContext();
 
       const baseKM = await new LSP6KeyManagerInit__factory(context.accounts[0]).deploy();
 
@@ -67,7 +67,7 @@ describe('LSP6KeyManager with proxy', () => {
 
   describe('when testing the deployed proxy', () => {
     shouldBehaveLikeLSP6(async (initialFunding?: BigNumber) => {
-      let context = await buildProxyTestContext(initialFunding);
+      const context = await buildProxyTestContext(initialFunding);
       await initializeProxies(context);
       return context;
     });

@@ -149,7 +149,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -166,7 +166,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -183,7 +183,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: '0x',
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -202,7 +202,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -219,7 +219,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -236,7 +236,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: '0x',
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -255,7 +255,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -272,7 +272,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -288,7 +288,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -304,7 +304,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: '0x',
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -322,7 +322,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -338,7 +338,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionD,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -356,7 +356,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: '0x',
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -378,7 +378,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -391,7 +391,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -407,7 +407,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -423,7 +423,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: '0x',
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -443,7 +443,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -457,7 +457,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -473,7 +473,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -489,7 +489,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: '0x',
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -509,7 +509,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionB,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -523,7 +523,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -539,7 +539,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: extensionA,
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -555,7 +555,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValue: '0x',
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             payloadParam.dataKey,
             payloadParam.dataValue,
           ]);
@@ -583,7 +583,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             ],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
             payloadParam.dataKeys,
             payloadParam.dataValues,
           ]);
@@ -609,7 +609,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             ],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
             payloadParam.dataKeys,
             payloadParam.dataValues,
           ]);
@@ -631,7 +631,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValues: ['0x', ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16), '0x'],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
             payloadParam.dataKeys,
             payloadParam.dataValues,
           ]);
@@ -660,7 +660,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               ],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -681,7 +681,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [extensionA, '0xaabbccdd'],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -699,7 +699,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [extensionA, extensionB],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -723,7 +723,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataValues: ['0x', '0x'],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
             payloadParam.dataKeys,
             payloadParam.dataValues,
           ]);
@@ -737,7 +737,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [extensionA, extensionB],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -757,7 +757,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [extensionC, extensionD],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -778,7 +778,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [extensionA, '0xaabbccdd'],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -803,7 +803,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [extensionA, extensionB, extensionC],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -829,7 +829,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [extensionA, extensionB, extensionC, '0xaabbccdd'],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -854,7 +854,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [extensionA, extensionB, extensionC, extensionD],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -877,7 +877,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: ['0x', '0x', '0x'],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -897,7 +897,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [extensionC, extensionD],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -918,7 +918,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [extensionA, '0xaabbccdd'],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -938,7 +938,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [extensionC, extensionD],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -958,7 +958,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [extensionA, '0xaabbccdd'],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -978,7 +978,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [extensionC, extensionD],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -999,7 +999,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [extensionA, '0xaabbccdd'],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -1020,7 +1020,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataValues: [combinePermissions(PERMISSIONS.ADDEXTENSIONS, PERMISSIONS.SETDATA)],
             };
 
-            let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
               payloadParam.dataKeys,
               payloadParam.dataValues,
             ]);
@@ -1037,10 +1037,10 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
                 dataValues: [extensionA, '0xaabbccdd'],
               };
 
-              let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
-                payloadParam.dataKeys,
-                payloadParam.dataValues,
-              ]);
+              const payload = context.universalProfile.interface.encodeFunctionData(
+                'setDataBatch',
+                [payloadParam.dataKeys, payloadParam.dataValues],
+              );
 
               await context.keyManager.connect(canOnlySetData).execute(payload);
 

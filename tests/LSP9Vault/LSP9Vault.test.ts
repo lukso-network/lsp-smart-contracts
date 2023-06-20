@@ -101,7 +101,7 @@ describe('LSP9Vault with constructor', () => {
   describe('when deploying the contract', () => {
     describe('when initializing the contract', () => {
       shouldInitializeLikeLSP9(async () => {
-        let context = await buildTestContext();
+        const context = await buildTestContext();
         const { lsp9Vault, deployParams } = context;
 
         return {

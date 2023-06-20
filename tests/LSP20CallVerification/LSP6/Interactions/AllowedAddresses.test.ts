@@ -51,7 +51,7 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
 
     notAllowedTargetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
-    let permissionsKeys = [
+    const permissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
         canCallOnlyTwoAddresses.address.substring(2),
@@ -73,7 +73,7 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
       ['0xffffffff', '0xffffffff'],
     );
 
-    let permissionsValues = [
+    const permissionsValues = [
       ALL_PERMISSIONS,
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       encodedAllowedCalls,
@@ -95,19 +95,19 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
 
       randomAddresses.forEach((recipient) => {
         it(`sending 1 LYX to EOA ${recipient}`, async () => {
-          let initialBalanceUP = await provider.getBalance(context.universalProfile.address);
-          let initialBalanceEOA = await provider.getBalance(recipient);
+          const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
+          const initialBalanceEOA = await provider.getBalance(recipient);
 
-          let amount = ethers.utils.parseEther('1');
+          const amount = ethers.utils.parseEther('1');
 
           await context.universalProfile
             .connect(context.owner)
             .execute(OPERATION_TYPES.CALL, recipient, amount, EMPTY_PAYLOAD);
 
-          let newBalanceUP = await provider.getBalance(context.universalProfile.address);
+          const newBalanceUP = await provider.getBalance(context.universalProfile.address);
           expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
-          let newBalanceEOA = await provider.getBalance(recipient);
+          const newBalanceEOA = await provider.getBalance(recipient);
           expect(newBalanceEOA).to.be.gt(initialBalanceEOA);
         });
       });
@@ -116,26 +116,26 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
 
   describe('when caller has 2 x addresses set under `AllowedCalls`', () => {
     it('should be allowed to send LYX to an allowed address (= EOA)', async () => {
-      let initialBalanceUP = await provider.getBalance(context.universalProfile.address);
-      let initialBalanceEOA = await provider.getBalance(allowedEOA.address);
+      const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
+      const initialBalanceEOA = await provider.getBalance(allowedEOA.address);
 
-      let amount = ethers.utils.parseEther('1');
+      const amount = ethers.utils.parseEther('1');
 
       await context.universalProfile
         .connect(canCallOnlyTwoAddresses)
         .execute(OPERATION_TYPES.CALL, allowedEOA.address, amount, EMPTY_PAYLOAD);
 
-      let newBalanceUP = await provider.getBalance(context.universalProfile.address);
+      const newBalanceUP = await provider.getBalance(context.universalProfile.address);
       expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
-      let newBalanceEOA = await provider.getBalance(allowedEOA.address);
+      const newBalanceEOA = await provider.getBalance(allowedEOA.address);
       expect(newBalanceEOA).to.be.gt(initialBalanceEOA);
     });
 
     it('should be allowed to interact with an allowed address (= contract)', async () => {
       const argument = 'new name';
 
-      let targetContractPayload = allowedTargetContract.interface.encodeFunctionData('setName', [
+      const targetContractPayload = allowedTargetContract.interface.encodeFunctionData('setName', [
         argument,
       ]);
 
@@ -148,8 +148,8 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
     });
 
     it('should revert when sending LYX to a non-allowed address (= EOA)', async () => {
-      let initialBalanceUP = await provider.getBalance(context.universalProfile.address);
-      let initialBalanceRecipient = await provider.getBalance(notAllowedEOA.address);
+      const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
+      const initialBalanceRecipient = await provider.getBalance(notAllowedEOA.address);
 
       await expect(
         context.universalProfile
@@ -164,8 +164,8 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
         .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
         .withArgs(canCallOnlyTwoAddresses.address, notAllowedEOA.address, '0x00000000');
 
-      let newBalanceUP = await provider.getBalance(context.universalProfile.address);
-      let newBalanceRecipient = await provider.getBalance(notAllowedEOA.address);
+      const newBalanceUP = await provider.getBalance(context.universalProfile.address);
+      const newBalanceRecipient = await provider.getBalance(notAllowedEOA.address);
 
       expect(newBalanceUP).to.equal(initialBalanceUP);
       expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
@@ -174,9 +174,10 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
     it('should revert when interacting with an non-allowed address (= contract)', async () => {
       const argument = 'new name';
 
-      let targetContractPayload = notAllowedTargetContract.interface.encodeFunctionData('setName', [
-        argument,
-      ]);
+      const targetContractPayload = notAllowedTargetContract.interface.encodeFunctionData(
+        'setName',
+        [argument],
+      );
 
       await expect(
         context.universalProfile
@@ -206,7 +207,7 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
           await provider.getBalance(context.universalProfile.address);
           await provider.getBalance(recipient);
 
-          let amount = ethers.utils.parseEther('1');
+          const amount = ethers.utils.parseEther('1');
 
           await expect(
             context.universalProfile

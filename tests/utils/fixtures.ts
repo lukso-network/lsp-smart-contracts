@@ -32,14 +32,14 @@ export async function deployProxy(
     '0x3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3';
 
   // deploy proxy contract
-  let proxyBytecode = eip1167RuntimeCodeTemplate.replace(
+  const proxyBytecode = eip1167RuntimeCodeTemplate.replace(
     'bebebebebebebebebebebebebebebebebebebebe',
     baseContractAddress.substr(2),
   );
-  let tx = await deployer.sendTransaction({
+  const tx = await deployer.sendTransaction({
     data: proxyBytecode,
   });
-  let receipt = await tx.wait();
+  const receipt = await tx.wait();
 
   return receipt.contractAddress;
 }
@@ -64,7 +64,7 @@ export async function setupKeyManager(
     .connect(_context.owner)
     .transferOwnership(_context.keyManager.address);
 
-  let payload = _context.universalProfile.interface.getSighash('acceptOwnership');
+  const payload = _context.universalProfile.interface.getSighash('acceptOwnership');
 
   await _context.keyManager.connect(_context.owner).execute(payload);
 }
@@ -89,7 +89,7 @@ export async function setupKeyManagerHelper(
     .connect(_context.owner)
     .transferOwnership(_context.keyManagerInternalTester.address);
 
-  let payload = _context.universalProfile.interface.getSighash('acceptOwnership');
+  const payload = _context.universalProfile.interface.getSighash('acceptOwnership');
 
   await _context.keyManagerInternalTester.connect(_context.owner).execute(payload);
 }
@@ -154,7 +154,7 @@ export async function grantLSP11PermissionViaKeyManager(
     ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
   );
 
-  let permissionArrayLength = ethers.BigNumber.from(rawPermissionArrayLength).toNumber();
+  const permissionArrayLength = ethers.BigNumber.from(rawPermissionArrayLength).toNumber();
 
   const newPermissionArrayLength = permissionArrayLength + 1;
   const newRawPermissionArrayLength = ethers.utils.hexZeroPad(
@@ -182,7 +182,7 @@ export async function grantLSP11PermissionViaKeyManager(
  * Returns the payload of Call operation with 0 value
  */
 export function callPayload(from: any, to: string, abi: string) {
-  let payload = from.interface.encodeFunctionData('execute', [0, to, 0, abi]);
+  const payload = from.interface.encodeFunctionData('execute', [0, to, 0, abi]);
   return payload;
 }
 
@@ -206,7 +206,7 @@ export async function getLSP5MapAndArrayKeysValue(account, token) {
     rawIndexInArray,
   ]);
 
-  let arrayKey = ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length;
+  const arrayKey = ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length;
   let [arrayLength, elementAddress] = await account.getDataBatch([arrayKey, elementInArrayKey]);
 
   if (elementAddress != '0x') {
