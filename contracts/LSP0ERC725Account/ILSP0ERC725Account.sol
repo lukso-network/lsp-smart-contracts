@@ -10,7 +10,7 @@ import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalRec
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 
 /**
- * @title The Interface of LSP0-ERC725Account Standard
+ * @title Interface of the LSP0 - ERC725Account standard, an account based smart contract that represents an identity on-chain.
  *        https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md
  *
  * @author Fabian Vogelsteller <fabian@lukso.network>, Jean Cavallera (CJ42)

@@ -2,9 +2,11 @@
 pragma solidity ^0.8.4;
 
 /**
+ * @title Interface for the LSP20 Call Verification standard, a set of functions intended to perform verifications on behalf of another contract.
+ *
  * @dev Interface to be inherited for contract supporting LSP20-CallVerification
  */
-interface ILSP20CallVerification {
+interface ILSP20CallVerifier {
     /**
      * @return magicValue MUST return the first 3 bytes of `lsp20VerifyCall(address,uint256,bytes)` function selector if the call to
      * the function is allowed, concatened with a byte that determines if the lsp20VerifyCallResult function should

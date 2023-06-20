@@ -12,8 +12,10 @@ import {_INTERFACEID_LSP17_EXTENDABLE} from "./LSP17Constants.sol";
 import "./LSP17Errors.sol";
 
 /**
- * @title Implementation of the fallback logic according to LSP17ContractExtension
- * @dev Module to be inherited used to extend the functionality of the parent contract when
+ * @title Module to add more functionalities to a contract using extensions.
+ *
+ * @dev Implementation of the `fallback(...)` logic according to LSP17 - Contract Extension standard.
+ * This module can be inherited to extend the functionality of the parent contract when
  * calling a function that doesn't exist on the parent contract via forwarding the call
  * to an extension mapped to the function selector being called, set originally by the parent contract
  */

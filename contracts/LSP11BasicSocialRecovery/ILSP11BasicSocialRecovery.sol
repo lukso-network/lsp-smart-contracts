@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 /**
- * @title interface of the LSP11 - Basic Social Recovery standard
+ * @title Interface of the LSP11 - Basic Social Recovery standard, a contract to recover access control into an account.
  * @dev Sets permission for a controller address after a recovery process to interact with an ERC725
  * contract via the LSP6KeyManager
  */
