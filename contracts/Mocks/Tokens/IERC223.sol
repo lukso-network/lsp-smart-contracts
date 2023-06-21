@@ -26,7 +26,10 @@ abstract contract IERC223 {
      * @dev Transfers `value` tokens from `msg.sender` to `to` address
      * and returns `true` on success.
      */
-    function transfer(address to, uint256 value) public virtual returns (bool success);
+    function transfer(
+        address to,
+        uint256 value
+    ) public virtual returns (bool success);
 
     /**
      * @dev Transfers `value` tokens from `msg.sender` to `to` address with `data` parameter

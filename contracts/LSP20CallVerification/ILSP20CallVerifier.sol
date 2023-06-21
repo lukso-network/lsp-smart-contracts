@@ -28,5 +28,8 @@ interface ILSP20CallVerifier {
      * @param callHash The keccak256 of the parameters of {lsp20VerifyCall} concatenated
      * @param result The value result of the function called on the msg.sender
      */
-    function lsp20VerifyCallResult(bytes32 callHash, bytes memory result) external returns (bytes4);
+    function lsp20VerifyCallResult(
+        bytes32 callHash,
+        bytes memory result
+    ) external returns (bytes4);
 }

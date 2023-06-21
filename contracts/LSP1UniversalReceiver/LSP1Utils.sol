@@ -3,7 +3,9 @@ pragma solidity ^0.8.4;
 
 // libraries
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {
+    ERC165Checker
+} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // constants
 import "./ILSP1UniversalReceiver.sol";
@@ -22,8 +24,16 @@ library LSP1Utils {
         bytes32 typeId,
         bytes memory data
     ) internal {
-        if (ERC165Checker.supportsERC165InterfaceUnchecked(lsp1Implementation, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(lsp1Implementation).universalReceiver(typeId, data);
+        if (
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                lsp1Implementation,
+                _INTERFACEID_LSP1
+            )
+        ) {
+            ILSP1UniversalReceiver(lsp1Implementation).universalReceiver(
+                typeId,
+                data
+            );
         }
     }
 
@@ -44,8 +54,14 @@ library LSP1Utils {
             msgValue
         );
 
-        (bool success, bytes memory result) = universalReceiverDelegate.call(callData);
-        Address.verifyCallResult(success, result, "Call to universalReceiver failed");
+        (bool success, bytes memory result) = universalReceiverDelegate.call(
+            callData
+        );
+        Address.verifyCallResult(
+            success,
+            result,
+            "Call to universalReceiver failed"
+        );
         return result.length != 0 ? abi.decode(result, (bytes)) : result;
     }
 
@@ -58,13 +74,24 @@ library LSP1Utils {
     )
         internal
         pure
-        returns (bool invalid, bytes10 mapPrefix, bytes4 interfaceId, bool isReceiving)
+        returns (
+            bool invalid,
+            bytes10 mapPrefix,
+            bytes4 interfaceId,
+            bool isReceiving
+        )
     {
-        if (typeId == _TYPEID_LSP7_TOKENSSENDER || typeId == _TYPEID_LSP7_TOKENSRECIPIENT) {
+        if (
+            typeId == _TYPEID_LSP7_TOKENSSENDER ||
+            typeId == _TYPEID_LSP7_TOKENSRECIPIENT
+        ) {
             mapPrefix = _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX;
             interfaceId = _INTERFACEID_LSP7;
             isReceiving = typeId == _TYPEID_LSP7_TOKENSRECIPIENT ? true : false;
-        } else if (typeId == _TYPEID_LSP8_TOKENSSENDER || typeId == _TYPEID_LSP8_TOKENSRECIPIENT) {
+        } else if (
+            typeId == _TYPEID_LSP8_TOKENSSENDER ||
+            typeId == _TYPEID_LSP8_TOKENSRECIPIENT
+        ) {
             mapPrefix = _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX;
             interfaceId = _INTERFACEID_LSP8;
             isReceiving = typeId == _TYPEID_LSP8_TOKENSRECIPIENT ? true : false;
@@ -74,7 +101,8 @@ library LSP1Utils {
         ) {
             mapPrefix = _LSP10_VAULTS_MAP_KEY_PREFIX;
             interfaceId = _INTERFACEID_LSP9;
-            isReceiving = (typeId == _TYPEID_LSP9_OwnershipTransferred_RecipientNotification)
+            isReceiving = (typeId ==
+                _TYPEID_LSP9_OwnershipTransferred_RecipientNotification)
                 ? true
                 : false;
         } else {

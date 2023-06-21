@@ -6,11 +6,15 @@ import "../../../../contracts/LSP6KeyManager/LSP6KeyManager.sol";
 contract LSP6ExecuteRestrictedController is LSP6KeyManager {
     constructor(address target_) LSP6KeyManager(target_) {}
 
-    function transferLYXToEOA(bytes calldata payload) public payable returns (bytes memory) {
+    function transferLYXToEOA(
+        bytes calldata payload
+    ) public payable returns (bytes memory) {
         return _execute(msg.value, payload);
     }
 
-    function transferLYXToUP(bytes calldata payload) public payable returns (bytes memory) {
+    function transferLYXToUP(
+        bytes calldata payload
+    ) public payable returns (bytes memory) {
         return _execute(msg.value, payload);
     }
 
@@ -26,11 +30,15 @@ contract LSP6ExecuteRestrictedController is LSP6KeyManager {
         return _execute(msg.value, payload);
     }
 
-    function transferNFTToRandomUP(bytes calldata payload) public payable returns (bytes memory) {
+    function transferNFTToRandomUP(
+        bytes calldata payload
+    ) public payable returns (bytes memory) {
         return _execute(msg.value, payload);
     }
 
-    function transferNFTToRandomEOA(bytes calldata payload) public payable returns (bytes memory) {
+    function transferNFTToRandomEOA(
+        bytes calldata payload
+    ) public payable returns (bytes memory) {
         return _execute(msg.value, payload);
     }
 }

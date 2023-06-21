@@ -8,7 +8,10 @@ interface ILSP14Ownable2Step {
     /**
      * @dev emitted when starting the `transferOwnership(..)` 2-step process.
      */
-    event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferStarted(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
 
     /**
      * @inheritdoc OwnableUnset

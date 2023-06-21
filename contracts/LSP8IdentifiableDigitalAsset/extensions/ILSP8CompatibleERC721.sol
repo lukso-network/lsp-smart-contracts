@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {ILSP8IdentifiableDigitalAsset} from "../ILSP8IdentifiableDigitalAsset.sol";
+import {
+    ILSP8IdentifiableDigitalAsset
+} from "../ILSP8IdentifiableDigitalAsset.sol";
 
 // --- ERC165 interface ids
 bytes4 constant _INTERFACEID_ERC721 = 0x80ac58cd;
@@ -19,7 +21,11 @@ interface ILSP8CompatibleERC721 is ILSP8IdentifiableDigitalAsset {
      * @param to The receiving address
      * @param tokenId The tokenId to transfer
      */
-    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+    event Transfer(
+        address indexed from,
+        address indexed to,
+        uint256 indexed tokenId
+    );
 
     /**
      * @notice To provide compatibility with indexing ERC721 events.
@@ -28,13 +34,21 @@ interface ILSP8CompatibleERC721 is ILSP8IdentifiableDigitalAsset {
      * @param approved The address set as operator
      * @param tokenId The approved tokenId
      */
-    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+    event Approval(
+        address indexed owner,
+        address indexed approved,
+        uint256 indexed tokenId
+    );
 
     /**
      * @dev This emits when an operator is enabled or disabled for an owner.
      * The operator can manage all NFTs of the owner.
      */
-    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+    event ApprovalForAll(
+        address indexed owner,
+        address indexed operator,
+        bool approved
+    );
 
     /**
      * @dev Compatible with ERC721 transferFrom.
@@ -50,7 +64,11 @@ interface ILSP8CompatibleERC721 is ILSP8IdentifiableDigitalAsset {
      * @param to The receiving address
      * @param tokenId The tokenId to transfer
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId) external;
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) external;
 
     /**
      * @dev Compatible with ERC721 safeTransferFrom.
@@ -101,7 +119,10 @@ interface ILSP8CompatibleERC721 is ILSP8IdentifiableDigitalAsset {
      * @param operator The operator address to query
      * @return Returns if the `operator` is allowed to manage all of the assets of `owner`
      */
-    function isApprovedForAll(address owner, address operator) external view returns (bool);
+    function isApprovedForAll(
+        address owner,
+        address operator
+    ) external view returns (bool);
 
     /*
      * @dev Compatible with ERC721Metadata tokenURI.

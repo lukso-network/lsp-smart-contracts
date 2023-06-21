@@ -6,13 +6,23 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ILSP7CompatibleERC20} from "./ILSP7CompatibleERC20.sol";
 
 // modules
-import {LSP4Compatibility} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
-import {LSP7DigitalAsset, LSP4DigitalAssetMetadata, ERC725YCore} from "../LSP7DigitalAsset.sol";
+import {
+    LSP4Compatibility
+} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
+import {
+    LSP7DigitalAsset,
+    LSP4DigitalAssetMetadata,
+    ERC725YCore
+} from "../LSP7DigitalAsset.sol";
 
 /**
  * @dev LSP7 extension, for compatibility for clients / tools that expect ERC20.
  */
-abstract contract LSP7CompatibleERC20 is ILSP7CompatibleERC20, LSP4Compatibility, LSP7DigitalAsset {
+abstract contract LSP7CompatibleERC20 is
+    ILSP7CompatibleERC20,
+    LSP4Compatibility,
+    LSP7DigitalAsset
+{
     /**
      * @notice Sets the name, the symbol and the owner of the token
      * @param name_ The name of the token
@@ -30,21 +40,33 @@ abstract contract LSP7CompatibleERC20 is ILSP7CompatibleERC20, LSP4Compatibility
      */
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override(IERC165, ERC725YCore, LSP7DigitalAsset) returns (bool) {
+    )
+        public
+        view
+        virtual
+        override(IERC165, ERC725YCore, LSP7DigitalAsset)
+        returns (bool)
+    {
         return super.supportsInterface(interfaceId);
     }
 
     /**
      * @inheritdoc ILSP7CompatibleERC20
      */
-    function allowance(address tokenOwner, address operator) public view virtual returns (uint256) {
+    function allowance(
+        address tokenOwner,
+        address operator
+    ) public view virtual returns (uint256) {
         return authorizedAmountFor(operator, tokenOwner);
     }
 
     /**
      * @inheritdoc ILSP7CompatibleERC20
      */
-    function approve(address operator, uint256 amount) public virtual returns (bool) {
+    function approve(
+        address operator,
+        uint256 amount
+    ) public virtual returns (bool) {
         authorizeOperator(operator, amount);
         return true;
     }
@@ -54,7 +76,11 @@ abstract contract LSP7CompatibleERC20 is ILSP7CompatibleERC20, LSP4Compatibility
      * @dev Compatible with ERC20 transferFrom.
      * Using allowNonLSP1Recipient=true so that EOA and any contract may receive the tokens.
      */
-    function transferFrom(address from, address to, uint256 amount) public virtual returns (bool) {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) public virtual returns (bool) {
         transfer(from, to, amount, true, "");
         return true;
     }
@@ -66,7 +92,10 @@ abstract contract LSP7CompatibleERC20 is ILSP7CompatibleERC20, LSP4Compatibility
      * @dev Compatible with ERC20 transfer.
      * Using allowNonLSP1Recipient=true so that EOA and any contract may receive the tokens.
      */
-    function transfer(address to, uint256 amount) public virtual override returns (bool) {
+    function transfer(
+        address to,
+        uint256 amount
+    ) public virtual override returns (bool) {
         transfer(msg.sender, to, amount, true, "");
         return true;
     }
@@ -105,7 +134,11 @@ abstract contract LSP7CompatibleERC20 is ILSP7CompatibleERC20, LSP4Compatibility
         super._mint(to, amount, allowNonLSP1Recipient, data);
     }
 
-    function _burn(address from, uint256 amount, bytes memory data) internal virtual override {
+    function _burn(
+        address from,
+        uint256 amount,
+        bytes memory data
+    ) internal virtual override {
         emit Transfer(from, address(0), amount);
         super._burn(from, amount, data);
     }

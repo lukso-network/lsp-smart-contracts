@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -26,7 +28,10 @@ import "../LSP9Vault/LSP9Constants.sol";
  * @param invalidValueStored the invalid value stored under the LSP10ReceivedVaults[] data key
  * @param invalidValueLength the invalid number of bytes stored under the LSP10ReceivedVaults[] data key (MUST be 16 bytes long)
  */
-error InvalidLSP10ReceivedVaultsArrayLength(bytes invalidValueStored, uint256 invalidValueLength);
+error InvalidLSP10ReceivedVaultsArrayLength(
+    bytes invalidValueStored,
+    uint256 invalidValueLength
+);
 
 /**
  * @dev reverts when the `LSP10Vaults[]` array reaches its maximum limit (max(uint128))
@@ -88,7 +93,10 @@ library LSP10Utils {
         values[0] = bytes.concat(bytes16(newArrayLength));
 
         // store the address of the vault under the element key in the array
-        keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(_LSP10_VAULTS_ARRAY_KEY, oldArrayLength);
+        keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
+            _LSP10_VAULTS_ARRAY_KEY,
+            oldArrayLength
+        );
         values[1] = bytes.concat(bytes20(vault));
 
         // store the interfaceId and the location in the array of the asset
@@ -110,7 +118,9 @@ library LSP10Utils {
         uint128 vaultIndex
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
         IERC725Y account = IERC725Y(sender);
-        bytes memory lsp10VaultsCountValue = getLSP10ReceivedVaultsCount(account);
+        bytes memory lsp10VaultsCountValue = getLSP10ReceivedVaultsCount(
+            account
+        );
 
         if (lsp10VaultsCountValue.length != 16) {
             revert InvalidLSP10ReceivedVaultsArrayLength({
@@ -184,13 +194,16 @@ library LSP10Utils {
             // with data Keys/values of the vault to remove
 
             // Generate the element key of the last vault in the array
-            bytes32 lastVaultInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
-                _LSP10_VAULTS_ARRAY_KEY,
-                newArrayLength
-            );
+            bytes32 lastVaultInArrayKey = LSP2Utils
+                .generateArrayElementKeyAtIndex(
+                    _LSP10_VAULTS_ARRAY_KEY,
+                    newArrayLength
+                );
 
             // Get the address of the vault from the element key of the last vault in the array
-            bytes20 lastVaultInArrayAddress = bytes20(account.getData(lastVaultInArrayKey));
+            bytes20 lastVaultInArrayAddress = bytes20(
+                account.getData(lastVaultInArrayKey)
+            );
 
             // Generate the map key of the last vault in the array
             bytes32 lastVaultInArrayMapKey = LSP2Utils.generateMappingKey(
@@ -217,7 +230,9 @@ library LSP10Utils {
         }
     }
 
-    function getLSP10ReceivedVaultsCount(IERC725Y account) internal view returns (bytes memory) {
+    function getLSP10ReceivedVaultsCount(
+        IERC725Y account
+    ) internal view returns (bytes memory) {
         return account.getData(_LSP10_VAULTS_ARRAY_KEY);
     }
 }

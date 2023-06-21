@@ -10,9 +10,14 @@ import "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 contract LSP6UtilsTests is Test {
     mapping(bytes32 => bool) selectedPermissions;
 
-    function testIsCBAOfAllowedCallsWithValidAllowedCalls(uint8 numberOfAllowedCalls) public view {
+    function testIsCBAOfAllowedCallsWithValidAllowedCalls(
+        uint8 numberOfAllowedCalls
+    ) public view {
         // generate between 1 and 50 allowedCalls
-        bytes memory allowedCalls = _generateAllowedCalls((numberOfAllowedCalls % 50) + 1, 28);
+        bytes memory allowedCalls = _generateAllowedCalls(
+            (numberOfAllowedCalls % 50) + 1,
+            28
+        );
 
         assert(LSP6Utils.isCompactBytesArrayOfAllowedCalls(allowedCalls));
     }
@@ -31,9 +36,15 @@ contract LSP6UtilsTests is Test {
     function testIsCBAOfAllowedCallsWithSmallerAllowedCallsAtTheBeginning(
         uint8 numberOfAllowedCalls
     ) public view {
-        bytes memory invalidAllowedCall = _generateAllowedCalls(1, numberOfAllowedCalls % 28);
+        bytes memory invalidAllowedCall = _generateAllowedCalls(
+            1,
+            numberOfAllowedCalls % 28
+        );
         bytes memory validAllowedCall = _generateAllowedCalls(1, 28);
-        bytes memory allowedCalls = abi.encodePacked(invalidAllowedCall, validAllowedCall);
+        bytes memory allowedCalls = abi.encodePacked(
+            invalidAllowedCall,
+            validAllowedCall
+        );
 
         assert(!LSP6Utils.isCompactBytesArrayOfAllowedCalls(allowedCalls));
     }
@@ -42,7 +53,10 @@ contract LSP6UtilsTests is Test {
         uint8 numberOfAllowedCalls
     ) public view {
         bytes memory validAllowedCallBefore = _generateAllowedCalls(1, 28);
-        bytes memory invalidAllowedCall = _generateAllowedCalls(1, numberOfAllowedCalls % 28);
+        bytes memory invalidAllowedCall = _generateAllowedCalls(
+            1,
+            numberOfAllowedCalls % 28
+        );
         bytes memory validAllowedCallAfter = _generateAllowedCalls(1, 28);
         bytes memory allowedCalls = abi.encodePacked(
             validAllowedCallBefore,
@@ -56,14 +70,22 @@ contract LSP6UtilsTests is Test {
     function testIsCBAOfAllowedCallsWithSmallerAllowedCallsAtTheEnd(
         uint8 numberOfAllowedCalls
     ) public view {
-        bytes memory invalidAllowedCall = _generateAllowedCalls(1, numberOfAllowedCalls % 28);
+        bytes memory invalidAllowedCall = _generateAllowedCalls(
+            1,
+            numberOfAllowedCalls % 28
+        );
         bytes memory validAllowedCall = _generateAllowedCalls(1, 28);
-        bytes memory allowedCalls = abi.encodePacked(validAllowedCall, invalidAllowedCall);
+        bytes memory allowedCalls = abi.encodePacked(
+            validAllowedCall,
+            invalidAllowedCall
+        );
 
         assert(!LSP6Utils.isCompactBytesArrayOfAllowedCalls(allowedCalls));
     }
 
-    function testIsCBAOfAllowedCallsWithBiggerAllowedCall(uint8 numberOfAllowedCalls) public view {
+    function testIsCBAOfAllowedCallsWithBiggerAllowedCall(
+        uint8 numberOfAllowedCalls
+    ) public view {
         // 251 = type(uint8).max - 4 (the 4 bytes of the callTypes)
         uint8 allowedCallLength = (numberOfAllowedCalls % (251 - 28)) + 29;
         if (allowedCallLength == 28) {
@@ -84,9 +106,15 @@ contract LSP6UtilsTests is Test {
             allowedCallLength = allowedCallLength + 1;
         }
 
-        bytes memory invalidAllowedCall = _generateAllowedCalls(1, allowedCallLength);
+        bytes memory invalidAllowedCall = _generateAllowedCalls(
+            1,
+            allowedCallLength
+        );
         bytes memory validAllowedCall = _generateAllowedCalls(1, 28);
-        bytes memory allowedCalls = abi.encodePacked(invalidAllowedCall, validAllowedCall);
+        bytes memory allowedCalls = abi.encodePacked(
+            invalidAllowedCall,
+            validAllowedCall
+        );
 
         assert(!LSP6Utils.isCompactBytesArrayOfAllowedCalls(allowedCalls));
     }
@@ -101,7 +129,10 @@ contract LSP6UtilsTests is Test {
         }
 
         bytes memory validAllowedCallBefore = _generateAllowedCalls(1, 28);
-        bytes memory invalidAllowedCall = _generateAllowedCalls(1, allowedCallLength);
+        bytes memory invalidAllowedCall = _generateAllowedCalls(
+            1,
+            allowedCallLength
+        );
         bytes memory validAllowedCallAfter = _generateAllowedCalls(1, 28);
         bytes memory allowedCalls = abi.encodePacked(
             validAllowedCallBefore,
@@ -118,25 +149,43 @@ contract LSP6UtilsTests is Test {
         // 251 = type(uint8).max - 4 (the 4 bytes of the callTypes)
         uint8 allowedCallLength = (numberOfAllowedCalls % (251 - 28)) + 29;
 
-        bytes memory allowedCallsEnd = _generateAllowedCalls(1, allowedCallLength);
+        bytes memory allowedCallsEnd = _generateAllowedCalls(
+            1,
+            allowedCallLength
+        );
         bytes memory validAllowedCall = _generateAllowedCalls(1, 28);
-        bytes memory allowedCalls = abi.encodePacked(validAllowedCall, allowedCallsEnd);
+        bytes memory allowedCalls = abi.encodePacked(
+            validAllowedCall,
+            allowedCallsEnd
+        );
 
         assert(!LSP6Utils.isCompactBytesArrayOfAllowedCalls(allowedCalls));
     }
 
-    function testIsCBAOfAllowedERC725YDataKeys(uint16 elementLength) public view {
+    function testIsCBAOfAllowedERC725YDataKeys(
+        uint16 elementLength
+    ) public view {
         uint8 numberBetween1and32 = uint8((elementLength % 31) + 1); // +1 to avoid having 0
-        bytes memory allowedKeys = _generateElementCBA(numberBetween1and32, numberBetween1and32);
-        assert(LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys));
+        bytes memory allowedKeys = _generateElementCBA(
+            numberBetween1and32,
+            numberBetween1and32
+        );
+        assert(
+            LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys)
+        );
     }
 
     function testIsCBAOfAllowedERC725YDataKeysForElementBiggerThan32ShouldReturnFalse(
         uint16 elementLength
     ) public view {
         uint8 numberOver32 = uint8((elementLength % 31) + 33);
-        bytes memory allowedKeys = _generateElementCBA(numberOver32, numberOver32);
-        assert(!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys));
+        bytes memory allowedKeys = _generateElementCBA(
+            numberOver32,
+            numberOver32
+        );
+        assert(
+            !LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys)
+        );
     }
 
     function testIsCBAOfAllowedERC725YDataKeysWithInvalidShorterCBAAtTheBeginning(
@@ -151,8 +200,13 @@ contract LSP6UtilsTests is Test {
             numberBetween1and32,
             numberBetween1and32
         );
-        bytes memory allowedKeys = abi.encodePacked(invalidAllowedKey, validAllowedKeys);
-        assert(!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys));
+        bytes memory allowedKeys = abi.encodePacked(
+            invalidAllowedKey,
+            validAllowedKeys
+        );
+        assert(
+            !LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys)
+        );
     }
 
     function testIsCBAOfAllowedERC725YDataKeysWithInvalidShorterCBAInTheMiddle(
@@ -176,7 +230,9 @@ contract LSP6UtilsTests is Test {
             invalidAllowedKey,
             validAllowedKeysAfter
         );
-        assert(!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys));
+        assert(
+            !LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys)
+        );
     }
 
     function testIsCBAOfAllowedERC725YDataKeysWithInvalidShorterCBAAtTheEnd(
@@ -191,8 +247,13 @@ contract LSP6UtilsTests is Test {
             numberBetween1and32,
             numberBetween1and32 - 1
         );
-        bytes memory allowedKeys = abi.encodePacked(validAllowedKeys, invalidAllowedKey);
-        assert(!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys));
+        bytes memory allowedKeys = abi.encodePacked(
+            validAllowedKeys,
+            invalidAllowedKey
+        );
+        assert(
+            !LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys)
+        );
     }
 
     function testIsCBAOfAllowedERC725YDataKeysWithInvalidBiggerCBAAtTheBeginning(
@@ -207,8 +268,13 @@ contract LSP6UtilsTests is Test {
             numberBetween1and32,
             numberBetween1and32
         );
-        bytes memory allowedKeys = abi.encodePacked(invalidAllowedKey, validAllowedKeys);
-        assert(!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys));
+        bytes memory allowedKeys = abi.encodePacked(
+            invalidAllowedKey,
+            validAllowedKeys
+        );
+        assert(
+            !LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys)
+        );
     }
 
     function testIsCBAOfAllowedERC725YDataKeysWithInvalidBiggerCBAInTheMiddle(
@@ -232,7 +298,9 @@ contract LSP6UtilsTests is Test {
             invalidAllowedKey,
             validAllowedKeysAfter
         );
-        assert(!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys));
+        assert(
+            !LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys)
+        );
     }
 
     function testIsCBAOfAllowedERC725YDataKeysWithInvalidBiggerCBAAtTheEnd(
@@ -247,8 +315,13 @@ contract LSP6UtilsTests is Test {
             numberBetween1and32,
             numberBetween1and32 + 1
         );
-        bytes memory allowedKeys = abi.encodePacked(validAllowedKeys, invalidAllowedKey);
-        assert(!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys));
+        bytes memory allowedKeys = abi.encodePacked(
+            validAllowedKeys,
+            invalidAllowedKey
+        );
+        assert(
+            !LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedKeys)
+        );
     }
 
     function _generateElementCBA(
@@ -257,7 +330,10 @@ contract LSP6UtilsTests is Test {
     ) internal view returns (bytes memory) {
         bytes memory elementBytes = _generateRandomBytes(elementLength);
         bytes2 elementLengthToBytes2 = bytes2(uint16(officialElementLength));
-        bytes memory elementCBA = abi.encodePacked(elementLengthToBytes2, elementBytes);
+        bytes memory elementCBA = abi.encodePacked(
+            elementLengthToBytes2,
+            elementBytes
+        );
         return elementCBA;
     }
 
@@ -279,7 +355,10 @@ contract LSP6UtilsTests is Test {
         combinePermissions[2] = bytes32(uint256(thirdPermission));
         combinePermissions[3] = bytes32(uint256(fourthPermission));
 
-        assert(totalPermissionsBytes32 == LSP6Utils.combinePermissions(combinePermissions));
+        assert(
+            totalPermissionsBytes32 ==
+                LSP6Utils.combinePermissions(combinePermissions)
+        );
     }
 
     function testHasPermissionShouldReturnTrueToAllRegularPermission(
@@ -310,7 +389,9 @@ contract LSP6UtilsTests is Test {
             _PERMISSION_SIGN
         ];
 
-        bytes32[] memory dynamicPermissionsArray = new bytes32[](numberOfPermissions);
+        bytes32[] memory dynamicPermissionsArray = new bytes32[](
+            numberOfPermissions
+        );
 
         for (uint256 i = 0; i < numberOfPermissions; i++) {
             dynamicPermissionsArray[i] = (normalPermissions[i]);
@@ -321,9 +402,16 @@ contract LSP6UtilsTests is Test {
             numberOfPermissions
         );
 
-        bytes32 combinedPermissions = LSP6Utils.combinePermissions(randomPermissionsPicked);
+        bytes32 combinedPermissions = LSP6Utils.combinePermissions(
+            randomPermissionsPicked
+        );
 
-        assert(LSP6Utils.hasPermission(ALL_REGULAR_PERMISSIONS, combinedPermissions));
+        assert(
+            LSP6Utils.hasPermission(
+                ALL_REGULAR_PERMISSIONS,
+                combinedPermissions
+            )
+        );
     }
 
     function testHasPermissionShouldReturnFalseToAllRegularPermissionWithNonRegularPermission(
@@ -354,7 +442,9 @@ contract LSP6UtilsTests is Test {
             _PERMISSION_SIGN
         ];
 
-        bytes32[] memory dynamicNormalPermissionsArray = new bytes32[](normalPermissions.length);
+        bytes32[] memory dynamicNormalPermissionsArray = new bytes32[](
+            normalPermissions.length
+        );
 
         for (uint256 i = 0; i < normalPermissions.length; i++) {
             dynamicNormalPermissionsArray[i] = (normalPermissions[i]);
@@ -380,9 +470,18 @@ contract LSP6UtilsTests is Test {
             numberOfPermissions
         );
 
-        bytes32 combinedPermissions = LSP6Utils.combinePermissions(randomPermissionsPicked);
+        bytes32 combinedPermissions = LSP6Utils.combinePermissions(
+            randomPermissionsPicked
+        );
 
-        assert(!(LSP6Utils.hasPermission(combinedPermissions, ALL_REGULAR_PERMISSIONS)));
+        assert(
+            !(
+                LSP6Utils.hasPermission(
+                    combinedPermissions,
+                    ALL_REGULAR_PERMISSIONS
+                )
+            )
+        );
     }
 
     function _randomPermissions(
@@ -391,7 +490,9 @@ contract LSP6UtilsTests is Test {
     ) internal pure returns (bytes32[] memory) {
         bytes32[] memory pickedPermissions = new bytes32[](randomNumber);
 
-        bytes32[] memory availablePermissions = new bytes32[](permissions.length);
+        bytes32[] memory availablePermissions = new bytes32[](
+            permissions.length
+        );
         for (uint256 i = 0; i < permissions.length; i++) {
             availablePermissions[i] = permissions[i];
         }
@@ -402,7 +503,9 @@ contract LSP6UtilsTests is Test {
             uint256 index = randomNumber % availablePermissions.length;
             pickedPermissions[i] = (availablePermissions[index]);
             delete availablePermissions[index];
-            availablePermissions = new bytes32[](availablePermissions.length - 1);
+            availablePermissions = new bytes32[](
+                availablePermissions.length - 1
+            );
         }
         return pickedPermissions;
     }
@@ -419,21 +522,25 @@ contract LSP6UtilsTests is Test {
 
         // Ensure at least one non-regular permission is included
         if (totalPermissions > 0 && nonRegularPermissionsCount > 0) {
-            uint256 index = uint256(keccak256(abi.encodePacked(block.timestamp))) %
-                nonRegularPermissionsCount;
+            uint256 index = uint256(
+                keccak256(abi.encodePacked(block.timestamp))
+            ) % nonRegularPermissionsCount;
             result[0] = nonRegularPermissions[index];
             selectedPermissions[nonRegularPermissions[index]] = true;
         }
 
         uint256 count = 1;
         while (count < totalPermissions) {
-            uint256 index = uint256(keccak256(abi.encodePacked(block.timestamp))) %
-                (normalPermissionsCount + nonRegularPermissionsCount);
+            uint256 index = uint256(
+                keccak256(abi.encodePacked(block.timestamp))
+            ) % (normalPermissionsCount + nonRegularPermissionsCount);
             bytes32 selectedPermission;
             if (index < normalPermissionsCount) {
                 selectedPermission = normalPermissions[index];
             } else {
-                selectedPermission = nonRegularPermissions[index - normalPermissionsCount];
+                selectedPermission = nonRegularPermissions[
+                    index - normalPermissionsCount
+                ];
             }
 
             if (!selectedPermissions[selectedPermission]) {
@@ -452,25 +559,34 @@ contract LSP6UtilsTests is Test {
         bytes memory allowedCalls;
         for (uint8 i = 0; i < numberOfAllowedCalls; i++) {
             bytes4 callTypes = 0x000000ff;
-            uint256 allowedCallLengthWithCallTypesLength = allowedCallLength + 4;
+            uint256 allowedCallLengthWithCallTypesLength = allowedCallLength +
+                4;
             bytes memory allowedCall = _generateRandomBytes(allowedCallLength);
             bytes memory allowedCallallowedCalls = abi.encodePacked(
                 bytes2(uint16(allowedCallLengthWithCallTypesLength)),
                 callTypes,
                 allowedCall
             );
-            allowedCalls = abi.encodePacked(allowedCalls, allowedCallallowedCalls);
+            allowedCalls = abi.encodePacked(
+                allowedCalls,
+                allowedCallallowedCalls
+            );
         }
         return allowedCalls;
     }
 
-    function _generateRandomBytes(uint16 length) internal view returns (bytes memory) {
+    function _generateRandomBytes(
+        uint16 length
+    ) internal view returns (bytes memory) {
         bytes memory bytesArray = new bytes(length);
         for (uint8 i = 0; i < length; i++) {
             bytesArray[i] = bytes1(
                 uint8(
-                    uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) %
-                        (i + 1)
+                    uint256(
+                        keccak256(
+                            abi.encodePacked(block.timestamp, block.difficulty)
+                        )
+                    ) % (i + 1)
                 )
             );
         }

@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 
 // libraries
@@ -20,7 +22,10 @@ library LSP6Utils {
      * @param caller the controller address to read the permissions from.
      * @return a `bytes32` BitArray containing the permissions of a controller address.
      */
-    function getPermissionsFor(IERC725Y target, address caller) internal view returns (bytes32) {
+    function getPermissionsFor(
+        IERC725Y target,
+        address caller
+    ) internal view returns (bytes32) {
         bytes memory permissions = target.getData(
             LSP2Utils.generateMappingWithGroupingKey(
                 _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
@@ -118,7 +123,8 @@ library LSP6Utils {
         uint256 pointer = 0;
 
         while (pointer < allowedERC725YDataKeysCompacted.length) {
-            if (pointer + 1 >= allowedERC725YDataKeysCompacted.length) return false;
+            if (pointer + 1 >= allowedERC725YDataKeysCompacted.length)
+                return false;
             uint256 elementLength = uint16(
                 bytes2(
                     abi.encodePacked(
@@ -146,7 +152,11 @@ library LSP6Utils {
         bytes32[] memory keys,
         bytes[] memory values
     ) internal returns (bytes memory result) {
-        bytes memory payload = abi.encodeWithSelector(IERC725Y.setDataBatch.selector, keys, values);
+        bytes memory payload = abi.encodeWithSelector(
+            IERC725Y.setDataBatch.selector,
+            keys,
+            values
+        );
         result = ILSP6KeyManager(keyManagerAddress).execute(payload);
     }
 
@@ -156,7 +166,9 @@ library LSP6Utils {
      * @param permissions the array of permissions to combine
      * @return a bytes32 containing the combined permissions
      */
-    function combinePermissions(bytes32[] memory permissions) internal pure returns (bytes32) {
+    function combinePermissions(
+        bytes32[] memory permissions
+    ) internal pure returns (bytes32) {
         uint256 result = 0;
         for (uint256 i = 0; i < permissions.length; i++) {
             result += uint256(permissions[i]);
@@ -187,7 +199,9 @@ library LSP6Utils {
         keys = new bytes32[](3);
         values = new bytes[](3);
 
-        uint128 arrayLength = uint128(bytes16(account.getData(_LSP6KEY_ADDRESSPERMISSIONS_ARRAY)));
+        uint128 arrayLength = uint128(
+            bytes16(account.getData(_LSP6KEY_ADDRESSPERMISSIONS_ARRAY))
+        );
         uint128 newArrayLength = arrayLength + 1;
 
         keys[0] = _LSP6KEY_ADDRESSPERMISSIONS_ARRAY;
@@ -216,7 +230,8 @@ library LSP6Utils {
         if (permission == _PERMISSION_EDITPERMISSIONS) return "EDITPERMISSIONS";
         if (permission == _PERMISSION_ADDCONTROLLER) return "ADDCONTROLLER";
         if (permission == _PERMISSION_ADDEXTENSIONS) return "ADDEXTENSIONS";
-        if (permission == _PERMISSION_CHANGEEXTENSIONS) return "CHANGEEXTENSIONS";
+        if (permission == _PERMISSION_CHANGEEXTENSIONS)
+            return "CHANGEEXTENSIONS";
         if (permission == _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE)
             return "ADDUNIVERSALRECEIVERDELEGATE";
         if (permission == _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE)

@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 // libraries
-import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import {
+    MerkleProof
+} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract NFTStorageMerkle {
     function verifyMerkleProof(

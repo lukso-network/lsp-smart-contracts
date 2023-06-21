@@ -6,12 +6,16 @@ pragma solidity ^0.8.4;
 import {
     LSP8IdentifiableDigitalAssetInitAbstract
 } from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
-import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
+import {
+    LSP8IdentifiableDigitalAssetCore
+} from "../LSP8IdentifiableDigitalAssetCore.sol";
 
 /**
  * @dev LSP8 extension.
  */
-abstract contract LSP8EnumerableInitAbstract is LSP8IdentifiableDigitalAssetInitAbstract {
+abstract contract LSP8EnumerableInitAbstract is
+    LSP8IdentifiableDigitalAssetInitAbstract
+{
     // Mapping from token index to token id
     mapping(uint256 => bytes32) private _indexToken;
 

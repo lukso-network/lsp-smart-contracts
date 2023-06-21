@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
+import {
+    LSP7DigitalAssetInitAbstract
+} from "../LSP7DigitalAssetInitAbstract.sol";
 
 /**
  * @dev LSP7 extension that allows token holders to destroy both

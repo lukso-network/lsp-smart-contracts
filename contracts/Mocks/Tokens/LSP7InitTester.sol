@@ -10,7 +10,10 @@ import {
     LSP7BurnableInitAbstract
 } from "../../LSP7DigitalAsset/extensions/LSP7BurnableInitAbstract.sol";
 
-contract LSP7InitTester is LSP7DigitalAssetInitAbstract, LSP7BurnableInitAbstract {
+contract LSP7InitTester is
+    LSP7DigitalAssetInitAbstract,
+    LSP7BurnableInitAbstract
+{
     function initialize(
         string memory tokenName_,
         string memory tokenSymbol_,

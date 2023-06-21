@@ -17,10 +17,15 @@ contract CheckerExtension {
         if (msg.data.length != 120) revert();
         if (
             originalMsgSender !=
-            address(bytes20(msg.data[msg.data.length - 52:msg.data.length - 32]))
+            address(
+                bytes20(msg.data[msg.data.length - 52:msg.data.length - 32])
+            )
         ) revert();
 
-        if (originalMsgValue != uint256(bytes32((msg.data[msg.data.length - 32:])))) revert();
+        if (
+            originalMsgValue !=
+            uint256(bytes32((msg.data[msg.data.length - 32:])))
+        ) revert();
         return true;
     }
 }

@@ -3,7 +3,9 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP7CompatibleERC20} from "../../LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol";
+import {
+    LSP7CompatibleERC20
+} from "../../LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol";
 import {LSP7DigitalAsset} from "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
 
 contract LSP7CompatibleERC20Tester is LSP7CompatibleERC20 {

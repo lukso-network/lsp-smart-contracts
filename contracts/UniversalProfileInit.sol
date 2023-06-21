@@ -31,7 +31,9 @@ contract UniversalProfileInit is UniversalProfileInitAbstract {
      *
      * @param initialOwner the owner of the contract
      */
-    function initialize(address initialOwner) external payable virtual initializer {
+    function initialize(
+        address initialOwner
+    ) external payable virtual initializer {
         UniversalProfileInitAbstract._initialize(initialOwner);
     }
 }

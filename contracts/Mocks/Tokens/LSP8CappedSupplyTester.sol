@@ -6,7 +6,9 @@ pragma solidity ^0.8.4;
 import {
     LSP8IdentifiableDigitalAsset
 } from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol";
-import {LSP8CappedSupply} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol";
+import {
+    LSP8CappedSupply
+} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol";
 
 contract LSP8CappedSupplyTester is LSP8CappedSupply {
     constructor(
@@ -14,7 +16,10 @@ contract LSP8CappedSupplyTester is LSP8CappedSupply {
         string memory symbol_,
         address newOwner_,
         uint256 tokenSupplyCap_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) LSP8CappedSupply(tokenSupplyCap_) {}
+    )
+        LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_)
+        LSP8CappedSupply(tokenSupplyCap_)
+    {}
 
     function mint(address to, bytes32 tokenId) public {
         _mint(to, tokenId, true, "token printer go brrr");

@@ -71,7 +71,10 @@ error InvalidEncodedAllowedCalls(bytes allowedCallsValue);
  * @param dataKey the AddressPermissions[index] data key
  * @param invalidValue the invalid value that was attempted to be set under AddressPermissions[index]
  */
-error AddressPermissionArrayIndexValueNotAnAddress(bytes32 dataKey, bytes invalidValue);
+error AddressPermissionArrayIndexValueNotAnAddress(
+    bytes32 dataKey,
+    bytes invalidValue
+);
 
 /**
  * @dev reverts if there are no AllowedERC725YDataKeys set for the caller

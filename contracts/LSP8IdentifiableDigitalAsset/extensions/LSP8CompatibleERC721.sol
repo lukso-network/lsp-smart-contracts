@@ -3,29 +3,44 @@ pragma solidity ^0.8.12;
 
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import {
+    IERC721Receiver
+} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import {ILSP8CompatibleERC721} from "./ILSP8CompatibleERC721.sol";
-import {ILSP8IdentifiableDigitalAsset} from "../ILSP8IdentifiableDigitalAsset.sol";
+import {
+    ILSP8IdentifiableDigitalAsset
+} from "../ILSP8IdentifiableDigitalAsset.sol";
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
 // modules
-import {LSP4Compatibility} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
+import {
+    LSP4Compatibility
+} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
 import {
     LSP8IdentifiableDigitalAsset,
     LSP4DigitalAssetMetadata,
     ERC725YCore
 } from "../LSP8IdentifiableDigitalAsset.sol";
-import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
+import {
+    LSP8IdentifiableDigitalAssetCore
+} from "../LSP8IdentifiableDigitalAssetCore.sol";
 
 // errors
 import "../LSP8Errors.sol";
 
 // constants
-import {_LSP4_METADATA_KEY} from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
-import {_INTERFACEID_ERC721, _INTERFACEID_ERC721METADATA} from "././ILSP8CompatibleERC721.sol";
+import {
+    _LSP4_METADATA_KEY
+} from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
+import {
+    _INTERFACEID_ERC721,
+    _INTERFACEID_ERC721METADATA
+} from "././ILSP8CompatibleERC721.sol";
 
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
@@ -76,13 +91,19 @@ abstract contract LSP8CompatibleERC721 is
     /*
      * @inheritdoc ILSP8CompatibleERC721
      */
-    function tokenURI(uint256 /* tokenId */) public view virtual returns (string memory) {
+    function tokenURI(
+        uint256 /* tokenId */
+    ) public view virtual returns (string memory) {
         bytes memory data = _getData(_LSP4_METADATA_KEY);
 
         // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36
         uint256 offset = 36;
 
-        bytes memory uriBytes = BytesLib.slice(data, offset, data.length - offset);
+        bytes memory uriBytes = BytesLib.slice(
+            data,
+            offset,
+            data.length - offset
+        );
         return string(uriBytes);
     }
 
@@ -96,7 +117,9 @@ abstract contract LSP8CompatibleERC721 is
     /**
      * @inheritdoc ILSP8CompatibleERC721
      */
-    function getApproved(uint256 tokenId) public view virtual returns (address) {
+    function getApproved(
+        uint256 tokenId
+    ) public view virtual returns (address) {
         bytes32 tokenIdAsBytes32 = bytes32(tokenId);
         _existsOrError(tokenIdAsBytes32);
 
@@ -146,7 +169,11 @@ abstract contract LSP8CompatibleERC721 is
      * @dev Compatible with ERC721 transferFrom.
      * Using allowNonLSP1Recipient=true so that EOA and any contract may receive the tokenId.
      */
-    function transferFrom(address from, address to, uint256 tokenId) public virtual {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public virtual {
         _transfer(from, to, bytes32(tokenId), true, "");
     }
 
@@ -155,7 +182,11 @@ abstract contract LSP8CompatibleERC721 is
      * @dev Compatible with ERC721 safeTransferFrom (without optional data).
      * Using allowNonLSP1Recipient=false so that no EOA and only contracts supporting LSP1 interface may receive the tokenId.
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId) public virtual {
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public virtual {
         _safeTransfer(from, to, tokenId, "");
     }
 
@@ -180,7 +211,14 @@ abstract contract LSP8CompatibleERC721 is
     function authorizeOperator(
         address operator,
         bytes32 tokenId
-    ) public virtual override(ILSP8IdentifiableDigitalAsset, LSP8IdentifiableDigitalAssetCore) {
+    )
+        public
+        virtual
+        override(
+            ILSP8IdentifiableDigitalAsset,
+            LSP8IdentifiableDigitalAssetCore
+        )
+    {
         super.authorizeOperator(operator, tokenId);
         emit Approval(tokenOwnerOf(tokenId), operator, uint256(tokenId));
     }
@@ -194,7 +232,10 @@ abstract contract LSP8CompatibleERC721 is
     ) internal virtual override {
         address operator = msg.sender;
 
-        if (!isApprovedForAll(from, operator) && !_isOperatorOrOwner(operator, tokenId)) {
+        if (
+            !isApprovedForAll(from, operator) &&
+            !_isOperatorOrOwner(operator, tokenId)
+        ) {
             revert LSP8NotTokenOperator(tokenId, operator);
         }
 
@@ -225,7 +266,10 @@ abstract contract LSP8CompatibleERC721 is
         super._mint(to, tokenId, allowNonLSP1Recipient, data);
     }
 
-    function _burn(bytes32 tokenId, bytes memory data) internal virtual override {
+    function _burn(
+        bytes32 tokenId,
+        bytes memory data
+    ) internal virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
 
         emit Transfer(tokenOwner, address(0), uint256(tokenId));
@@ -242,7 +286,10 @@ abstract contract LSP8CompatibleERC721 is
         address operator,
         bool approved
     ) internal virtual {
-        require(tokensOwner != operator, "LSP8CompatibleERC721: approve to caller");
+        require(
+            tokensOwner != operator,
+            "LSP8CompatibleERC721: approve to caller"
+        );
         _operatorApprovals[tokensOwner][operator] = approved;
         emit ApprovalForAll(tokensOwner, operator, approved);
     }
@@ -264,13 +311,20 @@ abstract contract LSP8CompatibleERC721 is
         bytes memory data
     ) private returns (bool) {
         if (to.code.length > 0) {
-            try IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data) returns (
-                bytes4 retval
-            ) {
+            try
+                IERC721Receiver(to).onERC721Received(
+                    msg.sender,
+                    from,
+                    tokenId,
+                    data
+                )
+            returns (bytes4 retval) {
                 return retval == IERC721Receiver.onERC721Received.selector;
             } catch (bytes memory reason) {
                 if (reason.length == 0) {
-                    revert("LSP8CompatibleERC721: transfer to non ERC721Receiver implementer");
+                    revert(
+                        "LSP8CompatibleERC721: transfer to non ERC721Receiver implementer"
+                    );
                 } else {
                     // solhint-disable no-inline-assembly
                     /// @solidity memory-safe-assembly

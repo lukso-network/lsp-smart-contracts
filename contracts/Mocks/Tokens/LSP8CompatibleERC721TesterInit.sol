@@ -11,7 +11,9 @@ import {
 } from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721InitAbstract.sol";
 
 // constants
-import {_LSP4_METADATA_KEY} from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
+import {
+    _LSP4_METADATA_KEY
+} from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 
 contract LSP8CompatibleERC721InitTester is LSP8CompatibleERC721InitAbstract {
     /**
