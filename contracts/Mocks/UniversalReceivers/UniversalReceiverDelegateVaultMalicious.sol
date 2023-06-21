@@ -6,7 +6,6 @@ import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {LSP14Ownable2Step} from "../../LSP14Ownable2Step/LSP14Ownable2Step.sol";
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
@@ -15,7 +14,6 @@ import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165S
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 // constants
-import {SETDATA_BATCH_SELECTOR} from "@erc725/smart-contracts/contracts/constants.sol";
 import {_TYPEID_LSP7_TOKENSSENDER} from "../../LSP7DigitalAsset/LSP7Constants.sol";
 import "../../LSP1UniversalReceiver/LSP1Constants.sol";
 import "../../LSP6KeyManager/LSP6Constants.sol";
@@ -60,7 +58,11 @@ contract UniversalReceiverDelegateVaultMalicious is ERC165Storage {
                 );
 
                 values[0] = bytes("some random text for the data value");
-                bytes memory payload = abi.encodeWithSelector(SETDATA_BATCH_SELECTOR, keys, values);
+                bytes memory payload = abi.encodeWithSelector(
+                    IERC725Y.setDataBatch.selector,
+                    keys,
+                    values
+                );
 
                 (bool success, bytes memory result) = msg.sender.call(payload);
                 Address.verifyCallResult(success, result, "Call reverted");
@@ -71,7 +73,11 @@ contract UniversalReceiverDelegateVaultMalicious is ERC165Storage {
                 keys[0] = bytes32(abi.encodePacked(_LSP6KEY_ADDRESSPERMISSIONS_PREFIX, bytes26(0)));
 
                 values[0] = bytes("some random text for the data value");
-                bytes memory payload = abi.encodeWithSelector(SETDATA_BATCH_SELECTOR, keys, values);
+                bytes memory payload = abi.encodeWithSelector(
+                    IERC725Y.setDataBatch.selector,
+                    keys,
+                    values
+                );
 
                 (bool success, bytes memory result) = msg.sender.call(payload);
                 Address.verifyCallResult(success, result, "Call reverted");
@@ -82,7 +88,11 @@ contract UniversalReceiverDelegateVaultMalicious is ERC165Storage {
                 keys[0] = bytes32(abi.encodePacked(_LSP17_EXTENSION_PREFIX, bytes22(0)));
 
                 values[0] = bytes("some random text for the data value");
-                bytes memory payload = abi.encodeWithSelector(SETDATA_BATCH_SELECTOR, keys, values);
+                bytes memory payload = abi.encodeWithSelector(
+                    IERC725Y.setDataBatch.selector,
+                    keys,
+                    values
+                );
 
                 (bool success, bytes memory result) = msg.sender.call(payload);
                 Address.verifyCallResult(success, result, "Call reverted");
