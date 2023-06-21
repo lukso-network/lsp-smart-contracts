@@ -137,7 +137,7 @@ describe('UniversalProfileInit with proxy', () => {
     (testCase) => {
       describe('when deploying + intializing the proxy contract with or without value', () => {
         it(`should have initialized with the correct funding amount (${testCase.initialFunding})`, async () => {
-          let context = await buildLSP3TestContext(testCase.initialFunding);
+          const context = await buildLSP3TestContext(testCase.initialFunding);
           await initializeProxy(context);
           const balance = await provider.getBalance(context.universalProfile.address);
           expect(balance).to.equal(testCase.initialFunding || 0);
@@ -148,7 +148,7 @@ describe('UniversalProfileInit with proxy', () => {
 
   describe('when calling `initialize(...)` more than once', () => {
     it('should revert', async () => {
-      let context = await buildLSP3TestContext();
+      const context = await buildLSP3TestContext();
       await initializeProxy(context);
 
       await expect(initializeProxy(context)).to.be.revertedWith(
@@ -159,7 +159,7 @@ describe('UniversalProfileInit with proxy', () => {
 
   describe('when deploying + initializing the proxy contract', () => {
     shouldInitializeLikeLSP3(async () => {
-      let context = await buildLSP3TestContext();
+      const context = await buildLSP3TestContext();
       await initializeProxy(context);
       return context;
     });
@@ -167,21 +167,21 @@ describe('UniversalProfileInit with proxy', () => {
 
   describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP3(async (initialFunding?: number) => {
-      let context = await buildLSP3TestContext(initialFunding);
+      const context = await buildLSP3TestContext(initialFunding);
       await initializeProxy(context);
       return context;
     });
 
     shouldBehaveLikeLSP1(async () => {
-      let lsp3Context = await buildLSP3TestContext();
+      const lsp3Context = await buildLSP3TestContext();
       await initializeProxy(lsp3Context);
 
-      let lsp1Context = await buildLSP1TestContext();
+      const lsp1Context = await buildLSP1TestContext();
       return lsp1Context;
     });
 
     shouldBehaveLikeLSP14WithLSP20(async (initialFunding?: number | BigNumber) => {
-      let claimOwnershipContext = await buildLSP14WithLSP20TestContext(initialFunding);
+      const claimOwnershipContext = await buildLSP14WithLSP20TestContext(initialFunding);
 
       await initializeProxy({
         accounts: claimOwnershipContext.accounts,
@@ -193,7 +193,7 @@ describe('UniversalProfileInit with proxy', () => {
     });
 
     shouldBehaveLikeLSP17(async () => {
-      let fallbackExtensionContext = await buildLSP17TestContext();
+      const fallbackExtensionContext = await buildLSP17TestContext();
 
       await initializeProxy({
         accounts: fallbackExtensionContext.accounts,
@@ -205,7 +205,7 @@ describe('UniversalProfileInit with proxy', () => {
     });
 
     shouldBehaveLikeLSP20(async () => {
-      let reverseVerificationContext = await buildLSP20TestContext();
+      const reverseVerificationContext = await buildLSP20TestContext();
 
       await initializeProxy({
         accounts: reverseVerificationContext.accounts,

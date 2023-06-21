@@ -65,11 +65,11 @@ export const testInvalidExecutePayloads = (buildContext: () => Promise<LSP6TestC
 
   describe('wrong operation type', () => {
     it('Should revert because of wrong operation type when caller has ALL PERMISSIONS', async () => {
-      let targetPayload = targetContract.interface.encodeFunctionData('setName', ['new name']);
+      const targetPayload = targetContract.interface.encodeFunctionData('setName', ['new name']);
 
       const INVALID_OPERATION_TYPE = 8;
 
-      let payload = context.universalProfile.interface.encodeFunctionData('execute', [
+      const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         INVALID_OPERATION_TYPE,
         targetContract.address,
         0,
@@ -82,11 +82,11 @@ export const testInvalidExecutePayloads = (buildContext: () => Promise<LSP6TestC
     });
 
     it('Should revert because of wrong operation type when caller has permission CALL', async () => {
-      let targetPayload = targetContract.interface.encodeFunctionData('setName', ['new name']);
+      const targetPayload = targetContract.interface.encodeFunctionData('setName', ['new name']);
 
       const INVALID_OPERATION_TYPE = 8;
 
-      let payload = context.universalProfile.interface.encodeFunctionData('execute', [
+      const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         INVALID_OPERATION_TYPE,
         targetContract.address,
         0,

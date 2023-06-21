@@ -71,8 +71,10 @@ async function getLSP10MapAndArrayKeysValue(account, lsp9Vault) {
     rawIndexInArray,
   ]);
 
-  let arrayKey = ERC725YDataKeys.LSP10['LSP10Vaults[]'].length;
-  let [arrayLength, elementAddress] = await account.getDataBatch([arrayKey, elementInArrayKey]);
+  const arrayKey = ERC725YDataKeys.LSP10['LSP10Vaults[]'].length;
+  const [arrayLength, _elementAddress] = await account.getDataBatch([arrayKey, elementInArrayKey]);
+
+  let elementAddress = _elementAddress;
 
   if (elementAddress != '0x') {
     elementAddress = ethers.utils.getAddress(elementAddress);
@@ -105,7 +107,7 @@ export const shouldBehaveLikeLSP1Delegate = (
   describe('When testing EOA call to URD through the UR function', () => {
     describe('when calling with token/vault typeId', () => {
       it('should revert with custom error', async () => {
-        let URD_TypeIds = [
+        const URD_TypeIds = [
           LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification,
           LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
           LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification,
@@ -131,7 +133,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
     describe('when calling with random bytes32 typeId', () => {
       it('should pass and return typeId out of scope return value', async () => {
-        let result = await context.universalProfile1
+        const result = await context.universalProfile1
           .connect(context.accounts.any)
           .callStatic.universalReceiver(LSP1_HOOK_PLACEHOLDER, '0x');
 
@@ -973,10 +975,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         const [genericExecutorResult] = abiCoder.decode(['bytes'], universalReceiverResult);
 
-        const [resultDelegate, resultTypeID] = abiCoder.decode(
-          ['bytes', 'bytes'],
-          genericExecutorResult,
-        );
+        const [resultDelegate] = abiCoder.decode(['bytes', 'bytes'], genericExecutorResult);
 
         expect(resultDelegate).to.equal(
           ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: asset sent is not registered')),
@@ -2117,10 +2116,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         const [genericExecutorResult] = abiCoder.decode(['bytes'], universalReceiverResult);
 
-        const [resultDelegate, resultTypeID] = abiCoder.decode(
-          ['bytes', 'bytes'],
-          genericExecutorResult,
-        );
+        const [resultDelegate] = abiCoder.decode(['bytes', 'bytes'], genericExecutorResult);
 
         expect(resultDelegate).to.equal(
           ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: asset sent is not registered')),
@@ -2170,7 +2166,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             .connect(context.accounts.random)
             .transferOwnership(context.universalProfile1.address);
 
-          let executePayload = context.universalProfile1.interface.encodeFunctionData('execute', [
+          const executePayload = context.universalProfile1.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
             lsp9VaultA.address,
             0,
@@ -2196,7 +2192,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             .connect(context.accounts.random)
             .transferOwnership(context.universalProfile1.address);
 
-          let executePayload = context.universalProfile1.interface.encodeFunctionData('execute', [
+          const executePayload = context.universalProfile1.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
             lsp9VaultB.address,
             0,
@@ -2222,7 +2218,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             .connect(context.accounts.random)
             .transferOwnership(context.universalProfile1.address);
 
-          let executePayload = context.universalProfile1.interface.encodeFunctionData('execute', [
+          const executePayload = context.universalProfile1.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
             lsp9VaultC.address,
             0,
@@ -2254,7 +2250,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             .connect(context.accounts.owner1)
             .execute(callPayload(context.universalProfile1, lsp9VaultA.address, abi));
 
-          let executePayload = context.universalProfile2.interface.encodeFunctionData('execute', [
+          const executePayload = context.universalProfile2.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
             lsp9VaultA.address,
             0,
@@ -2293,7 +2289,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             .connect(context.accounts.owner1)
             .execute(callPayload(context.universalProfile1, lsp9VaultB.address, abi));
 
-          let executePayload = context.universalProfile2.interface.encodeFunctionData('execute', [
+          const executePayload = context.universalProfile2.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
             lsp9VaultB.address,
             0,
@@ -2336,7 +2332,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             .connect(context.accounts.owner1)
             .execute(callPayload(context.universalProfile1, lsp9VaultC.address, abi));
 
-          let executePayload = context.universalProfile2.interface.encodeFunctionData('execute', [
+          const executePayload = context.universalProfile2.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
             lsp9VaultC.address,
             0,
@@ -2379,7 +2375,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             .connect(context.accounts.owner2)
             .execute(callPayload(context.universalProfile2, lsp9VaultB.address, abi));
 
-          let executePayload = context.universalProfile1.interface.encodeFunctionData('execute', [
+          const executePayload = context.universalProfile1.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
             lsp9VaultB.address,
             0,

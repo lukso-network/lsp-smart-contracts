@@ -22,10 +22,10 @@ jobs:
         run: npm ci
 
       - name: 🔍 Run Solidity Linter
-        run: npm run linter
+        run: npm run lint:solidity
 
-      - name: 🎨 Check Prettier Style
-        run: npm run format:check
+      - name: 🎨 Run ESLint on JS/TS files
+        run: npm run lint
 
       # This will also generate the Typechain types used by the Chai tests
       - name: 🏗️ Build contract artifacts

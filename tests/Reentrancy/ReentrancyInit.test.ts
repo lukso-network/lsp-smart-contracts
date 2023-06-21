@@ -37,7 +37,7 @@ describe('Reentrancy scenarios with proxy', () => {
 
   describe('when testing Reentrancy scenarios for LSP6', () => {
     shouldBehaveLikeLSP6ReentrancyScenarios(async (initialFunding?: BigNumber) => {
-      let context = await buildProxyTestContext(initialFunding);
+      const context = await buildProxyTestContext(initialFunding);
       await initializeProxies(context);
       return context;
     });
@@ -45,7 +45,7 @@ describe('Reentrancy scenarios with proxy', () => {
 
   describe('when testing Reentrancy scenarios for LSP20 + LSP6', () => {
     shouldBehaveLikeLSP20WithLSP6ReentrancyScenarios(async (initialFunding?: BigNumber) => {
-      let context = await buildProxyTestContext(initialFunding);
+      const context = await buildProxyTestContext(initialFunding);
       await initializeProxies(context);
       return context;
     });

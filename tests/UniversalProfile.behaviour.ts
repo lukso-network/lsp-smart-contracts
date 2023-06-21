@@ -123,24 +123,24 @@ export const shouldBehaveLikeLSP3 = (
   });
 
   describe('when interacting with the ERC725Y storage', () => {
-    let lsp12IssuedAssetsKeys = [
+    const lsp12IssuedAssetsKeys = [
       ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].index + '00000000000000000000000000000000',
       ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].index + '00000000000000000000000000000001',
     ];
 
-    let lsp12IssuedAssetsValues = [
+    const lsp12IssuedAssetsValues = [
       '0xd94353d9b005b3c0a9da169b768a31c57844e490',
       '0xdaea594e385fc724449e3118b2db7e86dfba1826',
     ];
 
     it('should set the 3 x keys for a basic UP setup => `LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`', async () => {
-      let keys = [
+      const keys = [
         ERC725YDataKeys.LSP3.LSP3Profile,
         ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].length,
         ...lsp12IssuedAssetsKeys,
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
       ];
-      let values = [
+      const values = [
         '0x6f357c6a820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361696670733a2f2f516d597231564a4c776572673670456f73636468564775676f3339706136727963455a4c6a7452504466573834554178',
         '0x0000000000000000000000000000000000000000000000000000000000000002',
         ...lsp12IssuedAssetsValues,
@@ -154,13 +154,13 @@ export const shouldBehaveLikeLSP3 = (
     });
 
     it('should add +10 more LSP12IssuedAssets[]', async () => {
-      let newIssuedAssets = getRandomAddresses(10);
+      const newIssuedAssets = getRandomAddresses(10);
 
       const expectedKeysLength = lsp12IssuedAssetsKeys.length + newIssuedAssets.length;
       const expectedValuesLength = lsp12IssuedAssetsValues.length + newIssuedAssets.length;
 
       for (let ii = 0; ii < newIssuedAssets.length; ii++) {
-        let hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length);
+        const hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length);
 
         lsp12IssuedAssetsKeys.push(
           ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].index +
@@ -172,12 +172,12 @@ export const shouldBehaveLikeLSP3 = (
       expect(lsp12IssuedAssetsKeys.length).to.equal(expectedKeysLength);
       expect(lsp12IssuedAssetsValues.length).to.equal(expectedValuesLength);
 
-      let keys = [
+      const keys = [
         ...lsp12IssuedAssetsKeys,
         ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].length, // update array length
       ];
 
-      let values = [
+      const values = [
         ...lsp12IssuedAssetsValues,
         ethers.utils.hexZeroPad(ethers.utils.hexlify(lsp12IssuedAssetsValues.length), 32),
       ];
@@ -190,7 +190,7 @@ export const shouldBehaveLikeLSP3 = (
 
     for (let ii = 1; ii <= 8; ii++) {
       it('should add +1 LSP12IssuedAssets', async () => {
-        let hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length + 1);
+        const hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length + 1);
 
         lsp12IssuedAssetsKeys.push(
           ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].index +
@@ -199,12 +199,12 @@ export const shouldBehaveLikeLSP3 = (
 
         lsp12IssuedAssetsValues.push(ethers.Wallet.createRandom().address.toLowerCase());
 
-        let keys = [
+        const keys = [
           ...lsp12IssuedAssetsKeys,
           ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].length, // update array length
         ];
 
-        let values = [
+        const values = [
           ...lsp12IssuedAssetsValues,
           ethers.utils.hexZeroPad(ethers.utils.hexlify(lsp12IssuedAssetsValues.length), 32),
         ];
@@ -218,8 +218,8 @@ export const shouldBehaveLikeLSP3 = (
 
     describe('when setting a data key with a value less than 256 bytes', () => {
       it('should emit DataChanged event with the whole data value', async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-        let value = ethers.utils.hexlify(ethers.utils.randomBytes(200));
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+        const value = ethers.utils.hexlify(ethers.utils.randomBytes(200));
 
         await expect(context.universalProfile.setData(key, value))
           .to.emit(context.universalProfile, 'DataChanged')
@@ -232,8 +232,8 @@ export const shouldBehaveLikeLSP3 = (
 
     describe('when setting a data key with a value more than 256 bytes', () => {
       it('should emit DataChanged event with only the first 256 bytes of the value', async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-        let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+        const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
         await expect(context.universalProfile.setData(key, value))
           .to.emit(context.universalProfile, 'DataChanged')
@@ -246,8 +246,8 @@ export const shouldBehaveLikeLSP3 = (
 
     describe('when setting a data key with a value exactly 256 bytes long', () => {
       it('should emit DataChanged event with the whole data value', async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-        let value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+        const value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
 
         await expect(context.universalProfile.setData(key, value))
           .to.emit(context.universalProfile, 'DataChanged')
@@ -261,9 +261,9 @@ export const shouldBehaveLikeLSP3 = (
     describe('when sending value while setting data', () => {
       describe('when calling setData(..)', () => {
         it('should pass and emit the ValueReceived event', async () => {
-          let msgValue = ethers.utils.parseEther('2');
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-          let value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
+          const msgValue = ethers.utils.parseEther('2');
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+          const value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
 
           await expect(
             context.universalProfile
@@ -280,9 +280,9 @@ export const shouldBehaveLikeLSP3 = (
 
       describe('when calling setData(..) Array', () => {
         it('should pass and emit the ValueReceived event', async () => {
-          let msgValue = ethers.utils.parseEther('2');
-          let key = [ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'))];
-          let value = [ethers.utils.hexlify(ethers.utils.randomBytes(256))];
+          const msgValue = ethers.utils.parseEther('2');
+          const key = [ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'))];
+          const value = [ethers.utils.hexlify(ethers.utils.randomBytes(256))];
 
           await expect(
             context.universalProfile
@@ -352,7 +352,7 @@ export const shouldBehaveLikeLSP3 = (
     it('should execute the fallback function, but not emit the ValueReceived event', async () => {
       // The payload must be prepended with bytes4(0) to be interpreted as graffiti
       // and not as a function selector
-      let tx = await context.accounts[0].sendTransaction({
+      const tx = await context.accounts[0].sendTransaction({
         to: context.universalProfile.address,
         value: 0,
         data: '0x00000000aabbccdd',
@@ -420,10 +420,10 @@ export const shouldBehaveLikeLSP3 = (
   describe('when using batchCalls function', () => {
     describe('when non-owner is calling', () => {
       it('shoud revert', async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-        let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+        const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
-        let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -440,13 +440,13 @@ export const shouldBehaveLikeLSP3 = (
       describe('when executing one function', () => {
         describe('setData', () => {
           it('should pass', async () => {
-            let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-            let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+            const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+            const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
-              key,
-              value,
-            ]);
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
+              'setData',
+              [key, value],
+            );
 
             await context.universalProfile
               .connect(context.deployParams.owner)
@@ -459,13 +459,11 @@ export const shouldBehaveLikeLSP3 = (
 
         describe('execute', () => {
           it('should pass', async () => {
-            let amount = 20;
-            let executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
-              0,
-              context.accounts[4].address,
-              amount,
-              '0x',
-            ]);
+            const amount = 20;
+            const executePayload = context.universalProfile.interface.encodeFunctionData(
+              'execute',
+              [0, context.accounts[4].address, amount, '0x'],
+            );
 
             await expect(() =>
               context.universalProfile
@@ -482,23 +480,21 @@ export const shouldBehaveLikeLSP3 = (
       describe('when executing several functions', () => {
         describe('When transfering lyx, setting data, transferring ownership', () => {
           it('should pass', async () => {
-            let amount = 20;
-            let executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
-              0,
-              context.accounts[5].address,
-              amount,
-              '0x',
-            ]);
+            const amount = 20;
+            const executePayload = context.universalProfile.interface.encodeFunctionData(
+              'execute',
+              [0, context.accounts[5].address, amount, '0x'],
+            );
 
-            let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('A new key'));
-            let value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
+            const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('A new key'));
+            const value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
-              key,
-              value,
-            ]);
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
+              'setData',
+              [key, value],
+            );
 
-            let transferOwnershipPayload = context.universalProfile.interface.encodeFunctionData(
+            const transferOwnershipPayload = context.universalProfile.interface.encodeFunctionData(
               'transferOwnership',
               [context.accounts[8].address],
             );
@@ -527,21 +523,19 @@ export const shouldBehaveLikeLSP3 = (
 
         describe('When setting data and transferring value in staticcall operation', () => {
           it('should revert', async () => {
-            let amount = 100;
-            let executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
-              3,
-              context.accounts[5].address,
-              amount,
-              '0x',
-            ]);
+            const amount = 100;
+            const executePayload = context.universalProfile.interface.encodeFunctionData(
+              'execute',
+              [3, context.accounts[5].address, amount, '0x'],
+            );
 
-            let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Another key'));
-            let value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
+            const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Another key'));
+            const value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
 
-            let setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
-              key,
-              value,
-            ]);
+            const setDataPayload = context.universalProfile.interface.encodeFunctionData(
+              'setData',
+              [key, value],
+            );
 
             await expect(
               context.universalProfile

@@ -811,8 +811,8 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
       let recoverySecretHash;
       let beforeRecoveryCounter;
       let guardiansThreshold;
-      let addressAselection;
       let addressBselection;
+
       before('Distribution selection of the guardians and setting recovery params', async () => {
         // Checks that recoveryCounter equal 0 before recovery
         beforeRecoveryCounter =
@@ -901,7 +901,6 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
           context.accounts.guardian4.address,
         );
 
-        addressAselection = 3;
         addressBselection = 1;
 
         expect(guardian4Choice).to.equal(context.accounts.addressBSelected.address);

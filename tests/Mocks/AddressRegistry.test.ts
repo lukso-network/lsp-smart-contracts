@@ -57,8 +57,8 @@ describe('Address Registry contracts', () => {
     });
 
     it('can list all values of the registry', async () => {
-      let length = await (await addressRegistry.length()).toNumber();
-      let values = [];
+      const length = await (await addressRegistry.length()).toNumber();
+      const values = [];
 
       for (let i = 0; i < length; i++) {
         values.push(await addressRegistry.getAddress(i));
@@ -90,7 +90,7 @@ describe('Address Registry contracts', () => {
     });
 
     it('add address', async () => {
-      let abi = addressRegistryRequireERC725.interface.encodeFunctionData('addAddress', [
+      const abi = addressRegistryRequireERC725.interface.encodeFunctionData('addAddress', [
         account.address,
       ]);
 
@@ -106,7 +106,7 @@ describe('Address Registry contracts', () => {
     });
 
     it('remove address', async () => {
-      let abi = addressRegistryRequireERC725.interface.encodeFunctionData('removeAddress', [
+      const abi = addressRegistryRequireERC725.interface.encodeFunctionData('removeAddress', [
         account.address,
       ]);
 

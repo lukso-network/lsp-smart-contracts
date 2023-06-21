@@ -63,7 +63,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       // Doing a delegatecall to the setData function of another UP
       // should update the ERC725Y storage of the UP making the delegatecall
-      let delegateCallPayload = erc725YDelegateCallContract.interface.encodeFunctionData(
+      const delegateCallPayload = erc725YDelegateCallContract.interface.encodeFunctionData(
         'updateStorage',
         [key, value],
       );
@@ -91,7 +91,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       // Doing a delegatecall to the setData function of another UP
       // should update the ERC725Y storage of the UP making the delegatecall
-      let delegateCallPayload = erc725YDelegateCallContract.interface.encodeFunctionData(
+      const delegateCallPayload = erc725YDelegateCallContract.interface.encodeFunctionData(
         'updateStorage',
         [key, value],
       );
@@ -119,7 +119,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       // Doing a delegatecall to the setData function of another UP
       // should update the ERC725Y storage of the UP making the delegatecall
-      let delegateCallPayload = erc725YDelegateCallContract.interface.encodeFunctionData(
+      const delegateCallPayload = erc725YDelegateCallContract.interface.encodeFunctionData(
         'setDataBatch',
         [[key], [value]],
       );
@@ -207,7 +207,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
             expect(currentStorage).to.equal('0x');
 
             // prettier-ignore
-            let delegateCallPayload = randomContracts[ii].interface.encodeFunctionData(
+            const delegateCallPayload = randomContracts[ii].interface.encodeFunctionData(
               "updateStorage", [
               key,
               value,
@@ -245,7 +245,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
         expect(currentStorage).to.equal('0x');
 
         // prettier-ignore
-        let delegateCallPayload = allowedDelegateCallContracts[0].interface.encodeFunctionData(
+        const delegateCallPayload = allowedDelegateCallContracts[0].interface.encodeFunctionData(
           "updateStorage", [
           key,
           value,
@@ -276,7 +276,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
         expect(currentStorage).to.equal('0x');
 
         // prettier-ignore
-        let delegateCallPayload = allowedDelegateCallContracts[1].interface.encodeFunctionData(
+        const delegateCallPayload = allowedDelegateCallContracts[1].interface.encodeFunctionData(
           "updateStorage", [
           key,
           value,

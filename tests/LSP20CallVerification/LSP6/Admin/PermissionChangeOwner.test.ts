@@ -85,7 +85,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       });
 
       it('should have set newKeyManager as pendingOwner', async () => {
-        let pendingOwner = await context.universalProfile.pendingOwner();
+        const pendingOwner = await context.universalProfile.pendingOwner();
         expect(pendingOwner).to.equal(newKeyManager.address);
       });
 
@@ -136,7 +136,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       });
 
       it('should override the pendingOwner when transferOwnership(...) is called twice', async () => {
-        let overridenPendingOwner = ethers.Wallet.createRandom().address;
+        const overridenPendingOwner = ethers.Wallet.createRandom().address;
 
         await context.universalProfile
           .connect(context.owner)
@@ -161,7 +161,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       });
 
       it('should have set newKeyManager as pendingOwner', async () => {
-        let pendingOwner = await context.universalProfile.pendingOwner();
+        const pendingOwner = await context.universalProfile.pendingOwner();
         expect(pendingOwner).to.equal(newKeyManager.address);
       });
 
@@ -179,7 +179,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       });
 
       it('should override the pendingOwner when transferOwnership(...) is called twice', async () => {
-        let overridenPendingOwner = await new LSP6KeyManager__factory(context.owner).deploy(
+        const overridenPendingOwner = await new LSP6KeyManager__factory(context.owner).deploy(
           context.universalProfile.address,
         );
 
@@ -195,11 +195,11 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
   describe('when calling acceptOwnership(...) from a KeyManager that is not the pendingOwner', () => {
     it('should revert', async () => {
-      let notPendingKeyManager = await new LSP6KeyManager__factory(context.accounts[5]).deploy(
+      const notPendingKeyManager = await new LSP6KeyManager__factory(context.accounts[5]).deploy(
         context.universalProfile.address,
       );
 
-      let payload = context.universalProfile.interface.getSighash('acceptOwnership');
+      const payload = context.universalProfile.interface.getSighash('acceptOwnership');
 
       await expect(notPendingKeyManager.connect(context.owner).execute(payload)).to.be.revertedWith(
         'LSP14: caller is not the pendingOwner',
@@ -217,18 +217,19 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       pendingOwner = await context.universalProfile.pendingOwner();
 
-      let acceptOwnershipPayload = context.universalProfile.interface.getSighash('acceptOwnership');
+      const acceptOwnershipPayload =
+        context.universalProfile.interface.getSighash('acceptOwnership');
 
       await newKeyManager.connect(context.owner).execute(acceptOwnershipPayload);
     });
 
     it("should have change the account's owner to the pendingOwner (= pending KeyManager)", async () => {
-      let updatedOwner = await context.universalProfile.owner();
+      const updatedOwner = await context.universalProfile.owner();
       expect(updatedOwner).to.equal(pendingOwner);
     });
 
     it('should have cleared the pendingOwner after transfering ownership', async () => {
-      let newPendingOwner = await context.universalProfile.pendingOwner();
+      const newPendingOwner = await context.universalProfile.pendingOwner();
       expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
     });
   });
@@ -245,7 +246,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         const key = '0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe';
         const value = '0xabcd';
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -256,10 +257,10 @@ export const shouldBehaveLikePermissionChangeOwner = (
       });
 
       it('should revert with error `NoPermissionsSet` when calling `execute(...)`', async () => {
-        let recipient = context.accounts[3];
-        let amount = ethers.utils.parseEther('3');
+        const recipient = context.accounts[3];
+        const amount = ethers.utils.parseEther('3');
 
-        let payload = context.universalProfile.interface.encodeFunctionData('execute', [
+        const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
           recipient.address,
           amount,
@@ -277,7 +278,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         const key = '0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe';
         const value = '0xabcd';
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -295,7 +296,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         const recipientBalanceBefore = await provider.getBalance(recipient.address);
         const accountBalanceBefore = await provider.getBalance(context.universalProfile.address);
 
-        let payload = context.universalProfile.interface.encodeFunctionData('execute', [
+        const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
           recipient.address,
           amount,
@@ -318,7 +319,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
   describe('when calling `renounceOwnership(...)`', () => {
     it('should revert even if caller has ALL PERMISSIONS`', async () => {
-      let payload = context.universalProfile.interface.getSighash('renounceOwnership');
+      const payload = context.universalProfile.interface.getSighash('renounceOwnership');
 
       await expect(context.universalProfile.connect(context.owner).renounceOwnership())
         .to.be.revertedWithCustomError(context.keyManager, 'InvalidERC725Function')

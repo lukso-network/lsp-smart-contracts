@@ -44,8 +44,8 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
 
     describe('when setting a data key with a value less than 256 bytes', () => {
       it('should emit DataChanged event with the whole data value', async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-        let value = ethers.utils.hexlify(ethers.utils.randomBytes(200));
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+        const value = ethers.utils.hexlify(ethers.utils.randomBytes(200));
 
         await expect(context.contract.connect(context.deployParams.owner).setData(key, value))
           .to.emit(context.contract, 'DataChanged')
@@ -58,8 +58,8 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
 
     describe('when setting a data key with a value more than 256 bytes', () => {
       it('should emit DataChanged event with only the first 256 bytes of the value', async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-        let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+        const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
         await expect(context.contract.connect(context.deployParams.owner).setData(key, value))
           .to.emit(context.contract, 'DataChanged')
@@ -72,8 +72,8 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
 
     describe('when setting a data key with a value exactly 256 bytes long', () => {
       it('should emit DataChanged event with the whole data value', async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-        let value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+        const value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
 
         await expect(context.contract.connect(context.deployParams.owner).setData(key, value))
           .to.emit(context.contract, 'DataChanged')

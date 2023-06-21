@@ -130,10 +130,7 @@ export const testAllowedCallsInternals = (
   describe('testing 2 x addresses encoded as LSP2 CompactBytesArray under `AllowedCalls`', () => {
     let canCallOnlyTwoAddresses: SignerWithAddress, canCallNoAllowedCalls: SignerWithAddress;
 
-    let allowedEOA: SignerWithAddress,
-      notAllowedEOA: SignerWithAddress,
-      allowedTargetContract: TargetContract,
-      notAllowedTargetContract: TargetContract;
+    let allowedEOA: SignerWithAddress, allowedTargetContract: TargetContract;
 
     let encodedAllowedCalls: string;
 
@@ -143,11 +140,8 @@ export const testAllowedCallsInternals = (
       canCallOnlyTwoAddresses = context.accounts[1];
       canCallNoAllowedCalls = context.accounts[2];
       allowedEOA = context.accounts[3];
-      notAllowedEOA = context.accounts[4];
 
       allowedTargetContract = await new TargetContract__factory(context.accounts[0]).deploy();
-
-      notAllowedTargetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
       // addresses need to be put in lower case for the encoding otherwise:
       //  - the encoding will return them checksummed
@@ -162,7 +156,7 @@ export const testAllowedCallsInternals = (
         ['0xffffffff', '0xffffffff'],
       );
 
-      let permissionsKeys = [
+      const permissionsKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           canCallOnlyTwoAddresses.address.substring(2),
@@ -170,7 +164,7 @@ export const testAllowedCallsInternals = (
           canCallOnlyTwoAddresses.address.substring(2),
       ];
 
-      let permissionsValues = [
+      const permissionsValues = [
         ALL_PERMISSIONS,
         combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
         encodedAllowedCalls,
@@ -181,7 +175,7 @@ export const testAllowedCallsInternals = (
 
     describe('`getAllowedCallsFor(...)`', () => {
       it('should return the list of allowed calls', async () => {
-        let bytesResult = await context.keyManagerInternalTester.getAllowedCallsFor(
+        const bytesResult = await context.keyManagerInternalTester.getAllowedCallsFor(
           canCallOnlyTwoAddresses.address,
         );
 
@@ -189,12 +183,12 @@ export const testAllowedCallsInternals = (
       });
 
       it('should return no bytes when no allowed calls were set', async () => {
-        let bytesResult = await context.keyManagerInternalTester.getAllowedCallsFor(
+        const bytesResult = await context.keyManagerInternalTester.getAllowedCallsFor(
           context.owner.address,
         );
         expect(bytesResult).to.equal('0x');
 
-        let resultFromAccount = await context.universalProfile['getData(bytes32)'](
+        const resultFromAccount = await context.universalProfile['getData(bytes32)'](
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             context.owner.address.substring(2),
         );
@@ -223,7 +217,7 @@ export const testAllowedCallsInternals = (
 
       describe('when the ERC725X payload (transfer 1 LYX)  is for an address not listed in the allowed calls', () => {
         it('should revert', async () => {
-          let disallowedAddress = ethers.utils.getAddress(
+          const disallowedAddress = ethers.utils.getAddress(
             '0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead',
           );
 
@@ -247,7 +241,7 @@ export const testAllowedCallsInternals = (
 
       describe('when there is nothing stored under `AllowedCalls` for a controller', () => {
         it('should revert', async () => {
-          let randomAddress = ethers.Wallet.createRandom().address;
+          const randomAddress = ethers.Wallet.createRandom().address;
 
           const payload = context.universalProfile.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
@@ -641,7 +635,7 @@ export const testAllowedCallsInternals = (
 
       const universalProfileInterface = UniversalProfile__factory.createInterface();
 
-      let payload: string = universalProfileInterface.encodeFunctionData('execute', [
+      const payload: string = universalProfileInterface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
         randomAddress,
         ethers.utils.parseEther('1'),
@@ -780,7 +774,7 @@ export const testAllowedCallsInternals = (
         longBytes: context.accounts[3],
       };
 
-      let permissionKeys = [
+      const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           controller.multipleOf29Bytes.address.substring(2),
@@ -858,7 +852,7 @@ export const testAllowedCallsInternals = (
 
       anyAllowedCalls = context.accounts[1];
 
-      let permissionsKeys = [
+      const permissionsKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           anyAllowedCalls.address.substring(2),
@@ -866,7 +860,7 @@ export const testAllowedCallsInternals = (
           anyAllowedCalls.address.substring(2),
       ];
 
-      let permissionsValues = [
+      const permissionsValues = [
         ALL_PERMISSIONS,
         combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
         combineAllowedCalls(

@@ -47,12 +47,12 @@ export const ARRAY_LENGTH = {
   EIGHT: '0x00000000000000000000000000000008',
 };
 
-export function getRandomAddresses(count: Number): string[] {
-  let addresses: string[] = [];
+export function getRandomAddresses(count: number): string[] {
+  const addresses: string[] = [];
   for (let ii = 0; ii < count; ii++) {
     // addresses stored under ERC725Y storage have always lowercases character.
     // therefore, disable the checksum by converting to lowercase to avoid failing tests
-    let randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
+    const randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
     addresses.push(randomAddress);
   }
 
@@ -63,7 +63,7 @@ export function combinePermissions(..._permissions: string[]) {
   let result: BigNumber = ethers.BigNumber.from(0);
 
   _permissions.forEach((permission) => {
-    let permissionAsBN = ethers.BigNumber.from(permission);
+    const permissionAsBN = ethers.BigNumber.from(permission);
     result = result.add(permissionAsBN);
   });
 
@@ -74,7 +74,7 @@ export function combineCallTypes(..._callTypes: string[]) {
   let result: BigNumber = ethers.BigNumber.from(0);
 
   _callTypes.forEach((callType) => {
-    let callTypeAsBN = ethers.BigNumber.from(callType);
+    const callTypeAsBN = ethers.BigNumber.from(callType);
     result = result.add(callTypeAsBN);
   });
 
@@ -94,8 +94,8 @@ export function encodeCompactBytesArray(inputKeys: BytesLike[]) {
 }
 
 export function decodeCompactBytes(compactBytesArray: BytesLike) {
-  let pointer: number = 2;
-  let keysToExport: BytesLike[] = [];
+  let pointer = 2;
+  const keysToExport: BytesLike[] = [];
   while (pointer < compactBytesArray.length) {
     const length = ethers.BigNumber.from(
       '0x' + compactBytesArray.toString().substring(pointer, pointer + 4),
@@ -115,14 +115,14 @@ export function combineAllowedCalls(
   _allowedStandards: string[],
   _allowedFunctions: string[],
 ) {
-  let result: string = '0x0020';
+  let result = '0x0020';
 
   for (let ii = 0; ii < _allowedStandards.length; ii++) {
     // remove "0x" prefixes
-    let allowedInteractions = _allowedInteractions[ii].substring(2);
-    let allowedAddress = _allowedAddresses[ii].substring(2).toLowerCase();
-    let allowedStandard = _allowedStandards[ii].substring(2);
-    let allowedFunction = _allowedFunctions[ii].substring(2);
+    const allowedInteractions = _allowedInteractions[ii].substring(2);
+    const allowedAddress = _allowedAddresses[ii].substring(2).toLowerCase();
+    const allowedStandard = _allowedStandards[ii].substring(2);
+    const allowedFunction = _allowedFunctions[ii].substring(2);
 
     result = result + allowedInteractions + allowedAddress + allowedStandard + allowedFunction;
 
@@ -161,7 +161,7 @@ export async function signLSP6ExecuteRelayCall(
     payload: _payload,
   };
 
-  let encodedMessage = ethers.utils.solidityPack(
+  const encodedMessage = ethers.utils.solidityPack(
     ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
     [
       signedMessageParams.lsp6Version,
@@ -173,9 +173,9 @@ export async function signLSP6ExecuteRelayCall(
     ],
   );
 
-  let eip191Signer = new EIP191Signer();
+  const eip191Signer = new EIP191Signer();
 
-  let { signature } = await eip191Signer.signDataWithIntendedValidator(
+  const { signature } = await eip191Signer.signDataWithIntendedValidator(
     _keyManager.address,
     encodedMessage,
     _signerPrivateKey,

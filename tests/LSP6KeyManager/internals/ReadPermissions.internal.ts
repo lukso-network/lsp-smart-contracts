@@ -136,7 +136,7 @@ export const testReadingPermissionsInternals = (
     });
 
     it('Should return true when checking if has permission SETDATA', async () => {
-      let appPermissions = await context.keyManagerInternalTester.getPermissionsFor(
+      const appPermissions = await context.keyManagerInternalTester.getPermissionsFor(
         addressCanSetData.address,
       );
 
@@ -210,7 +210,7 @@ export const testReadingPermissionsInternals = (
     });
 
     it("Value should be 5 for key 'AddressPermissions[]'", async () => {
-      let result = await context.universalProfile.getData(
+      const result = await context.universalProfile.getData(
         ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
       );
       expect(result).to.equal('0x05');

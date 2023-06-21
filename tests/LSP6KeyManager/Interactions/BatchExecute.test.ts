@@ -64,7 +64,7 @@ export const shouldBehaveLikeBatchExecute = (
 
   describe('example scenarios', () => {
     it('should send LYX to 3x different addresses', async () => {
-      const { universalProfile, owner } = context;
+      const { universalProfile } = context;
 
       const recipients = [
         context.accounts[1].address,
@@ -212,7 +212,7 @@ export const shouldBehaveLikeBatchExecute = (
       const futureTokenAddress = await context.keyManager
         .connect(context.owner)
         .callStatic.execute(lsp7ProxyDeploymentPayload);
-      let futureTokenInstance = await new LSP7MintableInit__factory(context.accounts[0]).attach(
+      const futureTokenInstance = await new LSP7MintableInit__factory(context.accounts[0]).attach(
         futureTokenAddress,
       );
 
@@ -695,9 +695,11 @@ export const shouldBehaveLikeBatchExecute = (
             ]),
           ];
 
-          let tx = await context.keyManager.connect(context.owner).executeBatch(values, payloads, {
-            value: totalValues,
-          });
+          const tx = await context.keyManager
+            .connect(context.owner)
+            .executeBatch(values, payloads, {
+              value: totalValues,
+            });
 
           await expect(tx).to.changeEtherBalances(
             [context.universalProfile.address, firstRecipient, secondRecipient, thirdRecipient],

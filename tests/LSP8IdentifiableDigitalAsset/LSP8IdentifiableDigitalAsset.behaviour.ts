@@ -55,7 +55,7 @@ const neverMintedTokenId = tokenIdAsBytes32(1010110);
 
 export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext>) => {
   let context: LSP8TestContext;
-  let expectedTotalSupply: number = 0;
+  let expectedTotalSupply = 0;
 
   before(async () => {
     context = await buildContext();

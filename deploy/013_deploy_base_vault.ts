@@ -9,14 +9,11 @@ const deployBaseVault: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
-  const deployResult = await deploy('LSP9VaultInit', {
+  await deploy('LSP9VaultInit', {
     from: owner,
     log: true,
     gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei
   });
-
-  const LSP9VaultInit = await ethers.getContractFactory('LSP9VaultInit');
-  const vaultInit = await LSP9VaultInit.attach(deployResult.address);
 };
 
 export default deployBaseVault;
