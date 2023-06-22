@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: 🏗️ Build contract artifacts
-        run: npm run build --if-present
+        run: npx hardhat compile
 
       - name: 🧪 Run Benchmark tests
         run: npm run test:benchmark
