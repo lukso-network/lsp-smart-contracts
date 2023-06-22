@@ -2,14 +2,18 @@
 pragma solidity ^0.8.4;
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {AddressRegistry} from "./AddressRegistry.sol";
 
 // constants
-import {_INTERFACEID_ERC725Y} from "@erc725/smart-contracts/contracts/constants.sol";
+import {
+    _INTERFACEID_ERC725Y
+} from "@erc725/smart-contracts/contracts/constants.sol";
 
 contract AddressRegistryRequiresERC725 is AddressRegistry {
     using EnumerableSet for EnumerableSet.AddressSet;

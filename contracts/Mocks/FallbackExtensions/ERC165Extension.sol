@@ -9,7 +9,9 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 contract ERC165Extension is IERC165 {
     bytes4 private constant _RANDOM_INTERFACE_ID = 0xaabbccdd;
 
-    function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual returns (bool) {
         return interfaceId == _RANDOM_INTERFACE_ID;
     }
 }

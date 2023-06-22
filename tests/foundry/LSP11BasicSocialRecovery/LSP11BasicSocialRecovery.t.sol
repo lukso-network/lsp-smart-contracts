@@ -33,7 +33,9 @@ contract LSP11BasicSocialRecoveryTests is Test {
         );
     }
 
-    function testShouldNotRevertWithCorrectSecret(string memory plainSecret) public {
+    function testShouldNotRevertWithCorrectSecret(
+        string memory plainSecret
+    ) public {
         address recoverer = vm.addr(3);
         uint256 currentRecoveryCounter = 1;
         bytes32 newHash = keccak256(abi.encodePacked("newHash"));

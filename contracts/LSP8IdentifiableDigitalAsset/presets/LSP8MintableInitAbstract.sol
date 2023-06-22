@@ -21,7 +21,11 @@ abstract contract LSP8MintableInitAbstract is
         string memory symbol_,
         address newOwner_
     ) internal virtual override onlyInitializing {
-        LSP8IdentifiableDigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_);
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_
+        );
     }
 
     /**

@@ -5,7 +5,9 @@ pragma solidity ^0.8.4;
 import {ILSP14Ownable2Step} from "./ILSP14Ownable2Step.sol";
 
 // modules
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {
+    OwnableUnset
+} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 // libraries
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
@@ -69,7 +71,10 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         address currentOwner = owner();
         emit OwnershipTransferStarted(currentOwner, newOwner);
 
-        newOwner.tryNotifyUniversalReceiver(_TYPEID_LSP14_OwnershipTransferStarted, "");
+        newOwner.tryNotifyUniversalReceiver(
+            _TYPEID_LSP14_OwnershipTransferStarted,
+            ""
+        );
         require(
             currentOwner == owner(),
             "LSP14: newOwner MUST accept ownership in a separate transaction"
@@ -129,7 +134,10 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
      * @dev set the pending owner of the contract as the new owner.
      */
     function _acceptOwnership() internal virtual {
-        require(msg.sender == pendingOwner(), "LSP14: caller is not the pendingOwner");
+        require(
+            msg.sender == pendingOwner(),
+            "LSP14: caller is not the pendingOwner"
+        );
 
         _setOwner(msg.sender);
         delete _pendingOwner;
@@ -148,7 +156,10 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
 
         // On the creation of a new network, `currentBlock` will be smaller than `confirmationPeriodEnd`,
         // `_renounceOwnershipStartedAt == 0` will indicate that a renounceOwnership call is happening for the first time
-        if (currentBlock > confirmationPeriodEnd || _renounceOwnershipStartedAt == 0) {
+        if (
+            currentBlock > confirmationPeriodEnd ||
+            _renounceOwnershipStartedAt == 0
+        ) {
             _renounceOwnershipStartedAt = currentBlock;
             delete _pendingOwner;
             emit RenounceOwnershipStarted();
@@ -156,7 +167,10 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         }
 
         if (currentBlock < confirmationPeriodStart) {
-            revert NotInRenounceOwnershipInterval(confirmationPeriodStart, confirmationPeriodEnd);
+            revert NotInRenounceOwnershipInterval(
+                confirmationPeriodStart,
+                confirmationPeriodEnd
+            );
         }
 
         _setOwner(address(0));

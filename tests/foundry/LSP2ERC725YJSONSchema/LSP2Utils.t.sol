@@ -27,7 +27,9 @@ contract LSP2UtilsTests is Test {
         }
     }
 
-    function testArrayElementKeyAtIndexShouldAllowedOverwrite(uint128 index) public pure {
+    function testArrayElementKeyAtIndexShouldAllowedOverwrite(
+        uint128 index
+    ) public pure {
         bytes32 arrayKey = keccak256(abi.encodePacked("test"));
         uint256 uniqueIndex = 1;
         if (index == uniqueIndex) {
@@ -131,15 +133,21 @@ contract LSP2UtilsTests is Test {
         );
 
         assertEq32(
-            bytes32(abi.encodePacked(keyPrefix, mapPrefix, bytes2(0), subMapKey)),
+            bytes32(
+                abi.encodePacked(keyPrefix, mapPrefix, bytes2(0), subMapKey)
+            ),
             lsp2Generated
         );
     }
 
-    function _generateRandomBytes(uint256 length) private view returns (bytes memory) {
+    function _generateRandomBytes(
+        uint256 length
+    ) private view returns (bytes memory) {
         bytes memory b = new bytes(length);
         for (uint256 i = 0; i < length; i++) {
-            b[i] = bytes1(uint8(uint256(keccak256(abi.encodePacked(block.timestamp, i)))));
+            b[i] = bytes1(
+                uint8(uint256(keccak256(abi.encodePacked(block.timestamp, i))))
+            );
         }
         return b;
     }

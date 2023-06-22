@@ -15,7 +15,12 @@ abstract contract LSP6OwnershipModule {
         address controllerAddress,
         bytes32 controllerPermissions
     ) internal pure {
-        if (!LSP6Utils.hasPermission(controllerPermissions, _PERMISSION_CHANGEOWNER)) {
+        if (
+            !LSP6Utils.hasPermission(
+                controllerPermissions,
+                _PERMISSION_CHANGEOWNER
+            )
+        ) {
             string memory permissionErrorString = LSP6Utils.getPermissionName(
                 _PERMISSION_CHANGEOWNER
             );

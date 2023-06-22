@@ -6,19 +6,29 @@ pragma solidity ^0.8.4;
 import {ILSP7Mintable} from "./ILSP7Mintable.sol";
 
 // modules
-import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
+import {
+    LSP7DigitalAssetInitAbstract
+} from "../LSP7DigitalAssetInitAbstract.sol";
 
 /**
  * @dev LSP7 extension, mintable.
  */
-abstract contract LSP7MintableInitAbstract is LSP7DigitalAssetInitAbstract, ILSP7Mintable {
+abstract contract LSP7MintableInitAbstract is
+    LSP7DigitalAssetInitAbstract,
+    ILSP7Mintable
+{
     function _initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_,
         bool isNonDivisible_
     ) internal virtual override onlyInitializing {
-        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, isNonDivisible_);
+        LSP7DigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            isNonDivisible_
+        );
     }
 
     /**

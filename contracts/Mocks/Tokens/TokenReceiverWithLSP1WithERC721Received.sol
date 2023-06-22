@@ -2,11 +2,17 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {ERC721Holder} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
-import {ILSP1UniversalReceiver} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import {
+    ERC721Holder
+} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
+import {
+    ILSP1UniversalReceiver
+} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
 // modules
-import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import {
+    ERC165Storage
+} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // constants
 import {_INTERFACEID_LSP1} from "../../LSP1UniversalReceiver/LSP1Constants.sol";

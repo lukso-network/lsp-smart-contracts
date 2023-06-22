@@ -11,7 +11,9 @@ contract GenericExecutor {
         bytes memory data
     ) public returns (bytes memory result) {
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, bytes memory returnData) = target.call{value: value}(data);
+        (bool success, bytes memory returnData) = target.call{value: value}(
+            data
+        );
         result = _verifyCallResult(success, returnData, "Unknown Error");
     }
 
@@ -27,7 +29,10 @@ contract GenericExecutor {
         }
     }
 
-    function _revert(bytes memory returndata, string memory errorMessage) private pure {
+    function _revert(
+        bytes memory returndata,
+        string memory errorMessage
+    ) private pure {
         // Look for revert reason and bubble it up if present
         if (returndata.length > 0) {
             // The easiest way to bubble the revert reason is using memory via assembly

@@ -25,7 +25,11 @@ interface ILSP7CompatibleERC20 is ILSP7DigitalAsset {
      * @param spender The account receiving approval
      * @param value The amount of tokens `spender` has access to from `owner`
      */
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
 
     /*
      * @dev Compatible with ERC20 transfer
@@ -40,7 +44,11 @@ interface ILSP7CompatibleERC20 is ILSP7DigitalAsset {
      * @param to The receiving address
      * @param amount The amount of tokens to transfer
      */
-    function transferFrom(address from, address to, uint256 amount) external returns (bool);
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) external returns (bool);
 
     /*
      * @dev Compatible with ERC20 approve
@@ -55,5 +63,8 @@ interface ILSP7CompatibleERC20 is ILSP7DigitalAsset {
      * @param operator The address approved by the `tokenOwner`
      * @return The amount `operator` is approved by `tokenOwner`
      */
-    function allowance(address tokenOwner, address operator) external view returns (uint256);
+    function allowance(
+        address tokenOwner,
+        address operator
+    ) external view returns (uint256);
 }

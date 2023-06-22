@@ -3,10 +3,16 @@ pragma solidity ^0.8.4;
 
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {
+    IERC725X
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
-import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import {
+    ILSP1UniversalReceiver
+} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 
 /**
@@ -58,5 +64,7 @@ interface ILSP0ERC725Account {
      * @param data An array of ABI encoded function calls to be called on the contract.
      * @return results An array of values returned by the executed functions.
      */
-    function batchCalls(bytes[] calldata data) external returns (bytes[] memory results);
+    function batchCalls(
+        bytes[] calldata data
+    ) external returns (bytes[] memory results);
 }

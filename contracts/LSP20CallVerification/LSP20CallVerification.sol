@@ -20,9 +20,16 @@ abstract contract LSP20CallVerification {
      * Reverts in case the value returned does not match the magic value (lsp20VerifyCall selector)
      * Returns whether a verification after the execution should happen based on the last byte of the magicValue
      */
-    function _verifyCall(address logicVerifier) internal virtual returns (bool verifyAfter) {
+    function _verifyCall(
+        address logicVerifier
+    ) internal virtual returns (bool verifyAfter) {
         (bool success, bytes memory returnedData) = logicVerifier.call(
-            abi.encodeWithSelector(ILSP20.lsp20VerifyCall.selector, msg.sender, msg.value, msg.data)
+            abi.encodeWithSelector(
+                ILSP20.lsp20VerifyCall.selector,
+                msg.sender,
+                msg.value,
+                msg.data
+            )
         );
 
         _validateCall(false, success, returnedData);
@@ -39,7 +46,10 @@ abstract contract LSP20CallVerification {
      * @dev Calls {lsp20VerifyCallResult} function on the logicVerifier.
      * Reverts in case the value returned does not match the magic value (lsp20VerifyCallResult selector)
      */
-    function _verifyCallResult(address logicVerifier, bytes memory callResult) internal virtual {
+    function _verifyCallResult(
+        address logicVerifier,
+        bytes memory callResult
+    ) internal virtual {
         (bool success, bytes memory returnedData) = logicVerifier.call(
             abi.encodeWithSelector(
                 ILSP20.lsp20VerifyCallResult.selector,
@@ -50,17 +60,25 @@ abstract contract LSP20CallVerification {
 
         _validateCall(true, success, returnedData);
 
-        if (abi.decode(returnedData, (bytes4)) != ILSP20.lsp20VerifyCallResult.selector)
-            revert LSP20InvalidMagicValue(true, returnedData);
+        if (
+            abi.decode(returnedData, (bytes4)) !=
+            ILSP20.lsp20VerifyCallResult.selector
+        ) revert LSP20InvalidMagicValue(true, returnedData);
     }
 
-    function _validateCall(bool postCall, bool success, bytes memory returnedData) internal pure {
+    function _validateCall(
+        bool postCall,
+        bool success,
+        bytes memory returnedData
+    ) internal pure {
         if (!success) _revert(postCall, returnedData);
 
         // check if the returned data contains at least 32 bytes, potentially an abi encoded bytes4 value
         // check if the returned data has in the first 32 bytes an abi encoded bytes4 value
-        if (returnedData.length < 32 || bytes28(bytes32(returnedData) << 32) != bytes28(0))
-            revert LSP20InvalidMagicValue(postCall, returnedData);
+        if (
+            returnedData.length < 32 ||
+            bytes28(bytes32(returnedData) << 32) != bytes28(0)
+        ) revert LSP20InvalidMagicValue(postCall, returnedData);
     }
 
     function _revert(bool postCall, bytes memory returnedData) internal pure {

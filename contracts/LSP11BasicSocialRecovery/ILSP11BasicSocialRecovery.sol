@@ -101,7 +101,9 @@ interface ILSP11BasicSocialRecovery {
      * @param guardian the address of a guardian to query his selection
      * @return the address that `guardian` selected
      */
-    function getGuardianChoice(address guardian) external view returns (address);
+    function getGuardianChoice(
+        address guardian
+    ) external view returns (address);
 
     /**
      * @dev Adds a guardian of the target

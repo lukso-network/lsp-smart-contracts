@@ -3,8 +3,12 @@ pragma solidity ^0.8.4;
 
 // modules
 import {LSP0ERC725AccountCore} from "./LSP0ERC725AccountCore.sol";
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {
+    Initializable
+} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {
+    OwnableUnset
+} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 /**
  * @title Inheritable Proxy Implementation of LSP0-ERC725Account Standard
@@ -37,7 +41,10 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
  * - Verifying calls on the owner to allow unified and standard interaction with the account using LSP20
  *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-20-CallVerification.md
  */
-abstract contract LSP0ERC725AccountInitAbstract is Initializable, LSP0ERC725AccountCore {
+abstract contract LSP0ERC725AccountInitAbstract is
+    Initializable,
+    LSP0ERC725AccountCore
+{
     /**
      * @dev Set `initialOwner` as the contract owner. ERC725X & ERC725Y parent contracts
      * are not initialised as they don't have non-zero initial state.
@@ -49,7 +56,9 @@ abstract contract LSP0ERC725AccountInitAbstract is Initializable, LSP0ERC725Acco
      *
      * @param initialOwner the owner of the contract
      */
-    function _initialize(address initialOwner) internal virtual onlyInitializing {
+    function _initialize(
+        address initialOwner
+    ) internal virtual onlyInitializing {
         if (msg.value != 0) {
             emit ValueReceived(msg.sender, msg.value);
         }

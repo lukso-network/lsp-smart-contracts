@@ -2,9 +2,13 @@
 pragma solidity ^0.8.12;
 
 // modules
-import {LSP7CompatibleERC20InitAbstract} from "../extensions/LSP7CompatibleERC20InitAbstract.sol";
+import {
+    LSP7CompatibleERC20InitAbstract
+} from "../extensions/LSP7CompatibleERC20InitAbstract.sol";
 
-contract LSP7CompatibleERC20MintableInitAbstract is LSP7CompatibleERC20InitAbstract {
+contract LSP7CompatibleERC20MintableInitAbstract is
+    LSP7CompatibleERC20InitAbstract
+{
     /**
      * @inheritdoc LSP7CompatibleERC20InitAbstract
      */

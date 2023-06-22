@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {
+    OwnableUnset
+} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {LSP9VaultCore} from "./LSP9VaultCore.sol";
 
 // libraries
@@ -33,7 +35,10 @@ contract LSP9Vault is LSP9VaultCore {
         OwnableUnset._setOwner(newOwner);
 
         // set key SupportedStandards:LSP9Vault
-        _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
+        _setData(
+            _LSP9_SUPPORTED_STANDARDS_KEY,
+            _LSP9_SUPPORTED_STANDARDS_VALUE
+        );
 
         newOwner.tryNotifyUniversalReceiver(
             _TYPEID_LSP9_OwnershipTransferred_RecipientNotification,

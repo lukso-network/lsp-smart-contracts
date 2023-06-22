@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP0ERC725AccountInitAbstract} from "./LSP0ERC725AccountInitAbstract.sol";
+import {
+    LSP0ERC725AccountInitAbstract
+} from "./LSP0ERC725AccountInitAbstract.sol";
 
 /**
  * @title Deployable Proxy Implementation of LSP0-ERC725Account Standard
@@ -57,7 +59,9 @@ contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract {
      *
      * @param initialOwner the owner of the contract
      */
-    function initialize(address initialOwner) external payable virtual initializer {
+    function initialize(
+        address initialOwner
+    ) external payable virtual initializer {
         LSP0ERC725AccountInitAbstract._initialize(initialOwner);
     }
 }
