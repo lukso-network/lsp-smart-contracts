@@ -237,7 +237,7 @@ describe('LSP2Utils', () => {
       });
 
       it("should return false if the byte length of the last element is invalid and points 'too far'", async () => {
-        let data = '0x02aabb05112233445520cafecafe';
+        const data = '0x02aabb05112233445520cafecafe';
         const result = await lsp2Utils.isCompactBytesArray(data);
         expect(result).to.be.false;
       });

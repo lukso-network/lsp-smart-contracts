@@ -24,7 +24,7 @@ jobs:
         run: npm ci
 
       - name: NPM build
-        run: npm run build
+        run: npm run build --if-present
 
       - name: Run Foundry tests
         run: npm run test:foundry

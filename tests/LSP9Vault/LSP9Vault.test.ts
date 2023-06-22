@@ -35,9 +35,7 @@ describe('LSP9Vault with constructor', () => {
       value: initialFunding,
     });
 
-    const [UP1, KM1, lsp1universalReceiverDelegateUP] = await setupProfileWithKeyManagerWithURD(
-      accounts.owner,
-    );
+    const [UP1, KM1] = await setupProfileWithKeyManagerWithURD(accounts.owner);
 
     const universalProfile = UP1 as UniversalProfile;
     const lsp6KeyManager = KM1 as LSP6KeyManager;
@@ -101,7 +99,7 @@ describe('LSP9Vault with constructor', () => {
   describe('when deploying the contract', () => {
     describe('when initializing the contract', () => {
       shouldInitializeLikeLSP9(async () => {
-        let context = await buildTestContext();
+        const context = await buildTestContext();
         const { lsp9Vault, deployParams } = context;
 
         return {

@@ -26,7 +26,6 @@ import { LSP6TestContext } from './utils/context';
 import { setupKeyManager, setupProfileWithKeyManagerWithURD } from './utils/fixtures';
 import { combineAllowedCalls, combinePermissions, encodeCompactBytesArray } from './utils/helpers';
 import { BigNumber } from 'ethers';
-import { token } from '../types/@openzeppelin/contracts';
 
 export type UniversalProfileContext = {
   accounts: SignerWithAddress[];
@@ -77,9 +76,9 @@ let restrictedControllerSetDataTable;
 describe('⛽📊 Gas Benchmark', () => {
   describe('UniversalProfile', () => {
     let context: UniversalProfileContext;
-    let executeUP: Row[] = [];
-    let setDataUP: Row[] = [];
-    let tokensUP: Row[] = [];
+    const executeUP: Row[] = [];
+    const setDataUP: Row[] = [];
+    const tokensUP: Row[] = [];
 
     describe('execute', () => {
       describe('execute Single', () => {
@@ -299,8 +298,8 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set a 20 bytes long value', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-          let value = generateRandomData(20);
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+          const value = generateRandomData(20);
 
           const tx = await context.universalProfile.setData(key, value);
 
@@ -310,8 +309,8 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set a 60 bytes long value', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Other Key'));
-          let value = generateRandomData(60);
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Other Key'));
+          const value = generateRandomData(60);
 
           const tx = await context.universalProfile.setData(key, value);
 
@@ -321,8 +320,8 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set a 160 bytes long value', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Third Key'));
-          let value = generateRandomData(160);
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Third Key'));
+          const value = generateRandomData(160);
 
           const tx = await context.universalProfile.setData(key, value);
 
@@ -332,8 +331,8 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set a 300 bytes long value', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fourth Key'));
-          let value = generateRandomData(300);
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fourth Key'));
+          const value = generateRandomData(300);
 
           const tx = await context.universalProfile.setData(key, value);
 
@@ -343,8 +342,8 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set a 600 bytes long value', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fifth Key'));
-          let value = generateRandomData(600);
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fifth Key'));
+          const value = generateRandomData(600);
 
           const tx = await context.universalProfile.setData(key, value);
 
@@ -354,9 +353,9 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Change the value of a data key already set', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fifth Key'));
-          let value1 = generateRandomData(20);
-          let value2 = generateRandomData(20);
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fifth Key'));
+          const value1 = generateRandomData(20);
+          const value2 = generateRandomData(20);
 
           await context.universalProfile.setData(key, value1);
 
@@ -371,8 +370,8 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Remove the value of a data key already set', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fifth Key'));
-          let value = generateRandomData(20);
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fifth Key'));
+          const value = generateRandomData(20);
 
           await context.universalProfile.setData(key, value);
 
@@ -393,11 +392,11 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set 2 data keys of 20 bytes long value', async () => {
-          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key1'));
-          let value1 = generateRandomData(20);
+          const key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key1'));
+          const value1 = generateRandomData(20);
 
-          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key2'));
-          let value2 = generateRandomData(20);
+          const key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key2'));
+          const value2 = generateRandomData(20);
 
           const tx = await context.universalProfile.setDataBatch([key1, key2], [value1, value2]);
 
@@ -410,11 +409,11 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set 2 data keys of 100 bytes long value', async () => {
-          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key3'));
-          let value1 = generateRandomData(100);
+          const key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key3'));
+          const value1 = generateRandomData(100);
 
-          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key4'));
-          let value2 = generateRandomData(100);
+          const key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key4'));
+          const value2 = generateRandomData(100);
 
           const tx = await context.universalProfile.setDataBatch([key1, key2], [value1, value2]);
 
@@ -427,14 +426,14 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set 3 data keys of 20 bytes long value', async () => {
-          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key5'));
-          let value1 = generateRandomData(20);
+          const key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key5'));
+          const value1 = generateRandomData(20);
 
-          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key6'));
-          let value2 = generateRandomData(20);
+          const key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key6'));
+          const value2 = generateRandomData(20);
 
-          let key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key7'));
-          let value3 = generateRandomData(20);
+          const key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key7'));
+          const value3 = generateRandomData(20);
 
           const tx = await context.universalProfile.setDataBatch(
             [key1, key2, key3],
@@ -450,14 +449,14 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Change the value of three data keys already set of 20 bytes long value', async () => {
-          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key8'));
-          let value1 = generateRandomData(20);
+          const key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key8'));
+          const value1 = generateRandomData(20);
 
-          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key9'));
-          let value2 = generateRandomData(20);
+          const key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key9'));
+          const value2 = generateRandomData(20);
 
-          let key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key10'));
-          let value3 = generateRandomData(20);
+          const key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key10'));
+          const value3 = generateRandomData(20);
 
           await context.universalProfile.setDataBatch([key1, key2, key3], [value1, value2, value3]);
 
@@ -475,14 +474,14 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Remove the value of three data keys already set', async () => {
-          let key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key11'));
-          let value1 = generateRandomData(20);
+          const key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key11'));
+          const value1 = generateRandomData(20);
 
-          let key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key12'));
-          let value2 = generateRandomData(20);
+          const key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key12'));
+          const value2 = generateRandomData(20);
 
-          let key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key13'));
-          let value3 = generateRandomData(20);
+          const key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key13'));
+          const value3 = generateRandomData(20);
 
           await context.universalProfile.setDataBatch([key1, key2, key3], [value1, value2, value3]);
 
@@ -584,7 +583,7 @@ describe('⛽📊 Gas Benchmark', () => {
       });
 
       describe('LSP8IdentifiableDigitalAsset', () => {
-        let metaNFTList: string[] = [
+        const metaNFTList: string[] = [
           '0x0000000000000000000000000000000000000000000000000000000000000001',
           '0x0000000000000000000000000000000000000000000000000000000000000002',
           '0x0000000000000000000000000000000000000000000000000000000000000003',
@@ -655,7 +654,7 @@ describe('⛽📊 Gas Benchmark', () => {
   describe('KeyManager', () => {
     describe('`execute(...)` via Key Manager', () => {
       describe('main controller (this browser extension)', () => {
-        let casesExecuteMainController: Row[] = [];
+        const casesExecuteMainController: Row[] = [];
 
         let context: LSP6TestContext;
 
@@ -666,7 +665,7 @@ describe('⛽📊 Gas Benchmark', () => {
         let lsp7MetaCoin: LSP7Mintable;
         let lsp8MetaNFT: LSP8Mintable;
 
-        let nftList: string[] = [
+        const nftList: string[] = [
           '0x0000000000000000000000000000000000000000000000000000000000000001',
           '0x0000000000000000000000000000000000000000000000000000000000000002',
           '0x0000000000000000000000000000000000000000000000000000000000000003',
@@ -677,7 +676,7 @@ describe('⛽📊 Gas Benchmark', () => {
           context = await buildLSP6TestContext(ethers.utils.parseEther('50'));
 
           recipientEOA = context.accounts[1];
-          let deployedContracts = await setupProfileWithKeyManagerWithURD(context.accounts[2]);
+          const deployedContracts = await setupProfileWithKeyManagerWithURD(context.accounts[2]);
           aliceUP = deployedContracts[0] as UniversalProfile;
 
           // the function `setupKeyManager` gives ALL PERMISSIONS
@@ -842,7 +841,7 @@ describe('⛽📊 Gas Benchmark', () => {
       });
 
       describe('controllers with some restrictions', () => {
-        let casesExecuteRestrictedController: Row[] = [];
+        const casesExecuteRestrictedController: Row[] = [];
         let context: LSP6TestContext;
 
         let recipientEOA: SignerWithAddress;
@@ -877,7 +876,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           recipientEOA = context.accounts[1];
 
-          let deployedContracts = await setupProfileWithKeyManagerWithURD(context.accounts[2]);
+          const deployedContracts = await setupProfileWithKeyManagerWithURD(context.accounts[2]);
           aliceUP = deployedContracts[0] as UniversalProfile;
 
           // LYX transfer scenarios
@@ -1139,7 +1138,7 @@ describe('⛽📊 Gas Benchmark', () => {
       });
 
       describe('main controller (this browser extension) has SUPER_SETDATA ', () => {
-        let benchmarkCasesSetDataMainController: Row[] = [];
+        const benchmarkCasesSetDataMainController: Row[] = [];
 
         it('updates profile details (LSP3Profile metadata)', async () => {
           const dataKey = ERC725YDataKeys.LSP3['LSP3Profile'];
@@ -1182,11 +1181,11 @@ describe('⛽📊 Gas Benchmark', () => {
             combinePermissions(PERMISSIONS.SETDATA),
           ];
 
-          let tx = await context.universalProfile
+          const tx = await context.universalProfile
             .connect(context.owner)
             .setDataBatch(dataKeys, dataValues);
 
-          let receipt = await tx.wait();
+          const receipt = await tx.wait();
 
           expect(await context.universalProfile.getDataBatch(dataKeys)).to.deep.equal(dataValues);
 
@@ -1212,11 +1211,11 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const dataValue = encodeCompactBytesArray([allowedDataKeys[0], allowedDataKeys[1], allowedDataKeys[2]])
 
-          let tx = await context.universalProfile
+          const tx = await context.universalProfile
             .connect(context.owner)
             .setData(dataKey, dataValue);
 
-          let receipt = await tx.wait();
+          const receipt = await tx.wait();
 
           expect(await context.universalProfile.getData(dataKey)).to.equal(dataValue);
 
@@ -1245,11 +1244,11 @@ describe('⛽📊 Gas Benchmark', () => {
             ['0xffffffff', '0xffffffff', '0xffffffff'],
           );
 
-          let tx = await context.universalProfile
+          const tx = await context.universalProfile
             .connect(context.owner)
             .setData(dataKey, dataValue);
 
-          let receipt = await tx.wait();
+          const receipt = await tx.wait();
 
           expect(await context.universalProfile.getData(dataKey)).to.equal(dataValue);
 
@@ -1284,11 +1283,11 @@ describe('⛽📊 Gas Benchmark', () => {
             "0x",
           ];
 
-          let tx = await context.universalProfile
+          const tx = await context.universalProfile
             .connect(context.owner)
             .setDataBatch(dataKeys, dataValues);
 
-          let receipt = await tx.wait();
+          const receipt = await tx.wait();
 
           benchmarkCasesSetDataMainController.push([
             'remove a controller (its permissions + its address from the AddressPermissions[] array)',
@@ -1318,11 +1317,11 @@ describe('⛽📊 Gas Benchmark', () => {
             context.accounts[9].address,
           ];
 
-          let tx = await context.universalProfile
+          const tx = await context.universalProfile
             .connect(context.owner)
             .setDataBatch(issuedAssetsDataKeys, issuedAssetsDataValues);
 
-          let receipt = await tx.wait();
+          const receipt = await tx.wait();
 
           expect(await context.universalProfile.getDataBatch(issuedAssetsDataKeys)).to.deep.equal(
             issuedAssetsDataValues,
@@ -1346,7 +1345,7 @@ describe('⛽📊 Gas Benchmark', () => {
       });
 
       describe('a controller (EOA) can SETDATA, ADDCONTROLLER and on 10x AllowedERC725YKeys', () => {
-        let benchmarkCasesSetDataRestrictedController: Row[] = [];
+        const benchmarkCasesSetDataRestrictedController: Row[] = [];
 
         it('`setData(bytes32,bytes)` -> updates 1x data key', async () => {
           const dataKey = allowedERC725YDataKeys[5];

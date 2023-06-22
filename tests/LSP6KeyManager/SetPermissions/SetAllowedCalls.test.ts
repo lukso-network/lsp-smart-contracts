@@ -34,7 +34,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       invalidBytes = context.accounts[4];
       noBytes = context.accounts[5];
 
-      let permissionKeys = [
+      const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -46,7 +46,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + noBytes.address.substring(2),
       ];
 
-      let permissionValues = [
+      const permissionValues = [
         PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.EDITPERMISSIONS,
         PERMISSIONS.CALL,
@@ -125,7 +125,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       zero32Bytes = context.accounts[5];
       zero40Bytes = context.accounts[6];
 
-      let permissionKeys = [
+      const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -137,7 +137,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + zero40Bytes.address.substring(2),
       ];
 
-      let permissionValues = [
+      const permissionValues = [
         PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.EDITPERMISSIONS,
         combineAllowedCalls(
@@ -160,11 +160,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
     describe('when caller has permission ADDCONTROLLER', () => {
       it('should fail when trying to edit existing allowed addresses for an address', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           beneficiary.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             '0xcafecafecafecafecafecafecafecafecafecafe',
@@ -174,7 +174,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -185,13 +185,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       });
 
       it('should fail with NotAuthorised -> when beneficiary address had an invalid bytes28[CompatBytesArray]', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           invalidBeneficiary.address.substring(2);
 
         // try to set for the invalidBeneficiary some allowed calls
         // that allow it to transfer value to addresses 0xcafe... and 0xbeef...
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             '0xcafecafecafecafecafecafecafecafecafecafe',
@@ -201,7 +201,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -215,11 +215,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
        * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
        */
       it.skip('should fail with NotAuthorised -> when beneficiary had 32 x 0 bytes set initially as allowed calls', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           zero32Bytes.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             '0xcafecafecafecafecafecafecafecafecafecafe',
@@ -229,7 +229,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -243,11 +243,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
        * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
        */
       it.skip('should fail with NotAuthorised -> when beneficiary had 40 x 0 bytes set initially as allowed calls', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           zero40Bytes.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             '0xcafecafecafecafecafecafecafecafecafecafe',
@@ -257,7 +257,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -268,14 +268,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       });
 
       it('should pass when beneficiary had no values set under AddressPermissions:AllowedCalls:... + setting a valid bytes28[CompactBytesArray]', async () => {
-        let newController = ethers.Wallet.createRandom();
+        const newController = ethers.Wallet.createRandom();
 
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + newController.address.substr(2);
 
         // set for the newController some allowed calls
         // that allow it to transfer value to addresses 0xcafe... and 0xbeef...
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             '0xcafecafecafecafecafecafecafecafecafecafe',
@@ -285,7 +285,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -299,15 +299,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
       describe('when setting an invalid bytes28[CompactBytesArray] for a new beneficiary', () => {
         it('should revert with error when value = random bytes', async () => {
-          let newController = ethers.Wallet.createRandom();
+          const newController = ethers.Wallet.createRandom();
 
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             newController.address.substr(2);
 
-          let value = '0xbadbadbadbad';
+          const value = '0xbadbadbadbad';
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -318,15 +318,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         });
 
         it('should revert with error when value = invalid bytes28[CompactBytesArray] (not enough bytes, missing the first length bytes)', async () => {
-          let newController = ethers.Wallet.createRandom();
+          const newController = ethers.Wallet.createRandom();
 
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             newController.address.substr(2);
 
-          let value = '0x00000001cafecafecafecafecafecafecafecafecafecafeffffffffffffffff';
+          const value = '0x00000001cafecafecafecafecafecafecafecafecafecafeffffffffffffffff';
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -340,14 +340,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
     describe('when caller has permission EDITPERMISSIONS', () => {
       it('should fail when beneficiary had no values set under AddressPermissions:AllowedCalls:...', async () => {
-        let newController = ethers.Wallet.createRandom();
+        const newController = ethers.Wallet.createRandom();
 
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + newController.address.substr(2);
 
         // try to set for the newController some allowed calls
         // that allow it to transfer value to addresses 0xcafe... and 0xbeef...
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             '0xcafecafecafecafecafecafecafecafecafecafe',
@@ -357,7 +357,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -368,14 +368,14 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       });
 
       it('should pass when trying to edit existing allowed addresses for an address', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           beneficiary.address.substring(2);
 
         // edit the allowed calls of the beneficiary
         // still transfering values to 2 x addresses
         // change 2nd address 0xbeef... to 0xf00d...
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             '0xcafecafecafecafecafecafecafecafecafecafe',
@@ -385,7 +385,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -398,12 +398,12 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       });
 
       it('should pass when address had an invalid bytes28[CompactBytesArray] initially', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           invalidBeneficiary.address.substring(2);
 
         // set some allowed calls for the beneficiary
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             '0xcafecafecafecafecafecafecafecafecafecafe',
@@ -413,7 +413,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -429,11 +429,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
        * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
        */
       it.skip('should pass when address had 32 x 0 bytes set initially as allowed calls', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           zero32Bytes.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             '0xcafecafecafecafecafecafecafecafecafecafe',
@@ -443,7 +443,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -459,11 +459,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
        * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
        */
       it.skip('should pass when address had 40 x 0 bytes set initially as allowed addresses', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           zero40Bytes.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             '0xcafecafecafecafecafecafecafecafecafecafe',
@@ -473,7 +473,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -487,13 +487,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
       describe('when changing the list of allowed calls from existing ANY:<address>:ANY to an invalid value', () => {
         it('should revert with error when value = random bytes', async () => {
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             beneficiary.address.substring(2);
 
-          let value = '0xbadbadbadbad';
+          const value = '0xbadbadbadbad';
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -504,13 +504,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         });
 
         it('should revert with error when value = invalid bytes28[CompactBytesArray] (not enough bytes, missing the first length byte)', async () => {
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             beneficiary.address.substring(2);
 
-          let value = '0x00000001cafecafecafecafecafecafecafecafecafecafeffffffffffffffff';
+          const value = '0x00000001cafecafecafecafecafecafecafecafecafecafeffffffffffffffff';
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -542,7 +542,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       zero32Bytes = context.accounts[5];
       zero40Bytes = context.accounts[6];
 
-      let permissionKeys = [
+      const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -554,7 +554,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + zero40Bytes.address.substring(2),
       ];
 
-      let permissionValues = [
+      const permissionValues = [
         PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.EDITPERMISSIONS,
         combineAllowedCalls(
@@ -576,11 +576,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
     describe('when caller has permission ADDCONTROLLER', () => {
       it('should fail when trying to edit existing allowed functions for an address', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           beneficiary.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           // allow beneficiary to make a CALL to only function selectors 0xcafecafe and 0xf00df00d
           [CALLTYPE.CALL, CALLTYPE.CALL],
           [
@@ -591,7 +591,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xcafecafe', '0xf00df00d'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -602,11 +602,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       });
 
       it('should fail with NotAuthorised -> when beneficiary address had an invalid bytes28[CompactBytesArray] initially', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           invalidBeneficiary.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           // allow beneficiary to make a CALL to only function selectors 0xcafecafe and 0xf00df00d
           [CALLTYPE.CALL, CALLTYPE.CALL],
           [
@@ -617,7 +617,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xcafecafe', '0xf00df00d'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -631,11 +631,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
        * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
        */
       it.skip('should fail with NotAuthorised -> when beneficiary had 32 x 0 bytes set initially as allowed calls', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           zero32Bytes.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             '0xffffffffffffffffffffffffffffffffffffffff',
@@ -645,7 +645,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xcafecafe', '0xca11ca11'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -659,11 +659,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
        * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
        */
       it.skip('should fail with NotAuthorised -> when beneficiary had 40 x 0 bytes set initially as allowed calls', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           zero40Bytes.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             '0xffffffffffffffffffffffffffffffffffffffff',
@@ -673,7 +673,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xcafecafe', '0xca11ca11'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -684,12 +684,12 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       });
 
       it('should pass when beneficiary had no values set under AddressPermissions:AllowedCalls:... + setting a valid bytes28[CompactBytesArray]', async () => {
-        let newController = ethers.Wallet.createRandom();
+        const newController = ethers.Wallet.createRandom();
 
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + newController.address.substr(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           // allow beneficiary to CALL only function selectors 0xcafecafe and 0xf00df00d
           [CALLTYPE.CALL, CALLTYPE.CALL],
           [
@@ -700,7 +700,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xcafecafe', '0xf00df00d'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -714,15 +714,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
       describe('when setting an invalid bytes28[CompactBytesArray] for a new beneficiary', () => {
         it('should fail when setting an invalid bytes28[CompactBytesArray] (= random bytes)', async () => {
-          let newController = ethers.Wallet.createRandom();
+          const newController = ethers.Wallet.createRandom();
 
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             newController.address.substr(2);
 
-          let value = '0xbadbadbadbad';
+          const value = '0xbadbadbadbad';
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -733,15 +733,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         });
 
         it('should fail when setting an invalid bytes28[CompactBytesArray] (not enough bytes, missing first length byte)', async () => {
-          let newController = ethers.Wallet.createRandom();
+          const newController = ethers.Wallet.createRandom();
 
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             newController.address.substr(2);
 
-          let value = '0x00000002ffffffffffffffffffffffffffffffffffffffffffffffffcafecafe';
+          const value = '0x00000002ffffffffffffffffffffffffffffffffffffffffffffffffcafecafe';
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -755,12 +755,12 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
     describe('when caller has EDITPERMISSIONS', () => {
       it('should fail when beneficiary had no values set under AddressPermissions:AllowedCalls:...', async () => {
-        let newController = ethers.Wallet.createRandom();
+        const newController = ethers.Wallet.createRandom();
 
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + newController.address.substr(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           // allow beneficiary to CALL only function selectors 0xcafecafe and 0xbeefbeef
           [CALLTYPE.CALL, CALLTYPE.CALL],
           [
@@ -771,7 +771,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xcafecafe', '0xbeefbeef'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -782,11 +782,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       });
 
       it('should pass when trying to edit existing allowed bytes4 selectors under ANY:ANY:<selector>', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           beneficiary.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           // allow beneficiary to CALL only function selectors 0xcafecafe and 0xbeefbeef
           [CALLTYPE.CALL, CALLTYPE.CALL],
           [
@@ -797,7 +797,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xcafecafe', '0xbeefbeef'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -810,11 +810,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       });
 
       it('should pass when address had an invalid bytes28[CompactBytesArray] initially', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           invalidBeneficiary.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           // allow beneficiary to CALL only function selectors 0xcafecafe and 0xbeefbeef
           [CALLTYPE.CALL, CALLTYPE.CALL],
           [
@@ -825,7 +825,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xcafecafe', '0xbeefbeef'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -841,11 +841,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
        * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
        */
       it.skip('should pass when address had 32 x 0 bytes set initially as allowed calls', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           zero32Bytes.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             '0xffffffffffffffffffffffffffffffffffffffff',
@@ -855,7 +855,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xcafecafe', '0xbeefbeef'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -871,11 +871,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
        * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
        */
       it.skip('should pass when address had 40 x 0 bytes set initially as allowed functions', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           zero40Bytes.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             '0xffffffffffffffffffffffffffffffffffffffff',
@@ -885,7 +885,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xcafecafe', '0xbeefbeef'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -899,13 +899,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
       describe('when changing the list of selectors in allowed calls from existing ANY:ANY:<selector> to an invalid value', () => {
         it('should revert with error when value = random bytes', async () => {
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             beneficiary.address.substring(2);
 
-          let value = '0xbadbadbadbad';
+          const value = '0xbadbadbadbad';
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -916,13 +916,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         });
 
         it('should revert with error when value = invalid bytes28[CompactBytesArray] (not enough bytes, missing first length byte)', async () => {
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             beneficiary.address.substring(2);
 
-          let value = '0x00000002ffffffffffffffffffffffffffffffffffffffffffffffffcafecafe';
+          const value = '0x00000002ffffffffffffffffffffffffffffffffffffffffffffffffcafecafe';
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -954,7 +954,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       zero32Bytes = context.accounts[5];
       zero40Bytes = context.accounts[6];
 
-      let permissionKeys = [
+      const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -966,7 +966,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + zero40Bytes.address.substring(2),
       ];
 
-      let permissionValues = [
+      const permissionValues = [
         PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.EDITPERMISSIONS,
         combineAllowedCalls(
@@ -990,11 +990,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
     describe('when caller has ADDCONTROLLER', () => {
       it('should fail when trying to edit existing allowed standards for an address', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           beneficiary.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             '0xffffffffffffffffffffffffffffffffffffffff',
@@ -1014,7 +1014,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -1025,11 +1025,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       });
 
       it('should fail with NotAuthorised -> when beneficiary address had an invalid bytes28[CompactBytesArray] initially', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           invalidBeneficiary.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             '0xffffffffffffffffffffffffffffffffffffffff',
@@ -1049,7 +1049,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -1063,11 +1063,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
        * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
        */
       it.skip('should fail with NotAuthorised -> when beneficiary had 32 x 0 bytes set initially as allowed calls', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           zero32Bytes.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             '0xffffffffffffffffffffffffffffffffffffffff',
@@ -1084,7 +1084,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -1098,11 +1098,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
        * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
        */
       it.skip('should fail with NotAuthorised -> when beneficiary had 40 x 0 bytes set initially as allowed calls', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           zero40Bytes.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             '0xffffffffffffffffffffffffffffffffffffffff',
@@ -1119,7 +1119,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -1130,12 +1130,12 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       });
 
       it('should pass when beneficiary had no values set under AddressPermissions:AllowedCalls:... + setting a valid bytes28[CompactBytesArray]', async () => {
-        let newController = ethers.Wallet.createRandom();
+        const newController = ethers.Wallet.createRandom();
 
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + newController.address.substr(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             '0xffffffffffffffffffffffffffffffffffffffff',
@@ -1155,7 +1155,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -1169,15 +1169,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
       describe('when setting an invalid bytes28[CompactBytesArray] of allowed calls for a new beneficiary', () => {
         it('should fail when setting an bytes28[CompactBytesArray] (= random bytes)', async () => {
-          let newController = ethers.Wallet.createRandom();
+          const newController = ethers.Wallet.createRandom();
 
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             newController.address.substr(2);
 
-          let value = '0xbadbadbadbad';
+          const value = '0xbadbadbadbad';
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -1188,15 +1188,15 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         });
 
         it('should fail when setting an invalid bytes28[CompactBytesArray] (not enough bytes, missing first length byte)', async () => {
-          let newController = ethers.Wallet.createRandom();
+          const newController = ethers.Wallet.createRandom();
 
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             newController.address.substr(2);
 
-          let value = '0x00000002ffffffffffffffffffffffffffffffffffffffffcafecafeffffffff';
+          const value = '0x00000002ffffffffffffffffffffffffffffffffffffffffcafecafeffffffff';
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -1210,12 +1210,12 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
     describe('when caller has EDITPERMISSIONS', () => {
       it('should fail when beneficiary had no values set under AddressPermissions:AllowedCalls:...', async () => {
-        let newController = ethers.Wallet.createRandom();
+        const newController = ethers.Wallet.createRandom();
 
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + newController.address.substr(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             '0xffffffffffffffffffffffffffffffffffffffff',
@@ -1228,7 +1228,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -1239,11 +1239,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       });
 
       it('should pass when trying to edit existing allowed standards for an address', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           beneficiary.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
           [
             '0xffffffffffffffffffffffffffffffffffffffff',
@@ -1263,7 +1263,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -1276,11 +1276,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       });
 
       it('should pass when address had an invalid bytes28[CompactBytesArray] initially', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           invalidBeneficiary.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             '0xffffffffffffffffffffffffffffffffffffffff',
@@ -1290,7 +1290,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -1306,11 +1306,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
        * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
        */
       it.skip('should pass when address had 32 x 0 bytes set initially as allowed calls', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           zero32Bytes.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             '0xffffffffffffffffffffffffffffffffffffffff',
@@ -1320,7 +1320,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -1336,11 +1336,11 @@ export const shouldBehaveLikeSettingAllowedCalls = (
        * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
        */
       it.skip('should pass when address had 40 x 0 bytes set initially as allowed calls', async () => {
-        let key =
+        const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
           zero40Bytes.address.substring(2);
 
-        let value = combineAllowedCalls(
+        const value = combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL],
           [
             '0xffffffffffffffffffffffffffffffffffffffff',
@@ -1350,7 +1350,7 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
         );
 
-        let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+        const payload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
           value,
         ]);
@@ -1364,13 +1364,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
 
       describe('when changing the list of interface IDs in allowed calls <standard>:ANY:ANY to an invalid value', () => {
         it('should revert with error when value = random bytes', async () => {
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             beneficiary.address.substring(2);
 
-          let value = '0xbadbadbadbad';
+          const value = '0xbadbadbadbad';
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -1381,13 +1381,13 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         });
 
         it('should revert with error when value = invalid bytes28[CompactBytesArray] (not enough bytes, missing first length byte)', async () => {
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
             beneficiary.address.substring(2);
 
-          let value = '0x00000002ffffffffffffffffffffffffffffffffffffffffcafecafeffffffff';
+          const value = '0x00000002ffffffffffffffffffffffffffffffffffffffffcafecafeffffffff';
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setData', [
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);

@@ -41,12 +41,12 @@ export const shouldBehaveLikeLSP14 = (
     });
 
     it('should have set the pendingOwner', async () => {
-      let pendingOwner = await context.contract.pendingOwner();
+      const pendingOwner = await context.contract.pendingOwner();
       expect(pendingOwner).to.equal(newOwner.address);
     });
 
     it('owner should remain the current owner', async () => {
-      let newOwner = ethers.Wallet.createRandom();
+      const newOwner = ethers.Wallet.createRandom();
 
       const ownerBefore = await context.contract.owner();
 
@@ -60,7 +60,7 @@ export const shouldBehaveLikeLSP14 = (
     });
 
     it('should override the pendingOwner when transferOwnership(...) is called twice', async () => {
-      let overridenNewOwner = ethers.Wallet.createRandom();
+      const overridenNewOwner = ethers.Wallet.createRandom();
 
       await context.contract
         .connect(context.deployParams.owner)
@@ -138,7 +138,7 @@ export const shouldBehaveLikeLSP14 = (
 
   describe('when non-owner call transferOwnership(...)', () => {
     it('should revert', async () => {
-      let randomAddress = context.accounts[2];
+      const randomAddress = context.accounts[2];
 
       await expect(
         context.contract.connect(randomAddress).transferOwnership(randomAddress.address),
@@ -163,12 +163,12 @@ export const shouldBehaveLikeLSP14 = (
       });
 
       it('should change the contract owner to the pendingOwner', async () => {
-        let updatedOwner = await context.contract.owner();
+        const updatedOwner = await context.contract.owner();
         expect(updatedOwner).to.equal(pendingOwner);
       });
 
       it('should have cleared the pendingOwner after transferring ownership', async () => {
-        let newPendingOwner = await context.contract.pendingOwner();
+        const newPendingOwner = await context.contract.pendingOwner();
         expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
       });
 
@@ -381,7 +381,7 @@ export const shouldBehaveLikeLSP14 = (
 
         await network.provider.send('hardhat_mine', [ethers.utils.hexValue(400)]); // skip 400 blocks
 
-        let tx = await context.contract.connect(context.deployParams.owner).renounceOwnership();
+        const tx = await context.contract.connect(context.deployParams.owner).renounceOwnership();
 
         await tx.wait();
 
@@ -396,16 +396,13 @@ export const shouldBehaveLikeLSP14 = (
       });
 
       describe('when called after the delay and before the confirmation period end', () => {
-        let renounceOwnershipFirstTx: ContractTransaction;
         let renounceOwnershipSecondTx: ContractTransaction;
 
         before(async () => {
           context = await buildContext(ethers.utils.parseEther('20'));
 
           // Call renounceOwnership for the first time
-          renounceOwnershipFirstTx = await context.contract
-            .connect(context.deployParams.owner)
-            .renounceOwnership();
+          await context.contract.connect(context.deployParams.owner).renounceOwnership();
 
           // Skip 199 block to reach the time where renouncing ownership can happen
           await network.provider.send('hardhat_mine', [ethers.utils.hexValue(199)]);

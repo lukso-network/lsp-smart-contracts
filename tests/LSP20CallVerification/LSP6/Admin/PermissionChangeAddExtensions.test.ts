@@ -557,11 +557,6 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             ],
           };
 
-          let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
-            payloadParam.dataKeys,
-            payloadParam.dataValues,
-          ]);
-
           await context.universalProfile
             .connect(context.owner)
             .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
@@ -664,11 +659,6 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataKeys: [extensionHandlerKey1, extensionHandlerKey2],
             dataValues: ['0x', '0x'],
           };
-
-          let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
-            payloadParam.dataKeys,
-            payloadParam.dataValues,
-          ]);
 
           await context.universalProfile
             .connect(context.owner)
@@ -958,11 +948,6 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
                 ],
                 dataValues: [extensionA, '0xaabbccdd'],
               };
-
-              let payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
-                payloadParam.dataKeys,
-                payloadParam.dataValues,
-              ]);
 
               await context.universalProfile
                 .connect(canOnlySetData)

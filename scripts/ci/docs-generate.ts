@@ -14,7 +14,7 @@ task(TASK_COMPILE)
     "Don't generate documentation after running this task, even if runOnCompile option is enabled",
   )
   .setAction(async function (args, hre, runSuper) {
-    for (let compiler of hre.config.solidity.compilers) {
+    for (const compiler of hre.config.solidity.compilers) {
       compiler.settings.outputSelection['*']['*'].push('devdoc');
       compiler.settings.outputSelection['*']['*'].push('userdoc');
     }
@@ -37,7 +37,7 @@ function collect(items: any) {
     return undefined;
   }
   let collection;
-  for (const [sig, { hash, ...item }] of Object.entries(items) as [string, any]) {
+  for (const [, { hash, ...item }] of Object.entries(items) as [string, any]) {
     if (!collection) {
       collection = {};
     }
@@ -101,13 +101,6 @@ task('ts-gen', 'Generate NatSpec documentation automatically on compilation')
       await hre.run(TASK_COMPILE, { noDocgen: true });
     }
 
-    const config = {
-      clear: true,
-      except: [],
-    };
-
-    const output = {};
-
     const contractNames = await hre.artifacts.getAllFullyQualifiedNames();
 
     // Only generate things for items in the package
@@ -141,7 +134,7 @@ task('ts-gen', 'Generate NatSpec documentation automatically on compilation')
     let contractCount = 0;
     let userdocCount = 0;
     let devdocCount = 0;
-    for (let contractName of contractNames) {
+    for (const contractName of contractNames) {
       const [source, name] = contractName.split(':');
 
       if (!contracts.has(name)) {
@@ -261,15 +254,19 @@ task('ts-gen', 'Generate NatSpec documentation automatically on compilation')
 
       const { events = {}, methods = {}, errors = {}, stateVariables } = membersByType;
       const {
-        events: _events, // Ignore
-        errors: _errors, // Ignore
-        methods: _methods, // Ignore
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        events: _events,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        errors: _errors,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        methods: _methods,
         ...contract
       } = devdoc;
 
       const wholeContract = { ...contract, constructor, fallback, receive };
       for (const name of ['constructor', 'fallback', 'receive']) {
         if (wholeContract[name]) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { hash, ...rest } = wholeContract[name];
           wholeContract[name] = rest;
         }
@@ -294,5 +291,6 @@ export const StateVariables = ${serialize(allStateVariables)};
       ),
     );
     console.log(`Successfully generated ${devdocCount} json files in devdocs`);
+    console.log(`Successfully generated ${userdocCount} json files in userdocs`);
     console.log(`Successfully generated ./contracts.ts for ${contractCount} contracts`);
   });

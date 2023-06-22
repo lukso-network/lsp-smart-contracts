@@ -191,7 +191,7 @@ const formatCode = (code: string, type: string) => {
 const formatBulletPointsWithTitle = (textToFormat: string, title: string) => {
   if (textToFormat.length === 0) return '';
 
-  let formatedText: string = `**${title}**\n\n`;
+  let formatedText = `**${title}**\n\n`;
 
   if (textToFormat.startsWith('- ')) textToFormat = ' ' + textToFormat;
 

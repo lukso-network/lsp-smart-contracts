@@ -69,11 +69,11 @@ export const shouldBehaveLikePermissionStaticCall = (
 
   describe('when caller has ALL PERMISSIONS', () => {
     it('should pass and return data', async () => {
-      let expectedName = await targetContract.callStatic.getName();
+      const expectedName = await targetContract.callStatic.getName();
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData('getName');
+      const targetContractPayload = targetContract.interface.encodeFunctionData('getName');
 
-      let result = await context.universalProfile
+      const result = await context.universalProfile
         .connect(context.owner)
         .callStatic.execute(
           OPERATION_TYPES.STATICCALL,
@@ -82,18 +82,18 @@ export const shouldBehaveLikePermissionStaticCall = (
           targetContractPayload,
         );
 
-      let [decodedResult] = abiCoder.decode(['string'], result);
+      const [decodedResult] = abiCoder.decode(['string'], result);
       expect(decodedResult).to.equal(expectedName);
     });
   });
 
   describe('when caller has permission STATICCALL + some allowed calls', () => {
     it('should pass and return data', async () => {
-      let expectedName = await targetContract.callStatic.getName();
+      const expectedName = await targetContract.callStatic.getName();
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData('getName');
+      const targetContractPayload = targetContract.interface.encodeFunctionData('getName');
 
-      let result = await context.universalProfile
+      const result = await context.universalProfile
         .connect(addressCanMakeStaticCall)
         .callStatic.execute(
           OPERATION_TYPES.STATICCALL,
@@ -102,14 +102,14 @@ export const shouldBehaveLikePermissionStaticCall = (
           targetContractPayload,
         );
 
-      let [decodedResult] = abiCoder.decode(['string'], result);
+      const [decodedResult] = abiCoder.decode(['string'], result);
       expect(decodedResult).to.equal(expectedName);
     });
 
     it('should revert when trying to change state at the target contract', async () => {
-      let initialValue = await targetContract.callStatic.getName();
+      const initialValue = await targetContract.callStatic.getName();
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
+      const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
         'modified name',
       ]);
 
@@ -120,12 +120,12 @@ export const shouldBehaveLikePermissionStaticCall = (
       ).to.be.reverted;
 
       // ensure state hasn't changed.
-      let newValue = await targetContract.callStatic.getName();
+      const newValue = await targetContract.callStatic.getName();
       expect(initialValue).to.equal(newValue);
     });
 
     it('should revert when caller try to make a CALL', async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
+      const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
         'modified name',
       ]);
 
@@ -141,7 +141,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
   describe('when caller has permission STATICCALL + no allowed calls', () => {
     it('should revert with `NotAllowedCall` error', async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData('getName');
+      const targetContractPayload = targetContract.interface.encodeFunctionData('getName');
 
       await expect(
         context.universalProfile
@@ -160,7 +160,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
   describe('when caller does not have permission STATICCALL', () => {
     it('should revert', async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData('getName');
+      const targetContractPayload = targetContract.interface.encodeFunctionData('getName');
 
       await expect(
         context.universalProfile
@@ -205,7 +205,7 @@ export const shouldBehaveLikePermissionStaticCall = (
     });
 
     it('should revert when trying to interact with a non-allowed address', async () => {
-      let targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+      const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
       await expect(
         context.universalProfile
@@ -227,7 +227,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
     describe('when interacting with 1st allowed contract', () => {
       it('should allow to call view function -> getName()', async () => {
-        let targetContract = allowedTargetContracts[0];
+        const targetContract = allowedTargetContracts[0];
 
         const name = await targetContract.getName();
 
@@ -245,7 +245,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       });
 
       it('should allow to call view function -> getNumber()', async () => {
-        let targetContract = allowedTargetContracts[0];
+        const targetContract = allowedTargetContracts[0];
 
         const number = await targetContract.getNumber();
 
@@ -263,7 +263,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       });
 
       it('should revert when calling state changing function -> setName(string)', async () => {
-        let targetContract = allowedTargetContracts[0];
+        const targetContract = allowedTargetContracts[0];
 
         const targetPayload = targetContract.interface.encodeFunctionData('setName', ['new name']);
 
@@ -280,7 +280,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       });
 
       it('should revert when calling state changing function -> setNumber(uint256)', async () => {
-        let targetContract = allowedTargetContracts[0];
+        const targetContract = allowedTargetContracts[0];
 
         const targetPayload = targetContract.interface.encodeFunctionData('setNumber', [12345]);
 
@@ -299,7 +299,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
     describe('when interacting with 2nd allowed contract', () => {
       it('should allow to interact with 2nd allowed contract - getName()', async () => {
-        let targetContract = allowedTargetContracts[1];
+        const targetContract = allowedTargetContracts[1];
 
         const name = await targetContract.getName();
 
@@ -317,7 +317,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       });
 
       it('should allow to interact with 2nd allowed contract - getNumber()', async () => {
-        let targetContract = allowedTargetContracts[1];
+        const targetContract = allowedTargetContracts[1];
 
         const number = await targetContract.getNumber();
 
@@ -335,7 +335,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       });
 
       it('should revert when calling state changing function -> setName(string)', async () => {
-        let targetContract = allowedTargetContracts[1];
+        const targetContract = allowedTargetContracts[1];
 
         const targetPayload = targetContract.interface.encodeFunctionData('setName', ['new name']);
 
@@ -352,7 +352,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       });
 
       it('should revert when calling state changing function -> setNumber(uint256)', async () => {
-        let targetContract = allowedTargetContracts[1];
+        const targetContract = allowedTargetContracts[1];
 
         const targetPayload = targetContract.interface.encodeFunctionData('setNumber', [12345]);
 
@@ -405,7 +405,7 @@ export const shouldBehaveLikePermissionStaticCall = (
     describe('it should bypass allowed addresses check + allow to interact with any contract', () => {
       for (let ii = 1; ii <= 5; ii++) {
         it(`e.g: Target Contract nb ${ii}`, async () => {
-          let targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+          const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
           const name = await targetContract.getName();
 

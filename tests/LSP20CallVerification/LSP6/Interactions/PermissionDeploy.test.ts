@@ -9,7 +9,6 @@ import { TargetContract__factory } from '../../../../types';
 import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
-  LSP6_VERSION,
   PERMISSIONS,
   OPERATION_TYPES,
 } from '../../../../constants';
@@ -17,8 +16,6 @@ import {
 // setup
 import { LSP6TestContext } from '../../../utils/context';
 import { setupKeyManager } from '../../../utils/fixtures';
-
-import { LOCAL_PRIVATE_KEYS } from '../../../utils/helpers';
 
 export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
@@ -46,7 +43,7 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
 
   describe('when caller has ALL PERMISSIONS', () => {
     it('should be allowed to deploy a contract TargetContract via CREATE', async () => {
-      let contractBytecodeToDeploy = TargetContract__factory.bytecode;
+      const contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
       const expectedContractAddress = await context.universalProfile.callStatic['execute'](
         OPERATION_TYPES.CREATE, // operation type
@@ -73,10 +70,10 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
     });
 
     it('should be allowed to deploy a contract TargetContract via CREATE2', async () => {
-      let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+      const contractBytecodeToDeploy = TargetContract__factory.bytecode;
+      const salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
-      let preComputedAddress = calculateCreate2(
+      const preComputedAddress = calculateCreate2(
         context.universalProfile.address,
         salt,
         contractBytecodeToDeploy,
@@ -99,7 +96,7 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
 
   describe('when caller is an address with permission DEPLOY', () => {
     it('should be allowed to deploy a contract TargetContract via CREATE', async () => {
-      let contractBytecodeToDeploy = TargetContract__factory.bytecode;
+      const contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
       const expectedContractAddress = await context.universalProfile
         .connect(addressCanDeploy)
@@ -130,10 +127,10 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
     });
 
     it('should be allowed to deploy a contract TargetContract via CREATE2', async () => {
-      let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      let salt = '0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe';
+      const contractBytecodeToDeploy = TargetContract__factory.bytecode;
+      const salt = '0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe';
 
-      let preComputedAddress = calculateCreate2(
+      const preComputedAddress = calculateCreate2(
         context.universalProfile.address,
         salt,
         contractBytecodeToDeploy,
@@ -157,7 +154,7 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
   describe('when caller is an address that does not have the permission DEPLOY', () => {
     describe('-> interacting via execute(...)', () => {
       it('should revert when trying to deploy a contract via CREATE', async () => {
-        let contractBytecodeToDeploy = TargetContract__factory.bytecode;
+        const contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
         await expect(
           context.universalProfile
@@ -174,8 +171,8 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
       });
 
       it('should revert when trying to deploy a contract via CREATE2', async () => {
-        let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-        let salt = '0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe';
+        const contractBytecodeToDeploy = TargetContract__factory.bytecode;
+        const salt = '0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe';
 
         await expect(
           context.universalProfile

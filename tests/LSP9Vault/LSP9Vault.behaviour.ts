@@ -405,8 +405,8 @@ export const shouldBehaveLikeLSP9 = (
 
     describe('when setting a data key with a value less than 256 bytes', () => {
       it('should emit DataChanged event with the whole data value', async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-        let value = ethers.utils.hexlify(ethers.utils.randomBytes(200));
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+        const value = ethers.utils.hexlify(ethers.utils.randomBytes(200));
 
         await expect(context.lsp9Vault.setData(key, value))
           .to.emit(context.lsp9Vault, 'DataChanged')
@@ -419,8 +419,8 @@ export const shouldBehaveLikeLSP9 = (
 
     describe('when setting a data key with a value more than 256 bytes', () => {
       it('should emit DataChanged event with only the first 256 bytes of the value', async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-        let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+        const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
         await expect(context.lsp9Vault.setData(key, value))
           .to.emit(context.lsp9Vault, 'DataChanged')
@@ -449,8 +449,8 @@ export const shouldBehaveLikeLSP9 = (
 
     describe('when setting a data key with a value exactly 256 bytes long', () => {
       it('should emit DataChanged event with the whole data value', async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-        let value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+        const value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
 
         await expect(context.lsp9Vault.setData(key, value))
           .to.emit(context.lsp9Vault, 'DataChanged')
@@ -463,7 +463,7 @@ export const shouldBehaveLikeLSP9 = (
 
     describe('When sending value to setData', () => {
       it('should revert when sending value to setData(..)', async () => {
-        let value = ethers.utils.parseEther('2');
+        const value = ethers.utils.parseEther('2');
         const txParams = {
           dataKey: ethers.utils.solidityKeccak256(['string'], ['FirstDataKey']),
           dataValue: '0xaabbccdd',
@@ -479,7 +479,7 @@ export const shouldBehaveLikeLSP9 = (
       });
 
       it('should revert when sending value to setData(..) Array', async () => {
-        let value = ethers.utils.parseEther('2');
+        const value = ethers.utils.parseEther('2');
         const txParams = {
           dataKey: [ethers.utils.solidityKeccak256(['string'], ['FirstDataKey'])],
           dataValue: ['0xaabbccdd'],
@@ -520,10 +520,10 @@ export const shouldBehaveLikeLSP9 = (
           .connect(context.accounts.owner)
           .transferOwnership(context.universalProfile.address);
 
-        let acceptOwnershipSelector =
+        const acceptOwnershipSelector =
           context.universalProfile.interface.getSighash('acceptOwnership');
 
-        let executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
+        const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
           context.lsp9Vault.address,
           0,
@@ -551,10 +551,10 @@ export const shouldBehaveLikeLSP9 = (
 
       describe('when non-owner is calling', () => {
         it('shoud revert', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+          const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
-          let setDataPayload = context.lsp9Vault.interface.encodeFunctionData('setData', [
+          const setDataPayload = context.lsp9Vault.interface.encodeFunctionData('setData', [
             key,
             value,
           ]);
@@ -569,10 +569,10 @@ export const shouldBehaveLikeLSP9 = (
         describe('when executing one function', () => {
           describe('setData', () => {
             it('should pass', async () => {
-              let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-              let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+              const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+              const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
-              let setDataPayload = context.lsp9Vault.interface.encodeFunctionData('setData', [
+              const setDataPayload = context.lsp9Vault.interface.encodeFunctionData('setData', [
                 key,
                 value,
               ]);
@@ -598,8 +598,8 @@ export const shouldBehaveLikeLSP9 = (
 
           describe('execute', () => {
             it('should pass', async () => {
-              let amount = 20;
-              let executePayload = context.lsp9Vault.interface.encodeFunctionData('execute', [
+              const amount = 20;
+              const executePayload = context.lsp9Vault.interface.encodeFunctionData('execute', [
                 0,
                 context.accounts.random.address,
                 amount,
@@ -629,23 +629,23 @@ export const shouldBehaveLikeLSP9 = (
         describe('when executing several functions', () => {
           describe('When transfering lyx, setting data, transferring ownership', () => {
             it('should pass', async () => {
-              let amount = 20;
-              let executePayload = context.lsp9Vault.interface.encodeFunctionData('execute', [
+              const amount = 20;
+              const executePayload = context.lsp9Vault.interface.encodeFunctionData('execute', [
                 0,
                 context.accounts.random.address,
                 amount,
                 '0x',
               ]);
 
-              let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('A new key'));
-              let value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
+              const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('A new key'));
+              const value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
 
-              let setDataPayload = context.lsp9Vault.interface.encodeFunctionData('setData', [
+              const setDataPayload = context.lsp9Vault.interface.encodeFunctionData('setData', [
                 key,
                 value,
               ]);
 
-              let transferOwnershipPayload = context.lsp9Vault.interface.encodeFunctionData(
+              const transferOwnershipPayload = context.lsp9Vault.interface.encodeFunctionData(
                 'transferOwnership',
                 [context.accounts.anyone.address],
               );
@@ -685,7 +685,7 @@ export const shouldBehaveLikeLSP9 = (
 
     describe('when restricitng address to only talk to the vault', () => {
       before(async () => {
-        let friendPermissions = PERMISSIONS.CALL;
+        const friendPermissions = PERMISSIONS.CALL;
         const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
           [
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -733,7 +733,7 @@ export const shouldBehaveLikeLSP9 = (
           dataValue,
         ]);
 
-        let disallowedAddress = ethers.utils.getAddress(context.universalProfile.address);
+        const disallowedAddress = ethers.utils.getAddress(context.universalProfile.address);
 
         await expect(
           context.lsp6KeyManager

@@ -90,7 +90,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
   });
 
   it('Should revert when caller has no permissions set', async () => {
-    let targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
+    const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
       'New Contract Name',
     ]);
 
@@ -104,7 +104,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
   });
 
   it('Should revert when caller calls the KeyManager through `ERC725X.execute`', async () => {
-    let lsp20VerifyCallPayload = context.keyManager.interface.encodeFunctionData(
+    const lsp20VerifyCallPayload = context.keyManager.interface.encodeFunctionData(
       'lsp20VerifyCall',
       [context.accounts[2].address, 0, '0xaabbccdd'], // random arguments
     );
@@ -121,22 +121,22 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
       // the Universal Profile wants to send 1 x LYX from its UP to another smart contract
       // we assume the UP owner is not aware that some malicious code is present
       // in the fallback function of the target (= recipient) contract
-      let transferPayload = context.universalProfile.interface.encodeFunctionData('execute', [
+      const transferPayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
         maliciousContract.address,
         ethers.utils.parseEther('1'),
         EMPTY_PAYLOAD,
       ]);
 
-      let executePayload = context.keyManager.interface.encodeFunctionData('execute', [
+      const executePayload = context.keyManager.interface.encodeFunctionData('execute', [
         transferPayload,
       ]);
       // load the malicious payload, that will be executed in the receive function
       // every time the contract receives LYX
       await maliciousContract.loadPayload(executePayload);
 
-      let initialAccountBalance = await provider.getBalance(context.universalProfile.address);
-      let initialAttackerContractBalance = await provider.getBalance(maliciousContract.address);
+      const initialAccountBalance = await provider.getBalance(context.universalProfile.address);
+      const initialAttackerContractBalance = await provider.getBalance(maliciousContract.address);
 
       // send LYX to malicious contract
       // at this point, the malicious contract receive function try to drain funds by re-entering the KeyManager
@@ -145,8 +145,8 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
         .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
         .withArgs(maliciousContract.address, 'REENTRANCY');
 
-      let newAccountBalance = await provider.getBalance(context.universalProfile.address);
-      let newAttackerContractBalance = await provider.getBalance(maliciousContract.address);
+      const newAccountBalance = await provider.getBalance(context.universalProfile.address);
+      const newAttackerContractBalance = await provider.getBalance(maliciousContract.address);
 
       expect(newAccountBalance).to.equal(initialAccountBalance);
       expect(newAttackerContractBalance).to.equal(initialAttackerContractBalance);
@@ -237,7 +237,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
       describe('when the firstReentrant execute its first reentrant call to the UniversalProfile successfully', () => {
         describe('when the secondReentrant is not granted REENTRANCY Permission', () => {
           it('shoul fail stating that the caller (secondReentrant) is not authorised (no reentrancy permission)', async () => {
-            let firstTargetSelector = firstReentrant.interface.encodeFunctionData('firstTarget');
+            const firstTargetSelector = firstReentrant.interface.encodeFunctionData('firstTarget');
 
             await expect(
               context.universalProfile
@@ -264,13 +264,13 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
           });
 
           it('should pass and setData from the second reentrantCall on the UniversalProfile correctly', async () => {
-            let firstTargetSelector = firstReentrant.interface.encodeFunctionData('firstTarget');
+            const firstTargetSelector = firstReentrant.interface.encodeFunctionData('firstTarget');
 
             await context.universalProfile
               .connect(context.owner)
               .execute(OPERATION_TYPES.CALL, firstReentrant.address, 0, firstTargetSelector);
 
-            let result = await context.universalProfile['getData(bytes32)'](
+            const result = await context.universalProfile['getData(bytes32)'](
               ethers.constants.HashZero,
             );
 
@@ -282,7 +282,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
 
     describe('when calling the lsp20 functions by an address other than the target', () => {
       it('should pass and not modify _reentrancyStatus when verfying that the owner have permission to execute a payload, ', async () => {
-        let emptyCallPayload = context.universalProfile.interface.encodeFunctionData('execute', [
+        const emptyCallPayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
           context.accounts[5].address,
           0,

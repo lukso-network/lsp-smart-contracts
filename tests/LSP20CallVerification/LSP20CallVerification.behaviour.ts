@@ -388,8 +388,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should pass when calling `setData(bytes32,bytes)`', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+          const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
           await expect(newUniversalProfile.connect(context.accounts[3]).setData(key, value))
             .to.emit(newUniversalProfile, 'DataChanged')
@@ -419,8 +419,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should pass when calling `setData(bytes32,bytes)`', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+          const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
           await expect(
             newUniversalProfile.connect(context.accounts[3])['setData(bytes32,bytes)'](key, value),
@@ -452,8 +452,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should pass when calling `setData(bytes32,bytes)`', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+          const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
           await expect(newUniversalProfile.connect(context.accounts[3]).setData(key, value))
             .to.emit(newUniversalProfile, 'DataChanged')
@@ -489,8 +489,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should pass when calling `setData(bytes32,bytes)`', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+          const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
           await expect(
             newUniversalProfile.connect(context.accounts[3])['setData(bytes32,bytes)'](key, value),
@@ -520,8 +520,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should revert when calling `setData(bytes32,bytes)`', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+          const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
           await expect(
             newUniversalProfile.connect(context.accounts[3]).setData(key, value),
@@ -551,8 +551,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should pass when calling `setData(bytes32,bytes)`', async () => {
-          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+          const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
           await expect(newUniversalProfile.connect(context.accounts[3]).setData(key, value))
             .to.emit(newUniversalProfile, 'DataChanged')

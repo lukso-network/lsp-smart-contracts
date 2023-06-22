@@ -24,7 +24,7 @@ import {
 import { tokenIdAsBytes32 } from '../utils/tokens';
 import { ERC725YDataKeys, INTERFACE_IDS, SupportedStandards } from '../../constants';
 
-import type { BytesLike, Contract } from 'ethers';
+import type { BytesLike } from 'ethers';
 import type { TransactionResponse } from '@ethersproject/abstract-provider';
 
 export type LSP8CompatibleERC721TestAccounts = {
@@ -274,7 +274,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           .connect(context.accounts.owner)
           .mint(txParams.to, txParams.tokenId, txParams.data);
 
-        let tx = await context.lsp8CompatibleERC721
+        const tx = await context.lsp8CompatibleERC721
           .connect(context.accounts.owner)
           .setApprovalForAll(context.accounts.operator.address, true);
 
@@ -684,42 +684,6 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
       // post-conditions
       const postOwnerOf = await context.lsp8CompatibleERC721.ownerOf(tokenId);
       expect(postOwnerOf).to.equal(to);
-    };
-
-    const transferFailScenario = async (
-      { from, to, tokenId, data }: TransferTxParams,
-      transferFn: string,
-      expectedError: ExpectedError,
-    ) => {
-      // pre-conditions
-      const preOwnerOf = await context.lsp8CompatibleERC721.ownerOf(tokenId);
-
-      // effect
-      if (expectedError.args.length > 0) {
-        if (data != undefined) {
-          await expect(context.lsp8CompatibleERC721[transferFn](from, to, tokenId, data))
-            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, expectedError.error)
-            .withArgs(...expectedError.args);
-        } else {
-          await expect(context.lsp8CompatibleERC721[transferFn](from, to, tokenId))
-            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, expectedError.error)
-            .withArgs(...expectedError.args);
-        }
-      } else {
-        if (data != undefined) {
-          await expect(
-            context.lsp8CompatibleERC721[transferFn](from, to, tokenId, data),
-          ).to.be.revertedWithCustomError(context.lsp8CompatibleERC721, expectedError.error);
-        } else {
-          await expect(
-            context.lsp8CompatibleERC721[transferFn](from, to, tokenId),
-          ).to.be.revertedWithCustomError(context.lsp8CompatibleERC721, expectedError.error);
-        }
-      }
-
-      // post-conditions
-      const postOwnerOf = await context.lsp8CompatibleERC721.ownerOf(tokenId);
-      expect(postOwnerOf).to.equal(preOwnerOf);
     };
 
     describe('transferFrom', () => {

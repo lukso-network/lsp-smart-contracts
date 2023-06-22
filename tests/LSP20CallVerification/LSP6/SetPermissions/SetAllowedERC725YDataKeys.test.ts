@@ -36,7 +36,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
       zero32Bytes = context.accounts[5];
       zero40Bytes = context.accounts[6];
 
-      let permissionKeys = [
+      const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -51,7 +51,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
           zero40Bytes.address.substring(2),
       ];
 
-      let permissionValues = [
+      const permissionValues = [
         PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.EDITPERMISSIONS,
         encodeCompactBytesArray([
@@ -70,11 +70,11 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
     describe('when caller has ADDCONTROLLER', () => {
       describe('when beneficiary had some ERC725Y data keys set under AddressPermissions:AllowedERC725YDataKeys:...', () => {
         it('should fail when adding an extra allowed ERC725Y data key', async () => {
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             beneficiary.address.substring(2);
 
-          let value = encodeCompactBytesArray([
+          const value = encodeCompactBytesArray([
             ERC725YDataKeys.LSP3['LSP3Profile'],
             // prettier-ignore
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
@@ -88,11 +88,11 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
         });
 
         it('should fail when removing an allowed ERC725Y data key', async () => {
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             beneficiary.address.substring(2);
 
-          let value = encodeCompactBytesArray([ERC725YDataKeys.LSP3['LSP3Profile']]);
+          const value = encodeCompactBytesArray([ERC725YDataKeys.LSP3['LSP3Profile']]);
 
           await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
             .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
@@ -100,11 +100,11 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
         });
 
         it('should fail when trying to clear the CompactedBytesArray completely', async () => {
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             beneficiary.address.substring(2);
 
-          let value = '0x';
+          const value = '0x';
 
           await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
             .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
@@ -112,11 +112,11 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
         });
 
         it('should fail when setting an invalid CompactedBytesArray', async () => {
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             beneficiary.address.substring(2);
 
-          let value = '0xbadbadbadbad';
+          const value = '0xbadbadbadbad';
 
           await expect(
             context.universalProfile.connect(canOnlyAddController).setData(key, value),
@@ -129,13 +129,13 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
       describe('when beneficiary had no ERC725Y data keys set under AddressPermissions:AllowedERC725YDataKeys:...', () => {
         it('should pass when setting a valid CompactedBytesArray', async () => {
-          let newController = ethers.Wallet.createRandom();
+          const newController = ethers.Wallet.createRandom();
 
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             newController.address.substr(2);
 
-          let value = encodeCompactBytesArray([
+          const value = encodeCompactBytesArray([
             // prettier-ignore
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Profile Key 1")),
             // prettier-ignore
@@ -150,13 +150,13 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
         });
 
         it('should fail when setting an invalid CompactedBytesArray (random bytes)', async () => {
-          let newController = ethers.Wallet.createRandom();
+          const newController = ethers.Wallet.createRandom();
 
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             newController.address.substr(2);
 
-          let value = '0xbadbadbadbad';
+          const value = '0xbadbadbadbad';
 
           await expect(
             context.universalProfile.connect(canOnlyAddController).setData(key, value),
@@ -171,11 +171,11 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
     describe('when caller has EDITPERMISSIONS', () => {
       describe('when beneficiary had some ERC725Y data keys set under AddressPermissions:AllowedERC725YDataKeys:...', () => {
         it('should pass when adding an extra allowed ERC725Y data key', async () => {
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             beneficiary.address.substring(2);
 
-          let value = encodeCompactBytesArray([
+          const value = encodeCompactBytesArray([
             ERC725YDataKeys.LSP3['LSP3Profile'],
             // prettier-ignore
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
@@ -191,11 +191,11 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
         });
 
         it('should pass when removing an allowed ERC725Y data key', async () => {
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             beneficiary.address.substring(2);
 
-          let value = encodeCompactBytesArray([ERC725YDataKeys.LSP3['LSP3Profile']]);
+          const value = encodeCompactBytesArray([ERC725YDataKeys.LSP3['LSP3Profile']]);
 
           await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
 
@@ -205,11 +205,11 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
         });
 
         it('should pass when trying to clear the CompactedBytesArray completely', async () => {
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             beneficiary.address.substring(2);
 
-          let value = '0x';
+          const value = '0x';
 
           await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
 
@@ -219,11 +219,11 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
         });
 
         it('should fail when setting an invalid CompactedBytesArray', async () => {
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             beneficiary.address.substring(2);
 
-          let value = '0xbadbadbadbad';
+          const value = '0xbadbadbadbad';
 
           await expect(
             context.universalProfile.connect(canOnlyEditPermissions).setData(key, value),
@@ -236,13 +236,13 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
       describe('when beneficiary had no ERC725Y data keys set under AddressPermissions:AllowedERC725YDataKeys:...', () => {
         it('should fail and not authorize to add a list of allowed ERC725Y data keys (not authorised)', async () => {
-          let newController = ethers.Wallet.createRandom();
+          const newController = ethers.Wallet.createRandom();
 
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             newController.address.substr(2);
 
-          let value = encodeCompactBytesArray([
+          const value = encodeCompactBytesArray([
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Custom Key 1')),
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Custom Key 2')),
           ]);
@@ -253,13 +253,13 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
         });
 
         it('should fail when setting an invalid CompactedBytesArray', async () => {
-          let newController = ethers.Wallet.createRandom();
+          const newController = ethers.Wallet.createRandom();
 
-          let key =
+          const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
             newController.address.substr(2);
 
-          let value = '0xbadbadbadbad';
+          const value = '0xbadbadbadbad';
 
           await expect(
             context.universalProfile.connect(canOnlyEditPermissions).setData(key, value),

@@ -49,16 +49,16 @@ async function main() {
       const source = `contracts/${folder}/${lspInterface}.sol:${lspInterface}`;
       const build = await hre.artifacts.getBuildInfo(source);
 
-      const [path, name] = source.split(':');
+      const [path] = source.split(':');
 
-      let devdoc = build?.output?.contracts?.[path]?.[lspInterface]['devdoc'];
+      const devdoc = build?.output?.contracts?.[path]?.[lspInterface]['devdoc'];
 
       if (!devdoc) {
         // search in the first implementation contract
         const source = `contracts/${folder}/${contract}.sol:${contract}`;
         const build = await hre.artifacts.getBuildInfo(source);
 
-        const [path, name] = source.split(':');
+        const [path] = source.split(':');
 
         const contractDevDoc = build?.output?.contracts?.[path]?.[contract]['devdoc'];
 

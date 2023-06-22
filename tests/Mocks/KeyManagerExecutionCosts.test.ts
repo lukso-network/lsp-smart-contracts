@@ -13,7 +13,6 @@ import {
 
 import { LSP6TestContext } from '../utils/context';
 import {
-  abiCoder,
   provider,
   combinePermissions,
   combineAllowedCalls,
@@ -94,9 +93,11 @@ describe('Key Manager gas cost interactions', () => {
 
       describe('display gas cost', () => {
         it('when caller has any allowed address and standard allowed', async () => {
-          let initialAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
+          const initialAccountBalance = await provider.getBalance(
+            contractImplementsERC1271.address,
+          );
 
-          let transferLyxPayload = context.universalProfile.interface.encodeFunctionData(
+          const transferLyxPayload = context.universalProfile.interface.encodeFunctionData(
             'execute',
             [
               OPERATION_TYPES.CALL,
@@ -106,67 +107,73 @@ describe('Key Manager gas cost interactions', () => {
             ],
           );
 
-          let tx = await context.keyManager.connect(context.owner).execute(transferLyxPayload);
+          const tx = await context.keyManager.connect(context.owner).execute(transferLyxPayload);
 
-          let receipt = await tx.wait();
+          const receipt = await tx.wait();
 
           console.log(
             'gas cost LYX transfer - everything allowed: ',
             ethers.BigNumber.from(receipt.gasUsed).toNumber(),
           );
 
-          let newAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
+          const newAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
           expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);
         });
       });
 
       it('when caller has only 1 x allowed address allowed', async () => {
-        let initialAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
+        const initialAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
 
-        let transferLyxPayload = context.universalProfile.interface.encodeFunctionData('execute', [
-          OPERATION_TYPES.CALL,
-          contractImplementsERC1271.address,
-          ethers.utils.parseEther('1'),
-          '0x',
-        ]);
+        const transferLyxPayload = context.universalProfile.interface.encodeFunctionData(
+          'execute',
+          [
+            OPERATION_TYPES.CALL,
+            contractImplementsERC1271.address,
+            ethers.utils.parseEther('1'),
+            '0x',
+          ],
+        );
 
-        let tx = await context.keyManager
+        const tx = await context.keyManager
           .connect(restrictedToOneAddress)
           .execute(transferLyxPayload);
 
-        let receipt = await tx.wait();
+        const receipt = await tx.wait();
 
         console.log(
           'gas cost LYX transfer - with 1 x allowed address: ',
           ethers.BigNumber.from(receipt.gasUsed).toNumber(),
         );
 
-        let newAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
+        const newAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
         expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);
       });
 
       it('when caller has only 1 x allowed address + 1 x allowed standard allowed', async () => {
-        let initialAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
+        const initialAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
 
-        let transferLyxPayload = context.universalProfile.interface.encodeFunctionData('execute', [
-          OPERATION_TYPES.CALL,
-          contractImplementsERC1271.address,
-          ethers.utils.parseEther('1'),
-          '0x',
-        ]);
+        const transferLyxPayload = context.universalProfile.interface.encodeFunctionData(
+          'execute',
+          [
+            OPERATION_TYPES.CALL,
+            contractImplementsERC1271.address,
+            ethers.utils.parseEther('1'),
+            '0x',
+          ],
+        );
 
-        let tx = await context.keyManager
+        const tx = await context.keyManager
           .connect(restrictedToOneAddressAndStandard)
           .execute(transferLyxPayload);
 
-        let receipt = await tx.wait();
+        const receipt = await tx.wait();
 
         console.log(
           'gas cost LYX transfer - with 1 x allowed address + 1 x allowed standard: ',
           ethers.BigNumber.from(receipt.gasUsed).toNumber(),
         );
 
-        let newAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
+        const newAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
         expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);
       });
     });

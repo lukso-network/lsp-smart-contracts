@@ -21,7 +21,6 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP6Utils} from "./LSP6Utils.sol";
-import {EIP191Signer} from "../Custom/EIP191Signer.sol";
 
 // errors
 import {
@@ -72,8 +71,7 @@ abstract contract LSP6KeyManagerCore is
     LSP6OwnershipModule
 {
     using LSP6Utils for *;
-    using ECDSA for bytes32;
-    using EIP191Signer for address;
+    using ECDSA for *;
     using BytesLib for bytes;
 
     address internal _target;
@@ -363,7 +361,7 @@ abstract contract LSP6KeyManagerCore is
         );
 
         address signer = address(this)
-            .toDataWithIntendedValidator(encodedMessage)
+            .toDataWithIntendedValidatorHash(encodedMessage)
             .recover(signature);
 
         bool isSetData = false;

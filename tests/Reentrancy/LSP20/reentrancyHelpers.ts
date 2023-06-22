@@ -368,12 +368,12 @@ export const generateRelayCall = async (
   payload: BytesLike,
   signer: Wallet,
 ) => {
-  let nonce = await keyManager.callStatic.getNonce(signer.address, 1);
+  const nonce = await keyManager.callStatic.getNonce(signer.address, 1);
 
   const validityTimestamps = 0;
 
-  let msgValue = 0;
-  let signature = await signLSP6ExecuteRelayCall(
+  const msgValue = 0;
+  const signature = await signLSP6ExecuteRelayCall(
     keyManager,
     nonce.toString(),
     validityTimestamps,
@@ -453,12 +453,12 @@ export const generateSingleRelayPayload = async (
       break;
   }
 
-  let nonce = await keyManager.callStatic.getNonce(reentrantSigner.address, 1);
+  const nonce = await keyManager.callStatic.getNonce(reentrantSigner.address, 1);
 
   const validityTimestamps = 0;
 
-  let msgValue = 0;
-  let signature = await signLSP6ExecuteRelayCall(
+  const msgValue = 0;
+  const signature = await signLSP6ExecuteRelayCall(
     keyManager,
     nonce.toString(),
     validityTimestamps,
@@ -526,12 +526,12 @@ export const generateBatchRelayPayload = async (
       break;
   }
 
-  let nonce = await keyManager.callStatic.getNonce(reentrantSigner.address, 1);
+  const nonce = await keyManager.callStatic.getNonce(reentrantSigner.address, 1);
 
   const validityTimestamps = 0;
 
-  let msgValue = 0;
-  let signature = await signLSP6ExecuteRelayCall(
+  const msgValue = 0;
+  const signature = await signLSP6ExecuteRelayCall(
     keyManager,
     nonce.toString(),
     validityTimestamps,

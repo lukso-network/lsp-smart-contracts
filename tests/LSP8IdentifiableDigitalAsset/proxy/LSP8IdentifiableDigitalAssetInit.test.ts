@@ -36,9 +36,9 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
   const buildLSP4DigitalAssetMetadataTestContext =
     async (): Promise<LS4DigitalAssetMetadataTestContext> => {
       const { lsp8 } = await buildTestContext();
-      let accounts = await ethers.getSigners();
+      const accounts = await ethers.getSigners();
 
-      let deployParams = {
+      const deployParams = {
         owner: accounts[0],
       };
 
@@ -98,7 +98,7 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
 
   describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP4DigitalAssetMetadata(async () => {
-      let lsp4Context = await buildLSP4DigitalAssetMetadataTestContext();
+      const lsp4Context = await buildLSP4DigitalAssetMetadataTestContext();
 
       await lsp4Context.contract['initialize(string,string,address)'](
         'LSP8 - deployed with proxy',

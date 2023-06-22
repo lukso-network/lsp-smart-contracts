@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import {
   FallbackInitializer,
@@ -17,7 +16,6 @@ import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
-  LSP6_VERSION,
   OPERATION_TYPES,
   CALLTYPE,
 } from '../../../../constants';
@@ -119,13 +117,6 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
 
       it('should fail with `NotAuthorised` error when `to` is a contract', async () => {
         const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
-
-        const payload = context.universalProfile.interface.encodeFunctionData('execute', [
-          OPERATION_TYPES.CALL,
-          targetContract.address,
-          0,
-          '0x',
-        ]);
 
         await expect(
           context.universalProfile
@@ -386,9 +377,9 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
     describe('when interacting via `execute(...)`', () => {
       describe('when caller has ALL PERMISSIONS', () => {
         it('should pass and change state at the target contract', async () => {
-          let argument = 'new name';
+          const argument = 'new name';
 
-          let targetPayload = targetContract.interface.encodeFunctionData('setName', [argument]);
+          const targetPayload = targetContract.interface.encodeFunctionData('setName', [argument]);
 
           await context.universalProfile
             .connect(context.owner)
@@ -400,11 +391,11 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
 
         describe('when calling a function that returns some value', () => {
           it('should return the value to the Key Manager <- UP <- targetContract.getName()', async () => {
-            let expectedName = await targetContract.callStatic.getName();
+            const expectedName = await targetContract.callStatic.getName();
 
-            let targetContractPayload = targetContract.interface.encodeFunctionData('getName');
+            const targetContractPayload = targetContract.interface.encodeFunctionData('getName');
 
-            let result = await context.universalProfile
+            const result = await context.universalProfile
               .connect(context.owner)
               .callStatic.execute(
                 OPERATION_TYPES.CALL,
@@ -413,16 +404,16 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
                 targetContractPayload,
               );
 
-            let [decodedResult] = abiCoder.decode(['string'], result);
+            const [decodedResult] = abiCoder.decode(['string'], result);
             expect(decodedResult).to.equal(expectedName);
           });
 
           it('Should return the value to the Key Manager <- UP <- targetContract.getNumber()', async () => {
-            let expectedNumber = await targetContract.callStatic.getNumber();
+            const expectedNumber = await targetContract.callStatic.getNumber();
 
-            let targetContractPayload = targetContract.interface.encodeFunctionData('getNumber');
+            const targetContractPayload = targetContract.interface.encodeFunctionData('getNumber');
 
-            let result = await context.universalProfile
+            const result = await context.universalProfile
               .connect(context.owner)
               .callStatic.execute(
                 OPERATION_TYPES.CALL,
@@ -431,14 +422,14 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
                 targetContractPayload,
               );
 
-            let [decodedResult] = abiCoder.decode(['uint256'], result);
+            const [decodedResult] = abiCoder.decode(['uint256'], result);
             expect(decodedResult).to.equal(expectedNumber);
           });
         });
 
         describe('when calling a function that reverts', () => {
           it('should revert', async () => {
-            let targetContractPayload = targetContract.interface.encodeFunctionData('revertCall');
+            const targetContractPayload = targetContract.interface.encodeFunctionData('revertCall');
 
             await expect(
               context.universalProfile.execute(
@@ -455,9 +446,11 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
       describe('when caller has permission CALL', () => {
         describe('when caller has no allowed calls set', () => {
           it('should revert with `NotAllowedCall(...)` error', async () => {
-            let argument = 'another name';
+            const argument = 'another name';
 
-            let targetPayload = targetContract.interface.encodeFunctionData('setName', [argument]);
+            const targetPayload = targetContract.interface.encodeFunctionData('setName', [
+              argument,
+            ]);
 
             await expect(
               context.universalProfile
@@ -471,9 +464,11 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
 
         describe('when caller has some allowed calls set', () => {
           it('should pass and change state at the target contract', async () => {
-            let argument = 'another name';
+            const argument = 'another name';
 
-            let targetPayload = targetContract.interface.encodeFunctionData('setName', [argument]);
+            const targetPayload = targetContract.interface.encodeFunctionData('setName', [
+              argument,
+            ]);
 
             await context.universalProfile
               .connect(addressCanMakeCallWithAllowedCalls)
@@ -487,9 +482,9 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
 
       describe('when caller does not have permission CALL', () => {
         it('should revert', async () => {
-          let argument = 'another name';
+          const argument = 'another name';
 
-          let targetPayload = targetContract.interface.encodeFunctionData('setName', [argument]);
+          const targetPayload = targetContract.interface.encodeFunctionData('setName', [argument]);
 
           await expect(
             context.universalProfile

@@ -40,9 +40,9 @@ describe('LSP7DigitalAsset with constructor', () => {
   const buildLSP4DigitalAssetMetadataTestContext =
     async (): Promise<LS4DigitalAssetMetadataTestContext> => {
       const { lsp7 } = await buildTestContext();
-      let accounts = await ethers.getSigners();
+      const accounts = await ethers.getSigners();
 
-      let deployParams = {
+      const deployParams = {
         owner: accounts[0],
       };
 

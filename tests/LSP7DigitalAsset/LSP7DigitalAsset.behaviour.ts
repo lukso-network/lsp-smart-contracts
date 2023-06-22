@@ -739,7 +739,6 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                     allowNonLSP1Recipient: true,
                     data: '0x',
                   };
-                  const expectedError = 'LSP7CannotSendWithAddressZero';
 
                   await expect(
                     context.lsp7
