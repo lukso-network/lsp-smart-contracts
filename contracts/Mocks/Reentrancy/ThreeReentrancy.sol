@@ -11,11 +11,13 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import "../../LSP6KeyManager/ILSP6KeyManager.sol";
 
 /**
- * @dev contract used for testing.
- *
  * The purpose of these contracts is to perform tests on chained reentrancy scenarios
  * that involve interacting with the UniversalProfile through its owner (LSP6KeyManager)
  * or by directly using the LSP20 method.
+ */
+
+/**
+ * @dev contract used for testing.
  */
 contract FirstToCallLSP20 {
     address public universalProfile;
