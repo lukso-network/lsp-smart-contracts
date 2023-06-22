@@ -29,7 +29,7 @@ jobs:
 
       # This will also generate the Typechain types used by the Chai tests
       - name: 🏗️ Build contract artifacts
-        run: npm run build --if-present
+        run: npx hardhat compile
 
       - name: 📤 cache dependencies + build
         uses: actions/cache@v2
