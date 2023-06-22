@@ -1,24 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-// modules
-import {UniversalProfile} from "../UniversalProfile.sol";
-import {LSP6KeyManager} from "../LSP6KeyManager/LSP6KeyManager.sol";
-
+// interfaces
 import {
     IERC725X
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {ILSP6KeyManager} from "../LSP6KeyManager/ILSP6KeyManager.sol";
+
+// modules
+import {UniversalProfile} from "../UniversalProfile.sol";
+import {LSP6KeyManager} from "../LSP6KeyManager/LSP6KeyManager.sol";
 
 // constants
 import {
-    SETDATA_SELECTOR,
-    EXECUTE_SELECTOR,
     OPERATION_0_CALL
 } from "@erc725/smart-contracts/contracts/constants.sol";
-import {_LSP6_EXECUTE_SELECTOR} from "../LSP6KeyManager/LSP6Constants.sol";
 
 contract ExecutorLSP20 {
     address internal constant _DUMMY_RECIPIENT =
@@ -88,7 +87,7 @@ contract ExecutorLSP20 {
         bytes memory value = "Some value";
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            SETDATA_SELECTOR,
+            IERC725Y.setData.selector,
             key,
             value
         );
@@ -102,7 +101,7 @@ contract ExecutorLSP20 {
         bytes memory value = abi.encodePacked("Some value");
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            SETDATA_SELECTOR,
+            IERC725Y.setData.selector,
             key,
             value
         );
@@ -116,7 +115,7 @@ contract ExecutorLSP20 {
         bytes memory _value
     ) public returns (bool) {
         bytes memory erc725Payload = abi.encodeWithSelector(
-            SETDATA_SELECTOR,
+            IERC725Y.setData.selector,
             _key,
             _value
         );
@@ -129,7 +128,7 @@ contract ExecutorLSP20 {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            EXECUTE_SELECTOR,
+            IERC725X.execute.selector,
             OPERATION_0_CALL,
             _DUMMY_RECIPIENT,
             amount,
@@ -146,7 +145,7 @@ contract ExecutorLSP20 {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            EXECUTE_SELECTOR,
+            IERC725X.execute.selector,
             OPERATION_0_CALL,
             _recipient,
             amount,

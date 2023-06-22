@@ -24,9 +24,6 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 // constants
 import {
-    SETDATA_BATCH_SELECTOR
-} from "@erc725/smart-contracts/contracts/constants.sol";
-import {
     _TYPEID_LSP7_TOKENSSENDER
 } from "../../LSP7DigitalAsset/LSP7Constants.sol";
 import "../../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -88,7 +85,7 @@ contract UniversalReceiverDelegateVaultMalicious is ERC165Storage {
 
                 values[0] = bytes("some random text for the data value");
                 bytes memory payload = abi.encodeWithSelector(
-                    SETDATA_BATCH_SELECTOR,
+                    IERC725Y.setDataBatch.selector,
                     keys,
                     values
                 );
@@ -108,7 +105,7 @@ contract UniversalReceiverDelegateVaultMalicious is ERC165Storage {
 
                 values[0] = bytes("some random text for the data value");
                 bytes memory payload = abi.encodeWithSelector(
-                    SETDATA_BATCH_SELECTOR,
+                    IERC725Y.setDataBatch.selector,
                     keys,
                     values
                 );
@@ -125,7 +122,7 @@ contract UniversalReceiverDelegateVaultMalicious is ERC165Storage {
 
                 values[0] = bytes("some random text for the data value");
                 bytes memory payload = abi.encodeWithSelector(
-                    SETDATA_BATCH_SELECTOR,
+                    IERC725Y.setDataBatch.selector,
                     keys,
                     values
                 );

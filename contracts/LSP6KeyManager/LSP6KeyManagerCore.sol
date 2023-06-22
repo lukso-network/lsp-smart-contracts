@@ -3,6 +3,12 @@ pragma solidity ^0.8.5;
 
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
+import {
+    IERC725X
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 import {
     ILSP20CallVerifier as ILSP20
@@ -37,12 +43,6 @@ import {
     RelayCallExpired
 } from "./LSP6Errors.sol";
 
-// constants
-import {
-    SETDATA_SELECTOR,
-    SETDATA_BATCH_SELECTOR,
-    EXECUTE_SELECTOR
-} from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_ERC1271,
     _ERC1271_MAGICVALUE,
@@ -253,8 +253,8 @@ abstract contract LSP6KeyManagerCore is
     ) external returns (bytes4) {
         bool isSetData = false;
         if (
-            bytes4(data) == SETDATA_SELECTOR ||
-            bytes4(data) == SETDATA_BATCH_SELECTOR
+            bytes4(data) == IERC725Y.setData.selector ||
+            bytes4(data) == IERC725Y.setDataBatch.selector
         ) {
             isSetData = true;
         }
@@ -320,8 +320,8 @@ abstract contract LSP6KeyManagerCore is
 
         bool isSetData = false;
         if (
-            bytes4(payload) == SETDATA_SELECTOR ||
-            bytes4(payload) == SETDATA_BATCH_SELECTOR
+            bytes4(payload) == IERC725Y.setData.selector ||
+            bytes4(payload) == IERC725Y.setDataBatch.selector
         ) {
             isSetData = true;
         }
@@ -366,8 +366,8 @@ abstract contract LSP6KeyManagerCore is
 
         bool isSetData = false;
         if (
-            bytes4(payload) == SETDATA_SELECTOR ||
-            bytes4(payload) == SETDATA_BATCH_SELECTOR
+            bytes4(payload) == IERC725Y.setData.selector ||
+            bytes4(payload) == IERC725Y.setDataBatch.selector
         ) {
             isSetData = true;
         }
@@ -463,7 +463,7 @@ abstract contract LSP6KeyManagerCore is
         bytes4 erc725Function = bytes4(payload);
 
         // ERC725Y.setData(bytes32,bytes)
-        if (erc725Function == SETDATA_SELECTOR) {
+        if (erc725Function == IERC725Y.setData.selector) {
             if (msgValue != 0) revert CannotSendValueToSetData();
             (bytes32 inputKey, bytes memory inputValue) = abi.decode(
                 payload[4:],
@@ -479,7 +479,7 @@ abstract contract LSP6KeyManagerCore is
             );
 
             // ERC725Y.setDataBatch(bytes32[],bytes[])
-        } else if (erc725Function == SETDATA_BATCH_SELECTOR) {
+        } else if (erc725Function == IERC725Y.setDataBatch.selector) {
             if (msgValue != 0) revert CannotSendValueToSetData();
             (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi
                 .decode(payload[4:], (bytes32[], bytes[]));
@@ -493,7 +493,7 @@ abstract contract LSP6KeyManagerCore is
             );
 
             // ERC725X.execute(uint256,address,uint256,bytes)
-        } else if (erc725Function == EXECUTE_SELECTOR) {
+        } else if (erc725Function == IERC725X.execute.selector) {
             LSP6ExecuteModule._verifyCanExecute(
                 _target,
                 from,
