@@ -4,7 +4,9 @@ pragma solidity ^0.8.4;
 
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 /**
  * @title Interface of the LSP8 - Identifiable Digital Asset standard, a non-fungible digital asset.
@@ -90,7 +92,9 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param tokenOwner The address to query owned tokens
      * @return List of owned tokens by `tokenOwner` address
      */
-    function tokenIdsOf(address tokenOwner) external view returns (bytes32[] memory);
+    function tokenIdsOf(
+        address tokenOwner
+    ) external view returns (bytes32[] memory);
 
     // --- Operator functionality
 
@@ -140,7 +144,10 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * - `tokenId` must exist.
      */
-    function isOperatorFor(address operator, bytes32 tokenId) external view returns (bool);
+    function isOperatorFor(
+        address operator,
+        bytes32 tokenId
+    ) external view returns (bool);
 
     /**
      * @param tokenId The tokenId to query
@@ -151,7 +158,9 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * - `tokenId` must exist.
      */
-    function getOperatorsOf(bytes32 tokenId) external view returns (address[] memory);
+    function getOperatorsOf(
+        bytes32 tokenId
+    ) external view returns (address[] memory);
 
     // --- Transfer functionality
 

@@ -19,7 +19,9 @@ library LSP2Utils {
      * @return a bytes32 dataKey
      *
      */
-    function generateSingletonKey(string memory keyName) internal pure returns (bytes32) {
+    function generateSingletonKey(
+        string memory keyName
+    ) internal pure returns (bytes32) {
         return keccak256(bytes(keyName));
     }
 
@@ -27,7 +29,9 @@ library LSP2Utils {
      * @dev Generates a data key of keyType Array by hashing `keyName`.
      * @param keyName The string that will be used to generate an data key of keyType Array
      */
-    function generateArrayKey(string memory keyName) internal pure returns (bytes32) {
+    function generateArrayKey(
+        string memory keyName
+    ) internal pure returns (bytes32) {
         bytes memory dataKey = bytes(keyName);
         require(dataKey.length >= 2, "MUST be longer than 2 characters");
         require(
@@ -49,7 +53,10 @@ library LSP2Utils {
         bytes32 arrayKey,
         uint128 index
     ) internal pure returns (bytes32) {
-        bytes memory elementInArray = bytes.concat(bytes16(arrayKey), bytes16(index));
+        bytes memory elementInArray = bytes.concat(
+            bytes16(arrayKey),
+            bytes16(index)
+        );
         return bytes32(elementInArray);
     }
 
@@ -109,7 +116,11 @@ library LSP2Utils {
         bytes10 keyPrefix,
         bytes20 bytes20Value
     ) internal pure returns (bytes32) {
-        bytes memory generatedKey = bytes.concat(keyPrefix, bytes2(0), bytes20Value);
+        bytes memory generatedKey = bytes.concat(
+            keyPrefix,
+            bytes2(0),
+            bytes20Value
+        );
         return bytes32(generatedKey);
     }
 
@@ -152,7 +163,12 @@ library LSP2Utils {
         bytes4 mapPrefix,
         bytes20 subMapKey
     ) internal pure returns (bytes32) {
-        bytes memory generatedKey = bytes.concat(keyPrefix, mapPrefix, bytes2(0), subMapKey);
+        bytes memory generatedKey = bytes.concat(
+            keyPrefix,
+            mapPrefix,
+            bytes2(0),
+            subMapKey
+        );
         return bytes32(generatedKey);
     }
 
@@ -166,7 +182,11 @@ library LSP2Utils {
         bytes10 keyPrefix,
         bytes20 bytes20Value
     ) internal pure returns (bytes32) {
-        bytes memory generatedKey = bytes.concat(keyPrefix, bytes2(0), bytes20Value);
+        bytes memory generatedKey = bytes.concat(
+            keyPrefix,
+            bytes2(0),
+            bytes20Value
+        );
         return bytes32(generatedKey);
     }
 
@@ -228,7 +248,9 @@ library LSP2Utils {
      * Verifing if `data` is an encoded array of addresses (address[])
      * @param data The value that is to be verified
      */
-    function isEncodedArrayOfAddresses(bytes memory data) internal pure returns (bool) {
+    function isEncodedArrayOfAddresses(
+        bytes memory data
+    ) internal pure returns (bool) {
         if (!isEncodedArray(data)) return false;
 
         uint256 offset = uint256(bytes32(data));
@@ -258,7 +280,9 @@ library LSP2Utils {
      * @dev verify that `data` is an array of bytes4 (bytes4[]) encoded according to the Solidity ABI specs.
      * @param data The value that is to be verified
      */
-    function isBytes4EncodedArray(bytes memory data) internal pure returns (bool) {
+    function isBytes4EncodedArray(
+        bytes memory data
+    ) internal pure returns (bool) {
         if (!isEncodedArray(data)) return false;
 
         uint256 offset = uint256(bytes32(data));
@@ -285,7 +309,9 @@ library LSP2Utils {
     /**
      * @dev Verify the validity of the `compactBytesArray` according to LSP2
      */
-    function isCompactBytesArray(bytes memory compactBytesArray) internal pure returns (bool) {
+    function isCompactBytesArray(
+        bytes memory compactBytesArray
+    ) internal pure returns (bool) {
         /**
          * Pointer will always land on these values:
          *
@@ -308,7 +334,12 @@ library LSP2Utils {
         while (pointer < compactBytesArray.length) {
             if (pointer + 1 >= compactBytesArray.length) return false;
             uint256 elementLength = uint16(
-                bytes2(abi.encodePacked(compactBytesArray[pointer], compactBytesArray[pointer + 1]))
+                bytes2(
+                    abi.encodePacked(
+                        compactBytesArray[pointer],
+                        compactBytesArray[pointer + 1]
+                    )
+                )
             );
             pointer += elementLength + 2;
         }

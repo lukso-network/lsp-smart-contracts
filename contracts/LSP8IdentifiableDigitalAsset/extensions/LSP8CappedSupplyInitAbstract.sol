@@ -10,7 +10,9 @@ import {
 /**
  * @dev LSP8 extension, adds token supply cap.
  */
-abstract contract LSP8CappedSupplyInitAbstract is LSP8IdentifiableDigitalAssetInitAbstract {
+abstract contract LSP8CappedSupplyInitAbstract is
+    LSP8IdentifiableDigitalAssetInitAbstract
+{
     // --- Errors
     error LSP8CappedSupplyRequired();
     error LSP8CappedSupplyCannotMintOverCap();
@@ -18,7 +20,9 @@ abstract contract LSP8CappedSupplyInitAbstract is LSP8IdentifiableDigitalAssetIn
     // --- Storage
     uint256 private _tokenSupplyCap;
 
-    function _initialize(uint256 tokenSupplyCap_) internal virtual onlyInitializing {
+    function _initialize(
+        uint256 tokenSupplyCap_
+    ) internal virtual onlyInitializing {
         if (tokenSupplyCap_ == 0) {
             revert LSP8CappedSupplyRequired();
         }

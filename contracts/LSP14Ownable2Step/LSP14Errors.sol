@@ -4,7 +4,10 @@ pragma solidity ^0.8.4;
 /**
  * @dev reverts when trying to renounce ownership before the initial confirmation delay
  */
-error NotInRenounceOwnershipInterval(uint256 renounceOwnershipStart, uint256 renounceOwnershipEnd);
+error NotInRenounceOwnershipInterval(
+    uint256 renounceOwnershipStart,
+    uint256 renounceOwnershipEnd
+);
 
 /**
  * @dev reverts when trying to transfer ownership to the address(this)

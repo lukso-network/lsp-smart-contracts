@@ -12,7 +12,9 @@ contract ABIEncoder {
         gasUsed = gasUsed1 - gasUsed2;
     }
 
-    function decode(bytes memory c) public pure returns (bytes memory a, bytes memory b) {
+    function decode(
+        bytes memory c
+    ) public pure returns (bytes memory a, bytes memory b) {
         (a, b) = abi.decode(c, (bytes, bytes));
     }
 }

@@ -41,7 +41,10 @@ contract Create2Factory {
      * - `bytecode` must not be empty.
      * - `salt` must have not been used for `bytecode` already.
      */
-    function deploy(bytes32 salt, bytes memory bytecode) public payable returns (address) {
+    function deploy(
+        bytes32 salt,
+        bytes memory bytecode
+    ) public payable returns (address) {
         address addr;
         uint256 amount = msg.value;
 
@@ -61,7 +64,10 @@ contract Create2Factory {
      * @dev Returns the address where a contract will be stored if deployed via {deploy}. Any change in the
      * `bytecodeHash` or `salt` will result in a new destination address.
      */
-    function computeAddress(bytes32 salt, bytes32 bytecodeHash) public view returns (address) {
+    function computeAddress(
+        bytes32 salt,
+        bytes32 bytecodeHash
+    ) public view returns (address) {
         return computeAddress(salt, bytecodeHash, address(this));
     }
 
@@ -74,7 +80,9 @@ contract Create2Factory {
         bytes32 bytecodeHash,
         address deployer
     ) public pure returns (address) {
-        bytes32 _data = keccak256(abi.encodePacked(bytes1(0xff), deployer, salt, bytecodeHash));
+        bytes32 _data = keccak256(
+            abi.encodePacked(bytes1(0xff), deployer, salt, bytecodeHash)
+        );
         return address(uint160(uint256(_data)));
     }
 }

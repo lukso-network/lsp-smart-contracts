@@ -43,13 +43,19 @@ contract ExecuteUnrestrictedController is UniversalProfileTestsHelper {
         randomUniversalProfileOwner = vm.addr(4);
 
         mainUniversalProfile = new LSP0ERC725Account(mainUniversalProfileOwner);
-        randomUniversalProfile = new LSP0ERC725Account(randomUniversalProfileOwner);
+        randomUniversalProfile = new LSP0ERC725Account(
+            randomUniversalProfileOwner
+        );
 
         universalReceiverDelegate = new LSP1UniversalReceiverDelegateUP();
 
         // deploy LSP6KeyManagers
-        keyManagerMainUP = new LSP6ExecuteUnrestrictedController(address(mainUniversalProfile));
-        keyManagerRandomUP = new LSP6ExecuteUnrestrictedController(address(randomUniversalProfile));
+        keyManagerMainUP = new LSP6ExecuteUnrestrictedController(
+            address(mainUniversalProfile)
+        );
+        keyManagerRandomUP = new LSP6ExecuteUnrestrictedController(
+            address(randomUniversalProfile)
+        );
 
         setURDToUPAndGivePermissions(
             mainUniversalProfile,
@@ -204,7 +210,10 @@ contract ExecuteUnrestrictedController is UniversalProfileTestsHelper {
         keyManagerMainUP.transferNFTToRandomUP(transferPayload);
 
         // check if UniversalProfile has 0 tokens
-        assertEq(indentifiableDigitalAsset.balanceOf(address(mainUniversalProfile)), 0);
+        assertEq(
+            indentifiableDigitalAsset.balanceOf(address(mainUniversalProfile)),
+            0
+        );
 
         // check if random EOA is owner of tokenID 1
         assertEq(
@@ -235,27 +244,49 @@ contract ExecuteUnrestrictedController is UniversalProfileTestsHelper {
         keyManagerMainUP.transferNFTToRandomEOA(transferPayload);
 
         // check if UniversalProfile has 0 tokens
-        assertEq(indentifiableDigitalAsset.balanceOf(address(mainUniversalProfile)), 0);
+        assertEq(
+            indentifiableDigitalAsset.balanceOf(address(mainUniversalProfile)),
+            0
+        );
 
         // check if random EOA is owner of tokenID 1
-        assertEq(indentifiableDigitalAsset.tokenOwnerOf(bytes32(uint256(1))), address(randomEOA));
+        assertEq(
+            indentifiableDigitalAsset.tokenOwnerOf(bytes32(uint256(1))),
+            address(randomEOA)
+        );
     }
 
     function _deployAndMintNFT() internal {
-        indentifiableDigitalAsset = new LSP8Tester("TestLSP8", "TSTLSP8", digitalAssetsOwner);
+        indentifiableDigitalAsset = new LSP8Tester(
+            "TestLSP8",
+            "TSTLSP8",
+            digitalAssetsOwner
+        );
 
         bytes32 tokenID = bytes32(uint256(1));
 
         // mint 100 tokens to UniversalProfile
         vm.prank(address(mainUniversalProfile));
-        indentifiableDigitalAsset.mint(address(mainUniversalProfile), tokenID, false, "");
+        indentifiableDigitalAsset.mint(
+            address(mainUniversalProfile),
+            tokenID,
+            false,
+            ""
+        );
 
         // check if UniversalProfile has 100 tokens
-        assertEq(indentifiableDigitalAsset.balanceOf(address(mainUniversalProfile)), 1);
+        assertEq(
+            indentifiableDigitalAsset.balanceOf(address(mainUniversalProfile)),
+            1
+        );
     }
 
     function _deployandMintLSP7DigitalAsset() internal {
-        digitalAsset = new LSP7Tester("TestLSP7", "TSTLSP7", digitalAssetsOwner);
+        digitalAsset = new LSP7Tester(
+            "TestLSP7",
+            "TSTLSP7",
+            digitalAssetsOwner
+        );
 
         // mint 100 tokens to UniversalProfile
         vm.prank(address(mainUniversalProfile));

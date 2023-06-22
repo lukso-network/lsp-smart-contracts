@@ -3,7 +3,9 @@ pragma solidity ^0.8.4;
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {
+    ERC165Checker
+} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // constants
 import {_INTERFACEID_LSP17_EXTENDABLE} from "./LSP17Constants.sol";
@@ -23,8 +25,12 @@ abstract contract LSP17Extendable is ERC165 {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == _INTERFACEID_LSP17_EXTENDABLE || super.supportsInterface(interfaceId);
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override returns (bool) {
+        return
+            interfaceId == _INTERFACEID_LSP17_EXTENDABLE ||
+            super.supportsInterface(interfaceId);
     }
 
     /**
@@ -38,10 +44,16 @@ abstract contract LSP17Extendable is ERC165 {
     function _supportsInterfaceInERC165Extension(
         bytes4 interfaceId
     ) internal view virtual returns (bool) {
-        address erc165Extension = _getExtension(ERC165.supportsInterface.selector);
+        address erc165Extension = _getExtension(
+            ERC165.supportsInterface.selector
+        );
         if (erc165Extension == address(0)) return false;
 
-        return ERC165Checker.supportsERC165InterfaceUnchecked(erc165Extension, interfaceId);
+        return
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                erc165Extension,
+                interfaceId
+            );
     }
 
     /**
@@ -50,7 +62,9 @@ abstract contract LSP17Extendable is ERC165 {
      * To be overrided.
      * Up to the implementor contract to return an extension based on a function selector
      */
-    function _getExtension(bytes4 functionSelector) internal view virtual returns (address);
+    function _getExtension(
+        bytes4 functionSelector
+    ) internal view virtual returns (address);
 
     /**
      * @dev Forwards the call to an extension mapped to a function selector.
@@ -74,7 +88,8 @@ abstract contract LSP17Extendable is ERC165 {
         address extension = _getExtension(msg.sig);
 
         // if no extension was found, revert
-        if (extension == address(0)) revert NoExtensionFoundForFunctionSelector(msg.sig);
+        if (extension == address(0))
+            revert NoExtensionFoundForFunctionSelector(msg.sig);
 
         // solhint-disable no-inline-assembly
         // if the extension was found, call the extension with the msg.data
@@ -90,7 +105,15 @@ abstract contract LSP17Extendable is ERC165 {
             mstore(add(calldatasize(), 20), callvalue())
 
             // Add 52 bytes for the msg.sender and msg.value appended at the end of the calldata
-            let success := call(gas(), extension, 0, 0, add(calldatasize(), 52), 0, 0)
+            let success := call(
+                gas(),
+                extension,
+                0,
+                0,
+                add(calldatasize(), 52),
+                0,
+                0
+            )
 
             // Copy the returned data
             returndatacopy(0, 0, returndatasize())

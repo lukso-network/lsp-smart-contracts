@@ -20,15 +20,22 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         return ERC725Y(_target).getPermissionsFor(_address);
     }
 
-    function getAllowedCallsFor(address _address) public view returns (bytes memory) {
+    function getAllowedCallsFor(
+        address _address
+    ) public view returns (bytes memory) {
         return ERC725Y(_target).getAllowedCallsFor(_address);
     }
 
-    function getAllowedERC725YDataKeysFor(address _address) public view returns (bytes memory) {
+    function getAllowedERC725YDataKeysFor(
+        address _address
+    ) public view returns (bytes memory) {
         return ERC725Y(_target).getAllowedERC725YDataKeysFor(_address);
     }
 
-    function verifyAllowedCall(address _sender, bytes calldata _payload) public view {
+    function verifyAllowedCall(
+        address _sender,
+        bytes calldata _payload
+    ) public view {
         super._verifyAllowedCall(_target, _sender, _payload);
     }
 
@@ -41,7 +48,9 @@ contract KeyManagerInternalTester is LSP6KeyManager {
     function isCompactBytesArrayOfAllowedERC725YDataKeys(
         bytes memory allowedERC725YDataKeysCompacted
     ) public pure returns (bool) {
-        return allowedERC725YDataKeysCompacted.isCompactBytesArrayOfAllowedERC725YDataKeys();
+        return
+            allowedERC725YDataKeysCompacted
+                .isCompactBytesArrayOfAllowedERC725YDataKeys();
     }
 
     function verifyCanSetData(
@@ -50,7 +59,13 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         bytes32[] memory inputDataKeys,
         bytes[] memory inputDataValues
     ) public view {
-        super._verifyCanSetData(_target, controller, permissions, inputDataKeys, inputDataValues);
+        super._verifyCanSetData(
+            _target,
+            controller,
+            permissions,
+            inputDataKeys,
+            inputDataValues
+        );
     }
 
     function verifyAllowedERC725YSingleKey(
@@ -58,7 +73,11 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         bytes32 inputKey,
         bytes memory allowedERC725YDataKeysFor
     ) public pure {
-        super._verifyAllowedERC725YSingleKey(from, inputKey, allowedERC725YDataKeysFor);
+        super._verifyAllowedERC725YSingleKey(
+            from,
+            inputKey,
+            allowedERC725YDataKeysFor
+        );
     }
 
     function verifyAllowedERC725YDataKeys(

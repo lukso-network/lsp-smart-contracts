@@ -28,7 +28,10 @@ error GuardiansNumberCannotGoBelowThreshold(uint256 guardianThreshold);
  * @dev reverts when setting the guardians threshold to a number
  * higher than the guardians number
  */
-error ThresholdCannotBeHigherThanGuardiansNumber(uint256 thresholdGiven, uint256 guardianNumber);
+error ThresholdCannotBeHigherThanGuardiansNumber(
+    uint256 thresholdGiven,
+    uint256 guardianNumber
+);
 
 /**
  * @dev reverts when the secret hash provided is equal to bytes32(0)

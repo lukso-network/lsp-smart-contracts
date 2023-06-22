@@ -4,12 +4,16 @@ pragma solidity ^0.8.4;
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP0ERC725Account} from "./ILSP0ERC725Account.sol";
-import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import {
+    ILSP1UniversalReceiver
+} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {
+    ERC165Checker
+} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
@@ -17,10 +21,14 @@ import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {
+    OwnableUnset
+} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
-import {LSP20CallVerification} from "../LSP20CallVerification/LSP20CallVerification.sol";
+import {
+    LSP20CallVerification
+} from "../LSP20CallVerification/LSP20CallVerification.sol";
 
 // constants
 import "@erc725/smart-contracts/contracts/constants.sol";
@@ -40,12 +48,20 @@ import {
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
-import {_LSP17_EXTENSION_PREFIX} from "../LSP17ContractExtension/LSP17Constants.sol";
-import {_INTERFACEID_LSP20_CALL_VERIFICATION} from "../LSP20CallVerification/LSP20Constants.sol";
+import {
+    _LSP17_EXTENSION_PREFIX
+} from "../LSP17ContractExtension/LSP17Constants.sol";
+import {
+    _INTERFACEID_LSP20_CALL_VERIFICATION
+} from "../LSP20CallVerification/LSP20Constants.sol";
 
 // errors
-import {ERC725Y_DataKeysValuesLengthMismatch} from "@erc725/smart-contracts/contracts/errors.sol";
-import {NoExtensionFoundForFunctionSelector} from "../LSP17ContractExtension/LSP17Errors.sol";
+import {
+    ERC725Y_DataKeysValuesLengthMismatch
+} from "@erc725/smart-contracts/contracts/errors.sol";
+import {
+    NoExtensionFoundForFunctionSelector
+} from "../LSP17ContractExtension/LSP17Errors.sol";
 
 /**
  * @title The Core Implementation of LSP0-ERC725Account Standard
@@ -152,10 +168,14 @@ abstract contract LSP0ERC725AccountCore is
      * @param data An array of ABI encoded function calls to be called on the contract.
      * @return results An array of values returned by the executed functions.
      */
-    function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
+    function batchCalls(
+        bytes[] calldata data
+    ) public returns (bytes[] memory results) {
         results = new bytes[](data.length);
         for (uint256 i; i < data.length; ) {
-            (bool success, bytes memory result) = address(this).delegatecall(data[i]);
+            (bool success, bytes memory result) = address(this).delegatecall(
+                data[i]
+            );
 
             if (!success) {
                 // Look for revert reason and bubble it up if present
@@ -221,7 +241,12 @@ abstract contract LSP0ERC725AccountCore is
         bool verifyAfter = LSP20CallVerification._verifyCall(_owner);
 
         // Perform the execution
-        bytes memory result = ERC725XCore._execute(operationType, target, value, data);
+        bytes memory result = ERC725XCore._execute(
+            operationType,
+            target,
+            value,
+            data
+        );
 
         // if verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         if (verifyAfter) {
@@ -266,7 +291,13 @@ abstract contract LSP0ERC725AccountCore is
 
         // If the caller is the owner perform execute directly
         if (msg.sender == _owner) {
-            return ERC725XCore._executeBatch(operationsType, targets, values, datas);
+            return
+                ERC725XCore._executeBatch(
+                    operationsType,
+                    targets,
+                    values,
+                    datas
+                );
         }
 
         // If the caller is not the owner, call {lsp20VerifyCall} on the owner
@@ -274,11 +305,19 @@ abstract contract LSP0ERC725AccountCore is
         bool verifyAfter = LSP20CallVerification._verifyCall(_owner);
 
         // Perform the execution
-        bytes[] memory results = ERC725XCore._executeBatch(operationsType, targets, values, datas);
+        bytes[] memory results = ERC725XCore._executeBatch(
+            operationsType,
+            targets,
+            values,
+            datas
+        );
 
         // if verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         if (verifyAfter) {
-            LSP20CallVerification._verifyCallResult(_owner, abi.encode(results));
+            LSP20CallVerification._verifyCallResult(
+                _owner,
+                abi.encode(results)
+            );
         }
 
         return results;
@@ -297,7 +336,10 @@ abstract contract LSP0ERC725AccountCore is
      * - {ValueReceived} event when receiving native tokens.
      * - {DataChanged} event.
      */
-    function setData(bytes32 dataKey, bytes memory dataValue) public payable virtual override {
+    function setData(
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) public payable virtual override {
         if (msg.value != 0) {
             emit ValueReceived(msg.sender, msg.value);
         }
@@ -424,14 +466,22 @@ abstract contract LSP0ERC725AccountCore is
         }
 
         // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY}
-        bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
+        bytes memory lsp1DelegateValue = _getData(
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
+        );
         bytes memory resultDefaultDelegate;
 
         if (lsp1DelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
+            address universalReceiverDelegate = address(
+                bytes20(lsp1DelegateValue)
+            );
 
             // Checking LSP1 InterfaceId support
-            if (universalReceiverDelegate.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
+            if (
+                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
+                    _INTERFACEID_LSP1
+                )
+            ) {
                 // calling {universalReceiver} function on URD appending the caller and the value sent
                 resultDefaultDelegate = universalReceiverDelegate
                     .callUniversalReceiverWithCallerInfos(
@@ -454,10 +504,16 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory resultTypeIdDelegate;
 
         if (lsp1TypeIdDelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(bytes20(lsp1TypeIdDelegateValue));
+            address universalReceiverDelegate = address(
+                bytes20(lsp1TypeIdDelegateValue)
+            );
 
             // Checking LSP1 InterfaceId support
-            if (universalReceiverDelegate.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
+            if (
+                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
+                    _INTERFACEID_LSP1
+                )
+            ) {
                 // calling {universalReceiver} function on URD appending the caller and the value sent
                 resultTypeIdDelegate = universalReceiverDelegate
                     .callUniversalReceiverWithCallerInfos(
@@ -469,8 +525,17 @@ abstract contract LSP0ERC725AccountCore is
             }
         }
 
-        returnedValues = abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
-        emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
+        returnedValues = abi.encode(
+            resultDefaultDelegate,
+            resultTypeIdDelegate
+        );
+        emit UniversalReceiver(
+            msg.sender,
+            msg.value,
+            typeId,
+            receivedData,
+            returnedValues
+        );
     }
 
     /**
@@ -501,7 +566,10 @@ abstract contract LSP0ERC725AccountCore is
             emit OwnershipTransferStarted(currentOwner, pendingNewOwner);
 
             // notify the pending owner through LSP1
-            pendingNewOwner.tryNotifyUniversalReceiver(_TYPEID_LSP0_OwnershipTransferStarted, "");
+            pendingNewOwner.tryNotifyUniversalReceiver(
+                _TYPEID_LSP0_OwnershipTransferStarted,
+                ""
+            );
 
             // Require that the owner didn't change after the LSP1 Call
             // (Pending owner didn't automate the acceptOwnership call through LSP1)
@@ -519,7 +587,10 @@ abstract contract LSP0ERC725AccountCore is
             emit OwnershipTransferStarted(currentOwner, pendingNewOwner);
 
             // notify the pending owner through LSP1
-            pendingNewOwner.tryNotifyUniversalReceiver(_TYPEID_LSP0_OwnershipTransferStarted, "");
+            pendingNewOwner.tryNotifyUniversalReceiver(
+                _TYPEID_LSP0_OwnershipTransferStarted,
+                ""
+            );
 
             // Require that the owner didn't change after the LSP1 Call
             // (Pending owner didn't automate the acceptOwnership call through LSP1)
@@ -581,7 +652,11 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:danger Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
      *
      */
-    function renounceOwnership() public virtual override(LSP14Ownable2Step, OwnableUnset) {
+    function renounceOwnership()
+        public
+        virtual
+        override(LSP14Ownable2Step, OwnableUnset)
+    {
         address _owner = owner();
 
         // If the caller is the owner perform renounceOwnership directly
@@ -616,7 +691,13 @@ abstract contract LSP0ERC725AccountCore is
      */
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override(ERC725XCore, ERC725YCore, LSP17Extendable) returns (bool) {
+    )
+        public
+        view
+        virtual
+        override(ERC725XCore, ERC725YCore, LSP17Extendable)
+        returns (bool)
+    {
         return
             interfaceId == _INTERFACEID_ERC1271 ||
             interfaceId == _INTERFACEID_LSP0 ||
@@ -659,7 +740,11 @@ abstract contract LSP0ERC725AccountCore is
         // If owner is a contract
         if (_owner.code.length > 0) {
             (bool success, bytes memory result) = _owner.staticcall(
-                abi.encodeWithSelector(IERC1271.isValidSignature.selector, dataHash, signature)
+                abi.encodeWithSelector(
+                    IERC1271.isValidSignature.selector,
+                    dataHash,
+                    signature
+                )
             );
 
             bool isValid = (success &&
@@ -671,18 +756,20 @@ abstract contract LSP0ERC725AccountCore is
         // If owner is an EOA
         else {
             // if isValidSignature fail, the error is catched in returnedError
-            (address recoveredAddress, ECDSA.RecoverError returnedError) = ECDSA.tryRecover(
-                dataHash,
-                signature
-            );
+            (address recoveredAddress, ECDSA.RecoverError returnedError) = ECDSA
+                .tryRecover(dataHash, signature);
 
             // if recovering throws an error, return the fail value
-            if (returnedError != ECDSA.RecoverError.NoError) return _ERC1271_FAILVALUE;
+            if (returnedError != ECDSA.RecoverError.NoError)
+                return _ERC1271_FAILVALUE;
 
             // if recovering is successful and the recovered address matches the owner's address,
             // return the ERC1271 magic value. Otherwise, return the ERC1271 fail value
             // matches the address of the owner, otherwise return fail value
-            return recoveredAddress == _owner ? _ERC1271_MAGICVALUE : _ERC1271_FAILVALUE;
+            return
+                recoveredAddress == _owner
+                    ? _ERC1271_MAGICVALUE
+                    : _ERC1271_FAILVALUE;
         }
     }
 
@@ -714,7 +801,8 @@ abstract contract LSP0ERC725AccountCore is
         if (msg.sig == bytes4(0) && extension == address(0)) return;
 
         // if no extension was found for other function selectors, revert
-        if (extension == address(0)) revert NoExtensionFoundForFunctionSelector(msg.sig);
+        if (extension == address(0))
+            revert NoExtensionFoundForFunctionSelector(msg.sig);
 
         // solhint-disable no-inline-assembly
         // if the extension was found, call the extension with the msg.data
@@ -730,7 +818,15 @@ abstract contract LSP0ERC725AccountCore is
             mstore(add(calldatasize(), 20), callvalue())
 
             // Add 52 bytes for the msg.sender and msg.value appended at the end of the calldata
-            let success := call(gas(), extension, 0, 0, add(calldatasize(), 52), 0, 0)
+            let success := call(
+                gas(),
+                extension,
+                0,
+                0,
+                add(calldatasize(), 52),
+                0,
+                0
+            )
 
             // Copy the returned data
             returndatacopy(0, 0, returndatasize())
@@ -762,7 +858,9 @@ abstract contract LSP0ERC725AccountCore is
         );
 
         // Check if there is an extension stored under the generated data key
-        address extension = address(bytes20(ERC725YCore._getData(mappedExtensionDataKey)));
+        address extension = address(
+            bytes20(ERC725YCore._getData(mappedExtensionDataKey))
+        );
 
         return extension;
     }
@@ -774,11 +872,16 @@ abstract contract LSP0ERC725AccountCore is
      * @param dataKey The key to store the data value under.
      * @param dataValue The data value to be stored.
      */
-    function _setData(bytes32 dataKey, bytes memory dataValue) internal virtual override {
+    function _setData(
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) internal virtual override {
         ERC725YCore._store[dataKey] = dataValue;
         emit DataChanged(
             dataKey,
-            dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
+            dataValue.length <= 256
+                ? dataValue
+                : BytesLib.slice(dataValue, 0, 256)
         );
     }
 }

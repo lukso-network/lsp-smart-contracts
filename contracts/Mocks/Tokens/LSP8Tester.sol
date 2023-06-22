@@ -6,7 +6,9 @@ pragma solidity ^0.8.4;
 import {
     LSP8IdentifiableDigitalAsset
 } from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol";
-import {LSP8Burnable} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol";
+import {
+    LSP8Burnable
+} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol";
 
 contract LSP8Tester is LSP8IdentifiableDigitalAsset, LSP8Burnable {
     constructor(

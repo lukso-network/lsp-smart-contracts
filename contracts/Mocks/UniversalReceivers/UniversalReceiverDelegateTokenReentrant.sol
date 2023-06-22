@@ -2,13 +2,17 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {
+    IERC725X
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import {
+    ERC165Storage
+} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // constants
 import {
@@ -36,10 +40,17 @@ contract UniversalReceiverDelegateTokenReentrant is ERC165Storage {
         bytes memory data
     ) public payable virtual returns (bytes memory result) {
         address sender = address(bytes20(msg.data[msg.data.length - 52:]));
-        if (typeId == _TYPEID_LSP7_TOKENSRECIPIENT || typeId == _TYPEID_LSP8_TOKENSRECIPIENT) {
+        if (
+            typeId == _TYPEID_LSP7_TOKENSRECIPIENT ||
+            typeId == _TYPEID_LSP8_TOKENSRECIPIENT
+        ) {
             // if the optional data field when minting/transferring is existing, re-execute the data on token contract
             if (data.length > 72) {
-                bytes memory tokenPayload = BytesLib.slice(data, 72, data.length - 72);
+                bytes memory tokenPayload = BytesLib.slice(
+                    data,
+                    72,
+                    data.length - 72
+                );
                 bytes memory executePayload = abi.encodeWithSelector(
                     IERC725X.execute.selector,
                     0, // OPERATION CALL

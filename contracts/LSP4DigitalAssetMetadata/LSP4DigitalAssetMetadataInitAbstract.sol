@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {ERC725YInitAbstract} from "@erc725/smart-contracts/contracts/ERC725YInitAbstract.sol";
+import {
+    ERC725YInitAbstract
+} from "@erc725/smart-contracts/contracts/ERC725YInitAbstract.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -11,7 +13,10 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import "./LSP4Constants.sol";
 
 // errors
-import {LSP4TokenNameNotEditable, LSP4TokenSymbolNotEditable} from "./LSP4Errors.sol";
+import {
+    LSP4TokenNameNotEditable,
+    LSP4TokenSymbolNotEditable
+} from "./LSP4Errors.sol";
 
 /**
  * @title LSP4DigitalAssetMetadata
@@ -27,7 +32,10 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is ERC725YInitAbstract {
         ERC725YInitAbstract._initialize(newOwner_);
 
         // set SupportedStandards:LSP4DigitalAsset
-        super._setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
+        super._setData(
+            _LSP4_SUPPORTED_STANDARDS_KEY,
+            _LSP4_SUPPORTED_STANDARDS_VALUE
+        );
 
         super._setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
         super._setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
@@ -39,7 +47,10 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is ERC725YInitAbstract {
      *
      * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
      */
-    function _setData(bytes32 dataKey, bytes memory dataValue) internal virtual override {
+    function _setData(
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) internal virtual override {
         if (dataKey == _LSP4_TOKEN_NAME_KEY) {
             revert LSP4TokenNameNotEditable();
         } else if (dataKey == _LSP4_TOKEN_SYMBOL_KEY) {
@@ -48,7 +59,9 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is ERC725YInitAbstract {
             _store[dataKey] = dataValue;
             emit DataChanged(
                 dataKey,
-                dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
+                dataValue.length <= 256
+                    ? dataValue
+                    : BytesLib.slice(dataValue, 0, 256)
             );
         }
     }

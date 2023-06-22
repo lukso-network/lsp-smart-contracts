@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -26,7 +28,10 @@ import "../LSP7DigitalAsset/LSP7Constants.sol";
  * @param invalidValueStored the invalid value stored under the LSP5ReceivedAssets[] data key
  * @param invalidValueLength the invalid number of bytes stored under the LSP5ReceivedAssets[] data key (MUST be exactly 16 bytes long)
  */
-error InvalidLSP5ReceivedAssetsArrayLength(bytes invalidValueStored, uint256 invalidValueLength);
+error InvalidLSP5ReceivedAssetsArrayLength(
+    bytes invalidValueStored,
+    uint256 invalidValueLength
+);
 
 /**
  * @dev reverts when the `LSP5ReceivedAssets[]` array reaches its maximum limit (max(uint128))
@@ -80,7 +85,9 @@ library LSP5Utils {
         uint128 oldArrayLength = uint128(bytes16(encodedArrayLength));
 
         if (oldArrayLength == type(uint128).max) {
-            revert MaxLSP5ReceivedAssetsCountReached({notRegisteredAsset: asset});
+            revert MaxLSP5ReceivedAssetsCountReached({
+                notRegisteredAsset: asset
+            });
         }
 
         // store the number of received assets incremented by 1
@@ -113,7 +120,9 @@ library LSP5Utils {
         uint128 assetIndex
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
         IERC725Y account = IERC725Y(sender);
-        bytes memory lsp5ReceivedAssetsCountValue = getLSP5ReceivedAssetsCount(account);
+        bytes memory lsp5ReceivedAssetsCountValue = getLSP5ReceivedAssetsCount(
+            account
+        );
 
         if (lsp5ReceivedAssetsCountValue.length != 16) {
             revert InvalidLSP5ReceivedAssetsArrayLength({
@@ -186,13 +195,16 @@ library LSP5Utils {
             // with data Keys/values of the asset to remove
 
             // Generate the element key of the last asset in the array
-            bytes32 lastAssetInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
-                _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
-                newArrayLength
-            );
+            bytes32 lastAssetInArrayKey = LSP2Utils
+                .generateArrayElementKeyAtIndex(
+                    _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
+                    newArrayLength
+                );
 
             // Get the address of the asset from the element key of the last asset in the array
-            bytes20 lastAssetInArrayAddress = bytes20(account.getData(lastAssetInArrayKey));
+            bytes20 lastAssetInArrayAddress = bytes20(
+                account.getData(lastAssetInArrayKey)
+            );
 
             // Generate the map key of the last asset in the array
             bytes32 lastAssetInArrayMapKey = LSP2Utils.generateMappingKey(
@@ -201,8 +213,14 @@ library LSP5Utils {
             );
 
             // Get the interfaceId and the location in the array of the last asset
-            bytes memory lastAssetInterfaceIdAndIndex = account.getData(lastAssetInArrayMapKey);
-            bytes memory interfaceID = BytesLib.slice(lastAssetInterfaceIdAndIndex, 0, 4);
+            bytes memory lastAssetInterfaceIdAndIndex = account.getData(
+                lastAssetInArrayMapKey
+            );
+            bytes memory interfaceID = BytesLib.slice(
+                lastAssetInterfaceIdAndIndex,
+                0,
+                4
+            );
 
             // Set the address of the last asset instead of the asset to be sent
             // under the element data key in the array
@@ -223,7 +241,9 @@ library LSP5Utils {
         }
     }
 
-    function getLSP5ReceivedAssetsCount(IERC725Y account) internal view returns (bytes memory) {
+    function getLSP5ReceivedAssetsCount(
+        IERC725Y account
+    ) internal view returns (bytes memory) {
         return account.getData(_LSP5_RECEIVED_ASSETS_ARRAY_KEY);
     }
 }

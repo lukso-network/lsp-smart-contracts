@@ -9,9 +9,13 @@ import {LSP6Utils} from "../LSP6KeyManager/LSP6Utils.sol";
 
 // modules
 import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {
+    OwnableUnset
+} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // constants
 import {ALL_REGULAR_PERMISSIONS} from "../LSP6KeyManager/LSP6Constants.sol";
@@ -23,7 +27,11 @@ import "./LSP11Errors.sol";
  * @dev Sets permission for a controller address after a recovery process to interact with an ERC725
  * contract via the LSP6KeyManager
  */
-abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11BasicSocialRecovery {
+abstract contract LSP11BasicSocialRecoveryCore is
+    OwnableUnset,
+    ERC165,
+    ILSP11BasicSocialRecovery
+{
     using EnumerableSet for EnumerableSet.AddressSet;
 
     address internal _target;
@@ -48,15 +56,20 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
      * @dev Throws if called by any account other than the guardians
      */
     modifier onlyGuardians() virtual {
-        if (!_guardians.contains(msg.sender)) revert CallerIsNotGuardian(msg.sender);
+        if (!_guardians.contains(msg.sender))
+            revert CallerIsNotGuardian(msg.sender);
         _;
     }
 
     /**
      * @inheritdoc ERC165
      */
-    function supportsInterface(bytes4 _interfaceId) public view virtual override returns (bool) {
-        return _interfaceId == _INTERFACEID_LSP11 || super.supportsInterface(_interfaceId);
+    function supportsInterface(
+        bytes4 _interfaceId
+    ) public view virtual override returns (bool) {
+        return
+            _interfaceId == _INTERFACEID_LSP11 ||
+            super.supportsInterface(_interfaceId);
     }
 
     /**
@@ -104,7 +117,9 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function getGuardianChoice(address guardian) public view virtual returns (address) {
+    function getGuardianChoice(
+        address guardian
+    ) public view virtual returns (address) {
         return _guardiansChoice[_recoveryCounter][guardian];
     }
 
@@ -112,7 +127,8 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
      * @inheritdoc ILSP11BasicSocialRecovery
      */
     function addGuardian(address newGuardian) public virtual onlyOwner {
-        if (_guardians.contains(newGuardian)) revert GuardianAlreadyExist(newGuardian);
+        if (_guardians.contains(newGuardian))
+            revert GuardianAlreadyExist(newGuardian);
 
         _guardians.add(newGuardian);
         emit GuardianAdded(newGuardian);
@@ -122,7 +138,8 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
      * @inheritdoc ILSP11BasicSocialRecovery
      */
     function removeGuardian(address existingGuardian) public virtual onlyOwner {
-        if (!_guardians.contains(existingGuardian)) revert GuardianDoNotExist(existingGuardian);
+        if (!_guardians.contains(existingGuardian))
+            revert GuardianDoNotExist(existingGuardian);
         if (_guardians.length() == _guardiansThreshold)
             revert GuardiansNumberCannotGoBelowThreshold(_guardiansThreshold);
 
@@ -133,9 +150,14 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function setGuardiansThreshold(uint256 newThreshold) public virtual onlyOwner {
+    function setGuardiansThreshold(
+        uint256 newThreshold
+    ) public virtual onlyOwner {
         if (newThreshold > _guardians.length())
-            revert ThresholdCannotBeHigherThanGuardiansNumber(newThreshold, _guardians.length());
+            revert ThresholdCannotBeHigherThanGuardiansNumber(
+                newThreshold,
+                _guardians.length()
+            );
 
         _guardiansThreshold = newThreshold;
         emit GuardiansThresholdChanged(newThreshold);
@@ -145,7 +167,9 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
      * @inheritdoc ILSP11BasicSocialRecovery
      * @dev Throws if hash provided is bytes32(0)
      */
-    function setRecoverySecretHash(bytes32 newRecoverSecretHash) public virtual onlyOwner {
+    function setRecoverySecretHash(
+        bytes32 newRecoverSecretHash
+    ) public virtual onlyOwner {
         if (newRecoverSecretHash == bytes32(0)) revert SecretHashCannotBeZero();
 
         _recoverySecretHash = newRecoverSecretHash;
@@ -155,11 +179,17 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function selectNewController(address addressSelected) public virtual onlyGuardians {
+    function selectNewController(
+        address addressSelected
+    ) public virtual onlyGuardians {
         uint256 currentRecoveryCounter = _recoveryCounter;
 
         _guardiansChoice[currentRecoveryCounter][msg.sender] = addressSelected;
-        emit SelectedNewController(currentRecoveryCounter, msg.sender, addressSelected);
+        emit SelectedNewController(
+            currentRecoveryCounter,
+            msg.sender,
+            addressSelected
+        );
     }
 
     /**
@@ -190,15 +220,21 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
         address keyManager = ERC725(target_).owner();
 
         // Setting permissions for `recoverer`
-        (bytes32[] memory keys, bytes[] memory values) = LSP6Utils.generateNewPermissionsKeys(
-            ERC725(target_),
-            recoverer,
-            ALL_REGULAR_PERMISSIONS
-        );
+        (bytes32[] memory keys, bytes[] memory values) = LSP6Utils
+            .generateNewPermissionsKeys(
+                ERC725(target_),
+                recoverer,
+                ALL_REGULAR_PERMISSIONS
+            );
 
         LSP6Utils.setDataViaKeyManager(keyManager, keys, values);
 
-        emit RecoveryProcessSuccessful(currentRecoveryCounter, recoverer, newSecretHash, guardians);
+        emit RecoveryProcessSuccessful(
+            currentRecoveryCounter,
+            recoverer,
+            newSecretHash,
+            guardians
+        );
 
         _cleanStorage(currentRecoveryCounter, guardians.length, guardians);
     }
@@ -224,15 +260,21 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
 
         unchecked {
             for (uint256 i; i < guardians.length; i++) {
-                if (_guardiansChoice[currentRecoveryCounter][guardians[i]] == recoverer)
-                    callerSelections++;
+                if (
+                    _guardiansChoice[currentRecoveryCounter][guardians[i]] ==
+                    recoverer
+                ) callerSelections++;
             }
         }
 
         uint256 guardiansThreshold = _guardiansThreshold;
 
         if (callerSelections < guardiansThreshold)
-            revert ThresholdNotReachedForRecoverer(recoverer, callerSelections, guardiansThreshold);
+            revert ThresholdNotReachedForRecoverer(
+                recoverer,
+                callerSelections,
+                guardiansThreshold
+            );
         if (newHash == bytes32(0)) revert SecretHashCannotBeZero();
         if (keccak256(abi.encodePacked(plainSecret)) != _recoverySecretHash)
             revert WrongPlainSecret();

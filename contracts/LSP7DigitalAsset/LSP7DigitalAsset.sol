@@ -6,7 +6,9 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
-import {LSP4DigitalAssetMetadata} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol";
+import {
+    LSP4DigitalAssetMetadata
+} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol";
 import {LSP7DigitalAssetCore} from "./LSP7DigitalAssetCore.sol";
 
 // constants
@@ -21,7 +23,10 @@ import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";
  * A supply mechanism has to be added in a derived contract using {_mint}
  * For a generic mechanism, see {LSP7Mintable}.
  */
-abstract contract LSP7DigitalAsset is LSP4DigitalAssetMetadata, LSP7DigitalAssetCore {
+abstract contract LSP7DigitalAsset is
+    LSP4DigitalAssetMetadata,
+    LSP7DigitalAssetCore
+{
     /**
      * @notice Sets the token-Metadata
      * @param name_ The name of the token
@@ -44,6 +49,8 @@ abstract contract LSP7DigitalAsset is LSP4DigitalAssetMetadata, LSP7DigitalAsset
     function supportsInterface(
         bytes4 interfaceId
     ) public view virtual override(IERC165, ERC725YCore) returns (bool) {
-        return interfaceId == _INTERFACEID_LSP7 || super.supportsInterface(interfaceId);
+        return
+            interfaceId == _INTERFACEID_LSP7 ||
+            super.supportsInterface(interfaceId);
     }
 }

@@ -27,7 +27,9 @@ contract BatchReentrancyRelayer {
 
     receive() external payable {}
 
-    function relayCallThatReenters(address keyManagerAddress) external returns (bytes[] memory) {
+    function relayCallThatReenters(
+        address keyManagerAddress
+    ) external returns (bytes[] memory) {
         return
             ILSP6KeyManager(keyManagerAddress).executeRelayCallBatch(
                 _signatures,

@@ -36,7 +36,9 @@ contract SetDataUnrestrictedController is UniversalProfileTestsHelper {
         mainUniversalProfile = new LSP0ERC725Account(unrestrictedController);
 
         // deploy LSP6KeyManagers
-        keyManagerMainUP = new LSP6SetDataUnrestrictedController(address(mainUniversalProfile));
+        keyManagerMainUP = new LSP6SetDataUnrestrictedController(
+            address(mainUniversalProfile)
+        );
 
         bytes32[] memory ownerPermissions = new bytes32[](3);
         ownerPermissions[0] = _PERMISSION_SUPER_CALL;
@@ -50,7 +52,11 @@ contract SetDataUnrestrictedController is UniversalProfileTestsHelper {
             ownerPermissions
         );
 
-        transferOwnership(mainUniversalProfile, unrestrictedController, address(keyManagerMainUP));
+        transferOwnership(
+            mainUniversalProfile,
+            unrestrictedController,
+            address(keyManagerMainUP)
+        );
     }
 
     // give permissions to a controller (AddressPermissions[] + AddressPermissions[index] + AddressPermissions:Permissions:)
@@ -59,7 +65,9 @@ contract SetDataUnrestrictedController is UniversalProfileTestsHelper {
         bytes[] memory values = new bytes[](3);
 
         uint128 arrayLength = uint128(
-            bytes16(mainUniversalProfile.getData(_LSP6KEY_ADDRESSPERMISSIONS_ARRAY))
+            bytes16(
+                mainUniversalProfile.getData(_LSP6KEY_ADDRESSPERMISSIONS_ARRAY)
+            )
         );
         uint128 newArrayLength = arrayLength + 1;
 
@@ -124,10 +132,13 @@ contract SetDataUnrestrictedController is UniversalProfileTestsHelper {
         );
         // generate ERC725Y Data Keys
         bytes[] memory allowedERC725YDataKeys = new bytes[](1);
-        allowedERC725YDataKeys[0] = abi.encodePacked(keccak256(abi.encodePacked("RandomKey")));
-        bytes memory allowedERC725YDataKeysCBA = generateCompactByteArrayElement(
-            allowedERC725YDataKeys
+        allowedERC725YDataKeys[0] = abi.encodePacked(
+            keccak256(abi.encodePacked("RandomKey"))
         );
+        bytes
+            memory allowedERC725YDataKeysCBA = generateCompactByteArrayElement(
+                allowedERC725YDataKeys
+            );
         values[1] = allowedERC725YDataKeysCBA;
 
         // setData payload

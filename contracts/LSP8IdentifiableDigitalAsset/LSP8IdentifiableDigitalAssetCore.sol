@@ -2,26 +2,39 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import {ILSP8IdentifiableDigitalAsset} from "./ILSP8IdentifiableDigitalAsset.sol";
+import {
+    ILSP1UniversalReceiver
+} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import {
+    ILSP8IdentifiableDigitalAsset
+} from "./ILSP8IdentifiableDigitalAsset.sol";
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    ERC165Checker
+} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // errors
 import "./LSP8Errors.sol";
 
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
-import {_TYPEID_LSP8_TOKENSSENDER, _TYPEID_LSP8_TOKENSRECIPIENT} from "./LSP8Constants.sol";
+import {
+    _TYPEID_LSP8_TOKENSSENDER,
+    _TYPEID_LSP8_TOKENSRECIPIENT
+} from "./LSP8Constants.sol";
 
 /**
  * @title LSP8IdentifiableDigitalAsset contract
  * @author Matthew Stevens
  * @dev Core Implementation of a LSP8 compliant contract.
  */
-abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAsset {
+abstract contract LSP8IdentifiableDigitalAssetCore is
+    ILSP8IdentifiableDigitalAsset
+{
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
@@ -54,14 +67,18 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function balanceOf(address tokenOwner) public view virtual returns (uint256) {
+    function balanceOf(
+        address tokenOwner
+    ) public view virtual returns (uint256) {
         return _ownedTokens[tokenOwner].length();
     }
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function tokenOwnerOf(bytes32 tokenId) public view virtual returns (address) {
+    function tokenOwnerOf(
+        bytes32 tokenId
+    ) public view virtual returns (address) {
         address tokenOwner = _tokenOwners[tokenId];
 
         if (tokenOwner == address(0)) {
@@ -74,7 +91,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function tokenIdsOf(address tokenOwner) public view virtual returns (bytes32[] memory) {
+    function tokenIdsOf(
+        address tokenOwner
+    ) public view virtual returns (bytes32[] memory) {
         return _ownedTokens[tokenOwner].values();
     }
 
@@ -83,7 +102,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function authorizeOperator(address operator, bytes32 tokenId) public virtual {
+    function authorizeOperator(
+        address operator,
+        bytes32 tokenId
+    ) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
 
         if (tokenOwner != msg.sender) {
@@ -128,7 +150,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function isOperatorFor(address operator, bytes32 tokenId) public view virtual returns (bool) {
+    function isOperatorFor(
+        address operator,
+        bytes32 tokenId
+    ) public view virtual returns (bool) {
         _existsOrError(tokenId);
 
         return _isOperatorOrOwner(operator, tokenId);
@@ -137,7 +162,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function getOperatorsOf(bytes32 tokenId) public view virtual returns (address[] memory) {
+    function getOperatorsOf(
+        bytes32 tokenId
+    ) public view virtual returns (address[] memory) {
         _existsOrError(tokenId);
 
         return _operators[tokenId].values();
@@ -198,7 +225,13 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         }
 
         for (uint256 i = 0; i < fromLength; ) {
-            transfer(from[i], to[i], tokenId[i], allowNonLSP1Recipient[i], data[i]);
+            transfer(
+                from[i],
+                to[i],
+                tokenId[i],
+                allowNonLSP1Recipient[i],
+                data[i]
+            );
 
             unchecked {
                 ++i;
@@ -222,14 +255,19 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @dev clear all the operators for the `tokenId`
      */
-    function _clearOperators(address tokenOwner, bytes32 tokenId) internal virtual {
+    function _clearOperators(
+        address tokenOwner,
+        bytes32 tokenId
+    ) internal virtual {
         // here is a good example of why having multiple operators will be expensive.. we
         // need to clear them on token transfer
         //
         // NOTE: this may cause a tx to fail if there is too many operators to clear, in which case
         // the tokenOwner needs to call `revokeOperator` until there is less operators to clear and
         // the desired `transfer` or `burn` call can succeed.
-        EnumerableSet.AddressSet storage operatorsForTokenId = _operators[tokenId];
+        EnumerableSet.AddressSet storage operatorsForTokenId = _operators[
+            tokenId
+        ];
 
         uint256 operatorListLength = operatorsForTokenId.length();
         for (uint256 i = 0; i < operatorListLength; ) {
@@ -296,7 +334,14 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         _ownedTokens[to].add(tokenId);
         _tokenOwners[tokenId] = to;
 
-        emit Transfer(operator, address(0), to, tokenId, allowNonLSP1Recipient, data);
+        emit Transfer(
+            operator,
+            address(0),
+            to,
+            tokenId,
+            allowNonLSP1Recipient,
+            data
+        );
 
         bytes memory lsp1Data = abi.encodePacked(address(0), to, tokenId, data);
         _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
@@ -327,7 +372,12 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
 
         emit Transfer(operator, tokenOwner, address(0), tokenId, false, data);
 
-        bytes memory lsp1Data = abi.encodePacked(tokenOwner, address(0), tokenId, data);
+        bytes memory lsp1Data = abi.encodePacked(
+            tokenOwner,
+            address(0),
+            tokenId,
+            data
+        );
         _notifyTokenSender(tokenOwner, lsp1Data);
     }
 
@@ -391,15 +441,30 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
      * - When `to` is zero, ``from``'s `tokenId` will be burned.
      * - `from` and `to` are never both zero.
      */
-    function _beforeTokenTransfer(address from, address to, bytes32 tokenId) internal virtual {}
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        bytes32 tokenId
+    ) internal virtual {}
 
     /**
      * @dev An attempt is made to notify the token sender about the `tokenId` changing owners using
      * LSP1 interface.
      */
-    function _notifyTokenSender(address from, bytes memory lsp1Data) internal virtual {
-        if (ERC165Checker.supportsERC165InterfaceUnchecked(from, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(from).universalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
+    function _notifyTokenSender(
+        address from,
+        bytes memory lsp1Data
+    ) internal virtual {
+        if (
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                from,
+                _INTERFACEID_LSP1
+            )
+        ) {
+            ILSP1UniversalReceiver(from).universalReceiver(
+                _TYPEID_LSP8_TOKENSSENDER,
+                lsp1Data
+            );
         }
     }
 
@@ -414,8 +479,16 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         bool allowNonLSP1Recipient,
         bytes memory lsp1Data
     ) internal virtual {
-        if (ERC165Checker.supportsERC165InterfaceUnchecked(to, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(to).universalReceiver(_TYPEID_LSP8_TOKENSRECIPIENT, lsp1Data);
+        if (
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                to,
+                _INTERFACEID_LSP1
+            )
+        ) {
+            ILSP1UniversalReceiver(to).universalReceiver(
+                _TYPEID_LSP8_TOKENSRECIPIENT,
+                lsp1Data
+            );
         } else if (!allowNonLSP1Recipient) {
             if (to.code.length > 0) {
                 revert LSP8NotifyTokenReceiverContractMissingLSP1Interface(to);
