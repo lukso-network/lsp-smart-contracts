@@ -71,7 +71,7 @@
     "build": "hardhat dodoc && ts-node scripts/interfaceIds.ts && prettier -w ./docs ",
     "build:js": "vite build && dts-bundle-generator --config dtsconfig.json",
     "package": "hardhat prepare-package",
-    "release": "run-s clean build package && standard-`version",
+    "release": "run-s clean build package && standard-version",
     "remixd": "remixd -s . --remix-ide",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
