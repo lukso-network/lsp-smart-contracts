@@ -30,19 +30,21 @@ abstract contract LSP7DigitalAssetInitAbstract is
         bool isNonDivisible_
     ) internal virtual onlyInitializing {
         _isNonDivisible = isNonDivisible_;
-        LSP4DigitalAssetMetadataInitAbstract._initialize(name_, symbol_, newOwner_);
+        LSP4DigitalAssetMetadataInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_
+        );
     }
 
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(IERC165, ERC725YCore)
-        returns (bool)
-    {
-        return interfaceId == _INTERFACEID_LSP7 || super.supportsInterface(interfaceId);
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(IERC165, ERC725YCore) returns (bool) {
+        return
+            interfaceId == _INTERFACEID_LSP7 ||
+            super.supportsInterface(interfaceId);
     }
 }

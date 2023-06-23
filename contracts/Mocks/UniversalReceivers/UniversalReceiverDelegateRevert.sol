@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {ILSP1UniversalReceiver} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import {
+    ILSP1UniversalReceiver
+} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {_INTERFACEID_LSP1} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
@@ -16,13 +18,17 @@ contract UniversalReceiverDelegateRevert is ERC165, ILSP1UniversalReceiver {
      * @return result the return value of keyManager's execute function
      */
     function universalReceiver(
-        bytes32, /* typeId */
+        bytes32 /* typeId */,
         bytes memory /* data */
     ) public payable virtual returns (bytes memory) {
         revert("I Revert");
     }
 
-    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == _INTERFACEID_LSP1 || super.supportsInterface(interfaceId);
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override returns (bool) {
+        return
+            interfaceId == _INTERFACEID_LSP1 ||
+            super.supportsInterface(interfaceId);
     }
 }

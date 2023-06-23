@@ -1,11 +1,8 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
-import {
-  LSP4CompatibilityTester,
-  LSP4CompatibilityTester__factory,
-} from "../../types";
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+import { LSP4CompatibilityTester, LSP4CompatibilityTester__factory } from '../../types';
 
-import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 type LSP4CompatibilityTestAccounts = {
   owner: SignerWithAddress;
@@ -26,57 +23,55 @@ type LSP4CompatibilityTestContext = {
   };
 };
 
-describe("LSP4Compatibility", () => {
+describe('LSP4Compatibility', () => {
   const buildTestContext = async (): Promise<LSP4CompatibilityTestContext> => {
     const accounts = await getNamedAccounts();
     const deployParams = {
-      name: "Much compat",
-      symbol: "WOW",
+      name: 'Much compat',
+      symbol: 'WOW',
       newOwner: accounts.owner.address,
     };
 
-    const lsp4Compatibility = await new LSP4CompatibilityTester__factory(
-      accounts.owner
-    ).deploy(deployParams.name, deployParams.symbol, deployParams.newOwner);
+    const lsp4Compatibility = await new LSP4CompatibilityTester__factory(accounts.owner).deploy(
+      deployParams.name,
+      deployParams.symbol,
+      deployParams.newOwner,
+    );
 
     return { accounts, lsp4Compatibility, deployParams };
   };
 
-  describe("when using LSP4Compatibility", () => {
+  describe('when using LSP4Compatibility', () => {
     let context: LSP4CompatibilityTestContext;
 
     before(async () => {
       context = await buildTestContext();
     });
 
-    it("should allow reading name", async () => {
+    it('should allow reading name', async () => {
       // using compatibility getter -> returns(string)
       const nameAsString = await context.lsp4Compatibility.name();
       expect(nameAsString).to.equal(context.deployParams.name);
 
       // using getData -> returns(bytes)
       const nameAsBytes = await context.lsp4Compatibility.getData(
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenName"))
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('LSP4TokenName')),
       );
 
-      expect(ethers.utils.toUtf8String(nameAsBytes)).to.equal(
-        context.deployParams.name
-      );
+      expect(ethers.utils.toUtf8String(nameAsBytes)).to.equal(context.deployParams.name);
     });
 
-    it("should allow reading symbol", async () => {
+    it('should allow reading symbol', async () => {
       // using compatibility getter -> returns(string)
       const symbolAsString = await context.lsp4Compatibility.symbol();
       expect(symbolAsString).to.equal(context.deployParams.symbol);
 
       // using getData -> returns(bytes)
       const symbolAsBytes = await context.lsp4Compatibility.getData(
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenSymbol"))
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('LSP4TokenSymbol')),
       );
 
-      expect(ethers.utils.toUtf8String(symbolAsBytes)).to.equal(
-        context.deployParams.symbol
-      );
+      expect(ethers.utils.toUtf8String(symbolAsBytes)).to.equal(context.deployParams.symbol);
     });
   });
 });

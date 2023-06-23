@@ -1,19 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {
+    IERC725X
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import "../../LSP6KeyManager/ILSP6KeyManager.sol";
 
-import {SETDATA_SELECTOR, EXECUTE_SELECTOR} from "@erc725/smart-contracts/contracts/constants.sol";
-
-// The purpose of these contracts is to perform tests on chained reentrancy scenarios
-// that involve interacting with the UniversalProfile through its owner (LSP6KeyManager)
-// or by directly using the LSP20 method.
+/**
+ * The purpose of these contracts is to perform tests on chained reentrancy scenarios
+ * that involve interacting with the UniversalProfile through its owner (LSP6KeyManager)
+ * or by directly using the LSP20 method.
+ */
 
 /**
- * @dev contract used for testing
+ * @dev contract used for testing.
  */
 contract FirstToCallLSP20 {
     address public universalProfile;
@@ -63,7 +67,7 @@ contract FirstToCallLSP6 {
 
     function firstTarget() public {
         bytes memory payload = abi.encodeWithSelector(
-            EXECUTE_SELECTOR,
+            IERC725X.execute.selector,
             0,
             address(0),
             0,
@@ -89,7 +93,11 @@ contract SecondToCallLSP6 {
     }
 
     function secondTarget() public {
-        bytes memory payload = abi.encodeWithSelector(SETDATA_SELECTOR, bytes32(0), hex"aabbccdd");
+        bytes memory payload = abi.encodeWithSelector(
+            IERC725Y.setData.selector,
+            bytes32(0),
+            hex"aabbccdd"
+        );
 
         // Calling setData function through the KeyManager
         ILSP6KeyManager(keyManager).execute(payload);

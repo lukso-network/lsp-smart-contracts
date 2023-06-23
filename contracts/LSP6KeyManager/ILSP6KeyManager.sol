@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 
 /**
- * @dev Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
+ * @title Interface of the LSP6 - Key Manager standard, a contract acting as a controller of an ERC725 Account using predfined permissions.
  */
 interface ILSP6KeyManager is
     IERC1271
@@ -17,7 +17,11 @@ interface ILSP6KeyManager is
      * @param value the amount of native token to be transferred in the calldata payload.
      * @param selector the bytes4 function of the function to run in the calldata payload.
      */
-    event VerifiedCall(address indexed signer, uint256 indexed value, bytes4 indexed selector);
+    event VerifiedCall(
+        address indexed signer,
+        uint256 indexed value,
+        bytes4 indexed selector
+    );
 
     /**
      * @notice returns the address of the account linked to this KeyManager
@@ -36,7 +40,10 @@ interface ILSP6KeyManager is
      * @param from the caller or signer address
      * @param channelId the channel id to retrieve the nonce from
      */
-    function getNonce(address from, uint128 channelId) external view returns (uint256);
+    function getNonce(
+        address from,
+        uint128 channelId
+    ) external view returns (uint256);
 
     /**
      * @notice execute the following payload on the ERC725Account: `payload`
@@ -44,15 +51,17 @@ interface ILSP6KeyManager is
      * @param payload the payload to execute. Obtained in web3 via encodeABI()
      * @return the data being returned by the ERC725 Account
      */
-    function execute(bytes calldata payload) external payable returns (bytes memory);
+    function execute(
+        bytes calldata payload
+    ) external payable returns (bytes memory);
 
     /**
      * @dev batch `execute(bytes)`
      */
-    function executeBatch(uint256[] calldata values, bytes[] calldata payloads)
-        external
-        payable
-        returns (bytes[] memory);
+    function executeBatch(
+        uint256[] calldata values,
+        bytes[] calldata payloads
+    ) external payable returns (bytes[] memory);
 
     /**
      * @dev allows anybody to execute given they have a signed message from an executor

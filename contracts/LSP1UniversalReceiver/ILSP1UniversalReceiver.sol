@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 
 /**
- * @title The interface for LSP1UniversalReceiver
+ * @title Interface of the LSP1 - Universal Receiver standard, an entry function for a contract to receive arbitrary information.
  * @dev LSP1UniversalReceiver allows to receive arbitrary messages and to be informed when assets are sent or received
  */
 interface ILSP1UniversalReceiver {
@@ -29,8 +29,8 @@ interface ILSP1UniversalReceiver {
      *
      * Emits a {UniversalReceiver} event
      */
-    function universalReceiver(bytes32 typeId, bytes calldata data)
-        external
-        payable
-        returns (bytes memory);
+    function universalReceiver(
+        bytes32 typeId,
+        bytes calldata data
+    ) external payable returns (bytes memory);
 }

@@ -1,30 +1,32 @@
-import { LSP8Mintable, LSP8Mintable__factory } from "../../../types";
+import { LSP8Mintable, LSP8Mintable__factory } from '../../../types';
 
-import { shouldInitializeLikeLSP8 } from "../LSP8IdentifiableDigitalAsset.behaviour";
+import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {
   shouldBehaveLikeLSP8Mintable,
   LSP8MintableTestContext,
   getNamedAccounts,
-} from "../LSP8Mintable.behaviour";
+} from '../LSP8Mintable.behaviour';
 
-describe("LSP8Mintable with constructor", () => {
+describe('LSP8Mintable with constructor', () => {
   const buildTestContext = async () => {
     const accounts = await getNamedAccounts();
 
     const deployParams = {
-      name: "LSP8 Mintable - deployed with constructor",
-      symbol: "LSP8 MNTBL",
+      name: 'LSP8 Mintable - deployed with constructor',
+      symbol: 'LSP8 MNTBL',
       newOwner: accounts.owner.address,
     };
 
-    const lsp8Mintable: LSP8Mintable = await new LSP8Mintable__factory(
-      accounts.owner
-    ).deploy(deployParams.name, deployParams.symbol, deployParams.newOwner);
+    const lsp8Mintable: LSP8Mintable = await new LSP8Mintable__factory(accounts.owner).deploy(
+      deployParams.name,
+      deployParams.symbol,
+      deployParams.newOwner,
+    );
 
     return { accounts, lsp8Mintable, deployParams };
   };
 
-  describe("when deploying the contract", () => {
+  describe('when deploying the contract', () => {
     let context: LSP8MintableTestContext;
 
     before(async () => {
@@ -42,7 +44,7 @@ describe("LSP8Mintable with constructor", () => {
     });
   });
 
-  describe("when testing deployed contract", () => {
+  describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP8Mintable(buildTestContext);
   });
 });

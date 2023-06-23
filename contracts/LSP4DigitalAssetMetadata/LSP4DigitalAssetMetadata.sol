@@ -11,7 +11,10 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import "./LSP4Constants.sol";
 
 // errors
-import {LSP4TokenNameNotEditable, LSP4TokenSymbolNotEditable} from "./LSP4Errors.sol";
+import {
+    LSP4TokenNameNotEditable,
+    LSP4TokenSymbolNotEditable
+} from "./LSP4Errors.sol";
 
 /**
  * @title LSP4DigitalAssetMetadata
@@ -31,7 +34,10 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
         address newOwner_
     ) ERC725Y(newOwner_) {
         // set key SupportedStandards:LSP4DigitalAsset
-        super._setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
+        super._setData(
+            _LSP4_SUPPORTED_STANDARDS_KEY,
+            _LSP4_SUPPORTED_STANDARDS_VALUE
+        );
 
         super._setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
         super._setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
@@ -43,7 +49,10 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
      *
      * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
      */
-    function _setData(bytes32 dataKey, bytes memory dataValue) internal virtual override {
+    function _setData(
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) internal virtual override {
         if (dataKey == _LSP4_TOKEN_NAME_KEY) {
             revert LSP4TokenNameNotEditable();
         } else if (dataKey == _LSP4_TOKEN_SYMBOL_KEY) {
@@ -52,7 +61,9 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
             _store[dataKey] = dataValue;
             emit DataChanged(
                 dataKey,
-                dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
+                dataValue.length <= 256
+                    ? dataValue
+                    : BytesLib.slice(dataValue, 0, 256)
             );
         }
     }

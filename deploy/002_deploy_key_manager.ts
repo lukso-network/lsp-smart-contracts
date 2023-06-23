@@ -1,6 +1,6 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployFunction } from "hardhat-deploy/types";
-import { ethers } from "hardhat";
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { DeployFunction } from 'hardhat-deploy/types';
+import { ethers } from 'hardhat';
 
 const deployKeyManager: DeployFunction = async ({
   deployments,
@@ -9,9 +9,9 @@ const deployKeyManager: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
-  const UniversalProfile = await deployments.get("UniversalProfile");
+  const UniversalProfile = await deployments.get('UniversalProfile');
 
-  await deploy("LSP6KeyManager", {
+  await deploy('LSP6KeyManager', {
     from: owner,
     args: [UniversalProfile.address],
     gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei
@@ -20,5 +20,5 @@ const deployKeyManager: DeployFunction = async ({
 };
 
 export default deployKeyManager;
-deployKeyManager.tags = ["LSP6KeyManager", "standard"];
-deployKeyManager.dependencies = ["UniversalProfile"];
+deployKeyManager.tags = ['LSP6KeyManager', 'standard'];
+deployKeyManager.dependencies = ['UniversalProfile'];

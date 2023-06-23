@@ -6,7 +6,9 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ILSP7CompatibleERC20} from "./ILSP7CompatibleERC20.sol";
 
 // modules
-import {LSP4Compatibility} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
+import {
+    LSP4Compatibility
+} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
 import {
     LSP7DigitalAssetInitAbstract,
     LSP4DigitalAssetMetadataInitAbstract,
@@ -33,13 +35,20 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         string memory symbol_,
         address newOwner_
     ) internal virtual override onlyInitializing {
-        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, false);
+        LSP7DigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            false
+        );
     }
 
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(
+        bytes4 interfaceId
+    )
         public
         view
         virtual
@@ -52,14 +61,20 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     /**
      * @inheritdoc ILSP7CompatibleERC20
      */
-    function allowance(address tokenOwner, address operator) public view virtual returns (uint256) {
+    function allowance(
+        address tokenOwner,
+        address operator
+    ) public view virtual returns (uint256) {
         return authorizedAmountFor(operator, tokenOwner);
     }
 
     /**
      * @inheritdoc ILSP7CompatibleERC20
      */
-    function approve(address operator, uint256 amount) public virtual returns (bool) {
+    function approve(
+        address operator,
+        uint256 amount
+    ) public virtual returns (bool) {
         authorizeOperator(operator, amount);
         return true;
     }
@@ -85,7 +100,10 @@ abstract contract LSP7CompatibleERC20InitAbstract is
      * @dev Compatible with ERC20 transfer.
      * Using allowNonLSP1Recipient=true so that EOA and any contract may receive the tokens.
      */
-    function transfer(address to, uint256 amount) public virtual override returns (bool) {
+    function transfer(
+        address to,
+        uint256 amount
+    ) public virtual override returns (bool) {
         transfer(msg.sender, to, amount, true, "");
         return true;
     }
@@ -133,7 +151,10 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         super._burn(from, amount, data);
     }
 
-    function _setData(bytes32 key, bytes memory value)
+    function _setData(
+        bytes32 key,
+        bytes memory value
+    )
         internal
         virtual
         override(LSP4DigitalAssetMetadataInitAbstract, ERC725YCore)

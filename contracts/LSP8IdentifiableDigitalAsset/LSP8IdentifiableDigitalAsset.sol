@@ -6,8 +6,12 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
-import {LSP8IdentifiableDigitalAssetCore} from "./LSP8IdentifiableDigitalAssetCore.sol";
-import {LSP4DigitalAssetMetadata} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol";
+import {
+    LSP8IdentifiableDigitalAssetCore
+} from "./LSP8IdentifiableDigitalAssetCore.sol";
+import {
+    LSP4DigitalAssetMetadata
+} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol";
 
 // constants
 import {_INTERFACEID_LSP8} from "./LSP8Constants.sol";
@@ -36,13 +40,11 @@ abstract contract LSP8IdentifiableDigitalAsset is
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(IERC165, ERC725YCore)
-        returns (bool)
-    {
-        return interfaceId == _INTERFACEID_LSP8 || super.supportsInterface(interfaceId);
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(IERC165, ERC725YCore) returns (bool) {
+        return
+            interfaceId == _INTERFACEID_LSP8 ||
+            super.supportsInterface(interfaceId);
     }
 }

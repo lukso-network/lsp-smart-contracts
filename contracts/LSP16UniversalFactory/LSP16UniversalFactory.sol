@@ -99,15 +99,23 @@ contract LSP16UniversalFactory {
      *
      * @return The address of the deployed contract
      */
-    function deployCreate2(bytes calldata byteCode, bytes32 providedSalt)
-        public
-        payable
-        virtual
-        returns (address)
-    {
+    function deployCreate2(
+        bytes calldata byteCode,
+        bytes32 providedSalt
+    ) public payable virtual returns (address) {
         bytes32 generatedSalt = generateSalt(providedSalt, false, _EMPTY_BYTE);
-        address contractCreated = Create2.deploy(msg.value, generatedSalt, byteCode);
-        emit ContractCreated(contractCreated, providedSalt, generatedSalt, false, _EMPTY_BYTE);
+        address contractCreated = Create2.deploy(
+            msg.value,
+            generatedSalt,
+            byteCode
+        );
+        emit ContractCreated(
+            contractCreated,
+            providedSalt,
+            generatedSalt,
+            false,
+            _EMPTY_BYTE
+        );
 
         return contractCreated;
     }
@@ -148,10 +156,19 @@ contract LSP16UniversalFactory {
         uint256 constructorMsgValue,
         uint256 initializeCalldataMsgValue
     ) public payable virtual returns (address) {
-        if (constructorMsgValue + initializeCalldataMsgValue != msg.value) revert InvalidValueSum();
+        if (constructorMsgValue + initializeCalldataMsgValue != msg.value)
+            revert InvalidValueSum();
 
-        bytes32 generatedSalt = generateSalt(providedSalt, true, initializeCalldata);
-        address contractCreated = Create2.deploy(constructorMsgValue, generatedSalt, byteCode);
+        bytes32 generatedSalt = generateSalt(
+            providedSalt,
+            true,
+            initializeCalldata
+        );
+        address contractCreated = Create2.deploy(
+            constructorMsgValue,
+            generatedSalt,
+            byteCode
+        );
         emit ContractCreated(
             contractCreated,
             providedSalt,
@@ -190,15 +207,23 @@ contract LSP16UniversalFactory {
      *
      * @return The address of the minimal proxy deployed
      */
-    function deployERC1167Proxy(address implementationContract, bytes32 providedSalt)
-        public
-        virtual
-        returns (address)
-    {
+    function deployERC1167Proxy(
+        address implementationContract,
+        bytes32 providedSalt
+    ) public virtual returns (address) {
         bytes32 generatedSalt = generateSalt(providedSalt, false, _EMPTY_BYTE);
 
-        address proxy = Clones.cloneDeterministic(implementationContract, generatedSalt);
-        emit ContractCreated(proxy, providedSalt, generatedSalt, false, _EMPTY_BYTE);
+        address proxy = Clones.cloneDeterministic(
+            implementationContract,
+            generatedSalt
+        );
+        emit ContractCreated(
+            proxy,
+            providedSalt,
+            generatedSalt,
+            false,
+            _EMPTY_BYTE
+        );
 
         return proxy;
     }
@@ -232,12 +257,27 @@ contract LSP16UniversalFactory {
         bytes32 providedSalt,
         bytes calldata initializeCalldata
     ) public payable virtual returns (address) {
-        bytes32 generatedSalt = generateSalt(providedSalt, true, initializeCalldata);
+        bytes32 generatedSalt = generateSalt(
+            providedSalt,
+            true,
+            initializeCalldata
+        );
 
-        address proxy = Clones.cloneDeterministic(implementationContract, generatedSalt);
-        emit ContractCreated(proxy, providedSalt, generatedSalt, true, initializeCalldata);
+        address proxy = Clones.cloneDeterministic(
+            implementationContract,
+            generatedSalt
+        );
+        emit ContractCreated(
+            proxy,
+            providedSalt,
+            generatedSalt,
+            true,
+            initializeCalldata
+        );
 
-        (bool success, bytes memory returndata) = proxy.call{value: msg.value}(initializeCalldata);
+        (bool success, bytes memory returndata) = proxy.call{value: msg.value}(
+            initializeCalldata
+        );
         _verifyCallResult(success, returndata);
 
         return proxy;
@@ -263,7 +303,11 @@ contract LSP16UniversalFactory {
         bool initializable,
         bytes calldata initializeCalldata
     ) public view virtual returns (address) {
-        bytes32 generatedSalt = generateSalt(providedSalt, initializable, initializeCalldata);
+        bytes32 generatedSalt = generateSalt(
+            providedSalt,
+            initializable,
+            initializeCalldata
+        );
         return Create2.computeAddress(generatedSalt, byteCodeHash);
     }
 
@@ -287,8 +331,16 @@ contract LSP16UniversalFactory {
         bool initializable,
         bytes calldata initializeCalldata
     ) public view virtual returns (address) {
-        bytes32 generatedSalt = generateSalt(providedSalt, initializable, initializeCalldata);
-        return Clones.predictDeterministicAddress(implementationContract, generatedSalt);
+        bytes32 generatedSalt = generateSalt(
+            providedSalt,
+            initializable,
+            initializeCalldata
+        );
+        return
+            Clones.predictDeterministicAddress(
+                implementationContract,
+                generatedSalt
+            );
     }
 
     /**
@@ -364,7 +416,10 @@ contract LSP16UniversalFactory {
         bytes memory initializeCalldata
     ) public pure virtual returns (bytes32) {
         if (initializable) {
-            return keccak256(abi.encodePacked(true, initializeCalldata, providedSalt));
+            return
+                keccak256(
+                    abi.encodePacked(true, initializeCalldata, providedSalt)
+                );
         } else {
             return keccak256(abi.encodePacked(false, providedSalt));
         }
@@ -374,7 +429,10 @@ contract LSP16UniversalFactory {
      * @dev Verifies that the contract created was initialized correctly.
      * Bubble the revert reason if present, revert with `ContractInitializationFailed` otherwise.
      */
-    function _verifyCallResult(bool success, bytes memory returndata) internal pure virtual {
+    function _verifyCallResult(
+        bool success,
+        bytes memory returndata
+    ) internal pure virtual {
         if (!success) {
             // Look for revert reason and bubble it up if present
             if (returndata.length != 0) {

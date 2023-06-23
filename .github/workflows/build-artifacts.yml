@@ -1,4 +1,3 @@
-# This workflow builds Android and iOS SDK artifacts
 name: Build Artifacts
 
 on:
@@ -16,7 +15,7 @@ jobs:
           fetch-depth: 0
 
       - name: Check if version changed
-        uses: EndBug/version-check@v1
+        uses: EndBug/version-check@v2
         id: check
 
       - name: Use Node.js '16.15.0'
@@ -27,38 +26,6 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
-
-      # Android artifacts
-      - name: Set up our JDK environment
-        uses: actions/setup-java@v3
-        with:
-          java-version: "11"
-          distribution: "adopt"
-
-      - name: Install Web3j
-        run: curl -L get.web3j.io | sh
-
-      - name: Generate Android artifacts
-        run: npm run build:android
-
-      # iOS artifacts
-      - name: Generate iOS artifacts
-        run: npm run build:ios
-
-      # Upload Artifacts
-      - name: Upload iOS Artifact
-        uses: actions/upload-artifact@v2
-        if: github.event_name == 'push' && steps.check.outputs.changed == 'true'
-        with:
-          name: LSPSmartContracts.swift
-          path: ios/LSPSmartContracts.swift
-
-      - name: Upload Android Artifact
-        uses: actions/upload-artifact@v2
-        if: github.event_name == 'push' && steps.check.outputs.changed == 'true'
-        with:
-          name: lspsmartcontracts.jar
-          path: java/build/libs/lspsmartcontracts.jar
 
       # Trigger Release
       - name: Repository Dispatch

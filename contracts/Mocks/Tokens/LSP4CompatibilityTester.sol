@@ -4,7 +4,9 @@ pragma solidity ^0.8.4;
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
-import {LSP4Compatibility} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
+import {
+    LSP4Compatibility
+} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
 
 // constants
 import {

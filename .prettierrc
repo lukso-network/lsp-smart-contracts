@@ -2,19 +2,20 @@
   "plugins": ["prettier-plugin-solidity"],
   "overrides": [
     {
-      "files": ["*.js", "*.,ts"],
+      "files": ["*.js", "*.ts"],
       "options": {
         "tabWidth": 2,
         "printWidth": 100,
         "trailingComma": "all",
-        "singleQuote": true
+        "singleQuote": true,
+        "semi": true
       }
     },
     {
       "files": "*.sol",
       "options": {
         "tabWidth": 4,
-        "printWidth": 100,
+        "printWidth": 80,
         "compiler": "0.8.15"
       }
     }

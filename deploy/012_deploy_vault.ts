@@ -1,6 +1,6 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployFunction } from "hardhat-deploy/types";
-import { ethers } from "hardhat";
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { DeployFunction } from 'hardhat-deploy/types';
+import { ethers } from 'hardhat';
 
 const deployVault: DeployFunction = async ({
   deployments,
@@ -9,7 +9,7 @@ const deployVault: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
-  await deploy("LSP9Vault", {
+  await deploy('LSP9Vault', {
     from: owner,
     args: [owner],
     gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei
@@ -18,4 +18,4 @@ const deployVault: DeployFunction = async ({
 };
 
 export default deployVault;
-deployVault.tags = ["LSP9Vault"];
+deployVault.tags = ['LSP9Vault'];

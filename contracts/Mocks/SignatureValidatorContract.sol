@@ -5,7 +5,9 @@ pragma solidity ^0.8.4;
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 
 // modules
-import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import {
+    ERC165Storage
+} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 /**
  * @dev sample contract that implements ERC1271 (Standard Signature Validation Method for Contracts)
@@ -22,7 +24,7 @@ contract SignatureValidator is IERC1271, ERC165Storage {
      * @notice Verifies that the signer is the owner of the signing contract.
      */
     function isValidSignature(
-        bytes32, /* messageHash */
+        bytes32 /* messageHash */,
         bytes calldata /* signature */
     ) external pure override returns (bytes4) {
         // always return true (just for testing)

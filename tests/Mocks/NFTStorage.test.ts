@@ -1,13 +1,13 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-const keccak256 = require("keccak256");
-import { ethers } from "hardhat";
-import { expect } from "chai";
-import { NFTStorageMerkle, NFTStorageMerkle__factory } from "../../types";
+import keccak256 from 'keccak256';
+import { MerkleTree } from 'merkletreejs';
 
-const { MerkleTree } = require("merkletreejs");
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
+import { NFTStorageMerkle, NFTStorageMerkle__factory } from '../../types';
 
-describe("NFTStorageMerkle", () => {
-  describe("Testing Merkle Tree", () => {
+describe('NFTStorageMerkle', () => {
+  describe('Testing Merkle Tree', () => {
     let accounts: SignerWithAddress[];
     let owner, nftList;
 
@@ -35,27 +35,23 @@ describe("NFTStorageMerkle", () => {
       merkletree = new MerkleTree(leaves, keccak256, { sortPairs: true });
     });
 
-    it("Should return 8 for leaves count", () => {
-      let count = merkletree.getHexLeaves().length;
+    it('Should return 8 for leaves count', () => {
+      const count = merkletree.getHexLeaves().length;
       expect(count).to.equal(8);
     });
 
-    it("Keccak256 hash should match for the first NFT address", async () => {
-      let firstNFT = merkletree.getHexLeaves()[0];
+    it('Keccak256 hash should match for the first NFT address', async () => {
+      const firstNFT = merkletree.getHexLeaves()[0];
 
       expect(firstNFT).to.equal(ethers.utils.keccak256(nftList[0]));
     });
 
-    it("Should verify the proof in the smart contract", async () => {
-      let root = merkletree.getHexRoot();
-      let leaf = merkletree.getHexLeaves()[3];
-      let proof = merkletree.getHexProof(leaf);
+    it('Should verify the proof in the smart contract', async () => {
+      const root = merkletree.getHexRoot();
+      const leaf = merkletree.getHexLeaves()[3];
+      const proof = merkletree.getHexProof(leaf);
 
-      let result = await nftStorage.callStatic.verifyMerkleProof(
-        proof,
-        root,
-        leaf
-      );
+      const result = await nftStorage.callStatic.verifyMerkleProof(proof, root, leaf);
       expect(result).to.be.true;
     });
   });

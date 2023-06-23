@@ -3,14 +3,20 @@ pragma solidity ^0.8.4;
 
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {
+    IERC725X
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
-import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import {
+    ILSP1UniversalReceiver
+} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 
 /**
- * @title The Interface of LSP0-ERC725Account Standard
+ * @title Interface of the LSP0 - ERC725Account standard, an account based smart contract that represents an identity on-chain.
  *        https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md
  *
  * @author Fabian Vogelsteller <fabian@lukso.network>, Jean Cavallera (CJ42)
@@ -58,5 +64,7 @@ interface ILSP0ERC725Account {
      * @param data An array of ABI encoded function calls to be called on the contract.
      * @return results An array of values returned by the executed functions.
      */
-    function batchCalls(bytes[] calldata data) external returns (bytes[] memory results);
+    function batchCalls(
+        bytes[] calldata data
+    ) external returns (bytes[] memory results);
 }

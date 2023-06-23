@@ -3,7 +3,9 @@ pragma solidity ^0.8.4;
 
 // modules
 import {LSP0ERC725AccountCore} from "./LSP0ERC725AccountCore.sol";
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {
+    OwnableUnset
+} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 /**
  * @title Deployable Implementation of LSP0-ERC725Account Standard
@@ -41,11 +43,9 @@ contract LSP0ERC725Account is LSP0ERC725AccountCore {
      * @notice Deploying the contract with owner set to: `initialOwner`
      * @dev Set `initialOwner` as the contract owner.
      * The `constructor` also allows funding the contract on deployment.
+     * @param initialOwner The owner of the contract.
      *
-     * Emitted Events:
-     * - ValueReceived: when the contract is funded on deployment.
-     *
-     * @param initialOwner The owner of the contract
+     * @custom:events {ValueReceived} event when funding the contract on deployment.
      */
     constructor(address initialOwner) payable {
         if (msg.value != 0) {

@@ -79,10 +79,11 @@ contract ReentrantContract {
         emit ValueReceived(msg.value);
     }
 
-    function callThatReenters(address keyManagerAddress, string memory payloadType)
-        external
-        returns (bytes memory)
-    {
-        return ILSP6KeyManager(keyManagerAddress).execute(_payloads[payloadType]);
+    function callThatReenters(
+        address keyManagerAddress,
+        string memory payloadType
+    ) external returns (bytes memory) {
+        return
+            ILSP6KeyManager(keyManagerAddress).execute(_payloads[payloadType]);
     }
 }

@@ -3,10 +3,16 @@ pragma solidity ^0.8.5;
 
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
+import {
+    IERC725X
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 import {
-    ILSP20CallVerification as ILSP20
-} from "../LSP20CallVerification/ILSP20CallVerification.sol";
+    ILSP20CallVerifier as ILSP20
+} from "../LSP20CallVerification/ILSP20CallVerifier.sol";
 
 // modules
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
@@ -21,7 +27,6 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP6Utils} from "./LSP6Utils.sol";
-import {EIP191Signer} from "../Custom/EIP191Signer.sol";
 
 // errors
 import {
@@ -38,12 +43,6 @@ import {
     RelayCallExpired
 } from "./LSP6Errors.sol";
 
-// constants
-import {
-    SETDATA_SELECTOR,
-    SETDATA_BATCH_SELECTOR,
-    EXECUTE_SELECTOR
-} from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_ERC1271,
     _ERC1271_MAGICVALUE,
@@ -72,8 +71,7 @@ abstract contract LSP6KeyManagerCore is
     LSP6OwnershipModule
 {
     using LSP6Utils for *;
-    using ECDSA for bytes32;
-    using EIP191Signer for address;
+    using ECDSA for *;
     using BytesLib for bytes;
 
     address internal _target;
@@ -91,7 +89,9 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override returns (bool) {
         return
             interfaceId == _INTERFACEID_LSP6 ||
             interfaceId == _INTERFACEID_ERC1271 ||
@@ -102,7 +102,10 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function getNonce(address from, uint128 channelId) public view returns (uint256) {
+    function getNonce(
+        address from,
+        uint128 channelId
+    ) public view returns (uint256) {
         uint256 nonceInChannel = _nonceStore[from][channelId];
         return (uint256(channelId) << 128) | nonceInChannel;
     }
@@ -110,23 +113,23 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc IERC1271
      */
-    function isValidSignature(bytes32 dataHash, bytes memory signature)
-        public
-        view
-        returns (bytes4 magicValue)
-    {
+    function isValidSignature(
+        bytes32 dataHash,
+        bytes memory signature
+    ) public view returns (bytes4 magicValue) {
         // if isValidSignature fail, the error is catched in returnedError
-        (address recoveredAddress, ECDSA.RecoverError returnedError) = ECDSA.tryRecover(
-            dataHash,
-            signature
-        );
+        (address recoveredAddress, ECDSA.RecoverError returnedError) = ECDSA
+            .tryRecover(dataHash, signature);
 
         // if recovering throws an error, return the fail value
-        if (returnedError != ECDSA.RecoverError.NoError) return _ERC1271_FAILVALUE;
+        if (returnedError != ECDSA.RecoverError.NoError)
+            return _ERC1271_FAILVALUE;
 
         // if the address recovered has SIGN permission return the ERC1271 magic value, otherwise the fail value
         return (
-            ERC725Y(_target).getPermissionsFor(recoveredAddress).hasPermission(_PERMISSION_SIGN)
+            ERC725Y(_target).getPermissionsFor(recoveredAddress).hasPermission(
+                _PERMISSION_SIGN
+            )
                 ? _ERC1271_MAGICVALUE
                 : _ERC1271_FAILVALUE
         );
@@ -135,19 +138,19 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(bytes calldata payload) public payable virtual returns (bytes memory) {
+    function execute(
+        bytes calldata payload
+    ) public payable virtual returns (bytes memory) {
         return _execute(msg.value, payload);
     }
 
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function executeBatch(uint256[] calldata values, bytes[] calldata payloads)
-        public
-        payable
-        virtual
-        returns (bytes[] memory)
-    {
+    function executeBatch(
+        uint256[] calldata values,
+        bytes[] calldata payloads
+    ) public payable virtual returns (bytes[] memory) {
         if (values.length != payloads.length) {
             revert BatchExecuteParamsLengthMismatch();
         }
@@ -155,7 +158,7 @@ abstract contract LSP6KeyManagerCore is
         bytes[] memory results = new bytes[](payloads.length);
         uint256 totalValues;
 
-        for (uint256 ii; ii < payloads.length; ) {
+        for (uint256 ii = 0; ii < payloads.length; ) {
             if ((totalValues += values[ii]) > msg.value) {
                 revert LSP6BatchInsufficientValueSent(totalValues, msg.value);
             }
@@ -183,7 +186,14 @@ abstract contract LSP6KeyManagerCore is
         uint256 validityTimestamps,
         bytes calldata payload
     ) public payable virtual returns (bytes memory) {
-        return _executeRelayCall(signature, nonce, validityTimestamps, msg.value, payload);
+        return
+            _executeRelayCall(
+                signature,
+                nonce,
+                validityTimestamps,
+                msg.value,
+                payload
+            );
     }
 
     /**
@@ -208,7 +218,7 @@ abstract contract LSP6KeyManagerCore is
         bytes[] memory results = new bytes[](payloads.length);
         uint256 totalValues;
 
-        for (uint256 ii; ii < payloads.length; ) {
+        for (uint256 ii = 0; ii < payloads.length; ) {
             if ((totalValues += values[ii]) > msg.value) {
                 revert LSP6BatchInsufficientValueSent(totalValues, msg.value);
             }
@@ -242,7 +252,10 @@ abstract contract LSP6KeyManagerCore is
         bytes calldata data
     ) external returns (bytes4) {
         bool isSetData = false;
-        if (bytes4(data) == SETDATA_SELECTOR || bytes4(data) == SETDATA_BATCH_SELECTOR) {
+        if (
+            bytes4(data) == IERC725Y.setData.selector ||
+            bytes4(data) == IERC725Y.setDataBatch.selector
+        ) {
             isSetData = true;
         }
 
@@ -286,7 +299,7 @@ abstract contract LSP6KeyManagerCore is
      * @inheritdoc ILSP20
      */
     function lsp20VerifyCallResult(
-        bytes32, /*callHash*/
+        bytes32 /*callHash*/,
         bytes memory /*result*/
     ) external returns (bytes4) {
         // If it's the target calling, set back the reentrancy guard
@@ -297,17 +310,19 @@ abstract contract LSP6KeyManagerCore is
         return _LSP20_VERIFY_CALL_RESULT_MAGIC_VALUE;
     }
 
-    function _execute(uint256 msgValue, bytes calldata payload)
-        internal
-        virtual
-        returns (bytes memory)
-    {
+    function _execute(
+        uint256 msgValue,
+        bytes calldata payload
+    ) internal virtual returns (bytes memory) {
         if (payload.length < 4) {
             revert InvalidPayload(payload);
         }
 
         bool isSetData = false;
-        if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_BATCH_SELECTOR) {
+        if (
+            bytes4(payload) == IERC725Y.setData.selector ||
+            bytes4(payload) == IERC725Y.setDataBatch.selector
+        ) {
             isSetData = true;
         }
 
@@ -345,12 +360,15 @@ abstract contract LSP6KeyManagerCore is
             payload
         );
 
-        address signer = address(this).toDataWithIntendedValidator(encodedMessage).recover(
-            signature
-        );
+        address signer = address(this)
+            .toDataWithIntendedValidatorHash(encodedMessage)
+            .recover(signature);
 
         bool isSetData = false;
-        if (bytes4(payload) == SETDATA_SELECTOR || bytes4(payload) == SETDATA_BATCH_SELECTOR) {
+        if (
+            bytes4(payload) == IERC725Y.setData.selector ||
+            bytes4(payload) == IERC725Y.setDataBatch.selector
+        ) {
             isSetData = true;
         }
 
@@ -393,14 +411,14 @@ abstract contract LSP6KeyManagerCore is
      * @param payload the abi-encoded function call to execute on the target.
      * @return bytes the result from calling the target with `payload`
      */
-    function _executePayload(uint256 msgValue, bytes calldata payload)
-        internal
-        virtual
-        returns (bytes memory)
-    {
-        (bool success, bytes memory returnData) = _target.call{value: msgValue, gas: gasleft()}(
-            payload
-        );
+    function _executePayload(
+        uint256 msgValue,
+        bytes calldata payload
+    ) internal virtual returns (bytes memory) {
+        (bool success, bytes memory returnData) = _target.call{
+            value: msgValue,
+            gas: gasleft()
+        }(payload);
         bytes memory result = Address.verifyCallResult(
             success,
             returnData,
@@ -418,7 +436,10 @@ abstract contract LSP6KeyManagerCore is
      * @param from caller address
      * @param idx (channel id + nonce within the channel)
      */
-    function _isValidNonce(address from, uint256 idx) internal view virtual returns (bool) {
+    function _isValidNonce(
+        address from,
+        uint256 idx
+    ) internal view virtual returns (bool) {
         uint256 mask = ~uint128(0);
         // Alternatively:
         // uint256 mask = (1<<128)-1;
@@ -442,25 +463,43 @@ abstract contract LSP6KeyManagerCore is
         bytes4 erc725Function = bytes4(payload);
 
         // ERC725Y.setData(bytes32,bytes)
-        if (erc725Function == SETDATA_SELECTOR) {
+        if (erc725Function == IERC725Y.setData.selector) {
             if (msgValue != 0) revert CannotSendValueToSetData();
-            (bytes32 inputKey, bytes memory inputValue) = abi.decode(payload[4:], (bytes32, bytes));
-
-            LSP6SetDataModule._verifyCanSetData(_target, from, permissions, inputKey, inputValue);
-
-            // ERC725Y.setDataBatch(bytes32[],bytes[])
-        } else if (erc725Function == SETDATA_BATCH_SELECTOR) {
-            if (msgValue != 0) revert CannotSendValueToSetData();
-            (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi.decode(
+            (bytes32 inputKey, bytes memory inputValue) = abi.decode(
                 payload[4:],
-                (bytes32[], bytes[])
+                (bytes32, bytes)
             );
 
-            LSP6SetDataModule._verifyCanSetData(_target, from, permissions, inputKeys, inputValues);
+            LSP6SetDataModule._verifyCanSetData(
+                _target,
+                from,
+                permissions,
+                inputKey,
+                inputValue
+            );
+
+            // ERC725Y.setDataBatch(bytes32[],bytes[])
+        } else if (erc725Function == IERC725Y.setDataBatch.selector) {
+            if (msgValue != 0) revert CannotSendValueToSetData();
+            (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi
+                .decode(payload[4:], (bytes32[], bytes[]));
+
+            LSP6SetDataModule._verifyCanSetData(
+                _target,
+                from,
+                permissions,
+                inputKeys,
+                inputValues
+            );
 
             // ERC725X.execute(uint256,address,uint256,bytes)
-        } else if (erc725Function == EXECUTE_SELECTOR) {
-            LSP6ExecuteModule._verifyCanExecute(_target, from, permissions, payload);
+        } else if (erc725Function == IERC725X.execute.selector) {
+            LSP6ExecuteModule._verifyCanExecute(
+                _target,
+                from,
+                permissions,
+                payload
+            );
         } else if (
             erc725Function == ILSP14Ownable2Step.transferOwnership.selector ||
             erc725Function == ILSP14Ownable2Step.acceptOwnership.selector
@@ -483,11 +522,10 @@ abstract contract LSP6KeyManagerCore is
      * the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
      * Used in the beginning of the `nonReentrant` modifier, before the method execution starts.
      */
-    function _nonReentrantBefore(bool isSetData, address from)
-        internal
-        virtual
-        returns (bool isReentrantCall)
-    {
+    function _nonReentrantBefore(
+        bool isSetData,
+        address from
+    ) internal virtual returns (bool isReentrantCall) {
         isReentrantCall = _reentrancyStatus;
         if (isReentrantCall) {
             // CHECK the caller has REENTRANCY permission
@@ -524,6 +562,10 @@ abstract contract LSP6KeyManagerCore is
         bytes32 addressPermissions,
         bytes32 permissionRequired
     ) internal pure override(LSP6ExecuteModule, LSP6SetDataModule) {
-        LSP6ExecuteModule._requirePermissions(controller, addressPermissions, permissionRequired);
+        LSP6ExecuteModule._requirePermissions(
+            controller,
+            addressPermissions,
+            permissionRequired
+        );
     }
 }

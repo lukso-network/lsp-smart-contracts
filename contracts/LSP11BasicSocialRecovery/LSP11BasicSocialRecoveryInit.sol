@@ -2,7 +2,9 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {LSP11BasicSocialRecoveryInitAbstract} from "./LSP11BasicSocialRecoveryInitAbstract.sol";
+import {
+    LSP11BasicSocialRecoveryInitAbstract
+} from "./LSP11BasicSocialRecoveryInitAbstract.sol";
 
 /**
  * @title Deployable Proxy Implementation of LSP11 - Basic Social Recovery standard
@@ -19,7 +21,10 @@ contract LSP11BasicSocialRecoveryInit is LSP11BasicSocialRecoveryInitAbstract {
      * @param _owner The owner of the LSP11 contract
      * @param target_ The address of the ER725 contract to recover
      */
-    function initialize(address target_, address _owner) public virtual initializer {
+    function initialize(
+        address target_,
+        address _owner
+    ) public virtual initializer {
         LSP11BasicSocialRecoveryInitAbstract._initialize(target_, _owner);
     }
 }

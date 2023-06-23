@@ -11,7 +11,9 @@ import {
 } from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721InitAbstract.sol";
 
 // constants
-import {_LSP4_METADATA_KEY} from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
+import {
+    _LSP4_METADATA_KEY
+} from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 
 contract LSP8CompatibleERC721InitTester is LSP8CompatibleERC721InitAbstract {
     /**
@@ -32,11 +34,7 @@ contract LSP8CompatibleERC721InitTester is LSP8CompatibleERC721InitAbstract {
         _setData(_LSP4_METADATA_KEY, tokenURIValue_);
     }
 
-    function mint(
-        address to,
-        uint256 tokenId,
-        bytes calldata data
-    ) public {
+    function mint(address to, uint256 tokenId, bytes calldata data) public {
         // using allowNonLSP1Recipient=true so we can send to EOA in test
         _mint(to, bytes32(tokenId), true, data);
     }

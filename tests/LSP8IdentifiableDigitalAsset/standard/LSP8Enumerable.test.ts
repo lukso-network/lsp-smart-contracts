@@ -1,36 +1,30 @@
-import {
-  LSP8EnumerableTester,
-  LSP8EnumerableTester__factory,
-} from "../../../types";
+import { LSP8EnumerableTester, LSP8EnumerableTester__factory } from '../../../types';
 
-import { shouldInitializeLikeLSP8 } from "../LSP8IdentifiableDigitalAsset.behaviour";
+import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {
   shouldBehaveLikeLSP8Enumerable,
   LSP8EnumerableTestContext,
   getNamedAccounts,
-} from "../LSP8Enumerable.behaviour";
+} from '../LSP8Enumerable.behaviour';
 
-describe("LSP8Enumerable with constructor", () => {
+describe('LSP8Enumerable with constructor', () => {
   const buildTestContext = async () => {
     const accounts = await getNamedAccounts();
 
     const deployParams = {
-      name: "LSP8 Enumerable - deployed with constructor",
-      symbol: "LSP8 NMRBL",
+      name: 'LSP8 Enumerable - deployed with constructor',
+      symbol: 'LSP8 NMRBL',
       newOwner: accounts.owner.address,
     };
 
-    const lsp8Enumerable: LSP8EnumerableTester =
-      await new LSP8EnumerableTester__factory(accounts.owner).deploy(
-        deployParams.name,
-        deployParams.symbol,
-        deployParams.newOwner
-      );
+    const lsp8Enumerable: LSP8EnumerableTester = await new LSP8EnumerableTester__factory(
+      accounts.owner,
+    ).deploy(deployParams.name, deployParams.symbol, deployParams.newOwner);
 
     return { accounts, lsp8Enumerable, deployParams };
   };
 
-  describe("when deploying the contract", () => {
+  describe('when deploying the contract', () => {
     let context: LSP8EnumerableTestContext;
 
     before(async () => {
@@ -47,7 +41,7 @@ describe("LSP8Enumerable with constructor", () => {
     });
   });
 
-  describe("when testing deployed contract", () => {
+  describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP8Enumerable(buildTestContext);
   });
 });

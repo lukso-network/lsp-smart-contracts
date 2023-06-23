@@ -6,7 +6,9 @@ import {
     LSP8CompatibleERC721MintableInitAbstract
 } from "./LSP8CompatibleERC721MintableInitAbstract.sol";
 
-contract LSP8CompatibleERC721MintableInit is LSP8CompatibleERC721MintableInitAbstract {
+contract LSP8CompatibleERC721MintableInit is
+    LSP8CompatibleERC721MintableInitAbstract
+{
     /**
      * @dev initialize (= lock) base implementation contract on deployment
      */
@@ -25,6 +27,10 @@ contract LSP8CompatibleERC721MintableInit is LSP8CompatibleERC721MintableInitAbs
         string memory symbol_,
         address newOwner_
     ) external virtual initializer {
-        LSP8CompatibleERC721MintableInitAbstract._initialize(name_, symbol_, newOwner_);
+        LSP8CompatibleERC721MintableInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_
+        );
     }
 }

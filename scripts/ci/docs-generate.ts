@@ -1,42 +1,35 @@
-import fs from "fs";
-import path from "path";
-import { task } from "hardhat/config";
-import { HardhatPluginError } from "hardhat/plugins";
-import { TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
-import { ethers } from "ethers";
-import pluralize from "pluralize";
-import { mkdir, rm, stat, writeFile } from "fs/promises";
-import { CompilerOutputContract } from "hardhat/types";
-import { format } from "prettier";
+import fs from 'fs';
+import path from 'path';
+import { task } from 'hardhat/config';
+import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names';
+import { ethers } from 'ethers';
+import pluralize from 'pluralize';
+import { mkdir, rm, stat, writeFile } from 'fs/promises';
+import { CompilerOutputContract } from 'hardhat/types';
+import { format } from 'prettier';
 
 task(TASK_COMPILE)
   .addFlag(
-    "noTsGen",
-    "Don't generate documentation after running this task, even if runOnCompile option is enabled"
+    'noTsGen',
+    "Don't generate documentation after running this task, even if runOnCompile option is enabled",
   )
   .setAction(async function (args, hre, runSuper) {
-    for (let compiler of hre.config.solidity.compilers) {
-      compiler.settings.outputSelection["*"]["*"].push("devdoc");
-      compiler.settings.outputSelection["*"]["*"].push("userdoc");
+    for (const compiler of hre.config.solidity.compilers) {
+      compiler.settings.outputSelection['*']['*'].push('devdoc');
+      compiler.settings.outputSelection['*']['*'].push('userdoc');
     }
 
     await runSuper();
 
     if (!args.noTsGen) {
       // Disable compile to avoid an infinite loop
-      await hre.run("ts-gen", { noCompile: true });
+      await hre.run('ts-gen', { noCompile: true });
     }
   });
 
 // derive external signatures from internal types
-function getSigType({
-  type,
-  components = [],
-}: {
-  type: string;
-  components?: any[];
-}): string {
-  return type.replace("tuple", `(${components.map(getSigType).join(",")})`);
+function getSigType({ type, components = [] }: { type: string; components?: any[] }): string {
+  return type.replace('tuple', `(${components.map(getSigType).join(',')})`);
 }
 
 function collect(items: any) {
@@ -44,10 +37,7 @@ function collect(items: any) {
     return undefined;
   }
   let collection;
-  for (const [sig, { hash, ...item }] of Object.entries(items) as [
-    string,
-    any
-  ]) {
+  for (const [, { hash, ...item }] of Object.entries(items) as [string, any]) {
     if (!collection) {
       collection = {};
     }
@@ -59,30 +49,27 @@ function collect(items: any) {
 function serialize(obj: any) {
   const output = [];
   if (Array.isArray(obj)) {
-    output.push("[");
+    output.push('[');
     for (const child of obj) {
       output.push(serialize(child));
-      output.push(",");
+      output.push(',');
     }
-    output.push("]");
-  } else if (typeof obj === "object") {
-    output.push("{");
+    output.push(']');
+  } else if (typeof obj === 'object') {
+    output.push('{');
     for (const [key, value] of Object.entries(obj)) {
       if (value === undefined) {
         continue;
       }
       const v = value as any;
       if (v && v.sig) {
-        let docs = `\n\n/**\n * ${v.type ? `${v.type} ` : ""}${v.sig}`;
+        let docs = `\n\n/**\n * ${v.type ? `${v.type} ` : ''}${v.sig}`;
         if (v.inputs && v.inputs.length) {
           docs = docs.replace(
             /\(.*\)$/,
             `(\n *  ${v.inputs
-              .map(
-                ({ name, type, indexed }) =>
-                  `${type}${indexed ? " indexed" : ""} ${name}`
-              )
-              .join(",\n *  ")}\n * )`
+              .map(({ name, type, indexed }) => `${type}${indexed ? ' indexed' : ''} ${name}`)
+              .join(',\n *  ')}\n * )`,
           );
         }
         if (/^0x/.test(key)) {
@@ -92,34 +79,27 @@ function serialize(obj: any) {
         output.push(docs);
       }
       output.push(`"${key}":`);
-      if (typeof v === "object" && v._doc && v._value) {
+      if (typeof v === 'object' && v._doc && v._value) {
         output.push(`/** ${v._doc} */`);
         output.push(serialize(v._value));
       } else {
         output.push(serialize(value));
       }
-      output.push(",");
+      output.push(',');
     }
-    output.push("}");
+    output.push('}');
   } else {
     output.push(JSON.stringify(obj));
   }
-  return output.join("");
+  return output.join('');
 }
 
-task("ts-gen", "Generate NatSpec documentation automatically on compilation")
-  .addFlag("noCompile", "Don't run hardhat compile task first")
+task('ts-gen', 'Generate NatSpec documentation automatically on compilation')
+  .addFlag('noCompile', "Don't run hardhat compile task first")
   .setAction(async function (args, hre) {
     if (!args.noCompile) {
       await hre.run(TASK_COMPILE, { noDocgen: true });
     }
-
-    const config = {
-      clear: true,
-      except: [],
-    };
-
-    const output = {};
 
     const contractNames = await hre.artifacts.getAllFullyQualifiedNames();
 
@@ -136,26 +116,26 @@ task("ts-gen", "Generate NatSpec documentation automatically on compilation")
 
     // Create userdocs
     if (
-      await stat("./userdocs")
+      await stat('./userdocs')
         .then((s) => s.isDirectory())
         .catch(() => false)
     ) {
-      await rm("./userdocs", { recursive: true });
+      await rm('./userdocs', { recursive: true });
     }
-    await mkdir("./userdocs");
+    await mkdir('./userdocs');
     if (
-      await stat("./devdocs")
+      await stat('./devdocs')
         .then((s) => s.isDirectory())
         .catch(() => false)
     ) {
-      await rm("./devdocs", { recursive: true });
+      await rm('./devdocs', { recursive: true });
     }
-    await mkdir("./devdocs");
+    await mkdir('./devdocs');
     let contractCount = 0;
     let userdocCount = 0;
     let devdocCount = 0;
-    for (let contractName of contractNames) {
-      const [source, name] = contractName.split(":");
+    for (const contractName of contractNames) {
+      const [source, name] = contractName.split(':');
 
       if (!contracts.has(name)) {
         continue;
@@ -166,9 +146,7 @@ task("ts-gen", "Generate NatSpec documentation automatically on compilation")
         abi,
         devdoc = undefined,
         userdoc = undefined,
-      } = build?.output?.contracts?.[source]?.[
-        name
-      ] as CompilerOutputContract & {
+      } = build?.output?.contracts?.[source]?.[name] as CompilerOutputContract & {
         devdoc?: {
           events: object;
           stateVariables: object;
@@ -180,16 +158,13 @@ task("ts-gen", "Generate NatSpec documentation automatically on compilation")
 
       const fileName = `${name}.json`;
       if (devdoc) {
-        await writeFile(
-          path.join("./devdocs", fileName),
-          JSON.stringify(devdoc, undefined, "  ")
-        );
+        await writeFile(path.join('./devdocs', fileName), JSON.stringify(devdoc, undefined, '  '));
         devdocCount++;
       }
       if (userdoc) {
         await writeFile(
-          path.join("./userdocs", fileName),
-          JSON.stringify(userdoc, undefined, "  ")
+          path.join('./userdocs', fileName),
+          JSON.stringify(userdoc, undefined, '  '),
         );
         userdocCount++;
       }
@@ -204,26 +179,18 @@ task("ts-gen", "Generate NatSpec documentation automatically on compilation")
       {
         // Handle devdoc
 
-        const {
-          events = {},
-          stateVariables = {},
-          methods = {},
-          errors = {},
-        } = devdoc;
+        const { events = {}, stateVariables = {}, methods = {}, errors = {} } = devdoc;
         // associate devdoc and userdoc comments with abi elements
         for (const [sig, event] of Object.entries(events)) {
           if (Object.keys(event).length) {
             allMembers[sig].devdoc = event;
           }
         }
-        for (const [name, stateVariable] of Object.entries(stateVariables) as [
-          string,
-          any
-        ]) {
+        for (const [name, stateVariable] of Object.entries(stateVariables) as [string, any]) {
           const key = `${name}()`;
           let entry = allMembers[key];
           if (!entry) {
-            entry = allMembers[key] = { type: "stateVariable" };
+            entry = allMembers[key] = { type: 'stateVariable' };
           }
           if (Object.keys(stateVariable).length) {
             entry.devdoc = stateVariable;
@@ -256,19 +223,19 @@ task("ts-gen", "Generate NatSpec documentation automatically on compilation")
         }
       }
 
-      const constructorName: string | undefined = Object.keys(allMembers).find(
-        (k) => k.startsWith("constructor(")
+      const constructorName: string | undefined = Object.keys(allMembers).find((k) =>
+        k.startsWith('constructor('),
       );
 
       const {
-        "fallback()": fallback,
-        "receive()": receive,
-        [constructorName || "___JUNK___"]: constructor,
+        'fallback()': fallback,
+        'receive()': receive,
+        [constructorName || '___JUNK___']: constructor,
       } = allMembers;
 
       for (const [sig, member] of Object.entries(allMembers)) {
         const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(sig));
-        member.hash = member.type === "event" ? hash : hash.slice(0, 10);
+        member.hash = member.type === 'event' ? hash : hash.slice(0, 10);
       }
 
       const membersByType: Record<string, Record<string, any>> = {};
@@ -277,7 +244,7 @@ task("ts-gen", "Generate NatSpec documentation automatically on compilation")
         if (!type) {
           continue;
         }
-        const key = type === "function" ? "methods" : pluralize(type);
+        const key = type === 'function' ? 'methods' : pluralize(type);
         let entry = membersByType[key];
         if (!entry) {
           entry = membersByType[key] = {};
@@ -285,22 +252,21 @@ task("ts-gen", "Generate NatSpec documentation automatically on compilation")
         entry[hash] = { sig, ...member };
       }
 
+      const { events = {}, methods = {}, errors = {}, stateVariables } = membersByType;
       const {
-        events = {},
-        methods = {},
-        errors = {},
-        stateVariables,
-      } = membersByType;
-      const {
-        events: _events, // Ignore
-        errors: _errors, // Ignore
-        methods: _methods, // Ignore
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        events: _events,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        errors: _errors,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        methods: _methods,
         ...contract
       } = devdoc;
 
       const wholeContract = { ...contract, constructor, fallback, receive };
-      for (const name of ["constructor", "fallback", "receive"]) {
+      for (const name of ['constructor', 'fallback', 'receive']) {
         if (wholeContract[name]) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { hash, ...rest } = wholeContract[name];
           wholeContract[name] = rest;
         }
@@ -313,7 +279,7 @@ task("ts-gen", "Generate NatSpec documentation automatically on compilation")
       allStateVariables[name] = collect(stateVariables);
     }
     fs.writeFileSync(
-      "./contracts.ts",
+      './contracts.ts',
       format(
         `export const ErrorSelectors = ${serialize(allErrors)};
 export const EventSigHashes = ${serialize(allEvents)};
@@ -321,11 +287,10 @@ export const FunctionSelectors = ${serialize(allMethods)};
 export const ContractsDocs = ${serialize(allContracts)};
 export const StateVariables = ${serialize(allStateVariables)};
 `,
-        { parser: "babel-ts" }
-      )
+        { parser: 'babel-ts' },
+      ),
     );
     console.log(`Successfully generated ${devdocCount} json files in devdocs`);
-    console.log(
-      `Successfully generated ./contracts.ts for ${contractCount} contracts`
-    );
+    console.log(`Successfully generated ${userdocCount} json files in userdocs`);
+    console.log(`Successfully generated ./contracts.ts for ${contractCount} contracts`);
   });

@@ -10,6 +10,6 @@ error LSP20CallingVerifierFailed(bool postCall);
 /**
  * @dev reverts when the call to the owner does not return the magic value
  * @param postCall True if the execution call was done, False otherwise
- * @param postCall The data returned by the call to the logic verifier
+ * @param returnedData The data returned by the call to the logic verifier
  */
 error LSP20InvalidMagicValue(bool postCall, bytes returnedData);

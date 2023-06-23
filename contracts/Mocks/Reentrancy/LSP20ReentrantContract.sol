@@ -2,8 +2,12 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {
+    IERC725X
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 
 // constants
 import "../../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -11,7 +15,8 @@ import "../../LSP6KeyManager/LSP6Constants.sol";
 
 contract LSP20ReentrantContract {
     event ValueReceived(uint256);
-    mapping(string => function() internal returns (bytes memory)) private _functionCall;
+    mapping(string => function() internal returns (bytes memory))
+        private _functionCall;
 
     address private _newControllerAddress;
     bytes32 private _newURDTypeId;
@@ -30,15 +35,21 @@ contract LSP20ReentrantContract {
         _functionCall["SETDATA"] = _setData;
         _functionCall["ADDCONTROLLER"] = _addController;
         _functionCall["EDITPERMISSIONS"] = _editPermissions;
-        _functionCall["ADDUNIVERSALRECEIVERDELEGATE"] = _addUniversalReceiverDelegate;
-        _functionCall["CHANGEUNIVERSALRECEIVERDELEGATE"] = _changeUniversalReceiverDelegate;
+        _functionCall[
+            "ADDUNIVERSALRECEIVERDELEGATE"
+        ] = _addUniversalReceiverDelegate;
+        _functionCall[
+            "CHANGEUNIVERSALRECEIVERDELEGATE"
+        ] = _changeUniversalReceiverDelegate;
     }
 
     receive() external payable {
         emit ValueReceived(msg.value);
     }
 
-    function callThatReenters(string memory payloadType) external returns (bytes memory) {
+    function callThatReenters(
+        string memory payloadType
+    ) external returns (bytes memory) {
         return _functionCall[payloadType]();
     }
 
@@ -102,7 +113,10 @@ contract LSP20ReentrantContract {
         return "";
     }
 
-    function _changeUniversalReceiverDelegate() internal returns (bytes memory) {
+    function _changeUniversalReceiverDelegate()
+        internal
+        returns (bytes memory)
+    {
         IERC725Y(msg.sender).setData(
             bytes32(
                 bytes.concat(

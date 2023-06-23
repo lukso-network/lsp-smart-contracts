@@ -21,11 +21,9 @@ library LSP0Utils {
      * @param erc725YStorage a reference to the ERC725Y storage mapping.
      * @return the bytes value stored under the `LSP1UniversalReceiverDelegate` data key.
      */
-    function getLSP1DelegateValue(mapping(bytes32 => bytes) storage erc725YStorage)
-        internal
-        view
-        returns (bytes memory)
-    {
+    function getLSP1DelegateValue(
+        mapping(bytes32 => bytes) storage erc725YStorage
+    ) internal view returns (bytes memory) {
         return erc725YStorage[_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY];
     }
 

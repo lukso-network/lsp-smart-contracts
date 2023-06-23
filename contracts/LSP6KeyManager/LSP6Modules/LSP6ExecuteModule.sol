@@ -7,7 +7,9 @@ import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 // libraries
 import {LSP6Utils} from "../LSP6Utils.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {
+    ERC165Checker
+} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // constants
 import {
@@ -61,10 +63,15 @@ abstract contract LSP6ExecuteModule {
         bytes calldata payload
     ) internal view virtual {
         // CHECK the offset of `data` is not pointing to the previous parameters
-        if (
-            bytes32(payload[100:132]) !=
-            0x0000000000000000000000000000000000000000000000000000000000000080
-        ) {
+        //
+        // offsets in calldata for ERC725X.execute(...) parameters (excluding function selector)
+        //
+        // - `operationType`: index 0 in calldata
+        // - `to`: index 32
+        // - `value`: index 64
+        // - `data`'s offset location: index 96
+        // - `data` starts at: index 128 (= 0x0000...0080)
+        if (bytes32(payload[100:132]) != bytes32(uint256(128))) {
             revert InvalidPayload(payload);
         }
 
@@ -96,23 +103,43 @@ abstract contract LSP6ExecuteModule {
 
         // if it is a message call
         if (operationType == OPERATION_0_CALL) {
-            return _verifyCanCall(controlledContract, controller, permissions, payload);
+            return
+                _verifyCanCall(
+                    controlledContract,
+                    controller,
+                    permissions,
+                    payload
+                );
         }
 
         // if it is a contract creation
-        if (operationType == OPERATION_1_CREATE || operationType == OPERATION_2_CREATE2) {
+        if (
+            operationType == OPERATION_1_CREATE ||
+            operationType == OPERATION_2_CREATE2
+        ) {
             // required to check for permission TRANSFERVALUE if we are funding
             // the contract on deployment via a payable constructor
             bool isFundingContract = uint256(bytes32(payload[68:100])) != 0;
 
-            return _verifyCanDeployContract(controller, permissions, isFundingContract);
+            return
+                _verifyCanDeployContract(
+                    controller,
+                    permissions,
+                    isFundingContract
+                );
         }
 
         // if it is a STATICALL
         // we do not check for TRANSFERVALUE permission,
         // as ERC725X will revert if a value is provided with operation type STATICCALL.
         if (operationType == OPERATION_3_STATICCALL) {
-            return _verifyCanStaticCall(controlledContract, controller, permissions, payload);
+            return
+                _verifyCanStaticCall(
+                    controlledContract,
+                    controller,
+                    permissions,
+                    payload
+                );
         }
 
         // DELEGATECALL is disallowed by default on the Key Manager.
@@ -128,7 +155,9 @@ abstract contract LSP6ExecuteModule {
     ) internal view virtual {
         _requirePermissions(controller, permissions, _PERMISSION_DEPLOY);
 
-        bool hasSuperTransferValue = permissions.hasPermission(_PERMISSION_SUPER_TRANSFERVALUE);
+        bool hasSuperTransferValue = permissions.hasPermission(
+            _PERMISSION_SUPER_TRANSFERVALUE
+        );
 
         // CHECK if we are funding the contract
         if (isFundingContract && !hasSuperTransferValue) {
@@ -142,7 +171,9 @@ abstract contract LSP6ExecuteModule {
         bytes32 permissions,
         bytes calldata payload
     ) internal view virtual {
-        bool hasSuperStaticCall = permissions.hasPermission(_PERMISSION_SUPER_STATICCALL);
+        bool hasSuperStaticCall = permissions.hasPermission(
+            _PERMISSION_SUPER_STATICCALL
+        );
 
         // Skip if caller has SUPER permission for static calls
         if (hasSuperStaticCall) return;
@@ -160,7 +191,9 @@ abstract contract LSP6ExecuteModule {
     ) internal view virtual {
         bool isTransferringValue = uint256(bytes32(payload[68:100])) != 0;
 
-        bool hasSuperTransferValue = permissions.hasPermission(_PERMISSION_SUPER_TRANSFERVALUE);
+        bool hasSuperTransferValue = permissions.hasPermission(
+            _PERMISSION_SUPER_TRANSFERVALUE
+        );
 
         // all the parameters are abi-encoded (padded to 32 bytes words)
         //
@@ -177,7 +210,11 @@ abstract contract LSP6ExecuteModule {
         bool hasSuperCall = permissions.hasPermission(_PERMISSION_SUPER_CALL);
 
         if (isTransferringValue && !hasSuperTransferValue) {
-            _requirePermissions(controller, permissions, _PERMISSION_TRANSFERVALUE);
+            _requirePermissions(
+                controller,
+                permissions,
+                _PERMISSION_TRANSFERVALUE
+            );
         }
 
         // CHECK if we are doing an empty call, as the receive() or fallback() function
@@ -194,7 +231,8 @@ abstract contract LSP6ExecuteModule {
         if (hasSuperCall && !isTransferringValue) return;
 
         // Skip if caller has SUPER permission for value transfers
-        if (hasSuperTransferValue && !isCallDataPresent && isTransferringValue) return;
+        if (hasSuperTransferValue && !isCallDataPresent && isTransferringValue)
+            return;
 
         // Skip if both SUPER permissions are present
         if (hasSuperCall && hasSuperTransferValue) return;
@@ -216,17 +254,20 @@ abstract contract LSP6ExecuteModule {
         ) = _extractExecuteParameters(payload);
 
         // CHECK for ALLOWED CALLS
-        bytes memory allowedCalls = ERC725Y(controlledContract).getAllowedCallsFor(
-            controllerAddress
-        );
+        bytes memory allowedCalls = ERC725Y(controlledContract)
+            .getAllowedCallsFor(controllerAddress);
 
         if (allowedCalls.length == 0) {
             revert NoCallsAllowed(controllerAddress);
         }
 
-        bytes4 requiredCallTypes = _extractCallType(operationType, value, isEmptyCall);
+        bytes4 requiredCallTypes = _extractCallType(
+            operationType,
+            value,
+            isEmptyCall
+        );
 
-        for (uint256 ii; ii < allowedCalls.length; ii += 34) {
+        for (uint256 ii = 0; ii < allowedCalls.length; ii += 34) {
             /// @dev structure of an AllowedCall
             //
             /// AllowedCall = 0x00200000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
@@ -248,7 +289,10 @@ abstract contract LSP6ExecuteModule {
             // 0xxxxxxxxxffffffffffffffffffffffffffffffffffffffffffffffffffffffff
             // (excluding the callTypes) not allowed
             // as equivalent to whitelisting any call (= SUPER permission)
-            if (bytes28(bytes32(allowedCall) << 32) == bytes28(type(uint224).max)) {
+            if (
+                bytes28(bytes32(allowedCall) << 32) ==
+                bytes28(type(uint224).max)
+            ) {
                 revert InvalidWhitelistedCall(controllerAddress);
             }
 
@@ -290,17 +334,9 @@ abstract contract LSP6ExecuteModule {
         }
     }
 
-    function _extractExecuteParameters(bytes calldata executeCalldata)
-        internal
-        pure
-        returns (
-            uint256,
-            address,
-            uint256,
-            bytes4,
-            bool
-        )
-    {
+    function _extractExecuteParameters(
+        bytes calldata executeCalldata
+    ) internal pure returns (uint256, address, uint256, bytes4, bool) {
         uint256 operationType = uint256(bytes32(executeCalldata[4:36]));
 
         // CHECK that it is a valid address left-padded with `00` on the 12 upper bytes
@@ -316,10 +352,19 @@ abstract contract LSP6ExecuteModule {
             ? bytes4(executeCalldata[164:168])
             : bytes4(0);
 
-        return (operationType, to, value, selector, executeCalldata.length == 164);
+        return (
+            operationType,
+            to,
+            value,
+            selector,
+            executeCalldata.length == 164
+        );
     }
 
-    function _isAllowedAddress(bytes memory allowedCall, address to) internal pure returns (bool) {
+    function _isAllowedAddress(
+        bytes memory allowedCall,
+        address to
+    ) internal pure returns (bool) {
         // <offset> = 4 bytes x 8 bits = 32 bits
         //
         // <offset>v----------------address---------------v
@@ -327,10 +372,15 @@ abstract contract LSP6ExecuteModule {
         address allowedAddress = address(bytes20(bytes32(allowedCall) << 32));
 
         // ANY address = 0xffffffffffffffffffffffffffffffffffffffff
-        return allowedAddress == address(bytes20(type(uint160).max)) || to == allowedAddress;
+        return
+            allowedAddress == address(bytes20(type(uint160).max)) ||
+            to == allowedAddress;
     }
 
-    function _isAllowedStandard(bytes memory allowedCall, address to) internal view returns (bool) {
+    function _isAllowedStandard(
+        bytes memory allowedCall,
+        address to
+    ) internal view returns (bool) {
         // <offset> = 24 bytes x 8 bits = 192 bits
         //
         //                                                 standard
@@ -344,11 +394,10 @@ abstract contract LSP6ExecuteModule {
             to.supportsERC165InterfaceUnchecked(allowedStandard);
     }
 
-    function _isAllowedFunction(bytes memory allowedCall, bytes4 requiredFunction)
-        internal
-        pure
-        returns (bool)
-    {
+    function _isAllowedFunction(
+        bytes memory allowedCall,
+        bytes4 requiredFunction
+    ) internal pure returns (bool) {
         // <offset> = 28 bytes x 8 bits = 224 bits
         //
         //                                                         function
@@ -364,11 +413,10 @@ abstract contract LSP6ExecuteModule {
             (isFunctionCall && (requiredFunction == allowedFunction));
     }
 
-    function _isAllowedCallType(bytes memory allowedCall, bytes4 requiredCallTypes)
-        internal
-        pure
-        returns (bool)
-    {
+    function _isAllowedCallType(
+        bytes memory allowedCall,
+        bytes4 requiredCallTypes
+    ) internal pure returns (bool) {
         // extract callType
         //
         // <offset> = 0
@@ -392,7 +440,9 @@ abstract contract LSP6ExecuteModule {
         bytes32 permissionRequired
     ) internal pure virtual {
         if (!LSP6Utils.hasPermission(addressPermissions, permissionRequired)) {
-            string memory permissionErrorString = LSP6Utils.getPermissionName(permissionRequired);
+            string memory permissionErrorString = LSP6Utils.getPermissionName(
+                permissionRequired
+            );
             revert NotAuthorised(controller, permissionErrorString);
         }
     }

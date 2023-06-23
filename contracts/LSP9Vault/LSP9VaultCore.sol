@@ -2,21 +2,33 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import {
+    ILSP1UniversalReceiver
+} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import {ILSP9Vault} from "./ILSP9Vault.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {
+    ERC165Checker
+} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // modules
-import {ERC725XCore, IERC725X} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
-import {ERC725YCore, IERC725Y} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {
+    ERC725XCore,
+    IERC725X
+} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
+import {
+    ERC725YCore,
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
+import {
+    OwnableUnset
+} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 
@@ -34,7 +46,9 @@ import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
 
-import {_LSP6KEY_ADDRESSPERMISSIONS_PREFIX} from "../LSP6KeyManager/LSP6Constants.sol";
+import {
+    _LSP6KEY_ADDRESSPERMISSIONS_PREFIX
+} from "../LSP6KeyManager/LSP6Constants.sol";
 import {
     _INTERFACEID_LSP9,
     _TYPEID_LSP9_OwnershipTransferStarted,
@@ -42,7 +56,9 @@ import {
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
 } from "./LSP9Constants.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
-import {_LSP17_EXTENSION_PREFIX} from "../LSP17ContractExtension/LSP17Constants.sol";
+import {
+    _LSP17_EXTENSION_PREFIX
+} from "../LSP17ContractExtension/LSP17Constants.sol";
 
 // errors
 import "./LSP9Errors.sol";
@@ -126,7 +142,8 @@ contract LSP9VaultCore is
         if (msg.sig == bytes4(0) && extension == address(0)) return;
 
         // if no extension was found, revert
-        if (extension == address(0)) revert NoExtensionFoundForFunctionSelector(msg.sig);
+        if (extension == address(0))
+            revert NoExtensionFoundForFunctionSelector(msg.sig);
 
         // solhint-disable no-inline-assembly
         // if the extension was found, call the extension with the msg.data
@@ -142,7 +159,15 @@ contract LSP9VaultCore is
             mstore(add(calldatasize(), 20), callvalue())
 
             // Add 52 bytes for the msg.sender and msg.value appended at the end of the calldata
-            let success := call(gas(), extension, 0, 0, add(calldatasize(), 52), 0, 0)
+            let success := call(
+                gas(),
+                extension,
+                0,
+                0,
+                add(calldatasize(), 52),
+                0,
+                0
+            )
 
             // Copy the returned data
             returndatacopy(0, 0, returndatasize())
@@ -164,13 +189,9 @@ contract LSP9VaultCore is
      *
      * If no extension is stored, returns the address(0)
      */
-    function _getExtension(bytes4 functionSelector)
-        internal
-        view
-        virtual
-        override
-        returns (address)
-    {
+    function _getExtension(
+        bytes4 functionSelector
+    ) internal view virtual override returns (address) {
         bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
             _LSP17_EXTENSION_PREFIX,
             functionSelector
@@ -190,7 +211,9 @@ contract LSP9VaultCore is
      * `supportsInterface` extension according to LSP17, and checks if the extension
      * implements the interface defined by `interfaceId`.
      */
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(
+        bytes4 interfaceId
+    )
         public
         view
         virtual
@@ -208,10 +231,14 @@ contract LSP9VaultCore is
     /**
      * @dev Receives and executes a batch of function calls on this contract.
      */
-    function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
+    function batchCalls(
+        bytes[] calldata data
+    ) public returns (bytes[] memory results) {
         results = new bytes[](data.length);
         for (uint256 i; i < data.length; ) {
-            (bool success, bytes memory result) = address(this).delegatecall(data[i]);
+            (bool success, bytes memory result) = address(this).delegatecall(
+                data[i]
+            );
 
             if (!success) {
                 // Look for revert reason and bubble it up if present
@@ -279,7 +306,10 @@ contract LSP9VaultCore is
      *
      * Emits a {DataChanged} event.
      */
-    function setData(bytes32 dataKey, bytes memory dataValue) public payable virtual override {
+    function setData(
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) public payable virtual override {
         if (msg.value != 0) revert ERC725Y_MsgValueDisallowed();
 
         bool isURD = _validateAndIdentifyCaller();
@@ -303,12 +333,10 @@ contract LSP9VaultCore is
      *
      * Emits a {DataChanged} event.
      */
-    function setDataBatch(bytes32[] memory dataKeys, bytes[] memory dataValues)
-        public
-        payable
-        virtual
-        override
-    {
+    function setDataBatch(
+        bytes32[] memory dataKeys,
+        bytes[] memory dataValues
+    ) public payable virtual override {
         bool isURD = _validateAndIdentifyCaller();
         if (dataKeys.length != dataValues.length) {
             revert ERC725Y_DataKeysValuesLengthMismatch();
@@ -319,7 +347,8 @@ contract LSP9VaultCore is
         for (uint256 i = 0; i < dataKeys.length; ) {
             if (isURD) {
                 if (
-                    bytes12(dataKeys[i]) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ||
+                    bytes12(dataKeys[i]) ==
+                    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ||
                     bytes6(dataKeys[i]) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
                     bytes12(dataKeys[i]) == _LSP17_EXTENSION_PREFIX
                 ) {
@@ -357,20 +386,26 @@ contract LSP9VaultCore is
      * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call
      * and the LSP1TypeIdDelegate call.
      */
-    function universalReceiver(bytes32 typeId, bytes calldata receivedData)
-        public
-        payable
-        virtual
-        returns (bytes memory returnedValues)
-    {
+    function universalReceiver(
+        bytes32 typeId,
+        bytes calldata receivedData
+    ) public payable virtual returns (bytes memory returnedValues) {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
-        bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
+        bytes memory lsp1DelegateValue = _getData(
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
+        );
         bytes memory resultDefaultDelegate;
 
         if (lsp1DelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
+            address universalReceiverDelegate = address(
+                bytes20(lsp1DelegateValue)
+            );
 
-            if (universalReceiverDelegate.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
+            if (
+                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
+                    _INTERFACEID_LSP1
+                )
+            ) {
                 _reentrantDelegate = universalReceiverDelegate;
                 resultDefaultDelegate = universalReceiverDelegate
                     .callUniversalReceiverWithCallerInfos(
@@ -391,9 +426,15 @@ contract LSP9VaultCore is
         bytes memory resultTypeIdDelegate;
 
         if (lsp1TypeIdDelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(bytes20(lsp1TypeIdDelegateValue));
+            address universalReceiverDelegate = address(
+                bytes20(lsp1TypeIdDelegateValue)
+            );
 
-            if (universalReceiverDelegate.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
+            if (
+                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
+                    _INTERFACEID_LSP1
+                )
+            ) {
                 _reentrantDelegate = universalReceiverDelegate;
                 resultTypeIdDelegate = universalReceiverDelegate
                     .callUniversalReceiverWithCallerInfos(
@@ -406,8 +447,17 @@ contract LSP9VaultCore is
         }
 
         delete _reentrantDelegate;
-        returnedValues = abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
-        emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
+        returnedValues = abi.encode(
+            resultDefaultDelegate,
+            resultTypeIdDelegate
+        );
+        emit UniversalReceiver(
+            msg.sender,
+            msg.value,
+            typeId,
+            receivedData,
+            returnedValues
+        );
     }
 
     /**
@@ -418,18 +468,18 @@ contract LSP9VaultCore is
      * Requirements:
      *  - when notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP9OwnershipTransferStarted')
      */
-    function transferOwnership(address newOwner)
-        public
-        virtual
-        override(LSP14Ownable2Step, OwnableUnset)
-        onlyOwner
-    {
+    function transferOwnership(
+        address newOwner
+    ) public virtual override(LSP14Ownable2Step, OwnableUnset) onlyOwner {
         LSP14Ownable2Step._transferOwnership(newOwner);
 
         address currentOwner = owner();
         emit OwnershipTransferStarted(currentOwner, newOwner);
 
-        newOwner.tryNotifyUniversalReceiver(_TYPEID_LSP9_OwnershipTransferStarted, "");
+        newOwner.tryNotifyUniversalReceiver(
+            _TYPEID_LSP9_OwnershipTransferStarted,
+            ""
+        );
 
         require(
             currentOwner == owner(),
@@ -477,11 +527,16 @@ contract LSP9VaultCore is
     /**
      * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
      */
-    function _setData(bytes32 dataKey, bytes memory dataValue) internal virtual override {
+    function _setData(
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) internal virtual override {
         _store[dataKey] = dataValue;
         emit DataChanged(
             dataKey,
-            dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
+            dataValue.length <= 256
+                ? dataValue
+                : BytesLib.slice(dataValue, 0, 256)
         );
     }
 
@@ -503,13 +558,15 @@ contract LSP9VaultCore is
 
         // Deploy with CREATE
         if (operationType == uint256(OPERATION_1_CREATE)) {
-            if (target != address(0)) revert ERC725X_CreateOperationsRequireEmptyRecipientAddress();
+            if (target != address(0))
+                revert ERC725X_CreateOperationsRequireEmptyRecipientAddress();
             return _deployCreate(value, data);
         }
 
         // Deploy with CREATE2
         if (operationType == uint256(OPERATION_2_CREATE2)) {
-            if (target != address(0)) revert ERC725X_CreateOperationsRequireEmptyRecipientAddress();
+            if (target != address(0))
+                revert ERC725X_CreateOperationsRequireEmptyRecipientAddress();
             return _deployCreate2(value, data);
         }
 

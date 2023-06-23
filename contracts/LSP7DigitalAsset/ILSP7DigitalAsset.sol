@@ -4,10 +4,12 @@ pragma solidity ^0.8.4;
 
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 /**
- * @title interface of the LSP7 - Digital Asset standard.
+ * @title Interface of the LSP7 - Digital Asset standard, a fungible digital asset.
  */
 interface ILSP7DigitalAsset is IERC165, IERC725Y {
     // --- Events
@@ -126,10 +128,10 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
      * operator.
      */
-    function authorizedAmountFor(address operator, address tokenOwner)
-        external
-        view
-        returns (uint256);
+    function authorizedAmountFor(
+        address operator,
+        address tokenOwner
+    ) external view returns (uint256);
 
     // --- Transfer functionality
 

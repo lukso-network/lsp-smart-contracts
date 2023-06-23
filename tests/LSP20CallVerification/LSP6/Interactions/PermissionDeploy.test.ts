@@ -1,32 +1,26 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { calculateCreate2 } from "eth-create2-calculator";
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { calculateCreate2 } from 'eth-create2-calculator';
 
-import { TargetContract__factory } from "../../../../types";
+import { TargetContract__factory } from '../../../../types';
 
 // constants
 import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
-  LSP6_VERSION,
   PERMISSIONS,
   OPERATION_TYPES,
-} from "../../../../constants";
+} from '../../../../constants';
 
 // setup
-import { LSP6TestContext } from "../../../utils/context";
-import { setupKeyManager } from "../../../utils/fixtures";
+import { LSP6TestContext } from '../../../utils/context';
+import { setupKeyManager } from '../../../utils/fixtures';
 
-import { LOCAL_PRIVATE_KEYS } from "../../../utils/helpers";
-
-export const shouldBehaveLikePermissionDeploy = (
-  buildContext: () => Promise<LSP6TestContext>
-) => {
+export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
-  let addressCanDeploy: SignerWithAddress,
-    addressCannotDeploy: SignerWithAddress;
+  let addressCanDeploy: SignerWithAddress, addressCannotDeploy: SignerWithAddress;
 
   before(async () => {
     context = await buildContext();
@@ -35,34 +29,27 @@ export const shouldBehaveLikePermissionDeploy = (
     addressCannotDeploy = context.accounts[2];
 
     const permissionKeys = [
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
         addressCanDeploy.address.substring(2),
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
         addressCannotDeploy.address.substring(2),
     ];
 
-    const permissionsValues = [
-      ALL_PERMISSIONS,
-      PERMISSIONS.DEPLOY,
-      PERMISSIONS.CALL,
-    ];
+    const permissionsValues = [ALL_PERMISSIONS, PERMISSIONS.DEPLOY, PERMISSIONS.CALL];
 
     await setupKeyManager(context, permissionKeys, permissionsValues);
   });
 
-  describe("when caller has ALL PERMISSIONS", () => {
-    it("should be allowed to deploy a contract TargetContract via CREATE", async () => {
-      let contractBytecodeToDeploy = TargetContract__factory.bytecode;
+  describe('when caller has ALL PERMISSIONS', () => {
+    it('should be allowed to deploy a contract TargetContract via CREATE', async () => {
+      const contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
-      const expectedContractAddress = await context.universalProfile.callStatic[
-        "execute"
-      ](
+      const expectedContractAddress = await context.universalProfile.callStatic['execute'](
         OPERATION_TYPES.CREATE, // operation type
         ethers.constants.AddressZero, // recipient
         0, // value
-        contractBytecodeToDeploy
+        contractBytecodeToDeploy,
       );
 
       await expect(
@@ -70,26 +57,26 @@ export const shouldBehaveLikePermissionDeploy = (
           OPERATION_TYPES.CREATE, // operation type
           ethers.constants.AddressZero, // recipient
           0, // value
-          contractBytecodeToDeploy
-        )
+          contractBytecodeToDeploy,
+        ),
       )
-        .to.emit(context.universalProfile, "ContractCreated")
+        .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
           ethers.utils.getAddress(expectedContractAddress),
           0,
-          ethers.utils.hexZeroPad("0x00", 32)
+          ethers.utils.hexZeroPad('0x00', 32),
         );
     });
 
-    it("should be allowed to deploy a contract TargetContract via CREATE2", async () => {
-      let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      let salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+    it('should be allowed to deploy a contract TargetContract via CREATE2', async () => {
+      const contractBytecodeToDeploy = TargetContract__factory.bytecode;
+      const salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
-      let preComputedAddress = calculateCreate2(
+      const preComputedAddress = calculateCreate2(
         context.universalProfile.address,
         salt,
-        contractBytecodeToDeploy
+        contractBytecodeToDeploy,
       ).toLowerCase();
 
       await expect(
@@ -99,22 +86,17 @@ export const shouldBehaveLikePermissionDeploy = (
             OPERATION_TYPES.CREATE2,
             ethers.constants.AddressZero,
             0,
-            contractBytecodeToDeploy + salt.substring(2)
-          )
+            contractBytecodeToDeploy + salt.substring(2),
+          ),
       )
-        .to.emit(context.universalProfile, "ContractCreated")
-        .withArgs(
-          OPERATION_TYPES.CREATE2,
-          ethers.utils.getAddress(preComputedAddress),
-          0,
-          salt
-        );
+        .to.emit(context.universalProfile, 'ContractCreated')
+        .withArgs(OPERATION_TYPES.CREATE2, ethers.utils.getAddress(preComputedAddress), 0, salt);
     });
   });
 
-  describe("when caller is an address with permission DEPLOY", () => {
-    it("should be allowed to deploy a contract TargetContract via CREATE", async () => {
-      let contractBytecodeToDeploy = TargetContract__factory.bytecode;
+  describe('when caller is an address with permission DEPLOY', () => {
+    it('should be allowed to deploy a contract TargetContract via CREATE', async () => {
+      const contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
       const expectedContractAddress = await context.universalProfile
         .connect(addressCanDeploy)
@@ -122,7 +104,7 @@ export const shouldBehaveLikePermissionDeploy = (
           OPERATION_TYPES.CREATE,
           ethers.constants.AddressZero,
           0,
-          contractBytecodeToDeploy
+          contractBytecodeToDeploy,
         );
 
       await expect(
@@ -132,27 +114,26 @@ export const shouldBehaveLikePermissionDeploy = (
             OPERATION_TYPES.CREATE,
             ethers.constants.AddressZero,
             0,
-            contractBytecodeToDeploy
-          )
+            contractBytecodeToDeploy,
+          ),
       )
-        .to.emit(context.universalProfile, "ContractCreated")
+        .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
           ethers.utils.getAddress(expectedContractAddress),
           0,
-          ethers.utils.hexZeroPad("0x00", 32)
+          ethers.utils.hexZeroPad('0x00', 32),
         );
     });
 
-    it("should be allowed to deploy a contract TargetContract via CREATE2", async () => {
-      let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      let salt =
-        "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+    it('should be allowed to deploy a contract TargetContract via CREATE2', async () => {
+      const contractBytecodeToDeploy = TargetContract__factory.bytecode;
+      const salt = '0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe';
 
-      let preComputedAddress = calculateCreate2(
+      const preComputedAddress = calculateCreate2(
         context.universalProfile.address,
         salt,
-        contractBytecodeToDeploy
+        contractBytecodeToDeploy,
       ).toLowerCase();
 
       await expect(
@@ -162,23 +143,18 @@ export const shouldBehaveLikePermissionDeploy = (
             OPERATION_TYPES.CREATE2,
             ethers.constants.AddressZero,
             0,
-            contractBytecodeToDeploy + salt.substring(2)
-          )
+            contractBytecodeToDeploy + salt.substring(2),
+          ),
       )
-        .to.emit(context.universalProfile, "ContractCreated")
-        .withArgs(
-          OPERATION_TYPES.CREATE2,
-          ethers.utils.getAddress(preComputedAddress),
-          0,
-          salt
-        );
+        .to.emit(context.universalProfile, 'ContractCreated')
+        .withArgs(OPERATION_TYPES.CREATE2, ethers.utils.getAddress(preComputedAddress), 0, salt);
     });
   });
 
-  describe("when caller is an address that does not have the permission DEPLOY", () => {
-    describe("-> interacting via execute(...)", () => {
-      it("should revert when trying to deploy a contract via CREATE", async () => {
-        let contractBytecodeToDeploy = TargetContract__factory.bytecode;
+  describe('when caller is an address that does not have the permission DEPLOY', () => {
+    describe('-> interacting via execute(...)', () => {
+      it('should revert when trying to deploy a contract via CREATE', async () => {
+        const contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
         await expect(
           context.universalProfile
@@ -187,17 +163,16 @@ export const shouldBehaveLikePermissionDeploy = (
               OPERATION_TYPES.CREATE,
               ethers.constants.AddressZero,
               0,
-              contractBytecodeToDeploy
-            )
+              contractBytecodeToDeploy,
+            ),
         )
-          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(addressCannotDeploy.address, "DEPLOY");
+          .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+          .withArgs(addressCannotDeploy.address, 'DEPLOY');
       });
 
-      it("should revert when trying to deploy a contract via CREATE2", async () => {
-        let contractBytecodeToDeploy = TargetContract__factory.bytecode;
-        let salt =
-          "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+      it('should revert when trying to deploy a contract via CREATE2', async () => {
+        const contractBytecodeToDeploy = TargetContract__factory.bytecode;
+        const salt = '0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe';
 
         await expect(
           context.universalProfile
@@ -206,11 +181,11 @@ export const shouldBehaveLikePermissionDeploy = (
               OPERATION_TYPES.CREATE2,
               ethers.constants.AddressZero,
               0,
-              contractBytecodeToDeploy + salt.substring(2)
-            )
+              contractBytecodeToDeploy + salt.substring(2),
+            ),
         )
-          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(addressCannotDeploy.address, "DEPLOY");
+          .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+          .withArgs(addressCannotDeploy.address, 'DEPLOY');
       });
     });
   });

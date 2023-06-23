@@ -3,7 +3,9 @@ pragma solidity ^0.8.5;
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
-import {ERC725Y_DataKeysValuesLengthMismatch} from "@erc725/smart-contracts/contracts/errors.sol";
+import {
+    ERC725Y_DataKeysValuesLengthMismatch
+} from "@erc725/smart-contracts/contracts/errors.sol";
 
 // libraries
 import {LSP6Utils} from "../LSP6Utils.sol";
@@ -29,7 +31,9 @@ import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../../LSP1UniversalReceiver/LSP1Constants.sol";
-import {_LSP17_EXTENSION_PREFIX} from "../../LSP17ContractExtension/LSP17Constants.sol";
+import {
+    _LSP17_EXTENSION_PREFIX
+} from "../../LSP17ContractExtension/LSP17Constants.sol";
 
 // errors
 import {
@@ -70,21 +74,32 @@ abstract contract LSP6SetDataModule {
         // CHECK if allowed to set an ERC725Y Data Key
         if (requiredPermission == _PERMISSION_SETDATA) {
             // Skip if caller has SUPER permissions
-            if (controllerPermissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
+            if (controllerPermissions.hasPermission(_PERMISSION_SUPER_SETDATA))
+                return;
 
-            _requirePermissions(controllerAddress, controllerPermissions, _PERMISSION_SETDATA);
+            _requirePermissions(
+                controllerAddress,
+                controllerPermissions,
+                _PERMISSION_SETDATA
+            );
 
             _verifyAllowedERC725YSingleKey(
                 controllerAddress,
                 inputDataKey,
-                ERC725Y(controlledContract).getAllowedERC725YDataKeysFor(controllerAddress)
+                ERC725Y(controlledContract).getAllowedERC725YDataKeysFor(
+                    controllerAddress
+                )
             );
         } else {
             // Do not check again if we already checked that the controller had the permissions inside `_getPermissionRequiredToSetDataKey(...)`
             if (requiredPermission == bytes32(0)) return;
 
             // Otherwise CHECK the required permission if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
-            _requirePermissions(controllerAddress, controllerPermissions, requiredPermission);
+            _requirePermissions(
+                controllerAddress,
+                controllerPermissions,
+                requiredPermission
+            );
         }
     }
 
@@ -107,13 +122,13 @@ abstract contract LSP6SetDataModule {
             revert ERC725Y_DataKeysValuesLengthMismatch();
         }
 
-        bool isSettingERC725YKeys;
+        bool isSettingERC725YKeys = false;
         bool[] memory validatedInputDataKeys = new bool[](inputDataKeys.length);
         uint256 inputDataKeysAllowed = 0;
 
         bytes32 requiredPermission;
 
-        uint256 ii;
+        uint256 ii = 0;
         do {
             requiredPermission = _getPermissionRequiredToSetDataKey(
                 controlledContract,
@@ -128,7 +143,11 @@ abstract contract LSP6SetDataModule {
                 // if we did not check already the permissions of the controller inside `_getPermissionRequiredToSetDataKey(...)`
                 if (requiredPermission != bytes32(0)) {
                     // CHECK the required permissions for setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
-                    _requirePermissions(controller, permissions, requiredPermission);
+                    _requirePermissions(
+                        controller,
+                        permissions,
+                        requiredPermission
+                    );
                 }
 
                 validatedInputDataKeys[ii] = true;
@@ -150,7 +169,9 @@ abstract contract LSP6SetDataModule {
             _verifyAllowedERC725YDataKeys(
                 controller,
                 inputDataKeys,
-                ERC725Y(controlledContract).getAllowedERC725YDataKeysFor(controller),
+                ERC725Y(controlledContract).getAllowedERC725YDataKeysFor(
+                    controller
+                ),
                 validatedInputDataKeys,
                 inputDataKeysAllowed
             );
@@ -175,9 +196,10 @@ abstract contract LSP6SetDataModule {
             // this is our best attempt to save gas to avoid reading the `target` storage multiple times
             // to know if we need the permission `ADDCONTROLLER` or `EDITPERMISSIONS`.
             // Even if `getData(...)` is `view`, multiple external calls to fetch values from storage add to the total gas used.
-            bool hasBothAddControllerAndEditPermissions = controllerPermissions.hasPermission(
-                _PERMISSION_ADDCONTROLLER | _PERMISSION_EDITPERMISSIONS
-            );
+            bool hasBothAddControllerAndEditPermissions = controllerPermissions
+                .hasPermission(
+                    _PERMISSION_ADDCONTROLLER | _PERMISSION_EDITPERMISSIONS
+                );
 
             return
                 _getPermissionToSetPermissionsArray(
@@ -190,19 +212,30 @@ abstract contract LSP6SetDataModule {
             // AddressPermissions:...
         } else if (bytes6(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX) {
             // same as above, save gas by avoiding redundants or unecessary external calls to fetch values from the `target` storage.
-            bool hasBothAddControllerAndEditPermissions = controllerPermissions.hasPermission(
-                _PERMISSION_ADDCONTROLLER | _PERMISSION_EDITPERMISSIONS
-            );
+            bool hasBothAddControllerAndEditPermissions = controllerPermissions
+                .hasPermission(
+                    _PERMISSION_ADDCONTROLLER | _PERMISSION_EDITPERMISSIONS
+                );
 
             // AddressPermissions:Permissions:<address>
-            if (bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
+            if (
+                bytes12(inputDataKey) ==
+                _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX
+            ) {
                 // controller already has the permissions needed. Do not run internal function.
                 if (hasBothAddControllerAndEditPermissions) return (bytes32(0));
 
-                return _getPermissionToSetControllerPermissions(controlledContract, inputDataKey);
+                return
+                    _getPermissionToSetControllerPermissions(
+                        controlledContract,
+                        inputDataKey
+                    );
 
                 // AddressPermissions:AllowedCalls:<address>
-            } else if (bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
+            } else if (
+                bytes12(inputDataKey) ==
+                _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX
+            ) {
                 return
                     _getPermissionToSetAllowedCalls(
                         controlledContract,
@@ -213,7 +246,8 @@ abstract contract LSP6SetDataModule {
 
                 // AddressPermissions:AllowedERC725YKeys:<address>
             } else if (
-                bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_AllowedERC725YDataKeys_PREFIX
+                bytes12(inputDataKey) ==
+                _LSP6KEY_ADDRESSPERMISSIONS_AllowedERC725YDataKeys_PREFIX
             ) {
                 return
                     _getPermissionToSetAllowedERC725YDataKeys(
@@ -257,7 +291,11 @@ abstract contract LSP6SetDataModule {
                 return bytes32(0);
             }
 
-            return _getPermissionToSetLSP1Delegate(controlledContract, inputDataKey);
+            return
+                _getPermissionToSetLSP1Delegate(
+                    controlledContract,
+                    inputDataKey
+                );
 
             // LSP17Extension:<bytes4>
         } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
@@ -271,7 +309,11 @@ abstract contract LSP6SetDataModule {
                 return bytes32(0);
             }
 
-            return _getPermissionToSetLSP17Extension(controlledContract, inputDataKey);
+            return
+                _getPermissionToSetLSP17Extension(
+                    controlledContract,
+                    inputDataKey
+                );
         } else {
             return _PERMISSION_SETDATA;
         }
@@ -302,7 +344,12 @@ abstract contract LSP6SetDataModule {
             uint128 newLength = uint128(bytes16(inputDataValue));
 
             return
-                newLength > uint128(bytes16(ERC725Y(controlledContract).getData(inputDataKey)))
+                newLength >
+                    uint128(
+                        bytes16(
+                            ERC725Y(controlledContract).getData(inputDataKey)
+                        )
+                    )
                     ? _PERMISSION_ADDCONTROLLER
                     : _PERMISSION_EDITPERMISSIONS;
         }
@@ -311,7 +358,10 @@ abstract contract LSP6SetDataModule {
 
         // CHECK that we either ADD an address (20 bytes long) or REMOVE an address (0x)
         if (inputDataValue.length != 0 && inputDataValue.length != 20) {
-            revert AddressPermissionArrayIndexValueNotAnAddress(inputDataKey, inputDataValue);
+            revert AddressPermissionArrayIndexValueNotAnAddress(
+                inputDataKey,
+                inputDataValue
+            );
         }
 
         // if the controller already has both permissions from one of the two required below,
@@ -337,7 +387,9 @@ abstract contract LSP6SetDataModule {
         return
             // if there is nothing stored under the data key, we are trying to ADD a new controller.
             // if there are already some permissions set under the data key, we are trying to CHANGE the permissions of a controller.
-            bytes32(ERC725Y(controlledContract).getData(inputPermissionDataKey)) == bytes32(0)
+            bytes32(
+                ERC725Y(controlledContract).getData(inputPermissionDataKey)
+            ) == bytes32(0)
                 ? _PERMISSION_ADDCONTROLLER
                 : _PERMISSION_EDITPERMISSIONS;
     }
@@ -438,7 +490,8 @@ abstract contract LSP6SetDataModule {
         bytes32 lsp17ExtensionDataKey
     ) internal view virtual returns (bytes32) {
         return
-            ERC725Y(controlledContract).getData(lsp17ExtensionDataKey).length == 0
+            ERC725Y(controlledContract).getData(lsp17ExtensionDataKey).length ==
+                0
                 ? _PERMISSION_ADDEXTENSIONS
                 : _PERMISSION_CHANGEEXTENSIONS;
     }
@@ -524,7 +577,9 @@ abstract contract LSP6SetDataModule {
              *           mask = 0xffffff0000000000000000000000000000000000000000000000000000000000
              */
             mask =
-                bytes32(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff) <<
+                bytes32(
+                    0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+                ) <<
                 (8 * (32 - length));
 
             /*
@@ -536,7 +591,9 @@ abstract contract LSP6SetDataModule {
                 // the first 32 bytes word in memory (where allowedERC725YDataKeysCompacted is stored)
                 // correspond to the total number of bytes in `allowedERC725YDataKeysCompacted`
                 let offset := add(add(pointer, 2), 32)
-                let memoryAt := mload(add(allowedERC725YDataKeysCompacted, offset))
+                let memoryAt := mload(
+                    add(allowedERC725YDataKeysCompacted, offset)
+                )
                 // MLOAD loads 32 bytes word, so we need to keep only the `length` number of bytes that makes up the allowed data key.
                 allowedKey := and(memoryAt, mask)
             }
@@ -640,7 +697,9 @@ abstract contract LSP6SetDataModule {
              *           mask = 0xffffff0000000000000000000000000000000000000000000000000000000000
              */
             mask =
-                bytes32(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff) <<
+                bytes32(
+                    0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+                ) <<
                 (8 * (32 - length));
 
             /*
@@ -652,7 +711,9 @@ abstract contract LSP6SetDataModule {
                 // the first 32 bytes word in memory (where allowedERC725YDataKeysCompacted is stored)
                 // correspond to the length of allowedERC725YDataKeysCompacted (= total number of bytes)
                 let offset := add(add(pointer, 2), 32)
-                let memoryAt := mload(add(allowedERC725YDataKeysCompacted, offset))
+                let memoryAt := mload(
+                    add(allowedERC725YDataKeysCompacted, offset)
+                )
                 allowedKey := and(memoryAt, mask)
             }
 
@@ -698,7 +759,10 @@ abstract contract LSP6SetDataModule {
         // if we did not find all the input data keys, search for the first not allowed data key to revert.
         for (uint256 jj; jj < inputKeysLength; ) {
             if (!validatedInputKeysList[jj]) {
-                revert NotAllowedERC725YDataKey(controllerAddress, inputDataKeys[jj]);
+                revert NotAllowedERC725YDataKey(
+                    controllerAddress,
+                    inputDataKeys[jj]
+                );
             }
 
             unchecked {
@@ -719,7 +783,9 @@ abstract contract LSP6SetDataModule {
         bytes32 permissionRequired
     ) internal pure virtual {
         if (!LSP6Utils.hasPermission(addressPermissions, permissionRequired)) {
-            string memory permissionErrorString = LSP6Utils.getPermissionName(permissionRequired);
+            string memory permissionErrorString = LSP6Utils.getPermissionName(
+                permissionRequired
+            );
             revert NotAuthorised(controller, permissionErrorString);
         }
     }

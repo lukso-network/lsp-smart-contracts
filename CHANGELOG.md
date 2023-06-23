@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.10.2](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.10.1...v0.10.2) (2023-06-13)
+
+### Refactor
+
+- remove `EIP191Signer.sol` library, replace by function `toDataWithIntendedValidatorHash` from latest OpenZeppelin library ([#622](https://github.com/lukso-network/lsp-smart-contracts/issues/622)) ([235048d](https://github.com/lukso-network/lsp-smart-contracts/commit/235048d028d9a770cc5fe516ce5bdbeecf9072e2))
+- remove LSP6 function selectors from `LSP6Constants.sol` ([0c2e9c0](https://github.com/lukso-network/lsp-smart-contracts/commit/0c2e9c01cde59c6a76c731e8bf4271425964df6b))
+
+### Build
+
+- upgrade default solc compiler version to 0.8.17 ([#627])(https://github.com/lukso-network/lsp-smart-contracts/issues/627)
+- upgrade `@erc725/smart-contracts` version to 5.1.0 ([#624](https://github.com/lukso-network/lsp-smart-contracts/pull/624))
+- remove android + iOS artifacts from Github release ([#617](https://github.com/lukso-network/lsp-smart-contracts/pull/617))
+
+### Bug Fixes
+
+- variable shadowing with `transferOwnership(_pendingOwner)` and `_pendingOwner` state variable ([7d1b5b8](https://github.com/lukso-network/lsp-smart-contracts/commit/7d1b5b8891ce6dfb970635e420bbf2d6e259d0c1))
+
 ## [0.10.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.10.0...v0.10.1) (2023-06-07)
 
 ### Bug Fixes

@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {ILSP1UniversalReceiver} from "../ILSP1UniversalReceiver.sol";
 import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
@@ -44,16 +46,26 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
         // Check https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#universalreceiver
         address notifier = address(bytes20(msg.data[msg.data.length - 52:]));
 
-        (bool invalid, bytes10 mapPrefix, bytes4 interfaceID, bool isReceiving) = LSP1Utils
-            .getTransferDetails(typeId);
+        (
+            bool invalid,
+            bytes10 mapPrefix,
+            bytes4 interfaceID,
+            bool isReceiving
+        ) = LSP1Utils.getTransferDetails(typeId);
 
-        if (invalid || interfaceID == _INTERFACEID_LSP9) return "LSP1: typeId out of scope";
+        if (invalid || interfaceID == _INTERFACEID_LSP9)
+            return "LSP1: typeId out of scope";
 
         // solhint-disable avoid-tx-origin
         if (notifier == tx.origin) revert CannotRegisterEOAsAsAssets(notifier);
 
-        bytes32 notifierMapKey = LSP2Utils.generateMappingKey(mapPrefix, bytes20(notifier));
-        bytes memory notifierMapValue = IERC725Y(msg.sender).getData(notifierMapKey);
+        bytes32 notifierMapKey = LSP2Utils.generateMappingKey(
+            mapPrefix,
+            bytes20(notifier)
+        );
+        bytes memory notifierMapValue = IERC725Y(msg.sender).getData(
+            notifierMapKey
+        );
 
         bytes32[] memory dataKeys;
         bytes[] memory dataValues;
@@ -67,7 +79,9 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
             // not when tokens are being transferred on deployment through the `constructor`
             if (notifier.code.length > 0) {
                 // if the amount sent is 0, then do not update the keys
-                uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
+                uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(
+                    msg.sender
+                );
                 if (balance == 0) return "LSP1: balance not updated";
             }
 
@@ -90,7 +104,8 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
 
             // if the value under the `LSP5ReceivedAssetsMap:<asset-address>`
             // is not a valid tuple as `(bytes4,uint128)`
-            if (notifierMapValue.length < 20) return "LSP1: asset data corrupted";
+            if (notifierMapValue.length < 20)
+                return "LSP1: asset data corrupted";
 
             // Identify where the asset is located in the `LSP5ReceivedAssets[]` Array
             // by extracting the index from the tuple value `(bytes4,uint128)`
@@ -108,7 +123,8 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
              * - the index returned from the data key `notifierMapKey` is bigger than
              * the length of the `LSP5ReceivedAssets[]`, meaning, index is out of bounds.
              */
-            if (dataKeys.length == 0 && dataValues.length == 0) return "LSP1: asset data corrupted";
+            if (dataKeys.length == 0 && dataValues.length == 0)
+                return "LSP1: asset data corrupted";
 
             IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
         }
@@ -119,7 +135,11 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
     /**
      * @inheritdoc ERC165
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == _INTERFACEID_LSP1 || super.supportsInterface(interfaceId);
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override returns (bool) {
+        return
+            interfaceId == _INTERFACEID_LSP1 ||
+            super.supportsInterface(interfaceId);
     }
 }

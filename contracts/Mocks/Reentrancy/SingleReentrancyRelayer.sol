@@ -24,7 +24,9 @@ contract SingleReentrancyRelayer {
 
     receive() external payable {}
 
-    function relayCallThatReenters(address keyManagerAddress) external returns (bytes memory) {
+    function relayCallThatReenters(
+        address keyManagerAddress
+    ) external returns (bytes memory) {
         return
             ILSP6KeyManager(keyManagerAddress).executeRelayCall(
                 _signature,

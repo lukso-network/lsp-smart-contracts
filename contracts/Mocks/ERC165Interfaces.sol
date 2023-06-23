@@ -2,13 +2,21 @@
 pragma solidity ^0.8.4;
 
 // ERC interfaces
-import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {
+    IERC725X
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {
+    OwnableUnset
+} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
+import {
+    IERC721Metadata
+} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC777} from "@openzeppelin/contracts/token/ERC777/IERC777.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
@@ -17,10 +25,14 @@ import {IERC223} from "./Tokens/IERC223.sol";
 // LSPs interfaces
 
 import {ILSP0ERC725Account} from "../LSP0ERC725Account/ILSP0ERC725Account.sol";
-import {ILSP1UniversalReceiver as ILSP1} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import {
+    ILSP1UniversalReceiver as ILSP1
+} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
 import {ILSP6KeyManager as ILSP6} from "../LSP6KeyManager/ILSP6KeyManager.sol";
-import {ILSP7DigitalAsset as ILSP7} from "../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
+import {
+    ILSP7DigitalAsset as ILSP7
+} from "../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 import {
     ILSP8IdentifiableDigitalAsset as ILSP8
 } from "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
@@ -29,19 +41,25 @@ import {ILSP9Vault as ILSP9} from "../LSP9Vault/ILSP9Vault.sol";
 import {
     ILSP11BasicSocialRecovery as ILSP11
 } from "../LSP11BasicSocialRecovery/ILSP11BasicSocialRecovery.sol";
-import {ILSP14Ownable2Step as ILSP14} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 import {
-    ILSP20CallVerification as ILSP20
-} from "../LSP20CallVerification/ILSP20CallVerification.sol";
+    ILSP14Ownable2Step as ILSP14
+} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
+import {
+    ILSP20CallVerifier as ILSP20
+} from "../LSP20CallVerification/ILSP20CallVerifier.sol";
 
 // constants
 import {_INTERFACEID_LSP0} from "../LSP0ERC725Account/LSP0Constants.sol";
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP6} from "../LSP6KeyManager/LSP6Constants.sol";
 import {_INTERFACEID_LSP7} from "../LSP7DigitalAsset/LSP7Constants.sol";
-import {_INTERFACEID_LSP8} from "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
+import {
+    _INTERFACEID_LSP8
+} from "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 import {_INTERFACEID_LSP9} from "../LSP9Vault/LSP9Constants.sol";
-import {_INTERFACEID_LSP11} from "../LSP11BasicSocialRecovery/LSP11Constants.sol";
+import {
+    _INTERFACEID_LSP11
+} from "../LSP11BasicSocialRecovery/LSP11Constants.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 import {
     _INTERFACEID_LSP17_EXTENDABLE,
@@ -54,7 +72,9 @@ import {
 
 // libraries
 
-import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {
+    ERC165Checker
+} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 /**
  * @dev This contract calculates the ERC165 interface IDs of each LSP contract
@@ -186,7 +206,11 @@ contract CalculateLSPInterfaces {
         return interfaceId;
     }
 
-    function calculateInterfaceLSP20CallVerification() public pure returns (bytes4) {
+    function calculateInterfaceLSP20CallVerification()
+        public
+        pure
+        returns (bytes4)
+    {
         bytes4 interfaceId = bytes4(keccak256("LSP20CallVerification"));
 
         require(
@@ -197,7 +221,11 @@ contract CalculateLSPInterfaces {
         return interfaceId;
     }
 
-    function calculateInterfaceLSP20CallVerifier() public pure returns (bytes4) {
+    function calculateInterfaceLSP20CallVerifier()
+        public
+        pure
+        returns (bytes4)
+    {
         bytes4 interfaceId = type(ILSP20).interfaceId;
 
         require(
@@ -246,11 +274,14 @@ contract CalculateERCInterfaces {
  * @dev Used for testing
  */
 contract CheckInterface {
-    function supportsERC165InterfaceUnchecked(address _address, bytes4 interfaceId)
-        public
-        view
-        returns (bool)
-    {
-        return ERC165Checker.supportsERC165InterfaceUnchecked(_address, interfaceId);
+    function supportsERC165InterfaceUnchecked(
+        address _address,
+        bytes4 interfaceId
+    ) public view returns (bool) {
+        return
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                _address,
+                interfaceId
+            );
     }
 }

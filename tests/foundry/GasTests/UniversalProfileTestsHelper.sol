@@ -28,7 +28,10 @@ contract UniversalProfileTestsHelper is Test {
         address URD
     ) public {
         vm.startPrank(universalProfileOwner);
-        universalProfile.setData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY, abi.encodePacked(URD));
+        universalProfile.setData(
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY,
+            abi.encodePacked(URD)
+        );
 
         // give SUPER_SETDATA permission to universalReceiverDelegate
         bytes32 dataKeyURD = LSP2Utils.generateMappingWithGroupingKey(
@@ -48,11 +51,9 @@ contract UniversalProfileTestsHelper is Test {
         vm.stopPrank();
     }
 
-    function generateCompactByteArrayElement(bytes[] memory data)
-        public
-        pure
-        returns (bytes memory)
-    {
+    function generateCompactByteArrayElement(
+        bytes[] memory data
+    ) public pure returns (bytes memory) {
         uint256 totalLength = 0;
         bytes memory concatenatedBytes = new bytes(0);
         for (uint256 i = 0; i < data.length; i++) {
@@ -61,7 +62,10 @@ contract UniversalProfileTestsHelper is Test {
         }
 
         //check that the total length is less than 256
-        require(totalLength < type(uint16).max, "UniversalProfileHelper: CBA Element too big");
+        require(
+            totalLength < type(uint16).max,
+            "UniversalProfileHelper: CBA Element too big"
+        );
 
         return bytes.concat(bytes2(uint16(totalLength)), concatenatedBytes);
     }
@@ -88,7 +92,9 @@ contract UniversalProfileTestsHelper is Test {
             newElement[1] = abi.encodePacked(callContracts[i]);
             newElement[2] = abi.encodePacked(supportedStandards[i]);
             newElement[3] = abi.encodePacked(callSignatures[i]);
-            bytes memory generatedAllowedCall = generateCompactByteArrayElement(newElement);
+            bytes memory generatedAllowedCall = generateCompactByteArrayElement(
+                newElement
+            );
             allowedCalls = bytes.concat(allowedCalls, generatedAllowedCall);
         }
 

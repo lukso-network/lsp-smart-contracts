@@ -6,7 +6,9 @@ import {
     LSP7CompatibleERC20MintableInitAbstract
 } from "./LSP7CompatibleERC20MintableInitAbstract.sol";
 
-contract LSP7CompatibleERC20MintableInit is LSP7CompatibleERC20MintableInitAbstract {
+contract LSP7CompatibleERC20MintableInit is
+    LSP7CompatibleERC20MintableInitAbstract
+{
     /**
      * @dev initialize (= lock) base implementation contract on deployment
      */
@@ -25,6 +27,10 @@ contract LSP7CompatibleERC20MintableInit is LSP7CompatibleERC20MintableInitAbstr
         string memory symbol_,
         address newOwner_
     ) external virtual initializer {
-        LSP7CompatibleERC20MintableInitAbstract._initialize(name_, symbol_, newOwner_);
+        LSP7CompatibleERC20MintableInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_
+        );
     }
 }

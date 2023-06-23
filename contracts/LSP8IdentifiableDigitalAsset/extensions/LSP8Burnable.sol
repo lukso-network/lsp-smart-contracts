@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
+import {
+    LSP8IdentifiableDigitalAssetCore
+} from "../LSP8IdentifiableDigitalAssetCore.sol";
 
 // errors
 import {LSP8NotTokenOperator} from "../LSP8Errors.sol";
