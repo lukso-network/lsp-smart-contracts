@@ -15,10 +15,10 @@ import {LSP7DigitalAssetCore} from "./LSP7DigitalAssetCore.sol";
 import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";
 
 /**
- * @title LSP7DigitalAsset contract
+ * @title Implementation of a LSP7 Digital Asset, a contract that represents a fungible token.
  * @author Matthew Stevens
- * @dev Implementation of a LSP7 compliant contract.
  *
+ * @dev Minting and transferring are supplied with a `uint256` amount.
  * This implementation is agnostic to the way tokens are created.
  * A supply mechanism has to be added in a derived contract using {_mint}
  * For a generic mechanism, see {LSP7Mintable}.
@@ -44,7 +44,7 @@ abstract contract LSP7DigitalAsset is
     }
 
     /**
-     * @dev See {IERC165-supportsInterface}.
+     * @inheritdoc IERC165
      */
     function supportsInterface(
         bytes4 interfaceId

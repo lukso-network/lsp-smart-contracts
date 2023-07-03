@@ -29,7 +29,10 @@ error LSP7AmountExceedsAuthorizedAmount(
 error LSP7CannotUseAddressZeroAsOperator();
 
 /**
- * @dev reverts when one tries to send tokens to or from the zero address.
+ * @dev reverts when trying to:
+ * - mint tokens to the zero address.
+ * - burn tokens from the zero address.
+ * - transfer tokens from or to the zero address.
  */
 error LSP7CannotSendWithAddressZero();
 
@@ -39,7 +42,7 @@ error LSP7CannotSendWithAddressZero();
 error LSP7CannotSendToSelf();
 
 /**
- * @dev reverts when the parameters used for `transferBatch` have different lengths.
+ * @dev reverts when the array parameters used in {transferBatch} have different lengths.
  */
 error LSP7InvalidTransferBatch();
 
@@ -52,8 +55,7 @@ error LSP7NotifyTokenReceiverContractMissingLSP1Interface(
 );
 
 /**
- * @dev reverts if the `tokenReceiver` is an EOA
- * when minting or transferring tokens with `bool allowNonLSP1Recipient` set as `false`.
+ * @dev reverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool allowNonLSP1Recipient` set as `false`.
  */
 error LSP7NotifyTokenReceiverIsEOA(address tokenReceiver);
 
@@ -63,6 +65,6 @@ error LSP7NotifyTokenReceiverIsEOA(address tokenReceiver);
 error LSP7TokenOwnerCannotBeOperator();
 
 /**
- * @dev Reverts when trying to decrease an operator's allowance to more than his current allowance
+ * @dev Reverts when trying to decrease an operator's allowance to more than its current allowance.
  */
 error LSP7DecreasedAllowanceBelowZero();
