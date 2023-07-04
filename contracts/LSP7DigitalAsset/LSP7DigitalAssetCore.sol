@@ -81,8 +81,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @custom:danger To avoid front-running and Allowance Double-Spend Exploit when
      * increasing or decreasing the authorized amount of an operator, it is advised to:
      *
-     *     1. either call {`revokeOperator`} first, and then re-call {`authorizeOperator`} with the new amount.
-     *     2. or use the non-standard functions {`increaseAllowance`} or {`decreaseAllowance`}.
+     *     1. either call {revokeOperator} first, and then re-call {authorizeOperator} with the new amount.
+     *     2. or use the non-standard functions {increaseAllowance} or {decreaseAllowance}.
      *
      * For more information, see:
      * https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
@@ -191,7 +191,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @notice Increase the allowance of `operator` by +`addedAmount`
      *
      * @dev Atomically increases the allowance granted to `operator` by the caller.
-     * This is an alternative approach to {`authorizeOperator(...)`} that can be used as a mitigation
+     * This is an alternative approach to {authorizeOperator} that can be used as a mitigation
      * for the double spending allowance problem.
      *
      * @param operator the operator to increase the allowance for `msg.sender`
@@ -222,7 +222,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @notice Decrease the allowance of `operator` by -`substractedAmount`
      *
      * @dev Atomically decreases the allowance granted to `operator` by the caller.
-     * This is an alternative approach to {`authorizeOperator(...)`} that can be used as a mitigation
+     * This is an alternative approach to {authorizeOperator} that can be used as a mitigation
      * for the double spending allowance problem.
      *
      * @custom:events
@@ -295,12 +295,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @param to the address to mint tokens for.
      * @param amount the amount of tokens to mint.
      * @param allowNonLSP1Recipient a boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
-     * @param data Additional data the caller wants included in the emitted {`Transfer`} event, and sent in the LSP1 hook to the `to` address.
+     * @param data Additional data the caller wants included in the emitted {Transfer} event, and sent in the LSP1 hook to the `to` address.
      *
      * @custom:requirements
      * - `to` cannot be the zero address.
      *
-     * @custom:events {`Transfer`} event with `address(0)` as `from`.
+     * @custom:events {Transfer} event with `address(0)` as `from`.
      */
     function _mint(
         address to,
@@ -337,11 +337,11 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     /**
      * @dev Burns (= destroys) `amount` of tokens, decrease the `from` balance. This is done by sending them to the zero address.
      *
-     * Both the sender and recipient will be notified of the token transfer through the LSP1 {`universalReceiver`}
+     * Both the sender and recipient will be notified of the token transfer through the LSP1 {universalReceiver}
      * function, if they are contracts that support the LSP1 interface. Their `universalReceiver` function will receive
      * all the parameters in the calldata packed encoded.
      *
-     * Any logic in the {`_beforeTokenTransfer`} function will run before updating the balances.
+     * Any logic in the {_beforeTokenTransfer} function will run before updating the balances.
      *
      * @param from the address to burn tokens from its balance.
      * @param amount the amount of tokens to burn.
@@ -409,11 +409,11 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @dev Transfer tokens from `from` to `to` by decreasing the balance of `from` by `-amount` and increasing the balance
      * of `to` by `+amount`.
      *
-     * Both the sender and recipient will be notified of the token transfer through the LSP1 {`universalReceiver`}
+     * Both the sender and recipient will be notified of the token transfer through the LSP1 {universalReceiver}
      * function, if they are contracts that support the LSP1 interface. Their `universalReceiver` function will receive
      * all the parameters in the calldata packed encoded.
      *
-     * Any logic in the {`_beforeTokenTransfer`} function will run before updating the balances.
+     * Any logic in the {_beforeTokenTransfer} function will run before updating the balances.
      *
      * @param from the address to decrease the balance.
      * @param to the address to increase the balance.
@@ -475,10 +475,10 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
     /**
      * @dev Attempt to notify the token sender `from` about the `amount` of tokens being transferred.
-     * This is done by calling its {`universalReceiver`} function with the `_TYPEID_LSP7_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
      * If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
      
-     * @param from The address to call the {`universalReceiver`} function on.                                                                                                                                                                                   
+     * @param from The address to call the {universalReceiver} function on.                                                                                                                                                                                   
      * @param lsp1Data the data to be sent to the `from` address in the `universalReceiver` call.
      */
     function _notifyTokenSender(
@@ -500,15 +500,15 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
     /**
      * @dev Attempt to notify the token receiver `to` about the `amount` tokens being received.
-     * This is done by calling its {`universalReceiver`} function with the `_TYPEID_LSP7_TOKENSRECIPIENT` as typeId, if `to` is a contract that supports the LSP1 interface.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENSRECIPIENT` as typeId, if `to` is a contract that supports the LSP1 interface.
      *
      * If `to` is is an EOA or a contract that does not support the LSP1 interface, the behaviour will depend on the `allowNonLSP1Recipient` boolean flag.
      * - if `allowNonLSP1Recipient` is set to `true`, nothing will happen and no notification will be sent.
      * - if `allowNonLSP1Recipient` is set to `false, the transaction will revert.
      *
-     * @param to The address to call the {`universalReceiver`} function on.
+     * @param to The address to call the {universalReceiver} function on.
      * @param allowNonLSP1Recipient a boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
-     * @param lsp1Data the data to be sent to the `to` address in the `universalReceiver` call.
+     * @param lsp1Data the data to be sent to the `to` address in the `universalReceiver(...)` call.
      */
     function _notifyTokenReceiver(
         address to,

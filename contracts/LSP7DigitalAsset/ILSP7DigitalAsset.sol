@@ -76,7 +76,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
 
     /**
      * @dev Get the number of tokens owned by `tokenOwner`.
-     * If the token is divisible (the `{decimals}` function returns `18`), the amount returned should be divided
+     * If the token is divisible (the {decimals} function returns `18`), the amount returned should be divided
      * by 1e18 to get a better picture of the actual balance of the `tokenOwner`.
      *
      * _Example:_
