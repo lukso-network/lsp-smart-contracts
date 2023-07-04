@@ -17,23 +17,24 @@ import {
 } from "./LSP4Errors.sol";
 
 /**
- * @title LSP4DigitalAssetMetadata
+ * @title Implementation of a LSP4DigitalAssetMetadata contract that stores the **Token-Metadata** (`LSP4TokenName` and `LSP4TokenSymbol`) in its ERC725Y data store.
  * @author Matthew Stevens
- * @dev Implementation of a LSP8 compliant contract.
+ * @dev Standard Implementation of the LSP4 standard.
  */
 abstract contract LSP4DigitalAssetMetadata is ERC725Y {
     /**
-     * @notice Sets the name, symbol of the token and the owner, and sets the SupportedStandards:LSP4DigitalAsset key
+     * @notice Deploying a digital asset `name_` with the `symbol_` symbol.
+     *
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the token contract
+     * @param initialOwner_ The owner of the token contract
      */
     constructor(
         string memory name_,
         string memory symbol_,
-        address newOwner_
-    ) ERC725Y(newOwner_) {
-        // set key SupportedStandards:LSP4DigitalAsset
+        address initialOwner_
+    ) ERC725Y(initialOwner_) {
+        // set data key SupportedStandards:LSP4DigitalAsset
         super._setData(
             _LSP4_SUPPORTED_STANDARDS_KEY,
             _LSP4_SUPPORTED_STANDARDS_VALUE
@@ -47,7 +48,7 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
      * @dev The ERC725Y data keys `LSP4TokenName` and `LSP4TokenSymbol` cannot be changed
      *      via this function once the digital asset contract has been deployed.
      *
-     * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
+     * @dev Save gas by emitting the {DataChanged} event with only the first 256 bytes of dataValue
      */
     function _setData(
         bytes32 dataKey,
