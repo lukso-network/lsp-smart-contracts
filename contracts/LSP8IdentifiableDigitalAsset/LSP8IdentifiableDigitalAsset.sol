@@ -17,9 +17,15 @@ import {
 import {_INTERFACEID_LSP8} from "./LSP8Constants.sol";
 
 /**
- * @title LSP8IdentifiableDigitalAsset contract
+ * @title Implementation of a LSP8 Identifiable Digital Asset, a contract that represents a non-fungible token.
  * @author Matthew Stevens
- * @dev Implementation of a LSP8 compliant contract.
+ *
+ * @dev Standard implementation contract of the LSP8 standard.
+ *
+ * Minting and transferring are done by providing a unique `tokenId`.
+ * This implementation is agnostic to the way tokens are created.
+ * A supply mechanism has to be added in a derived contract using {_mint}
+ * For a generic mechanism, see {LSP7Mintable}.
  */
 abstract contract LSP8IdentifiableDigitalAsset is
     LSP4DigitalAssetMetadata,
@@ -38,7 +44,7 @@ abstract contract LSP8IdentifiableDigitalAsset is
     ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {}
 
     /**
-     * @dev See {IERC165-supportsInterface}.
+     * @inheritdoc IERC165
      */
     function supportsInterface(
         bytes4 interfaceId
