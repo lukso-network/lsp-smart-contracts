@@ -18,8 +18,11 @@ contract LSP6KeyManagerInit is LSP6KeyManagerInitAbstract {
     }
 
     /**
-     * @notice Initiate the account with the address of the ERC725Account contract and sets LSP6KeyManager InterfaceId
-     * @param target_ The address of the ER725Account to control
+     * @notice Deploying a LSP6KeyManager linked to contract at address `target_`.
+     * @dev Deploy a Key Manager and set the `target_` address in the contract storage,
+     * making this Key Manager linked to this `target_` contract.
+     *
+     * @param target_ The address of the contract to control and forward calldata payloads to.
      */
     function initialize(address target_) external virtual initializer {
         LSP6KeyManagerInitAbstract._initialize(target_);

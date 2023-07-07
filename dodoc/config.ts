@@ -17,7 +17,7 @@ export const dodocConfig = {
     'contracts/LSP17ContractExtension/LSP17Extension.sol',
     'contracts/LSP20CallVerification/LSP20CallVerification.sol',
 
-    // tokens --------------------
+    // tokens
     'contracts/LSP4DigitalAssetMetadata/LSP4Compatibility.sol',
     'contracts/LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol',
     'contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol',
@@ -34,7 +34,7 @@ export const dodocConfig = {
     'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol',
     'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol',
 
-    // libraries
+    // libraries --------------------
     'contracts/LSP0ERC725Account/LSP0Utils.sol',
     'contracts/LSP1UniversalReceiver/LSP1Utils.sol',
     'contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol',

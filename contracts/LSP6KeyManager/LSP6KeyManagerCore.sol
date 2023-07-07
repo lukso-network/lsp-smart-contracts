@@ -61,6 +61,10 @@ import "../LSP20CallVerification/LSP20Constants.sol";
  * @author Fabian Vogelsteller <frozeman>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
  * @dev This contract acts as a controller for an ERC725 Account.
  *      Permissions for controllers are stored in the ERC725Y storage of the ERC725 Account and can be updated using `setData(...)`.
+ *
+ * @custom:danger Because of its potential malicious impact on the linked contract, the current implementation of the Key Manager
+ * disallows the operation type **[DELEGATECALL](../universal-profile/lsp6-key-manager.md#permissions-value)** operation via the
+ * `execute(...)` function of the linked contract.
  */
 abstract contract LSP6KeyManagerCore is
     ERC165,
@@ -82,12 +86,15 @@ abstract contract LSP6KeyManagerCore is
 
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
-    function target() public view virtual returns (address) {
+    /**
+     * @inheritdoc ILSP6KeyManager
+     */
+    function target() public view returns (address) {
         return _target;
     }
 
     /**
-     * @dev See {IERC165-supportsInterface}.
+     * @inheritdoc ERC165
      */
     function supportsInterface(
         bytes4 interfaceId
@@ -101,6 +108,9 @@ abstract contract LSP6KeyManagerCore is
 
     /**
      * @inheritdoc ILSP6KeyManager
+     *
+     * @custom:info A signer can choose its channel number arbitrarily. Channel ID = 0 can be used for sequential nonces (transactions
+     * that are order dependant), any other channel ID for out-of-order execution (= execution in parallel).
      */
     function getNonce(
         address from,
@@ -112,6 +122,11 @@ abstract contract LSP6KeyManagerCore is
 
     /**
      * @inheritdoc IERC1271
+     *
+     * @dev Checks if a signature was signed by a controller that has the permission `SIGN`.
+     * If the signer is a controller with the permission `SIGN`, it will return the ERC1271 magic value.
+     *
+     * @return magicValue `0x1626ba7e` on success, or `0xffffffff` on failure.
      */
     function isValidSignature(
         bytes32 dataHash,
@@ -137,6 +152,8 @@ abstract contract LSP6KeyManagerCore is
 
     /**
      * @inheritdoc ILSP6KeyManager
+     *
+     * @custom:events VerifiedCall event when the permissions related to `payload` have been verified successfully.
      */
     function execute(
         bytes calldata payload
@@ -146,6 +163,8 @@ abstract contract LSP6KeyManagerCore is
 
     /**
      * @inheritdoc ILSP6KeyManager
+     *
+     * @custom:events VerifiedCall event for each permissions related to each `payload` that have been verified successfully.
      */
     function executeBatch(
         uint256[] calldata values,
@@ -179,6 +198,13 @@ abstract contract LSP6KeyManagerCore is
 
     /**
      * @inheritdoc ILSP6KeyManager
+     *
+     * @custom:events {VerifiedCall} event when the permissions related to `payload` have been verified successfully.
+     *
+     * @custom:hint If you are looking to learn how to sign and execute relay transactions via the Key Manager,
+     * see our Javascript step by step guide [_"Execute Relay Transactions"_](../../guides/key-manager/execute-relay-transactions.md).
+     * See the LSP6 Standard page for more details on how to
+     * [generate a valid signature for Execute Relay Call](../universal-profile/lsp6-key-manager.md#how-to-sign-relay-transactions).
      */
     function executeRelayCall(
         bytes memory signature,
@@ -198,6 +224,11 @@ abstract contract LSP6KeyManagerCore is
 
     /**
      * @inheritdoc ILSP6KeyManager
+     *
+     * @custom:requirements
+     * - the length of `signatures`, `nonces`, `validityTimestamps`, `values` and `payloads` MUST be the same.
+     * - the value sent to this function (`msg.value`) MUST be equal to the sum of all `values` in the batch.
+     * There should not be any excess value sent to this function.
      */
     function executeRelayCallBatch(
         bytes[] memory signatures,
