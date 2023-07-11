@@ -23,6 +23,8 @@ abstract contract LSP8EnumerableInitAbstract is
     mapping(bytes32 => uint256) private _tokenIndex;
 
     /**
+     * @notice Retrieving the `tokenId` for `msg.sender` located in its list at index number `index`.
+     *
      * @dev Returns a token id at index. See {totalSupply} to get total number of minted tokens.
      * @param index The index to search to search in the enumerable mapping.
      * @return TokenId or `bytes32(0)` if no tokenId exist at `index`.
