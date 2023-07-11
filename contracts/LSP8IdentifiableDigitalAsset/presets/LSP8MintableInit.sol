@@ -6,7 +6,7 @@ pragma solidity ^0.8.4;
 import {LSP8MintableInitAbstract} from "./LSP8MintableInitAbstract.sol";
 
 /**
- * @dev LSP8 extension.
+ * @dev LSP8IdentifiableDigitalAsset deployable preset contract (proxy version) with a public {mint} function callable only by the contract {owner}.
  */
 contract LSP8MintableInit is LSP8MintableInitAbstract {
     /**
@@ -17,10 +17,12 @@ contract LSP8MintableInit is LSP8MintableInitAbstract {
     }
 
     /**
-     * @notice Sets the token-Metadata and register LSP8InterfaceId
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the the token-Metadata
+     * @notice Initializing a `LSP8MintableInit` token contract with: token name = `name_`, token symbol = `symbol_`, and
+     * address `newOwner_` as the token contract owner.
+     *
+     * @param name_ The name of the token.
+     * @param symbol_ The symbol of the token.
+     * @param newOwner_ The owner of the token contract.
      */
     function initialize(
         string memory name_,

@@ -53,16 +53,17 @@ abstract contract LSP8CompatibleERC721 is
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /**
-     * Mapping from owner to operator approvals
-     * @dev for backward compatibility with ERC721
+     * @dev Mapping from owner to operator approvals for backward compatibility with ERC721
      */
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
     /**
-     * @notice Sets the name, the symbol and the owner of the token
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the token
+     * @notice Deploying a `LSP8CompatibleERC721` token contract with: token name = `name_`, token symbol = `symbol_`, and
+     * address `newOwner_` as the token contract owner.
+     *
+     * @param name_ The name of the token.
+     * @param symbol_ The symbol of the token.
+     * @param newOwner_ The owner of the token contract.
      */
     constructor(
         string memory name_,
@@ -71,7 +72,7 @@ abstract contract LSP8CompatibleERC721 is
     ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {}
 
     /**
-     * @dev See {IERC165-supportsInterface}.
+     * @inheritdoc LSP8IdentifiableDigitalAsset
      */
     function supportsInterface(
         bytes4 interfaceId
@@ -158,7 +159,7 @@ abstract contract LSP8CompatibleERC721 is
     }
 
     /**
-     * @dev See _setApprovalForAll
+     * @dev See {_setApprovalForAll}
      */
     function setApprovalForAll(address operator, bool approved) public virtual {
         _setApprovalForAll(msg.sender, operator, approved);
@@ -166,8 +167,8 @@ abstract contract LSP8CompatibleERC721 is
 
     /**
      * @inheritdoc ILSP8CompatibleERC721
-     * @dev Compatible with ERC721 transferFrom.
-     * Using allowNonLSP1Recipient=true so that EOA and any contract may receive the tokenId.
+     *
+     * @custom:info This function sets the `allowNonLSP1Recipient` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */
     function transferFrom(
         address from,
@@ -179,8 +180,8 @@ abstract contract LSP8CompatibleERC721 is
 
     /**
      * @inheritdoc ILSP8CompatibleERC721
-     * @dev Compatible with ERC721 safeTransferFrom (without optional data).
-     * Using allowNonLSP1Recipient=false so that no EOA and only contracts supporting LSP1 interface may receive the tokenId.
+     *
+     * @custom:info This function sets the `allowNonLSP1Recipient` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */
     function safeTransferFrom(
         address from,
@@ -190,9 +191,10 @@ abstract contract LSP8CompatibleERC721 is
         _safeTransfer(from, to, tokenId, "");
     }
 
-    /*
-     * @dev Compatible with ERC721 safeTransferFrom (with optional data).
-     * Using allowNonLSP1Recipient=false so that no EOA and only contracts supporting LSP1 interface may receive the tokenId.
+    /**
+     * @inheritdoc ILSP8CompatibleERC721
+     *
+     * @custom:info This function sets the `allowNonLSP1Recipient` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */
     function safeTransferFrom(
         address from,
@@ -207,6 +209,10 @@ abstract contract LSP8CompatibleERC721 is
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
+     *
+     * @custom:events
+     * - LSP7 {AuthorizedOperator} event.
+     * - ERC721 {Approval} event.
      */
     function authorizeOperator(
         address operator,
@@ -223,6 +229,13 @@ abstract contract LSP8CompatibleERC721 is
         emit Approval(tokenOwnerOf(tokenId), operator, uint256(tokenId));
     }
 
+    /**
+     * @inheritdoc LSP8IdentifiableDigitalAssetCore
+     *
+     * @custom:events
+     * - LSP8 {Transfer} event.
+     * - ERC721 {Transfer} event.
+     */
     function _transfer(
         address from,
         address to,
@@ -243,6 +256,11 @@ abstract contract LSP8CompatibleERC721 is
         super._transfer(from, to, tokenId, allowNonLSP1Recipient, data);
     }
 
+    /**
+     * @dev Transfer the `tokenId` from `from` to `to` and check if the `to` recipient address is
+     * a contract that implements the `IERC721Received` interface and return the right magic value.
+     * See {_checkOnERC721Received} for more infos.
+     */
     function _safeTransfer(
         address from,
         address to,
@@ -256,6 +274,13 @@ abstract contract LSP8CompatibleERC721 is
         );
     }
 
+    /**
+     * @inheritdoc LSP8IdentifiableDigitalAssetCore
+     *
+     * @custom:events
+     * - LSP8 {Transfer} event with `address(0)` as `from`.
+     * - ERC721 {Transfer} event with `address(0)` as `from`.
+     */
     function _mint(
         address to,
         bytes32 tokenId,
@@ -266,6 +291,13 @@ abstract contract LSP8CompatibleERC721 is
         super._mint(to, tokenId, allowNonLSP1Recipient, data);
     }
 
+    /**
+     * @inheritdoc LSP8IdentifiableDigitalAssetCore
+     *
+     * @custom:events
+     * - LSP8 {Transfer} event with `address(0)` as the `to` address.
+     * - ERC721 {Transfer} event with `address(0)` as the `to` address.
+     */
     function _burn(
         bytes32 tokenId,
         bytes memory data
@@ -279,7 +311,7 @@ abstract contract LSP8CompatibleERC721 is
     /**
      * @dev Approve `operator` to operate on all tokens of `tokensOwner`
      *
-     * Emits an {ApprovalForAll} event.
+     * @custom:events {ApprovalForAll} event.
      */
     function _setApprovalForAll(
         address tokensOwner,
@@ -295,14 +327,14 @@ abstract contract LSP8CompatibleERC721 is
     }
 
     /**
-     * @dev Internal function to invoke {IERC721Receiver-onERC721Received} on a target address.
+     * @dev Internal function to invoke `IERC721Receiver.onERC721Received(...)` function on a target address.
      * The call is not executed if the target address is not a contract.
      *
-     * @param from address representing the previous owner of the given token ID
-     * @param to target address that will receive the token
-     * @param tokenId uint256 ID of the token to be transferred
-     * @param data bytes optional data to send along with the call
-     * @return bool whether the call correctly returned the expected magic value
+     * @param from address representing the previous owner of the given `tokenId`.
+     * @param to target address that will receive the token.
+     * @param tokenId uint256 ID of the token to be transferred.
+     * @param data bytes optional data to send along with the call.
+     * @return bool whether the call correctly returned the expected magic value.
      */
     function _checkOnERC721Received(
         address from,
@@ -338,6 +370,9 @@ abstract contract LSP8CompatibleERC721 is
         }
     }
 
+    /**
+     * @inheritdoc LSP4DigitalAssetMetadata
+     */
     function _setData(
         bytes32 key,
         bytes memory value

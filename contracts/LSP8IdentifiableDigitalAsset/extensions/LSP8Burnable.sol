@@ -9,11 +9,14 @@ import {
 import {LSP8NotTokenOperator} from "../LSP8Errors.sol";
 
 /**
- * @dev LSP8 extension (standard version) that allows token holders to destroy both
+ * @dev LSP8 token extension that allows token holders to destroy both
  * their own tokens and those that they have an allowance for as an operator.
  */
-abstract contract LSP8Burnable is LSP8IdentifiableDigitalAsset {
-    function burn(bytes32 tokenId, bytes memory data) public virtual {
+abstract contract LSP8Burnable is LSP8IdentifiableDigitalAssetCore {
+    /**
+     * @dev See internal {_burn} function for details.
+     */
+    function burn(bytes32 tokenId, bytes memory data) public {
         if (!_isOperatorOrOwner(msg.sender, tokenId)) {
             revert LSP8NotTokenOperator(tokenId, msg.sender);
         }

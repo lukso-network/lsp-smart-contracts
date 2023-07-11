@@ -15,8 +15,9 @@ bytes4 constant _INTERFACEID_ERC721METADATA = 0x5b5e139f;
  */
 interface ILSP8CompatibleERC721 is ILSP8IdentifiableDigitalAsset {
     /**
-     * @notice To provide compatibility with indexing ERC721 events.
-     * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
+     * @dev ERC721 `Transfer` event emitted when `tokenId` token is transferred from `from` to `to`.
+     * To provide compatibility with indexing ERC721 events.
+     *
      * @param from The sending address
      * @param to The receiving address
      * @param tokenId The tokenId to transfer
@@ -28,21 +29,26 @@ interface ILSP8CompatibleERC721 is ILSP8IdentifiableDigitalAsset {
     );
 
     /**
-     * @notice To provide compatibility with indexing ERC721 events.
-     * @dev Emitted when `owner` enables `approved` for `tokenId`.
+     * @dev ERC721 `Approval` event emitted when `owner` enables `operator` for `tokenId`.
+     * To provide compatibility with indexing ERC721 events.
+     *
      * @param owner The address of the owner of the `tokenId`
-     * @param approved The address set as operator
+     * @param operator The address set as operator
      * @param tokenId The approved tokenId
      */
     event Approval(
         address indexed owner,
-        address indexed approved,
+        address indexed operator,
         uint256 indexed tokenId
     );
 
     /**
-     * @dev This emits when an operator is enabled or disabled for an owner.
-     * The operator can manage all NFTs of the owner.
+     * @dev ERC721 `ApprovalForAll` event emitted when an `operator` is enabled or disabled for an owner
+     * to transfer any of its tokenIds. The operator can manage all NFTs of the owner.
+     *
+     * @param owner The address of the owner of tokenIds.
+     * @param operator The address set as operator
+     * @param approved If `operator` is approved for all NFTs or not.
      */
     event ApprovalForAll(
         address indexed owner,
@@ -51,18 +57,20 @@ interface ILSP8CompatibleERC721 is ILSP8IdentifiableDigitalAsset {
     );
 
     /**
-     * @dev Compatible with ERC721 transferFrom.
-     * @param from The sending address
-     * @param to The receiving address
-     * @param tokenId The tokenId to transfer
+     * @dev Transfer functions from the ERC721 standard interface.
+     *
+     * @param from The sending address.
+     * @param to The receiving address.
+     * @param tokenId The tokenId to transfer.
      */
     function transferFrom(address from, address to, uint256 tokenId) external;
 
     /**
-     * @dev Compatible with ERC721 transferFrom.
-     * @param from The sending address
-     * @param to The receiving address
-     * @param tokenId The tokenId to transfer
+     * @dev Safe Transfer function without optional data from the ERC721 standard interface.
+     *
+     * @param from The sending address.
+     * @param to The receiving address.
+     * @param tokenId The tokenId to transfer.
      */
     function safeTransferFrom(
         address from,
@@ -71,11 +79,12 @@ interface ILSP8CompatibleERC721 is ILSP8IdentifiableDigitalAsset {
     ) external;
 
     /**
-     * @dev Compatible with ERC721 safeTransferFrom.
-     * @param from The sending address
-     * @param to The receiving address
-     * @param tokenId The tokenId to transfer
-     * @param data The data to be sent with the transfer
+     * @dev Safe Transfer function with optional data from the ERC721 standard interface..
+     *
+     * @param from The sending address.
+     * @param to The receiving address.
+     * @param tokenId The tokenId to transfer.
+     * @param data The data to be sent with the transfer.
      */
     function safeTransferFrom(
         address from,
