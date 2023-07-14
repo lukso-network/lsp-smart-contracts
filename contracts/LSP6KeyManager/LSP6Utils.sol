@@ -15,7 +15,7 @@ import "./LSP6Constants.sol";
 
 /**
  * @title LSP6 Utility library.
- * @author Yamen Merhi <YamenMerhi>, Jean Cavallera <CJ42>
+ * @author Yamen Merhi <YamenMerhi>, Jean Cavallera <CJ42>, Maxime Viard <SkimaHarvey>
  * @dev LSP6Utils is a library of utility functions that can be used to retrieve, check and set LSP6 permissions stored under the ERC725Y storage
  * of a smart contract.
  * Based on the LSP6 Key Manager standard.
