@@ -41,6 +41,9 @@ jobs:
             contracts.ts
           key: ${{ github.run_id }}
 
+      - name: 🧪 run import/requires tests
+        run: npm run test:import
+
   test-suites:
     strategy:
       matrix:
@@ -97,6 +100,3 @@ jobs:
 
       - name: 🧪 run tests
         run: npm run test:${{ matrix.lsp }}
-
-      - name: 🧪 run import/requires tests
-        run: npm run test:import
