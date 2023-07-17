@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-mktmp=$(mktemp -d)
+rm -rf ./.test
+mkdir ./.test
+mktmp="$(pwd)/.test"
 trap "rm -rf $mktmp" EXIT
 RED="\033[31m"
 GREEN="\033[32m"
@@ -35,15 +37,39 @@ fi
 echo -e "${YELLOW}Creating test directory${ENDCOLOR}"
 cd $mktmp
 
+echo -e "${YELLOW}Creating package.json type=module${ENDCOLOR}"
+cat > package.json <<EOF
+{
+  "type": "module",
+  "devDependencies": {
+    "typescript": "^4.3.5"
+  },
+  "scripts": {
+    "build": "tsc"
+  }
+}
+EOF
+npm install
+
 echo -e "${YELLOW}Installing $PACK"
 npm install "$PACK"
 
 echo -e "${YELLOW}Creating cjs require test${ENDCOLOR}"
 cat > test.cjs <<EOF
 const pkg = require('@lukso/lsp-smart-contracts/package.json');
-console.log("\x1b[32mSuccess: require package.json\x1b[0m");
+if (pkg.version) {
+  console.log("\x1b[32mSuccess: require package.json\x1b[0m");
+} else {
+  console.log("\x1b[31mFail: require package.json has not version\x1b[0m");
+  process.exit(1);
+}
 const { INTERFACE_IDS } = require('@lukso/lsp-smart-contracts');
-console.log("\x1b[32mSuccess: require { INTERFACE_IDS }}\x1b[0m");
+if (INTERFACE_IDS) {
+  console.log("\x1b[32mSuccess: require { INTERFACE_IDS }\x1b[0m");
+} else {
+  console.log("\x1b[31mFail: require { INTERFACE_IDS } has not version\x1b[0m");
+  process.exit(1);
+}
 EOF
 
 echo -e "${YELLOW}Executing cjs require test${ENDCOLOR}"
@@ -55,16 +81,19 @@ fi
 
 echo -e "${YELLOW}Creating esm (ts) import test${ENDCOLOR}"
 cat > test.ts <<EOF
-import pkg from '@lukso/lsp-smart-contracts/package.json';
-console.log("\x1b[32mSuccess: import package.json\x1b[0m");
+import pkg from '@lukso/lsp-smart-contracts/package.json' assert { type: 'json' };
+if (pkg.version) {
+  console.log("\x1b[32mSuccess: import package.json\x1b[0m");
+} else {
+  console.log("\x1b[31mFail: import package.json has not version\x1b[0m");
+  process.exit(1);
+}
 import { INTERFACE_IDS } from '@lukso/lsp-smart-contracts';
-console.log("\x1b[32mSuccess: import { INTERFACE_IDS }\x1b[0m");
-EOF
-
-echo -e "${YELLOW}Creating package.json type=module${ENDCOLOR}"
-cat > package.json <<EOF
-{
-  "type": "module"
+if (INTERFACE_IDS) {
+  console.log("\x1b[32mSuccess: import { INTERFACE_IDS }\x1b[0m");
+} else {
+  console.log("\x1b[31mFail: import { INTERFACE_IDS } has not version\x1b[0m");
+  process.exit(1);
 }
 EOF
 
@@ -72,27 +101,20 @@ echo -e "${YELLOW}Creating tsconfig.json to allow json import${ENDCOLOR}"
 cat > tsconfig.json <<EOF
 {
   "compilerOptions": {
-    "target": "ES2018",
-    "module": "es2022",
+    "target": "ES2022",
+    "module": "esnext",
     "strict": true,
     "outDir": "dist",
     "jsx": "preserve",
     "importHelpers": true,
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "noImplicitAny": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "allowJs": true,
     "baseUrl": ".",
-    "types": [
-      "webpack-env",
-      "jest",
-      "node",
-      "chrome"
-    ],
     "lib": [
       "ES2018",
       "dom",
@@ -102,16 +124,24 @@ cat > tsconfig.json <<EOF
     "resolveJsonModule": true
   },
   "include": [
-    "./*.ts"
-  ],
-  "exclude": [
-    "./node_modules"
+    "./*.ts",
+    "./node_modules/@lukso/lsp-smart-contracts/**/*.ts",
+    "./node_modules/@lukso/lsp-smart-contracts/**/*.js",
+    "./node_modules/@lukso/lsp-smart-contracts/**/*.json"
   ]
 }
 EOF
 
 echo -e "${YELLOW}Testing import${ENDCOLOR}"
-if ! npx ts-node --esm test.ts
+if ! npx esbuild test.ts --bundle --outfile=dist/test.mjs
+then
+  echo "${RED}Fail: import failed${ENDCOLOR}"
+  exit 1
+fi
+ls dist
+
+echo -e "${YELLOW}Testing import${ENDCOLOR}"
+if ! node dist/test.mjs
 then
   echo "${RED}Fail: import failed${ENDCOLOR}"
   exit 1
