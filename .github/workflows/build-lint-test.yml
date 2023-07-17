@@ -42,7 +42,7 @@ jobs:
           key: ${{ github.run_id }}
 
       - name: 🧪 run import/requires tests
-        run: npm run test:import
+        run: npm run test:importRequire
 
   test-suites:
     strategy:
