@@ -21,24 +21,25 @@
   "typings": "./dist/constants.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/constants.cjs.js",
-      "require": "./dist/constants.es.js",
+      "require": "./dist/constants.cjs.js",
+      "import": "./dist/constants.es.js",
       "types": "./dist/constants.d.ts"
     },
     "./constants.js": {
-      "import": "./dist/constants.cjs.js",
-      "require": "./dist/constants.es.js",
+      "require": "./dist/constants.cjs.js",
+      "import": "./dist/constants.es.js",
       "types": "./dist/constants.d.ts"
     },
     "./constants": {
-      "import": "./dist/constants.cjs.js",
-      "require": "./dist/constants.es.js",
+      "require": "./dist/constants.cjs.js",
+      "import": "./dist/constants.es.js",
       "types": "./dist/constants.d.ts"
     },
     "./userdocs/*": "./userdocs",
     "./devdocs/*": "./devdocs/*",
     "./artifacts/*": "./artifacts/*",
-    "./dist/*": "./dist/*"
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
   },
   "scripts": {
     "test": "hardhat test",
