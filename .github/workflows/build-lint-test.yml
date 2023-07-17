@@ -97,3 +97,6 @@ jobs:
 
       - name: 🧪 run tests
         run: npm run test:${{ matrix.lsp }}
+
+      - name: 🧪 run import/requires tests
+        run: npm run test:import
