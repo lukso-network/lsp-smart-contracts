@@ -21,24 +21,25 @@
   "typings": "./dist/constants.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/constants.cjs.js",
-      "require": "./dist/constants.es.js",
+      "require": "./dist/constants.cjs.js",
+      "import": "./dist/constants.es.js",
       "types": "./dist/constants.d.ts"
     },
     "./constants.js": {
-      "import": "./dist/constants.cjs.js",
-      "require": "./dist/constants.es.js",
+      "require": "./dist/constants.cjs.js",
+      "import": "./dist/constants.es.js",
       "types": "./dist/constants.d.ts"
     },
     "./constants": {
-      "import": "./dist/constants.cjs.js",
-      "require": "./dist/constants.es.js",
+      "require": "./dist/constants.cjs.js",
+      "import": "./dist/constants.es.js",
       "types": "./dist/constants.d.ts"
     },
     "./userdocs/*": "./userdocs",
     "./devdocs/*": "./devdocs/*",
     "./artifacts/*": "./artifacts/*",
-    "./dist/*": "./dist/*"
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
   },
   "scripts": {
     "test": "hardhat test",
@@ -67,6 +68,7 @@
     "test:reentrancy": "hardhat test --no-compile tests/Reentrancy/Reentrancy.test.ts",
     "test:reentrancyinit": "hardhat test --no-compile tests/Reentrancy/ReentrancyInit.test.ts",
     "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
+    "test:importRequire": "npm run build:js && ./tests/importRequire.sh",
     "clean": "hardhat clean && rm -rf module common",
     "build": "hardhat dodoc && ts-node scripts/interfaceIds.ts && prettier -w ./docs ",
     "build:js": "vite build && dts-bundle-generator --config dtsconfig.json",
