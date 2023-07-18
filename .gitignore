@@ -143,3 +143,6 @@ benchmark.md
 /contracts.ts
 /devdocs
 /userdocs
+
+# test temporary folder
+/.test

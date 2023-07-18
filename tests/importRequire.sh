@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 rm -rf ./.test
 mkdir ./.test
-mktmp="$(pwd)/.test"
-trap "rm -rf $mktmp" EXIT
+testdir="$(pwd)/.test"
+trap "rm -rf $testdir" EXIT
 RED="\033[31m"
 GREEN="\033[32m"
 YELLOW="\033[33m"
@@ -35,7 +35,7 @@ then
 fi
 
 echo -e "${YELLOW}Creating test directory${ENDCOLOR}"
-cd $mktmp
+cd ./.test
 
 echo -e "${YELLOW}Creating package.json type=module${ENDCOLOR}"
 cat > package.json <<EOF
@@ -60,14 +60,14 @@ const pkg = require('@lukso/lsp-smart-contracts/package.json');
 if (pkg.version) {
   console.log("\x1b[32mSuccess: require package.json\x1b[0m");
 } else {
-  console.log("\x1b[31mFail: require package.json has not version\x1b[0m");
+  console.log("\x1b[31mFail: require package.json has no version property\x1b[0m");
   process.exit(1);
 }
 const { INTERFACE_IDS } = require('@lukso/lsp-smart-contracts');
 if (INTERFACE_IDS) {
   console.log("\x1b[32mSuccess: require { INTERFACE_IDS }\x1b[0m");
 } else {
-  console.log("\x1b[31mFail: require { INTERFACE_IDS } has not version\x1b[0m");
+  console.log("\x1b[31mFail: require { INTERFACE_IDS } does not yield an object\x1b[0m");
   process.exit(1);
 }
 EOF
@@ -85,14 +85,14 @@ import pkg from '@lukso/lsp-smart-contracts/package.json' assert { type: 'json' 
 if (pkg.version) {
   console.log("\x1b[32mSuccess: import package.json\x1b[0m");
 } else {
-  console.log("\x1b[31mFail: import package.json has not version\x1b[0m");
+  console.log("\x1b[31mFail: import package.json has no version property\x1b[0m");
   process.exit(1);
 }
 import { INTERFACE_IDS } from '@lukso/lsp-smart-contracts';
 if (INTERFACE_IDS) {
   console.log("\x1b[32mSuccess: import { INTERFACE_IDS }\x1b[0m");
 } else {
-  console.log("\x1b[31mFail: import { INTERFACE_IDS } has not version\x1b[0m");
+  console.log("\x1b[31mFail: import { INTERFACE_IDS } does not yield an object\x1b[0m");
   process.exit(1);
 }
 EOF
