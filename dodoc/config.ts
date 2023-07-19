@@ -4,53 +4,56 @@ import { HelperContent } from 'squirrelly/dist/types/containers';
 export const dodocConfig = {
   runOnCompile: false,
   include: [
-    'UniversalProfile.sol',
-    'LSP0ERC725Account/LSP0ERC725Account.sol',
-    'LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol',
-    'LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol',
-    'LSP6KeyManager/LSP6KeyManager.sol',
-    'LSP9Vault/LSP9Vault.sol',
-    'LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol',
-    'LSP14Ownable2Step/LSP14Ownable2Step.sol',
-    'LSP16UniversalFactory/LSP16UniversalFactory.sol',
-    'LSP17ContractExtension/LSP17Extendable.sol',
-    'LSP17ContractExtension/LSP17Extension.sol',
-    'LSP20CallVerification/LSP20CallVerification.sol',
+    'contracts/UniversalProfile.sol',
+    'contracts/LSP0ERC725Account/LSP0ERC725Account.sol',
+    'contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol',
+    'contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol',
+    'contracts/LSP6KeyManager/LSP6KeyManager.sol',
+    'contracts/LSP9Vault/LSP9Vault.sol',
+    'contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol',
+    'contracts/LSP14Ownable2Step/LSP14Ownable2Step.sol',
+    'contracts/LSP16UniversalFactory/LSP16UniversalFactory.sol',
+    'contracts/LSP17ContractExtension/LSP17Extendable.sol',
+    'contracts/LSP17ContractExtension/LSP17Extension.sol',
+    'contracts/LSP20CallVerification/LSP20CallVerification.sol',
 
-    // tokens
-    'LSP4DigitalAssetMetadata/LSP4Compatibility.sol',
-    'LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol',
-    'LSP7DigitalAsset/LSP7DigitalAsset.sol',
-    'LSP7DigitalAsset/extensions/LSP7Burnable.sol',
-    'LSP7DigitalAsset/extensions/LSP7CappedSupply.sol',
-    'LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol',
-    'LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol',
-    'LSP7DigitalAsset/presets/LSP7Mintable.sol',
-    'LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol',
-    'LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol',
-    'LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol',
-    'LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721.sol',
-    'LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol',
-    'LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol',
-    'LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol',
+    // tokens --------------------
+    'contracts/LSP4DigitalAssetMetadata/LSP4Compatibility.sol',
+    'contracts/LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol',
+    'contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol',
+    'contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol',
+    'contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply.sol',
+    'contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol',
+    'contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol',
+    'contracts/LSP7DigitalAsset/presets/LSP7Mintable.sol',
+    'contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol',
+    'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol',
+    'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol',
+    'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721.sol',
+    'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol',
+    'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol',
+    'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol',
 
     // libraries --------------------
-    'LSP0ERC725Account/LSP0Utils.sol',
-    'LSP1UniversalReceiver/LSP1Utils.sol',
-    'LSP2ERC725YJSONSchema/LSP2Utils.sol',
-    'LSP5ReceivedAssets/LSP5Utils.sol',
-    'LSP6KeyManager/LSP6Utils.sol',
-    'LSP10ReceivedVaults/LSP10Utils.sol',
-    'LSP17ContractExtension/LSP17Utils.sol',
+    'contracts/LSP0ERC725Account/LSP0Utils.sol',
+    'contracts/LSP1UniversalReceiver/LSP1Utils.sol',
+    'contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol',
+    'contracts/LSP5ReceivedAssets/LSP5Utils.sol',
+    'contracts/LSP6KeyManager/LSP6Utils.sol',
+    'contracts/LSP10ReceivedVaults/LSP10Utils.sol',
+    'contracts/LSP17ContractExtension/LSP17Utils.sol',
+
+    // external --------------------
+    '@erc725/smart-contracts/contracts/ERC725.sol',
   ],
   libraries: [
-    'LSP0Utils',
-    'LSP1Utils',
-    'LSP2Utils',
-    'LSP5Utils',
-    'LSP6Utils',
-    'LSP10Utils',
-    'LSP17Utils',
+    'contracts/LSP0ERC725Account/LSP0Utils.sol',
+    'contracts/LSP1UniversalReceiver/LSP1Utils.sol',
+    'contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol',
+    'contracts/LSP5ReceivedAssets/LSP5Utils.sol',
+    'contracts/LSP6KeyManager/LSP6Utils.sol',
+    'contracts/LSP10ReceivedVaults/LSP10Utils.sol',
+    'contracts/LSP17ContractExtension/LSP17Utils.sol',
   ],
   templatePath: './dodoc/template.sqrl',
   helpers: [
@@ -108,6 +111,23 @@ export const dodocConfig = {
     {
       helperName: 'generateContractLink',
       helperFunc: (content: HelperContent) => generateContractLink(content.params[0]),
+    },
+    {
+      helperName: 'generateContractSpecsDetails',
+      helperFunc: (content: HelperContent) =>
+        content.exec(generateContractSpecsDetails(content.params[0])),
+    },
+    {
+      helperName: 'formatDisplayedCode',
+      helperFunc: (content: HelperContent) => formatDisplayedCode(content.params[0]),
+    },
+    {
+      helperName: 'formatParamDescription',
+      helperFunc: (content: HelperContent) => formatParamDescription(content.params[0]),
+    },
+    {
+      helperName: 'formatParamType',
+      helperFunc: (content: HelperContent) => formatParamType(content.params[0]),
     },
   ],
 };
@@ -208,9 +228,9 @@ const generateAdditionalMethodInfo = (contract: string, code: string) => {
   const { specsName, specsLink } = generateContractSpecsDetails(contract);
 
   let infoBlock =
-    `- Specification details in [**${specsName}**](${specsLink}#${formatedCode
+    `- Specification details: [**${specsName}**](${specsLink}#${formatedCode
       .split('(')[0]
-      .toLowerCase()})\n` + `- Solidity implementation in [**${contract}**](${contractLink})\n`;
+      .toLowerCase()})\n` + `- Solidity implementation: [\`${contract}.sol\`](${contractLink})\n`;
 
   if (
     !formatedCode.startsWith('constructor') &&
@@ -233,12 +253,12 @@ const generateAdditionalEventInfo = (contract: string, code: string) => {
   const { specsName, specsLink } = generateContractSpecsDetails(contract);
 
   return (
-    `- Specification details in [**${specsName}**](${specsLink}#${formatedCode
+    `- Specification details: [**${specsName}**](${specsLink}#${formatedCode
       .split('(')[0]
       .toLowerCase()})\n` +
-    `- Solidity implementation in [**${contract}**](${contractLink})\n` +
+    `- Solidity implementation: [\`${contract}.sol\`](${contractLink})\n` +
     `- Event signature: \`${formatedCode}\`\n` +
-    `- Event hash: \`${ethers.utils.keccak256(ethers.utils.toUtf8Bytes(formatedCode))}\``
+    `- Event topic hash: \`${ethers.utils.keccak256(ethers.utils.toUtf8Bytes(formatedCode))}\``
   );
 };
 
@@ -248,10 +268,10 @@ const generateAdditionalErrorInfo = (contract: string, code: string) => {
   const { specsName, specsLink } = generateContractSpecsDetails(contract);
 
   return (
-    `- Specification details in [**${specsName}**](${specsLink}#${formatedCode
+    `- Specification details: [**${specsName}**](${specsLink}#${formatedCode
       .split('(')[0]
       .toLowerCase()})\n` +
-    `- Solidity implementation in [**${contract}**](${contractLink})\n` +
+    `- Solidity implementation: [\`${contract}.sol\`](${contractLink})\n` +
     `- Error signature: \`${formatedCode}\`\n` +
     `- Error hash: \`${ethers.utils
       .keccak256(ethers.utils.toUtf8Bytes(formatedCode))
@@ -260,28 +280,41 @@ const generateAdditionalErrorInfo = (contract: string, code: string) => {
 };
 
 const generateContractLink = (contractName: string) => {
-  if (contractName === 'UniversalProfile')
+  if (contractName === 'UniversalProfile') {
     return `${linkBase}lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol`;
+  }
+
+  if (contractName === 'ERC725') {
+    return 'https://github.com/ERC725Alliance/ERC725/blob/main/implementations/contracts/ERC725.sol';
+  }
 
   const contractPath = dodocConfig.include.filter((value) => {
     if (value.endsWith(`${contractName}.sol`)) return value;
   })[0];
 
-  return `${linkBase}lsp-smart-contracts/blob/develop/contracts/${contractPath}`;
+  return `${linkBase}lsp-smart-contracts/blob/develop/${contractPath}`;
 };
 
 const generateContractSpecsDetails = (contractName: string) => {
-  if (contractName === 'UniversalProfile')
+  if (contractName === 'UniversalProfile') {
     return {
       specsName: `${contractName}`,
       specsLink: `${linkBase}lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md`,
     };
+  }
+
+  if (contractName === 'ERC725') {
+    return {
+      specsName: 'ERC-725',
+      specsLink: 'https://github.com/ethereum/EIPs/blob/master/EIPS/eip-725.md',
+    };
+  }
 
   const contractPath = dodocConfig.include.filter((value) => {
     if (value.endsWith(`${contractName}.sol`)) return value;
   })[0];
 
-  const specs = contractPath.split('/')[0];
+  const specs = contractPath.split('/')[1];
 
   const specsName = `LSP-${specs.match(/\d+/)[0]}-${specs.split(/LSP\d+/)[1]}`;
 
@@ -290,4 +323,38 @@ const generateContractSpecsDetails = (contractName: string) => {
   }.md`;
 
   return { specsName, specsLink };
+};
+
+const formatDisplayedCode = (textToFormat: string) => {
+  let formatedText = textToFormat;
+  while (formatedText.includes('&gt;')) {
+    formatedText = formatedText.replace('&gt;', '<');
+  }
+
+  return formatedText;
+};
+
+const formatParamDescription = (textToFormat: string) => {
+  if (!textToFormat) return '-';
+
+  let formatedText = textToFormat;
+  while (formatedText.includes('&lt;')) {
+    formatedText = formatedText.replace('&lt;', '<');
+  }
+  while (formatedText.includes('&gt;')) {
+    formatedText = formatedText.replace('&gt;', '<');
+  }
+
+  return formatedText;
+};
+
+const formatParamType = (textToFormat: string) => {
+  if (!textToFormat) return '';
+
+  let formatedText = textToFormat;
+  while (formatedText.includes('&gt;')) {
+    formatedText = formatedText.replace('&gt;', '<');
+  }
+
+  return formatedText;
 };
