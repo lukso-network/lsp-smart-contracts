@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.10.3](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.10.2...v0.10.3) (2023-07-20)
+
+### Bug Fixes
+
+- Repair problem in package.json where require/import was swapped. Add in export of package.json ([4e38d39](https://github.com/lukso-network/lsp-smart-contracts/commit/4e38d39a82ef0e53cd5fcd4bbc5b0e4d4454993d))
+
 ## [0.10.2](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.10.1...v0.10.2) (2023-06-13)
 
 ### Refactor
