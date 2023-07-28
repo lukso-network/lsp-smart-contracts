@@ -364,7 +364,7 @@ abstract contract LSP6ExecuteModule {
     function _isAllowedAddress(
         bytes memory allowedCall,
         address to
-    ) internal pure returns (bool) {
+    ) internal pure virtual returns (bool) {
         // <offset> = 4 bytes x 8 bits = 32 bits
         //
         // <offset>v----------------address---------------v
