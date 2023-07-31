@@ -170,7 +170,7 @@ abstract contract LSP0ERC725AccountCore is
      */
     function batchCalls(
         bytes[] calldata data
-    ) public returns (bytes[] memory results) {
+    ) public virtual returns (bytes[] memory results) {
         results = new bytes[](data.length);
         for (uint256 i; i < data.length; ) {
             (bool success, bytes memory result) = address(this).delegatecall(
