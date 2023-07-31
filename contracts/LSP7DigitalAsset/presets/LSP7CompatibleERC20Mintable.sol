@@ -15,7 +15,7 @@ contract LSP7CompatibleERC20Mintable is LSP7CompatibleERC20 {
         uint256 amount,
         bool allowNonLSP1Recipient,
         bytes memory data
-    ) public onlyOwner {
+    ) public virtual onlyOwner {
         _mint(to, amount, allowNonLSP1Recipient, data);
     }
 }
