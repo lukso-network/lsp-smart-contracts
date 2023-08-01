@@ -476,6 +476,9 @@ contract LSP9VaultCore is
     function transferOwnership(
         address newOwner
     ) public virtual override(LSP14Ownable2Step, OwnableUnset) onlyOwner {
+        // set the transfer ownership lock
+        _inTransferOwnership = true;
+
         LSP14Ownable2Step._transferOwnership(newOwner);
 
         address currentOwner = owner();
@@ -486,10 +489,8 @@ contract LSP9VaultCore is
             ""
         );
 
-        require(
-            currentOwner == owner(),
-            "LSP14: newOwner MUST accept ownership in a separate transaction"
-        );
+        // reset the transfer ownership lock
+        _inTransferOwnership = false;
     }
 
     /**
@@ -503,6 +504,12 @@ contract LSP9VaultCore is
      */
     function acceptOwnership() public virtual override {
         address previousOwner = owner();
+
+        if (_inTransferOwnership) {
+            revert(
+                "LSP14: newOwner MUST accept ownership in a separate transaction"
+            );
+        }
 
         _acceptOwnership();
 
