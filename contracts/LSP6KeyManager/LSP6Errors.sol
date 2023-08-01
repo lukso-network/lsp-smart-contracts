@@ -165,3 +165,8 @@ error RelayCallBeforeStartTime();
  * @dev reverts when the period to execute the relay call has expired
  */
 error RelayCallExpired();
+
+/**
+ * @dev reverts when the address of the Key Manager is being set as extensions for lsp20 functions
+ */
+error KeyManagerCannotBeSetAsExtensionForLSP20Functions();

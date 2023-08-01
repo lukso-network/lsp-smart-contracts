@@ -25,7 +25,9 @@ import {
     _PERMISSION_ADDEXTENSIONS,
     _PERMISSION_CHANGEEXTENSIONS,
     _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE,
-    _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE
+    _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE,
+    _LSP20_VERIFY_CALL_EXTENSION_DATA_KEY,
+    _LSP20_VERIFY_CALL_RESULT_EXTENSION_DATA_KEY
 } from "../LSP6Constants.sol";
 import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
@@ -43,7 +45,8 @@ import {
     InvalidEncodedAllowedERC725YDataKeys,
     NoERC725YDataKeysAllowed,
     NotAllowedERC725YDataKey,
-    NotAuthorised
+    NotAuthorised,
+    KeyManagerCannotBeSetAsExtensionForLSP20Functions
 } from "../LSP6Errors.sol";
 
 abstract contract LSP6SetDataModule {
@@ -299,6 +302,16 @@ abstract contract LSP6SetDataModule {
 
             // LSP17Extension:<bytes4>
         } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
+            // reverts when the address of the Key Manager is being set as extensions for lsp20 functions
+            if (
+                inputDataKey == _LSP20_VERIFY_CALL_EXTENSION_DATA_KEY ||
+                inputDataKey == _LSP20_VERIFY_CALL_RESULT_EXTENSION_DATA_KEY
+            ) {
+                if (address(bytes20(inputDataValue)) == address(this)) {
+                    revert KeyManagerCannotBeSetAsExtensionForLSP20Functions();
+                }
+            }
+
             // same as above. If controller has both permissions, do not read the `target` storage
             // to save gas by avoiding an extra external `view` call.
             if (
