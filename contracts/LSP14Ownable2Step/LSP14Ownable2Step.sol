@@ -63,9 +63,12 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     /**
      * @inheritdoc ILSP14Ownable2Step
      */
-    function transferOwnership(
-        address newOwner
-    ) public virtual override(OwnableUnset, ILSP14Ownable2Step) onlyOwner {
+    function transferOwnership(address newOwner)
+        public
+        virtual
+        override(OwnableUnset, ILSP14Ownable2Step)
+        onlyOwner
+    {
         _transferOwnership(newOwner);
 
         address currentOwner = owner();
@@ -175,6 +178,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
 
         _setOwner(address(0));
         delete _renounceOwnershipStartedAt;
+        delete _pendingOwner;
         emit OwnershipRenounced();
     }
 }
