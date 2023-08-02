@@ -380,7 +380,7 @@ abstract contract LSP6ExecuteModule {
     function _isAllowedStandard(
         bytes memory allowedCall,
         address to
-    ) internal view returns (bool) {
+    ) internal view virtual returns (bool) {
         // <offset> = 24 bytes x 8 bits = 192 bits
         //
         //                                                 standard
@@ -397,7 +397,7 @@ abstract contract LSP6ExecuteModule {
     function _isAllowedFunction(
         bytes memory allowedCall,
         bytes4 requiredFunction
-    ) internal pure returns (bool) {
+    ) internal pure virtual returns (bool) {
         // <offset> = 28 bytes x 8 bits = 224 bits
         //
         //                                                         function
@@ -416,7 +416,7 @@ abstract contract LSP6ExecuteModule {
     function _isAllowedCallType(
         bytes memory allowedCall,
         bytes4 requiredCallTypes
-    ) internal pure returns (bool) {
+    ) internal pure virtual returns (bool) {
         // extract callType
         //
         // <offset> = 0
