@@ -71,7 +71,7 @@ abstract contract LSP20CallVerification {
         bool success,
         bytes memory returnedData
     ) internal pure virtual {
-        if (!success) _revert(postCall, returnedData);
+        if (!success) _revertWithLSP20DefaultError(postCall, returnedData);
 
         // check if the returned data contains at least 32 bytes, potentially an abi encoded bytes4 value
         // check if the returned data has in the first 32 bytes an abi encoded bytes4 value
@@ -81,7 +81,7 @@ abstract contract LSP20CallVerification {
         ) revert LSP20InvalidMagicValue(postCall, returnedData);
     }
 
-    function _revert(
+    function _revertWithLSP20DefaultError(
         bool postCall,
         bytes memory returnedData
     ) internal pure virtual {
