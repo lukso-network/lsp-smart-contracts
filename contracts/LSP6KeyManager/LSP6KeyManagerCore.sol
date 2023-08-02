@@ -82,7 +82,7 @@ abstract contract LSP6KeyManagerCore is
 
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
-    function target() public view returns (address) {
+    function target() public view virtual returns (address) {
         return _target;
     }
 
