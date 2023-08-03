@@ -141,7 +141,7 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
             address ownerContractAddress
         )
     {
-        bytes32 controlledContractGeneratedSalt = _generatecontrolledContractSalt(
+        bytes32 controlledContractGeneratedSalt = _generateControlledContractSalt(
                 controlledContractDeployment,
                 ownerContractDeployment,
                 postDeploymentModule,
@@ -212,7 +212,7 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         address postDeploymentModule,
         bytes calldata postDeploymentModuleCalldata
     ) internal returns (address controlledContractAddress) {
-        bytes32 controlledContractGeneratedSalt = _generatecontrolledContractSalt(
+        bytes32 controlledContractGeneratedSalt = _generateControlledContractSalt(
                 controlledContractDeployment,
                 ownerContractDeployment,
                 postDeploymentModule,
@@ -313,7 +313,7 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         }
     }
 
-    function _generatecontrolledContractSalt(
+    function _generateControlledContractSalt(
         ControlledContractDeployment calldata controlledContractDeployment,
         OwnerContractDeployment calldata ownerContractDeployment,
         address postDeploymentModule,

@@ -20,31 +20,6 @@ interface IOwnerControlledContractDeployer {
         bytes postDeploymentModuleCalldata
     );
 
-    event DeployedContract(
-        address indexed controlledContract,
-        ControlledContractDeployment controlledContractDeployment
-    );
-
-    event DeployedOwnerContract(
-        address indexed ownerContract,
-        OwnerContractDeployment ownerContractDeployment
-    );
-
-    event DeployedERC1167Proxie(
-        address indexed controlledContract,
-        ControlledContractDeploymentInit controlledContractDeploymentInit
-    );
-
-    event DeployedOwnerERC1167Proxie(
-        address indexed ownerContract,
-        OwnerContractDeploymentInit ownerContractDeploymentInit
-    );
-
-    event PostDeployment(
-        address postDeploymentModule,
-        bytes postDeploymentModuleCalldata
-    );
-
     /**
      * @param salt A unique value used to ensure each created proxies are unique. (Can be used to deploy the contract at a desired address.)
      * @param fundingAmount The value to be sent with the deployment transaction.
