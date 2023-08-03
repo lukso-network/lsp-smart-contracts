@@ -232,15 +232,15 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         address controlledContractAddress
     ) internal returns (address ownerContractAddress) {
         /* if addControlledContractAddress is true, the controlled contract address + extraConstructorParams will be appended to the constructor params */
-        bytes memory ownerContractByteCode;
+        bytes memory ownerContractByteCode = ownerContractDeployment
+            .creationBytecode;
+
         if (ownerContractDeployment.addControlledContractAddress) {
             ownerContractByteCode = abi.encodePacked(
-                ownerContractDeployment.creationBytecode,
+                ownerContractByteCode,
                 abi.encode(controlledContractAddress),
                 ownerContractDeployment.extraConstructorParams
             );
-        } else {
-            ownerContractByteCode = ownerContractDeployment.creationBytecode;
         }
 
         /*  here owner refers as the future owner of the controlled contract at the end of the transaction */
@@ -292,16 +292,15 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         );
 
         /* if addControlledContractAddress is true, the controlled contract address + extraInitialisationBytes will be appended to the initializationCalldata */
-        bytes memory ownerInitializationBytes;
+        bytes memory ownerInitializationBytes = ownerContractDeploymentInit
+            .initializationCalldata;
+
         if (ownerContractDeploymentInit.addControlledContractAddress) {
             ownerInitializationBytes = abi.encodePacked(
-                ownerContractDeploymentInit.initializationCalldata,
+                ownerInitializationBytes,
                 abi.encode(controlledContractAddress),
                 ownerContractDeploymentInit.extraInitializationParams
             );
-        } else {
-            ownerInitializationBytes = ownerContractDeploymentInit
-                .initializationCalldata;
         }
 
         /* initialize the controlled contract proxy */
