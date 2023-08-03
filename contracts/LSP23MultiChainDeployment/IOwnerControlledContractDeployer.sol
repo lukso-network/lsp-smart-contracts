@@ -106,8 +106,8 @@ interface IOwnerControlledContractDeployer {
      * @param postDeploymentModule The module to be executed after deployment.
      * @param postDeploymentModuleCalldata The data to be passed to the post deployment module.
      *
-     * @return controlledContractAddress the address of the deployed controlled contract proxy
-     * @return ownerContractAddress the address of the deployed owner contract proxy
+     * @return controlledContractAddress The address of the deployed controlled contract proxy
+     * @return ownerContractAddress The address of the deployed owner contract proxy
      */
     function deployERC1167Proxies(
         ControlledContractDeploymentInit
@@ -155,8 +155,8 @@ interface IOwnerControlledContractDeployer {
      * @param postDeploymentModule The module to be executed after deployment.
      * @param postDeploymentModuleCalldata The data to be passed to the post deployment module.
      *
-     * @return controlledContractAddress the address of the deployed controlled contract proxy
-     * @return ownerContractAddress the address of the deployed owner contract proxy
+     * @return controlledContractAddress The address of the deployed controlled contract proxy
+     * @return ownerContractAddress The address of the deployed owner contract proxy
      */
     function computeERC1167Addresses(
         ControlledContractDeploymentInit

@@ -51,19 +51,19 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
             controlledContractAddress
         );
 
-        /* execute the post deployment module logic in the postDeploymentModule */
-        IPostDeploymentModule(postDeploymentModule).executePostDeployment(
-            controlledContractAddress,
-            ownerContractAddress,
-            postDeploymentModuleCalldata
-        );
-
         emit DeployedContracts(
             controlledContractAddress,
             ownerContractAddress,
             controlledContractDeployment,
             ownerContractDeployment,
             postDeploymentModule,
+            postDeploymentModuleCalldata
+        );
+
+        /* execute the post deployment module logic in the postDeploymentModule */
+        IPostDeploymentModule(postDeploymentModule).executePostDeployment(
+            controlledContractAddress,
+            ownerContractAddress,
             postDeploymentModuleCalldata
         );
     }
@@ -108,19 +108,19 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
             controlledContractAddress
         );
 
-        /* execute the post deployment logic in the postDeploymentModule */
-        IPostDeploymentModule(postDeploymentModule).executePostDeployment(
-            controlledContractAddress,
-            ownerContractAddress,
-            postDeploymentModuleCalldata
-        );
-
         emit DeployedERC1167Proxies(
             controlledContractAddress,
             ownerContractAddress,
             controlledContractDeploymentInit,
             ownerContractDeploymentInit,
             postDeploymentModule,
+            postDeploymentModuleCalldata
+        );
+
+        /* execute the post deployment logic in the postDeploymentModule */
+        IPostDeploymentModule(postDeploymentModule).executePostDeployment(
+            controlledContractAddress,
+            ownerContractAddress,
             postDeploymentModuleCalldata
         );
     }
