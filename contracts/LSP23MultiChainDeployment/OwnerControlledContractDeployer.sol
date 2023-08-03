@@ -231,7 +231,11 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         OwnerContractDeployment calldata ownerContractDeployment,
         address controlledContractAddress
     ) internal returns (address ownerContractAddress) {
-        /* if addControlledContractAddress is true, the controlled contract address + extraConstructorParams will be appended to the constructor params */
+        /**
+         * If `addControlledContractAddress` is `true`, we will be appended to the constructor params:
+         * - The controlled contract address
+         * - `extraConstructorParams`
+         */
         bytes memory ownerContractByteCode = ownerContractDeployment
             .creationBytecode;
 
@@ -243,7 +247,7 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
             );
         }
 
-        /*  here owner refers as the future owner of the controlled contract at the end of the transaction */
+        /* Here owner refers to the future owner of the controlled contract at the end of the transaction */
         ownerContractAddress = Create2.deploy(
             ownerContractDeployment.fundingAmount,
             keccak256(abi.encodePacked(controlledContractAddress)),
@@ -291,7 +295,11 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
             keccak256(abi.encodePacked(controlledContractAddress))
         );
 
-        /* if addControlledContractAddress is true, the controlled contract address + extraInitialisationBytes will be appended to the initializationCalldata */
+        /**
+         * If `addControlledContractAddress` is `true`, we will be appended to the `initializationCalldata`:
+         * - The controlled contract address
+         * - `extraInitialisationBytes`
+         */
         bytes memory ownerInitializationBytes = ownerContractDeploymentInit
             .initializationCalldata;
 
