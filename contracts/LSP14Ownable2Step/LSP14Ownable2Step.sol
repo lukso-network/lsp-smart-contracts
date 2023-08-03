@@ -59,6 +59,16 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     bool internal _inTransferOwnership;
 
     /**
+     * @dev reverts when {_inTransferOwnership} variable is true
+     */
+    modifier NotInTransferOwnership() virtual {
+        if (_inTransferOwnership) {
+            revert LSP14MustAcceptOwnershipInSeparateTransaction();
+        }
+        _;
+    }
+
+    /**
      * @inheritdoc ILSP14Ownable2Step
      */
     function pendingOwner() public view virtual returns (address) {
@@ -91,14 +101,8 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     /**
      * @inheritdoc ILSP14Ownable2Step
      */
-    function acceptOwnership() public virtual {
+    function acceptOwnership() public virtual NotInTransferOwnership {
         address previousOwner = owner();
-
-        if (_inTransferOwnership) {
-            revert(
-                "LSP14: newOwner MUST accept ownership in a separate transaction"
-            );
-        }
 
         _acceptOwnership();
 

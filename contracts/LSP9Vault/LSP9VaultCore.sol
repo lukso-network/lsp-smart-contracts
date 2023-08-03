@@ -64,6 +64,10 @@ import {
 import "./LSP9Errors.sol";
 import "../LSP17ContractExtension/LSP17Errors.sol";
 
+import {
+    LSP14MustAcceptOwnershipInSeparateTransaction
+} from "../LSP14Ownable2Step/LSP14Errors.sol";
+
 /**
  * @title Core Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
@@ -502,14 +506,8 @@ contract LSP9VaultCore is
      * - when notifying the previous owner via LSP1, the typeId used MUST be keccak256('LSP9OwnershipTransferred_SenderNotification')
      * - when notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP9OwnershipTransferred_RecipientNotification')
      */
-    function acceptOwnership() public virtual override {
+    function acceptOwnership() public virtual override NotInTransferOwnership {
         address previousOwner = owner();
-
-        if (_inTransferOwnership) {
-            revert(
-                "LSP14: newOwner MUST accept ownership in a separate transaction"
-            );
-        }
 
         _acceptOwnership();
 

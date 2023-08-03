@@ -63,6 +63,10 @@ import {
     NoExtensionFoundForFunctionSelector
 } from "../LSP17ContractExtension/LSP17Errors.sol";
 
+import {
+    LSP14MustAcceptOwnershipInSeparateTransaction
+} from "../LSP14Ownable2Step/LSP14Errors.sol";
+
 /**
  * @title The Core Implementation of LSP0-ERC725Account Standard
  *        https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md
@@ -619,14 +623,8 @@ abstract contract LSP0ERC725AccountCore is
      * - When notifying the previous owner via LSP1, the typeId used MUST be `keccak256('LSP0OwnershipTransferred_SenderNotification')`.
      * - When notifying the new owner via LSP1, the typeId used MUST be `keccak256('LSP0OwnershipTransferred_RecipientNotification')`.
      */
-    function acceptOwnership() public virtual override {
+    function acceptOwnership() public virtual override NotInTransferOwnership {
         address previousOwner = owner();
-
-        if (_inTransferOwnership) {
-            revert(
-                "LSP14: newOwner MUST accept ownership in a separate transaction"
-            );
-        }
 
         _acceptOwnership();
 
