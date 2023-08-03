@@ -58,7 +58,14 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
             postDeploymentModuleCalldata
         );
 
-        emit PostDeployment(postDeploymentModule, postDeploymentModuleCalldata);
+        emit DeployedContracts(
+            controlledContractAddress,
+            ownerContractAddress,
+            controlledContractDeployment,
+            ownerContractDeployment,
+            postDeploymentModule,
+            postDeploymentModuleCalldata
+        );
     }
 
     /**
@@ -81,8 +88,8 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         /* check that the msg.value is equal to the sum of the values of the controlled and owner contracts */
         if (
             msg.value !=
-            controlledContractDeploymentInit.value +
-                ownerContractDeploymentInit.value
+            controlledContractDeploymentInit.fundingAmount +
+                ownerContractDeploymentInit.fundingAmount
         ) {
             revert InvalidValueSum();
         }
@@ -108,7 +115,14 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
             postDeploymentModuleCalldata
         );
 
-        emit PostDeployment(postDeploymentModule, postDeploymentModuleCalldata);
+        emit DeployedERC1167Proxies(
+            controlledContractAddress,
+            ownerContractAddress,
+            controlledContractDeploymentInit,
+            ownerContractDeploymentInit,
+            postDeploymentModule,
+            postDeploymentModuleCalldata
+        );
     }
 
     /**
@@ -174,7 +188,7 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
             address ownerContractAddress
         )
     {
-        bytes32 controlledContractGeneratedSalt = _generateControlledContractSalt(
+        bytes32 controlledContractGeneratedSalt = _generateControlledProxyContractSalt(
                 controlledContractDeploymentInit,
                 ownerContractDeploymentInit,
                 postDeploymentModule,
@@ -211,11 +225,6 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
             controlledContractGeneratedSalt,
             controlledContractDeployment.creationBytecode
         );
-
-        emit DeployedContract(
-            controlledContractAddress,
-            controlledContractDeployment
-        );
     }
 
     function _deployOwnerContract(
@@ -240,11 +249,6 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
             keccak256(abi.encodePacked(controlledContractAddress)),
             ownerContractByteCode
         );
-
-        emit DeployedOwnerContract(
-            ownerContractAddress,
-            ownerContractDeployment
-        );
     }
 
     function _deployAndInitializeControlledContractProxy(
@@ -254,7 +258,7 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         address postDeploymentModule,
         bytes calldata postDeploymentModuleCalldata
     ) internal returns (address controlledContractAddress) {
-        bytes32 controlledContractGeneratedSalt = _generateControlledContractSalt(
+        bytes32 controlledContractGeneratedSalt = _generateControlledProxyContractSalt(
                 controlledContractDeploymentInit,
                 ownerContractDeploymentInit,
                 postDeploymentModule,
@@ -275,11 +279,6 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         if (!success) {
             revert ControlledContractProxyInitFailureError(returnedData);
         }
-
-        emit DeployedERC1167Proxie(
-            controlledContractAddress,
-            controlledContractDeploymentInit
-        );
     }
 
     function _deployAndInitializeOwnerContractProxy(
@@ -312,11 +311,6 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         if (!success) {
             revert OwnerContractProxyInitFailureError(returnedData);
         }
-
-        emit DeployedOwnerERC1167Proxie(
-            ownerContractAddress,
-            ownerContractDeploymentInit
-        );
     }
 
     function _generateControlledProxyContractSalt(

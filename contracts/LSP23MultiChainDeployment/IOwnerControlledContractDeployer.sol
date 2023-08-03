@@ -2,6 +2,49 @@
 pragma solidity ^0.8.4;
 
 interface IOwnerControlledContractDeployer {
+    event DeployedContracts(
+        address indexed controlledContract,
+        address indexed ownerContract,
+        ControlledContractDeployment controlledContractDeployment,
+        OwnerContractDeployment ownerContractDeployment,
+        address postDeploymentModule,
+        bytes postDeploymentModuleCalldata
+    );
+
+    event DeployedERC1167Proxies(
+        address indexed controlledContract,
+        address indexed ownerContract,
+        ControlledContractDeploymentInit controlledContractDeploymentInit,
+        OwnerContractDeploymentInit ownerContractDeploymentInit,
+        address postDeploymentModule,
+        bytes postDeploymentModuleCalldata
+    );
+
+    event DeployedContract(
+        address indexed controlledContract,
+        ControlledContractDeployment controlledContractDeployment
+    );
+
+    event DeployedOwnerContract(
+        address indexed ownerContract,
+        OwnerContractDeployment ownerContractDeployment
+    );
+
+    event DeployedERC1167Proxie(
+        address indexed controlledContract,
+        ControlledContractDeploymentInit controlledContractDeploymentInit
+    );
+
+    event DeployedOwnerERC1167Proxie(
+        address indexed ownerContract,
+        OwnerContractDeploymentInit ownerContractDeploymentInit
+    );
+
+    event PostDeployment(
+        address postDeploymentModule,
+        bytes postDeploymentModuleCalldata
+    );
+
     /**
      * @param salt A unique value used to ensure each created proxies are unique. (Can be used to deploy the contract at a desired address.)
      * @param fundingAmount The value to be sent with the deployment transaction.
@@ -53,31 +96,6 @@ interface IOwnerControlledContractDeployer {
         bool addControlledContractAddress;
         bytes extraInitializationParams;
     }
-
-    event DeployedContract(
-        address indexed controlledContract,
-        ControlledContractDeployment controlledContractDeployment
-    );
-
-    event DeployedOwnerContract(
-        address indexed ownerContract,
-        OwnerContractDeployment ownerContractDeployment
-    );
-
-    event DeployedERC1167Proxie(
-        address indexed controlledContract,
-        ControlledContractDeploymentInit controlledContractDeploymentInit
-    );
-
-    event DeployedOwnerERC1167Proxie(
-        address indexed ownerContract,
-        OwnerContractDeploymentInit ownerContractDeploymentInit
-    );
-
-    event PostDeployment(
-        address postDeploymentModule,
-        bytes postDeploymentModuleCalldata
-    );
 
     /**
      * @dev Deploys a contract and its owner contract.
