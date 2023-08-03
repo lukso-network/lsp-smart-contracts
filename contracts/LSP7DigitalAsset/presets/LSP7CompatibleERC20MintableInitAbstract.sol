@@ -25,7 +25,7 @@ contract LSP7CompatibleERC20MintableInitAbstract is
         uint256 amount,
         bool allowNonLSP1Recipient,
         bytes memory data
-    ) public onlyOwner {
+    ) public virtual onlyOwner {
         _mint(to, amount, allowNonLSP1Recipient, data);
     }
 }
