@@ -10,11 +10,11 @@ import {
 import {
     InvalidValueSum,
     ControlledContractProxyInitFailureError,
-    OwnerProxyInitFailureError
+    OwnerContractProxyInitFailureError
 } from "./LSP23Errors.sol";
 
 contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
-    /*
+    /**
      * @inheritdoc IOwnerControlledContractDeployer
      */
     function deployContracts(
@@ -33,7 +33,8 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         /* check that the msg.value is equal to the sum of the values of the controlled and owner contracts */
         if (
             msg.value !=
-            controlledContractDeployment.value + ownerContractDeployment.value
+            controlledContractDeployment.fundingAmount +
+                ownerContractDeployment.fundingAmount
         ) {
             revert InvalidValueSum();
         }
@@ -60,7 +61,7 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         emit PostDeployment(postDeploymentModule, postDeploymentModuleCalldata);
     }
 
-    /*
+    /**
      * @inheritdoc IOwnerControlledContractDeployer
      */
     function deployERC1167Proxies(
@@ -95,7 +96,7 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         );
 
         /* deploy the owner contract proxy */
-        ownerContractAddress = _deployAndInitializeOwnerControlledProxy(
+        ownerContractAddress = _deployAndInitializeOwnerContractProxy(
             ownerContractDeploymentInit,
             controlledContractAddress
         );
@@ -110,17 +111,14 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         emit PostDeployment(postDeploymentModule, postDeploymentModuleCalldata);
     }
 
-    /*
+    /**
      * @inheritdoc IOwnerControlledContractDeployer
      */
     function computeAddresses(
-        bytes32 salt,
-        bytes memory controlledContractCreationByteCode,
-        bytes memory ownerContractCreationByteCode,
-        bool addControlledContractAddress,
-        bytes memory extraConstructorParams,
+        ControlledContractDeployment calldata controlledContractDeployment,
+        OwnerContractDeployment calldata ownerContractDeployment,
         address postDeploymentModule,
-        bytes memory postDeploymentModuleCalldata
+        bytes calldata postDeploymentModuleCalldata
     )
         public
         view
@@ -129,32 +127,28 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
             address ownerContractAddress
         )
     {
-        bytes32 controlledContractGeneratedSalt = keccak256(
-            abi.encode(
-                salt,
-                controlledContractCreationByteCode,
-                ownerContractCreationByteCode,
-                addControlledContractAddress,
-                extraConstructorParams,
+        bytes32 controlledContractGeneratedSalt = _generatecontrolledContractSalt(
+                controlledContractDeployment,
+                ownerContractDeployment,
                 postDeploymentModule,
                 postDeploymentModuleCalldata
-            )
-        );
+            );
 
         controlledContractAddress = Create2.computeAddress(
             controlledContractGeneratedSalt,
-            keccak256(controlledContractCreationByteCode)
+            keccak256(controlledContractDeployment.creationBytecode)
         );
 
         bytes memory ownerContractByteCodeWithAllParams;
-        if (addControlledContractAddress) {
+        if (ownerContractDeployment.addControlledContractAddress) {
             ownerContractByteCodeWithAllParams = abi.encodePacked(
-                ownerContractCreationByteCode,
+                ownerContractDeployment.creationBytecode,
                 abi.encode(controlledContractAddress),
-                extraConstructorParams
+                ownerContractDeployment.extraConstructorParams
             );
         } else {
-            ownerContractByteCodeWithAllParams = ownerContractCreationByteCode;
+            ownerContractByteCodeWithAllParams = ownerContractDeployment
+                .creationBytecode;
         }
 
         ownerContractAddress = Create2.computeAddress(
@@ -163,18 +157,15 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         );
     }
 
-    /*
+    /**
      * @inheritdoc IOwnerControlledContractDeployer
      */
     function computeERC1167Addresses(
-        bytes32 salt,
-        address controlledContractImplementation,
-        address ownerContractImplementation,
-        bytes memory initializationCalldata,
-        bool addControlledContractAddress,
-        bytes memory extraInitializationParams,
+        ControlledContractDeploymentInit
+            calldata controlledContractDeploymentInit,
+        OwnerContractDeploymentInit calldata ownerContractDeploymentInit,
         address postDeploymentModule,
-        bytes memory postDeploymentModuleCalldata
+        bytes calldata postDeploymentModuleCalldata
     )
         public
         view
@@ -183,113 +174,21 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
             address ownerContractAddress
         )
     {
-        bytes32 controlledContractGeneratedSalt = keccak256(
-            abi.encode(
-                salt,
-                ownerContractImplementation,
-                initializationCalldata,
-                addControlledContractAddress,
-                extraInitializationParams,
+        bytes32 controlledContractGeneratedSalt = _generateControlledContractSalt(
+                controlledContractDeploymentInit,
+                ownerContractDeploymentInit,
                 postDeploymentModule,
                 postDeploymentModuleCalldata
-            )
-        );
+            );
 
         controlledContractAddress = Clones.predictDeterministicAddress(
-            controlledContractImplementation,
-            controlledContractGeneratedSalt
-        );
-
-        ownerContractAddress = Clones.predictDeterministicAddress(
-            ownerContractImplementation,
-            keccak256(abi.encodePacked(controlledContractAddress))
-        );
-    }
-
-    function _deployAndInitializeControlledContractProxy(
-        ControlledContractDeploymentInit
-            calldata controlledContractDeploymentInit,
-        OwnerContractDeploymentInit calldata ownerContractDeploymentInit,
-        address postDeploymentModule,
-        bytes calldata postDeploymentModuleCalldata
-    ) internal returns (address controlledContractAddress) {
-        /* generate the salt for the controlled contract
-         *  the salt is generated by hashing the following elements:
-         *   - the salt
-         *   - the owner implementation contract address
-         *   - the owner contract addControlledContractAddress boolean
-         *   - the owner contract initialization calldata
-         *   - the owner contract extra initialization params (if any)
-         *   - the postDeploymentModule address
-         *   - the callda to the post deployment module
-         *
-         */
-        bytes32 controlledContractGeneratedSalt = keccak256(
-            abi.encode(
-                controlledContractDeploymentInit.salt,
-                ownerContractDeploymentInit.implementationContract,
-                ownerContractDeploymentInit.initializationCalldata,
-                ownerContractDeploymentInit.addControlledContractAddress,
-                ownerContractDeploymentInit.extraInitializationParams,
-                postDeploymentModule,
-                postDeploymentModuleCalldata
-            )
-        );
-        /* deploy the controlled contract proxy with the controlledContractGeneratedSalt */
-        controlledContractAddress = Clones.cloneDeterministic(
             controlledContractDeploymentInit.implementationContract,
             controlledContractGeneratedSalt
         );
 
-        /* initialize the controlled contract proxy */
-        (bool success, bytes memory returnedData) = controlledContractAddress
-            .call{value: msg.value}(
-            controlledContractDeploymentInit.initializationCalldata
-        );
-        if (!success) {
-            revert ControlledContractProxyInitFailureError(returnedData);
-        }
-
-        emit DeployedERC1167Proxie(
-            controlledContractAddress,
-            controlledContractDeploymentInit
-        );
-    }
-
-    function _deployAndInitializeOwnerControlledProxy(
-        OwnerContractDeploymentInit calldata ownerContractDeploymentInit,
-        address controlledContractAddress
-    ) internal returns (address ownerContractAddress) {
-        /* deploy the controlled contract proxy with the controlledContractGeneratedSalt */
-        ownerContractAddress = Clones.cloneDeterministic(
+        ownerContractAddress = Clones.predictDeterministicAddress(
             ownerContractDeploymentInit.implementationContract,
             keccak256(abi.encodePacked(controlledContractAddress))
-        );
-
-        /* if addControlledContractAddress is true, the controlled contract address + extraInitialisationBytes will be appended to the initializationCalldata */
-        bytes memory ownerInitializationBytes;
-        if (ownerContractDeploymentInit.addControlledContractAddress) {
-            ownerInitializationBytes = abi.encodePacked(
-                ownerContractDeploymentInit.initializationCalldata,
-                abi.encode(controlledContractAddress),
-                ownerContractDeploymentInit.extraInitializationParams
-            );
-        } else {
-            ownerInitializationBytes = ownerContractDeploymentInit
-                .initializationCalldata;
-        }
-
-        /* initialize the controlled contract proxy */
-        (bool success, bytes memory returnedData) = ownerContractAddress.call{
-            value: msg.value
-        }(ownerInitializationBytes);
-        if (!success) {
-            revert OwnerProxyInitFailureError(returnedData);
-        }
-
-        emit DeployedOwnerERC1167Proxie(
-            ownerContractAddress,
-            ownerContractDeploymentInit
         );
     }
 
@@ -299,30 +198,16 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         address postDeploymentModule,
         bytes calldata postDeploymentModuleCalldata
     ) internal returns (address controlledContractAddress) {
-        /* generate salt for the controlled contract
-         *  the salt is generated by hashing the following elements:
-         *   - the salt
-         *   - the owner contract bytecode
-         *   - the owner addControlledContractAddress boolean
-         *   - the owner extraConstructorParams
-         *   - the postDeploymentModule address
-         *   - the postDeploymentModuleCalldata
-         *
-         */
-        bytes32 controlledContractGeneratedSalt = keccak256(
-            abi.encode(
-                controlledContractDeployment.salt,
-                ownerContractDeployment.creationBytecode,
-                ownerContractDeployment.addControlledContractAddress,
-                ownerContractDeployment.extraConstructorParams,
+        bytes32 controlledContractGeneratedSalt = _generatecontrolledContractSalt(
+                controlledContractDeployment,
+                ownerContractDeployment,
                 postDeploymentModule,
                 postDeploymentModuleCalldata
-            )
-        );
+            );
 
         /* deploy the controlled contract */
         controlledContractAddress = Create2.deploy(
-            controlledContractDeployment.value,
+            controlledContractDeployment.fundingAmount,
             controlledContractGeneratedSalt,
             controlledContractDeployment.creationBytecode
         );
@@ -351,7 +236,7 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
 
         /*  here owner refers as the future owner of the controlled contract at the end of the transaction */
         ownerContractAddress = Create2.deploy(
-            ownerContractDeployment.value,
+            ownerContractDeployment.fundingAmount,
             keccak256(abi.encodePacked(controlledContractAddress)),
             ownerContractByteCode
         );
@@ -359,6 +244,138 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         emit DeployedOwnerContract(
             ownerContractAddress,
             ownerContractDeployment
+        );
+    }
+
+    function _deployAndInitializeControlledContractProxy(
+        ControlledContractDeploymentInit
+            calldata controlledContractDeploymentInit,
+        OwnerContractDeploymentInit calldata ownerContractDeploymentInit,
+        address postDeploymentModule,
+        bytes calldata postDeploymentModuleCalldata
+    ) internal returns (address controlledContractAddress) {
+        bytes32 controlledContractGeneratedSalt = _generateControlledContractSalt(
+                controlledContractDeploymentInit,
+                ownerContractDeploymentInit,
+                postDeploymentModule,
+                postDeploymentModuleCalldata
+            );
+
+        /* deploy the controlled contract proxy with the controlledContractGeneratedSalt */
+        controlledContractAddress = Clones.cloneDeterministic(
+            controlledContractDeploymentInit.implementationContract,
+            controlledContractGeneratedSalt
+        );
+
+        /* initialize the controlled contract proxy */
+        (bool success, bytes memory returnedData) = controlledContractAddress
+            .call{value: msg.value}(
+            controlledContractDeploymentInit.initializationCalldata
+        );
+        if (!success) {
+            revert ControlledContractProxyInitFailureError(returnedData);
+        }
+
+        emit DeployedERC1167Proxie(
+            controlledContractAddress,
+            controlledContractDeploymentInit
+        );
+    }
+
+    function _deployAndInitializeOwnerContractProxy(
+        OwnerContractDeploymentInit calldata ownerContractDeploymentInit,
+        address controlledContractAddress
+    ) internal returns (address ownerContractAddress) {
+        /* deploy the controlled contract proxy with the controlledContractGeneratedSalt */
+        ownerContractAddress = Clones.cloneDeterministic(
+            ownerContractDeploymentInit.implementationContract,
+            keccak256(abi.encodePacked(controlledContractAddress))
+        );
+
+        /* if addControlledContractAddress is true, the controlled contract address + extraInitialisationBytes will be appended to the initializationCalldata */
+        bytes memory ownerInitializationBytes;
+        if (ownerContractDeploymentInit.addControlledContractAddress) {
+            ownerInitializationBytes = abi.encodePacked(
+                ownerContractDeploymentInit.initializationCalldata,
+                abi.encode(controlledContractAddress),
+                ownerContractDeploymentInit.extraInitializationParams
+            );
+        } else {
+            ownerInitializationBytes = ownerContractDeploymentInit
+                .initializationCalldata;
+        }
+
+        /* initialize the controlled contract proxy */
+        (bool success, bytes memory returnedData) = ownerContractAddress.call{
+            value: msg.value
+        }(ownerInitializationBytes);
+        if (!success) {
+            revert OwnerContractProxyInitFailureError(returnedData);
+        }
+
+        emit DeployedOwnerERC1167Proxie(
+            ownerContractAddress,
+            ownerContractDeploymentInit
+        );
+    }
+
+    function _generateControlledProxyContractSalt(
+        ControlledContractDeploymentInit
+            calldata controlledContractDeploymentInit,
+        OwnerContractDeploymentInit calldata ownerContractDeploymentInit,
+        address postDeploymentModule,
+        bytes calldata postDeploymentModuleCalldata
+    ) internal pure returns (bytes32 controlledProxyContractGeneratedSalt) {
+        /**
+         * Generate the salt for the controlled contract
+         * The salt is generated by hashing the following elements:
+         *  - the salt
+         *  - the owner implementation contract address
+         *  - the owner contract addControlledContractAddress boolean
+         *  - the owner contract initialization calldata
+         *  - the owner contract extra initialization params (if any)
+         *  - the postDeploymentModule address
+         *  - the callda to the post deployment module
+         *
+         */
+        controlledProxyContractGeneratedSalt = keccak256(
+            abi.encode(
+                controlledContractDeploymentInit.salt,
+                ownerContractDeploymentInit.implementationContract,
+                ownerContractDeploymentInit.initializationCalldata,
+                ownerContractDeploymentInit.addControlledContractAddress,
+                ownerContractDeploymentInit.extraInitializationParams,
+                postDeploymentModule,
+                postDeploymentModuleCalldata
+            )
+        );
+    }
+
+    function _generatecontrolledContractSalt(
+        ControlledContractDeployment calldata controlledContractDeployment,
+        OwnerContractDeployment calldata ownerContractDeployment,
+        address postDeploymentModule,
+        bytes calldata postDeploymentModuleCalldata
+    ) internal pure returns (bytes32 controlledContractGeneratedSalt) {
+        /* generate salt for the controlled contract
+         *  the salt is generated by hashing the following elements:
+         *   - the salt
+         *   - the owner contract bytecode
+         *   - the owner addControlledContractAddress boolean
+         *   - the owner extraConstructorParams
+         *   - the postDeploymentModule address
+         *   - the postDeploymentModuleCalldata
+         *
+         */
+        controlledContractGeneratedSalt = keccak256(
+            abi.encode(
+                controlledContractDeployment.salt,
+                ownerContractDeployment.creationBytecode,
+                ownerContractDeployment.addControlledContractAddress,
+                ownerContractDeployment.extraConstructorParams,
+                postDeploymentModule,
+                postDeploymentModuleCalldata
+            )
         );
     }
 }

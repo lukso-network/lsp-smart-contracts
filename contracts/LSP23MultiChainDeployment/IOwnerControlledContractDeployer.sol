@@ -2,32 +2,56 @@
 pragma solidity ^0.8.4;
 
 interface IOwnerControlledContractDeployer {
+    /**
+     * @param salt A unique value used to ensure each created proxies are unique. (Can be used to deploy the contract at a desired address.)
+     * @param fundingAmount The value to be sent with the deployment transaction.
+     * @param creationBytecode The bytecode of the contract with the constructor params.
+     */
     struct ControlledContractDeployment {
         bytes32 salt;
-        uint256 value;
-        bytes creationBytecode /* the bytecode of the controlled contract with the constructor params */;
+        uint256 fundingAmount;
+        bytes creationBytecode;
     }
 
+    /**
+     * @param fundingAmount The value to be sent with the deployment transaction.
+     * @param creationBytecode The constructor + runtime bytecode (without the controlled contract's address as param)
+     * @param addControlledContractAddress If set to `true`, this will append the controlled contract's address + the `extraConstructorParams` to the `creationBytecode`.
+     * @param extraConstructorParams Params to be appended to the `creationBytecode` (after the controlled contract address) if `addControlledContractAddress` is set to `true`.
+     */
     struct OwnerContractDeployment {
-        uint256 value;
-        bytes creationBytecode /* the bytecode of the owner contract with the constructor params before the controlled contract address param */;
-        bool addControlledContractAddress /* will append the controlled contract address to the constructor params if true + the extraConstructorParams */;
-        bytes extraConstructorParams /* params to be appended to the bytecode after the controlled contract address */;
+        uint256 fundingAmount;
+        bytes creationBytecode;
+        bool addControlledContractAddress;
+        bytes extraConstructorParams;
     }
 
+    /**
+     * @param salt A unique value used to ensure each created proxies are unique. (Can be used to deploy the contract at a desired address.)
+     * @param fundingAmount The value to be sent with the deployment transaction.
+     * @param implementationContract The address of the contract that will be used as a base contract for the proxy.
+     * @param initializationCalldata The calldata used to initialise the contract. (initialization should be similar to a constructor in a normal contract.)
+     */
     struct ControlledContractDeploymentInit {
         bytes32 salt;
-        uint256 value;
+        uint256 fundingAmount;
         address implementationContract;
         bytes initializationCalldata;
     }
 
+    /**
+     * @param fundingAmount The value to be sent with the deployment transaction.
+     * @param implementationContract The address of the contract that will be used as a base contract for the proxy.
+     * @param initializationCalldata The first part of the initialisation calldata, everything before the controlled contract address.
+     * @param addControlledContractAddress If set to `true`, this will append the controlled contract's address + the `extraInitializationParams` to the `initializationCalldata`.
+     * @param extraInitializationParams Params to be appended to the `initializationCalldata` (after the controlled contract address) if `addControlledContractAddress` is set to `true`
+     */
     struct OwnerContractDeploymentInit {
-        uint256 value;
+        uint256 fundingAmount;
         address implementationContract;
-        bool addControlledContractAddress /* will append the controlled contract address to the initialisation calldata if true as well as the extraInitializationParams */;
         bytes initializationCalldata;
-        bytes extraInitializationParams /* params to be appended to the initialisation calldata after the controlled contract address */;
+        bool addControlledContractAddress;
+        bytes extraInitializationParams;
     }
 
     event DeployedContract(
@@ -55,13 +79,15 @@ interface IOwnerControlledContractDeployer {
         bytes postDeploymentModuleCalldata
     );
 
-    /*
-     * @dev Deploys a controlled contract and an owner contract
-     * @param salt a value used to ensure uniqueness of the created contracts
-     * @param controlledContractDeployment contains the value and creation bytecode for the controlled contract
-     * @param ownerContractDeployment contains the value and creation bytecode for the owner contract
-     * @param postDeploymentModule the module to be executed after deployment
-     * @param postDeploymentModuleCalldata the data to be passed to the post deployment module
+    /**
+     * @dev Deploys a contract and its owner contract.
+     * @notice Contracts deployed. Contract Address: `controlledContractAddress`. Owner Contract Address: `ownerContractAddress`
+     *
+     * @param controlledContractDeployment Contains the needed parameter to deploy a contract. (`salt`, `fundingAmount`, `creationBytecode`)
+     * @param ownerContractDeployment Contains the needed parameter to deploy the owner contract. (`fundingAmount`, `creationBytecode`, `addControlledContractAddress`, `extraConstructorParams`)
+     * @param postDeploymentModule The module to be executed after deployment
+     * @param postDeploymentModuleCalldata The data to be passed to the post deployment module
+     *
      * @return controlledContractAddress The address of the deployed controlled contract.
      * @return ownerContractAddress The address of the deployed owner contract.
      */
@@ -78,13 +104,15 @@ interface IOwnerControlledContractDeployer {
             address ownerContractAddress
         );
 
-    /*
-     * @dev Deploys proxies of a controlled contract and an owner contract
-     * @param salt a value used to ensure uniqueness of the created proxies
-     * @param controlledContractDeploymentInit contains the value and initialisation data for the controlled contract proxy
-     * @param ownerContractDeploymentInit contains the value and initialisation data for the owner contract proxy
-     * @param postDeploymentModule the module to be executed after deployment
-     * @param postDeploymentModuleCalldata the data to be passed to the post deployment module
+    /**
+     * @dev Deploys proxies of a contract and its owner contract
+     * @notice Contract proxies deployed. Contract Proxy Address: `controlledContractAddress`. Owner Contract Proxy Address: `ownerContractAddress`
+     *
+     * @param controlledContractDeploymentInit Contains the needed parameter to deploy a proxy contract. (`salt`, `fundingAmount`, `implementationContract`, `initializationCalldata`)
+     * @param ownerContractDeploymentInit Contains the needed parameter to deploy the owner proxy contract. (`fundingAmount`, `implementationContract`, `addControlledContractAddress`, `initializationCalldata`, `extraInitializationParams`)
+     * @param postDeploymentModule The module to be executed after deployment.
+     * @param postDeploymentModuleCalldata The data to be passed to the post deployment module.
+     *
      * @return controlledContractAddress the address of the deployed controlled contract proxy
      * @return ownerContractAddress the address of the deployed owner contract proxy
      */
@@ -102,26 +130,22 @@ interface IOwnerControlledContractDeployer {
             address ownerContractAddress
         );
 
-    /*
+    /**
      * @dev Computes the addresses of the controlled and owner contracts to be created
-     * @param salt a value used to ensure uniqueness of the created contracts
-     * @param controlledContractCreationByteCode the creation bytecode of the controlled contract
-     * @param ownerContractCreationByteCode the creation bytecode of the owner contract
-     * @param addControlledContractAddress a flag indicating if the address of the controlled contract should be appended to the constructor params
-     * @param extraConstructorParams additional constructor params to be appended to the bytecode
-     * @param postDeploymentModule the module to be executed after deployment
-     * @param postDeploymentModuleCalldata the data to be passed to the post deployment module
-     * @return controlledContractAddress the address of the controlled contract to be created
-     * @return ownerContractAddress the address of the owner contract to be created
+     *
+     * @param controlledContractDeployment Contains the needed parameter to deploy a contract. (`salt`, `fundingAmount`, `creationBytecode`)
+     * @param ownerContractDeployment Contains the needed parameter to deploy the owner contract. (`fundingAmount`, `creationBytecode`, `addControlledContractAddress`, `extraConstructorParams`)
+     * @param postDeploymentModule The module to be executed after deployment
+     * @param postDeploymentModuleCalldata The data to be passed to the post deployment module
+     *
+     * @return controlledContractAddress The address of the deployed controlled contract.
+     * @return ownerContractAddress The address of the deployed owner contract.
      */
     function computeAddresses(
-        bytes32 salt,
-        bytes memory controlledContractCreationByteCode,
-        bytes memory ownerContractCreationByteCode,
-        bool addControlledContractAddress,
-        bytes memory extraConstructorParams,
+        ControlledContractDeployment calldata controlledContractDeployment,
+        OwnerContractDeployment calldata ownerContractDeployment,
         address postDeploymentModule,
-        bytes memory postDeploymentModuleCalldata
+        bytes calldata postDeploymentModuleCalldata
     )
         external
         view
@@ -130,28 +154,23 @@ interface IOwnerControlledContractDeployer {
             address ownerContractAddress
         );
 
-    /*
+    /**
      * @dev Computes the addresses of the controlled and owner contract proxies to be created.
-     * @param salt A value used to ensure uniqueness of the created proxies.
-     * @param controlledContractImplementation The implementation contract of the controlled contract proxy.
-     * @param ownerContractImplementation The implementation contract of the owner contract proxy.
-     * @param initializationCalldata The initialisation calldata of the owner contract proxy.
-     * @param addControlledContractAddress A flag indicating if the address of the controlled contract should be appended to the initialisation calldata of the owner contract proxy.
-     * @param extraInitializationParams Additional initialisation params to be appended to the calldata of the owner contract proxy.
+     *
+     * @param controlledContractDeploymentInit Contains the needed parameter to deploy a proxy contract. (`salt`, `fundingAmount`, `implementationContract`, `initializationCalldata`)
+     * @param ownerContractDeploymentInit Contains the needed parameter to deploy the owner proxy contract. (`fundingAmount`, `implementationContract`, `addControlledContractAddress`, `initializationCalldata`, `extraInitializationParams`)
      * @param postDeploymentModule The module to be executed after deployment.
      * @param postDeploymentModuleCalldata The data to be passed to the post deployment module.
-     * @return controlledContractAddress The address of the controlled contract proxy to be created.
-     * @return ownerContractAddress The address of the owner contract proxy to be created.
+     *
+     * @return controlledContractAddress the address of the deployed controlled contract proxy
+     * @return ownerContractAddress the address of the deployed owner contract proxy
      */
     function computeERC1167Addresses(
-        bytes32 salt,
-        address controlledContractImplementation,
-        address ownerContractImplementation,
-        bytes memory initializationCalldata,
-        bool addControlledContractAddress,
-        bytes memory extraInitializationParams,
+        ControlledContractDeploymentInit
+            calldata controlledContractDeploymentInit,
+        OwnerContractDeploymentInit calldata ownerContractDeploymentInit,
         address postDeploymentModule,
-        bytes memory postDeploymentModuleCalldata
+        bytes calldata postDeploymentModuleCalldata
     )
         external
         view
