@@ -78,7 +78,7 @@ abstract contract LSP6KeyManagerCore is
 
     // Variables, methods and modifier used for ReentrancyGuard are taken from the link below and modified accordingly.
     // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/security/ReentrancyGuard.sol
-    bool private _reentrancyStatus;
+    bool internal _reentrancyStatus;
 
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
