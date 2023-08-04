@@ -232,7 +232,7 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         address controlledContractAddress
     ) internal returns (address ownerContractAddress) {
         /**
-         * If `addControlledContractAddress` is `true`, we will be appended to the constructor params:
+         * If `addControlledContractAddress` is `true`, the following will be appended to the constructor params:
          * - The controlled contract address
          * - `extraConstructorParams`
          */
@@ -296,7 +296,7 @@ contract OwnerControlledContractDeployer is IOwnerControlledContractDeployer {
         );
 
         /**
-         * If `addControlledContractAddress` is `true`, we will be appended to the `initializationCalldata`:
+         * If `addControlledContractAddress` is `true`, the following will be appended to the `initializationCalldata`:
          * - The controlled contract address
          * - `extraInitialisationBytes`
          */
