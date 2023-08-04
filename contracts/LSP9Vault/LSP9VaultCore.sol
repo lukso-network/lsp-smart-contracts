@@ -233,7 +233,7 @@ contract LSP9VaultCore is
      */
     function batchCalls(
         bytes[] calldata data
-    ) public returns (bytes[] memory results) {
+    ) public virtual returns (bytes[] memory results) {
         results = new bytes[](data.length);
         for (uint256 i; i < data.length; ) {
             (bool success, bytes memory result) = address(this).delegatecall(
@@ -366,7 +366,12 @@ contract LSP9VaultCore is
     /**
      * @dev Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
      */
-    function _validateAndIdentifyCaller() internal view returns (bool isURD) {
+    function _validateAndIdentifyCaller()
+        internal
+        view
+        virtual
+        returns (bool isURD)
+    {
         if (msg.sender != owner()) {
             require(
                 msg.sender == _reentrantDelegate,

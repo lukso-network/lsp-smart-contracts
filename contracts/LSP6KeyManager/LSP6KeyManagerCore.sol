@@ -82,7 +82,7 @@ abstract contract LSP6KeyManagerCore is
 
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
-    function target() public view returns (address) {
+    function target() public view virtual returns (address) {
         return _target;
     }
 
@@ -116,7 +116,7 @@ abstract contract LSP6KeyManagerCore is
     function isValidSignature(
         bytes32 dataHash,
         bytes memory signature
-    ) public view returns (bytes4 magicValue) {
+    ) public view virtual returns (bytes4 magicValue) {
         // if isValidSignature fail, the error is catched in returnedError
         (address recoveredAddress, ECDSA.RecoverError returnedError) = ECDSA
             .tryRecover(dataHash, signature);
@@ -250,7 +250,7 @@ abstract contract LSP6KeyManagerCore is
         address caller,
         uint256 msgValue,
         bytes calldata data
-    ) external returns (bytes4) {
+    ) external virtual returns (bytes4) {
         bool isSetData = false;
         if (
             bytes4(data) == IERC725Y.setData.selector ||
@@ -301,7 +301,7 @@ abstract contract LSP6KeyManagerCore is
     function lsp20VerifyCallResult(
         bytes32 /*callHash*/,
         bytes memory /*result*/
-    ) external returns (bytes4) {
+    ) external virtual returns (bytes4) {
         // If it's the target calling, set back the reentrancy guard
         // to false, if not return the magic value
         if (msg.sender == _target) {
