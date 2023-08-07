@@ -13,7 +13,7 @@ import {LSP8NotTokenOperator} from "../LSP8Errors.sol";
  * their own tokens and those that they have an allowance for as an operator.
  */
 abstract contract LSP8Burnable is LSP8IdentifiableDigitalAssetCore {
-    function burn(bytes32 tokenId, bytes memory data) public {
+    function burn(bytes32 tokenId, bytes memory data) public virtual {
         if (!_isOperatorOrOwner(msg.sender, tokenId)) {
             revert LSP8NotTokenOperator(tokenId, msg.sender);
         }
