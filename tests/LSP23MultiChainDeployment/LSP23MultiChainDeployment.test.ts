@@ -89,9 +89,6 @@ describe('UniversalProfileDeployer', function () {
       ],
     ]);
 
-    console.log(ownerControlledDeploymentInit);
-    console.log(ownerDeploymentInit);
-
     // get the address of the UP and the KeyManager contracts
     const [upAddress, keyManagerAddress] =
       await ownerControlledContractDeployer.callStatic.deployERC1167Proxies(
