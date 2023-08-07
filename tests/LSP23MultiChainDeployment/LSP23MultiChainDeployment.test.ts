@@ -31,7 +31,7 @@ describe('UniversalProfileDeployer', function () {
     const ownerControlledDeploymentInit: OwnerControlledContractDeployer.ControlledContractDeploymentInitStruct =
       {
         salt,
-        value: 0,
+        fundingAmount: 0,
         implementationContract: universalProfileInit.address,
         initializationCalldata: universalProfileInit.interface.encodeFunctionData('initialize', [
           upPostDeploymentModule.address,
@@ -39,7 +39,7 @@ describe('UniversalProfileDeployer', function () {
       };
 
     const ownerDeploymentInit: OwnerControlledContractDeployer.OwnerContractDeploymentInitStruct = {
-      value: 0,
+      fundingAmount: 0,
       implementationContract: keyManagerInit.address,
       addControlledContractAddress: true,
       initializationCalldata: '0xc4d66de8',
@@ -113,12 +113,8 @@ describe('UniversalProfileDeployer', function () {
 
     const [expectedUpProxyAddress, expectedKeyManagerProxyAddress] =
       await ownerControlledContractDeployer.computeERC1167Addresses(
-        ownerControlledDeploymentInit.salt,
-        ownerControlledDeploymentInit.implementationContract,
-        ownerDeploymentInit.implementationContract,
-        ownerDeploymentInit.initializationCalldata,
-        ownerDeploymentInit.addControlledContractAddress,
-        ownerDeploymentInit.extraInitializationParams,
+        ownerControlledDeploymentInit,
+        ownerDeploymentInit,
         upPostDeploymentModule.address,
         encodedBytes,
       );

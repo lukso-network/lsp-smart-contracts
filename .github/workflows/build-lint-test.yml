@@ -66,6 +66,7 @@ jobs:
             "lsp11init",
             "lsp20",
             "lsp20init",
+            "lsp23",
             "universalfactory",
             "reentrancy",
             "reentrancyinit",
