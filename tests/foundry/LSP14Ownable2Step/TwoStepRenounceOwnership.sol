@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
+import "@erc725/smart-contracts/contracts/constants.sol";
 import "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
 
 contract Implementation {
@@ -29,7 +30,7 @@ contract TwoStepRenounceOwnershipTest is Test {
         // Overwrite _pendingOwner using a delegatecall
         Implementation implementation = new Implementation();
         account.execute(
-            4, // OPERATION_4_DELEGATECALL
+            OPERATION_4_DELEGATECALL,
             address(implementation),
             0,
             abi.encodeWithSelector(
