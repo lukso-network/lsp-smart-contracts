@@ -617,10 +617,10 @@ export const shouldInitializeLikeLSP3 = (buildContext: () => Promise<LSP3TestCon
 
     it("should have set key 'SupportedStandards:LSP3UniversalProfile'", async () => {
       const result = await context.universalProfile.getData(
-        SupportedStandards.LSP3UniversalProfile.key,
+        SupportedStandards.LSP3Profile.key,
       );
 
-      expect(result).to.equal(SupportedStandards.LSP3UniversalProfile.value);
+      expect(result).to.equal(SupportedStandards.LSP3Profile.value);
     });
   });
 };
