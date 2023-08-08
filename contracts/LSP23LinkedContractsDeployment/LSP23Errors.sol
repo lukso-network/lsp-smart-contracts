@@ -9,16 +9,16 @@ error InvalidValueSum();
 
 /**
  * @dev Reverts when the deployment & intialisation of the contract has failed.
- * @notice Failed to deploy & initialise the Controlled Contract Proxy. Error: `errorData`.
+ * @notice Failed to deploy & initialise the Primary Contract Proxy. Error: `errorData`.
  *
  * @param errorData Potentially information about why the deployment & intialisation have failed.
  */
-error ControlledContractProxyInitFailureError(bytes errorData);
+error PrimaryContractProxyInitFailureError(bytes errorData);
 
 /**
- * @dev Reverts when the deployment & intialisation of the owner contract has failed.
- * @notice Failed to deploy & initialise the Owner Contract Proxy. Error: `errorData`.
+ * @dev Reverts when the deployment & intialisation of the secondary contract has failed.
+ * @notice Failed to deploy & initialise the Secondary Contract Proxy. Error: `errorData`.
  *
  * @param errorData Potentially information about why the deployment & intialisation have failed.
  */
-error OwnerContractProxyInitFailureError(bytes errorData);
+error SecondaryContractProxyInitFailureError(bytes errorData);

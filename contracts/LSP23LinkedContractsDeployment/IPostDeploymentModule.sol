@@ -3,8 +3,8 @@ pragma solidity ^0.8.4;
 
 interface IPostDeploymentModule {
     function executePostDeployment(
-        address ownerControlledContract,
-        address ownerContract,
+        address primaryContract,
+        address secondaryContract,
         bytes calldata calldataToPostDeploymentModule
     ) external;
 }

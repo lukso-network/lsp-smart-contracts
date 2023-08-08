@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0-rc.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.1...v0.11.0-rc.1) (2023-08-08)
+
+### ⚠ BREAKING CHANGES
+
+- refactor: rename LSP23 to LinkedContractsFactory (#658)
+
+### Bug Fixes
+
+- build: add LSP23 in artifacts (#662)
+- failing tests for lsp23 + add LSP23 test suite in CI ([#657](https://github.com/lukso-network/lsp-smart-contracts/issues/657)) ([0e5d9bf](https://github.com/lukso-network/lsp-smart-contracts/commit/0e5d9bf7f9b212976f5c754b28f96b37a8039076))
+
 ## [0.11.0-rc.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.10.3...v0.11.0-rc.0) (2023-08-04)
 
 ### ⚠ BREAKING CHANGES

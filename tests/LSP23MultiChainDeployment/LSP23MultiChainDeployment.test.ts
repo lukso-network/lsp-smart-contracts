@@ -1,6 +1,7 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { OwnerControlledContractDeployer } from '../../typechain-types';
+
+import { LinkedContractsFactory } from '../../typechain-types';
 import { ERC725YDataKeys } from '../../constants.ts';
 import { calculateProxiesAddresses } from './helpers';
 
@@ -14,11 +15,9 @@ describe('UniversalProfileDeployer', function () {
     const UniversalProfileInitFactory = await ethers.getContractFactory('UniversalProfileInit');
     const universalProfileInit = await UniversalProfileInitFactory.deploy();
 
-    const OwnerControlledContractDeployerFactory = await ethers.getContractFactory(
-      'OwnerControlledContractDeployer',
-    );
+    const LinkedContractsFactoryFactory = await ethers.getContractFactory('LinkedContractsFactory');
 
-    const ownerControlledContractDeployer = await OwnerControlledContractDeployerFactory.deploy();
+    const LinkedContractsFactory = await LinkedContractsFactoryFactory.deploy();
 
     const UPDelegatorPostDeploymentManagerFactory = await ethers.getContractFactory(
       'UniversalProfileInitPostDeploymentModule',
@@ -28,7 +27,7 @@ describe('UniversalProfileDeployer', function () {
 
     const salt = ethers.utils.randomBytes(32);
 
-    const ownerControlledDeploymentInit: OwnerControlledContractDeployer.ControlledContractDeploymentInitStruct =
+    const primaryContractDeploymentInit: LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
       {
         salt,
         fundingAmount: 0,
@@ -38,13 +37,14 @@ describe('UniversalProfileDeployer', function () {
         ]),
       };
 
-    const ownerDeploymentInit: OwnerControlledContractDeployer.OwnerContractDeploymentInitStruct = {
-      fundingAmount: 0,
-      implementationContract: keyManagerInit.address,
-      addControlledContractAddress: true,
-      initializationCalldata: '0xc4d66de8',
-      extraInitializationParams: '0x',
-    };
+    const secondaryContractDeploymentInit: LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
+      {
+        fundingAmount: 0,
+        implementationContract: keyManagerInit.address,
+        addPrimaryContractAddress: true,
+        initializationCalldata: '0xc4d66de8',
+        extraInitializationParams: '0x',
+      };
 
     const allPermissionsSignerPermissionsKey =
       '0x4b80742de2bf82acb3630000' + allPermissionsSigner.address.slice(2);
@@ -91,16 +91,16 @@ describe('UniversalProfileDeployer', function () {
 
     // get the address of the UP and the KeyManager contracts
     const [upAddress, keyManagerAddress] =
-      await ownerControlledContractDeployer.callStatic.deployERC1167Proxies(
-        ownerControlledDeploymentInit,
-        ownerDeploymentInit,
+      await LinkedContractsFactory.callStatic.deployERC1167Proxies(
+        primaryContractDeploymentInit,
+        secondaryContractDeploymentInit,
         upPostDeploymentModule.address,
         encodedBytes,
       );
 
-    await ownerControlledContractDeployer.deployERC1167Proxies(
-      ownerControlledDeploymentInit,
-      ownerDeploymentInit,
+    await LinkedContractsFactory.deployERC1167Proxies(
+      primaryContractDeploymentInit,
+      secondaryContractDeploymentInit,
       upPostDeploymentModule.address,
       encodedBytes,
     );
@@ -112,23 +112,23 @@ describe('UniversalProfileDeployer', function () {
     const keyManagerProxyOwner = await keyManagerProxy.target();
 
     const [expectedUpProxyAddress, expectedKeyManagerProxyAddress] =
-      await ownerControlledContractDeployer.computeERC1167Addresses(
-        ownerControlledDeploymentInit,
-        ownerDeploymentInit,
+      await LinkedContractsFactory.computeERC1167Addresses(
+        primaryContractDeploymentInit,
+        secondaryContractDeploymentInit,
         upPostDeploymentModule.address,
         encodedBytes,
       );
 
     const [calculatedUpProxyAddress, calculatedKMProxyAddress] = await calculateProxiesAddresses(
-      ownerControlledDeploymentInit.salt,
-      ownerControlledDeploymentInit.implementationContract,
-      ownerDeploymentInit.implementationContract,
-      ownerDeploymentInit.initializationCalldata,
-      ownerDeploymentInit.addControlledContractAddress,
-      ownerDeploymentInit.extraInitializationParams,
+      primaryContractDeploymentInit.salt,
+      primaryContractDeploymentInit.implementationContract,
+      secondaryContractDeploymentInit.implementationContract,
+      secondaryContractDeploymentInit.initializationCalldata,
+      secondaryContractDeploymentInit.addPrimaryContractAddress,
+      secondaryContractDeploymentInit.extraInitializationParams,
       upPostDeploymentModule.address,
       encodedBytes,
-      ownerControlledContractDeployer.address,
+      LinkedContractsFactory.address,
     );
 
     expect(upAddress).to.equal(expectedUpProxyAddress);
