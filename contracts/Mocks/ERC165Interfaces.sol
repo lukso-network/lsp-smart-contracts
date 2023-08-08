@@ -91,7 +91,8 @@ contract CalculateLSPInterfaces {
             type(IERC1271).interfaceId ^
             type(ILSP1).interfaceId ^
             calculateInterfaceLSP14() ^
-            calculateInterfaceLSP17Extendable();
+            calculateInterfaceLSP17Extendable() ^
+            calculateInterfaceLSP20CallVerification();
 
         require(
             interfaceId == _INTERFACEID_LSP0,

@@ -24,7 +24,7 @@ export const INTERFACE_IDS = {
   ERC1155: '0xd9b67a26',
   ERC725X: '0x7545acac',
   ERC725Y: '0x629aa694',
-  LSP0ERC725Account: '0x3e89ad98',
+  LSP0ERC725Account: '0x24871b3d',
   LSP1UniversalReceiver: '0x6bb56a14',
   LSP6KeyManager: '0x38bb3cdb',
   LSP7DigitalAsset: '0xda1f85e4',
