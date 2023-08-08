@@ -124,7 +124,7 @@ interface ILinkedContractsFactory {
         );
 
     /**
-     * @dev Computes the addresses of a primary and a secondary linked contracts to be created
+     * @dev Computes the addresses of a primary contract and a secondary linked contract
      *
      * @param primaryContractDeployment Contains the needed parameter to deploy the primary contract. (`salt`, `fundingAmount`, `creationBytecode`)
      * @param secondaryContractDeployment Contains the needed parameter to deploy the secondary contract. (`fundingAmount`, `creationBytecode`, `addPrimaryContractAddress`, `extraConstructorParams`)

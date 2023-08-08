@@ -37,14 +37,14 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
             revert InvalidValueSum();
         }
 
-        primaryContractAddress = _deployprimaryContract(
+        primaryContractAddress = _deployPrimaryContract(
             primaryContractDeployment,
             secondaryContractDeployment,
             postDeploymentModule,
             postDeploymentModuleCalldata
         );
 
-        secondaryContractAddress = _deploysecondaryContract(
+        secondaryContractAddress = _deploySecondaryContract(
             secondaryContractDeployment,
             primaryContractAddress
         );
@@ -139,7 +139,7 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
             address secondaryContractAddress
         )
     {
-        bytes32 primaryContractGeneratedSalt = _generateprimaryContractSalt(
+        bytes32 primaryContractGeneratedSalt = _generatePrimaryContractSalt(
             primaryContractDeployment,
             secondaryContractDeployment,
             postDeploymentModule,
@@ -204,13 +204,13 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
         );
     }
 
-    function _deployprimaryContract(
+    function _deployPrimaryContract(
         PrimaryContractDeployment calldata primaryContractDeployment,
         SecondaryContractDeployment calldata secondaryContractDeployment,
         address postDeploymentModule,
         bytes calldata postDeploymentModuleCalldata
     ) internal returns (address primaryContractAddress) {
-        bytes32 primaryContractGeneratedSalt = _generateprimaryContractSalt(
+        bytes32 primaryContractGeneratedSalt = _generatePrimaryContractSalt(
             primaryContractDeployment,
             secondaryContractDeployment,
             postDeploymentModule,
@@ -225,7 +225,7 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
         );
     }
 
-    function _deploysecondaryContract(
+    function _deploySecondaryContract(
         SecondaryContractDeployment calldata secondaryContractDeployment,
         address primaryContractAddress
     ) internal returns (address secondaryContractAddress) {
@@ -317,7 +317,7 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
         }
     }
 
-    function _generateprimaryContractSalt(
+    function _generatePrimaryContractSalt(
         PrimaryContractDeployment calldata primaryContractDeployment,
         SecondaryContractDeployment calldata secondaryContractDeployment,
         address postDeploymentModule,
@@ -336,7 +336,6 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
         primaryContractGeneratedSalt = keccak256(
             abi.encode(
                 primaryContractDeployment.salt,
-                primaryContractDeployment.creationBytecode,
                 secondaryContractDeployment.creationBytecode,
                 secondaryContractDeployment.addPrimaryContractAddress,
                 secondaryContractDeployment.extraConstructorParams,
