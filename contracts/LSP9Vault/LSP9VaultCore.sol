@@ -518,7 +518,15 @@ contract LSP9VaultCore is
         override(LSP14Ownable2Step, OwnableUnset)
         onlyOwner
     {
+        address previousOwner = owner();
         LSP14Ownable2Step._renounceOwnership();
+
+        if (owner() == address(0)) {
+            previousOwner.tryNotifyUniversalReceiver(
+                _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
+                ""
+            );
+        }
     }
 
     /**

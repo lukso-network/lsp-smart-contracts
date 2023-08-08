@@ -672,8 +672,15 @@ abstract contract LSP0ERC725AccountCore is
         // Depending on the magicValue returned, a second call is done after transferring ownership
         bool verifyAfter = _verifyCall(_owner);
 
-        // set the pending owner
+        address previousOwner = owner();
         LSP14Ownable2Step._renounceOwnership();
+
+        if (owner() == address(0)) {
+            previousOwner.tryNotifyUniversalReceiver(
+                _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
+                ""
+            );
+        }
 
         // If verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         // The transferOwnership function does not return, second parameter of {_verifyCallResult} will be empty
