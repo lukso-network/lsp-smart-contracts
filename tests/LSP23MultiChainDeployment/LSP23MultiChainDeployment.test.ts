@@ -1,5 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
+
 import { LinkedContractsFactory } from '../../typechain-types';
 import { ERC725YDataKeys } from '../../constants.ts';
 import { calculateProxiesAddresses } from './helpers';
