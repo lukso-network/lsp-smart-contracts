@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.5;
 
+// interfaces
+import {
+    ILSP20CallVerifier as ILSP20
+} from "../../LSP20CallVerification/ILSP20CallVerifier.sol";
+
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {
@@ -25,9 +30,7 @@ import {
     _PERMISSION_ADDEXTENSIONS,
     _PERMISSION_CHANGEEXTENSIONS,
     _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE,
-    _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE,
-    _LSP20_VERIFY_CALL_EXTENSION_DATA_KEY,
-    _LSP20_VERIFY_CALL_RESULT_EXTENSION_DATA_KEY
+    _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE
 } from "../LSP6Constants.sol";
 import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
@@ -303,9 +306,11 @@ abstract contract LSP6SetDataModule {
             // LSP17Extension:<bytes4>
         } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
             // reverts when the address of the Key Manager is being set as extensions for lsp20 functions
+            bytes4 selector = bytes4(inputDataKey << 96);
+
             if (
-                inputDataKey == _LSP20_VERIFY_CALL_EXTENSION_DATA_KEY ||
-                inputDataKey == _LSP20_VERIFY_CALL_RESULT_EXTENSION_DATA_KEY
+                (selector == ILSP20.lsp20VerifyCall.selector ||
+                    selector == ILSP20.lsp20VerifyCallResult.selector)
             ) {
                 if (address(bytes20(inputDataValue)) == address(this)) {
                     revert KeyManagerCannotBeSetAsExtensionForLSP20Functions();
