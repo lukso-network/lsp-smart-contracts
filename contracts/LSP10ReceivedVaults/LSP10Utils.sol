@@ -15,18 +15,18 @@ import "../LSP10ReceivedVaults/LSP10Constants.sol";
 import "../LSP9Vault/LSP9Constants.sol";
 
 /**
- * @dev reverts when the value stored under the 'LSP10ReceivedVaults[]' data key is not valid.
+ * @dev Reverts when the value stored under the 'LSP10ReceivedVaults[]' Array data key is not valid.
  *      The value stored under this data key should be exactly 16 bytes long.
  *
  *      Only possible valid values are:
  *      - any valid uint128 values
- *          i.e. 0x00000000000000000000000000000000 (zero), meaning empty array, no vaults received.
- *          i.e. 0x00000000000000000000000000000005 (non-zero), meaning 5 array elements, 5 vaults received.
+ *          _e.g: `0x00000000000000000000000000000000` (zero), meaning empty array, no vaults received._
+ *          _e.g: `0x00000000000000000000000000000005` (non-zero), meaning 5 array elements, 5 vaults received._
  *
- *      - 0x (nothing stored under this data key, equivalent to empty array)
+ *      - `0x` (nothing stored under this data key, equivalent to empty array).
  *
- * @param invalidValueStored the invalid value stored under the LSP10ReceivedVaults[] data key
- * @param invalidValueLength the invalid number of bytes stored under the LSP10ReceivedVaults[] data key (MUST be 16 bytes long)
+ * @param invalidValueStored The invalid value stored under the `LSP10ReceivedVaults[]` Array data key.
+ * @param invalidValueLength The invalid number of bytes stored under the `LSP10ReceivedVaults[]` Array data key (MUST be 16 bytes long).
  */
 error InvalidLSP10ReceivedVaultsArrayLength(
     bytes invalidValueStored,
@@ -34,31 +34,35 @@ error InvalidLSP10ReceivedVaultsArrayLength(
 );
 
 /**
- * @dev reverts when the `LSP10Vaults[]` array reaches its maximum limit (max(uint128))
- * @param notRegisteredVault the address of the vault that could not be registered
+ * @dev Reverts when the `LSP10Vaults[]` Array reaches its maximum limit (`max(uint128)`).
+ * @param notRegisteredVault The address of the LSP9Vault that could not be registered.
  */
 error MaxLSP10VaultsCountReached(address notRegisteredVault);
 
 /**
- * @dev reverts when the vault index is superior to uint128
- * @param index the vault index
+ * @dev Reverts when the vault index is superior to `max(uint128)`.
+ * @param index The vault index.
  */
 error VaultIndexSuperiorToUint128(uint256 index);
 
 /**
- * @title LSP10Utils
+ * @title LSP10 Utility library.
  * @author Yamen Merhi <YamenMerhi>, Jean Cavallera <CJ42>
- * @dev LSP5Utils is a library of functions that are used to register and manage vaults received by an ERC725Y smart contract
- *      based on the LSP10 - Received Vaults standard
- *      https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-10-ReceivedVaults.md
+ * @dev LSP5Utils is a library of functions that can be used to register and manage vaults received by an ERC725Y smart contract.
+ * Based on the LSP10 Received Vaults standard.
  */
 library LSP10Utils {
     /**
-     * @dev Generating the data keys/values to be set on the receiver address after receiving vaults
-     * @param receiver The address receiving the vault and where the Keys should be added
-     * @param vault The address of the vault being received
-     * @param vaultMapKey The map key of the vault being received containing the interfaceId of the
-     * vault and the index in the array
+     * @dev Generate an array of data keys/values pairs to be set on the receiver address after receiving vaults.
+     *
+     * @param receiver The address receiving the vault and where the LSP10 data keys should be added.
+     * @param vault The address of the vault being received.
+     * @param vaultMapKey The `LSP10VaultMap:<vault>` data key of the vault being received containing the interfaceId of the
+     * vault and its index in the `LSP10Vaults[]` Array.
+     *
+     * @return keys An array of 3 x data keys: `LSP10Vaults[]`, `LSP10Vaults[index]` and `LSP10VaultMap:<asset>`.
+     * @return values An array of 3 x data values: the new length of `LSP10Vaults[]`, the address of the asset under `LSP10Vaults[index]`
+     * and the interfaceId + index stored under `LSP10VaultsMap:<asset>`.
      */
     function generateReceivedVaultKeys(
         address receiver,
@@ -106,11 +110,16 @@ library LSP10Utils {
     }
 
     /**
-     * @dev Generating the data keys/values to be set on the sender address after sending vaults
-     * @param sender The address sending the vault and where the Keys should be updated
-     * @param vaultMapKey The map key of the vault being sent containing the interfaceId of the
-     * vault and the index in the array
-     * @param vaultIndex The index where the vault address is stored under `LSP10Vaults[]` Array
+     * @dev Generate an array of data key/value pairs to be set on the sender address after sending vaults.
+     *
+     * @param sender The address sending the vault and where the LSP10 data keys should be updated.
+     * @param vaultMapKey The `LSP10VaultMap:<vault>` data key of the vault being sent containing the interfaceId of the
+     * vault and the index in the `LSP10Vaults[]` Array.
+     * @param vaultIndex The index at which the vault address is stored under `LSP10Vaults[]` Array.
+     *
+     * @return keys An array of 3 x data keys: `LSP10Vaults[]`, `LSP10Vaults[index]` and `LSP10VaultsMap:<asset>`.
+     * @return values An array of 3 x data values: the new length of `LSP10Vaults[]`, the address of the asset under `LSP10Vaults[index]`
+     * and the interfaceId + index stored under `LSP10VaultsMap:<asset>`.
      */
     function generateSentVaultKeys(
         address sender,
@@ -230,6 +239,13 @@ library LSP10Utils {
         }
     }
 
+    /**
+     * @dev Get the total number of vault addresses stored under the `LSP10Vaults[]` Array data key.
+     * @param account The ERC725Y smart contract to read the storage from.
+     * @return The raw bytes stored under the `LSP10Vaults[]` data key.
+     *
+     * @custom:info This function does not return a number but the raw bytes stored under the `LSP10Vaults[]` Array data key.
+     */
     function getLSP10ReceivedVaultsCount(
         IERC725Y account
     ) internal view returns (bytes memory) {

@@ -7,7 +7,7 @@ pragma solidity ^0.8.4;
 library LSP17Utils {
     /**
      * @dev Returns whether the call is a normal call or an extension call by checking if
-     * the parametersLength with offset with an additional of 52 bytes supposed msg.sender
+     * the `parametersLengthWithOffset` with an additional of 52 bytes supposed msg.sender
      * and msg.value appended is equal to the msgDataLength
      */
     function isExtension(
