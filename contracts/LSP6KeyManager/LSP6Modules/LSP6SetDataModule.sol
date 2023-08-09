@@ -456,7 +456,7 @@ abstract contract LSP6SetDataModule {
         bytes32 dataKey,
         bytes memory dataValue,
         bool hasBothAddControllerAndEditPermissions
-    ) internal view returns (bytes32) {
+    ) internal view virtual returns (bytes32) {
         if (!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(dataValue)) {
             revert InvalidEncodedAllowedERC725YDataKeys(
                 dataValue,

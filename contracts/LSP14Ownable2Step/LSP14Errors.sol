@@ -13,3 +13,8 @@ error NotInRenounceOwnershipInterval(
  * @dev reverts when trying to transfer ownership to the address(this)
  */
 error CannotTransferOwnershipToSelf();
+
+/**
+ * @dev reverts when pending owner accept ownership in the same transaction of transferring ownership
+ */
+error LSP14MustAcceptOwnershipInSeparateTransaction();

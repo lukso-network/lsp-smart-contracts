@@ -310,31 +310,31 @@ abstract contract LSP8CompatibleERC721 is
         uint256 tokenId,
         bytes memory data
     ) private returns (bool) {
-        if (to.code.length > 0) {
-            try
-                IERC721Receiver(to).onERC721Received(
-                    msg.sender,
-                    from,
-                    tokenId,
-                    data
-                )
-            returns (bytes4 retval) {
-                return retval == IERC721Receiver.onERC721Received.selector;
-            } catch (bytes memory reason) {
-                if (reason.length == 0) {
-                    revert(
-                        "LSP8CompatibleERC721: transfer to non ERC721Receiver implementer"
-                    );
-                } else {
-                    // solhint-disable no-inline-assembly
-                    /// @solidity memory-safe-assembly
-                    assembly {
-                        revert(add(32, reason), mload(reason))
-                    }
+        if (to.code.length == 0) {
+            return true;
+        }
+
+        try
+            IERC721Receiver(to).onERC721Received(
+                msg.sender,
+                from,
+                tokenId,
+                data
+            )
+        returns (bytes4 retval) {
+            return retval == IERC721Receiver.onERC721Received.selector;
+        } catch (bytes memory reason) {
+            if (reason.length == 0) {
+                revert(
+                    "LSP8CompatibleERC721: transfer to non ERC721Receiver implementer"
+                );
+            } else {
+                // solhint-disable no-inline-assembly
+                /// @solidity memory-safe-assembly
+                assembly {
+                    revert(add(32, reason), mload(reason))
                 }
             }
-        } else {
-            return true;
         }
     }
 

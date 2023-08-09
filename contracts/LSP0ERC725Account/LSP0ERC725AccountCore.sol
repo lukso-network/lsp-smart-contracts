@@ -63,6 +63,10 @@ import {
     NoExtensionFoundForFunctionSelector
 } from "../LSP17ContractExtension/LSP17Errors.sol";
 
+import {
+    LSP14MustAcceptOwnershipInSeparateTransaction
+} from "../LSP14Ownable2Step/LSP14Errors.sol";
+
 /**
  * @title The Core Implementation of LSP0-ERC725Account Standard
  *        https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md
@@ -170,7 +174,7 @@ abstract contract LSP0ERC725AccountCore is
      */
     function batchCalls(
         bytes[] calldata data
-    ) public returns (bytes[] memory results) {
+    ) public virtual returns (bytes[] memory results) {
         results = new bytes[](data.length);
         for (uint256 i; i < data.length; ) {
             (bool success, bytes memory result) = address(this).delegatecall(
@@ -561,6 +565,9 @@ abstract contract LSP0ERC725AccountCore is
 
         // If the caller is the owner perform transferOwnership directly
         if (msg.sender == currentOwner) {
+            // set the transfer ownership lock
+            _inTransferOwnership = true;
+
             // set the pending owner
             LSP14Ownable2Step._transferOwnership(pendingNewOwner);
             emit OwnershipTransferStarted(currentOwner, pendingNewOwner);
@@ -571,16 +578,15 @@ abstract contract LSP0ERC725AccountCore is
                 ""
             );
 
-            // Require that the owner didn't change after the LSP1 Call
-            // (Pending owner didn't automate the acceptOwnership call through LSP1)
-            require(
-                currentOwner == owner(),
-                "LSP14: newOwner MUST accept ownership in a separate transaction"
-            );
+            // reset the transfer ownership lock
+            _inTransferOwnership = false;
         } else {
             // If the caller is not the owner, call {lsp20VerifyCall} on the owner
             // Depending on the magicValue returned, a second call is done after transferring ownership
             bool verifyAfter = _verifyCall(currentOwner);
+
+            // set the transfer ownership lock
+            _inTransferOwnership = true;
 
             // Set the pending owner if the call is allowed
             LSP14Ownable2Step._transferOwnership(pendingNewOwner);
@@ -592,12 +598,8 @@ abstract contract LSP0ERC725AccountCore is
                 ""
             );
 
-            // Require that the owner didn't change after the LSP1 Call
-            // (Pending owner didn't automate the acceptOwnership call through LSP1)
-            require(
-                currentOwner == owner(),
-                "LSP14: newOwner MUST accept ownership in a separate transaction"
-            );
+            // reset the transfer ownership lock
+            _inTransferOwnership = false;
 
             // If verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
             // The transferOwnership function does not return, second parameter of {_verifyCallResult} will be empty
@@ -621,7 +623,7 @@ abstract contract LSP0ERC725AccountCore is
      * - When notifying the previous owner via LSP1, the typeId used MUST be `keccak256('LSP0OwnershipTransferred_SenderNotification')`.
      * - When notifying the new owner via LSP1, the typeId used MUST be `keccak256('LSP0OwnershipTransferred_RecipientNotification')`.
      */
-    function acceptOwnership() public virtual override {
+    function acceptOwnership() public virtual override NotInTransferOwnership {
         address previousOwner = owner();
 
         _acceptOwnership();
