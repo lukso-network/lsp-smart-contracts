@@ -195,10 +195,13 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         });
 
         it('should revert when adding the KeyManager address as extensions for lsp20VerifyCall function', async () => {
+          const lsp20VerifyCallSelector =
+            context.keyManager.interface.getSighash('lsp20VerifyCall');
+
           const payloadParam = {
             dataKey:
               ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-              '9bf04b11' + // function selector of `lsp20VerifyCall(address,uint256,bytes)`
+              lsp20VerifyCallSelector.slice(2) +
               '00000000000000000000000000000000', // zero padded,
             dataValue: context.keyManager.address,
           };
@@ -217,10 +220,13 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         });
 
         it('should revert when adding the KeyManager address as extensions for lsp20VerifyCallResult function', async () => {
+          const lsp20VerifyCallResultSelector =
+            context.keyManager.interface.getSighash('lsp20VerifyCallResult');
+
           const payloadParam = {
             dataKey:
               ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-              'd3fc45d3' + // function selector of `lsp20VerifyCallResult(bytes32,bytes)`
+              lsp20VerifyCallResultSelector.slice(2) +
               '00000000000000000000000000000000', // zero padded,
             dataValue: context.keyManager.address,
           };
@@ -239,13 +245,19 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         });
 
         it('should pass when adding the random address as extensions for lsp20VerifyCall and lsp20VerifyCallResult functions', async () => {
+          const lsp20VerifyCallSelector =
+            context.keyManager.interface.getSighash('lsp20VerifyCall');
+
+          const lsp20VerifyCallResultSelector =
+            context.keyManager.interface.getSighash('lsp20VerifyCallResult');
+
           const payloadParam = {
             dataKeys: [
               ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-                '9bf04b11' + // function selector of `lsp20VerifyCall(address,uint256,bytes)`
+                lsp20VerifyCallSelector.slice(2) +
                 '00000000000000000000000000000000',
               ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-                'd3fc45d3' + // function selector of `lsp20VerifyCallResult(bytes32,bytes)`
+                lsp20VerifyCallResultSelector.slice(2) +
                 '00000000000000000000000000000000',
             ], // zero padded,
             dataValues: [context.accounts[2].address, context.accounts[3].address],
