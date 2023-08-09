@@ -25,7 +25,7 @@ contract LSP8CompatibleERC721MintableInitAbstract is
         bytes32 tokenId,
         bool allowNonLSP1Recipient,
         bytes memory data
-    ) public onlyOwner {
+    ) public virtual onlyOwner {
         _mint(to, tokenId, allowNonLSP1Recipient, data);
     }
 }

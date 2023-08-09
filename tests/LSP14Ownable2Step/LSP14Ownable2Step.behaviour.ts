@@ -125,7 +125,10 @@ export const shouldBehaveLikeLSP14 = (
           context.contract
             .connect(context.deployParams.owner)
             .transferOwnership(upWithCustomURD.address),
-        ).to.be.revertedWith('LSP14: newOwner MUST accept ownership in a separate transaction');
+        ).to.be.revertedWithCustomError(
+          context.contract,
+          'LSP14MustAcceptOwnershipInSeparateTransaction',
+        );
       });
     });
 

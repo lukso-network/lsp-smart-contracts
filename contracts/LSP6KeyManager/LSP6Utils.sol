@@ -13,14 +13,23 @@ import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 // constants
 import "./LSP6Constants.sol";
 
+/**
+ * @title LSP6 Utility library.
+ * @author Yamen Merhi <YamenMerhi>, Jean Cavallera <CJ42>, Maxime Viard <SkimaHarvey>
+ * @dev LSP6Utils is a library of utility functions that can be used to retrieve, check and set LSP6 permissions stored under the ERC725Y storage
+ * of a smart contract.
+ * Based on the LSP6 Key Manager standard.
+ */
 library LSP6Utils {
     using LSP2Utils for bytes12;
 
     /**
-     * @dev read the permissions of a `caller` on an ERC725Y `target` contract.
-     * @param target an `IERC725Y` contract where to read the permissions.
-     * @param caller the controller address to read the permissions from.
-     * @return a `bytes32` BitArray containing the permissions of a controller address.
+     * @dev Read the permissions of a `caller` on an ERC725Y `target` contract.
+     *
+     * @param target An `IERC725Y` contract where to read the permissions.
+     * @param caller The controller address to read the permissions from.
+     *
+     * @return A `bytes32` BitArray containing the permissions of a controller address.
      */
     function getPermissionsFor(
         IERC725Y target,
@@ -50,10 +59,12 @@ library LSP6Utils {
     }
 
     /**
-     * @dev read the Allowed ERC725Y data keys of a `caller` on an ERC725Y `target` contract.
-     * @param target an `IERC725Y` contract where to read the permissions.
-     * @param caller the controller address to read the permissions from.
-     * @return an abi-encoded array of allowed ERC725 keys that the controller address is allowed to interact with.
+     * @dev Read the Allowed ERC725Y data keys of a `caller` on an ERC725Y `target` contract.
+     *
+     * @param target An `IERC725Y` contract where to read the permissions.
+     * @param caller The controller address to read the permissions from.
+     *
+     * @return An abi-encoded array of allowed ERC725 data keys that the controller address is allowed to interact with.
      */
     function getAllowedERC725YDataKeysFor(
         IERC725Y target,
@@ -69,24 +80,26 @@ library LSP6Utils {
     }
 
     /**
-     * @dev compare the permissions `addressPermissions` of an address
-     *      to check if they includes the permissions `permissionToCheck`
-     * @param addressPermission the permissions of an address stored on an ERC725 account
-     * @param permissionToCheck the permissions to check
-     * @return true if `addressPermissions` includes `permissionToCheck`, false otherwise
+     * @dev Compare the permissions `controllerPermissions` of a controller address to check if they includes the permissions `permissionToCheck`.
+     *
+     * @param controllerPermissions The permissions of an address.
+     * @param permissionToCheck The permissions to check if the controller has under its `controllerPermissions`.
+     *
+     * @return `true` if `controllerPermissions` includes `permissionToCheck`, `false` otherwise.
      */
     function hasPermission(
-        bytes32 addressPermission,
+        bytes32 controllerPermissions,
         bytes32 permissionToCheck
     ) internal pure returns (bool) {
-        return (addressPermission & permissionToCheck) == permissionToCheck;
+        return (controllerPermissions & permissionToCheck) == permissionToCheck;
     }
 
     /**
-     * @dev same as LSP2Utils.isCompactBytesArray with the additional requirement that each element must be 28 bytes long.
+     * @dev Same as `LSP2Utils.isCompactBytesArray` with the additional requirement that each element must be 32 bytes long.
      *
-     * @param allowedCallsCompacted a compact bytes array of tuples (bytes4,address,bytes4) to check.
-     * @return true if the value passed is a valid compact bytes array of bytes28 elements according to LSP2, false otherwise.
+     * @param allowedCallsCompacted A compact bytes array of tuples `(bytes4,address,bytes4,bytes4)` to check (defined as `(bytes4,address,bytes4,bytes4)[CompactBytesArray]` in LSP6).
+     *
+     * @return `true` if the value passed is a valid compact bytes array of bytes32 AllowedCalls elements, `false` otherwise.
      */
     function isCompactBytesArrayOfAllowedCalls(
         bytes memory allowedCallsCompacted
@@ -112,10 +125,11 @@ library LSP6Utils {
     }
 
     /**
-     * @dev same as LSP2Utils.isCompactBytesArray with the additional requirement that each element must be from 1 to 32 bytes long.
+     * @dev Same as `LSP2Utils.isCompactBytesArray` with the additional requirement that each element must be from 1 to 32 bytes long.
      *
-     * @param allowedERC725YDataKeysCompacted a compact bytes array of ERC725Y Data Keys (full bytes32 data keys or bytesN prefix) to check.
-     * @return true if the value passed is a valid compact bytes array of ERC725Y Data Keys, false otherwise.
+     * @param allowedERC725YDataKeysCompacted a compact bytes array of ERC725Y data Keys (full bytes32 data keys or bytesN prefix) to check (defined as `bytes[CompactBytesArray]`).
+     *
+     * @return `true` if the value passed is a valid compact bytes array of bytes32 Allowed ERC725Y data keys, `false` otherwise.
      */
     function isCompactBytesArrayOfAllowedERC725YDataKeys(
         bytes memory allowedERC725YDataKeysCompacted
@@ -142,10 +156,11 @@ library LSP6Utils {
     }
 
     /**
-     * @dev use the `setData(bytes32[],bytes[])` via the KeyManager of the target
-     * @param keyManagerAddress the address of the KeyManager
-     * @param keys the array of data keys
-     * @param values the array of data values
+     * @dev Use the `setData(bytes32[],bytes[])` function via the KeyManager on the target contract.
+     *
+     * @param keyManagerAddress The address of the KeyManager.
+     * @param keys The array of `bytes32[]` data keys.
+     * @param values The array of `bytes[]` data values.
      */
     function setDataViaKeyManager(
         address keyManagerAddress,
@@ -161,10 +176,11 @@ library LSP6Utils {
     }
 
     /**
-     * @dev combine multiple permissions into a single bytes32
-     * Make sure that the sum of the values of the input array is less than 2^256-1 to avoid overflow.
-     * @param permissions the array of permissions to combine
-     * @return a bytes32 containing the combined permissions
+     * @dev Combine multiple permissions into a single `bytes32`.
+     * Make sure that the sum of the values of the input array is less than `2^256-1 to avoid overflow.
+     *
+     * @param permissions The array of permissions to combine.
+     * @return A `bytes32` value containing the combined permissions.
      */
     function combinePermissions(
         bytes32[] memory permissions
@@ -177,19 +193,19 @@ library LSP6Utils {
     }
 
     /**
-     * @dev Generate a new set of 3 x LSP6 permission data keys to add a new `controller` on `account`
-     * @param account the ERC725Y contract to add the controller into (used to fetch the `LSP6Permissions[]` length)
-     * @param controller the address of the controller to grant permissions to
-     * @param permissions the BitArray of permissions to grant to the controller
-     * @return keys an array of 3 x data keys containing:
-     *  - keys[0] = `AddressPermissions[]` (array length)
-     *  - keys[1] = `AddressPermissions[index]` (where to store the controller address)
-     *  - keys[2] = `AddressPermissions:Permissions:<controller>`
+     * @dev Generate a new set of 3 x LSP6 permission data keys to add a new `controller` on `account`.
+     * @param account The ERC725Y contract to add the controller into (used to fetch the `LSP6Permissions[]` length).
+     * @param controller The address of the controller to grant permissions to.
+     * @param permissions The `BitArray` of permissions to grant to the controller.
+     * @return keys An array of 3 x data keys containing:
+     * - `keys[0] = AddressPermissions[]` (array length).
+     * - `keys[1] = AddressPermissions[index]` (where to store the controller address).
+     * - `keys[2] = AddressPermissions:Permissions:<controller>`.
      *
-     * @return values : an array of 3 x data values containing:
-     *  - values[0] = the new array length of `AddressPermissions[]`
-     *  - values[1] = the address of the controller
-     *  - values[2] = the `permissions` passed as param
+     * @return values An array of 3 x data values containing:
+     * - `values[0] =` the new array length of `AddressPermissions[]`
+     * - `values[1] =` the address of the controller
+     * - `values[2] =` the `permissions` passed as param
      */
     function generateNewPermissionsKeys(
         IERC725Y account,
@@ -221,11 +237,15 @@ library LSP6Utils {
     }
 
     /**
-     * @dev returns the name of the permission as a string
+     * @dev Returns the name of the permission as a string.
+     *
+     * @param permission The low-level `bytes32` permission as a `BitArray` to get the permission name from.
+     *
+     * @return The string name of the `bytes32` permission value.
      */
     function getPermissionName(
         bytes32 permission
-    ) internal pure returns (string memory errorMessage) {
+    ) internal pure returns (string memory) {
         if (permission == _PERMISSION_CHANGEOWNER) return "TRANSFEROWNERSHIP";
         if (permission == _PERMISSION_EDITPERMISSIONS) return "EDITPERMISSIONS";
         if (permission == _PERMISSION_ADDCONTROLLER) return "ADDCONTROLLER";
@@ -244,5 +264,6 @@ library LSP6Utils {
         if (permission == _PERMISSION_DEPLOY) return "DEPLOY";
         if (permission == _PERMISSION_TRANSFERVALUE) return "TRANSFERVALUE";
         if (permission == _PERMISSION_SIGN) return "SIGN";
+        return "";
     }
 }

@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0-rc.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.1...v0.11.0-rc.1) (2023-08-08)
+
+### ⚠ BREAKING CHANGES
+
+- refactor: rename LSP23 to LinkedContractsFactory (#658)
+
+### Bug Fixes
+
+- build: add LSP23 in artifacts (#662)
+- failing tests for lsp23 + add LSP23 test suite in CI ([#657](https://github.com/lukso-network/lsp-smart-contracts/issues/657)) ([0e5d9bf](https://github.com/lukso-network/lsp-smart-contracts/commit/0e5d9bf7f9b212976f5c754b28f96b37a8039076))
+
+## [0.11.0-rc.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.10.3...v0.11.0-rc.0) (2023-08-04)
+
+### ⚠ BREAKING CHANGES
+
+- change visibility of `_reentrancyStatus` state variable from `private` to `internal` ([#651](https://github.com/lukso-network/lsp-smart-contracts/pull/651))
+
+### Features
+
+- create LSP23MultiChainDeployment ([#649](https://github.com/lukso-network/lsp-smart-contracts/issues/649)) ([01fd820](https://github.com/lukso-network/lsp-smart-contracts/commit/01fd82038811ba65798f3ff8fe8273fd191dcb38)), closes [#650](https://github.com/lukso-network/lsp-smart-contracts/issues/650)
+- change visibility of `_reentrancyStatus` state variable from `private` to `internal` ([#651](https://github.com/lukso-network/lsp-smart-contracts/pull/651))
+
 ## [0.10.3](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.10.2...v0.10.3) (2023-07-20)
 
 ### Bug Fixes

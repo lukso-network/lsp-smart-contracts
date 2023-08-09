@@ -18,7 +18,22 @@ import "../LSP9Vault/LSP9Constants.sol";
 import "../LSP14Ownable2Step/LSP14Constants.sol";
 import "../LSP10ReceivedVaults/LSP10Constants.sol";
 
+/**
+ * @title LSP1 Utility library.
+ * @author Jean Cavallera <CJ42>, Yamen Merhi <YamenMerhi>, Daniel Afteni <B00ste>
+ * @dev LSP1Utils is a library of utility functions that can be used to notify the `universalReceiver` function of a contract
+ * that implements LSP1 and retrieve informations related to LSP1 `typeId`.
+ * Based on LSP1 Universal Receiver standard.
+ */
 library LSP1Utils {
+    /**
+     * @dev Notify a contract at `lsp1Implementation` address by calling its `universalReceiver` function if this contract
+     * supports the LSP1 interface.
+     *
+     * @param lsp1Implementation The address of the contract to notify.
+     * @param typeId A `bytes32` typeId.
+     * @param data Any optional data to send to the `universalReceiver` function to the `lsp1Implementation` address.
+     */
     function tryNotifyUniversalReceiver(
         address lsp1Implementation,
         bytes32 typeId,
@@ -37,6 +52,18 @@ library LSP1Utils {
         }
     }
 
+    /**
+     * @dev Call a LSP1UniversalReceiverDelegate contract at `universalReceiverDelegate` address and append `msgSender` and `msgValue`
+     * as additional informations in the calldata.
+     *
+     * @param universalReceiverDelegate The address of the LSP1UniversalReceiverDelegate to delegate the `universalReceiver` function to.
+     * @param typeId A `bytes32` typeId.
+     * @param receivedData The data sent initially to the `universalReceiver` function.
+     * @param msgSender The address that initially called the `universalReceiver` function.
+     * @param msgValue The amount of native token received initially by the `universalReceiver` function.
+     *
+     * @return The data returned by the LSP1UniversalReceiverDelegate contract.
+     */
     function callUniversalReceiverWithCallerInfos(
         address universalReceiverDelegate,
         bytes32 typeId,
@@ -66,8 +93,15 @@ library LSP1Utils {
     }
 
     /**
-     * @dev Gets all the transfer details depending on the `typeId`
-     * @param typeId A unique identifier for a specific action
+     * @dev Gets all the transfer details based on the provided `bytes32 typeId`.
+     *
+     * @param typeId A `bytes32` unique identifier for a specific action or information.
+     *
+     * @return invalid `true` if the `typeId` was not recognised, `false otherwise.
+     * @return mapPrefix The standard 10 bytes defined in a LSP standard associated with the specific `typeId`.
+     * @return interfaceId The bytes4 ERC165 interface ID defined in a LSP standard associated with a specific `typeId`.
+     * @return isReceiving When the typeId relate to LSP7/8 tokens or LSP9 Vaults, describe if the `typeId` relates
+     * to receiving assets/vaults (`true`), or sending them (`false`).
      */
     function getTransferDetails(
         bytes32 typeId

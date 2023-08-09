@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp-smart-contracts",
-  "version": "0.10.3",
+  "version": "0.11.0-rc.1",
   "description": "The reference implementation for universal profiles smart contracts",
   "directories": {
     "test": "test"
@@ -64,6 +64,7 @@
     "test:lsp11init": "hardhat test --no-compile tests/LSP11BasicSocialRecovery/LSP11BasicSocialRecoveryInit.test.ts",
     "test:lsp20": "hardhat test --no-compile tests/LSP20CallVerification/LSP6/LSP20WithLSP6.test.ts",
     "test:lsp20init": "hardhat test --no-compile tests/LSP20CallVerification/LSP6/LSP20WithLSP6Init.test.ts",
+    "test:lsp23": "hardhat test --no-compile tests/LSP23LinkedContractsDeployment/LSP23LinkedContractsDeployment.test.ts",
     "test:universalfactory": "hardhat test --no-compile tests/LSP16UniversalFactory/LSP16UniversalFactory.test.ts",
     "test:reentrancy": "hardhat test --no-compile tests/Reentrancy/Reentrancy.test.ts",
     "test:reentrancyinit": "hardhat test --no-compile tests/Reentrancy/ReentrancyInit.test.ts",
@@ -104,7 +105,7 @@
     "solidity-bytes-utils": "0.8.0"
   },
   "devDependencies": {
-    "@b00ste/hardhat-dodoc": "^0.3.1",
+    "@b00ste/hardhat-dodoc": "^0.3.11",
     "@defi-wonderland/smock": "^2.3.4",
     "@erc725/erc725.js": "0.17.2",
     "@lukso/eip191-signer.js": "^0.2.2",
