@@ -2,7 +2,7 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
 import { LinkedContractsFactory } from '../../typechain-types';
-import { ERC725YDataKeys } from '../../constants.ts';
+import { ERC725YDataKeys } from '../../constants';
 import { calculateProxiesAddresses } from './helpers';
 
 describe('UniversalProfileDeployer', function () {

@@ -64,7 +64,7 @@
     "test:lsp11init": "hardhat test --no-compile tests/LSP11BasicSocialRecovery/LSP11BasicSocialRecoveryInit.test.ts",
     "test:lsp20": "hardhat test --no-compile tests/LSP20CallVerification/LSP6/LSP20WithLSP6.test.ts",
     "test:lsp20init": "hardhat test --no-compile tests/LSP20CallVerification/LSP6/LSP20WithLSP6Init.test.ts",
-    "test:lsp23": "hardhat test --no-compile tests/LSP23MultiChainDeployment/LSP23MultiChainDeployment.test.ts",
+    "test:lsp23": "hardhat test --no-compile tests/LSP23LinkedContractsDeployment/LSP23LinkedContractsDeployment.test.ts",
     "test:universalfactory": "hardhat test --no-compile tests/LSP16UniversalFactory/LSP16UniversalFactory.test.ts",
     "test:reentrancy": "hardhat test --no-compile tests/Reentrancy/Reentrancy.test.ts",
     "test:reentrancyinit": "hardhat test --no-compile tests/Reentrancy/ReentrancyInit.test.ts",
