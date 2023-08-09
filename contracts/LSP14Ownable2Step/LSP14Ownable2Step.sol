@@ -54,6 +54,21 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     address private _pendingOwner;
 
     /**
+     * @dev The boolean that indicates whether the contract is in an active ownership transfer phase
+     */
+    bool internal _inTransferOwnership;
+
+    /**
+     * @dev reverts when {_inTransferOwnership} variable is true
+     */
+    modifier NotInTransferOwnership() virtual {
+        if (_inTransferOwnership) {
+            revert LSP14MustAcceptOwnershipInSeparateTransaction();
+        }
+        _;
+    }
+
+    /**
      * @inheritdoc ILSP14Ownable2Step
      */
     function pendingOwner() public view virtual returns (address) {
@@ -66,6 +81,9 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     function transferOwnership(
         address newOwner
     ) public virtual override(OwnableUnset, ILSP14Ownable2Step) onlyOwner {
+        // set the transfer ownership lock
+        _inTransferOwnership = true;
+
         _transferOwnership(newOwner);
 
         address currentOwner = owner();
@@ -75,16 +93,15 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
             _TYPEID_LSP14_OwnershipTransferStarted,
             ""
         );
-        require(
-            currentOwner == owner(),
-            "LSP14: newOwner MUST accept ownership in a separate transaction"
-        );
+
+        // reset the transfer ownership lock
+        _inTransferOwnership = false;
     }
 
     /**
      * @inheritdoc ILSP14Ownable2Step
      */
-    function acceptOwnership() public virtual {
+    function acceptOwnership() public virtual NotInTransferOwnership {
         address previousOwner = owner();
 
         _acceptOwnership();
