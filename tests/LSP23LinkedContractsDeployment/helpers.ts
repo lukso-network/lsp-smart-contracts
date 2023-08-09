@@ -36,7 +36,7 @@ export async function calculateProxiesAddresses(
     ),
   );
 
-  const expectedSecondaryImplementationContractAddress = ethers.utils.getCreate2Address(
+  const expectedSecondaryContractAddress = ethers.utils.getCreate2Address(
     linkedContractsFactoryAddress,
     ethers.utils.keccak256(expectedPrimaryContractAddress),
     ethers.utils.keccak256(
@@ -46,5 +46,5 @@ export async function calculateProxiesAddresses(
     ),
   );
 
-  return [expectedPrimaryContractAddress, expectedSecondaryImplementationContractAddress];
+  return [expectedPrimaryContractAddress, expectedSecondaryContractAddress];
 }
