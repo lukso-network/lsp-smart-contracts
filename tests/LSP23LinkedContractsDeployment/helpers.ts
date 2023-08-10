@@ -1,14 +1,15 @@
-import { ethers } from 'ethers';
+import { ethers } from 'hardhat';
+import { BytesLike } from 'ethers';
 
 export async function calculateProxiesAddresses(
-  salt: ethers.utils.BytesLike,
+  salt: BytesLike,
   primaryImplementationContractAddress: string,
   secondaryImplementationContractAddress: string,
-  secondaryContractInitializationCalldata: ethers.utils.BytesLike,
+  secondaryContractInitializationCalldata: BytesLike,
   secondaryContractAddControlledContractAddress: boolean,
-  secondaryContractExtraInitializationParams: ethers.utils.BytesLike,
+  secondaryContractExtraInitializationParams: BytesLike,
   upPostDeploymentModuleAddress: string,
-  postDeploymentCalldata: ethers.utils.BytesLike,
+  postDeploymentCalldata: BytesLike,
   linkedContractsFactoryAddress: string,
 ): Promise<[string, string]> {
   const generatedSalt = ethers.utils.keccak256(
@@ -47,4 +48,37 @@ export async function calculateProxiesAddresses(
   );
 
   return [expectedPrimaryContractAddress, expectedSecondaryContractAddress];
+}
+
+export function createDataKey(prefix, address) {
+  return prefix + address.slice(2);
+}
+
+export const create16BytesUint = (value: number) => {
+  return ethers.utils.hexZeroPad(ethers.utils.hexlify(value), 16).slice(2);
+};
+
+export async function deployImplementationContracts() {
+  const KeyManagerInitFactory = await ethers.getContractFactory('LSP6KeyManagerInit');
+  const keyManagerInit = await KeyManagerInitFactory.deploy();
+
+  const UniversalProfileInitFactory = await ethers.getContractFactory('UniversalProfileInit');
+  const universalProfileInit = await UniversalProfileInitFactory.deploy();
+
+  const LinkedContractsFactoryFactory = await ethers.getContractFactory('LinkedContractsFactory');
+  const LinkedContractsFactory = await LinkedContractsFactoryFactory.deploy();
+
+  const UPDelegatorPostDeploymentManagerFactory = await ethers.getContractFactory(
+    'UniversalProfileInitPostDeploymentModule',
+  );
+  const upPostDeploymentModule = await UPDelegatorPostDeploymentManagerFactory.deploy();
+
+  return {
+    keyManagerInit,
+    KeyManagerInitFactory,
+    universalProfileInit,
+    UniversalProfileInitFactory,
+    LinkedContractsFactory,
+    upPostDeploymentModule,
+  };
 }
