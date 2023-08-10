@@ -18,7 +18,7 @@ interface ILSP6KeyManager is
      * @param value The amount of native token to be transferred in the calldata payload.
      * @param selector The bytes4 function of the function that was executed on the linked {target}
      */
-    event VerifiedCall(
+    event PermissionsVerified(
         address indexed signer,
         uint256 indexed value,
         bytes4 indexed selector
