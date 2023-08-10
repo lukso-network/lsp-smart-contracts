@@ -26,7 +26,7 @@ export const INTERFACE_IDS = {
   ERC725Y: '0x629aa694',
   LSP0ERC725Account: '0x3e89ad98',
   LSP1UniversalReceiver: '0x6bb56a14',
-  LSP6KeyManager: '0x38bb3cdb',
+  LSP6KeyManager: '0x627ca5d3',
   LSP7DigitalAsset: '0xda1f85e4',
   LSP8IdentifiableDigitalAsset: '0x622e7a01',
   LSP9Vault: '0x28af17e6',
@@ -36,6 +36,7 @@ export const INTERFACE_IDS = {
   LSP17Extension: '0xcee78b40',
   LSP20CallVerification: '0x1a0eb6a5',
   LSP20CallVerifier: '0x480c0ec2',
+  LSP25ExecuteRelayCall: '0x5ac79908',
 };
 
 // ERC1271
@@ -210,12 +211,6 @@ export const ERC725YDataKeys = {
 // ----------
 
 /**
- * @dev LSP6 version number for signing `executeRelayCall(...)` transaction using EIP191
- * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#executerelaycall
- */
-export const LSP6_VERSION = 6;
-
-/**
  * @dev The types of calls for an AllowedCall
  */
 export const CALLTYPE = {
@@ -319,3 +314,12 @@ export const LSP1_TYPE_IDS = {
   LSP14OwnershipTransferred_RecipientNotification:
     '0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
 };
+
+// LSP25
+// ----------
+
+/**
+ * @dev LSP25 version number for signing `executeRelayCall(...)` transaction using EIP191
+ * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-25-ExecuteRelayCall.md#executerelaycall
+ */
+export const LSP25_VERSION = 25;

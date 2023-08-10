@@ -13,6 +13,9 @@ import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 import {
     ILSP20CallVerifier as ILSP20
 } from "../LSP20CallVerification/ILSP20CallVerifier.sol";
+import {
+    ILSP25ExecuteRelayCall as ILSP25
+} from "../LSP25ExecuteRelayCall/ILSP25ExecuteRelayCall.sol";
 
 // modules
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
@@ -21,6 +24,9 @@ import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {LSP6SetDataModule} from "./LSP6Modules/LSP6SetDataModule.sol";
 import {LSP6ExecuteModule} from "./LSP6Modules/LSP6ExecuteModule.sol";
 import {LSP6OwnershipModule} from "./LSP6Modules/LSP6OwnershipModule.sol";
+import {
+    LSP25MultiChannelNonce
+} from "../LSP25ExecuteRelayCall/LSP25MultiChannelNonce.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -46,12 +52,12 @@ import {
     _ERC1271_FAILVALUE
 } from "../LSP0ERC725Account/LSP0Constants.sol";
 import {
-    LSP6_VERSION,
     _INTERFACEID_LSP6,
     _PERMISSION_SIGN,
     _PERMISSION_REENTRANCY
 } from "./LSP6Constants.sol";
 import "../LSP20CallVerification/LSP20Constants.sol";
+import {_INTERFACEID_LSP25} from "../LSP25ExecuteRelayCall/LSP25Constants.sol";
 
 /**
  * @title Core implementation of the LSP6 Key Manager standard.
@@ -67,9 +73,11 @@ abstract contract LSP6KeyManagerCore is
     ERC165,
     ILSP6KeyManager,
     ILSP20,
+    ILSP25,
     LSP6SetDataModule,
     LSP6ExecuteModule,
-    LSP6OwnershipModule
+    LSP6OwnershipModule,
+    LSP25MultiChannelNonce
 {
     using LSP6Utils for *;
     using ECDSA for *;
@@ -80,8 +88,6 @@ abstract contract LSP6KeyManagerCore is
     // Variables, methods and modifier used for ReentrancyGuard are taken from the link below and modified accordingly.
     // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/security/ReentrancyGuard.sol
     bool internal _reentrancyStatus;
-
-    mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
     /**
      * @inheritdoc ILSP6KeyManager
@@ -100,11 +106,12 @@ abstract contract LSP6KeyManagerCore is
             interfaceId == _INTERFACEID_LSP6 ||
             interfaceId == _INTERFACEID_ERC1271 ||
             interfaceId == _INTERFACEID_LSP20_CALL_VERIFIER ||
+            interfaceId == _INTERFACEID_LSP25 ||
             super.supportsInterface(interfaceId);
     }
 
     /**
-     * @inheritdoc ILSP6KeyManager
+     * @inheritdoc ILSP25
      *
      * @custom:info A signer can choose its channel number arbitrarily. Channel ID = 0 can be used for sequential nonces (transactions
      * that are order dependant), any other channel ID for out-of-order execution (= execution in parallel).
@@ -112,7 +119,13 @@ abstract contract LSP6KeyManagerCore is
     function getNonce(
         address from,
         uint128 channelId
-    ) public view returns (uint256) {
+    )
+        public
+        view
+        virtual
+        override(LSP25MultiChannelNonce, ILSP25)
+        returns (uint256)
+    {
         uint256 nonceInChannel = _nonceStore[from][channelId];
         return (uint256(channelId) << 128) | nonceInChannel;
     }
@@ -194,7 +207,7 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @inheritdoc ILSP6KeyManager
+     * @inheritdoc ILSP25
      *
      * @custom:events {VerifiedCall} event when the permissions related to `payload` have been verified successfully.
      *
@@ -220,7 +233,7 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @inheritdoc ILSP6KeyManager
+     * @inheritdoc ILSP25
      *
      * @custom:requirements
      * - the length of `signatures`, `nonces`, `validityTimestamps`, `values` and `payloads` MUST be the same.
@@ -379,7 +392,13 @@ abstract contract LSP6KeyManagerCore is
             revert InvalidPayload(payload);
         }
 
-        // TODO inherit LSP25 and implement verification function
+        address signer = LSP25MultiChannelNonce._validateExecuteRelayCall(
+            signature,
+            nonce,
+            validityTimestamps,
+            msgValue,
+            payload
+        );
 
         bool isSetData = false;
         if (
