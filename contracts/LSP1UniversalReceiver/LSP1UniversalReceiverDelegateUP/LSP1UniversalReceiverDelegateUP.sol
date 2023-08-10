@@ -32,48 +32,35 @@ import "../../LSP14Ownable2Step/LSP14Constants.sol";
 import "../LSP1Errors.sol";
 
 /**
- * @title Implementation of a UniversalReceiverDelegate for LSP0ERC725Account
+ * @title Implementation of a UniversalReceiverDelegate for the [LSP-0-ERC725Account]
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
- * @dev This UniversalReceiverDelegate follows the {LSP1-UniversalReceiver} standards and is designed
- * for LSP0ERC725Account contracts.
+ * @dev The {LSP1UniversalReceiverDelegateUP} follows the [LSP-1-UniversalReceiver] standard and is designed
+ * for [LSP-0-ERC725Account] contracts.
  *
- * @dev Handles two cases:
- * - Registers the address of received assets (exclusively LSP7 and LSP8) and vaults (exclusively LSP9) according
- *   to {LSP5-ReceivedAssets} and {LSP10-ReceivedVaults} respectively
+ * The {LSP1UniversalReceiverDelegateUP} is a contract called by the {universalReceiver(...)} function of the [LSP-0-ERC725Account] contract that:
  *
- *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-5-ReceivedAssets.md
- *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-10-ReceivedVaults.md
+ * - Writes the data keys representing assets received from type [LSP-7-DigitalAsset] and [LSP-8-IdentifiableDigitalAsset] into the account storage, and removes them when the balance is zero according to the [LSP-5-ReceivedAssets] Standard.
+ * - Writes the data keys representing the owned vaults from type [LSP-9-Vault] into your account storage, and removes them when transferring ownership to other accounts according to the [LSP-10-ReceivedVaults] Standard.
  *
- * - Removes the address of registered assets and vaults when the full balance is sent from the LSP0ERC725Account contract
- *
- * Requirements:
- * - The contract should be able to setData the LSP5 and LSP10 data Keys according to the logic of the owner
- *    of the LSP0ERC725Account.
- *
- * For example, for contracts that are owned by an LSP6KeyManager, this contract should be granted
- * the SUPER/SETDATA and REENTRANCY Permission.
- *
- * Assets and Vaults that are compliant with this version of the UniversalReceiverDelegate are:
- *
- * - LSP7-DigitalAsset: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-7-DigitalAsset.md
- * - LSP8-IdentifiableDigitalAsset: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-8-IdentifiableDigitalAsset.md
- * - LSP9-Vault: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md
  */
 contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
     using ERC165Checker for address;
 
     /**
-     * @dev Handles two cases:
-     * - Registers the address of received assets (exclusively LSP7 and LSP8) and vaults (exclusively LSP9) according
-     *   to {LSP5-ReceivedAssets} and {LSP10-ReceivedVaults} respectively
+     * @dev
+     * 1. Writes the data keys of the received [LSP-7-DigitalAsset], [LSP-8-IdentifiableDigitalAsset] and [LSP-9-Vault] contract addresses into the account storage according to the [LSP-5-ReceivedAssets] and [LSP-10-ReceivedVaults] Standard.
+     * 2. The data keys representing an asset/vault are cleared when the asset/vault is no longer owned by the account.
      *
-     * - Removes the address of registered assets and vaults when the full balance is sent from the LSP0ERC725Account contract
+     * @notice Reacted on received notification with `typeId`.
      *
-     * Requirements:
-     * - The contract should be able to setData the LSP5 and LSP10 data Keys according to the logic of the owner
-     *    of the LSP0ERC725Account.
+     * @custom:warning When the data stored in the ERC725Y storage of the LSP0 contract is corrupted (_e.g: ([LSP-5-ReceivedAssets]'s Array length not 16 bytes long, the token received is already registered in `LSP5ReceivetAssets[]`, the token being sent is not sent as full balance, etc...), the function call will still pass and return (**not revert!**) and not modify any data key on the storage of the [LSP-0-ERC725Account].
      *
+     * @custom:requirements
+     * - This contract should be allowed to use the {setDataBatch(...)} function in order to update the LSP5 and LSP10 Data Keys.
      * - Cannot accept native tokens
+     *
+     * @param typeId Unique identifier for a specific notification.
+     * @return result The result of the reaction for `typeId`.
      */
     function universalReceiver(
         bytes32 typeId,

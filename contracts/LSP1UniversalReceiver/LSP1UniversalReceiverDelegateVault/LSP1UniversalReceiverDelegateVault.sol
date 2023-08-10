@@ -24,17 +24,28 @@ import "../../LSP9Vault/LSP9Constants.sol";
 import "../LSP1Errors.sol";
 
 /**
- * @title Core Implementation of contract writing the received LSP7 and LSP8 assets into your Vault using
- *        the LSP5-ReceivedAsset standard and removing the sent assets.
- *
+ * @title Implementation of a UniversalReceiverDelegate for the [LSP9Vault]
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
- * @dev Delegate contract of the initial universal receiver
+ * @dev The {LSP1UniversalReceiverDelegateVault} follows the [LSP-1-UniversalReceiver] standard and is designed
+ * for [LSP9Vault] contracts.
+ *
+ * The {LSP1UniversalReceiverDelegateVault} is a contract called by the {universalReceiver(...)} function of the [LSP-9-Vault] contract that:
+ *
+ * - Writes the data keys representing assets received from type [LSP-7-DigitalAsset] and [LSP-8-IdentifiableDigitalAsset] into the account storage, and removes them when the balance is zero according to the [LSP-5-ReceivedAssets] Standard.
  */
 contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
     /**
      * @inheritdoc ILSP1UniversalReceiver
-     * @dev allows to register arrayKeys and Map of incoming assets and remove after being sent
-     * @return result The return value
+     * @dev Handles two cases:
+     *
+     * Writes the received [LSP-7-DigitalAsset] or [LSP-8-IdentifiableDigitalAsset] assets into the vault storage according to the [LSP-5-ReceivedAssets] standard.
+     *
+     * @notice Reacted on received notification with `typeId`.
+     *
+     * @custom:requirements Cannot accept native tokens.
+     *
+     * @param typeId Unique identifier for a specific notification.
+     * @return result The result of the reaction for `typeId`.
      */
     function universalReceiver(
         bytes32 typeId,
