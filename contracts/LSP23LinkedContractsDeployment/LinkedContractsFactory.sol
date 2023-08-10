@@ -274,7 +274,7 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
 
         /* initialize the primary contract proxy */
         (bool success, bytes memory returnedData) = primaryContractAddress.call{
-            value: msg.value
+            value: primaryContractDeploymentInit.fundingAmount
         }(primaryContractDeploymentInit.initializationCalldata);
         if (!success) {
             revert PrimaryContractProxyInitFailureError(returnedData);
@@ -311,7 +311,9 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
 
         /* initialize the primary contract proxy */
         (bool success, bytes memory returnedData) = secondaryContractAddress
-            .call{value: msg.value}(secondaryInitializationBytes);
+            .call{value: secondaryContractDeploymentInit.fundingAmount}(
+            secondaryInitializationBytes
+        );
         if (!success) {
             revert SecondaryContractProxyInitFailureError(returnedData);
         }
