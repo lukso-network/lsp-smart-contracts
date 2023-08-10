@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.4;
 
+// interfaces
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
@@ -414,5 +419,126 @@ library LSP2Utils {
         }
         if (pointer == compactBytesArray.length) return true;
         return false;
+    }
+
+    /**
+     * @dev Validates if the bytes `arrayLength` are exactly 16 bytes long, and are of the exact size of an LSP2 Array length value
+     *
+     * @param arrayLength Plain bytes that should be validated.
+     *
+     * @return `true` if the value is 16 bytes long, `false` otherwise.
+     */
+    function isValidLSP2ArrayLengthValue(
+        bytes memory arrayLength
+    ) internal pure returns (bool) {
+        if (arrayLength.length == 16) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @dev Generates Data Key/Value pairs for removing the last element from an LSP2 Array and a mapping Data Key.
+     *
+     * @param arrayKey The Data Key of Key Type Array.
+     * @param newArrayLength The new Array Length for the `arrayKey`.
+     * @param removedElementIndexKey The Data Key of Key Type Array Index for the removed element.
+     * @param removedElementMapKey The Data Key of a mapping to be removed.
+     */
+    function removeLastElementFromArrayAndMap(
+        bytes32 arrayKey,
+        uint128 newArrayLength,
+        bytes32 removedElementIndexKey,
+        bytes32 removedElementMapKey
+    )
+        internal
+        pure
+        returns (bytes32[] memory dataKeys, bytes[] memory dataValues)
+    {
+        dataKeys = new bytes32[](3);
+        dataValues = new bytes[](3);
+
+        // store the number of received assets decremented by 1
+        dataKeys[0] = arrayKey;
+        dataValues[0] = abi.encodePacked(newArrayLength);
+
+        // remove the data value for the map key of the element
+        dataKeys[1] = removedElementMapKey;
+        dataValues[1] = "";
+
+        // remove the data value for the map key of the element
+        dataKeys[2] = removedElementIndexKey;
+        dataValues[2] = "";
+    }
+
+    /**
+     * @dev Generates Data Key/Value pairs for removing an element from an LSP2 Array and a mapping Data Key.
+     *
+     * @custom:info The function assumes that the Data Value stored under the mapping Data Key is of length 20 where the last 16 bytes are the index of the element in the array.
+     *
+     * @param ERC725YContract The ERC725Y contract.
+     * @param arrayKey The Data Key of Key Type Array.
+     * @param newArrayLength The new Array Length for the `arrayKey`.
+     * @param removedElementIndexKey The Data Key of Key Type Array Index for the removed element.
+     * @param removedElementIndex the index of the removed element.
+     * @param removedElementMapKey The Data Key of a mapping to be removed.
+     */
+    function removeElementFromArrayAndMap(
+        IERC725Y ERC725YContract,
+        bytes32 arrayKey,
+        uint128 newArrayLength,
+        bytes32 removedElementIndexKey,
+        uint128 removedElementIndex,
+        bytes32 removedElementMapKey
+    )
+        internal
+        view
+        returns (bytes32[] memory dataKeys, bytes[] memory dataValues)
+    {
+        dataKeys = new bytes32[](5);
+        dataValues = new bytes[](5);
+
+        // store the number of received assets decremented by 1
+        dataKeys[0] = arrayKey;
+        dataValues[0] = abi.encodePacked(newArrayLength);
+
+        // remove the data value for the map key of the element
+        dataKeys[1] = removedElementMapKey;
+        dataValues[1] = "";
+
+        // Generate the key of the last element in the array
+        bytes32 lastElementIndexKey = LSP2Utils.generateArrayElementKeyAtIndex(
+            arrayKey,
+            newArrayLength
+        );
+
+        // Get the data value from the key of the last element in the array
+        bytes20 lastElementIndexValue = bytes20(
+            ERC725YContract.getData(lastElementIndexKey)
+        );
+
+        // Set data value of the last element instead of the element from the array that will be removed
+        dataKeys[2] = removedElementIndexKey;
+        dataValues[2] = bytes.concat(lastElementIndexValue);
+
+        // Remove the data value for the swapped array element
+        dataKeys[3] = lastElementIndexKey;
+        dataValues[3] = "";
+
+        // Generate mapping key for the swapped array element
+        bytes32 lastElementMapKey = LSP2Utils.generateMappingKey(
+            bytes10(removedElementMapKey),
+            lastElementIndexValue
+        );
+
+        // Generate the mapping value for the swapped array element
+        bytes memory lastElementMapValue = abi.encodePacked(
+            bytes4(ERC725YContract.getData(lastElementMapKey)),
+            removedElementIndex
+        );
+
+        // Update the map value of the swapped array element to the new index
+        dataKeys[4] = lastElementMapKey;
+        dataValues[4] = lastElementMapValue;
     }
 }

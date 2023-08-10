@@ -15,37 +15,6 @@ import "../LSP5ReceivedAssets/LSP5Constants.sol";
 import "../LSP7DigitalAsset/LSP7Constants.sol";
 
 /**
- * @dev Reverts when the value stored under the 'LSP5ReceivedAssets[]' Array data key is not valid.
- *      The value stored under this data key should be exactly 16 bytes long.
- *
- *      Only possible valid values are:
- *      - any valid uint128 values
- *          _e.g: `0x00000000000000000000000000000000` (zero), empty array, no assets received._
- *          _e.g. `0x00000000000000000000000000000005` (non-zero), 5 array elements, 5 assets received._
- *
- *      - `0x` (nothing stored under this data key, equivalent to empty array)
- *
- * @param invalidValueStored The invalid value stored under the `LSP5ReceivedAssets[]` Array data key.
- * @param invalidValueLength The invalid number of bytes stored under the `LSP5ReceivedAssets[]` data key (MUST be exactly 16 bytes long).
- */
-error InvalidLSP5ReceivedAssetsArrayLength(
-    bytes invalidValueStored,
-    uint256 invalidValueLength
-);
-
-/**
- * @dev Reverts when the `LSP5ReceivedAssets[]` Array reaches its maximum limit (`max(uint128)`).
- * @param notRegisteredAsset The address of the asset that could not be registered.
- */
-error MaxLSP5ReceivedAssetsCountReached(address notRegisteredAsset);
-
-/**
- * @dev Reverts when the received assets index is superior to `max(uint128)`.
- * @param index The received assets index.
- */
-error ReceivedAssetsIndexSuperiorToUint128(uint256 index);
-
-/**
  * @title LSP5 Utility library.
  * @author Yamen Merhi <YamenMerhi>, Jean Cavallera <CJ42>
  * @dev LSP5Utils is a library of functions that can be used to register and manage assets under an ERC725Y smart contract.
@@ -55,211 +24,185 @@ library LSP5Utils {
     /**
      * @dev Generate an array of data key/value pairs to be set on the receiver address after receiving assets.
      *
-     * @param receiver The address receiving the asset and where the LSP5 data keys should be added.
-     * @param asset The address of the asset being received (_e.g: an LSP7 or LSP8 token_).
-     * @param assetMapKey The `LSP5ReceivedAssetMap:<asset>` data key of the asset being received containing the interfaceId of the
-     * asset and its index in the `LSP5ReceivedAssets[]` Array.
-     * @param interfaceID The interfaceID of the asset being received.
+     * @custom:warning Returns empty arrays when encountering errors. Otherwise the arrays must have 3 data keys and 3 data values.
      *
-     * @return keys An array of 3 x data keys: `LSP5ReceivedAssets[]`, `LSP5ReceivedAssets[index]` and `LSP5ReceivedAssetsMap:<asset>`.
-     * @return values An array of 3 x data values: the new length of `LSP5ReceivedAssets[]`, the address of the asset under `LSP5ReceivedAssets[index]`
-     * and the interfaceId + index stored under `LSP5ReceivedAssetsMap:<asset>`.
+     * @param receiver The address receiving the asset and where the LSP5 data keys should be added.
+     * @param assetAddress The address of the asset being received (_e.g: an LSP7 or LSP8 token_).
+     * @param assetInterfaceId The interfaceID of the asset being received.
+     *
+     * @return lsp5DataKeys An array Data Keys used to update the [LSP-5-ReceivedAssets] data.
+     * @return lsp5DataValues An array Data Values used to update the [LSP-5-ReceivedAssets] data.
      */
     function generateReceivedAssetKeys(
         address receiver,
-        address asset,
-        bytes32 assetMapKey,
-        bytes4 interfaceID
-    ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
-        keys = new bytes32[](3);
-        values = new bytes[](3);
+        address assetAddress,
+        bytes4 assetInterfaceId
+    )
+        internal
+        view
+        returns (bytes32[] memory lsp5DataKeys, bytes[] memory lsp5DataValues)
+    {
+        IERC725Y erc725YContract = IERC725Y(receiver);
 
-        IERC725Y account = IERC725Y(receiver);
-        bytes memory encodedArrayLength = getLSP5ReceivedAssetsCount(account);
+        // --- `LSP5ReceivedAssets[]` Array ---
 
-        // CHECK it's either the first asset received,
-        // or the storage is already set with a valid `uint128` value
-        if (encodedArrayLength.length != 0 && encodedArrayLength.length != 16) {
-            revert InvalidLSP5ReceivedAssetsArrayLength({
-                invalidValueStored: encodedArrayLength,
-                invalidValueLength: encodedArrayLength.length
-            });
-        }
-
-        uint128 oldArrayLength = uint128(bytes16(encodedArrayLength));
-
-        if (oldArrayLength == type(uint128).max) {
-            revert MaxLSP5ReceivedAssetsCountReached({
-                notRegisteredAsset: asset
-            });
-        }
-
-        // store the number of received assets incremented by 1
-        keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
-        values[0] = bytes.concat(bytes16(oldArrayLength + 1));
-
-        // store the address of the asset under the element key in the array
-        keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
-            _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
-            oldArrayLength
+        bytes memory currentArrayLengthBytes = getLSP5ArrayLengthBytes(
+            erc725YContract
         );
-        values[1] = bytes.concat(bytes20(asset));
 
-        // store the interfaceId and the location in the array of the asset
-        // under the LSP5ReceivedAssetMap key
-        keys[2] = assetMapKey;
-        values[2] = bytes.concat(interfaceID, bytes16(oldArrayLength));
+        // CHECK that the value of `LSP5ReceivedAssets[]` Array length is a valid `uint128` (16 bytes long)
+        if (!LSP2Utils.isValidLSP2ArrayLengthValue(currentArrayLengthBytes)) {
+            if (currentArrayLengthBytes.length == 0) {
+                // if it's the first asset received and nothing is set (= 0x)
+                // we need to convert it to: `0x00000000000000000000000000000000`
+                // to safely cast to a uint128 of length 0
+                currentArrayLengthBytes = abi.encodePacked(bytes16(0));
+            } else {
+                // otherwise the array length is invalid
+                return (lsp5DataKeys, lsp5DataValues);
+            }
+        }
+
+        uint128 currentArrayLength = uint128(bytes16(currentArrayLengthBytes));
+
+        // CHECK for potential overflow
+        if (currentArrayLength == type(uint128).max) {
+            return (lsp5DataKeys, lsp5DataValues);
+        }
+
+        // --- `LSP5ReceivedAssetsMap:<assetAddress>` ---
+
+        bytes32 mapDataKey = LSP2Utils.generateMappingKey(
+            _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX,
+            bytes20(assetAddress)
+        );
+
+        // CHECK that the map value is not already set in the storage for the newly received asset
+        // If that's the case, the asset is already registered. Do not try to update.
+        if (erc725YContract.getData(mapDataKey).length != 0) {
+            return (lsp5DataKeys, lsp5DataValues);
+        }
+
+        // --- LSP5 Data Keys & Values ---
+
+        lsp5DataKeys = new bytes32[](3);
+        lsp5DataValues = new bytes[](3);
+
+        // Increment `LSP5ReceivedAssets[]` Array length
+        lsp5DataKeys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
+        lsp5DataValues[0] = abi.encodePacked(currentArrayLength + 1);
+
+        // Add asset address to `LSP5ReceivedAssets[index]`, where index == previous array length
+        lsp5DataKeys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
+            _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
+            currentArrayLength
+        );
+        lsp5DataValues[1] = abi.encodePacked(assetAddress);
+
+        // Add interfaceId + index as value under `LSP5ReceivedAssetsMap:<assetAddress>`
+        lsp5DataKeys[2] = mapDataKey;
+        lsp5DataValues[2] = bytes.concat(
+            assetInterfaceId,
+            currentArrayLengthBytes
+        );
     }
 
     /**
-     * @dev Generate an array of data key/value pairs to be set on the sender address after sending assets.
+     * @dev Generate an array of Data Key/Value pairs to be set on the sender address after sending assets.
+     *
+     * @custom:warning Returns empty arrays when encountering errors. Otherwise the arrays must have at least 3 data keys and 3 data values.
      *
      * @param sender The address sending the asset and where the LSP5 data keys should be updated.
-     * @param assetMapKey The `LSP5ReceivedAssetMap:<asset>` data key of the asset being sent containing the interfaceId of the
-     * asset and the index in the `LSP5ReceivedAssets[]` Array.
-     * @param assetIndex The index at which the asset is stored under the `LSP5ReceivedAssets[]` Array.
+     * @param assetAddress The address of the asset that is being sent.
      *
-     * @return keys An array of 3 x data keys: `LSP5ReceivedAssets[]`, `LSP5ReceivedAssets[index]` and `LSP5ReceivedAssetsMap:<asset>`.
-     * @return values An array of 3 x data values: the new length of `LSP5ReceivedAssets[]`, the address of the asset under `LSP5ReceivedAssets[index]`
-     * and the interfaceId + index stored under `LSP5ReceivedAssetsMap:<asset>`.
+     * @return lsp5DataKeys An array Data Keys used to update the [LSP-5-ReceivedAssets] data.
+     * @return lsp5DataValues An array Data Values used to update the [LSP-5-ReceivedAssets] data.
      */
     function generateSentAssetKeys(
         address sender,
-        bytes32 assetMapKey,
-        uint128 assetIndex
-    ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
-        IERC725Y account = IERC725Y(sender);
-        bytes memory lsp5ReceivedAssetsCountValue = getLSP5ReceivedAssetsCount(
-            account
+        address assetAddress
+    )
+        internal
+        view
+        returns (bytes32[] memory lsp5DataKeys, bytes[] memory lsp5DataValues)
+    {
+        IERC725Y erc725YContract = IERC725Y(sender);
+
+        // --- `LSP5ReceivedAssets[]` Array ---
+
+        bytes memory newArrayLengthBytes = getLSP5ArrayLengthBytes(
+            erc725YContract
         );
 
-        if (lsp5ReceivedAssetsCountValue.length != 16) {
-            revert InvalidLSP5ReceivedAssetsArrayLength({
-                invalidValueStored: lsp5ReceivedAssetsCountValue,
-                invalidValueLength: lsp5ReceivedAssetsCountValue.length
-            });
+        // CHECK that the value of `LSP5ReceivedAssets[]` Array length is a valid `uint128` (16 bytes long)
+        if (!LSP2Utils.isValidLSP2ArrayLengthValue(newArrayLengthBytes)) {
+            return (lsp5DataKeys, lsp5DataValues);
         }
 
-        uint128 oldArrayLength = uint128(bytes16(lsp5ReceivedAssetsCountValue));
+        // CHECK for potential underflow
+        if (bytes16(newArrayLengthBytes) == bytes16(0)) {
+            return (lsp5DataKeys, lsp5DataValues);
+        }
 
-        // Updating the number of the received assets (decrementing by 1
-        uint128 newArrayLength = oldArrayLength - 1;
+        uint128 newArrayLength = uint128(bytes16(newArrayLengthBytes)) - 1;
 
-        // Generate the element key in the array of the asset
-        bytes32 assetInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
-            _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
-            assetIndex
+        // --- `LSP5ReceivedAssetsMap:<assetAddress>` ---
+
+        bytes32 removedElementMapKey = LSP2Utils.generateMappingKey(
+            _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX,
+            bytes20(assetAddress)
         );
 
-        // If the asset to remove is the last element in the array
-        if (assetIndex == newArrayLength) {
-            /**
-             * We will be updating/removing 3 keys:
-             * - Keys[0]: [Update] The arrayLengthKey to contain the new number of the received assets
-             * - Keys[1]: [Remove] The element in arrayKey (Remove the address of the asset sent)
-             * - Keys[2]: [Remove] The mapKey (Remove the interfaceId and the index of the asset sent)
-             */
-            keys = new bytes32[](3);
-            values = new bytes[](3);
+        // Query the ERC725Y storage of the LSP0-ERC725Account
+        bytes memory mapValue = erc725YContract.getData(removedElementMapKey);
 
-            // store the number of received assets decremented by 1
-            keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes16(newArrayLength));
+        // CHECK if no map value was set for the asset to remove.
+        // If that's the case, there is nothing to remove. Do not try to update.
+        if (mapValue.length != 20) {
+            return (lsp5DataKeys, lsp5DataValues);
+        }
 
-            // remove the address of the asset from the element key
-            keys[1] = assetInArrayKey;
-            values[1] = "";
+        // Extract index of asset to remove from the map value
+        uint128 removedElementIndex = uint128(bytes16(bytes20(mapValue) << 32));
 
-            // remove the interfaceId and the location in the array of the asset
-            keys[2] = assetMapKey;
-            values[2] = "";
+        bytes32 removedElementIndexKey = LSP2Utils
+            .generateArrayElementKeyAtIndex(
+                _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
+                removedElementIndex
+            );
 
-            // Swapping last element in ArrayKey with the element in ArrayKey to remove || {Swap and pop} method;
-            // check https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/structs/EnumerableSet.sol#L80
-        } else if (assetIndex < newArrayLength) {
-            /**
-             * We will be updating/removing 5 keys:
-             * - Keys[0]: [Update] The arrayLengthKey to contain the new number of the received assets
-             * - Keys[1]: [Remove] The mapKey of the asset to remove (Remove the interfaceId and the index of the asset sent)
-             * - Keys[2]: [Update] The element in arrayKey to remove (Swap with the address of the last element in Array)
-             * - Keys[3]: [Remove] The last element in arrayKey (Remove (pop) the address of the last element as it's already swapped)
-             * - Keys[4]: [Update] The mapKey of the last element in array (Update the new index and the interfaceID)
-             */
-            keys = new bytes32[](5);
-            values = new bytes[](5);
-
-            // store the number of received assets decremented by 1
-            keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes16(newArrayLength));
-
-            // remove the interfaceId and the location in the array of the asset
-            keys[1] = assetMapKey;
-            values[1] = "";
-
-            if (newArrayLength >= type(uint128).max) {
-                revert ReceivedAssetsIndexSuperiorToUint128(newArrayLength);
-            }
-
-            // Generate all data Keys/values of the last element in Array to swap
-            // with data Keys/values of the asset to remove
-
-            // Generate the element key of the last asset in the array
-            bytes32 lastAssetInArrayKey = LSP2Utils
-                .generateArrayElementKeyAtIndex(
+        if (removedElementIndex == newArrayLength) {
+            return
+                LSP2Utils.removeLastElementFromArrayAndMap(
                     _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
-                    newArrayLength
+                    newArrayLength,
+                    removedElementIndexKey,
+                    removedElementMapKey
                 );
-
-            // Get the address of the asset from the element key of the last asset in the array
-            bytes20 lastAssetInArrayAddress = bytes20(
-                account.getData(lastAssetInArrayKey)
-            );
-
-            // Generate the map key of the last asset in the array
-            bytes32 lastAssetInArrayMapKey = LSP2Utils.generateMappingKey(
-                _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX,
-                lastAssetInArrayAddress
-            );
-
-            // Get the interfaceId and the location in the array of the last asset
-            bytes memory lastAssetInterfaceIdAndIndex = account.getData(
-                lastAssetInArrayMapKey
-            );
-            bytes memory interfaceID = BytesLib.slice(
-                lastAssetInterfaceIdAndIndex,
-                0,
-                4
-            );
-
-            // Set the address of the last asset instead of the asset to be sent
-            // under the element data key in the array
-            keys[2] = assetInArrayKey;
-            values[2] = bytes.concat(lastAssetInArrayAddress);
-
-            // Remove the address swapped from the last element data key in the array
-            keys[3] = lastAssetInArrayKey;
-            values[3] = "";
-
-            // Update the index and the interfaceId of the address swapped (last element in the array)
-            // to point to the new location in the LSP5ReceivedAssets array
-            keys[4] = lastAssetInArrayMapKey;
-            values[4] = bytes.concat(interfaceID, bytes16(assetIndex));
+        } else if (removedElementIndex < newArrayLength) {
+            return
+                LSP2Utils.removeElementFromArrayAndMap(
+                    erc725YContract,
+                    _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
+                    newArrayLength,
+                    removedElementIndexKey,
+                    removedElementIndex,
+                    removedElementMapKey
+                );
         } else {
             // If index is bigger than the array length, out of bounds
-            return (keys, values);
+            return (lsp5DataKeys, lsp5DataValues);
         }
     }
 
     /**
-     * @dev Get the total number of asset addresses stored under the `LSP5ReceivedAssets[]` Array data key.
-     * @param account The ERC725Y smart contract to read the storage from.
-     * @return The raw bytes stored under the `LSP5ReceivedAssets[]` data key.
-     *
-     * @custom:info This function does not return a number but the raw bytes stored under the `LSP5ReceivedAssets[]` Array data key.
+     * @dev Get the raw bytes value stored under the `_LSP5_RECEIVED_ASSETS_ARRAY_KEY`.
+     * @param erc725YContract The contract to query the ERC725Y storage from.
+     * @return The raw bytes value stored under this data key.
      */
-    function getLSP5ReceivedAssetsCount(
-        IERC725Y account
+    function getLSP5ArrayLengthBytes(
+        IERC725Y erc725YContract
     ) internal view returns (bytes memory) {
-        return account.getData(_LSP5_RECEIVED_ASSETS_ARRAY_KEY);
+        return erc725YContract.getData(_LSP5_RECEIVED_ASSETS_ARRAY_KEY);
     }
 }
