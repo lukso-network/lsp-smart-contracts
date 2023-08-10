@@ -35,12 +35,9 @@ import {
     LSP6BatchExcessiveValueSent,
     LSP6BatchInsufficientValueSent,
     InvalidPayload,
-    InvalidRelayNonce,
     NoPermissionsSet,
     InvalidERC725Function,
-    CannotSendValueToSetData,
-    RelayCallBeforeStartTime,
-    RelayCallExpired
+    CannotSendValueToSetData
 } from "./LSP6Errors.sol";
 
 import {
@@ -382,18 +379,7 @@ abstract contract LSP6KeyManagerCore is
             revert InvalidPayload(payload);
         }
 
-        bytes memory encodedMessage = abi.encodePacked(
-            LSP6_VERSION,
-            block.chainid,
-            nonce,
-            validityTimestamps,
-            msgValue,
-            payload
-        );
-
-        address signer = address(this)
-            .toDataWithIntendedValidatorHash(encodedMessage)
-            .recover(signature);
+        // TODO inherit LSP25 and implement verification function
 
         bool isSetData = false;
         if (
@@ -404,26 +390,6 @@ abstract contract LSP6KeyManagerCore is
         }
 
         bool isReentrantCall = _nonReentrantBefore(isSetData, signer);
-
-        if (!_isValidNonce(signer, nonce)) {
-            revert InvalidRelayNonce(signer, nonce, signature);
-        }
-
-        // increase nonce after successful verification
-        _nonceStore[signer][nonce >> 128]++;
-
-        if (validityTimestamps != 0) {
-            uint128 startingTimestamp = uint128(validityTimestamps >> 128);
-            uint128 endingTimestamp = uint128(validityTimestamps);
-
-            // solhint-disable not-rely-on-time
-            if (block.timestamp < startingTimestamp) {
-                revert RelayCallBeforeStartTime();
-            }
-            if (block.timestamp > endingTimestamp) {
-                revert RelayCallExpired();
-            }
-        }
 
         _verifyPermissions(signer, msgValue, payload);
         emit VerifiedCall(signer, msgValue, bytes4(payload));
@@ -457,25 +423,6 @@ abstract contract LSP6KeyManagerCore is
         );
 
         return result.length != 0 ? abi.decode(result, (bytes)) : result;
-    }
-
-    /**
-     * @notice verify the nonce `_idx` for `_from` (obtained via `getNonce(...)`)
-     * @dev "idx" is a 256bits (unsigned) integer, where:
-     *          - the 128 leftmost bits = channelId
-     *      and - the 128 rightmost bits = nonce within the channel
-     * @param from caller address
-     * @param idx (channel id + nonce within the channel)
-     */
-    function _isValidNonce(
-        address from,
-        uint256 idx
-    ) internal view virtual returns (bool) {
-        uint256 mask = ~uint128(0);
-        // Alternatively:
-        // uint256 mask = (1<<128)-1;
-        // uint256 mask = 0xffffffffffffffffffffffffffffffff;
-        return (idx & mask) == (_nonceStore[from][idx >> 128]);
     }
 
     /**
