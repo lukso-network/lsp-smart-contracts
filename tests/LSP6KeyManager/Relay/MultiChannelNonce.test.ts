@@ -10,7 +10,7 @@ import {
   ALL_PERMISSIONS,
   ERC725YDataKeys,
   OPERATION_TYPES,
-  LSP6_VERSION,
+  LSP25_VERSION,
   PERMISSIONS,
   CALLTYPE,
 } from '../../../constants';
@@ -108,7 +108,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const encodedMessage = ethers.utils.solidityPack(
           ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
-            LSP6_VERSION,
+            LSP25_VERSION,
             HARDHAT_CHAINID,
             latestNonce,
             validityTimestamps,
@@ -173,7 +173,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const encodedMessage = ethers.utils.solidityPack(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
-            LSP6_VERSION,
+            LSP25_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
             validityTimestamps,
@@ -224,7 +224,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const encodedMessage = ethers.utils.solidityPack(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
-            LSP6_VERSION,
+            LSP25_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
             validityTimestamps,
@@ -280,7 +280,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const encodedMessage = ethers.utils.solidityPack(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
-            LSP6_VERSION,
+            LSP25_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
             validityTimestamps,
@@ -331,7 +331,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const encodedMessage = ethers.utils.solidityPack(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
-            LSP6_VERSION,
+            LSP25_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
             validityTimestamps,
@@ -387,7 +387,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const encodedMessage = ethers.utils.solidityPack(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
-            LSP6_VERSION,
+            LSP25_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
             validityTimestamps,
@@ -438,7 +438,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const encodedMessage = ethers.utils.solidityPack(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
-            LSP6_VERSION,
+            LSP25_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
             validityTimestamps,
@@ -493,7 +493,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const encodedMessage = ethers.utils.solidityPack(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
-            LSP6_VERSION,
+            LSP25_VERSION,
             HARDHAT_CHAINID,
             nonceBefore,
             validityTimestamps,
