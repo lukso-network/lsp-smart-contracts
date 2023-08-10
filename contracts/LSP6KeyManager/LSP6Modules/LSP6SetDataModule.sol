@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.5;
 
+// interfaces
+import {
+    ILSP20CallVerifier as ILSP20
+} from "../../LSP20CallVerification/ILSP20CallVerifier.sol";
+
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {
@@ -43,7 +48,8 @@ import {
     InvalidEncodedAllowedERC725YDataKeys,
     NoERC725YDataKeysAllowed,
     NotAllowedERC725YDataKey,
-    NotAuthorised
+    NotAuthorised,
+    KeyManagerCannotBeSetAsExtensionForLSP20Functions
 } from "../LSP6Errors.sol";
 
 abstract contract LSP6SetDataModule {
@@ -299,6 +305,18 @@ abstract contract LSP6SetDataModule {
 
             // LSP17Extension:<bytes4>
         } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
+            // reverts when the address of the Key Manager is being set as extensions for lsp20 functions
+            bytes4 selector = bytes4(inputDataKey << 96);
+
+            if (
+                (selector == ILSP20.lsp20VerifyCall.selector ||
+                    selector == ILSP20.lsp20VerifyCallResult.selector)
+            ) {
+                if (address(bytes20(inputDataValue)) == address(this)) {
+                    revert KeyManagerCannotBeSetAsExtensionForLSP20Functions();
+                }
+            }
+
             // same as above. If controller has both permissions, do not read the `target` storage
             // to save gas by avoiding an extra external `view` call.
             if (

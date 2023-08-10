@@ -1,9 +1,20 @@
+<!-- This file is auto-generated. Do not edit! -->
+<!-- Check `@lukso-network/lsp-smart-contracts/CONTRIBUTING.md#solidity-code-comments` for more information. -->
+
+
 {{@if (it.name)}}
 # {{it.name}}
 {{/if}}
 
 
-:::info Soldity contract
+:::info Standard Specifications
+
+{{@generateContractSpecsDetails(it.name) => specsDetails}}
+[`{{specsDetails.specsName}}`]({{specsDetails.specsLink}})
+{{/generateContractSpecsDetails}}
+
+:::
+:::info Solidity implementation
 
 [`{{it.name}}.sol`]({{@generateContractLink(it.name) /}})
 
@@ -32,7 +43,11 @@
 {{@if (Object.keys(it.methods).length > 0)}}
 
 
-## Methods
+## Public Methods
+
+
+Public methods are accessible externally from users, allowing interaction with this function from dApps or other smart contracts.
+When marked as 'public', a method can be called both externally and internally, on the other hand, when marked as 'external', a method can only be called externally.
 
 
 {{@splitMethods(it.methods) => methods}}
@@ -41,7 +56,7 @@
 ### {{key.split('(')[0]}}
 
 
-:::note Links{{'\n\n'}}{{@generateAdditionalMethodInfo(it.name, val.code) /}}{{'\n\n'}}:::
+:::note References{{'\n\n'}}{{@generateAdditionalMethodInfo(it.name, val.code) /}}{{'\n\n'}}:::
 
 
 {{@if (val['custom:info'])}}
@@ -65,7 +80,7 @@
 
 
 ```solidity
-{{val.code}};
+{{@formatDisplayedCode(val.code) /}};
 ```
 
 
@@ -99,7 +114,7 @@
 | Name | Type | Description |
 |---|:-:|---|
 {{@foreach(val.inputs) => key, val}}
-| `{{key}}` | `{{val.type}}` | {{val.description ? val.description : '-' }} |
+| `{{key}}` | `{{@formatParamType(val.type) /}}` | {{@formatParamDescription(val.description) /}} |
 {{/foreach}}
 {{/if}}
 
@@ -110,14 +125,104 @@
 | Name | Type | Description |
 |---|:-:|---|
 {{@foreach(val.outputs) => key, val}}
-| {{@if (key[0] === '_')}}`{{key.substring(1)}}`{{#else}}`{{key}}`{{/if}} | `{{val.type}}` | {{val.description ? val.description : '-' }} |
+| {{@if (key[0] === '_')}}`{{key.substring(1)}}`{{#else}}`{{key}}`{{/if}} | `{{@formatParamType(val.type) /}}` | {{@formatParamDescription(val.description) /}} |
 {{/foreach}}
 {{/if}}
+<br/>
 
 
 {{/foreach}}
 {{/each}}
 {{/splitMethods}}
+
+
+{{/if}}
+
+
+{{@if (Object.keys(it.internalMethods).length > 0)}}
+
+## Internal Methods
+
+Any method labeled as `internal` serves as utility function within the contract. They can be used when writing solidity contracts that inherit from this contract. These methods can be extended or modified by overriding their internal behavior to suit specific needs.
+
+Internal functions cannot be called externally, whether from other smart contracts, dApp interfaces, or backend services. Their restricted accessibility ensures that they remain exclusively available within the context of the current contract, promoting controlled and encapsulated usage of these internal utilities.
+
+
+{{@foreach(it.internalMethods) => key, val}}
+### {{key.split('(')[0]}}
+
+{{@if (val['custom:info'])}}
+:::info{{'\n\n'}}{{_ val['custom:info'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+{{/if}}
+
+
+{{@if (val['custom:hint'])}}
+:::tip Hint{{'\n\n'}}{{_ val['custom:hint'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+{{/if}}
+
+
+{{@if (val['custom:warning'])}}
+:::caution Warning{{'\n\n'}}{{_ val['custom:warning'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+{{/if}}
+
+
+{{@if (val['custom:danger'])}}
+:::danger{{'\n\n'}}{{_ val['custom:danger'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+{{/if}}
+
+
+```solidity
+{{@formatDisplayedCode(val.code) /}};
+```
+
+
+{{@if (val.notice)}}
+*{{@parseNotice(val.notice) /}}*
+{{/if}}
+
+
+{{@if (val.details)}}
+{{@parseDetails(val.details) /}}
+{{/if}}
+
+
+{{@if (val['custom:requirements'])}}
+<blockquote>{{'\n\n'}}
+{{@parseCustomRequirements(val['custom:requirements']) /}}
+{{'\n\n'}}</blockquote>
+{{/if}}
+
+
+{{@if (val['custom:events'])}}
+<blockquote>{{'\n\n'}}
+{{@parseCustomEvents(val['custom:events']) /}}
+{{'\n\n'}}</blockquote>
+{{/if}}
+
+
+{{@if (Object.keys(val.inputs).length > 0)}}
+#### Parameters
+
+| Name | Type | Description |
+|---|:-:|---|
+{{@foreach(val.inputs) => key, val}}
+| `{{key}}` | `{{@formatParamType(val.type) /}}` | {{@formatParamDescription(val.description) /}} |
+{{/foreach}}
+{{/if}}
+
+
+{{@if (Object.keys(val.outputs).length > 0)}}
+#### Returns
+
+| Name | Type | Description |
+|---|:-:|---|
+{{@foreach(val.outputs) => key, val}}
+| {{@if (key[0] === '_')}}`{{key.substring(1)}}`{{#else}}`{{key}}`{{/if}} | `{{@formatParamType(val.type) /}}` | {{@formatParamDescription(val.description) /}} |
+{{/foreach}}
+{{/if}}
+<br/>
+
+{{/foreach}}
 
 
 {{/if}}
@@ -131,11 +236,11 @@
 ### {{key}}
 
 
-:::note Links{{'\n\n'}}{{@generateAdditionalEventInfo(it.name, val.code) /}}{{'\n\n'}}:::
+:::note References{{'\n\n'}}{{@generateAdditionalEventInfo(it.name, val.code) /}}{{'\n\n'}}:::
 
 
 ```solidity
-{{val.code}};
+{{@formatDisplayedCode(val.code) /}};
 ```
 
 
@@ -156,9 +261,10 @@
 | Name | Type | Description |
 |---|:-:|---|
 {{@foreach(val.inputs) => key, val}}
-| `{{key}}` {{@if (val.indexed)}}**`indexed`**{{/if}} | `{{val.type}}` | {{val.description ? val.description : '-' }} |
+| `{{key}}` {{@if (val.indexed)}}**`indexed`**{{/if}} | `{{@formatParamType(val.type) /}}` | {{@formatParamDescription(val.description) /}} |
 {{/foreach}}
 {{/if}}
+<br/>
 
 {{/foreach}}
 {{/if}}
@@ -172,11 +278,11 @@
 ### {{key}}
 
 
-:::note Links{{'\n\n'}}{{@generateAdditionalErrorInfo(it.name, val.code) /}}{{'\n\n'}}:::
+:::note References{{'\n\n'}}{{@generateAdditionalErrorInfo(it.name, val.code) /}}{{'\n\n'}}:::
 
 
 ```solidity
-{{val.code}};
+{{@formatDisplayedCode(val.code) /}};
 ```
 
 
@@ -196,9 +302,10 @@
 | Name | Type | Description |
 |---|:-:|---|
 {{@foreach(val.inputs) => key, val}}
-| `{{key}}` | `{{val.type}}` | {{val.description ? val.description : '-' }} |
+| `{{key}}` | `{{@formatParamType(val.type) /}}` | {{@formatParamDescription(val.description) /}} |
 {{/foreach}}
 {{/if}}
+<br/>
 
 {{/foreach}}
 {{/if}}

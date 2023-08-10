@@ -193,6 +193,86 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           const result = await context.universalProfile.getData(payloadParam.dataKey);
           expect(result).to.equal(payloadParam.dataValue);
         });
+
+        it('should revert when adding the KeyManager address as extensions for lsp20VerifyCall function', async () => {
+          const lsp20VerifyCallSelector =
+            context.keyManager.interface.getSighash('lsp20VerifyCall');
+
+          const payloadParam = {
+            dataKey:
+              ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+              lsp20VerifyCallSelector.slice(2) +
+              '00000000000000000000000000000000', // zero padded,
+            dataValue: context.keyManager.address,
+          };
+
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
+            payloadParam.dataKey,
+            payloadParam.dataValue,
+          ]);
+
+          await expect(
+            context.keyManager.connect(context.owner).execute(payload),
+          ).to.be.revertedWithCustomError(
+            context.keyManager,
+            'KeyManagerCannotBeSetAsExtensionForLSP20Functions',
+          );
+        });
+
+        it('should revert when adding the KeyManager address as extensions for lsp20VerifyCallResult function', async () => {
+          const lsp20VerifyCallResultSelector =
+            context.keyManager.interface.getSighash('lsp20VerifyCallResult');
+
+          const payloadParam = {
+            dataKey:
+              ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+              lsp20VerifyCallResultSelector.slice(2) +
+              '00000000000000000000000000000000', // zero padded,
+            dataValue: context.keyManager.address,
+          };
+
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
+            payloadParam.dataKey,
+            payloadParam.dataValue,
+          ]);
+
+          await expect(
+            context.keyManager.connect(context.owner).execute(payload),
+          ).to.be.revertedWithCustomError(
+            context.keyManager,
+            'KeyManagerCannotBeSetAsExtensionForLSP20Functions',
+          );
+        });
+
+        it('should pass when adding the random address as extensions for lsp20VerifyCall and lsp20VerifyCallResult functions', async () => {
+          const lsp20VerifyCallSelector =
+            context.keyManager.interface.getSighash('lsp20VerifyCall');
+
+          const lsp20VerifyCallResultSelector =
+            context.keyManager.interface.getSighash('lsp20VerifyCallResult');
+
+          const payloadParam = {
+            dataKeys: [
+              ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+                lsp20VerifyCallSelector.slice(2) +
+                '00000000000000000000000000000000',
+              ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+                lsp20VerifyCallResultSelector.slice(2) +
+                '00000000000000000000000000000000',
+            ], // zero padded,
+            dataValues: [context.accounts[2].address, context.accounts[3].address],
+          };
+
+          const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
+            payloadParam.dataKeys,
+            payloadParam.dataValues,
+          ]);
+
+          await context.keyManager.connect(context.owner).execute(payload);
+
+          const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
+          expect(result).to.deep.equal(payloadParam.dataValues);
+        });
       });
 
       describe('when caller is an address with ADD/CHANGE Extensions permission', () => {

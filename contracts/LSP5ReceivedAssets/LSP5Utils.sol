@@ -15,18 +15,18 @@ import "../LSP5ReceivedAssets/LSP5Constants.sol";
 import "../LSP7DigitalAsset/LSP7Constants.sol";
 
 /**
- * @dev reverts when the value stored under the 'LSP5ReceivedAssets[]' data key is not valid.
+ * @dev Reverts when the value stored under the 'LSP5ReceivedAssets[]' Array data key is not valid.
  *      The value stored under this data key should be exactly 16 bytes long.
  *
  *      Only possible valid values are:
  *      - any valid uint128 values
- *          i.e. 0x00000000000000000000000000000000 (zero), empty array, no assets received.
- *          i.e. 0x00000000000000000000000000000005 (non-zero), 5 array elements, 5 assets received.
+ *          _e.g: `0x00000000000000000000000000000000` (zero), empty array, no assets received._
+ *          _e.g. `0x00000000000000000000000000000005` (non-zero), 5 array elements, 5 assets received._
  *
- *      - 0x (nothing stored under this data key, equivalent to empty array)
+ *      - `0x` (nothing stored under this data key, equivalent to empty array)
  *
- * @param invalidValueStored the invalid value stored under the LSP5ReceivedAssets[] data key
- * @param invalidValueLength the invalid number of bytes stored under the LSP5ReceivedAssets[] data key (MUST be exactly 16 bytes long)
+ * @param invalidValueStored The invalid value stored under the `LSP5ReceivedAssets[]` Array data key.
+ * @param invalidValueLength The invalid number of bytes stored under the `LSP5ReceivedAssets[]` data key (MUST be exactly 16 bytes long).
  */
 error InvalidLSP5ReceivedAssetsArrayLength(
     bytes invalidValueStored,
@@ -34,32 +34,36 @@ error InvalidLSP5ReceivedAssetsArrayLength(
 );
 
 /**
- * @dev reverts when the `LSP5ReceivedAssets[]` array reaches its maximum limit (max(uint128))
- * @param notRegisteredAsset the address of the asset that could not be registered
+ * @dev Reverts when the `LSP5ReceivedAssets[]` Array reaches its maximum limit (`max(uint128)`).
+ * @param notRegisteredAsset The address of the asset that could not be registered.
  */
 error MaxLSP5ReceivedAssetsCountReached(address notRegisteredAsset);
 
 /**
- * @dev reverts when the received assets index is superior to uint128
- * @param index the received assets index
+ * @dev Reverts when the received assets index is superior to `max(uint128)`.
+ * @param index The received assets index.
  */
 error ReceivedAssetsIndexSuperiorToUint128(uint256 index);
 
 /**
- * @title LSP5Utils
+ * @title LSP5 Utility library.
  * @author Yamen Merhi <YamenMerhi>, Jean Cavallera <CJ42>
- * @dev LSP5Utils is a library of functions that are used to register and manage assets received by an ERC725Y smart contract
- *      based on the LSP5 - Received Assets standard
- *      https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-5-ReceivedAssets.md
+ * @dev LSP5Utils is a library of functions that can be used to register and manage assets under an ERC725Y smart contract.
+ * Based on the LSP5 Received Assets standard.
  */
 library LSP5Utils {
     /**
-     * @dev Generating the data keys/values to be set on the receiver address after receiving assets
-     * @param receiver The address receiving the asset and where the Keys should be added
-     * @param asset The address of the asset being received
-     * @param assetMapKey The map key of the asset being received containing the interfaceId of the
-     * asset and the index in the array
-     * @param interfaceID The interfaceID of the asset being received
+     * @dev Generate an array of data key/value pairs to be set on the receiver address after receiving assets.
+     *
+     * @param receiver The address receiving the asset and where the LSP5 data keys should be added.
+     * @param asset The address of the asset being received (_e.g: an LSP7 or LSP8 token_).
+     * @param assetMapKey The `LSP5ReceivedAssetMap:<asset>` data key of the asset being received containing the interfaceId of the
+     * asset and its index in the `LSP5ReceivedAssets[]` Array.
+     * @param interfaceID The interfaceID of the asset being received.
+     *
+     * @return keys An array of 3 x data keys: `LSP5ReceivedAssets[]`, `LSP5ReceivedAssets[index]` and `LSP5ReceivedAssetsMap:<asset>`.
+     * @return values An array of 3 x data values: the new length of `LSP5ReceivedAssets[]`, the address of the asset under `LSP5ReceivedAssets[index]`
+     * and the interfaceId + index stored under `LSP5ReceivedAssetsMap:<asset>`.
      */
     function generateReceivedAssetKeys(
         address receiver,
@@ -108,11 +112,16 @@ library LSP5Utils {
     }
 
     /**
-     * @dev Generating the data keys/values to be set on the sender address after sending assets
-     * @param sender The address sending the asset and where the Keys should be updated
-     * @param assetMapKey The map key of the asset being received containing the interfaceId of the
-     * asset and the index in the array
-     * @param assetIndex The index in the LSP5ReceivedAssets[] array
+     * @dev Generate an array of data key/value pairs to be set on the sender address after sending assets.
+     *
+     * @param sender The address sending the asset and where the LSP5 data keys should be updated.
+     * @param assetMapKey The `LSP5ReceivedAssetMap:<asset>` data key of the asset being sent containing the interfaceId of the
+     * asset and the index in the `LSP5ReceivedAssets[]` Array.
+     * @param assetIndex The index at which the asset is stored under the `LSP5ReceivedAssets[]` Array.
+     *
+     * @return keys An array of 3 x data keys: `LSP5ReceivedAssets[]`, `LSP5ReceivedAssets[index]` and `LSP5ReceivedAssetsMap:<asset>`.
+     * @return values An array of 3 x data values: the new length of `LSP5ReceivedAssets[]`, the address of the asset under `LSP5ReceivedAssets[index]`
+     * and the interfaceId + index stored under `LSP5ReceivedAssetsMap:<asset>`.
      */
     function generateSentAssetKeys(
         address sender,
@@ -241,6 +250,13 @@ library LSP5Utils {
         }
     }
 
+    /**
+     * @dev Get the total number of asset addresses stored under the `LSP5ReceivedAssets[]` Array data key.
+     * @param account The ERC725Y smart contract to read the storage from.
+     * @return The raw bytes stored under the `LSP5ReceivedAssets[]` data key.
+     *
+     * @custom:info This function does not return a number but the raw bytes stored under the `LSP5ReceivedAssets[]` Array data key.
+     */
     function getLSP5ReceivedAssetsCount(
         IERC725Y account
     ) internal view returns (bytes memory) {

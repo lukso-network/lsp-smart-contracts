@@ -5,19 +5,25 @@ pragma solidity ^0.8.4;
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
 /**
- * @title ERC725 Utility library to encode key types
- * @author Jean Cavallera (CJ-42)
- * @dev based on LSP2 - ERC725Y JSON Schema
- *      https://github.com/lukso-network/LIPs/blob/master/LSPs/LSP-2-ERC725YJSONSchema.md
+ * @title LSP2 Utility library.
+ * @author Jean Cavallera <CJ42>, Yamen Merhi <YamenMerhi>, Daniel Afteni <B00ste>
+ * @dev LSP2Utils is a library of utility functions that can be used to encode data key of different key type
+ * defined on the LSP2 standard.
+ * Based on LSP2 ERC725Y JSON Schema standard.
  */
 library LSP2Utils {
     using BytesLib for bytes;
 
     /**
-     * @dev Generates a data key of keyType Singleton
-     * @param keyName The string to hash to generate a Singleton data key
-     * @return a bytes32 dataKey
+     * @dev Generates a data key of keyType Singleton by hashing the string `keyName`. As:
      *
+     * ```
+     * keccak256("keyName")
+     * ```
+     *
+     * @param keyName The string to hash to generate a Singleton data key.
+     *
+     * @return The generated `bytes32` data key of key type Singleton.
      */
     function generateSingletonKey(
         string memory keyName
@@ -26,13 +32,23 @@ library LSP2Utils {
     }
 
     /**
-     * @dev Generates a data key of keyType Array by hashing `keyName`.
-     * @param keyName The string that will be used to generate an data key of keyType Array
+     * @dev Generates a data key of keyType Array by hashing `arrayKeyName`. As:
+     *
+     * ```
+     * keccak256("arrayKeyName[]")
+     * ```
+     *
+     * @param arrayKeyName The string that will be used to generate a data key of key type Array.
+     *
+     * @return The generated `bytes32` data key of key type Array.
+     *
+     * @custom:requirements
+     * - The `keyName` must include at the end of the string the square brackets `"[]"`.
      */
     function generateArrayKey(
-        string memory keyName
+        string memory arrayKeyName
     ) internal pure returns (bytes32) {
-        bytes memory dataKey = bytes(keyName);
+        bytes memory dataKey = bytes(arrayKeyName);
         require(dataKey.length >= 2, "MUST be longer than 2 characters");
         require(
             dataKey[dataKey.length - 2] == 0x5b && // "[" in utf8 encoded
@@ -44,10 +60,17 @@ library LSP2Utils {
     }
 
     /**
-     * @dev Generates a Array index data key by concatenating the first 16 bytes of `arrayKey`
-     * and `index` transformed from uint256 to bytes16 (uint256 -> uint128 -> bytes16)
-     * @param arrayKey The key from which we're getting the first half of the Array index data key from
-     * @param index Used to generate the second half of the Array index data key
+     * @dev Generates an Array data key at a specific `index` by concatenating together the first 16 bytes of `arrayKey`
+     * with the 16 bytes of `index`. As:
+     *
+     * ```
+     * arrayKey[index]
+     * ```
+     *
+     * @param arrayKey The Array data key from which to generate the Array data key at a specific `index`.
+     * @param index The index number in the `arrayKey`.
+     *
+     * @return The generated `bytes32` data key of key type Array at a specific `index`.
      */
     function generateArrayElementKeyAtIndex(
         bytes32 arrayKey,
@@ -61,12 +84,16 @@ library LSP2Utils {
     }
 
     /**
-     * @dev Generates a data key of keyType Mapping by hashing two strings:
-     * <bytes10(keccak256(firstWord))>:<bytes2(0)>:<bytes20(keccak256(firstWord))>
-     * @param firstWord Used to generate a hash and its first 10 bytes
-     * are used for the first part of the data key of keyType Mapping
-     * @param lastWord Used to generate a hash and its first 20 bytes
-     * are used for the last part of the data key of keyType Mapping
+     * @dev Generates a data key of key type Mapping that map `firstWord` to `lastWord`. This is done by hashing two strings words `firstWord` and `lastWord`. As:
+     *
+     * ```
+     * bytes10(firstWordHash):0000:bytes20(lastWordHash)
+     * ```
+     *
+     * @param firstWord The word to retrieve the first 10 bytes of its hash.
+     * @param lastWord The word to retrieve the first 10 bytes of its hash.
+     *
+     * @return The generated `bytes32` data key of key type Mapping that map `firstWord` to a specific `lastWord`.
      */
     function generateMappingKey(
         string memory firstWord,
@@ -85,11 +112,17 @@ library LSP2Utils {
     }
 
     /**
-     * @dev Generates a data key of keyType Mapping by hashing a string and concatenating it with an address:
-     * <bytes10(keccak256(firstWord))>:<bytes2(0)>:<bytes20(addr)>
-     * @param firstWord Used to generate a hash and its first 10 bytes
-     * are used for the first part of the data key of keyType Mapping
-     * @param addr used for the last part of the data key of keyType Mapping
+     * @dev Generates a data key of key type Mapping that map `firstWord` to an address `addr`.
+     * This is done by hashing the string word `firstWord` and concatenating its first 10 bytes with `addr`. As:
+     *
+     * ```
+     * bytes10(firstWordHash):0000:<address>
+     * ```
+     *
+     * @param firstWord The word to retrieve the first 10 bytes of its hash.
+     * @param addr An address to map `firstWord` to.
+     *
+     * @return The generated `bytes32` data key of key type Mapping that map `firstWord` to a specific address `addr`.
      */
     function generateMappingKey(
         string memory firstWord,
@@ -107,10 +140,16 @@ library LSP2Utils {
     }
 
     /**
-     * @dev Generate a data key of keyType Mapping
-     * <bytes10keyPrefix>:<bytes2(0)>:<bytes20Value>
-     * @param keyPrefix First part of the data key of keyType Mapping
-     * @param bytes20Value Second part of the data key of keyType Mapping
+     * @dev Generate a data key of key type Mapping that map a 10 bytes `keyPrefix` to a `bytes20Value`. As:
+     *
+     * ```
+     * keyPrefix:bytes20Value
+     * ```
+     *
+     * @param keyPrefix The first part of the data key of key type Mapping.
+     * @param bytes20Value The second part of the data key of key type Mapping.
+     *
+     * @return The generated `bytes32` data key of key type Mapping that map a `keyPrefix` to a specific `bytes20Value`.
      */
     function generateMappingKey(
         bytes10 keyPrefix,
@@ -125,13 +164,18 @@ library LSP2Utils {
     }
 
     /**
-     * @dev Generate a data key of keyType MappingWithGrouping by using two strings and an address
-     * <bytes6(keccak256(firstWord))>:<bytes4(keccak256(secondWord))>:<bytes2(0)>:<bytes20(addr)>
-     * @param firstWord Used to generate a hash and its first 6 bytes
-     * are used for the first part of the data key of keyType MappingWithGrouping
-     * @param secondWord Used to generate a hash and its first 4 bytes
-     * are used for the second part of the data key of keyType MappingWithGrouping
-     * @param addr Used for the last part of the data key of keyType MappingWithGrouping
+     * @dev Generate a data key of key type MappingWithGrouping by using two strings `firstWord`
+     * mapped to a `secondWord` mapped itself to a specific address `addr`. As:
+     *
+     * ```
+     * bytes6(keccak256("firstWord")):bytes4(keccak256("secondWord")):0000:<address>
+     * ```
+     *
+     * @param firstWord The word to retrieve the first 6 bytes of its hash.
+     * @param secondWord The word to retrieve the first 4 bytes of its hash.
+     * @param addr The address that makes the last part of the MappingWithGrouping.
+     *
+     * @return The generated `bytes32` data key of key type MappingWithGrouping that map a `firstWord` to a `secondWord` to a specific address `addr`.
      */
     function generateMappingWithGroupingKey(
         string memory firstWord,
@@ -152,11 +196,17 @@ library LSP2Utils {
     }
 
     /**
-     * @dev Generate a data key of keyType MappingWithGrouping
-     * <bytes6keyPrefix>:<bytes4mapPrefix>:<bytes2(0)>:<subMapKey>
-     * @param keyPrefix the first part of the data key of keyType MappingWithGrouping
-     * @param mapPrefix Used for the second part (bytes4) of the data key of keyType MappingWithGrouping
-     * @param subMapKey Used for the last part (bytes20) of the data key of keyType MappingWithGrouping
+     * @dev Generate a data key of key type MappingWithGrouping that map a `keyPrefix` to an other `mapPrefix` to a specific `subMapKey`. As:
+     *
+     * ```
+     * keyPrefix:mapPrefix:0000:subMapKey
+     * ```
+     *
+     * @param keyPrefix The first part (6 bytes) of the data key of keyType MappingWithGrouping.
+     * @param mapPrefix The second part (4 bytes) of the data key of keyType MappingWithGrouping.
+     * @param subMapKey The last part (bytes20) of the data key of keyType MappingWithGrouping.
+     *
+     * @return The generated `bytes32` data key of key type MappingWithGrouping that map a `keyPrefix` to a `mapPrefix` to a specific `subMapKey`.
      */
     function generateMappingWithGroupingKey(
         bytes6 keyPrefix,
@@ -173,10 +223,13 @@ library LSP2Utils {
     }
 
     /**
-     * @dev Generate a data key of keyType MappingWithGrouping
-     * <bytes10keyPrefix>:<bytes2(0)>:<bytes20Value>
-     * @param keyPrefix Used for the first part of the data key of keyType MappingWithGrouping
-     * @param bytes20Value Used for the first last of the data key of keyType MappingWithGrouping
+     * @dev Generate a data key of key type MappingWithGrouping that map a 10 bytes `keyPrefix` to a specific `bytes20Value`. As:
+     *
+     * @param keyPrefix The first part of the data key of keyType MappingWithGrouping.
+     * @param bytes20Value The last of the data key of keyType MappingWithGrouping.
+     *
+     * @return The generated `bytes32` data key of key type MappingWithGrouping that map a `keyPrefix`
+     * (containing the first and second mapped word) to a specific `bytes20Value`.
      */
     function generateMappingWithGroupingKey(
         bytes10 keyPrefix,
@@ -191,10 +244,10 @@ library LSP2Utils {
     }
 
     /**
-     * @dev Generate a JSONURL valueContent
-     * @param hashFunction The function used to hash the JSON file
-     * @param json Bytes value of the JSON file
-     * @param url The URL where the JSON file is hosted
+     * @dev Generate a JSONURL value content.
+     * @param hashFunction The function used to hash the JSON file.
+     * @param json Bytes value of the JSON file.
+     * @param url The URL where the JSON file is hosted.
      */
     function generateJSONURLValue(
         string memory hashFunction,
@@ -208,10 +261,13 @@ library LSP2Utils {
     }
 
     /**
-     * @dev Generate a ASSETURL valueContent
-     * @param hashFunction The function used to hash the JSON file
-     * @param assetBytes Bytes value of the JSON file
-     * @param url The URL where the JSON file is hosted
+     * @dev Generate a ASSETURL value content.
+     *
+     * @param hashFunction The function used to hash the JSON file.
+     * @param assetBytes Bytes value of the JSON file.
+     * @param url The URL where the JSON file is hosted.
+     *
+     * @return The encoded value as an `ASSETURL`.
      */
     function generateASSETURLValue(
         string memory hashFunction,
@@ -225,8 +281,11 @@ library LSP2Utils {
     }
 
     /**
-     * Verifing if `data` is an encoded array
-     * @param data The value that is to be verified
+     * @dev Verify if `data` is an abi-encoded array.
+     *
+     * @param data The bytes value to verify.
+     *
+     * @return `true` if the `data` represents an abi-encoded array, `false` otherwise.
      */
     function isEncodedArray(bytes memory data) internal pure returns (bool) {
         uint256 nbOfBytes = data.length;
@@ -245,8 +304,11 @@ library LSP2Utils {
     }
 
     /**
-     * Verifing if `data` is an encoded array of addresses (address[])
-     * @param data The value that is to be verified
+     * @dev Verify if `data` is an abi-encoded array of addresses (`address[]`) encoded according to the ABI specs.
+     *
+     * @param data The bytes value to verify.
+     *
+     * @return `true` if the `data` represents an abi-encoded array of addresses, `false` otherwise.
      */
     function isEncodedArrayOfAddresses(
         bytes memory data
@@ -277,8 +339,11 @@ library LSP2Utils {
     }
 
     /**
-     * @dev verify that `data` is an array of bytes4 (bytes4[]) encoded according to the Solidity ABI specs.
-     * @param data The value that is to be verified
+     * @dev Verify if `data` is an abi-array of `bytes4` values (`bytes4[]`) encoded according to the ABI specs.
+     *
+     * @param data The bytes value to verify.
+     *
+     * @return `true` if the `data` represents an abi-encoded array of `bytes4`, `false` otherwise.
      */
     function isBytes4EncodedArray(
         bytes memory data
@@ -307,7 +372,11 @@ library LSP2Utils {
     }
 
     /**
-     * @dev Verify the validity of the `compactBytesArray` according to LSP2
+     * @dev Verify if `data` is a valid array of value encoded as a `CompactBytesArray` according to the LSP2 `CompactBytesArray` valueType specification.
+     *
+     * @param compactBytesArray The bytes value to verify.
+     *
+     * @return `true` if the `data` is correctly encoded CompactBytesArray, `false` otherwise.
      */
     function isCompactBytesArray(
         bytes memory compactBytesArray
