@@ -156,23 +156,20 @@ contract LSP9VaultCore is
         if (extension == address(0))
             revert NoExtensionFoundForFunctionSelector(msg.sig);
 
-        bytes memory calldataWithCallerInfos = abi.encodePacked(
-            callData,
-            msg.sender,
-            msg.value
-        );
-
         (bool success, bytes memory result) = extension.call(
-            calldataWithCallerInfos
+            abi.encodePacked(callData, msg.sender, msg.value)
         );
 
         if (success) {
             return result;
         } else {
-            // `result` -> first word in memory where the length of `result` is stored
-            // `add(result, 32)` -> next word in memory is where the `result` data starts
+            // `mload(result)` -> offset in memory where `result.length` is located
+            // `add(result, 32)` -> offset in memory where `result` data starts
+            // solhint-disable no-inline-assembly
+            /// @solidity memory-safe-assembly
             assembly {
-                revert(add(result, 32), mload(result))
+                let resultdata_size := mload(result)
+                revert(add(result, 32), resultdata_size)
             }
         }
     }
