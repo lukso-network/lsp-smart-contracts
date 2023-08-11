@@ -205,7 +205,7 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
             await expect(tx).to.not.be.reverted;
 
             expect(tx)
-              .to.emit(context.keyManager, 'VerifiedCall')
+              .to.emit(context.keyManager, 'PermissionsVerified')
               .withArgs(addressCanMakeCallWithAllowedCalls.address, 0, '0x00000000');
           });
         });

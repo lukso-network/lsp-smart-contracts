@@ -259,7 +259,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               );
 
             expect(tx)
-              .to.emit(context.keyManager, 'VerifiedCall')
+              .to.emit(context.keyManager, 'PermissionsVerified')
               .withArgs(
                 context.accounts[1].address,
                 signedMessageParams.msgValue,

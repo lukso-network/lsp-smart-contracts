@@ -298,7 +298,7 @@ abstract contract LSP6KeyManagerCore is
             bool isReentrantCall = _nonReentrantBefore(isSetData, caller);
 
             _verifyPermissions(caller, msgValue, data);
-            emit VerifiedCall(caller, msgValue, bytes4(data));
+            emit PermissionsVerified(caller, msgValue, bytes4(data));
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
@@ -363,7 +363,7 @@ abstract contract LSP6KeyManagerCore is
         bool isReentrantCall = _nonReentrantBefore(isSetData, msg.sender);
 
         _verifyPermissions(msg.sender, msgValue, payload);
-        emit VerifiedCall(msg.sender, msgValue, bytes4(payload));
+        emit PermissionsVerified(msg.sender, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
 
@@ -429,7 +429,7 @@ abstract contract LSP6KeyManagerCore is
         }
 
         _verifyPermissions(signer, msgValue, payload);
-        emit VerifiedCall(signer, msgValue, bytes4(payload));
+        emit PermissionsVerified(signer, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
 
