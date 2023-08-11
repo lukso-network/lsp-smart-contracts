@@ -6,14 +6,17 @@ import {LSP6KeyManagerCore} from "./LSP6KeyManagerCore.sol";
 import {InvalidLSP6Target} from "./LSP6Errors.sol";
 
 /**
- * @title Implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
+ * @title Implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage.
  * @author Fabian Vogelsteller <frozeman>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
- * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
+ * @dev All the permissions can be set on the ERC725 Account using `setData(bytes32,bytes)` or `setData(bytes32[],bytes[])`.
  */
 contract LSP6KeyManager is LSP6KeyManagerCore {
     /**
-     * @notice Initiate the account with the address of the ERC725Account contract and sets LSP6KeyManager InterfaceId
-     * @param target_ The address of the ER725Account to control
+     * @notice Deploying a LSP6KeyManager linked to the contract at address `target_`.
+     * @dev Deploy a Key Manager and set the `target_` address in the contract storage,
+     * making this Key Manager linked to this `target_` contract.
+     *
+     * @param target_ The address of the contract to control and forward calldata payloads to.
      */
     constructor(address target_) {
         if (target_ == address(0)) revert InvalidLSP6Target();

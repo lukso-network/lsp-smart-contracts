@@ -428,7 +428,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @notice Achieves the goal of [LSP1-UniversalReceiver] by allowing the account to be notified about incoming/outgoing
+     * @notice Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be notified about incoming/outgoing
      * transactions and enabling reactions to these actions.
      *
      * The reaction is achieved by having two external contracts (UniversalReceiverDelegates) that react on the whole transaction

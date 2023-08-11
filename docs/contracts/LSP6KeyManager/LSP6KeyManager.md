@@ -1,0 +1,1749 @@
+<!-- This file is auto-generated. Do not edit! -->
+<!-- Check `@lukso-network/lsp-smart-contracts/CONTRIBUTING.md#solidity-code-comments` for more information. -->
+
+# LSP6KeyManager
+
+:::info Standard Specifications
+
+[`LSP-6-KeyManager`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md)
+
+:::
+:::info Solidity implementation
+
+[`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+
+:::
+
+> Implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage.
+
+All the permissions can be set on the ERC725 Account using `setData(bytes32,bytes)` or `setData(bytes32[],bytes[])`.
+
+## Public Methods
+
+Public methods are accessible externally from users, allowing interaction with this function from dApps or other smart contracts.
+When marked as 'public', a method can be called both externally and internally, on the other hand, when marked as 'external', a method can only be called externally.
+
+### constructor
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#constructor)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+
+:::
+
+```solidity
+constructor(address target_);
+```
+
+_Deploying a LSP6KeyManager linked to the contract at address `target_`._
+
+Deploy a Key Manager and set the `target_` address in the contract storage, making this Key Manager linked to this `target_` contract.
+
+#### Parameters
+
+| Name      |   Type    | Description                                                              |
+| --------- | :-------: | ------------------------------------------------------------------------ |
+| `target_` | `address` | The address of the contract to control and forward calldata payloads to. |
+
+<br/>
+
+### execute
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#execute)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Function signature: `execute(bytes)`
+- Function selector: `0x09c5eabe`
+
+:::
+
+```solidity
+function execute(bytes payload) external payable returns (bytes);
+```
+
+_Executing the following payload on the linked contract: `payload`_
+
+Execute A `payload` on the linked [`target`](#target) contract after having verified the permissions associated with the function being run. The `payload` MUST be a valid abi-encoded function call of one of the functions present in the linked [`target`](#target), otherwise the call will fail. The linked [`target`](#target) will return some data on successful execution, or revert on failure.
+
+<blockquote>
+
+**Emitted events:**
+
+- VerifiedCall event when the permissions related to `payload` have been verified successfully.
+
+</blockquote>
+
+#### Parameters
+
+| Name      |  Type   | Description                                                      |
+| --------- | :-----: | ---------------------------------------------------------------- |
+| `payload` | `bytes` | The abi-encoded function call to execute on the linked {target}. |
+
+#### Returns
+
+| Name |  Type   | Description                                                                  |
+| ---- | :-----: | ---------------------------------------------------------------------------- |
+| `0`  | `bytes` | The abi-decoded data returned by the function called on the linked {target}. |
+
+<br/>
+
+### executeBatch
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#executebatch)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Function signature: `executeBatch(uint256[],bytes[])`
+- Function selector: `0xbf0176ff`
+
+:::
+
+```solidity
+function executeBatch(
+  uint256[] values,
+  bytes[] payloads
+) external payable returns (bytes[]);
+```
+
+\*Executing the following batch of payloads and sensind on the linked contract.
+
+- payloads: `payloads`
+
+- values transferred for each payload: `values`\*
+
+Same as [`execute`](#execute) but execute a batch of payloads (abi-encoded function calls) in a single transaction.
+
+<blockquote>
+
+**Emitted events:**
+
+- VerifiedCall event for each permissions related to each `payload` that have been verified successfully.
+
+</blockquote>
+
+#### Parameters
+
+| Name       |    Type     | Description                                                                            |
+| ---------- | :---------: | -------------------------------------------------------------------------------------- |
+| `values`   | `uint256[]` | An array of amount of native tokens to be transferred for each `payload`.              |
+| `payloads` |  `bytes[]`  | An array of abi-encoded function calls to execute successively on the linked {target}. |
+
+#### Returns
+
+| Name |   Type    | Description                                                                           |
+| ---- | :-------: | ------------------------------------------------------------------------------------- |
+| `0`  | `bytes[]` | An array of abi-decoded data returned by the functions called on the linked {target}. |
+
+<br/>
+
+### executeRelayCall
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#executerelaycall)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Function signature: `executeRelayCall(bytes,uint256,uint256,bytes)`
+- Function selector: `0x4c8a4e74`
+
+:::
+
+:::tip Hint
+
+You can use `validityTimestamps == 0` to define an `executeRelayCall` transaction that is indefinitely valid, meaning that does not require to start from a specific date/time, or that has an expiration date/time/If you are looking to learn how to sign and execute relay transactions via the Key Manager, see our Javascript step by step guide [_&quot;Execute Relay Transactions&quot;_](../../guides/key-manager/execute-relay-transactions.md). See the LSP6 Standard page for more details on how to [generate a valid signature for Execute Relay Call](../universal-profile/lsp6-key-manager.md#how-to-sign-relay-transactions).
+
+:::
+
+```solidity
+function executeRelayCall(
+  bytes signature,
+  uint256 nonce,
+  uint256 validityTimestamps,
+  bytes payload
+) external payable returns (bytes);
+```
+
+_Executing a relay call (= meta-transaction)._
+
+Allows any address (executor) to execute a payload (= abi-encoded function call) in the linked [`target`](#target) given they have a signed message from a controller with some permissions.
+
+<blockquote>
+
+**Emitted events:**
+
+- [`VerifiedCall`](#verifiedcall) event when the permissions related to `payload` have been verified successfully.
+
+</blockquote>
+
+#### Parameters
+
+| Name                 |   Type    | Description                                                                                                                                                            |
+| -------------------- | :-------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `signature`          |  `bytes`  | A 65 bytes long signature for a meta transaction according to LSP6.                                                                                                    |
+| `nonce`              | `uint256` | The nonce of the address that signed the calldata (in a specific `_channel`), obtained via {getNonce}. Used to prevent replay attack.                                  |
+| `validityTimestamps` | `uint256` | Two `uint128` timestamps concatenated together that describes when the relay transaction is valid "from" (left `uint128`) and "until" as a deadline (right `uint128`). |
+| `payload`            |  `bytes`  | The abi-encoded function call to execute on the linked {target}.                                                                                                       |
+
+#### Returns
+
+| Name |  Type   | Description                                                            |
+| ---- | :-----: | ---------------------------------------------------------------------- |
+| `0`  | `bytes` | The data being returned by the function called on the linked {target}. |
+
+<br/>
+
+### executeRelayCallBatch
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#executerelaycallbatch)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Function signature: `executeRelayCallBatch(bytes[],uint256[],uint256[],uint256[],bytes[])`
+- Function selector: `0xa20856a5`
+
+:::
+
+```solidity
+function executeRelayCallBatch(
+  bytes[] signatures,
+  uint256[] nonces,
+  uint256[] validityTimestamps,
+  uint256[] values,
+  bytes[] payloads
+) external payable returns (bytes[]);
+```
+
+_Executing a batch of relay calls (= meta-transactions)._
+
+Same as [`executeRelayCall`](#executerelaycall) but execute a batch of signed calldata payloads (abi-encoded function calls) in a single transaction. The signed transactions can be from multiple controllers, not necessarely the same controller signer, as long as each of these controllers that signed have the right permissions related to the calldata `payload` they signed.
+
+<blockquote>
+
+**Requirements:**
+
+- the length of `signatures`, `nonces`, `validityTimestamps`, `values` and `payloads` MUST be the same.
+- the value sent to this function (`msg.value`) MUST be equal to the sum of all `values` in the batch. There should not be any excess value sent to this function.
+
+</blockquote>
+
+#### Parameters
+
+| Name                 |    Type     | Description                                                                                                                                                |
+| -------------------- | :---------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `signatures`         |  `bytes[]`  | An array of 65 bytes long signatures for meta transactions according to LSP6.                                                                              |
+| `nonces`             | `uint256[]` | An array of nonces of the addresses that signed the calldata payloads (in specific channels). Obtained via {getNonce}. Used to prevent replay attack.      |
+| `validityTimestamps` | `uint256[]` | An array of two `uint128` concatenated timestamps that describe when the relay transaction is valid "from" (left `uint128`) and "until" (right `uint128`). |
+| `values`             | `uint256[]` | An array of amount of native tokens to be transferred for each calldata `payload`.                                                                         |
+| `payloads`           |  `bytes[]`  | An array of abi-encoded function calls to be executed successively on the linked {target}.                                                                 |
+
+#### Returns
+
+| Name |   Type    | Description                                                                           |
+| ---- | :-------: | ------------------------------------------------------------------------------------- |
+| `0`  | `bytes[]` | An array of abi-decoded data returned by the functions called on the linked {target}. |
+
+<br/>
+
+### getNonce
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#getnonce)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Function signature: `getNonce(address,uint128)`
+- Function selector: `0xb44581d9`
+
+:::
+
+:::info
+
+A signer can choose its channel number arbitrarily. Channel ID = 0 can be used for sequential nonces (transactions that are order dependant), any other channel ID for out-of-order execution (= execution in parallel).
+
+:::
+
+```solidity
+function getNonce(
+  address from,
+  uint128 channelId
+) external view returns (uint256);
+```
+
+_Reading the latest nonce of address `from` in the channel ID `channelId`._
+
+Get The nonce for a specific controller `from` address that can be used for signing relay transaction.
+
+#### Parameters
+
+| Name        |   Type    | Description                                                                |
+| ----------- | :-------: | -------------------------------------------------------------------------- |
+| `from`      | `address` | The address of the signer of the transaction.                              |
+| `channelId` | `uint128` | The channel id that the signer wants to use for executing the transaction. |
+
+#### Returns
+
+| Name |   Type    | Description                                 |
+| ---- | :-------: | ------------------------------------------- |
+| `0`  | `uint256` | The current nonce on a specific `channelId` |
+
+<br/>
+
+### isValidSignature
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#isvalidsignature)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Function signature: `isValidSignature(bytes32,bytes)`
+- Function selector: `0x1626ba7e`
+
+:::
+
+```solidity
+function isValidSignature(
+  bytes32 dataHash,
+  bytes signature
+) external view returns (bytes4 magicValue);
+```
+
+Checks if a signature was signed by a controller that has the permission `SIGN`. If the signer is a controller with the permission `SIGN`, it will return the ERC1271 magic value.
+
+#### Parameters
+
+| Name        |   Type    | Description                                 |
+| ----------- | :-------: | ------------------------------------------- |
+| `dataHash`  | `bytes32` | -                                           |
+| `signature` |  `bytes`  | Signature byte array associated with \_data |
+
+#### Returns
+
+| Name         |   Type   | Description                                          |
+| ------------ | :------: | ---------------------------------------------------- |
+| `magicValue` | `bytes4` | `0x1626ba7e` on success, or `0xffffffff` on failure. |
+
+<br/>
+
+### lsp20VerifyCall
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#lsp20verifycall)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Function signature: `lsp20VerifyCall(address,uint256,bytes)`
+- Function selector: `0x9bf04b11`
+
+:::
+
+```solidity
+function lsp20VerifyCall(
+  address caller,
+  uint256 msgValue,
+  bytes data
+) external nonpayable returns (bytes4);
+```
+
+#### Parameters
+
+| Name       |   Type    | Description                                           |
+| ---------- | :-------: | ----------------------------------------------------- |
+| `caller`   | `address` | The address who called the function on the msg.sender |
+| `msgValue` | `uint256` | -                                                     |
+| `data`     |  `bytes`  | -                                                     |
+
+#### Returns
+
+| Name |   Type   | Description                                                                                                                                                                                                                                                                                                                                     |
+| ---- | :------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0`  | `bytes4` | MUST return the first 3 bytes of `lsp20VerifyCall(address,uint256,bytes)` function selector if the call to the function is allowed, concatened with a byte that determines if the lsp20VerifyCallResult function should be called after the original function call. The byte that invoke the lsp20VerifyCallResult function is strictly `0x01`. |
+
+<br/>
+
+### lsp20VerifyCallResult
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#,))
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Function signature: `,)`
+- Function selector: `0x9f47dbd3`
+
+:::
+
+```solidity
+function lsp20VerifyCallResult(
+  bytes32,
+  bytes
+) external nonpayable returns (bytes4);
+```
+
+#### Parameters
+
+| Name |   Type    | Description |
+| ---- | :-------: | ----------- |
+| `_0` | `bytes32` | -           |
+| `_1` |  `bytes`  | -           |
+
+#### Returns
+
+| Name |   Type   | Description                                                                                    |
+| ---- | :------: | ---------------------------------------------------------------------------------------------- |
+| `0`  | `bytes4` | MUST return the lsp20VerifyCallResult function selector if the call to the function is allowed |
+
+<br/>
+
+### supportsInterface
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#supportsinterface)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Function signature: `supportsInterface(bytes4)`
+- Function selector: `0x01ffc9a7`
+
+:::
+
+```solidity
+function supportsInterface(bytes4 interfaceId) external view returns (bool);
+```
+
+See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
+
+#### Parameters
+
+| Name          |   Type   | Description |
+| ------------- | :------: | ----------- |
+| `interfaceId` | `bytes4` | -           |
+
+#### Returns
+
+| Name |  Type  | Description |
+| ---- | :----: | ----------- |
+| `0`  | `bool` | -           |
+
+<br/>
+
+### target
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#target)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Function signature: `target()`
+- Function selector: `0xd4b83992`
+
+:::
+
+```solidity
+function target() external view returns (address);
+```
+
+Get The address of the contract linked to this Key Manager.
+
+#### Returns
+
+| Name |   Type    | Description                        |
+| ---- | :-------: | ---------------------------------- |
+| `0`  | `address` | The address of the linked contract |
+
+<br/>
+
+## Internal Methods
+
+Any method labeled as `internal` serves as utility function within the contract. They can be used when writing solidity contracts that inherit from this contract. These methods can be extended or modified by overriding their internal behavior to suit specific needs.
+
+Internal functions cannot be called externally, whether from other smart contracts, dApp interfaces, or backend services. Their restricted accessibility ensures that they remain exclusively available within the context of the current contract, promoting controlled and encapsulated usage of these internal utilities.
+
+### \_verifyCanSetData
+
+```solidity
+function _verifyCanSetData(
+  address controlledContract,
+  address controllerAddress,
+  bytes32 controllerPermissions,
+  bytes32 inputDataKey,
+  bytes inputDataValue
+) internal view;
+```
+
+verify if the `controllerAddress` has the permissions required to set a data key on the ERC725Y storage of the `controlledContract`.
+
+#### Parameters
+
+| Name                    |   Type    | Description                                                    |
+| ----------------------- | :-------: | -------------------------------------------------------------- |
+| `controlledContract`    | `address` | the address of the ERC725Y contract where the data key is set. |
+| `controllerAddress`     | `address` | the address of the controller who wants to set the data key.   |
+| `controllerPermissions` | `bytes32` | the permissions of the controller address.                     |
+| `inputDataKey`          | `bytes32` | the data key to set on the `controlledContract`.               |
+| `inputDataValue`        |  `bytes`  | the data value to set for the `inputDataKey`.                  |
+
+<br/>
+
+### \_verifyCanSetData
+
+```solidity
+function _verifyCanSetData(
+  address controlledContract,
+  address controller,
+  bytes32 permissions,
+  bytes32[] inputDataKeys,
+  bytes[] inputDataValues
+) internal view;
+```
+
+verify if the `controllerAddress` has the permissions required to set an array of data keys on the ERC725Y storage of the `controlledContract`.
+
+#### Parameters
+
+| Name                 |    Type     | Description                                                    |
+| -------------------- | :---------: | -------------------------------------------------------------- |
+| `controlledContract` |  `address`  | the address of the ERC725Y contract where the data key is set. |
+| `controller`         |  `address`  | the address of the controller who wants to set the data key.   |
+| `permissions`        |  `bytes32`  | the permissions of the controller address.                     |
+| `inputDataKeys`      | `bytes32[]` | an array of data keys to set on the `controlledContract`.      |
+| `inputDataValues`    |  `bytes[]`  | an array of data values to set for the `inputDataKeys`.        |
+
+<br/>
+
+### \_getPermissionRequiredToSetDataKey
+
+```solidity
+function _getPermissionRequiredToSetDataKey(
+  address controlledContract,
+  bytes32 controllerPermissions,
+  bytes32 inputDataKey,
+  bytes inputDataValue
+) internal view returns (bytes32);
+```
+
+retrieve the permission required based on the data key to be set on the `controlledContract`.
+
+#### Parameters
+
+| Name                    |   Type    | Description                                                                                                             |
+| ----------------------- | :-------: | ----------------------------------------------------------------------------------------------------------------------- |
+| `controlledContract`    | `address` | the address of the ERC725Y contract where the data key is verified.                                                     |
+| `controllerPermissions` | `bytes32` | -                                                                                                                       |
+| `inputDataKey`          | `bytes32` | the data key to set on the `controlledContract`. Can be related to LSP6 Permissions, LSP1 Delegate or LSP17 Extensions. |
+| `inputDataValue`        |  `bytes`  | the data value to set for the `inputDataKey`.                                                                           |
+
+#### Returns
+
+| Name |   Type    | Description                                                                    |
+| ---- | :-------: | ------------------------------------------------------------------------------ |
+| `0`  | `bytes32` | the permission required to set the `inputDataKey` on the `controlledContract`. |
+
+<br/>
+
+### \_getPermissionToSetPermissionsArray
+
+```solidity
+function _getPermissionToSetPermissionsArray(
+  address controlledContract,
+  bytes32 inputDataKey,
+  bytes inputDataValue,
+  bool hasBothAddControllerAndEditPermissions
+) internal view returns (bytes32);
+```
+
+retrieve the permission required to update the `AddressPermissions[]` array data key defined in LSP6.
+
+#### Parameters
+
+| Name                                     |   Type    | Description                                                                               |
+| ---------------------------------------- | :-------: | ----------------------------------------------------------------------------------------- |
+| `controlledContract`                     | `address` | the address of the ERC725Y contract where the data key is verified.                       |
+| `inputDataKey`                           | `bytes32` | either `AddressPermissions[]` (array length) or `AddressPermissions[index]` (array index) |
+| `inputDataValue`                         |  `bytes`  | the updated value for the `inputDataKey`. MUST be:                                        |
+| `hasBothAddControllerAndEditPermissions` |  `bool`   | -                                                                                         |
+
+#### Returns
+
+| Name |   Type    | Description                       |
+| ---- | :-------: | --------------------------------- |
+| `0`  | `bytes32` | either ADD or CHANGE PERMISSIONS. |
+
+<br/>
+
+### \_getPermissionToSetControllerPermissions
+
+```solidity
+function _getPermissionToSetControllerPermissions(
+  address controlledContract,
+  bytes32 inputPermissionDataKey
+) internal view returns (bytes32);
+```
+
+retrieve the permission required to set permissions for a controller address.
+
+#### Parameters
+
+| Name                     |   Type    | Description                                                         |
+| ------------------------ | :-------: | ------------------------------------------------------------------- |
+| `controlledContract`     | `address` | the address of the ERC725Y contract where the data key is verified. |
+| `inputPermissionDataKey` | `bytes32` | `AddressPermissions:Permissions:<controller-address>`.              |
+
+#### Returns
+
+| Name |   Type    | Description                       |
+| ---- | :-------: | --------------------------------- |
+| `0`  | `bytes32` | either ADD or CHANGE PERMISSIONS. |
+
+<br/>
+
+### \_getPermissionToSetAllowedCalls
+
+```solidity
+function _getPermissionToSetAllowedCalls(
+  address controlledContract,
+  bytes32 dataKey,
+  bytes dataValue,
+  bool hasBothAddControllerAndEditPermissions
+) internal view returns (bytes32);
+```
+
+retrieve the permission required to set some AllowedCalls for a controller.
+
+#### Parameters
+
+| Name                                     |   Type    | Description                                                                                 |
+| ---------------------------------------- | :-------: | ------------------------------------------------------------------------------------------- |
+| `controlledContract`                     | `address` | the address of the ERC725Y contract where the data key is verified.                         |
+| `dataKey`                                | `bytes32` | `AddressPermissions:AllowedCalls:<controller-address>`.                                     |
+| `dataValue`                              |  `bytes`  | the updated value for the `dataKey`. MUST be a bytes28[CompactBytesArray] of Allowed Calls. |
+| `hasBothAddControllerAndEditPermissions` |  `bool`   | -                                                                                           |
+
+#### Returns
+
+| Name |   Type    | Description                       |
+| ---- | :-------: | --------------------------------- |
+| `0`  | `bytes32` | either ADD or CHANGE PERMISSIONS. |
+
+<br/>
+
+### \_getPermissionToSetAllowedERC725YDataKeys
+
+```solidity
+function _getPermissionToSetAllowedERC725YDataKeys(
+  address controlledContract,
+  bytes32 dataKey,
+  bytes dataValue,
+  bool hasBothAddControllerAndEditPermissions
+) internal view returns (bytes32);
+```
+
+retrieve the permission required to set some Allowed ERC725Y Data Keys for a controller.
+
+#### Parameters
+
+| Name                                     |   Type    | Description                                                                                           |
+| ---------------------------------------- | :-------: | ----------------------------------------------------------------------------------------------------- |
+| `controlledContract`                     | `address` | the address of the ERC725Y contract where the data key is verified.                                   |
+| `dataKey`                                | `bytes32` | or `AddressPermissions:AllowedERC725YDataKeys:<controller-address>`.                                  |
+| `dataValue`                              |  `bytes`  | the updated value for the `dataKey`. MUST be a bytes[CompactBytesArray] of Allowed ERC725Y Data Keys. |
+| `hasBothAddControllerAndEditPermissions` |  `bool`   | -                                                                                                     |
+
+#### Returns
+
+| Name |   Type    | Description                       |
+| ---- | :-------: | --------------------------------- |
+| `0`  | `bytes32` | either ADD or CHANGE PERMISSIONS. |
+
+<br/>
+
+### \_getPermissionToSetLSP1Delegate
+
+```solidity
+function _getPermissionToSetLSP1Delegate(
+  address controlledContract,
+  bytes32 lsp1DelegateDataKey
+) internal view returns (bytes32);
+```
+
+retrieve the permission required to either add or change the address
+of a LSP1 Universal Receiver Delegate stored under a specific LSP1 data key.
+
+#### Parameters
+
+| Name                  |   Type    | Description                                                          |
+| --------------------- | :-------: | -------------------------------------------------------------------- |
+| `controlledContract`  | `address` | the address of the ERC725Y contract where the data key is verified.  |
+| `lsp1DelegateDataKey` | `bytes32` | either the data key for the default `LSP1UniversalReceiverDelegate`, |
+
+#### Returns
+
+| Name |   Type    | Description                                     |
+| ---- | :-------: | ----------------------------------------------- |
+| `0`  | `bytes32` | either ADD or CHANGE UNIVERSALRECEIVERDELEGATE. |
+
+<br/>
+
+### \_getPermissionToSetLSP17Extension
+
+```solidity
+function _getPermissionToSetLSP17Extension(
+  address controlledContract,
+  bytes32 lsp17ExtensionDataKey
+) internal view returns (bytes32);
+```
+
+Verify if `controller` has the required permissions to either add or change the address
+of an LSP0 Extension stored under a specific LSP17Extension data key
+
+#### Parameters
+
+| Name                    |   Type    | Description                                                         |
+| ----------------------- | :-------: | ------------------------------------------------------------------- |
+| `controlledContract`    | `address` | the address of the ERC725Y contract where the data key is verified. |
+| `lsp17ExtensionDataKey` | `bytes32` | the dataKey to set with `_LSP17_EXTENSION_PREFIX` as prefix.        |
+
+<br/>
+
+### \_verifyAllowedERC725YSingleKey
+
+```solidity
+function _verifyAllowedERC725YSingleKey(
+  address controllerAddress,
+  bytes32 inputDataKey,
+  bytes allowedERC725YDataKeysCompacted
+) internal pure;
+```
+
+Verify if the `inputKey` is present in the list of `allowedERC725KeysCompacted` for the `controllerAddress`.
+
+#### Parameters
+
+| Name                              |   Type    | Description                                                                               |
+| --------------------------------- | :-------: | ----------------------------------------------------------------------------------------- |
+| `controllerAddress`               | `address` | the address of the controller.                                                            |
+| `inputDataKey`                    | `bytes32` | the data key to verify against the allowed ERC725Y Data Keys for the `controllerAddress`. |
+| `allowedERC725YDataKeysCompacted` |  `bytes`  | a CompactBytesArray of allowed ERC725Y Data Keys for the `controllerAddress`.             |
+
+<br/>
+
+### \_verifyAllowedERC725YDataKeys
+
+```solidity
+function _verifyAllowedERC725YDataKeys(
+  address controllerAddress,
+  bytes32[] inputDataKeys,
+  bytes allowedERC725YDataKeysCompacted,
+  bool[] validatedInputKeysList,
+  uint256 allowedDataKeysFound
+) internal pure;
+```
+
+Verify if all the `inputDataKeys` are present in the list of `allowedERC725KeysCompacted` of the `controllerAddress`.
+
+#### Parameters
+
+| Name                              |    Type     | Description                                                                                                                  |
+| --------------------------------- | :---------: | ---------------------------------------------------------------------------------------------------------------------------- |
+| `controllerAddress`               |  `address`  | the address of the controller.                                                                                               |
+| `inputDataKeys`                   | `bytes32[]` | the data keys to verify against the allowed ERC725Y Data Keys of the `controllerAddress`.                                    |
+| `allowedERC725YDataKeysCompacted` |   `bytes`   | a CompactBytesArray of allowed ERC725Y Data Keys of the `controllerAddress`.                                                 |
+| `validatedInputKeysList`          |  `bool[]`   | an array of booleans to store the result of the verification of each data keys checked.                                      |
+| `allowedDataKeysFound`            |  `uint256`  | the number of data keys that were previously validated for other permissions like `ADDCONTROLLER`, `EDITPERMISSIONS`, etc... |
+
+<br/>
+
+### \_requirePermissions
+
+```solidity
+function _requirePermissions(
+  address controller,
+  bytes32 addressPermissions,
+  bytes32 permissionRequired
+) internal pure;
+```
+
+revert if `controller`'s `addressPermissions` doesn't contain `permissionsRequired`
+
+#### Parameters
+
+| Name                 |   Type    | Description                       |
+| -------------------- | :-------: | --------------------------------- |
+| `controller`         | `address` | the caller address                |
+| `addressPermissions` | `bytes32` | the caller's permissions BitArray |
+| `permissionRequired` | `bytes32` | the required permission           |
+
+<br/>
+
+### \_verifyCanExecute
+
+```solidity
+function _verifyCanExecute(
+  address controlledContract,
+  address controller,
+  bytes32 permissions,
+  bytes payload
+) internal view;
+```
+
+verify if `controllerAddress` has the required permissions to interact with other addresses using the controlledContract.
+
+#### Parameters
+
+| Name                 |   Type    | Description                                                                                              |
+| -------------------- | :-------: | -------------------------------------------------------------------------------------------------------- |
+| `controlledContract` | `address` | the address of the ERC725 contract where the payload is executed and where the permissions are verified. |
+| `controller`         | `address` | the address who want to run the execute function on the ERC725Account.                                   |
+| `permissions`        | `bytes32` | the permissions of the controller address.                                                               |
+| `payload`            |  `bytes`  | the ABI encoded payload `controlledContract.execute(...)`.                                               |
+
+<br/>
+
+### \_verifyCanDeployContract
+
+```solidity
+function _verifyCanDeployContract(
+  address controller,
+  bytes32 permissions,
+  bool isFundingContract
+) internal view;
+```
+
+<br/>
+
+### \_verifyCanStaticCall
+
+```solidity
+function _verifyCanStaticCall(
+  address controlledContract,
+  address controller,
+  bytes32 permissions,
+  bytes payload
+) internal view;
+```
+
+<br/>
+
+### \_verifyCanCall
+
+```solidity
+function _verifyCanCall(
+  address controlledContract,
+  address controller,
+  bytes32 permissions,
+  bytes payload
+) internal view;
+```
+
+<br/>
+
+### \_verifyAllowedCall
+
+```solidity
+function _verifyAllowedCall(
+  address controlledContract,
+  address controllerAddress,
+  bytes payload
+) internal view;
+```
+
+<br/>
+
+### \_extractCallType
+
+```solidity
+function _extractCallType(
+  uint256 operationType,
+  uint256 value,
+  bool isEmptyCall
+) internal pure returns (bytes4 requiredCallTypes);
+```
+
+extract the bytes4 representation of a single bit for the type of call according to the `operationType`
+
+#### Parameters
+
+| Name            |   Type    | Description                                  |
+| --------------- | :-------: | -------------------------------------------- |
+| `operationType` | `uint256` | 0 = CALL, 3 = STATICCALL or 3 = DELEGATECALL |
+| `value`         | `uint256` | -                                            |
+| `isEmptyCall`   |  `bool`   | -                                            |
+
+#### Returns
+
+| Name                |   Type   | Description                                               |
+| ------------------- | :------: | --------------------------------------------------------- |
+| `requiredCallTypes` | `bytes4` | a bytes4 value containing a single 1 bit for the callType |
+
+<br/>
+
+### \_extractExecuteParameters
+
+```solidity
+function _extractExecuteParameters(
+  bytes executeCalldata
+) internal pure returns (uint256, address, uint256, bytes4, bool);
+```
+
+<br/>
+
+### \_isAllowedAddress
+
+```solidity
+function _isAllowedAddress(
+  bytes allowedCall,
+  address to
+) internal pure returns (bool);
+```
+
+<br/>
+
+### \_isAllowedStandard
+
+```solidity
+function _isAllowedStandard(
+  bytes allowedCall,
+  address to
+) internal view returns (bool);
+```
+
+<br/>
+
+### \_isAllowedFunction
+
+```solidity
+function _isAllowedFunction(
+  bytes allowedCall,
+  bytes4 requiredFunction
+) internal pure returns (bool);
+```
+
+<br/>
+
+### \_isAllowedCallType
+
+```solidity
+function _isAllowedCallType(
+  bytes allowedCall,
+  bytes4 requiredCallTypes
+) internal pure returns (bool);
+```
+
+<br/>
+
+### \_verifyOwnershipPermissions
+
+```solidity
+function _verifyOwnershipPermissions(
+  address controllerAddress,
+  bytes32 controllerPermissions
+) internal pure;
+```
+
+<br/>
+
+### \_execute
+
+```solidity
+function _execute(
+  uint256 msgValue,
+  bytes payload
+) internal nonpayable returns (bytes);
+```
+
+<br/>
+
+### \_executeRelayCall
+
+```solidity
+function _executeRelayCall(
+  bytes signature,
+  uint256 nonce,
+  uint256 validityTimestamps,
+  uint256 msgValue,
+  bytes payload
+) internal nonpayable returns (bytes);
+```
+
+<br/>
+
+### \_executePayload
+
+```solidity
+function _executePayload(
+  uint256 msgValue,
+  bytes payload
+) internal nonpayable returns (bytes);
+```
+
+_execute the `payload` passed to `execute(...)` or `executeRelayCall(...)`_
+
+#### Parameters
+
+| Name       |   Type    | Description                                             |
+| ---------- | :-------: | ------------------------------------------------------- |
+| `msgValue` | `uint256` | -                                                       |
+| `payload`  |  `bytes`  | the abi-encoded function call to execute on the target. |
+
+#### Returns
+
+| Name |  Type   | Description                                             |
+| ---- | :-----: | ------------------------------------------------------- |
+| `0`  | `bytes` | bytes the result from calling the target with `payload` |
+
+<br/>
+
+### \_isValidNonce
+
+```solidity
+function _isValidNonce(address from, uint256 idx) internal view returns (bool);
+```
+
+_verify the nonce `_idx` for `_from` (obtained via `getNonce(...)`)_
+
+"idx" is a 256bits (unsigned) integer, where:
+
+- the 128 leftmost bits = channelId
+  and
+
+- the 128 rightmost bits = nonce within the channel
+
+#### Parameters
+
+| Name   |   Type    | Description                             |
+| ------ | :-------: | --------------------------------------- |
+| `from` | `address` | caller address                          |
+| `idx`  | `uint256` | (channel id + nonce within the channel) |
+
+<br/>
+
+### \_verifyPermissions
+
+```solidity
+function _verifyPermissions(
+  address from,
+  uint256 msgValue,
+  bytes payload
+) internal view;
+```
+
+verify if the `from` address is allowed to execute the `payload` on the `target`.
+
+#### Parameters
+
+| Name       |   Type    | Description                                                                   |
+| ---------- | :-------: | ----------------------------------------------------------------------------- |
+| `from`     | `address` | either the caller of `execute(...)` or the signer of `executeRelayCall(...)`. |
+| `msgValue` | `uint256` | -                                                                             |
+| `payload`  |  `bytes`  | the payload to execute on the `target`.                                       |
+
+<br/>
+
+### \_setupLSP6ReentrancyGuard
+
+```solidity
+function _setupLSP6ReentrancyGuard() internal nonpayable;
+```
+
+Initialise \_reentrancyStatus to \_NOT_ENTERED.
+
+<br/>
+
+### \_nonReentrantBefore
+
+```solidity
+function _nonReentrantBefore(
+  bool isSetData,
+  address from
+) internal nonpayable returns (bool isReentrantCall);
+```
+
+Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
+the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
+Used in the beginning of the `nonReentrant` modifier, before the method execution starts.
+
+<br/>
+
+### \_nonReentrantAfter
+
+```solidity
+function _nonReentrantAfter() internal nonpayable;
+```
+
+Resets the status to `_NOT_ENTERED`
+Used in the end of the `nonReentrant` modifier after the method execution is terminated
+
+<br/>
+
+## Events
+
+### VerifiedCall
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#verifiedcall)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Event signature: `VerifiedCall(address,uint256,bytes4)`
+- Event topic hash: `0xa54458b75709e42f79700ffb6cfc57c7e224d8a77a52c457ee7ecb8e22636280`
+
+:::
+
+```solidity
+event VerifiedCall(address indexed signer, uint256 indexed value, bytes4 indexed selector);
+```
+
+_Verified the permissions of `signer` for calling function `selector` on the linked account and sending `value` of native token._
+
+Emitted when the LSP6KeyManager contract verified the permissions of the `signer` successfully.
+
+#### Parameters
+
+| Name                     |   Type    | Description                                                                                                                                        |
+| ------------------------ | :-------: | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `signer` **`indexed`**   | `address` | The address of the controller that executed the calldata payload (either directly via {execute} or via meta transaction using {executeRelayCall}). |
+| `value` **`indexed`**    | `uint256` | The amount of native token to be transferred in the calldata payload.                                                                              |
+| `selector` **`indexed`** | `bytes4`  | The bytes4 function of the function that was executed on the linked {target}                                                                       |
+
+<br/>
+
+## Errors
+
+### AddressPermissionArrayIndexValueNotAnAddress
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#addresspermissionarrayindexvaluenotanaddress)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `AddressPermissionArrayIndexValueNotAnAddress(bytes32,bytes)`
+- Error hash: `0x8f4afa38`
+
+:::
+
+```solidity
+error AddressPermissionArrayIndexValueNotAnAddress(
+  bytes32 dataKey,
+  bytes invalidValue
+);
+```
+
+_Could not store `invalidValue` inside the `AddressPermissions[]` Array at index: `dataKey`._
+
+Reverts when trying to set a value that is not 20 bytes long (not an `address`) under the `AddressPermissions[index]` data key.
+
+#### Parameters
+
+| Name           |   Type    | Description                                                                                           |
+| -------------- | :-------: | ----------------------------------------------------------------------------------------------------- |
+| `dataKey`      | `bytes32` | The `AddressPermissions[index]` data key, that specify the index in the `AddressPermissions[]` array. |
+| `invalidValue` |  `bytes`  | The invalid value that was attempted to be set under `AddressPermissions[index]`.                     |
+
+<br/>
+
+### BatchExecuteParamsLengthMismatch
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#batchexecuteparamslengthmismatch)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `BatchExecuteParamsLengthMismatch()`
+- Error hash: `0x55a187db`
+
+:::
+
+```solidity
+error BatchExecuteParamsLengthMismatch();
+```
+
+_The array parameters provided to the function `executeBatch(...)` do not have the same number of elements. (Different array param's length)._
+
+Reverts when the array parameters `uint256[] value` and `bytes[] payload` have different sizes. There should be the same number of elements for each array parameters.
+
+<br/>
+
+### BatchExecuteRelayCallParamsLengthMismatch
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#batchexecuterelaycallparamslengthmismatch)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `BatchExecuteRelayCallParamsLengthMismatch()`
+- Error hash: `0xb4d50d21`
+
+:::
+
+```solidity
+error BatchExecuteRelayCallParamsLengthMismatch();
+```
+
+_The array parameters provided to the function `executeRelayCallBatch(...)` do not have the same number of elements. (Different array param's length)._
+
+Reverts when providing array parameters of different sizes to `executeRelayCallBatch(bytes[],uint256[],bytes[])`
+
+<br/>
+
+### CallingKeyManagerNotAllowed
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#callingkeymanagernotallowed)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `CallingKeyManagerNotAllowed()`
+- Error hash: `0xa431b236`
+
+:::
+
+```solidity
+error CallingKeyManagerNotAllowed();
+```
+
+_Calling the Key Manager address for this transaction is disallowed._
+
+Reverts when calling the KeyManager through `execute(uint256,address,uint256,bytes)`.
+
+<br/>
+
+### CannotSendValueToSetData
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#cannotsendvaluetosetdata)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `CannotSendValueToSetData()`
+- Error hash: `0x59a529fc`
+
+:::
+
+```solidity
+error CannotSendValueToSetData();
+```
+
+_Cannot sent native tokens while setting data._
+
+Reverts when calling the `setData(byte32,bytes)` or `setData(bytes32[],bytes[]) functions on the linked [`target`](#target) while sending value.
+
+<br/>
+
+### DelegateCallDisallowedViaKeyManager
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#delegatecalldisallowedviakeymanager)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `DelegateCallDisallowedViaKeyManager()`
+- Error hash: `0x80d6ebae`
+
+:::
+
+```solidity
+error DelegateCallDisallowedViaKeyManager();
+```
+
+_Performing DELEGATE CALLS via the Key Manager is currently disallowed._
+
+Reverts when trying to do a `delegatecall` via the ERC725X.execute(uint256,address,uint256,bytes) (operation type 4) function of the linked [`target`](#target). `DELEGATECALL` is disallowed by default on the LSP6KeyManager.
+
+<br/>
+
+### ERC725Y_DataKeysValuesLengthMismatch
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#erc725y_datakeysvalueslengthmismatch)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `ERC725Y_DataKeysValuesLengthMismatch()`
+- Error hash: `0x3bcc8979`
+
+:::
+
+```solidity
+error ERC725Y_DataKeysValuesLengthMismatch();
+```
+
+reverts when there is not the same number of elements in the lists of data keys and data values when calling setDataBatch.
+
+<br/>
+
+### InvalidERC725Function
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#invaliderc725function)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `InvalidERC725Function(bytes4)`
+- Error hash: `0x2ba8851c`
+
+:::
+
+```solidity
+error InvalidERC725Function(bytes4 invalidFunction);
+```
+
+_The Key Manager could not verify the calldata of the transaction because it could not recognise the function being called. Invalid function selector: `invalidFunction`._
+
+Reverts when trying to call a function on the linked [`target`](#target), that is not any of the following:
+
+- `setData(bytes32,bytes)` (ERC725Y)
+
+- `setDataBatch(bytes32[],bytes[])` (ERC725Y)
+
+- `execute(uint256,address,uint256,bytes)` (ERC725X)
+
+- `transferOwnership(address)`
+
+- `acceptOwnership()` (LSP14)
+
+#### Parameters
+
+| Name              |   Type   | Description                                                                                                      |
+| ----------------- | :------: | ---------------------------------------------------------------------------------------------------------------- |
+| `invalidFunction` | `bytes4` | The `bytes4` selector of the function that was attempted to be called on the linked {target} but not recognised. |
+
+<br/>
+
+### InvalidEncodedAllowedCalls
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#invalidencodedallowedcalls)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `InvalidEncodedAllowedCalls(bytes)`
+- Error hash: `0x187e77ab`
+
+:::
+
+```solidity
+error InvalidEncodedAllowedCalls(bytes allowedCallsValue);
+```
+
+_Could not decode the Allowed Calls. Value = `allowedCallsValue`._
+
+Reverts when `allowedCallsValue` is not properly encoded as a `(bytes4,address,bytes4,bytes4)[CompactBytesArray]` (CompactBytesArray made of tuples that are 32 bytes long each). See LSP2 value type `CompactBytesArray` for more infos.
+
+#### Parameters
+
+| Name                |  Type   | Description                                                                                                       |
+| ------------------- | :-----: | ----------------------------------------------------------------------------------------------------------------- |
+| `allowedCallsValue` | `bytes` | The list of allowedCalls that are not encoded correctly as a `(bytes4,address,bytes4,bytes4)[CompactBytesArray]`. |
+
+<br/>
+
+### InvalidEncodedAllowedERC725YDataKeys
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#invalidencodedallowederc725ydatakeys)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `InvalidEncodedAllowedERC725YDataKeys(bytes,string)`
+- Error hash: `0xae6cbd37`
+
+:::
+
+```solidity
+error InvalidEncodedAllowedERC725YDataKeys(bytes value, string context);
+```
+
+_Error when reading the Allowed ERC725Y Data Keys. Reason: `context`, Allowed ERC725Y Data Keys value read: `value`._
+
+Reverts when `value` is not encoded properly as a `bytes32[CompactBytesArray]`. The `context` string provides context on when this error occurred (\_e.g: when fetching the `AllowedERC725YDataKeys` to verify the permissions of a controller, or when validating the `AllowedERC725YDataKeys` when setting them for a controller).
+
+#### Parameters
+
+| Name      |   Type   | Description                                                |
+| --------- | :------: | ---------------------------------------------------------- |
+| `value`   | `bytes`  | The value that is not a valid `bytes32[CompactBytesArray]` |
+| `context` | `string` | A brief description of where the error occurred.           |
+
+<br/>
+
+### InvalidLSP6Target
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#invalidlsp6target)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `InvalidLSP6Target()`
+- Error hash: `0xfc854579`
+
+:::
+
+```solidity
+error InvalidLSP6Target();
+```
+
+_Invalid address supplied to link this Key Manager to (`address(0)`)._
+
+Reverts when the address provided to set as the [`target`](#target) linked to this KeyManager is invalid (_e.g. `address(0)`_).
+
+<br/>
+
+### InvalidPayload
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#invalidpayload)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `InvalidPayload(bytes)`
+- Error hash: `0x3621bbcc`
+
+:::
+
+```solidity
+error InvalidPayload(bytes payload);
+```
+
+_Invalid calldata payload sent._
+
+Reverts when the payload is invalid.
+
+#### Parameters
+
+| Name      |  Type   | Description |
+| --------- | :-----: | ----------- |
+| `payload` | `bytes` | -           |
+
+<br/>
+
+### InvalidRelayNonce
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#invalidrelaynonce)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `InvalidRelayNonce(address,uint256,bytes)`
+- Error hash: `0xc9bd9eb9`
+
+:::
+
+```solidity
+error InvalidRelayNonce(address signer, uint256 invalidNonce, bytes signature);
+```
+
+_The relay call failed because an invalid nonce was provided for the address `signer` that signed the execute relay call. Invalid nonce: `invalidNonce`, signature of signer: `signature`._
+
+Reverts when the `signer` address retrieved from the `signature` has an invalid nonce: `invalidNonce`.
+
+#### Parameters
+
+| Name           |   Type    | Description                                         |
+| -------------- | :-------: | --------------------------------------------------- |
+| `signer`       | `address` | The address of the signer                           |
+| `invalidNonce` | `uint256` | The nonce retrieved for the `signer` address        |
+| `signature`    |  `bytes`  | The signature used to retrieve the `signer` address |
+
+<br/>
+
+### InvalidWhitelistedCall
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#invalidwhitelistedcall)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `InvalidWhitelistedCall(address)`
+- Error hash: `0x6fd203c5`
+
+:::
+
+```solidity
+error InvalidWhitelistedCall(address from);
+```
+
+_Invalid allowed calls (`0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff`) set for address `from`. Could not perform external call._
+
+Reverts when a `from` address has _"any whitelisted call"_ as allowed call set. This revert happens during the verification of the permissions of the address for its allowed calls. A `from` address is not allowed to have 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff in its list of `AddressPermissions:AllowedCalls:<address>`, as this allows any STANDARD:ADDRESS:FUNCTION. This is equivalent to granting the SUPER permission and should never be valid.
+
+#### Parameters
+
+| Name   |   Type    | Description                                                            |
+| ------ | :-------: | ---------------------------------------------------------------------- |
+| `from` | `address` | The controller address that has _"any allowed calls"_ whitelisted set. |
+
+<br/>
+
+### LSP6BatchExcessiveValueSent
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#lsp6batchexcessivevaluesent)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `LSP6BatchExcessiveValueSent(uint256,uint256)`
+- Error hash: `0xa51868b6`
+
+:::
+
+```solidity
+error LSP6BatchExcessiveValueSent(uint256 totalValues, uint256 msgValue);
+```
+
+_Too much funds sent to forward each amount in the batch. No amount of native tokens should stay in the Key Manager._
+
+This error occurs when there was too much funds sent to the batch functions `execute(uint256[],bytes[])` or `executeRelayCall(bytes[],uint256[],uint256[],bytes[])` to cover the sum of all the values forwarded on Reverts to avoid the KeyManager to holds some remaining funds sent to the following batch functions:
+
+- execute(uint256[],bytes[])
+
+- executeRelayCall(bytes[],uint256[],uint256[],bytes[]) This error occurs when `msg.value` is more than the sum of all the values being forwarded on each payloads (`values[]` parameter from the batch functions above).
+
+#### Parameters
+
+| Name          |   Type    | Description |
+| ------------- | :-------: | ----------- |
+| `totalValues` | `uint256` | -           |
+| `msgValue`    | `uint256` | -           |
+
+<br/>
+
+### LSP6BatchInsufficientValueSent
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#lsp6batchinsufficientvaluesent)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `LSP6BatchInsufficientValueSent(uint256,uint256)`
+- Error hash: `0x30a324ac`
+
+:::
+
+```solidity
+error LSP6BatchInsufficientValueSent(uint256 totalValues, uint256 msgValue);
+```
+
+_Not enough funds sent to forward each amount in the batch._
+
+This error occurs when there was not enough funds sent to the batch functions `execute(uint256[],bytes[])` or `executeRelayCall(bytes[],uint256[],uint256[],bytes[])` to cover the sum of all the values forwarded on each payloads (`values[]` parameter from the batch functions above). This mean that `msg.value` is less than the sum of all the values being forwarded on each payloads (`values[]` parameters).
+
+#### Parameters
+
+| Name          |   Type    | Description                                                                                                                                      |
+| ------------- | :-------: | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `totalValues` | `uint256` | The sum of all the values forwarded on each payloads (`values[]` parameter from the batch functions above).                                      |
+| `msgValue`    | `uint256` | The amount of native tokens sent to the batch functions `execute(uint256[],bytes[])` or `executeRelayCall(bytes[],uint256[],uint256[],bytes[])`. |
+
+<br/>
+
+### NoCallsAllowed
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#nocallsallowed)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `NoCallsAllowed(address)`
+- Error hash: `0x6cb60587`
+
+:::
+
+```solidity
+error NoCallsAllowed(address from);
+```
+
+_The address `from` is not authorised to use the linked account contract to make external calls, because it has Allowed Calls set._
+
+Reverts when the `from` address has no `AllowedCalls` set and cannot interact with any address using the linked [`target`](#target).
+
+#### Parameters
+
+| Name   |   Type    | Description                           |
+| ------ | :-------: | ------------------------------------- |
+| `from` | `address` | The address that has no AllowedCalls. |
+
+<br/>
+
+### NoERC725YDataKeysAllowed
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#noerc725ydatakeysallowed)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `NoERC725YDataKeysAllowed(address)`
+- Error hash: `0xed7fa509`
+
+:::
+
+```solidity
+error NoERC725YDataKeysAllowed(address from);
+```
+
+_The address `from` is not authorised to set data, because it has no ERC725Y Data Key allowed._
+
+Reverts when the `from` address has no AllowedERC725YDataKeys set and cannot set any ERC725Y data key on the ERC725Y storage of the linked [`target`](#target).
+
+#### Parameters
+
+| Name   |   Type    | Description                                           |
+| ------ | :-------: | ----------------------------------------------------- |
+| `from` | `address` | The address that has no `AllowedERC725YDataKeys` set. |
+
+<br/>
+
+### NoPermissionsSet
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#nopermissionsset)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `NoPermissionsSet(address)`
+- Error hash: `0xf292052a`
+
+:::
+
+```solidity
+error NoPermissionsSet(address from);
+```
+
+_The address `from` does not have any permission set on the contract linked to the Key Manager._
+
+Reverts when address `from` does not have any permissions set on the account linked to this Key Manager
+
+#### Parameters
+
+| Name   |   Type    | Description                                |
+| ------ | :-------: | ------------------------------------------ |
+| `from` | `address` | the address that does not have permissions |
+
+<br/>
+
+### NotAllowedCall
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#notallowedcall)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `NotAllowedCall(address,address,bytes4)`
+- Error hash: `0x45147bce`
+
+:::
+
+```solidity
+error NotAllowedCall(address from, address to, bytes4 selector);
+```
+
+_The address `from` is not authorised to call the function `selector` on the `to` address._
+
+Reverts when `from` is not authorised to call the `execute(uint256,address,uint256,bytes)` function because of a not allowed callType, address, standard or function.
+
+#### Parameters
+
+| Name       |   Type    | Description                                                                                                                                                                  |
+| ---------- | :-------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `from`     | `address` | The controller that tried to call the `execute(uint256,address,uint256,bytes)` function.                                                                                     |
+| `to`       | `address` | The address of an EOA or contract that `from` tried to call using the linked {target}                                                                                        |
+| `selector` | `bytes4`  | If `to` is a contract, the bytes4 selector of the function that `from` is trying to call. If no function is called (_e.g: a native token transfer_), selector = `0x00000000` |
+
+<br/>
+
+### NotAllowedERC725YDataKey
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#notallowederc725ydatakey)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `NotAllowedERC725YDataKey(address,bytes32)`
+- Error hash: `0x557ae079`
+
+:::
+
+```solidity
+error NotAllowedERC725YDataKey(address from, bytes32 disallowedKey);
+```
+
+_The address `from` is not authorised to set the data key `disallowedKey` on the contract linked to the Key Manager._
+
+Reverts when address `from` is not authorised to set the key `disallowedKey` on the linked [`target`](#target).
+
+#### Parameters
+
+| Name            |   Type    | Description                                                                                            |
+| --------------- | :-------: | ------------------------------------------------------------------------------------------------------ |
+| `from`          | `address` | address The controller that tried to `setData` on the linked {target}.                                 |
+| `disallowedKey` | `bytes32` | A bytes32 data key that `from` is not authorised to set on the ERC725Y storage of the linked {target}. |
+
+<br/>
+
+### NotAuthorised
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#notauthorised)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `NotAuthorised(address,string)`
+- Error hash: `0x3bdad6e6`
+
+:::
+
+```solidity
+error NotAuthorised(address from, string permission);
+```
+
+_The address `from` is not authorised to `permission` on the contract linked to the Key Manager._
+
+Reverts when address `from` is not authorised and does not have `permission` on the linked [`target`](#target)
+
+#### Parameters
+
+| Name         |   Type    | Description                                                                    |
+| ------------ | :-------: | ------------------------------------------------------------------------------ |
+| `from`       | `address` | address The address that was not authorised.                                   |
+| `permission` | `string`  | permission The permission required (\_e.g: `SETDATA`, `CALL`, `TRANSFERVALUE`) |
+
+<br/>
+
+### NotRecognisedPermissionKey
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#notrecognisedpermissionkey)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `NotRecognisedPermissionKey(bytes32)`
+- Error hash: `0x0f7d735b`
+
+:::
+
+```solidity
+error NotRecognisedPermissionKey(bytes32 dataKey);
+```
+
+_The data key `dataKey` starts with `AddressPermissions` prefix but is none of the permission data keys defined in LSP6._
+
+Reverts when `dataKey` is a `bytes32` value that does not adhere to any of the permission data keys defined by the LSP6 standard
+
+#### Parameters
+
+| Name      |   Type    | Description                                                                    |
+| --------- | :-------: | ------------------------------------------------------------------------------ |
+| `dataKey` | `bytes32` | The dataKey that does not match any of the standard LSP6 permission data keys. |
+
+<br/>
+
+### RelayCallBeforeStartTime
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#relaycallbeforestarttime)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `RelayCallBeforeStartTime()`
+- Error hash: `0x00de4b8a`
+
+:::
+
+```solidity
+error RelayCallBeforeStartTime();
+```
+
+_Relay call not valid yet._
+
+Reverts when the start timestamp provided to [`executeRelayCall`](#executerelaycall) function is bigger than the current timestamp.
+
+<br/>
+
+### RelayCallExpired
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#relaycallexpired)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `RelayCallExpired()`
+- Error hash: `0x5c53a98c`
+
+:::
+
+```solidity
+error RelayCallExpired();
+```
+
+_The date of the relay call expired._
+
+Reverts when the period to execute the relay call has expired.
+
+<br/>

@@ -12,10 +12,11 @@ interface ILSP6KeyManager is
     /* is ERC165 */
 {
     /**
-     * @dev Emitted when a calldata payload that includes `selector` and `value` as msg.value was verified for `signer`
-     * @param signer the address of the controller that executed the calldata payload.
-     * @param value the amount of native token to be transferred in the calldata payload.
-     * @param selector the bytes4 function of the function to run in the calldata payload.
+     * @dev Emitted when the LSP6KeyManager contract verified the permissions of the `signer` successfully.
+     * @notice Verified the permissions of `signer` for calling function `selector` on the linked account and sending `value` of native token.
+     * @param signer The address of the controller that executed the calldata payload (either directly via {execute} or via meta transaction using {executeRelayCall}).
+     * @param value The amount of native token to be transferred in the calldata payload.
+     * @param selector The bytes4 function of the function that was executed on the linked {target}
      */
     event VerifiedCall(
         address indexed signer,
@@ -24,21 +25,20 @@ interface ILSP6KeyManager is
     );
 
     /**
-     * @notice returns the address of the account linked to this KeyManager
-     * @dev this can be a contract that implements
-     *  - ERC725X only
-     *  - ERC725Y only
-     *  - any ERC725 based contract (so implementing both ERC725X and ERC725Y)
-     *
-     * @return the address of the linked account
+     * @dev Get The address of the contract linked to this Key Manager.
+     * @return The address of the linked contract
      */
     function target() external view returns (address);
 
     /**
-     * @notice get latest nonce for `from` in channel ID: `channelId`
-     * @dev use channel ID = 0 for sequential nonces, any other number for out-of-order execution (= execution in parallel)
-     * @param from the caller or signer address
-     * @param channelId the channel id to retrieve the nonce from
+     * @notice Reading the latest nonce of address `from` in the channel ID `channelId`.
+     *
+     * @dev Get The nonce for a specific controller `from` address that can be used for signing relay transaction.
+     *
+     * @param from The address of the signer of the transaction.
+     * @param channelId The channel id that the signer wants to use for executing the transaction.
+     *
+     * @return The current nonce on a specific `channelId`
      */
     function getNonce(
         address from,
@@ -46,17 +46,30 @@ interface ILSP6KeyManager is
     ) external view returns (uint256);
 
     /**
-     * @notice execute the following payload on the ERC725Account: `payload`
-     * @dev the ERC725Account will return some data on successful call, or revert on failure
-     * @param payload the payload to execute. Obtained in web3 via encodeABI()
-     * @return the data being returned by the ERC725 Account
+     * @notice Executing the following payload on the linked contract: `payload`
+     *
+     * @dev Execute A `payload` on the linked {target} contract after having verified the permissions associated with the function being run.
+     * The `payload` MUST be a valid abi-encoded function call of one of the functions present in the linked {target}, otherwise the call will fail.
+     * The linked {target} will return some data on successful execution, or revert on failure.
+     *
+     * @param payload The abi-encoded function call to execute on the linked {target}.
+     * @return The abi-decoded data returned by the function called on the linked {target}.
      */
     function execute(
         bytes calldata payload
     ) external payable returns (bytes memory);
 
     /**
-     * @dev batch `execute(bytes)`
+     * @notice Executing the following batch of payloads and sensind on the linked contract.
+     * - payloads: `payloads`
+     * - values transferred for each payload: `values`
+     *
+     * @dev Same as {execute} but execute a batch of payloads (abi-encoded function calls) in a single transaction.
+     *
+     * @param values An array of amount of native tokens to be transferred for each `payload`.
+     * @param payloads An array of abi-encoded function calls to execute successively on the linked {target}.
+     *
+     * @return An array of abi-decoded data returned by the functions called on the linked {target}.
      */
     function executeBatch(
         uint256[] calldata values,
@@ -64,12 +77,18 @@ interface ILSP6KeyManager is
     ) external payable returns (bytes[] memory);
 
     /**
-     * @dev allows anybody to execute given they have a signed message from an executor
-     * @param signature bytes32 ethereum signature
-     * @param nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
-     * @param validityTimestamps two `uint128` timestamps concatenated, the first timestamp determines from when the payload can be executed, the second timestamp delimits the end of the validity of the payload. If `validityTimestamps` is 0, the checks regardin the timestamps are skipped
-     * @param payload obtained via encodeABI() in web3
-     * @return the data being returned by the ERC725 Account
+     * @notice Executing a relay call (= meta-transaction).
+     *
+     * @dev Allows any address (executor) to execute a payload (= abi-encoded function call) in the linked {target} given they have a signed message from
+     * a controller with some permissions.
+     *
+     * @param signature A 65 bytes long signature for a meta transaction according to LSP6.
+     * @param nonce The nonce of the address that signed the calldata (in a specific `_channel`), obtained via {getNonce}. Used to prevent replay attack.
+     * @param validityTimestamps Two `uint128` timestamps concatenated together that describes
+     * when the relay transaction is valid "from" (left `uint128`) and "until" as a deadline (right `uint128`).
+     * @param payload The abi-encoded function call to execute on the linked {target}.
+     *
+     * @return The data being returned by the function called on the linked {target}.
      */
     function executeRelayCall(
         bytes calldata signature,
@@ -79,7 +98,19 @@ interface ILSP6KeyManager is
     ) external payable returns (bytes memory);
 
     /**
-     * @dev batch `executeRelayCall(...)`
+     * @notice Executing a batch of relay calls (= meta-transactions).
+     *
+     * @dev Same as {executeRelayCall} but execute a batch of signed calldata payloads (abi-encoded function calls) in a single transaction.
+     * The signed transactions can be from multiple controllers, not necessarely the same controller signer, as long as each of these controllers
+     * that signed have the right permissions related to the calldata `payload` they signed.
+     *
+     * @param signatures An array of 65 bytes long signatures for meta transactions according to LSP6.
+     * @param nonces An array of nonces of the addresses that signed the calldata payloads (in specific channels). Obtained via {getNonce}. Used to prevent replay attack.
+     * @param validityTimestamps An array of two `uint128` concatenated timestamps that describe when the relay transaction is valid "from" (left `uint128`) and "until" (right `uint128`).
+     * @param values An array of amount of native tokens to be transferred for each calldata `payload`.
+     * @param payloads An array of abi-encoded function calls to be executed successively on the linked {target}.
+     *
+     * @return An array of abi-decoded data returned by the functions called on the linked {target}.
      */
     function executeRelayCallBatch(
         bytes[] calldata signatures,

@@ -95,9 +95,9 @@ export type LSPSupportedStandard = { key: string; value: string };
  * and contain a set of pre-defined ERC725Y Data Keys.
  */
 export const SupportedStandards = {
-  LSP3UniversalProfile: {
-    key: '0xeafec4d89fa9619884b60000abe425d64acd861a49b8ddf5c0b6962110481f38',
-    value: '0xabe425d6',
+  LSP3Profile: {
+    key: '0xeafec4d89fa9619884b600005ef83ad9559033e6e941db7d7c495acdce616347',
+    value: '0x5ef83ad9',
   } as LSPSupportedStandard,
   LSP4DigitalAsset: {
     key: '0xeafec4d89fa9619884b60000a4d96624a38f7ac2d8d9a604ecf07c12c77e480c',
@@ -123,7 +123,7 @@ export const ERC725YDataKeys = {
       '0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47',
   },
   LSP3: {
-    SupportedStandards_LSP3: SupportedStandards.LSP3UniversalProfile.key,
+    SupportedStandards_LSP3: SupportedStandards.LSP3Profile.key,
 
     // keccak256('LSP3Profile')
     LSP3Profile: '0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5',

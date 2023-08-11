@@ -2,20 +2,15 @@
 pragma solidity ^0.8.4;
 
 /**
- * @dev reverts when EOA calls the `universalReceiver(..)` function with an asset/vault typeId
+ * @dev Reverts when EOA calls the {universalReceiver(..)} function with an asset/vault typeId.
+ * @notice EOA: `caller` cannot be registered as an asset.
+ *
  * @param caller The address of the EOA
  */
 error CannotRegisterEOAsAsAssets(address caller);
 
 /**
- * @dev reverts when the account calling the UniversalReceiverDelegate is not the same account
- * linked as target in the KeyManager -- Security Check
- * @param account The address of the account implementing the `universalReceiver(..)` function
- * @param target The address of the target linked to the KeyManager
- */
-error CallerNotLSP6LinkedTarget(address account, address target);
-
-/**
- * @dev reverts when `universalReceiver(...)` is called with a value different than 0
+ * @dev Reverts when the {universalReceiver} function in the LSP1 Universal Receiver Delegate contract is called while sending some native tokens along the call (`msg.value` different than `0`)
+ * @notice Cannot send native tokens to {universalReceiver(...)} function of the delegated contract.
  */
 error NativeTokensNotAccepted();
