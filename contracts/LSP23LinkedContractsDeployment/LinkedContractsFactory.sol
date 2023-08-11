@@ -58,12 +58,14 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
             postDeploymentModuleCalldata
         );
 
-        /* execute the post deployment module logic in the postDeploymentModule */
-        IPostDeploymentModule(postDeploymentModule).executePostDeployment(
-            primaryContractAddress,
-            secondaryContractAddress,
-            postDeploymentModuleCalldata
-        );
+        if (postDeploymentModule != address(0)) {
+            /* execute the post deployment module logic in the postDeploymentModule */
+            IPostDeploymentModule(postDeploymentModule).executePostDeployment(
+                primaryContractAddress,
+                secondaryContractAddress,
+                postDeploymentModuleCalldata
+            );
+        }
     }
 
     /**
@@ -115,12 +117,14 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
             postDeploymentModuleCalldata
         );
 
-        /* execute the post deployment logic in the postDeploymentModule */
-        IPostDeploymentModule(postDeploymentModule).executePostDeployment(
-            primaryContractAddress,
-            secondaryContractAddress,
-            postDeploymentModuleCalldata
-        );
+        if (postDeploymentModule != address(0)) {
+            /* execute the post deployment logic in the postDeploymentModule */
+            IPostDeploymentModule(postDeploymentModule).executePostDeployment(
+                primaryContractAddress,
+                secondaryContractAddress,
+                postDeploymentModuleCalldata
+            );
+        }
     }
 
     /**
