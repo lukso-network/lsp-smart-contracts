@@ -68,10 +68,15 @@ export async function deployImplementationContracts() {
   const LinkedContractsFactoryFactory = await ethers.getContractFactory('LinkedContractsFactory');
   const LinkedContractsFactory = await LinkedContractsFactoryFactory.deploy();
 
-  const UPDelegatorPostDeploymentManagerFactory = await ethers.getContractFactory(
+  const UPPostDeploymentManagerFactory = await ethers.getContractFactory(
+    'UniversalProfilePostDeploymentModule',
+  );
+  const upPostDeploymentModule = await UPPostDeploymentManagerFactory.deploy();
+
+  const UPInitPostDeploymentManagerFactory = await ethers.getContractFactory(
     'UniversalProfileInitPostDeploymentModule',
   );
-  const upPostDeploymentModule = await UPDelegatorPostDeploymentManagerFactory.deploy();
+  const upInitPostDeploymentModule = await UPInitPostDeploymentManagerFactory.deploy();
 
   return {
     keyManagerInit,
@@ -80,5 +85,6 @@ export async function deployImplementationContracts() {
     UniversalProfileInitFactory,
     LinkedContractsFactory,
     upPostDeploymentModule,
+    upInitPostDeploymentModule,
   };
 }
