@@ -58,12 +58,14 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
             postDeploymentModuleCalldata
         );
 
-        /* execute the post deployment module logic in the postDeploymentModule */
-        IPostDeploymentModule(postDeploymentModule).executePostDeployment(
-            primaryContractAddress,
-            secondaryContractAddress,
-            postDeploymentModuleCalldata
-        );
+        if (postDeploymentModule != address(0)) {
+            /* execute the post deployment module logic in the postDeploymentModule */
+            IPostDeploymentModule(postDeploymentModule).executePostDeployment(
+                primaryContractAddress,
+                secondaryContractAddress,
+                postDeploymentModuleCalldata
+            );
+        }
     }
 
     /**
@@ -115,12 +117,14 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
             postDeploymentModuleCalldata
         );
 
-        /* execute the post deployment logic in the postDeploymentModule */
-        IPostDeploymentModule(postDeploymentModule).executePostDeployment(
-            primaryContractAddress,
-            secondaryContractAddress,
-            postDeploymentModuleCalldata
-        );
+        if (postDeploymentModule != address(0)) {
+            /* execute the post deployment logic in the postDeploymentModule */
+            IPostDeploymentModule(postDeploymentModule).executePostDeployment(
+                primaryContractAddress,
+                secondaryContractAddress,
+                postDeploymentModuleCalldata
+            );
+        }
     }
 
     /**
@@ -274,7 +278,7 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
 
         /* initialize the primary contract proxy */
         (bool success, bytes memory returnedData) = primaryContractAddress.call{
-            value: msg.value
+            value: primaryContractDeploymentInit.fundingAmount
         }(primaryContractDeploymentInit.initializationCalldata);
         if (!success) {
             revert PrimaryContractProxyInitFailureError(returnedData);
@@ -311,7 +315,9 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
 
         /* initialize the primary contract proxy */
         (bool success, bytes memory returnedData) = secondaryContractAddress
-            .call{value: msg.value}(secondaryInitializationBytes);
+            .call{value: secondaryContractDeploymentInit.fundingAmount}(
+            secondaryInitializationBytes
+        );
         if (!success) {
             revert SecondaryContractProxyInitFailureError(returnedData);
         }
