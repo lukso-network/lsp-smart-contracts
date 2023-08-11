@@ -40,7 +40,8 @@ import {
     InvalidERC725Function,
     CannotSendValueToSetData,
     RelayCallBeforeStartTime,
-    RelayCallExpired
+    RelayCallExpired,
+    CannotReplayTheRelayCall
 } from "./LSP6Errors.sol";
 
 import {
@@ -83,6 +84,9 @@ abstract contract LSP6KeyManagerCore is
     // Variables, methods and modifier used for ReentrancyGuard are taken from the link below and modified accordingly.
     // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/security/ReentrancyGuard.sol
     bool internal _reentrancyStatus;
+
+    // Mapping to keep track of all message hashes that have been approved by ALL REQUIRED owners
+    mapping(bytes32 => bool) public signedMessages;
 
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
@@ -431,11 +435,18 @@ abstract contract LSP6KeyManagerCore is
         _verifyPermissions(signer, msgValue, payload);
         emit PermissionsVerified(signer, msgValue, bytes4(payload));
 
+        bytes32 encodedMessageHash = keccak256(encodedMessage);
+        if (signedMessages[encodedMessageHash]) {
+            revert CannotReplayTheRelayCall(encodedMessageHash);
+        }
+
         bytes memory result = _executePayload(msgValue, payload);
 
         if (!isReentrantCall && !isSetData) {
             _nonReentrantAfter();
         }
+
+        signedMessages[encodedMessageHash] = true;
 
         return result;
     }

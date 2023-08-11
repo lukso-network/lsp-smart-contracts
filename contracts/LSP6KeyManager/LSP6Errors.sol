@@ -245,3 +245,10 @@ error RelayCallExpired();
  * @dev reverts when the address of the Key Manager is being set as extensions for lsp20 functions
  */
 error KeyManagerCannotBeSetAsExtensionForLSP20Functions();
+
+/**
+ * @dev reverts when trying to use the same arguments with a different signature.
+ * @notice Cannot use the same arguments twice! Encoded message: `encodedMessage`
+ * @param encodedMessageHash The hash of the [EIP-191] signed data.
+ */
+error CannotReplayTheRelayCall(bytes32 encodedMessageHash);
