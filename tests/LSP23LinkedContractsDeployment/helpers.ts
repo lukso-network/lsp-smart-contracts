@@ -65,8 +65,10 @@ export async function deployImplementationContracts() {
   const UniversalProfileInitFactory = await ethers.getContractFactory('UniversalProfileInit');
   const universalProfileInit = await UniversalProfileInitFactory.deploy();
 
-  const LinkedContractsFactoryFactory = await ethers.getContractFactory('LinkedContractsFactory');
-  const LinkedContractsFactory = await LinkedContractsFactoryFactory.deploy();
+  const LinkedContractsFactoryFactory = await ethers.getContractFactory(
+    'LSP23LinkedContractsFactory',
+  );
+  const LSP23LinkedContractsFactory = await LinkedContractsFactoryFactory.deploy();
 
   const UPPostDeploymentManagerFactory = await ethers.getContractFactory(
     'UniversalProfilePostDeploymentModule',
@@ -83,7 +85,7 @@ export async function deployImplementationContracts() {
     KeyManagerInitFactory,
     universalProfileInit,
     UniversalProfileInitFactory,
-    LinkedContractsFactory,
+    LSP23LinkedContractsFactory,
     upPostDeploymentModule,
     upInitPostDeploymentModule,
   };

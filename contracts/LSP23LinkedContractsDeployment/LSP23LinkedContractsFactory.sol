@@ -4,16 +4,16 @@ pragma solidity ^0.8.4;
 import {Create2} from "@openzeppelin/contracts/utils/Create2.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {IPostDeploymentModule} from "./IPostDeploymentModule.sol";
-import {ILinkedContractsFactory} from "./ILinkedContractsFactory.sol";
+import {ILSP23LinkedContractsFactory} from "./ILSP23LinkedContractsFactory.sol";
 import {
     InvalidValueSum,
     PrimaryContractProxyInitFailureError,
     SecondaryContractProxyInitFailureError
 } from "./LSP23Errors.sol";
 
-contract LinkedContractsFactory is ILinkedContractsFactory {
+contract LSP23LinkedContractsFactory is ILSP23LinkedContractsFactory {
     /**
-     * @inheritdoc ILinkedContractsFactory
+     * @inheritdoc ILSP23LinkedContractsFactory
      */
     function deployContracts(
         PrimaryContractDeployment calldata primaryContractDeployment,
@@ -69,7 +69,7 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
     }
 
     /**
-     * @inheritdoc ILinkedContractsFactory
+     * @inheritdoc ILSP23LinkedContractsFactory
      */
     function deployERC1167Proxies(
         PrimaryContractDeploymentInit calldata primaryContractDeploymentInit,
@@ -128,7 +128,7 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
     }
 
     /**
-     * @inheritdoc ILinkedContractsFactory
+     * @inheritdoc ILSP23LinkedContractsFactory
      */
     function computeAddresses(
         PrimaryContractDeployment calldata primaryContractDeployment,
@@ -174,7 +174,7 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
     }
 
     /**
-     * @inheritdoc ILinkedContractsFactory
+     * @inheritdoc ILSP23LinkedContractsFactory
      */
     function computeERC1167Addresses(
         PrimaryContractDeploymentInit calldata primaryContractDeploymentInit,

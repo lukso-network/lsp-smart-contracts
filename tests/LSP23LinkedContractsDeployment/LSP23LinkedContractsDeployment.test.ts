@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LinkedContractsFactory } from '../../typechain-types';
+import { LSP23LinkedContractsFactory } from '../../typechain-types';
 import { ERC725YDataKeys } from '../../constants';
 import {
   calculateProxiesAddresses,
@@ -19,7 +19,7 @@ describe('UniversalProfileDeployer', function () {
       const universalProfileBytecode = (await ethers.getContractFactory('UniversalProfile'))
         .bytecode;
 
-      const { upPostDeploymentModule, LinkedContractsFactory } =
+      const { upPostDeploymentModule, LSP23LinkedContractsFactory } =
         await deployImplementationContracts();
 
       // universalProfileCreationCode = universalProfileBytecode + abi encoded address of upInitPostDeploymentModule
@@ -29,13 +29,14 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.utils.randomBytes(32);
 
-      const primaryContractDeployment: LinkedContractsFactory.PrimaryContractDeploymentStruct = {
-        salt,
-        fundingAmount: 0,
-        creationBytecode: universalProfileCreationCode,
-      };
+      const primaryContractDeployment: LSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
+        {
+          salt,
+          fundingAmount: 0,
+          creationBytecode: universalProfileCreationCode,
+        };
 
-      const secondaryContractDeployment: LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
+      const secondaryContractDeployment: LSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
         {
           fundingAmount: 0,
           creationBytecode: keyManagerBytecode,
@@ -88,7 +89,7 @@ describe('UniversalProfileDeployer', function () {
 
       // get the address of the UP and the KeyManager contracts
       const [upContract, keyManagerContract] =
-        await LinkedContractsFactory.callStatic.deployContracts(
+        await LSP23LinkedContractsFactory.callStatic.deployContracts(
           primaryContractDeployment,
           secondaryContractDeployment,
           upPostDeploymentModule.address,
@@ -96,7 +97,7 @@ describe('UniversalProfileDeployer', function () {
         );
 
       /* deploying gives a gas error while static calls work fine */
-      // await LinkedContractsFactory.deployContracts(
+      // await LSP23LinkedContractsFactory.deployContracts(
       //   primaryContractDeployment,
       //   secondaryContractDeployment,
       //   ethers.constants.AddressZero,
@@ -104,7 +105,7 @@ describe('UniversalProfileDeployer', function () {
       // );
 
       const [expectedUpAddress, expectedKeyManagerAddress] =
-        await LinkedContractsFactory.computeAddresses(
+        await LSP23LinkedContractsFactory.computeAddresses(
           primaryContractDeployment,
           secondaryContractDeployment,
           upPostDeploymentModule.address,
@@ -124,7 +125,7 @@ describe('UniversalProfileDeployer', function () {
       const universalProfileBytecode = (await ethers.getContractFactory('UniversalProfile'))
         .bytecode;
 
-      const { upPostDeploymentModule, LinkedContractsFactory } =
+      const { upPostDeploymentModule, LSP23LinkedContractsFactory } =
         await deployImplementationContracts();
 
       // universalProfileCreationCode = universalProfileBytecode + abi encoded address of upInitPostDeploymentModule
@@ -134,13 +135,14 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.utils.randomBytes(32);
 
-      const primaryContractDeployment: LinkedContractsFactory.PrimaryContractDeploymentStruct = {
-        salt,
-        fundingAmount: universalProfileFundAmount,
-        creationBytecode: universalProfileCreationCode,
-      };
+      const primaryContractDeployment: LSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
+        {
+          salt,
+          fundingAmount: universalProfileFundAmount,
+          creationBytecode: universalProfileCreationCode,
+        };
 
-      const secondaryContractDeployment: LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
+      const secondaryContractDeployment: LSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
         {
           fundingAmount: 0,
           creationBytecode: keyManagerBytecode,
@@ -193,7 +195,7 @@ describe('UniversalProfileDeployer', function () {
 
       // get the address of the UP and the KeyManager contracts
       const [upContract, keyManagerContract] =
-        await LinkedContractsFactory.callStatic.deployContracts(
+        await LSP23LinkedContractsFactory.callStatic.deployContracts(
           primaryContractDeployment,
           secondaryContractDeployment,
           upPostDeploymentModule.address,
@@ -202,7 +204,7 @@ describe('UniversalProfileDeployer', function () {
         );
 
       /* deploying gives a gas error while static calls work fine */
-      // await LinkedContractsFactory.deployContracts(
+      // await LSP23LinkedContractsFactory.deployContracts(
       //   primaryContractDeployment,
       //   secondaryContractDeployment,
       //   ethers.constants.AddressZero,
@@ -210,7 +212,7 @@ describe('UniversalProfileDeployer', function () {
       // );
 
       const [expectedUpAddress, expectedKeyManagerAddress] =
-        await LinkedContractsFactory.computeAddresses(
+        await LSP23LinkedContractsFactory.computeAddresses(
           primaryContractDeployment,
           secondaryContractDeployment,
           upPostDeploymentModule.address,
@@ -230,7 +232,7 @@ describe('UniversalProfileDeployer', function () {
       const universalProfileBytecode = (await ethers.getContractFactory('UniversalProfile'))
         .bytecode;
 
-      const { upPostDeploymentModule, LinkedContractsFactory } =
+      const { upPostDeploymentModule, LSP23LinkedContractsFactory } =
         await deployImplementationContracts();
 
       // universalProfileCreationCode = universalProfileBytecode + abi encoded address of upInitPostDeploymentModule
@@ -240,13 +242,14 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.utils.randomBytes(32);
 
-      const primaryContractDeployment: LinkedContractsFactory.PrimaryContractDeploymentStruct = {
-        salt,
-        fundingAmount: universalProfileFundAmount,
-        creationBytecode: universalProfileCreationCode,
-      };
+      const primaryContractDeployment: LSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
+        {
+          salt,
+          fundingAmount: universalProfileFundAmount,
+          creationBytecode: universalProfileCreationCode,
+        };
 
-      const secondaryContractDeployment: LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
+      const secondaryContractDeployment: LSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
         {
           fundingAmount: 0,
           creationBytecode: keyManagerBytecode,
@@ -299,14 +302,14 @@ describe('UniversalProfileDeployer', function () {
 
       // get the address of the UP and the KeyManager contracts
       await expect(
-        LinkedContractsFactory.callStatic.deployContracts(
+        LSP23LinkedContractsFactory.callStatic.deployContracts(
           primaryContractDeployment,
           secondaryContractDeployment,
           upPostDeploymentModule.address,
           encodedBytes,
           { value: universalProfileFundAmount.add(ethers.utils.parseEther('0.1')) },
         ),
-      ).to.be.revertedWithCustomError(LinkedContractsFactory, 'InvalidValueSum');
+      ).to.be.revertedWithCustomError(LSP23LinkedContractsFactory, 'InvalidValueSum');
     });
   });
   describe('for proxies deployment', function () {
@@ -316,7 +319,7 @@ describe('UniversalProfileDeployer', function () {
       const {
         keyManagerInit,
         universalProfileInit,
-        LinkedContractsFactory,
+        LSP23LinkedContractsFactory,
         upInitPostDeploymentModule,
         UniversalProfileInitFactory,
         KeyManagerInitFactory,
@@ -324,7 +327,7 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.utils.randomBytes(32);
 
-      const primaryContractDeploymentInit: LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
+      const primaryContractDeploymentInit: LSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
         {
           salt,
           fundingAmount: 0,
@@ -334,7 +337,7 @@ describe('UniversalProfileDeployer', function () {
           ]),
         };
 
-      const secondaryContractDeploymentInit: LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
+      const secondaryContractDeploymentInit: LSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
         {
           fundingAmount: 0,
           implementationContract: keyManagerInit.address,
@@ -388,14 +391,14 @@ describe('UniversalProfileDeployer', function () {
 
       // get the address of the UP and the KeyManager contracts
       const [upAddress, keyManagerAddress] =
-        await LinkedContractsFactory.callStatic.deployERC1167Proxies(
+        await LSP23LinkedContractsFactory.callStatic.deployERC1167Proxies(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
           upInitPostDeploymentModule.address,
           encodedBytes,
         );
 
-      await LinkedContractsFactory.deployERC1167Proxies(
+      await LSP23LinkedContractsFactory.deployERC1167Proxies(
         primaryContractDeploymentInit,
         secondaryContractDeploymentInit,
         upInitPostDeploymentModule.address,
@@ -409,7 +412,7 @@ describe('UniversalProfileDeployer', function () {
       const keyManagerProxyOwner = await keyManagerProxy.target();
 
       const [expectedUpProxyAddress, expectedKeyManagerProxyAddress] =
-        await LinkedContractsFactory.computeERC1167Addresses(
+        await LSP23LinkedContractsFactory.computeERC1167Addresses(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
           upInitPostDeploymentModule.address,
@@ -425,7 +428,7 @@ describe('UniversalProfileDeployer', function () {
         secondaryContractDeploymentInit.extraInitializationParams,
         upInitPostDeploymentModule.address,
         encodedBytes,
-        LinkedContractsFactory.address,
+        LSP23LinkedContractsFactory.address,
       );
 
       expect(upAddress).to.equal(expectedUpProxyAddress);
@@ -446,7 +449,7 @@ describe('UniversalProfileDeployer', function () {
       const secondaryFundingAmount = ethers.utils.parseEther('1');
 
       const {
-        LinkedContractsFactory,
+        LSP23LinkedContractsFactory,
         upInitPostDeploymentModule,
         universalProfileInit,
         keyManagerInit,
@@ -454,7 +457,7 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.utils.randomBytes(32);
 
-      const primaryContractDeploymentInit: LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
+      const primaryContractDeploymentInit: LSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
         {
           salt,
           fundingAmount: primaryFundingAmount,
@@ -464,7 +467,7 @@ describe('UniversalProfileDeployer', function () {
           ]),
         };
 
-      const secondaryContractDeploymentInit: LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
+      const secondaryContractDeploymentInit: LSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
         {
           fundingAmount: secondaryFundingAmount,
           implementationContract: keyManagerInit.address,
@@ -485,18 +488,18 @@ describe('UniversalProfileDeployer', function () {
       ]);
 
       await expect(
-        LinkedContractsFactory.deployERC1167Proxies(
+        LSP23LinkedContractsFactory.deployERC1167Proxies(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
           upInitPostDeploymentModule.address,
           encodedBytes,
           { value: primaryFundingAmount }, // Only sending primary funding amount
         ),
-      ).to.be.revertedWithCustomError(LinkedContractsFactory, 'InvalidValueSum');
+      ).to.be.revertedWithCustomError(LSP23LinkedContractsFactory, 'InvalidValueSum');
 
       // Sending more than required
       await expect(
-        LinkedContractsFactory.deployERC1167Proxies(
+        LSP23LinkedContractsFactory.deployERC1167Proxies(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
           upInitPostDeploymentModule.address,
@@ -507,11 +510,11 @@ describe('UniversalProfileDeployer', function () {
               .add(ethers.utils.parseEther('0.1')),
           }, // Sending extra 0.1 ETH
         ),
-      ).to.be.revertedWithCustomError(LinkedContractsFactory, 'InvalidValueSum');
+      ).to.be.revertedWithCustomError(LSP23LinkedContractsFactory, 'InvalidValueSum');
     });
     it('should successfully deploy primary and secondary proxies with the correct values', async function () {
       const {
-        LinkedContractsFactory,
+        LSP23LinkedContractsFactory,
         upInitPostDeploymentModule,
         universalProfileInit,
         keyManagerInit,
@@ -521,7 +524,7 @@ describe('UniversalProfileDeployer', function () {
       const primaryFundingAmount = ethers.utils.parseEther('1');
       const secondaryFundingAmount = ethers.utils.parseEther('0'); // key manager does not accept funds
 
-      const primaryContractDeploymentInit: LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
+      const primaryContractDeploymentInit: LSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
         {
           salt,
           fundingAmount: primaryFundingAmount,
@@ -531,7 +534,7 @@ describe('UniversalProfileDeployer', function () {
           ]),
         };
 
-      const secondaryContractDeploymentInit: LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
+      const secondaryContractDeploymentInit: LSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
         {
           fundingAmount: secondaryFundingAmount,
           implementationContract: keyManagerInit.address,
@@ -547,7 +550,7 @@ describe('UniversalProfileDeployer', function () {
       ]);
 
       const [primaryAddress, secondaryAddress] =
-        await LinkedContractsFactory.callStatic.deployERC1167Proxies(
+        await LSP23LinkedContractsFactory.callStatic.deployERC1167Proxies(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
           upInitPostDeploymentModule.address,
@@ -555,7 +558,7 @@ describe('UniversalProfileDeployer', function () {
           { value: primaryFundingAmount.add(secondaryFundingAmount) },
         );
 
-      await LinkedContractsFactory.deployERC1167Proxies(
+      await LSP23LinkedContractsFactory.deployERC1167Proxies(
         primaryContractDeploymentInit,
         secondaryContractDeploymentInit,
         upInitPostDeploymentModule.address,
@@ -574,7 +577,7 @@ describe('UniversalProfileDeployer', function () {
     });
     it('should successfully deploy primary and secondary proxies', async function () {
       const {
-        LinkedContractsFactory,
+        LSP23LinkedContractsFactory,
         upInitPostDeploymentModule,
         universalProfileInit,
         keyManagerInit,
@@ -608,7 +611,7 @@ describe('UniversalProfileDeployer', function () {
       ]);
 
       const [primaryAddress, secondaryAddress] =
-        await LinkedContractsFactory.callStatic.deployERC1167Proxies(
+        await LSP23LinkedContractsFactory.callStatic.deployERC1167Proxies(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
           upInitPostDeploymentModule.address,
@@ -616,7 +619,7 @@ describe('UniversalProfileDeployer', function () {
           { value: primaryFundingAmount.add(secondaryFundingAmount) },
         );
 
-      await LinkedContractsFactory.callStatic.deployERC1167Proxies(
+      await LSP23LinkedContractsFactory.callStatic.deployERC1167Proxies(
         primaryContractDeploymentInit,
         secondaryContractDeploymentInit,
         upInitPostDeploymentModule.address,
@@ -629,7 +632,7 @@ describe('UniversalProfileDeployer', function () {
     });
     it('should emit DeployedERC1167Proxies event with correct parameters', async function () {
       const {
-        LinkedContractsFactory,
+        LSP23LinkedContractsFactory,
         upInitPostDeploymentModule,
         universalProfileInit,
         keyManagerInit,
@@ -663,7 +666,7 @@ describe('UniversalProfileDeployer', function () {
       ]);
 
       const [primaryAddress, secondaryAddress] =
-        await LinkedContractsFactory.callStatic.deployERC1167Proxies(
+        await LSP23LinkedContractsFactory.callStatic.deployERC1167Proxies(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
           upInitPostDeploymentModule.address,
@@ -671,7 +674,7 @@ describe('UniversalProfileDeployer', function () {
           { value: primaryFundingAmount.add(secondaryFundingAmount) },
         );
 
-      const tx = await LinkedContractsFactory.deployERC1167Proxies(
+      const tx = await LSP23LinkedContractsFactory.deployERC1167Proxies(
         primaryContractDeploymentInit,
         secondaryContractDeploymentInit,
         upInitPostDeploymentModule.address,
@@ -700,7 +703,7 @@ describe('UniversalProfileDeployer', function () {
     });
     it('should revert if trying to deploy twice with the same deployment info', async function () {
       const {
-        LinkedContractsFactory,
+        LSP23LinkedContractsFactory,
         upInitPostDeploymentModule,
         universalProfileInit,
         keyManagerInit,
@@ -733,7 +736,7 @@ describe('UniversalProfileDeployer', function () {
         [ethers.utils.randomBytes(32)],
       ]);
 
-      await LinkedContractsFactory.deployERC1167Proxies(
+      await LSP23LinkedContractsFactory.deployERC1167Proxies(
         primaryContractDeploymentInit,
         secondaryContractDeploymentInit,
         upInitPostDeploymentModule.address,
@@ -742,7 +745,7 @@ describe('UniversalProfileDeployer', function () {
       );
 
       await expect(
-        LinkedContractsFactory.deployERC1167Proxies(
+        LSP23LinkedContractsFactory.deployERC1167Proxies(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
           upInitPostDeploymentModule.address,
