@@ -10,8 +10,6 @@ import {
 import {_INTERFACEID_LSP1} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
 contract TokenReceiverWithoutLSP1WithERC721ReceivedInvalid is ERC721Holder {
-    event UniversalReceiverCalled(bytes32 typeId, bytes data);
-
     receive() external payable {}
 
     fallback() external payable {}

@@ -21,11 +21,6 @@ describe('LSP20 + LSP6 with constructor', () => {
     return { accounts, owner, universalProfile, keyManager, initialFunding };
   };
 
-  describe('when deploying the contract', () => {
-    // TODO: add tests to ensure LSP20 interface is registered.
-    // on LSP6 or LSP0?
-  });
-
   describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP6(buildTestContext);
   });
