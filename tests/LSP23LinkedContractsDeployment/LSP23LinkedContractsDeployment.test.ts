@@ -1,7 +1,11 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LSP23LinkedContractsFactory } from '../../typechain-types';
+import {
+  LSP23LinkedContractsFactory,
+  LSP6KeyManager,
+  UniversalProfile,
+} from '../../typechain-types';
 import { ERC725YDataKeys } from '../../constants';
 import {
   calculateProxiesAddresses,
@@ -15,9 +19,11 @@ describe('UniversalProfileDeployer', function () {
     it('should deploy both contract (with no value)', async function () {
       const [allPermissionsSigner, universalReceiver, recoverySigner] = await ethers.getSigners();
 
-      const keyManagerBytecode = (await ethers.getContractFactory('LSP6KeyManager')).bytecode;
-      const universalProfileBytecode = (await ethers.getContractFactory('UniversalProfile'))
-        .bytecode;
+      const KeyManagerFactory = await ethers.getContractFactory('LSP6KeyManager');
+      const UniversalProfileFactory = await ethers.getContractFactory('UniversalProfile');
+
+      const keyManagerBytecode = KeyManagerFactory.bytecode;
+      const universalProfileBytecode = UniversalProfileFactory.bytecode;
 
       const { upPostDeploymentModule, LSP23LinkedContractsFactory } =
         await deployImplementationContracts();
@@ -96,13 +102,17 @@ describe('UniversalProfileDeployer', function () {
           encodedBytes,
         );
 
-      /* deploying gives a gas error while static calls work fine */
-      // await LSP23LinkedContractsFactory.deployContracts(
-      //   primaryContractDeployment,
-      //   secondaryContractDeployment,
-      //   ethers.constants.AddressZero,
-      //   '0x',
-      // );
+      await LSP23LinkedContractsFactory.deployContracts(
+        primaryContractDeployment,
+        secondaryContractDeployment,
+        upPostDeploymentModule.address,
+        encodedBytes,
+        {
+          // Need to specify gasLimit, otherwise Hardhat reverts strangely with the following error:
+          // InvalidInputError: Transaction gas limit is 30915224 and exceeds block gas limit of 30000000
+          gasLimit: 30_000_000,
+        },
+      );
 
       const [expectedUpAddress, expectedKeyManagerAddress] =
         await LSP23LinkedContractsFactory.computeAddresses(
@@ -113,9 +123,18 @@ describe('UniversalProfileDeployer', function () {
         );
 
       expect(upContract).to.equal(expectedUpAddress);
-
       expect(keyManagerContract).to.equal(expectedKeyManagerAddress);
+
+      const keyManagerInstance: LSP6KeyManager = KeyManagerFactory.attach(keyManagerContract);
+      const universalProfileInstance: UniversalProfile = UniversalProfileFactory.attach(upContract);
+
+      // CHECK that the UP is owned by the KeyManager contract
+      expect(await universalProfileInstance.owner()).to.equal(keyManagerContract);
+
+      // CHECK that the `target()` of the KeyManager contract is the UP contract
+      expect(await keyManagerInstance.target()).to.equal(upContract);
     });
+
     it('should deploy both contract (with value)', async function () {
       const [allPermissionsSigner, universalReceiver, recoverySigner] = await ethers.getSigners();
 
