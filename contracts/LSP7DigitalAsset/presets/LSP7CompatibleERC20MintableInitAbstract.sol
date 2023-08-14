@@ -6,7 +6,10 @@ import {
     LSP7CompatibleERC20InitAbstract
 } from "../extensions/LSP7CompatibleERC20InitAbstract.sol";
 
-contract LSP7CompatibleERC20MintableInitAbstract is
+/**
+ * @title LSP7 preset contract (inheritable proxy version) with a public mint function callable only by the contract {owner}
+ */
+abstract contract LSP7CompatibleERC20MintableInitAbstract is
     LSP7CompatibleERC20InitAbstract
 {
     /**
@@ -20,6 +23,9 @@ contract LSP7CompatibleERC20MintableInitAbstract is
         LSP7CompatibleERC20InitAbstract._initialize(name_, symbol_, newOwner_);
     }
 
+    /**
+     * @dev Public {_mint} function only callable by the {owner}.
+     */
     function mint(
         address to,
         uint256 amount,
