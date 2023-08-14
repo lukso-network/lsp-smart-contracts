@@ -7,12 +7,12 @@ import {
     LSP8IdentifiableDigitalAssetInitAbstract
 } from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInitAbstract.sol";
 import {
-    LSP8Burnable
-} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol";
+    LSP8BurnableInitAbstract
+} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8BurnableInitAbstract.sol";
 
 contract LSP8InitTester is
     LSP8IdentifiableDigitalAssetInitAbstract,
-    LSP8Burnable
+    LSP8BurnableInitAbstract
 {
     function initialize(
         string memory name,
