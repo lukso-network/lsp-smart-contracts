@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-interface ILinkedContractsFactory {
+interface ILSP23LinkedContractsFactory {
     event DeployedContracts(
         address indexed primaryContract,
         address indexed secondaryContract,
