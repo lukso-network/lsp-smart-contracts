@@ -6,7 +6,7 @@ pragma solidity ^0.8.4;
 import {LSP7MintableInitAbstract} from "./LSP7MintableInitAbstract.sol";
 
 /**
- * @dev LSP7 extension, mintable.
+ * @dev LSP7DigitalAsset deployable preset contract (proxy version) with a public {mint} function callable only by the contract {owner}.
  */
 contract LSP7MintableInit is LSP7MintableInitAbstract {
     /**
@@ -17,11 +17,12 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
     }
 
     /**
-     * @notice Sets the token-Metadata and register LSP7InterfaceId
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the the token-Metadata
-     * @param isNonDivisible_ Specify if the LSP7 token is a fungible or non-fungible token
+     * @notice Initializing a `LSP7MintableInit` token contract with: token name = `name_`, token symbol = `symbol_`, and
+     * address `newOwner_` as the token contract owner.
+     *
+     * @param name_ The name of the token.
+     * @param symbol_ The symbol of the token.
+     * @param newOwner_ The owner of the token contract.
      */
     function initialize(
         string memory name_,

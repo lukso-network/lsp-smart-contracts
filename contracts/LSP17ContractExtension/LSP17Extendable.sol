@@ -83,7 +83,9 @@ abstract contract LSP17Extendable is ERC165 {
      *
      * Otherwise, the codes after _fallbackLSP17Extendable() may never be reached.
      */
-    function _fallbackLSP17Extendable() internal virtual {
+    function _fallbackLSP17Extendable(
+        bytes calldata callData
+    ) internal virtual returns (bytes memory) {
         // If there is a function selector
         address extension = _getExtension(msg.sig);
 
@@ -91,40 +93,20 @@ abstract contract LSP17Extendable is ERC165 {
         if (extension == address(0))
             revert NoExtensionFoundForFunctionSelector(msg.sig);
 
-        // solhint-disable no-inline-assembly
-        // if the extension was found, call the extension with the msg.data
-        // appended with bytes20(address) and bytes32(msg.value)
-        assembly {
-            calldatacopy(0, 0, calldatasize())
+        (bool success, bytes memory result) = extension.call(
+            abi.encodePacked(callData, msg.sender, msg.value)
+        );
 
-            // The msg.sender address is shifted to the left by 12 bytes to remove the padding
-            // Then the address without padding is stored right after the calldata
-            mstore(calldatasize(), shl(96, caller()))
-
-            // The msg.value is stored right after the calldata + msg.sender
-            mstore(add(calldatasize(), 20), callvalue())
-
-            // Add 52 bytes for the msg.sender and msg.value appended at the end of the calldata
-            let success := call(
-                gas(),
-                extension,
-                0,
-                0,
-                add(calldatasize(), 52),
-                0,
-                0
-            )
-
-            // Copy the returned data
-            returndatacopy(0, 0, returndatasize())
-
-            switch success
-            // call returns 0 on failed calls
-            case 0 {
-                revert(0, returndatasize())
-            }
-            default {
-                return(0, returndatasize())
+        if (success) {
+            return result;
+        } else {
+            // `mload(result)` -> offset in memory where `result.length` is located
+            // `add(result, 32)` -> offset in memory where `result` data starts
+            // solhint-disable no-inline-assembly
+            /// @solidity memory-safe-assembly
+            assembly {
+                let resultdata_size := mload(result)
+                revert(add(result, 32), resultdata_size)
             }
         }
     }
