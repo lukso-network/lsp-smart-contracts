@@ -154,7 +154,6 @@ abstract contract LSP8CompatibleERC721 is
      */
     function approve(address operator, uint256 tokenId) public virtual {
         authorizeOperator(operator, bytes32(tokenId));
-        emit Approval(tokenOwnerOf(bytes32(tokenId)), operator, tokenId);
     }
 
     /**
@@ -219,7 +218,27 @@ abstract contract LSP8CompatibleERC721 is
             LSP8IdentifiableDigitalAssetCore
         )
     {
-        super.authorizeOperator(operator, tokenId);
+        address tokenOwner = tokenOwnerOf(tokenId);
+
+        if (
+            tokenOwner != msg.sender &&
+            !isApprovedForAll(tokenOwner, msg.sender)
+        ) {
+            revert LSP8NotTokenOwner(tokenOwner, tokenId, msg.sender);
+        }
+
+        if (operator == address(0)) {
+            revert LSP8CannotUseAddressZeroAsOperator();
+        }
+
+        if (tokenOwner == operator) {
+            revert LSP8TokenOwnerCannotBeOperator();
+        }
+
+        bool isAdded = _operators[tokenId].add(operator);
+        if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
+
+        emit AuthorizedOperator(operator, tokenOwner, tokenId);
         emit Approval(tokenOwnerOf(tokenId), operator, uint256(tokenId));
     }
 
@@ -230,13 +249,11 @@ abstract contract LSP8CompatibleERC721 is
         bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual override {
-        address operator = msg.sender;
-
         if (
-            !isApprovedForAll(from, operator) &&
-            !_isOperatorOrOwner(operator, tokenId)
+            !isApprovedForAll(from, msg.sender) &&
+            !_isOperatorOrOwner(msg.sender, tokenId)
         ) {
-            revert LSP8NotTokenOperator(tokenId, operator);
+            revert LSP8NotTokenOperator(tokenId, msg.sender);
         }
 
         emit Transfer(from, to, uint256(tokenId));
