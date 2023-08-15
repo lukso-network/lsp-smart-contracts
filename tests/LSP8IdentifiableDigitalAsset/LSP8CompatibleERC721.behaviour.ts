@@ -254,6 +254,16 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         .setApprovalForAll(context.accounts.operator.address, true);
     });
 
+    it('should be able to set approval for operator', async () => {
+      const tx = await context.lsp8CompatibleERC721
+        .connect(context.accounts.operator)
+        .approve(context.accounts.anyone.address, tokenIds[0]);
+
+      await expect(tx)
+        .to.emit(context.lsp8CompatibleERC721, 'Approval')
+        .withArgs(context.accounts.owner.address, context.accounts.anyone.address, tokenIds[0]);
+    });
+
     describe('when calling setApprovalForAll with true', () => {
       it('should revert when trying to pass caller address as operator', async () => {
         await expect(
