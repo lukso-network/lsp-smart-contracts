@@ -14,6 +14,7 @@ export const testAllowedERC725YDataKeysInternals = (
 ) => {
   describe('Testing CheckAllowedERC725YDataKeys', () => {
     let context: LSP6InternalsTestContext;
+
     let dataKeys: {
       firstDynamicKey: DataKey;
       secondDynamicKey: DataKey;
@@ -24,6 +25,7 @@ export const testAllowedERC725YDataKeysInternals = (
       thirdFixedKey: DataKey;
       fourthFixedKey: DataKey;
     };
+
     let dataKeysToReturn: BytesLike[];
     let compactBytesArray_2d: BytesLike;
     let compactBytesArray_2f: BytesLike;
@@ -32,6 +34,7 @@ export const testAllowedERC725YDataKeysInternals = (
 
     before(async () => {
       context = await buildContext();
+
       dataKeys = {
         firstDynamicKey: {
           length: '0x0011',
@@ -66,6 +69,7 @@ export const testAllowedERC725YDataKeysInternals = (
           key: '0x2b58178172d258515ef1d9e7c467f6f6a09510e863ef5ad383dbfc50721183df',
         },
       };
+
       dataKeysToReturn = [
         '0x6fae27edb0b5020ca98b9af9014331fcc79241c7f12d6afbcaea07f00e53b45d',
         '0xfd63b8f031e1f4c43fbb4956e08c686aa350a051d4d3e77a1e1c7f70366207b2',
@@ -78,16 +82,19 @@ export const testAllowedERC725YDataKeysInternals = (
         '0x9fedfe7c7366c70c52b6f11531196d0c5baa77abd16117ae30dc4eeb16dd6da2',
         '0x8741530fb57ca8556c5e7b45ffac62c178d8c0ff070ff1c99652e3f099997fa6',
       ];
+
       compactBytesArray_2d =
         dataKeys.firstDynamicKey.length +
         dataKeys.firstDynamicKey.key.toString().substring(2) +
         dataKeys.secondDynamicKey.length.toString().substring(2) +
         dataKeys.secondDynamicKey.key.toString().substring(2);
+
       compactBytesArray_2f =
         dataKeys.firstFixedKey.length +
         dataKeys.firstFixedKey.key.toString().substring(2) +
         dataKeys.secondFixedKey.length.toString().substring(2) +
         dataKeys.secondFixedKey.key.toString().substring(2);
+
       compactBytesArray_2d_2f =
         dataKeys.firstDynamicKey.length +
         dataKeys.firstDynamicKey.key.toString().substring(2) +
@@ -97,6 +104,7 @@ export const testAllowedERC725YDataKeysInternals = (
         dataKeys.firstFixedKey.key.toString().substring(2) +
         dataKeys.secondFixedKey.length.toString().substring(2) +
         dataKeys.secondFixedKey.key.toString().substring(2);
+
       compactBytesArray_mixed_d_f =
         dataKeys.firstDynamicKey.length +
         dataKeys.firstDynamicKey.key.toString().substring(2) +
@@ -237,8 +245,8 @@ export const testAllowedERC725YDataKeysInternals = (
               )
               .substring(2);
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_2d,
@@ -257,8 +265,8 @@ export const testAllowedERC725YDataKeysInternals = (
               )
               .substring(2);
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_2d,
@@ -290,8 +298,8 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking first fixed key: should return true', async () => {
           const checkedDataKey = dataKeys.firstFixedKey.key;
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_2f,
@@ -302,8 +310,8 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking second fixed key: should return true', async () => {
           const checkedDataKey = dataKeys.secondFixedKey.key;
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_2f,
@@ -343,8 +351,8 @@ export const testAllowedERC725YDataKeysInternals = (
               )
               .substring(2);
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_2d_2f,
@@ -363,8 +371,8 @@ export const testAllowedERC725YDataKeysInternals = (
               )
               .substring(2);
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_2d_2f,
@@ -375,8 +383,8 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking first fixed key: should return true', async () => {
           const checkedDataKey = dataKeys.firstFixedKey.key;
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_2d_2f,
@@ -387,8 +395,8 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking second fixed key: should return true', async () => {
           const checkedDataKey = dataKeys.secondFixedKey.key;
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_2d_2f,
@@ -428,8 +436,8 @@ export const testAllowedERC725YDataKeysInternals = (
               )
               .substring(2);
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_mixed_d_f,
@@ -448,8 +456,8 @@ export const testAllowedERC725YDataKeysInternals = (
               )
               .substring(2);
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_mixed_d_f,
@@ -468,8 +476,8 @@ export const testAllowedERC725YDataKeysInternals = (
               )
               .substring(2);
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_mixed_d_f,
@@ -488,8 +496,8 @@ export const testAllowedERC725YDataKeysInternals = (
               )
               .substring(2);
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_mixed_d_f,
@@ -500,8 +508,8 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking first fixed key: should return true', async () => {
           const checkedDataKey = dataKeys.firstFixedKey.key;
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_mixed_d_f,
@@ -512,8 +520,8 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking second fixed key: should return true', async () => {
           const checkedDataKey = dataKeys.secondFixedKey.key;
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_mixed_d_f,
@@ -524,8 +532,8 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking third fixed key: should return true', async () => {
           const checkedDataKey = dataKeys.thirdFixedKey.key;
 
-          expect(
-            await context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
               context.universalProfile.address,
               checkedDataKey,
               compactBytesArray_mixed_d_f,
@@ -572,6 +580,32 @@ export const testAllowedERC725YDataKeysInternals = (
               'InvalidEncodedAllowedERC725YDataKeys',
             )
             .withArgs(compactBytesArray_with_invalid_length, "couldn't DECODE from storage");
+        });
+      });
+
+      describe('checking a CompactBytesArray of AllowedERC725YDataKeys containing `0x0000`', () => {
+        let context: LSP6InternalsTestContext;
+
+        before(async () => {
+          context = await buildContext();
+        });
+
+        it('should revert when passing `bytes32(0)` as input data key', async () => {
+          const compactBytesArrayOfAllowedERC725YDataKeys = '0x0000';
+          const inputDataKey = '0x0000000000000000000000000000000000000000000000000000000000000000';
+
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+              context.universalProfile.address,
+              inputDataKey,
+              compactBytesArrayOfAllowedERC725YDataKeys,
+            ),
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManagerInternalTester,
+              'InvalidEncodedAllowedERC725YDataKeys',
+            )
+            .withArgs(compactBytesArrayOfAllowedERC725YDataKeys, "couldn't DECODE from storage");
         });
       });
     });
