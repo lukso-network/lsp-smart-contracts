@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import {
+    OPERATION_4_DELEGATECALL
+} from "@erc725/smart-contracts/contracts/constants.sol";
+
 import {UniversalProfileInit} from "../../UniversalProfileInit.sol";
 
 contract UniversalProfileInitPostDeploymentModule is UniversalProfileInit {
@@ -45,7 +49,7 @@ contract UniversalProfileInitPostDeploymentModule is UniversalProfileInit {
 
         // call the execute function with delegate_call on the universalProfile contract to setData and transferOwnership
         UniversalProfileInit(payable(universalProfile)).execute(
-            4,
+            OPERATION_4_DELEGATECALL,
             address(this),
             0,
             abi.encodeWithSignature(
