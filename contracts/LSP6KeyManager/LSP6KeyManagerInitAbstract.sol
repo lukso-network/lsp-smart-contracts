@@ -11,7 +11,7 @@ import {InvalidLSP6Target} from "./LSP6Errors.sol";
 /**
  * @title Proxy implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
  * @author Fabian Vogelsteller <frozeman>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
- * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
+ * @dev All the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
 abstract contract LSP6KeyManagerInitAbstract is
     Initializable,

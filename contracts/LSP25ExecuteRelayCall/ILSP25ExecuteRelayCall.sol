@@ -18,16 +18,18 @@ interface ILSP25ExecuteRelayCall {
     ) external view returns (uint256);
 
     /**
+     * @notice Executing a relay call (= meta-transaction).
+     *
      * @dev Allows any address (executor) to execute a payload (= abi-encoded function call) in the linked {target} given they have a signed message from
      * a controller with some permissions.
      *
-     * @param signature a 65 bytes long signature for a meta transaction according to LSP6.
-     * @param nonce the nonce of the address that signed the calldata (in a specific `_channel`), obtained via {getNonce}. Used to prevent replay attack.
-     * @param validityTimestamps * Two `uint128` timestamps concatenated together that describes
+     * @param signature A 65 bytes long signature for a meta transaction according to LSP6.
+     * @param nonce The nonce of the address that signed the calldata (in a specific `_channel`), obtained via {getNonce}. Used to prevent replay attack.
+     * @param validityTimestamps Two `uint128` timestamps concatenated together that describes
      * when the relay transaction is valid "from" (left `uint128`) and "until" as a deadline (right `uint128`).
-     * @param payload the abi-encoded function call to execute on the linked {target}.
+     * @param payload The abi-encoded function call to execute on the linked {target}.
      *
-     * @return the data being returned by the function called on the linked {target}.
+     * @return The data being returned by the function called on the linked {target}.
      */
     function executeRelayCall(
         bytes calldata signature,
@@ -37,6 +39,8 @@ interface ILSP25ExecuteRelayCall {
     ) external payable returns (bytes memory);
 
     /**
+     * @notice Executing a batch of relay calls (= meta-transactions).
+     *
      * @dev Same as {executeRelayCall} but execute a batch of signed calldata payloads (abi-encoded function calls) in a single transaction.
      * The signed transactions can be from multiple controllers, not necessarely the same controller signer, as long as each of these controllers
      * that signed have the right permissions related to the calldata `payload` they signed.
@@ -45,9 +49,9 @@ interface ILSP25ExecuteRelayCall {
      * @param nonces An array of nonces of the addresses that signed the calldata payloads (in specific channels). Obtained via {getNonce}. Used to prevent replay attack.
      * @param validityTimestamps An array of two `uint128` concatenated timestamps that describe when the relay transaction is valid "from" (left `uint128`) and "until" (right `uint128`).
      * @param values An array of amount of native tokens to be transferred for each calldata `payload`.
-     * @param payloads An array of abi-encoded function calls to execute successively on the linked {target}.
+     * @param payloads An array of abi-encoded function calls to be executed successively on the linked {target}.
      *
-     * @return An array of abi-decoded return data returned by the functions called on the linked {target}.
+     * @return An array of abi-decoded data returned by the functions called on the linked {target}.
      */
     function executeRelayCallBatch(
         bytes[] calldata signatures,

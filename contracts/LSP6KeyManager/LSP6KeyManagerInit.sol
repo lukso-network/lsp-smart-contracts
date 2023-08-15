@@ -7,11 +7,11 @@ import {LSP6KeyManagerInitAbstract} from "./LSP6KeyManagerInitAbstract.sol";
 /**
  * @title Proxy implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
  * @author Fabian Vogelsteller <frozeman>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
- * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
+ * @dev All the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
 contract LSP6KeyManagerInit is LSP6KeyManagerInitAbstract {
     /**
-     * @dev initialize (= lock) base implementation contract on deployment
+     * @dev Initialize (= lock) base implementation contract on deployment
      */
     constructor() {
         _disableInitializers();

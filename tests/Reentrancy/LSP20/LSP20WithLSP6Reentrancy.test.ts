@@ -23,7 +23,7 @@ export const shouldBehaveLikeLSP20WithLSP6ReentrancyScenarios = (
     testERC725XExecuteToLSP6ExecuteRelayCall(buildContext, buildReentrancyContext);
   });
 
-  // This tests will be enabled when we allow `ERC725X.execute(uint256[],address[],uint256[],bytes[])` in the LSP6.execute(bytes)
+  // TODO: enable these tests once we allow `ERC725X.execute(uint256[],address[],uint256[],bytes[])` in the LSP6.execute(bytes)
   describe.skip('first call through `execute(bytes)`, second call through `execute(uint256[],bytes[])`', () => {
     testERC725XBatchExecuteToERC725XExecute(buildContext, buildReentrancyContext);
   });

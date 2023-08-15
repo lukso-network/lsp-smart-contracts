@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 /**
+ * @notice The address `from` does not have any permission set on the contract linked to the Key Manager.
  * @dev Reverts when address `from` does not have any permissions set on the account linked to this Key Manager
  *
  * @param from the address that does not have permissions
@@ -9,6 +10,7 @@ pragma solidity ^0.8.4;
 error NoPermissionsSet(address from);
 
 /**
+ * @notice The address `from` is not authorised to `permission` on the contract linked to the Key Manager.
  * @dev Reverts when address `from` is not authorised and does not have `permission` on the linked {target}
  *
  * @param from address The address that was not authorised.
@@ -17,17 +19,19 @@ error NoPermissionsSet(address from);
 error NotAuthorised(address from, string permission);
 
 /**
+ * @notice The address `from` is not authorised to call the function `selector` on the `to` address.
  * @dev Reverts when `from` is not authorised to call the `execute(uint256,address,uint256,bytes)` function because of
  * a not allowed callType, address, standard or function.
  *
- * @param from address The controller that tried to call the `execute(uint256,address,uint256,bytes)` function.
+ * @param from The controller that tried to call the `execute(uint256,address,uint256,bytes)` function.
  * @param to The address of an EOA or contract that `from` tried to call using the linked {target}
  * @param selector If `to` is a contract, the bytes4 selector of the function that `from` is trying to call.
- * If no function is called (e.g: a native token transfer), selector = 0x00000000
+ * If no function is called (_e.g: a native token transfer_), selector = `0x00000000`
  */
 error NotAllowedCall(address from, address to, bytes4 selector);
 
 /**
+ * @notice The address `from` is not authorised to set the data key `disallowedKey` on the contract linked to the Key Manager.
  * @dev Reverts when address `from` is not authorised to set the key `disallowedKey` on the linked {target}.
  *
  * @param from address The controller that tried to `setData` on the linked {target}.
@@ -36,19 +40,23 @@ error NotAllowedCall(address from, address to, bytes4 selector);
 error NotAllowedERC725YDataKey(address from, bytes32 disallowedKey);
 
 /**
- * @dev Reverts when `dataKey` is a bytes32 value that does not adhere to any of the
- * permission data keys defined by the LSP6 standard
+ * @notice The data key `dataKey` starts with `AddressPermissions` prefix but is none of the permission data keys defined in LSP6.
+ * @dev Reverts when `dataKey` is a `bytes32` value that does not adhere to any of the permission data keys defined by the LSP6 standard
  *
  * @param dataKey The dataKey that does not match any of the standard LSP6 permission data keys.
  */
 error NotRecognisedPermissionKey(bytes32 dataKey);
 
 /**
+ * @notice Invalid address supplied to link this Key Manager to (`address(0)`).
  * @dev Reverts when the address provided to set as the {target} linked to this KeyManager is invalid (_e.g. `address(0)`_).
  */
 error InvalidLSP6Target();
 
 /**
+ * @notice The relay call failed because an invalid nonce was provided for the address `signer` that signed the execute relay call.
+ * Invalid nonce: `invalidNonce`, signature of signer: `signature`.
+ *
  * @dev Reverts when the `signer` address retrieved from the `signature` has an invalid nonce: `invalidNonce`.
  *
  * @param signer The address of the signer
@@ -58,6 +66,9 @@ error InvalidLSP6Target();
 error InvalidRelayNonce(address signer, uint256 invalidNonce, bytes signature);
 
 /**
+ * @notice The Key Manager could not verify the calldata of the transaction because it could not recognise
+ * the function being called. Invalid function selector: `invalidFunction`.
+ *
  * @dev Reverts when trying to call a function on the linked {target}, that is not any of the following:
  * - `setData(bytes32,bytes)` (ERC725Y)
  * - `setDataBatch(bytes32[],bytes[])` (ERC725Y)
@@ -65,12 +76,14 @@ error InvalidRelayNonce(address signer, uint256 invalidNonce, bytes signature);
  * - `transferOwnership(address)`
  * - `acceptOwnership()` (LSP14)
  *
- * @param invalidFunction The `bytes4` selector of the function selector that was attempted
+ * @param invalidFunction The `bytes4` selector of the function that was attempted
  * to be called on the linked {target} but not recognised.
  */
 error InvalidERC725Function(bytes4 invalidFunction);
 
 /**
+ * @notice Could not decode the Allowed Calls. Value = `allowedCallsValue`.
+ *
  * @dev Reverts when `allowedCallsValue` is not properly encoded as a `(bytes4,address,bytes4,bytes4)[CompactBytesArray]`
  * (CompactBytesArray made of tuples that are 32 bytes long each). See LSP2 value type `CompactBytesArray` for more infos.
  *
@@ -79,6 +92,7 @@ error InvalidERC725Function(bytes4 invalidFunction);
 error InvalidEncodedAllowedCalls(bytes allowedCallsValue);
 
 /**
+ * @notice Could not store `invalidValue` inside the `AddressPermissions[]` Array at index: `dataKey`.
  * @dev Reverts when trying to set a value that is not 20 bytes long (not an `address`) under the `AddressPermissions[index]` data key.
  *
  * @param dataKey The `AddressPermissions[index]` data key, that specify the index in the `AddressPermissions[]` array.
@@ -90,6 +104,8 @@ error AddressPermissionArrayIndexValueNotAnAddress(
 );
 
 /**
+ * @notice The address `from` is not authorised to set data, because it has no ERC725Y Data Key allowed.
+ *
  * @dev Reverts when the `from` address has no AllowedERC725YDataKeys set and cannot set
  * any ERC725Y data key on the ERC725Y storage of the linked {target}.
  *
@@ -98,6 +114,8 @@ error AddressPermissionArrayIndexValueNotAnAddress(
 error NoERC725YDataKeysAllowed(address from);
 
 /**
+ * @notice The address `from` is not authorised to use the linked account contract to make external calls, because it has Allowed Calls set.
+ *
  * @dev Reverts when the `from` address has no `AllowedCalls` set and cannot interact with any address
  * using the linked {target}.
  *
@@ -106,37 +124,52 @@ error NoERC725YDataKeysAllowed(address from);
 error NoCallsAllowed(address from);
 
 /**
+ * @notice Error when reading the Allowed ERC725Y Data Keys. Reason: `context`, Allowed ERC725Y Data Keys value read: `value`.
+ *
  * @dev Reverts when `value` is not encoded properly as a `bytes32[CompactBytesArray]`. The `context` string provides context
- * on when this error occured (_e.g: when fetching the `AllowedERC725YDataKeys` to verify the permissions of a controller,
+ * on when this error occurred (_e.g: when fetching the `AllowedERC725YDataKeys` to verify the permissions of a controller,
  * or when validating the `AllowedERC725YDataKeys` when setting them for a controller).
  *
  * @param value The value that is not a valid `bytes32[CompactBytesArray]`
- * @param context A brief description of where the error occured.
+ * @param context A brief description of where the error occurred.
  */
 error InvalidEncodedAllowedERC725YDataKeys(bytes value, string context);
 
 /**
- * @dev Reverts when verifying the permissions of a `from` address for its allowed calls, and has a "any whitelisted call" allowed call set.
+ * @notice Invalid allowed calls (`0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff`) set for address `from`.
+ * Could not perform external call.
+ *
+ * @dev Reverts when a `from` address has _"any whitelisted call"_ as allowed call set.
+ * This revert happens during the verification of the permissions of the address for its allowed calls.
+ *
  * A `from` address is not allowed to have 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff
  * in its list of `AddressPermissions:AllowedCalls:<address>`, as this allows any STANDARD:ADDRESS:FUNCTION.
  * This is equivalent to granting the SUPER permission and should never be valid.
  *
- * @param from The controller address that has any allowed calls whitelisted set.
+ * @param from The controller address that has _"any allowed calls"_ whitelisted set.
  */
 error InvalidWhitelistedCall(address from);
 
 /**
- * @dev Reverts when providing array parameters of different sizes to `executeRelayCall(bytes[],uint256[],bytes[])`
+ * @notice The array parameters provided to the function `executeRelayCallBatch(...)` do not have the same number of elements.
+ * (Different array param's length).
+ *
+ * @dev Reverts when providing array parameters of different sizes to `executeRelayCallBatch(bytes[],uint256[],bytes[])`
  */
 error BatchExecuteRelayCallParamsLengthMismatch();
 
 /**
+ * @notice The array parameters provided to the function `executeBatch(...)` do not have the same number of elements.
+ * (Different array param's length).
+ *
  * @dev Reverts when the array parameters `uint256[] value` and `bytes[] payload` have different sizes.
  * There should be the same number of elements for each array parameters.
  */
 error BatchExecuteParamsLengthMismatch();
 
 /**
+ * @notice Not enough funds sent to forward each amount in the batch.
+ *
  * @dev This error occurs when there was not enough funds sent to the batch functions `execute(uint256[],bytes[])` or
  * `executeRelayCall(bytes[],uint256[],uint256[],bytes[])` to cover the sum of all the values forwarded on
  * each payloads (`values[]` parameter from the batch functions above).
@@ -149,6 +182,8 @@ error BatchExecuteParamsLengthMismatch();
 error LSP6BatchInsufficientValueSent(uint256 totalValues, uint256 msgValue);
 
 /**
+ * @notice Too much funds sent to forward each amount in the batch. No amount of native tokens should stay in the Key Manager.
+ *
  * @dev This error occurs when there was too much funds sent to the batch functions `execute(uint256[],bytes[])` or
  * `executeRelayCall(bytes[],uint256[],uint256[],bytes[])` to cover the sum of all the values forwarded on
  *
@@ -163,6 +198,8 @@ error LSP6BatchInsufficientValueSent(uint256 totalValues, uint256 msgValue);
 error LSP6BatchExcessiveValueSent(uint256 totalValues, uint256 msgValue);
 
 /**
+ * @notice Performing DELEGATE CALLS via the Key Manager is currently disallowed.
+ *
  * @dev Reverts when trying to do a `delegatecall` via the ERC725X.execute(uint256,address,uint256,bytes) (operation type 4)
  * function of the linked {target}.
  * `DELEGATECALL` is disallowed by default on the LSP6KeyManager.
@@ -170,27 +207,36 @@ error LSP6BatchExcessiveValueSent(uint256 totalValues, uint256 msgValue);
 error DelegateCallDisallowedViaKeyManager();
 
 /**
- * @dev Reverst when the payload is invalid.
+ * @notice Invalid calldata payload sent.
+ * @dev Reverts when the payload is invalid.
  */
 error InvalidPayload(bytes payload);
 
 /**
- * @dev Reverts when trying to call to the `setData(byte32,bytes)` or `setData(bytes32[],bytes[]) functions
+ * @notice Cannot sent native tokens while setting data.
+ *
+ * @dev Reverts when calling the `setData(byte32,bytes)` or `setData(bytes32[],bytes[]) functions
  * on the linked {target} while sending value.
  */
 error CannotSendValueToSetData();
 
 /**
+ * @notice Calling the Key Manager address for this transaction is disallowed.
+ *
  * @dev Reverts when calling the KeyManager through `execute(uint256,address,uint256,bytes)`.
  */
 error CallingKeyManagerNotAllowed();
 
 /**
+ * @notice Relay call not valid yet.
+ *
  * @dev Reverts when the start timestamp provided to {executeRelayCall} function is bigger than the current timestamp.
  */
 error RelayCallBeforeStartTime();
 
 /**
+ * @notice The date of the relay call expired.
+ *
  * @dev Reverts when the period to execute the relay call has expired.
  */
 error RelayCallExpired();

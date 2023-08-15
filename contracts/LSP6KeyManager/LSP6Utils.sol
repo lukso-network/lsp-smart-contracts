@@ -185,11 +185,11 @@ library LSP6Utils {
     function combinePermissions(
         bytes32[] memory permissions
     ) internal pure returns (bytes32) {
-        uint256 result = 0;
+        bytes32 result;
         for (uint256 i = 0; i < permissions.length; i++) {
-            result += uint256(permissions[i]);
+            result |= permissions[i];
         }
-        return bytes32(result);
+        return result;
     }
 
     /**

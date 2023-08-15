@@ -12,7 +12,7 @@ import {InvalidLSP6Target} from "./LSP6Errors.sol";
  */
 contract LSP6KeyManager is LSP6KeyManagerCore {
     /**
-     * @notice Deploying a LSP6KeyManager linked to contract at address `target_`.
+     * @notice Deploying a LSP6KeyManager linked to the contract at address `target_`.
      * @dev Deploy a Key Manager and set the `target_` address in the contract storage,
      * making this Key Manager linked to this `target_` contract.
      *

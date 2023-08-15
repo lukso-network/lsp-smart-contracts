@@ -211,6 +211,9 @@ abstract contract LSP6KeyManagerCore is
      *
      * @custom:events {VerifiedCall} event when the permissions related to `payload` have been verified successfully.
      *
+     * @custom:hint You can use `validityTimestamps == 0` to define an `executeRelayCall` transaction that is indefinitely valid,
+     * meaning that does not require to start from a specific date/time, or that has an expiration date/time/
+     *
      * @custom:hint If you are looking to learn how to sign and execute relay transactions via the Key Manager,
      * see our Javascript step by step guide [_"Execute Relay Transactions"_](../../guides/key-manager/execute-relay-transactions.md).
      * See the LSP6 Standard page for more details on how to
@@ -305,7 +308,7 @@ abstract contract LSP6KeyManagerCore is
             bool isReentrantCall = _nonReentrantBefore(isSetData, caller);
 
             _verifyPermissions(caller, msgValue, data);
-            emit VerifiedCall(caller, msgValue, bytes4(data));
+            emit PermissionsVerified(caller, msgValue, bytes4(data));
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
@@ -370,7 +373,7 @@ abstract contract LSP6KeyManagerCore is
         bool isReentrantCall = _nonReentrantBefore(isSetData, msg.sender);
 
         _verifyPermissions(msg.sender, msgValue, payload);
-        emit VerifiedCall(msg.sender, msgValue, bytes4(payload));
+        emit PermissionsVerified(msg.sender, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
 
@@ -411,7 +414,7 @@ abstract contract LSP6KeyManagerCore is
         bool isReentrantCall = _nonReentrantBefore(isSetData, signer);
 
         _verifyPermissions(signer, msgValue, payload);
-        emit VerifiedCall(signer, msgValue, bytes4(payload));
+        emit PermissionsVerified(signer, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
 

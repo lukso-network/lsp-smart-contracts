@@ -10,6 +10,7 @@ import {
     LSP4Compatibility
 } from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
 import {
+    LSP7DigitalAssetCore,
     LSP7DigitalAssetInitAbstract,
     LSP4DigitalAssetMetadataInitAbstract,
     ERC725YCore
@@ -24,12 +25,13 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     LSP7DigitalAssetInitAbstract
 {
     /**
-     * @notice Sets the name, the symbol and the owner of the token
+     * @notice Initializing a `LSP7CompatibleERC20` token contract with: token name = `name_`, token symbol = `symbol_`, and
+     * address `newOwner_` as the token contract owner.
+     *
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
      * @param newOwner_ The owner of the token
      */
-
     function _initialize(
         string memory name_,
         string memory symbol_,
@@ -44,7 +46,7 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     }
 
     /**
-     * @dev See {IERC165-supportsInterface}.
+     * @inheritdoc LSP7DigitalAssetInitAbstract
      */
     function supportsInterface(
         bytes4 interfaceId
@@ -81,8 +83,8 @@ abstract contract LSP7CompatibleERC20InitAbstract is
 
     /**
      * @inheritdoc ILSP7CompatibleERC20
-     * @dev Compatible with ERC20 transferFrom.
-     * Using allowNonLSP1Recipient=true so that EOA and any contract may receive the tokens.
+     *
+     * @custom:info This function uses the `allowNonLSP1Recipient` parameter as `true` so that EOA and any contract can receive tokens.
      */
     function transferFrom(
         address from,
@@ -97,8 +99,8 @@ abstract contract LSP7CompatibleERC20InitAbstract is
 
     /**
      * @inheritdoc ILSP7CompatibleERC20
-     * @dev Compatible with ERC20 transfer.
-     * Using allowNonLSP1Recipient=true so that EOA and any contract may receive the tokens.
+     *
+     * @custom:info This function uses the `allowNonLSP1Recipient` parameter as `true` so that EOA and any contract can receive tokens.
      */
     function transfer(
         address to,
@@ -109,8 +111,7 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     }
 
     /**
-     * @dev same behaviour as LSP7DigitalAssetCore
-     * with the addition of emitting ERC20 Approval event.
+     * @inheritdoc LSP7DigitalAssetCore
      */
     function _updateOperator(
         address tokenOwner,
@@ -121,6 +122,13 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         emit Approval(tokenOwner, operator, amount);
     }
 
+    /**
+     * @inheritdoc LSP7DigitalAssetCore
+     *
+     * @custom:events
+     * - LSP7 {Transfer} event.
+     * - ERC20 {Transfer} event.
+     */
     function _transfer(
         address from,
         address to,
@@ -132,6 +140,13 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         super._transfer(from, to, amount, allowNonLSP1Recipient, data);
     }
 
+    /**
+     * @inheritdoc LSP7DigitalAssetCore
+     *
+     * @custom:events
+     * - LSP7 {Transfer} event with `address(0)` as `from`.
+     * - ERC20 {Transfer} event with `address(0)` as `from`.
+     */
     function _mint(
         address to,
         uint256 amount,
@@ -142,6 +157,13 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         super._mint(to, amount, allowNonLSP1Recipient, data);
     }
 
+    /**
+     * @inheritdoc LSP7DigitalAssetCore
+     *
+     * @custom:events
+     * - LSP7 {Transfer} event with `address(0)` as the `to` address.
+     * - ERC20 {Transfer} event with `address(0)` as the `to` address.
+     */
     function _burn(
         address from,
         uint256 amount,
@@ -151,6 +173,9 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         super._burn(from, amount, data);
     }
 
+    /**
+     * @inheritdoc LSP4DigitalAssetMetadataInitAbstract
+     */
     function _setData(
         bytes32 key,
         bytes memory value

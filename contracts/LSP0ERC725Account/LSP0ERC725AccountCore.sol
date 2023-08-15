@@ -152,16 +152,18 @@ abstract contract LSP0ERC725AccountCore is
      *
      * @custom:events {ValueReceived} event when receiving native tokens.
      */
-    fallback() external payable virtual {
+    fallback(
+        bytes calldata callData
+    ) external payable virtual returns (bytes memory) {
         if (msg.value != 0) {
             emit ValueReceived(msg.sender, msg.value);
         }
 
         if (msg.data.length < 4) {
-            return;
+            return "";
         }
 
-        _fallbackLSP17Extendable();
+        return _fallbackLSP17Extendable(callData);
     }
 
     /**
@@ -428,7 +430,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @notice Achieves the goal of [LSP1-UniversalReceiver] by allowing the account to be notified about incoming/outgoing
+     * @notice Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be notified about incoming/outgoing
      * transactions and enabling reactions to these actions.
      *
      * The reaction is achieved by having two external contracts (UniversalReceiverDelegates) that react on the whole transaction
@@ -789,57 +791,32 @@ abstract contract LSP0ERC725AccountCore is
      * If there is an extension for the function selector being called, it calls the extension with the
      * CALL opcode, passing the `msg.data` appended with the 20 bytes of the `msg.sender` and
      * 32 bytes of the `msg.value`
-     *
-     * Because the function uses assembly `return()`/`revert()` to terminate the call, it cannot be
-     * called before other codes in {fallback()}.
-     *
-     * Otherwise, the codes after {_fallbackLSP17Extendable()} may never be reached.
      */
-    function _fallbackLSP17Extendable() internal virtual override {
+    function _fallbackLSP17Extendable(
+        bytes calldata callData
+    ) internal virtual override returns (bytes memory) {
         // If there is a function selector
         address extension = _getExtension(msg.sig);
 
         // if no extension was found for bytes4(0) return don't revert
-        if (msg.sig == bytes4(0) && extension == address(0)) return;
+        if (msg.sig == bytes4(0) && extension == address(0)) return "";
 
         // if no extension was found for other function selectors, revert
         if (extension == address(0))
             revert NoExtensionFoundForFunctionSelector(msg.sig);
 
-        // solhint-disable no-inline-assembly
-        // if the extension was found, call the extension with the msg.data
-        // appended with bytes20(address) and bytes32(msg.value)
-        assembly {
-            calldatacopy(0, 0, calldatasize())
+        (bool success, bytes memory result) = extension.call(
+            abi.encodePacked(callData, msg.sender, msg.value)
+        );
 
-            // The msg.sender address is shifted to the left by 12 bytes to remove the padding
-            // Then the address without padding is stored right after the calldata
-            mstore(calldatasize(), shl(96, caller()))
-
-            // The msg.value is stored right after the calldata + msg.sender
-            mstore(add(calldatasize(), 20), callvalue())
-
-            // Add 52 bytes for the msg.sender and msg.value appended at the end of the calldata
-            let success := call(
-                gas(),
-                extension,
-                0,
-                0,
-                add(calldatasize(), 52),
-                0,
-                0
-            )
-
-            // Copy the returned data
-            returndatacopy(0, 0, returndatasize())
-
-            switch success
-            // call returns 0 on failed calls
-            case 0 {
-                revert(0, returndatasize())
-            }
-            default {
-                return(0, returndatasize())
+        if (success) {
+            return result;
+        } else {
+            // `mload(result)` -> offset in memory where `result.length` is located
+            // `add(result, 32)` -> offset in memory where `result` data starts
+            assembly {
+                let resultdata_size := mload(result)
+                revert(add(result, 32), resultdata_size)
             }
         }
     }
