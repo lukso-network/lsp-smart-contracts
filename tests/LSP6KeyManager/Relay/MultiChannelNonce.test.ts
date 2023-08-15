@@ -38,19 +38,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + signer.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + signer.address.substring(2),
-      // TODO: why the allowed calls for this controller are set twice? duplicate?
-      ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + signer.address.substring(2),
     ];
 
     const permissionsValues = [
       ALL_PERMISSIONS,
       PERMISSIONS.CALL,
-      combineAllowedCalls(
-        [CALLTYPE.CALL],
-        [targetContract.address],
-        ['0xffffffff'],
-        ['0xffffffff'],
-      ),
       combineAllowedCalls(
         [CALLTYPE.CALL],
         [targetContract.address],
