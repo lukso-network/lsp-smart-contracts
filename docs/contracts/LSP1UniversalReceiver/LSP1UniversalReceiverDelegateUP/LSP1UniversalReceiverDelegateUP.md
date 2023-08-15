@@ -69,6 +69,13 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 :::
 
+:::info
+
+- If some issues occured with generating the `dataKeys` or `dataValues` the `returnedMessage` will be an error message, otherwise it will be empty.
+- If an error occured when trying to use `setDataBatch(dataKeys,dataValues)`, it will return the raw error data back to the caller.
+
+:::
+
 :::caution Warning
 
 When the data stored in the ERC725Y storage of the LSP0 contract is corrupted (\_e.g: ([LSP-5-ReceivedAssets]&#39;s Array length not 16 bytes long, the token received is already registered in `LSP5ReceivetAssets[]`, the token being sent is not sent as full balance, etc...), the function call will still pass and return (**not revert!**) and not modify any data key on the storage of the [LSP-0-ERC725Account].
@@ -79,7 +86,7 @@ When the data stored in the ERC725Y storage of the LSP0 contract is corrupted (\
 function universalReceiver(
   bytes32 typeId,
   bytes
-) external payable returns (bytes result);
+) external payable returns (bytes);
 ```
 
 _Reacted on received notification with `typeId`._
@@ -106,9 +113,9 @@ _Reacted on received notification with `typeId`._
 
 #### Returns
 
-| Name     |  Type   | Description                              |
-| -------- | :-----: | ---------------------------------------- |
-| `result` | `bytes` | The result of the reaction for `typeId`. |
+| Name |  Type   | Description                              |
+| ---- | :-----: | ---------------------------------------- |
+| `0`  | `bytes` | The result of the reaction for `typeId`. |
 
 <br/>
 
@@ -118,37 +125,97 @@ Any method labeled as `internal` serves as utility function within the contract.
 
 Internal functions cannot be called externally, whether from other smart contracts, dApp interfaces, or backend services. Their restricted accessibility ensures that they remain exclusively available within the context of the current contract, promoting controlled and encapsulated usage of these internal utilities.
 
-### \_whenReceiving
+### \_tokenSender
 
 ```solidity
-function _whenReceiving(
-  bytes32 typeId,
-  address notifier,
-  bytes32 notifierMapKey,
-  bytes4 interfaceID
-) internal nonpayable returns (bytes);
+function _tokenSender(address notifier) internal nonpayable returns (bytes);
 ```
 
-To avoid stack too deep error
-Generate the keys/values of the asset/vault received to set and set them
-on the account depending on the type of the transfer (asset/vault)
+Handler for LSP7 and LSP8 token sender type id.
+
+#### Parameters
+
+| Name       |   Type    | Description                     |
+| ---------- | :-------: | ------------------------------- |
+| `notifier` | `address` | The LSP7 or LSP8 token address. |
 
 <br/>
 
-### \_whenSending
+### \_tokenRecipient
 
 ```solidity
-function _whenSending(
-  bytes32 typeId,
+function _tokenRecipient(
   address notifier,
-  bytes32 notifierMapKey,
-  uint128 arrayIndex
+  bytes4 interfaceId
 ) internal nonpayable returns (bytes);
 ```
 
-To avoid stack too deep error
-Generate the keys/values of the asset/vault sent to set and set them
-on the account depending on the type of the transfer (asset/vault)
+Handler for LSP7 and LSP8 token recipient type id.
+
+#### Parameters
+
+| Name          |   Type    | Description                     |
+| ------------- | :-------: | ------------------------------- |
+| `notifier`    | `address` | The LSP7 or LSP8 token address. |
+| `interfaceId` | `bytes4`  | The LSP7 or LSP8 interface id.  |
+
+<br/>
+
+### \_vaultSender
+
+```solidity
+function _vaultSender(address notifier) internal nonpayable returns (bytes);
+```
+
+Handler for LSP9 vault sender type id.
+
+#### Parameters
+
+| Name       |   Type    | Description             |
+| ---------- | :-------: | ----------------------- |
+| `notifier` | `address` | The LSP9 vault address. |
+
+<br/>
+
+### \_vaultRecipient
+
+```solidity
+function _vaultRecipient(address notifier) internal nonpayable returns (bytes);
+```
+
+Handler for LSP9 vault recipient type id.
+
+#### Parameters
+
+| Name       |   Type    | Description             |
+| ---------- | :-------: | ----------------------- |
+| `notifier` | `address` | The LSP9 vault address. |
+
+<br/>
+
+### \_setDataBatchWithoutReverting
+
+:::info
+
+If an the low-level transaction revert, the returned data will be forwarded. Th contract that uses this function can use the `Address` library to revert with the revert reason.
+
+:::
+
+```solidity
+function _setDataBatchWithoutReverting(
+  bytes32[] dataKeys,
+  bytes[] dataValues
+) internal nonpayable returns (bytes);
+```
+
+Calls `bytes4(keccak256(setDataBatch(bytes32[],bytes[])))` without checking for `bool success`, but it returns all the data back.
+
+#### Parameters
+
+| Name         |    Type     | Description            |
+| ------------ | :---------: | ---------------------- |
+| `dataKeys`   | `bytes32[]` | Data Keys to be set.   |
+| `dataValues` |  `bytes[]`  | Data Values to be set. |
 
 <br/>
 
@@ -216,122 +283,6 @@ Reverts when EOA calls the [`universalReceiver(..)`](#universalreceiver) functio
 
 <br/>
 
-### InvalidLSP10ReceivedVaultsArrayLength
-
-:::note References
-
-- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#invalidlsp10receivedvaultsarraylength)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol)
-- Error signature: `InvalidLSP10ReceivedVaultsArrayLength(bytes,uint256)`
-- Error hash: `0x12ce1c39`
-
-:::
-
-```solidity
-error InvalidLSP10ReceivedVaultsArrayLength(
-  bytes invalidValueStored,
-  uint256 invalidValueLength
-);
-```
-
-Reverts when the value stored under the 'LSP10ReceivedVaults[]' Array data key is not valid. The value stored under this data key should be exactly 16 bytes long. Only possible valid values are:
-
-- any valid uint128 values _e.g: `0x00000000000000000000000000000000` (zero), meaning empty array, no vaults received._ _e.g: `0x00000000000000000000000000000005` (non-zero), meaning 5 array elements, 5 vaults received._
-
-- `0x` (nothing stored under this data key, equivalent to empty array).
-
-#### Parameters
-
-| Name                 |   Type    | Description                                                                                                  |
-| -------------------- | :-------: | ------------------------------------------------------------------------------------------------------------ |
-| `invalidValueStored` |  `bytes`  | The invalid value stored under the `LSP10ReceivedVaults[]` Array data key.                                   |
-| `invalidValueLength` | `uint256` | The invalid number of bytes stored under the `LSP10ReceivedVaults[]` Array data key (MUST be 16 bytes long). |
-
-<br/>
-
-### InvalidLSP5ReceivedAssetsArrayLength
-
-:::note References
-
-- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#invalidlsp5receivedassetsarraylength)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol)
-- Error signature: `InvalidLSP5ReceivedAssetsArrayLength(bytes,uint256)`
-- Error hash: `0xecba7af8`
-
-:::
-
-```solidity
-error InvalidLSP5ReceivedAssetsArrayLength(
-  bytes invalidValueStored,
-  uint256 invalidValueLength
-);
-```
-
-Reverts when the value stored under the 'LSP5ReceivedAssets[]' Array data key is not valid. The value stored under this data key should be exactly 16 bytes long. Only possible valid values are:
-
-- any valid uint128 values _e.g: `0x00000000000000000000000000000000` (zero), empty array, no assets received._ _e.g. `0x00000000000000000000000000000005` (non-zero), 5 array elements, 5 assets received._
-
-- `0x` (nothing stored under this data key, equivalent to empty array)
-
-#### Parameters
-
-| Name                 |   Type    | Description                                                                                                   |
-| -------------------- | :-------: | ------------------------------------------------------------------------------------------------------------- |
-| `invalidValueStored` |  `bytes`  | The invalid value stored under the `LSP5ReceivedAssets[]` Array data key.                                     |
-| `invalidValueLength` | `uint256` | The invalid number of bytes stored under the `LSP5ReceivedAssets[]` data key (MUST be exactly 16 bytes long). |
-
-<br/>
-
-### MaxLSP10VaultsCountReached
-
-:::note References
-
-- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#maxlsp10vaultscountreached)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol)
-- Error signature: `MaxLSP10VaultsCountReached(address)`
-- Error hash: `0x11610270`
-
-:::
-
-```solidity
-error MaxLSP10VaultsCountReached(address notRegisteredVault);
-```
-
-Reverts when the `LSP10Vaults[]` Array reaches its maximum limit (`max(uint128)`).
-
-#### Parameters
-
-| Name                 |   Type    | Description                                                |
-| -------------------- | :-------: | ---------------------------------------------------------- |
-| `notRegisteredVault` | `address` | The address of the LSP9Vault that could not be registered. |
-
-<br/>
-
-### MaxLSP5ReceivedAssetsCountReached
-
-:::note References
-
-- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#maxlsp5receivedassetscountreached)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol)
-- Error signature: `MaxLSP5ReceivedAssetsCountReached(address)`
-- Error hash: `0x0b51a2d0`
-
-:::
-
-```solidity
-error MaxLSP5ReceivedAssetsCountReached(address notRegisteredAsset);
-```
-
-Reverts when the `LSP5ReceivedAssets[]` Array reaches its maximum limit (`max(uint128)`).
-
-#### Parameters
-
-| Name                 |   Type    | Description                                            |
-| -------------------- | :-------: | ------------------------------------------------------ |
-| `notRegisteredAsset` | `address` | The address of the asset that could not be registered. |
-
-<br/>
-
 ### NativeTokensNotAccepted
 
 :::note References
@@ -350,55 +301,5 @@ error NativeTokensNotAccepted();
 _Cannot send native tokens to [`universalReceiver(...)`](#universalreceiver) function of the delegated contract._
 
 Reverts when the [`universalReceiver`](#universalreceiver) function in the LSP1 Universal Receiver Delegate contract is called while sending some native tokens along the call (`msg.value` different than `0`)
-
-<br/>
-
-### ReceivedAssetsIndexSuperiorToUint128
-
-:::note References
-
-- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#receivedassetsindexsuperiortouint128)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol)
-- Error signature: `ReceivedAssetsIndexSuperiorToUint128(uint256)`
-- Error hash: `0xe8a4fba0`
-
-:::
-
-```solidity
-error ReceivedAssetsIndexSuperiorToUint128(uint256 index);
-```
-
-Reverts when the received assets index is superior to `max(uint128)`.
-
-#### Parameters
-
-| Name    |   Type    | Description                |
-| ------- | :-------: | -------------------------- |
-| `index` | `uint256` | The received assets index. |
-
-<br/>
-
-### VaultIndexSuperiorToUint128
-
-:::note References
-
-- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#vaultindexsuperiortouint128)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol)
-- Error signature: `VaultIndexSuperiorToUint128(uint256)`
-- Error hash: `0x76f9db1b`
-
-:::
-
-```solidity
-error VaultIndexSuperiorToUint128(uint256 index);
-```
-
-Reverts when the vault index is superior to `max(uint128)`.
-
-#### Parameters
-
-| Name    |   Type    | Description      |
-| ------- | :-------: | ---------------- |
-| `index` | `uint256` | The vault index. |
 
 <br/>
