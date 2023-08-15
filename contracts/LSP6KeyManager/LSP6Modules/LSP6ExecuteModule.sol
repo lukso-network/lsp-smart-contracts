@@ -54,32 +54,17 @@ abstract contract LSP6ExecuteModule {
      * @param controlledContract the address of the ERC725 contract where the payload is executed and where the permissions are verified.
      * @param controller the address who want to run the execute function on the ERC725Account.
      * @param permissions the permissions of the controller address.
-     * @param payload the ABI encoded payload `controlledContract.execute(...)`.
      */
+    //  * @param payload the ABI encoded payload `controlledContract.execute(...)`.
     function _verifyCanExecute(
         address controlledContract,
         address controller,
         bytes32 permissions,
-        bytes calldata payload
+        uint256 operationType,
+        address to,
+        uint256 value,
+        bytes memory data
     ) internal view virtual {
-        // CHECK the offset of `data` is not pointing to the previous parameters
-        //
-        // offsets in calldata for ERC725X.execute(...) parameters (excluding function selector)
-        //
-        // - `operationType`: index 0 in calldata
-        // - `to`: index 32
-        // - `value`: index 64
-        // - `data`'s offset location: index 96
-        // - `data` starts at: index 128 (= 0x0000...0080)
-        if (bytes32(payload[100:132]) != bytes32(uint256(128))) {
-            revert InvalidPayload(payload);
-        }
-
-        // MUST be one of the ERC725X operation types.
-        uint256 operationType = uint256(bytes32(payload[4:36]));
-
-        address to = address(bytes20(payload[48:68]));
-
         // if to is the KeyManager address revert
         if (to == address(this)) {
             revert CallingKeyManagerNotAllowed();
@@ -92,10 +77,10 @@ abstract contract LSP6ExecuteModule {
         // Check to restrict controllers with execute permissions to call lsp20 functions
         // to avoid setting the reentrancy guard to a non-valid state
 
-        // if (payload.length >= 168 && to == address(this)) {
+        // if (data.length >= 4 && to == address(this)) {
         //     if (
-        //         bytes4(payload[164:168]) == ILSP20.lsp20VerifyCall.selector ||
-        //         bytes4(payload[164:168]) == ILSP20.lsp20VerifyCallResult.selector
+        //         bytes4(data) == ILSP20.lsp20VerifyCall.selector ||
+        //         bytes4(data) == ILSP20.lsp20VerifyCallResult.selector
         //     ) {
         //         revert CallingLSP20FunctionsOnLSP6NotAllowed();
         //     }
@@ -108,7 +93,9 @@ abstract contract LSP6ExecuteModule {
                     controlledContract,
                     controller,
                     permissions,
-                    payload
+                    to,
+                    value,
+                    data
                 );
         }
 
@@ -119,7 +106,7 @@ abstract contract LSP6ExecuteModule {
         ) {
             // required to check for permission TRANSFERVALUE if we are funding
             // the contract on deployment via a payable constructor
-            bool isFundingContract = uint256(bytes32(payload[68:100])) != 0;
+            bool isFundingContract = value != 0;
 
             return
                 _verifyCanDeployContract(
@@ -138,7 +125,9 @@ abstract contract LSP6ExecuteModule {
                     controlledContract,
                     controller,
                     permissions,
-                    payload
+                    to,
+                    value,
+                    data
                 );
         }
 
@@ -169,7 +158,9 @@ abstract contract LSP6ExecuteModule {
         address controlledContract,
         address controller,
         bytes32 permissions,
-        bytes calldata payload
+        address to,
+        uint256 value,
+        bytes memory data
     ) internal view virtual {
         bool hasSuperStaticCall = permissions.hasPermission(
             _PERMISSION_SUPER_STATICCALL
@@ -180,32 +171,31 @@ abstract contract LSP6ExecuteModule {
 
         _requirePermissions(controller, permissions, _PERMISSION_STATICCALL);
 
-        _verifyAllowedCall(controlledContract, controller, payload);
+        _verifyAllowedCall(
+            controlledContract,
+            controller,
+            OPERATION_3_STATICCALL,
+            to,
+            value,
+            data
+        );
     }
 
     function _verifyCanCall(
         address controlledContract,
         address controller,
         bytes32 permissions,
-        bytes calldata payload
+        address to,
+        uint256 value,
+        bytes memory data
     ) internal view virtual {
-        bool isTransferringValue = uint256(bytes32(payload[68:100])) != 0;
+        bool isTransferringValue = value != 0;
 
         bool hasSuperTransferValue = permissions.hasPermission(
             _PERMISSION_SUPER_TRANSFERVALUE
         );
 
-        // all the parameters are abi-encoded (padded to 32 bytes words)
-        //
-        //    4 (ERC725X.execute selector)
-        // + 32 (uint256 operationType)
-        // + 32 (address to/target)
-        // + 32 (uint256 value)
-        // + 32 (`data` offset)
-        // + 32 (`data` length)
-        // --------------------
-        // = 164 bytes in total
-        bool isCallDataPresent = payload.length > 164;
+        bool isEmptyCall = data.length == 0;
 
         bool hasSuperCall = permissions.hasPermission(_PERMISSION_SUPER_CALL);
 
@@ -219,11 +209,11 @@ abstract contract LSP6ExecuteModule {
 
         // CHECK if we are doing an empty call, as the receive() or fallback() function
         // of the controlledContract could run some code.
-        if (!hasSuperCall && !isCallDataPresent && !isTransferringValue) {
+        if (!hasSuperCall && isEmptyCall && !isTransferringValue) {
             _requirePermissions(controller, permissions, _PERMISSION_CALL);
         }
 
-        if (isCallDataPresent && !hasSuperCall) {
+        if (!isEmptyCall && !hasSuperCall) {
             _requirePermissions(controller, permissions, _PERMISSION_CALL);
         }
 
@@ -231,27 +221,33 @@ abstract contract LSP6ExecuteModule {
         if (hasSuperCall && !isTransferringValue) return;
 
         // Skip if caller has SUPER permission for value transfers
-        if (hasSuperTransferValue && !isCallDataPresent && isTransferringValue)
-            return;
+        if (hasSuperTransferValue && isEmptyCall && isTransferringValue) return;
 
         // Skip if both SUPER permissions are present
         if (hasSuperCall && hasSuperTransferValue) return;
 
-        _verifyAllowedCall(controlledContract, controller, payload);
+        _verifyAllowedCall(
+            controlledContract,
+            controller,
+            OPERATION_0_CALL,
+            to,
+            value,
+            data
+        );
     }
 
     function _verifyAllowedCall(
         address controlledContract,
         address controllerAddress,
-        bytes calldata payload
+        uint256 operationType,
+        address to,
+        uint256 value,
+        bytes memory data
     ) internal view virtual {
-        (
-            uint256 operationType,
-            address to,
-            uint256 value,
-            bytes4 selector,
-            bool isEmptyCall
-        ) = _extractExecuteParameters(payload);
+        bool isEmptyCall = data.length == 0;
+
+        // CHECK if there is at least a 4 bytes function selector
+        bytes4 selector = data.length >= 4 ? bytes4(data) : bytes4(0);
 
         // CHECK for ALLOWED CALLS
         bytes memory allowedCalls = ERC725Y(controlledContract)
@@ -332,33 +328,6 @@ abstract contract LSP6ExecuteModule {
                 requiredCallTypes |= _ALLOWEDCALLS_DELEGATECALL;
             }
         }
-    }
-
-    function _extractExecuteParameters(
-        bytes calldata executeCalldata
-    ) internal pure returns (uint256, address, uint256, bytes4, bool) {
-        uint256 operationType = uint256(bytes32(executeCalldata[4:36]));
-
-        // CHECK that it is a valid address left-padded with `00` on the 12 upper bytes
-        if (bytes12(executeCalldata[36:48]) != bytes12(0)) {
-            revert InvalidPayload(executeCalldata);
-        }
-        address to = address(bytes20(executeCalldata[48:68]));
-
-        uint256 value = uint256(bytes32(executeCalldata[68:100]));
-
-        // CHECK if there is at least a 4 bytes function selector
-        bytes4 selector = executeCalldata.length >= 168
-            ? bytes4(executeCalldata[164:168])
-            : bytes4(0);
-
-        return (
-            operationType,
-            to,
-            value,
-            selector,
-            executeCalldata.length == 164
-        );
     }
 
     function _isAllowedAddress(
