@@ -15,14 +15,13 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     // --- Events
 
     /**
-     * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
-     * @param operator The address of operator sending tokens
-     * @param from The address which tokens are sent
-     * @param to The receiving address
-     * @param tokenId The tokenId transferred
-     * @param allowNonLSP1Recipient When set to TRUE, `to` may be any address but
-     * when set to FALSE `to` must be a contract that supports LSP1 UniversalReceiver
-     * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses
+     * @dev Emitted when `tokenId` token is transferred from the `from` to the `to` address.
+     * @param operator The address of operator that sent the `tokenId`
+     * @param from The previous owner of the `tokenId`
+     * @param to The new owner of `tokenId`
+     * @param tokenId The tokenId that was transferred
+     * @param allowNonLSP1Recipient If the token transfer enforces the `to` recipient address to be a contract that implements the LSP1 standard or not.
+     * @param data Any additional data the caller included by the caller during the transfer, and sent in the hooks to the `from` and `to` addresses.
      */
     event Transfer(
         address operator,
@@ -34,10 +33,10 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     );
 
     /**
-     * @dev Emitted when `tokenOwner` enables `operator` for `tokenId`.
-     * @param operator The address authorized as an operator
-     * @param tokenOwner The token owner
-     * @param tokenId The tokenId `operator` address has access to from `tokenOwner`
+     * @dev Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
+     * @param operator The address authorized as an operator.
+     * @param tokenOwner The owner of the `tokenId`.
+     * @param tokenId The tokenId `operator` address has access on behalf of `tokenOwner`.
      */
     event AuthorizedOperator(
         address indexed operator,
@@ -46,10 +45,10 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     );
 
     /**
-     * @dev Emitted when `tokenOwner` disables `operator` for `tokenId`.
-     * @param operator The address revoked from operating
-     * @param tokenOwner The token owner
-     * @param tokenId The tokenId `operator` is revoked from operating
+     * @dev Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on its behalf.
+     * @param operator The address revoked from the operator array ({getOperatorsOf}).
+     * @param tokenOwner The owner of the `tokenId`.
+     * @param tokenId The tokenId `operator` is revoked from operating on.
      */
     event RevokedOperator(
         address indexed operator,
@@ -60,37 +59,36 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     // --- Token queries
 
     /**
-     * @dev Returns the number of existing tokens.
-     * @return The number of existing tokens
+     * @dev Returns the number of existing tokens that have been minted in this contract.
+     * @return The number of existing tokens.
      */
     function totalSupply() external view returns (uint256);
 
-    //
     // --- Token owner queries
-    //
 
     /**
-     * @dev Returns the number of tokens owned by `tokenOwner`.
-     * @param tokenOwner The address to query
-     * @return The number of tokens owned by this address
+     * @dev Get the number of token IDs owned by `tokenOwner`.
+
+     * @param tokenOwner The address to query     *
+     * @return The total number of token IDs that `tokenOwner` owns.
      */
     function balanceOf(address tokenOwner) external view returns (uint256);
 
     /**
-     * @param tokenId The tokenId to query
-     * @return The address owning the `tokenId`
-     * @dev Returns the `tokenOwner` address of the `tokenId` token.
+     * @dev Returns the list of `tokenIds` for the `tokenOwner` address.
      *
-     * Requirements:
+     * @param tokenId tokenOwner The address to query owned tokens
+     * @return The owner address of the given `tokenId`.
      *
-     * - `tokenId` must exist.
+     * @custom:requirements `tokenId` must exist.
+     * @custom:info if the `tokenId` is not owned by any address, the returned address will be `address(0)`
      */
     function tokenOwnerOf(bytes32 tokenId) external view returns (address);
 
     /**
-     * @dev Returns the list of `tokenIds` for the `tokenOwner` address.
-     * @param tokenOwner The address to query owned tokens
-     * @return List of owned tokens by `tokenOwner` address
+     * @dev Returns the list of token IDs that the `tokenOwner` address owns.
+     * @param tokenOwner The address that we want to get the list of token IDs for.
+     * @return An array of `bytes32[] tokenIds` owned by `tokenOwner`.
      */
     function tokenIdsOf(
         address tokenOwner
@@ -99,50 +97,51 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     // --- Operator functionality
 
     /**
+     * @dev Allow an `operator` address to transfer or burn a specific `tokenId` on behalf of its token owner. See {isOperatorFor}.
+     *
      * @param operator The address to authorize as an operator.
-     * @param tokenId The tokenId operator has access to.
-     * @dev Makes `operator` address an operator of `tokenId`.
+     * @param tokenId The token ID operator has access to..
      *
-     * See {isOperatorFor}.
-     *
-     * Requirements
-     *
+     * @custom:requirements
      * - `tokenId` must exist.
-     * - caller must be current `tokenOwner` of `tokenId`.
+     * - caller MUST be the {tokenOwnerOf} `tokenId`.
+     * - the owner of a `tokenId` cannot grant itself as an `operator` (`operator` cannot be the calling address).
      * - `operator` cannot be the zero address.
      *
-     * Emits an {AuthorizedOperator} event.
+     * @custom:events {AuthorizedOperator} event.
      */
     function authorizeOperator(address operator, bytes32 tokenId) external;
 
     /**
+     * @dev Remove access of `operator` for a given `tokenId`, disallowing it to transfer `tokenId` on behalf of its owner.
+     * See also {isOperatorFor}.
+     *
      * @param operator The address to revoke as an operator.
-     * @param tokenId The tokenId `operator` is revoked from operating
-     * @dev Removes `operator` address as an operator of `tokenId`.
+     * @param tokenId The tokenId `operator` is revoked from operating on.
      *
-     * See {isOperatorFor}.
-     *
-     * Requirements
-     *
+     * @custom:requirements
      * - `tokenId` must exist.
-     * - caller must be current `tokenOwner` of `tokenId`.
+     * - caller must be the {tokenOwnerOf} `tokenId`.
+     * - the owner of a `tokenId` cannot grant revoke itself as an `operator` (`operator` cannot be the calling address).
      * - `operator` cannot be the zero address.
      *
-     * Emits a {RevokedOperator} event.
+     * @custom:events {RevokedOperator} event with address of the operator being revoked for the caller (token owner)..
      */
     function revokeOperator(address operator, bytes32 tokenId) external;
 
     /**
-     * @param operator The address to query
-     * @param tokenId The tokenId to query
-     * @return True if the owner of `tokenId` is `operator` address, false otherwise
-     * @dev Returns whether `operator` address is an operator of `tokenId`.
-     * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
-     * operator.
+     * @dev Returns whether `operator` address is an operator for a given `tokenId`.
      *
-     * Requirements
+     * @param operator The address to query operator status for.
+     * @param tokenId The token ID to check if `operator` is allowed to operate on.
      *
+     * @return `true` if `operator` is an operator for `tokenId`, `false` otherwise.
+     *
+     * @custom:requirements
      * - `tokenId` must exist.
+     * - caller must be the current {tokenOwnerOf} `tokenId`.
+     *
+     * @custom:info The tokenOwner is its own operator.
      */
     function isOperatorFor(
         address operator,
@@ -150,12 +149,12 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     ) external view returns (bool);
 
     /**
-     * @param tokenId The tokenId to query
-     * @return The list of operators for the `tokenId`
-     * @dev Returns all `operator` addresses of `tokenId`.
+     * @dev Returns all `operator` addresses that are allowed to transfer or burn a specific `tokenId` on behalf of its owner.
+     *
+     * @param tokenId The token ID to get the operators for.
+     * @return An array of operators allowed to transfer or burn a specific `tokenId`.
      *
      * Requirements
-     *
      * - `tokenId` must exist.
      */
     function getOperatorsOf(
@@ -165,23 +164,37 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     // --- Transfer functionality
 
     /**
-     * @param from The sending address.
-     * @param to The receiving address.
-     * @param tokenId The tokenId to transfer.
-     * @param allowNonLSP1Recipient When set to TRUE, to may be any address but
-     * when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
-     * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
-     * @dev Transfers `tokenId` token from `from` to `to`.
+     * @dev Transfer a given `tokenId` token from the `from` address to the `to` address.
      *
-     * Requirements:
+     * If operators are set for a specific `tokenId`, all the operators are revoked after the tokenId have been transferred.
      *
+     * The `allowNonLSP1Recipient` parameter MUST be set to `true` when transferring tokens to Externally Owned Accounts (EOAs)
+     * or contracts that do not implement the LSP1 standard.
+     *
+     * @param from The address that owns the given `tokenId`.
+     * @param to The address that will receive the `tokenId`.
+     * @param tokenId The token ID to transfer.
+     * @param allowNonLSP1Recipient When set to `true`, the `to` address CAN be any addres.
+     * When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard.
+     * @param data Any additional data the caller wants included in the emitted event, and sent in the hooks of the `from` and `to` addresses.
+     *
+     * @custom:requirements
      * - `from` cannot be the zero address.
      * - `to` cannot be the zero address.
-     * - `from` and `to` cannot be the same address.
-     * - `tokenId` token must be owned by `from`.
-     * - If the caller is not `from`, it must be an operator of `tokenId`.
+     * - `from` and `to` cannot be the same address (`from` cannot send the `tokenId` to itself).
+     * - `from` must own the given `tokenId`.
+     * - If the caller is not `from`, it must be an operator for the `tokenId`.
      *
-     * Emits a {Transfer} event.
+     * @custom:events
+     * - {Transfer} event when the `tokenId` is successfully transferred.
+     *
+     * @custom:hint The `allowNonLSP1Recipient` parameter **MUST be set to `true`** to transfer tokens to Externally Owned Accounts (EOAs)
+     * or contracts that do not implement the LSP1 Universal Receiver Standard. Otherwise the function will revert making the transfer fail.
+     *
+     * @custom:info if the `to` address is a contract that implements LSP1, it will always be notified via its `universalReceiver(...)` function, regardless if `allowNonLSP1Recipient` is set to `true` or `false`.
+     *
+     * @custom:warning Be aware that when either the sender or the recipient can have logic that revert in their `universalReceiver(...)` function when being notified.
+     * This even if the `allowNonLSP1Recipient` was set to `true`.
      */
     function transfer(
         address from,
@@ -192,26 +205,27 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     ) external;
 
     /**
-     * @param from The list of sending addresses.
-     * @param to The list of receiving addresses.
-     * @param tokenId The list of tokenId to transfer.
-     * @param allowNonLSP1Recipient When set to TRUE, to may be any address but
-     * when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
-     * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
+     * @dev Transfers multiple tokens at once based on the arrays of `from`, `to` and `tokenId`.
+     * If any transfer fails, the whole call will revert.
      *
-     * @dev Transfers many tokens based on the list `from`, `to`, `tokenId`. If any transfer fails
-     * the call will revert.
+     * @param from An array of sending addresses.
+     * @param to An array of recipient addresses.
+     * @param tokenId An array of token IDs to transfer.
+     * @param allowNonLSP1Recipient When set to `true`, `to` may be any address.
+     * When set to `false`, `to` must be a contract that supports the LSP1 standard and not revert.
+     * @param data Any additional data the caller wants included in the emitted event, and sent in the hooks to the `from` and `to` addresses.
      *
-     * Requirements:
      *
-     * - `from`, `to`, `tokenId` lists are the same length.
-     * - no values in `from` can be the zero address.
-     * - no values in `to` can be the zero address.
-     * - `from` and `to` cannot be the same address at the same index of each lists.
-     * - each `tokenId` token must be owned by `from`.
+     * @custom:requirements
+     * - The arrays of `from`, `to` and `tokenId` must have the same length.
+     * - no values in the `from` array can be the zero address.
+     * - no values in the `to` array can be the zero address.
+     * - `from` and `to` cannot be the same address at the same index on each arrays.
+     * - each `tokenId` must be owned by `from`.
      * - If the caller is not `from`, it must be an operator of each `tokenId`.
      *
-     * Emits {Transfer} events.
+     * @custom:events
+     * - {Transfer} events on each successful token transfer.
      */
     function transferBatch(
         address[] memory from,
