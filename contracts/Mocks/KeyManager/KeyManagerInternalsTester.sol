@@ -113,9 +113,11 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         return _addressPermission.hasPermission(_permissions);
     }
 
-    // function extractExecuteParameters(
-    //     bytes calldata executeCalldata
-    // ) public pure returns (uint256, address, uint256, bytes4, bool) {
-    //     return super._extractExecuteParameters(executeCalldata);
-    // }
+    function verifyPermissions(
+        address from,
+        uint256 msgValue,
+        bytes calldata payload
+    ) public view {
+        super._verifyPermissions(from, msgValue, payload);
+    }
 }
