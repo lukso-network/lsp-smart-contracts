@@ -34,6 +34,7 @@ export const dodocConfig = {
     'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol',
     'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol',
     'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol',
+    'contracts/LSP25ExecuteRelayCall/LSP25MultiChannelNonce.sol',
 
     // libraries --------------------
     'contracts/LSP0ERC725Account/LSP0Utils.sol',

@@ -119,13 +119,7 @@ abstract contract LSP6KeyManagerCore is
     function getNonce(
         address from,
         uint128 channelId
-    )
-        public
-        view
-        virtual
-        override(LSP25MultiChannelNonce, ILSP25)
-        returns (uint256)
-    {
+    ) public view virtual returns (uint256) {
         uint256 nonceInChannel = _nonceStore[from][channelId];
         return (uint256(channelId) << 128) | nonceInChannel;
     }
@@ -209,10 +203,13 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP25
      *
-     * @custom:events {VerifiedCall} event when the permissions related to `payload` have been verified successfully.
+     * @dev Allows any address (executor) to execute a payload (= abi-encoded function call), given they have a valid signature from a signer address and a valid `nonce` for this signer.
+     * The signature MUST be generated according to the signature format defined by the LSP25 standard.
      *
-     * @custom:hint You can use `validityTimestamps == 0` to define an `executeRelayCall` transaction that is indefinitely valid,
-     * meaning that does not require to start from a specific date/time, or that has an expiration date/time/
+     * The signer that generated the `signature` MUST be a controller with some permissions on the linked {target}.
+     * The `payload` will be executed on the {target} contract once the LSP25 signature and the permissions of the signer have been verified.
+     *
+     * @custom:events {VerifiedCall} event when the permissions related to `payload` have been verified successfully.
      *
      * @custom:hint If you are looking to learn how to sign and execute relay transactions via the Key Manager,
      * see our Javascript step by step guide [_"Execute Relay Transactions"_](../../guides/key-manager/execute-relay-transactions.md).
@@ -237,6 +234,11 @@ abstract contract LSP6KeyManagerCore is
 
     /**
      * @inheritdoc ILSP25
+     *
+     * @dev Same as {executeRelayCall} but execute a batch of signed calldata payloads (abi-encoded function calls) in a single transaction.
+     *
+     * The `signatures` can be from multiple controllers, not necessarely the same controller, as long as each of these controllers
+     * that signed have the right permissions related to the calldata `payload` they signed.
      *
      * @custom:requirements
      * - the length of `signatures`, `nonces`, `validityTimestamps`, `values` and `payloads` MUST be the same.
@@ -426,9 +428,9 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @notice execute the `payload` passed to `execute(...)` or `executeRelayCall(...)`
-     * @param payload the abi-encoded function call to execute on the target.
-     * @return bytes the result from calling the target with `payload`
+     * @notice Execute the `payload` passed to `execute(...)` or `executeRelayCall(...)`
+     * @param payload The abi-encoded function call to execute on the {target} contract.
+     * @return bytes The data returned by the call made to the linked {target} contract.
      */
     function _executePayload(
         uint256 msgValue,
@@ -448,9 +450,9 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @dev verify if the `from` address is allowed to execute the `payload` on the `target`.
-     * @param from either the caller of `execute(...)` or the signer of `executeRelayCall(...)`.
-     * @param payload the payload to execute on the `target`.
+     * @dev Verify if the `from` address is allowed to execute the `payload` on the {target} contract linked to this Key Manager.
+     * @param from Either the caller of {execute} or the signer of {executeRelayCall}.
+     * @param payload The abi-encoded function call to execute on the {target} contract.
      */
     function _verifyPermissions(
         address from,
@@ -552,7 +554,8 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @dev revert if `controller`'s `addressPermissions` doesn't contain `permissionsRequired`
+     * @dev Check if the `controller` has the `permissionRequired` among its permission listed in `controllerPermissions`
+     * If not, this function will revert with the error `NotAuthorised` and the name of the permission missing by the controller.
      * @param controller the caller address
      * @param addressPermissions the caller's permissions BitArray
      * @param permissionRequired the required permission
