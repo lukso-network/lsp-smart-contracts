@@ -219,7 +219,27 @@ abstract contract LSP8CompatibleERC721InitAbstract is
             LSP8IdentifiableDigitalAssetCore
         )
     {
-        super.authorizeOperator(operator, tokenId);
+        address tokenOwner = tokenOwnerOf(tokenId);
+
+        if (
+            tokenOwner != msg.sender &&
+            !isApprovedForAll(tokenOwner, msg.sender)
+        ) {
+            revert LSP8NotTokenOwner(tokenOwner, tokenId, msg.sender);
+        }
+
+        if (operator == address(0)) {
+            revert LSP8CannotUseAddressZeroAsOperator();
+        }
+
+        if (tokenOwner == operator) {
+            revert LSP8TokenOwnerCannotBeOperator();
+        }
+
+        bool isAdded = _operators[tokenId].add(operator);
+        if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
+
+        emit AuthorizedOperator(operator, tokenOwner, tokenId);
         emit Approval(tokenOwnerOf(tokenId), operator, uint256(tokenId));
     }
 
