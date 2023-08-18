@@ -33,7 +33,7 @@ import { ERC725YDataKeys, INTERFACE_IDS, OPERATION_TYPES, LSP1_TYPE_IDS } from '
 // fixtures
 import { callPayload, getLSP5MapAndArrayKeysValue, setupKeyManager } from '../utils/fixtures';
 import { LSP6TestContext } from '../utils/context';
-import { BigNumber, BytesLike, ContractTransaction, Transaction } from 'ethers';
+import { BigNumber, BytesLike, Transaction } from 'ethers';
 
 export type LSP1TestAccounts = {
   owner1: SignerWithAddress;

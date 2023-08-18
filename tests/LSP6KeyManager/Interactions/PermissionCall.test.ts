@@ -27,9 +27,18 @@ import { LSP6TestContext } from '../../utils/context';
 import { setupKeyManager } from '../../utils/fixtures';
 
 // helpers
-import { abiCoder, combineAllowedCalls, LOCAL_PRIVATE_KEYS } from '../../utils/helpers';
+import {
+  abiCoder,
+  combineAllowedCalls,
+  combineCallTypes,
+  combinePermissions,
+  LOCAL_PRIVATE_KEYS,
+} from '../../utils/helpers';
+import { BigNumber } from 'ethers';
 
-export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6TestContext>) => {
+export const shouldBehaveLikePermissionCall = (
+  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
+) => {
   let context: LSP6TestContext;
 
   describe('when making an empty call via `ERC25X.execute(...)` -> (`data` = `0x`, `value` = 0)', () => {
@@ -405,29 +414,6 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
       ];
 
       await setupKeyManager(context, permissionKeys, permissionsValues);
-    });
-
-    describe("when the 'offset' of the `data` payload is not `0x00...80`", () => {
-      it('should revert', async () => {
-        let payload = context.universalProfile.interface.encodeFunctionData('execute', [
-          OPERATION_TYPES.CALL,
-          targetContract.address,
-          0,
-          '0xcafecafe',
-        ]);
-
-        // edit the `data` offset
-        payload = payload.replace(
-          '0000000000000000000000000000000000000000000000000000000000000080',
-          '0000000000000000000000000000000000000000000000000000000000000040',
-        );
-
-        await expect(
-          context.keyManager.connect(addressCanMakeCallWithAllowedCalls).execute(payload),
-        )
-          .to.be.revertedWithCustomError(context.keyManager, 'InvalidPayload')
-          .withArgs(payload);
-      });
     });
 
     describe('when interacting via `execute(...)`', () => {
@@ -1049,6 +1035,128 @@ export const shouldBehaveLikePermissionCall = (buildContext: () => Promise<LSP6T
       await expect(
         context.keyManager.connect(context.owner).execute(executePayload),
       ).to.be.revertedWithCustomError(context.keyManager, 'CallingKeyManagerNotAllowed');
+    });
+
+    describe('when the offset of the `data` payload is not `0x00...80`', () => {
+      describe('if the offset points backwards to the `value` parameter', () => {
+        // We add the target in the allowed calls for each of these controller
+        let controllerCanTransferValue;
+        let controllerCanTransferValueAndCall;
+        let controllerCanCall;
+
+        let controllerCanOnlySign;
+
+        let targetContract;
+
+        let executePayload;
+
+        before(async () => {
+          context = await buildContext(ethers.utils.parseEther('50'));
+
+          const accounts = await ethers.getSigners();
+
+          controllerCanTransferValue = accounts[1];
+          controllerCanTransferValueAndCall = accounts[2];
+          controllerCanCall = accounts[3];
+          controllerCanOnlySign = accounts[4];
+
+          targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+
+          const permissionKeys = [
+            // permissions
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+              controllerCanTransferValue.address.substring(2),
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+              controllerCanTransferValueAndCall.address.substring(2),
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+              controllerCanCall.address.substring(2),
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+              controllerCanOnlySign.address.substring(2),
+            // allowed calls
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+              controllerCanTransferValue.address.substring(2),
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+              controllerCanTransferValueAndCall.address.substring(2),
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+              controllerCanCall.address.substring(2),
+          ];
+
+          const allowedCall = combineAllowedCalls(
+            [combineCallTypes(CALLTYPE.CALL, CALLTYPE.VALUE)],
+            [targetContract.address],
+            ['0xffffffff'],
+            ['0xffffffff'],
+          );
+
+          const permissionValues = [
+            // permissions
+            PERMISSIONS.TRANSFERVALUE,
+            combinePermissions(PERMISSIONS.TRANSFERVALUE, PERMISSIONS.CALL),
+            PERMISSIONS.CALL,
+            PERMISSIONS.SIGN,
+            // allowed calls,
+            allowedCall,
+            allowedCall,
+            allowedCall,
+          ];
+
+          await setupKeyManager(context, permissionKeys, permissionValues);
+
+          executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
+            OPERATION_TYPES.CALL,
+            targetContract.address,
+            36,
+            '0xdeadbeef',
+          ]);
+
+          // edit the `data` offset to points to the `value` parameter
+          executePayload = executePayload.replace(
+            '0000000000000000000000000000000000000000000000000000000000000080',
+            '0000000000000000000000000000000000000000000000000000000000000040',
+          );
+        });
+
+        describe('when caller has permission TRANSFERVALUE only', () => {
+          it("should revert with 'NotAuthorised' error to 'CALL'", async () => {
+            await expect(
+              context.keyManager.connect(controllerCanTransferValue).execute(executePayload),
+            )
+              .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+              .withArgs(controllerCanTransferValue.address, 'CALL');
+          });
+        });
+
+        describe('when caller has permission CALL only', () => {
+          it("should revert with 'NotAuthorised' error to 'TRANSFERVALUE'", async () => {
+            await expect(
+              context.keyManager.connect(controllerCanCall).execute(executePayload, { value: 100 }),
+            )
+              .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+              .withArgs(controllerCanCall.address, 'TRANSFERVALUE');
+          });
+        });
+
+        describe('when caller does not have neither CALL nor TRANSFERVALUE permissions', () => {
+          it("should revert with 'NotAuthorised' error to 'TRANSFERVALUE' (as value transfer is the first thing being checked", async () => {
+            await expect(context.keyManager.connect(controllerCanOnlySign).execute(executePayload))
+              .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+              .withArgs(controllerCanOnlySign.address, 'TRANSFERVALUE');
+          });
+        });
+
+        describe('when caller has both permissions CALL + TRANSFERVALUE', () => {
+          it('should pass and allow to call the contract (but fallback to default handler because of unrecognised selector)', async () => {
+            // Here the controller has the permissions to do the external call
+            // but the default error handler is triggered because there is no function selector `0x40deadbe'
+            // in the contract and it is not recognised
+            await expect(
+              context.keyManager
+                .connect(controllerCanTransferValueAndCall)
+                .callStatic.execute(executePayload),
+            ).to.be.revertedWith('ERC725X: Unknown Error');
+          });
+        });
+      });
     });
   });
 };

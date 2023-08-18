@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-import { TargetContract, TargetContract__factory, UniversalProfile__factory } from '../../../types';
+import { TargetContract, TargetContract__factory } from '../../../types';
 
 // constants
 import {
@@ -714,8 +714,6 @@ export const testAllowedCallsInternals = (
 
       describe('should revert with `NoCallsAllowed` error', () => {
         it(`when AllowedCalls contain noBytes -> 0x`, async () => {
-          const params = Object.values(executeParams);
-
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
               controllers[0].account.address,
