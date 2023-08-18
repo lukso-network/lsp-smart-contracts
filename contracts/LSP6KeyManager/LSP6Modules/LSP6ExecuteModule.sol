@@ -189,7 +189,7 @@ abstract contract LSP6ExecuteModule {
         uint256 value,
         bytes memory data
     ) internal view virtual {
-        bool isTransferringValue = value != 0;
+        bool isValueTransfer = value != 0;
 
         bool hasSuperTransferValue = permissions.hasPermission(
             _PERMISSION_SUPER_TRANSFERVALUE
@@ -199,7 +199,7 @@ abstract contract LSP6ExecuteModule {
 
         bool hasSuperCall = permissions.hasPermission(_PERMISSION_SUPER_CALL);
 
-        if (isTransferringValue && !hasSuperTransferValue) {
+        if (isValueTransfer && !hasSuperTransferValue) {
             _requirePermissions(
                 controller,
                 permissions,
@@ -207,24 +207,24 @@ abstract contract LSP6ExecuteModule {
             );
         }
 
+        // Skip if both SUPER permissions are present
+        if (hasSuperCall && hasSuperTransferValue) return;
+
+        // Skip if caller has SUPER permission for value transfers
+        if (isEmptyCall && isValueTransfer && hasSuperTransferValue) return;
+
+        // Skip if caller has SUPER permissions for external calls, with or without calldata (empty calls)
+        if (!isValueTransfer && hasSuperCall) return;
+
         // CHECK if we are doing an empty call, as the receive() or fallback() function
         // of the controlledContract could run some code.
-        if (!hasSuperCall && isEmptyCall && !isTransferringValue) {
+        if (isEmptyCall && !isValueTransfer && !hasSuperCall) {
             _requirePermissions(controller, permissions, _PERMISSION_CALL);
         }
 
         if (!isEmptyCall && !hasSuperCall) {
             _requirePermissions(controller, permissions, _PERMISSION_CALL);
         }
-
-        // Skip if caller has SUPER permissions for external calls, with or without calldata (empty calls)
-        if (hasSuperCall && !isTransferringValue) return;
-
-        // Skip if caller has SUPER permission for value transfers
-        if (hasSuperTransferValue && isEmptyCall && isTransferringValue) return;
-
-        // Skip if both SUPER permissions are present
-        if (hasSuperCall && hasSuperTransferValue) return;
 
         _verifyAllowedCall(
             controlledContract,
@@ -244,11 +244,6 @@ abstract contract LSP6ExecuteModule {
         uint256 value,
         bytes memory data
     ) internal view virtual {
-        bool isEmptyCall = data.length == 0;
-
-        // CHECK if there is at least a 4 bytes function selector
-        bytes4 selector = data.length >= 4 ? bytes4(data) : bytes4(0);
-
         // CHECK for ALLOWED CALLS
         bytes memory allowedCalls = ERC725Y(controlledContract)
             .getAllowedCallsFor(controllerAddress);
@@ -256,6 +251,11 @@ abstract contract LSP6ExecuteModule {
         if (allowedCalls.length == 0) {
             revert NoCallsAllowed(controllerAddress);
         }
+
+        bool isEmptyCall = data.length == 0;
+
+        // CHECK if there is at least a 4 bytes function selector
+        bytes4 selector = data.length >= 4 ? bytes4(data) : bytes4(0);
 
         bytes4 requiredCallTypes = _extractCallType(
             operationType,
