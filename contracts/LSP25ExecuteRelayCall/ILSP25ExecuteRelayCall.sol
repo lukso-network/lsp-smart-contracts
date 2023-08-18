@@ -5,7 +5,7 @@ interface ILSP25ExecuteRelayCall {
     /**
      * @notice Reading the latest nonce of address `from` in the channel ID `channelId`.
      *
-     * @dev Get the nonce for a specific controller `from` address that can be used for signing relay transactions via {executeRelayCall}.
+     * @dev Get the nonce for a specific `from` address that can be used for signing relay transactions via {executeRelayCall}.
      *
      * @param from The address of the signer of the transaction.
      * @param channelId The channel id that the signer wants to use for executing the transaction.

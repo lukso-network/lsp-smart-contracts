@@ -2,16 +2,10 @@
 pragma solidity ^0.8.4;
 
 /**
- * @dev Reverts when the `signer` address retrieved from the `signature` has an invalid nonce: `invalidNonce`.
+ * @notice Relay call not valid yet.
  *
- * @param signer The address of the signer
- * @param invalidNonce The nonce retrieved for the `signer` address
- * @param signature The signature used to retrieve the `signer` address
- */
-error InvalidRelayNonce(address signer, uint256 invalidNonce, bytes signature);
-
-/**
- * @dev Reverts when the start timestamp provided to {executeRelayCall} function is bigger than the current timestamp.
+ * @dev Reverts when the relay call is cannot yet bet executed.
+ * This mean that the starting timestamp provided to {executeRelayCall} function is bigger than the current timestamp.
  */
 error RelayCallBeforeStartTime();
 

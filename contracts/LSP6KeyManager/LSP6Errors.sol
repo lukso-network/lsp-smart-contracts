@@ -59,9 +59,9 @@ error InvalidLSP6Target();
  *
  * @dev Reverts when the `signer` address retrieved from the `signature` has an invalid nonce: `invalidNonce`.
  *
- * @param signer The address of the signer
- * @param invalidNonce The nonce retrieved for the `signer` address
- * @param signature The signature used to retrieve the `signer` address
+ * @param signer The address of the signer.
+ * @param invalidNonce The nonce retrieved for the `signer` address.
+ * @param signature The signature used to retrieve the `signer` address.
  */
 error InvalidRelayNonce(address signer, uint256 invalidNonce, bytes signature);
 
@@ -226,20 +226,6 @@ error CannotSendValueToSetData();
  * @dev Reverts when calling the KeyManager through `execute(uint256,address,uint256,bytes)`.
  */
 error CallingKeyManagerNotAllowed();
-
-/**
- * @notice Relay call not valid yet.
- *
- * @dev Reverts when the start timestamp provided to {executeRelayCall} function is bigger than the current timestamp.
- */
-error RelayCallBeforeStartTime();
-
-/**
- * @notice The date of the relay call expired.
- *
- * @dev Reverts when the period to execute the relay call has expired.
- */
-error RelayCallExpired();
 
 /**
  * @dev reverts when the address of the Key Manager is being set as extensions for lsp20 functions

@@ -41,6 +41,7 @@ import {
     LSP6BatchExcessiveValueSent,
     LSP6BatchInsufficientValueSent,
     InvalidPayload,
+    InvalidRelayNonce,
     NoPermissionsSet,
     InvalidERC725Function,
     CannotSendValueToSetData
@@ -113,15 +114,22 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP25
      *
-     * @custom:info A signer can choose its channel number arbitrarily. Channel ID = 0 can be used for sequential nonces (transactions
-     * that are order dependant), any other channel ID for out-of-order execution (= execution in parallel).
+     * @custom:hint A signer can choose its channel number arbitrarily. The recommended practice is to:
+     * - use `channelId == 0` for transactions for which the ordering of execution matters.abi
+     *
+     * _Example: you have two transactions A and B, and transaction A must be executed first and complete successfully before
+     * transaction B should be executed)._
+     *
+     * - use any other `channelId` number for transactions that you want to be order independant (out-of-order execution, execution _"in parallel"_).
+     *
+     * _Example: you have two transactions A and B. You want transaction B to be executed a) without having to wait for transaction A to complete,
+     * or b) regardless if transaction A completed successfully or not.
      */
     function getNonce(
         address from,
         uint128 channelId
     ) public view virtual returns (uint256) {
-        uint256 nonceInChannel = _nonceStore[from][channelId];
-        return (uint256(channelId) << 128) | nonceInChannel;
+        return LSP25MultiChannelNonce._getNonce(from, channelId);
     }
 
     /**
@@ -386,6 +394,20 @@ abstract contract LSP6KeyManagerCore is
         return result;
     }
 
+    /**
+     * @dev Validate that the `nonce` given for the `signature` signed and the `payload` to execute is valid
+     * and conform to the signature format according to the LSP25 standard.
+     *
+     * @param signature A valid signature for a signer, generated according to the signature format specified in the LSP25 standard.
+     * @param nonce The nonce that the signer used to generate the `signature`.
+     * @param validityTimestamps Two `uint128` concatenated together, where the left-most `uint128` represent the timestamp from which the transaction can be executed,
+     * and the right-most `uint128` represents the timestamp after which the transaction expire.
+     * @param payload The abi-encoded function call to execute.
+     *
+     * @custom:warning Be aware that this function can also throw an error if the `callData` was signed incorrectly (not conforming to the signature format defined in the LSP25 standard).
+     * This is because the contract cannot distinguish if the data is signed correctly or not. Instead, it will recover an incorrect signer address from the signature
+     * and throw an {InvalidRelayNonce} error with the incorrect signer address as the first parameter.
+     */
     function _executeRelayCall(
         bytes memory signature,
         uint256 nonce,
@@ -397,13 +419,23 @@ abstract contract LSP6KeyManagerCore is
             revert InvalidPayload(payload);
         }
 
-        address signer = LSP25MultiChannelNonce._validateExecuteRelayCall(
-            signature,
-            nonce,
-            validityTimestamps,
-            msgValue,
-            payload
-        );
+        address signer = LSP25MultiChannelNonce
+            ._recoverSignerFromLSP25Signature(
+                signature,
+                nonce,
+                validityTimestamps,
+                msgValue,
+                payload
+            );
+
+        if (!_isValidNonce(signer, nonce)) {
+            revert InvalidRelayNonce(signer, nonce, signature);
+        }
+
+        // increase nonce after successful verification
+        _nonceStore[signer][nonce >> 128]++;
+
+        LSP25MultiChannelNonce._verifyValidityTimestamps(validityTimestamps);
 
         bool isSetData = false;
         if (

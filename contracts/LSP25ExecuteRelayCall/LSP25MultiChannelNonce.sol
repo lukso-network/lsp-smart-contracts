@@ -8,11 +8,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {LSP25_VERSION} from "./LSP25Constants.sol";
 
 // errors
-import {
-    InvalidRelayNonce,
-    RelayCallBeforeStartTime,
-    RelayCallExpired
-} from "./LSP25Errors.sol";
+import {RelayCallBeforeStartTime, RelayCallExpired} from "./LSP25Errors.sol";
 
 /**
  * @title Implementation of the multi channel nonce and the signature verification defined in the LSP25 standard.
@@ -31,29 +27,59 @@ abstract contract LSP25MultiChannelNonce {
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
     /**
-     * @dev Validate that the `nonce` given for the `signature` signed and the `payload` to execute is valid
-     * and conform to the signature format according to the LSP25 standard.
+     * @dev Read the nonce for a `from` address on a specific `channelId`.
+     * This will return an `idx`, which is the concatenation of two `uint128` as follow:
+     * 1. the `channelId` where the nonce was queried for.
+     * 2. the actual nonce of the given `channelId`.
      *
-     * @param signature A valid signature for a signer, generated according to the signature format specified in the LSP25 standard.
-     * @param nonce The nonce that the signer used to generate the `signature`.
-     * @param validityTimestamps Two `uint128` concatenated together, where the left-most `uint128` represent the timestamp from which the transaction can be executed,
-     * and the right-most `uint128` represents the timestamp after which the transaction expire.
-     * @param callData The abi-encoded function call to execute.
+     * For example, if on `channelId` number `5`, the latest nonce  is `1`, the `idx` returned by this function will be:
      *
-     * @return recoveredSignerAddress The address of the signer recovered, for which the signature was validated.
+     * ```
+     * // in decimals = 1701411834604692317316873037158841057281
+     * idx = 0x0000000000000000000000000000000500000000000000000000000000000001
+     * ```
      *
-     * @custom:warning Be aware that this function can also throw an error if the `callData` was signed incorrectly (not conforming to the signature format defined in the LSP25 standard).
-     * The contract cannot distinguish if the data is signed correctly or not. Instead, it will recover an incorrect signer address from the signature
-     * and throw an {InvalidRelayNonce} error with the incorrect signer address as the first parameter.
+     * This idx can be described as follow:
+     *
+     * ```
+     *             channelId => 5          nonce in this channel => 1
+     *   v------------------------------v-------------------------------v
+     * 0x0000000000000000000000000000000500000000000000000000000000000001
+     * ```
+     *
+     * @param from The address to read the nonce for.
+     * @param channelId The channel in which to extract the nonce.
+     *
+     * @return idx The idx composed of two `uint128`: the channelId + nonce in channel concatenated together in a single `uint256` value.
      */
-    function _validateExecuteRelayCall(
+    function _getNonce(
+        address from,
+        uint128 channelId
+    ) internal view virtual returns (uint256 idx) {
+        uint256 nonceInChannel = _nonceStore[from][channelId];
+        return (uint256(channelId) << 128) | nonceInChannel;
+    }
+
+    /**
+     * @dev Recover the address of the signer that generated a `signature` using the parameters provided `nonce`, `validityTimestamps`, `msgValue` and `callData`.
+     * The address of the signer will be recovered using the LSP25 signature format.
+     *
+     * @param signature A 65 bytes long signature generated according to the signature format specified in the LSP25 standard.
+     * @param nonce The nonce that the signer used to generate the `signature`.
+     * @param validityTimestamps The validity timestamp that the signer used to generate the signature (See {_verifyValidityTimestamps} to learn more).
+     * @param msgValue The amount of native tokens intended to be sent for the relay transaction.
+     * @param callData The calldata to execute as a relay transaction that the signer signed for.
+     *
+     * @return The address that signed, recovered from the `signature`.
+     */
+    function _recoverSignerFromLSP25Signature(
         bytes memory signature,
         uint256 nonce,
         uint256 validityTimestamps,
         uint256 msgValue,
         bytes calldata callData
-    ) internal returns (address recoveredSignerAddress) {
-        bytes memory encodedMessage = abi.encodePacked(
+    ) internal view returns (address) {
+        bytes memory lsp25EncodedMessage = abi.encodePacked(
             LSP25_VERSION,
             block.chainid,
             nonce,
@@ -62,31 +88,36 @@ abstract contract LSP25MultiChannelNonce {
             callData
         );
 
-        recoveredSignerAddress = address(this)
-            .toDataWithIntendedValidatorHash(encodedMessage)
-            .recover(signature);
+        bytes32 eip191Hash = address(this).toDataWithIntendedValidatorHash(
+            lsp25EncodedMessage
+        );
 
-        if (!_isValidNonce(recoveredSignerAddress, nonce)) {
-            revert InvalidRelayNonce(recoveredSignerAddress, nonce, signature);
+        return eip191Hash.recover(signature);
+    }
+
+    /**
+     * @notice Verifying if the current timestamp is within the date and time range provided by `validityTimestamps`.
+     *
+     * @dev Verify that the validity timestamp provided is within a valid range compared to the current timestamp.
+     *
+     * @param validityTimestamps Two `uint128` concatenated together, where the left-most `uint128` represent the timestamp from which the transaction can be executed,
+     * and the right-most `uint128` represents the timestamp after which the transaction expire.
+     */
+    function _verifyValidityTimestamps(
+        uint256 validityTimestamps
+    ) internal view {
+        if (validityTimestamps == 0) return;
+
+        uint128 startingTimestamp = uint128(validityTimestamps >> 128);
+        uint128 endingTimestamp = uint128(validityTimestamps);
+
+        // solhint-disable not-rely-on-time
+        if (block.timestamp < startingTimestamp) {
+            revert RelayCallBeforeStartTime();
         }
-
-        // increase nonce after successful verification
-        _nonceStore[recoveredSignerAddress][nonce >> 128]++;
-
-        if (validityTimestamps != 0) {
-            uint128 startingTimestamp = uint128(validityTimestamps >> 128);
-            uint128 endingTimestamp = uint128(validityTimestamps);
-
-            // solhint-disable not-rely-on-time
-            if (block.timestamp < startingTimestamp) {
-                revert RelayCallBeforeStartTime();
-            }
-            if (block.timestamp > endingTimestamp) {
-                revert RelayCallExpired();
-            }
+        if (block.timestamp > endingTimestamp) {
+            revert RelayCallExpired();
         }
-
-        return recoveredSignerAddress;
     }
 
     /**
@@ -109,6 +140,6 @@ abstract contract LSP25MultiChannelNonce {
         // Alternatively:
         // uint256 mask = (1<<128)-1;
         // uint256 mask = 0xffffffffffffffffffffffffffffffff;
-        return (idx & mask) == (_nonceStore[from][idx >> 128]);
+        return (idx & mask) == _nonceStore[from][idx >> 128];
     }
 }

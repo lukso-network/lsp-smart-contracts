@@ -256,9 +256,12 @@ Same as [`executeRelayCall`](#executerelaycall) but execute a batch of signed ca
 
 :::
 
-:::info
+:::tip Hint
 
-A signer can choose its channel number arbitrarily. Channel ID = 0 can be used for sequential nonces (transactions that are order dependant), any other channel ID for out-of-order execution (= execution in parallel).
+A signer can choose its channel number arbitrarily. The recommended practice is to:
+
+- use `channelId == 0` for transactions for which the ordering of execution matters.abi _Example: you have two transactions A and B, and transaction A must be executed first and complete successfully before transaction B should be executed)._
+- use any other `channelId` number for transactions that you want to be order independant (out-of-order execution, execution _&quot;in parallel&quot;_). \_Example: you have two transactions A and B. You want transaction B to be executed a) without having to wait for transaction A to complete, or b) regardless if transaction A completed successfully or not.
 
 :::
 
@@ -271,7 +274,7 @@ function getNonce(
 
 _Reading the latest nonce of address `from` in the channel ID `channelId`._
 
-Get the nonce for a specific controller `from` address that can be used for signing relay transactions via [`executeRelayCall`](#executerelaycall).
+Get the nonce for a specific `from` address that can be used for signing relay transactions via [`executeRelayCall`](#executerelaycall).
 
 #### Parameters
 
@@ -937,44 +940,99 @@ function _verifyOwnershipPermissions(
 
 <br/>
 
-### \_validateExecuteRelayCall
-
-:::caution Warning
-
-Be aware that this function can also throw an error if the `callData` was signed incorrectly (not conforming to the signature format defined in the LSP25 standard).
-The contract cannot distinguish if the data is signed correctly or not. Instead, it will recover an incorrect signer address from the signature
-and throw an {InvalidRelayNonce} error with the incorrect signer address as the first parameter.
-
-:::
+### \_getNonce
 
 ```solidity
-function _validateExecuteRelayCall(
+function _getNonce(
+  address from,
+  uint128 channelId
+) internal view returns (uint256 idx);
+```
+
+Read the nonce for a `from` address on a specific `channelId`.
+This will return an `idx`, which is the concatenation of two `uint128` as follow:
+
+1. the `channelId` where the nonce was queried for.
+
+2. the actual nonce of the given `channelId`.
+   For example, if on `channelId` number `5`, the latest nonce is `1`, the `idx` returned by this function will be:
+
+```
+// in decimals = 1701411834604692317316873037158841057281
+idx = 0x0000000000000000000000000000000500000000000000000000000000000001
+```
+
+This idx can be described as follow:
+
+```
+            channelId => 5          nonce in this channel => 1
+  v------------------------------v-------------------------------v
+0x0000000000000000000000000000000500000000000000000000000000000001
+```
+
+#### Parameters
+
+| Name        |   Type    | Description                                |
+| ----------- | :-------: | ------------------------------------------ |
+| `from`      | `address` | The address to read the nonce for.         |
+| `channelId` | `uint128` | The channel in which to extract the nonce. |
+
+#### Returns
+
+| Name  |   Type    | Description                                                                                                            |
+| ----- | :-------: | ---------------------------------------------------------------------------------------------------------------------- |
+| `idx` | `uint256` | The idx composed of two `uint128`: the channelId + nonce in channel concatenated together in a single `uint256` value. |
+
+<br/>
+
+### \_recoverSignerFromLSP25Signature
+
+```solidity
+function _recoverSignerFromLSP25Signature(
   bytes signature,
   uint256 nonce,
   uint256 validityTimestamps,
   uint256 msgValue,
   bytes callData
-) internal nonpayable returns (address recoveredSignerAddress);
+) internal view returns (address);
 ```
 
-Validate that the `nonce` given for the `signature` signed and the `payload` to execute is valid
-and conform to the signature format according to the LSP25 standard.
+Recover the address of the signer that generated a `signature` using the parameters provided `nonce`, `validityTimestamps`, `msgValue` and `callData`.
+The address of the signer will be recovered using the LSP25 signature format.
+
+#### Parameters
+
+| Name                 |   Type    | Description                                                                                                             |
+| -------------------- | :-------: | ----------------------------------------------------------------------------------------------------------------------- |
+| `signature`          |  `bytes`  | A 65 bytes long signature generated according to the signature format specified in the LSP25 standard.                  |
+| `nonce`              | `uint256` | The nonce that the signer used to generate the `signature`.                                                             |
+| `validityTimestamps` | `uint256` | The validity timestamp that the signer used to generate the signature (See {\_verifyValidityTimestamps} to learn more). |
+| `msgValue`           | `uint256` | The amount of native tokens intended to be sent for the relay transaction.                                              |
+| `callData`           |  `bytes`  | The calldata to execute as a relay transaction that the signer signed for.                                              |
+
+#### Returns
+
+| Name |   Type    | Description                                              |
+| ---- | :-------: | -------------------------------------------------------- |
+| `0`  | `address` | The address that signed, recovered from the `signature`. |
+
+<br/>
+
+### \_verifyValidityTimestamps
+
+```solidity
+function _verifyValidityTimestamps(uint256 validityTimestamps) internal view;
+```
+
+_Verifying if the current timestamp is within the date and time range provided by `validityTimestamps`._
+
+Verify that the validity timestamp provided is within a valid range compared to the current timestamp.
 
 #### Parameters
 
 | Name                 |   Type    | Description                                                                                                                            |
 | -------------------- | :-------: | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `signature`          |  `bytes`  | A valid signature for a signer, generated according to the signature format specified in the LSP25 standard.                           |
-| `nonce`              | `uint256` | The nonce that the signer used to generate the `signature`.                                                                            |
 | `validityTimestamps` | `uint256` | Two `uint128` concatenated together, where the left-most `uint128` represent the timestamp from which the transaction can be executed, |
-| `msgValue`           | `uint256` | -                                                                                                                                      |
-| `callData`           |  `bytes`  | The abi-encoded function call to execute.                                                                                              |
-
-#### Returns
-
-| Name                     |   Type    | Description                                                                 |
-| ------------------------ | :-------: | --------------------------------------------------------------------------- |
-| `recoveredSignerAddress` | `address` | The address of the signer recovered, for which the signature was validated. |
 
 <br/>
 
@@ -1019,6 +1077,14 @@ function _execute(
 
 ### \_executeRelayCall
 
+:::caution Warning
+
+Be aware that this function can also throw an error if the `callData` was signed incorrectly (not conforming to the signature format defined in the LSP25 standard).
+This is because the contract cannot distinguish if the data is signed correctly or not. Instead, it will recover an incorrect signer address from the signature
+and throw an {InvalidRelayNonce} error with the incorrect signer address as the first parameter.
+
+:::
+
 ```solidity
 function _executeRelayCall(
   bytes signature,
@@ -1028,6 +1094,19 @@ function _executeRelayCall(
   bytes payload
 ) internal nonpayable returns (bytes);
 ```
+
+Validate that the `nonce` given for the `signature` signed and the `payload` to execute is valid
+and conform to the signature format according to the LSP25 standard.
+
+#### Parameters
+
+| Name                 |   Type    | Description                                                                                                                            |
+| -------------------- | :-------: | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `signature`          |  `bytes`  | A valid signature for a signer, generated according to the signature format specified in the LSP25 standard.                           |
+| `nonce`              | `uint256` | The nonce that the signer used to generate the `signature`.                                                                            |
+| `validityTimestamps` | `uint256` | Two `uint128` concatenated together, where the left-most `uint128` represent the timestamp from which the transaction can be executed, |
+| `msgValue`           | `uint256` | -                                                                                                                                      |
+| `payload`            |  `bytes`  | The abi-encoded function call to execute.                                                                                              |
 
 <br/>
 
@@ -1458,15 +1537,17 @@ Reverts when the payload is invalid.
 error InvalidRelayNonce(address signer, uint256 invalidNonce, bytes signature);
 ```
 
+_The relay call failed because an invalid nonce was provided for the address `signer` that signed the execute relay call. Invalid nonce: `invalidNonce`, signature of signer: `signature`._
+
 Reverts when the `signer` address retrieved from the `signature` has an invalid nonce: `invalidNonce`.
 
 #### Parameters
 
-| Name           |   Type    | Description                                         |
-| -------------- | :-------: | --------------------------------------------------- |
-| `signer`       | `address` | The address of the signer                           |
-| `invalidNonce` | `uint256` | The nonce retrieved for the `signer` address        |
-| `signature`    |  `bytes`  | The signature used to retrieve the `signer` address |
+| Name           |   Type    | Description                                          |
+| -------------- | :-------: | ---------------------------------------------------- |
+| `signer`       | `address` | The address of the signer.                           |
+| `invalidNonce` | `uint256` | The nonce retrieved for the `signer` address.        |
+| `signature`    |  `bytes`  | The signature used to retrieve the `signer` address. |
 
 <br/>
 
@@ -1784,7 +1865,9 @@ Reverts when `dataKey` is a `bytes32` value that does not adhere to any of the p
 error RelayCallBeforeStartTime();
 ```
 
-Reverts when the start timestamp provided to [`executeRelayCall`](#executerelaycall) function is bigger than the current timestamp.
+_Relay call not valid yet._
+
+Reverts when the relay call is cannot yet bet executed. This mean that the starting timestamp provided to [`executeRelayCall`](#executerelaycall) function is bigger than the current timestamp.
 
 <br/>
 

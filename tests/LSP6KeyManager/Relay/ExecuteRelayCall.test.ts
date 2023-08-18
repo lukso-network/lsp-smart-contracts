@@ -554,8 +554,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
       });
 
       describe('When testing `validityTimestamps`', () => {
-        describe('(invalid timestamps) `startingTimestamp` is greter than `endingTimestamp`', () => {
-          describe('`now` is equal to `startingTimestamp` and `now` is greter than `endingTimestamp`', () => {
+        describe('(invalid timestamps) `startingTimestamp` is greater than `endingTimestamp`', () => {
+          describe('`now` is equal to `startingTimestamp` and `now` is greater than `endingTimestamp`', () => {
             it('reverts', async () => {
               const now = await time.latest();
               const startingTimestamp = now;

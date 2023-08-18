@@ -24,44 +24,99 @@ Any method labeled as `internal` serves as utility function within the contract.
 
 Internal functions cannot be called externally, whether from other smart contracts, dApp interfaces, or backend services. Their restricted accessibility ensures that they remain exclusively available within the context of the current contract, promoting controlled and encapsulated usage of these internal utilities.
 
-### \_validateExecuteRelayCall
-
-:::caution Warning
-
-Be aware that this function can also throw an error if the `callData` was signed incorrectly (not conforming to the signature format defined in the LSP25 standard).
-The contract cannot distinguish if the data is signed correctly or not. Instead, it will recover an incorrect signer address from the signature
-and throw an {InvalidRelayNonce} error with the incorrect signer address as the first parameter.
-
-:::
+### \_getNonce
 
 ```solidity
-function _validateExecuteRelayCall(
+function _getNonce(
+  address from,
+  uint128 channelId
+) internal view returns (uint256 idx);
+```
+
+Read the nonce for a `from` address on a specific `channelId`.
+This will return an `idx`, which is the concatenation of two `uint128` as follow:
+
+1. the `channelId` where the nonce was queried for.
+
+2. the actual nonce of the given `channelId`.
+   For example, if on `channelId` number `5`, the latest nonce is `1`, the `idx` returned by this function will be:
+
+```
+// in decimals = 1701411834604692317316873037158841057281
+idx = 0x0000000000000000000000000000000500000000000000000000000000000001
+```
+
+This idx can be described as follow:
+
+```
+            channelId => 5          nonce in this channel => 1
+  v------------------------------v-------------------------------v
+0x0000000000000000000000000000000500000000000000000000000000000001
+```
+
+#### Parameters
+
+| Name        |   Type    | Description                                |
+| ----------- | :-------: | ------------------------------------------ |
+| `from`      | `address` | The address to read the nonce for.         |
+| `channelId` | `uint128` | The channel in which to extract the nonce. |
+
+#### Returns
+
+| Name  |   Type    | Description                                                                                                            |
+| ----- | :-------: | ---------------------------------------------------------------------------------------------------------------------- |
+| `idx` | `uint256` | The idx composed of two `uint128`: the channelId + nonce in channel concatenated together in a single `uint256` value. |
+
+<br/>
+
+### \_recoverSignerFromLSP25Signature
+
+```solidity
+function _recoverSignerFromLSP25Signature(
   bytes signature,
   uint256 nonce,
   uint256 validityTimestamps,
   uint256 msgValue,
   bytes callData
-) internal nonpayable returns (address recoveredSignerAddress);
+) internal view returns (address);
 ```
 
-Validate that the `nonce` given for the `signature` signed and the `payload` to execute is valid
-and conform to the signature format according to the LSP25 standard.
+Recover the address of the signer that generated a `signature` using the parameters provided `nonce`, `validityTimestamps`, `msgValue` and `callData`.
+The address of the signer will be recovered using the LSP25 signature format.
+
+#### Parameters
+
+| Name                 |   Type    | Description                                                                                                             |
+| -------------------- | :-------: | ----------------------------------------------------------------------------------------------------------------------- |
+| `signature`          |  `bytes`  | A 65 bytes long signature generated according to the signature format specified in the LSP25 standard.                  |
+| `nonce`              | `uint256` | The nonce that the signer used to generate the `signature`.                                                             |
+| `validityTimestamps` | `uint256` | The validity timestamp that the signer used to generate the signature (See {\_verifyValidityTimestamps} to learn more). |
+| `msgValue`           | `uint256` | The amount of native tokens intended to be sent for the relay transaction.                                              |
+| `callData`           |  `bytes`  | The calldata to execute as a relay transaction that the signer signed for.                                              |
+
+#### Returns
+
+| Name |   Type    | Description                                              |
+| ---- | :-------: | -------------------------------------------------------- |
+| `0`  | `address` | The address that signed, recovered from the `signature`. |
+
+<br/>
+
+### \_verifyValidityTimestamps
+
+```solidity
+function _verifyValidityTimestamps(uint256 validityTimestamps) internal view;
+```
+
+_Verifying if the current timestamp is within the date and time range provided by `validityTimestamps`._
+
+Verify that the validity timestamp provided is within a valid range compared to the current timestamp.
 
 #### Parameters
 
 | Name                 |   Type    | Description                                                                                                                            |
 | -------------------- | :-------: | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `signature`          |  `bytes`  | A valid signature for a signer, generated according to the signature format specified in the LSP25 standard.                           |
-| `nonce`              | `uint256` | The nonce that the signer used to generate the `signature`.                                                                            |
 | `validityTimestamps` | `uint256` | Two `uint128` concatenated together, where the left-most `uint128` represent the timestamp from which the transaction can be executed, |
-| `msgValue`           | `uint256` | -                                                                                                                                      |
-| `callData`           |  `bytes`  | The abi-encoded function call to execute.                                                                                              |
-
-#### Returns
-
-| Name                     |   Type    | Description                                                                 |
-| ------------------------ | :-------: | --------------------------------------------------------------------------- |
-| `recoveredSignerAddress` | `address` | The address of the signer recovered, for which the signature was validated. |
 
 <br/>
 
