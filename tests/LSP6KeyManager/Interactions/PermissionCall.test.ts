@@ -33,6 +33,7 @@ import {
   combineCallTypes,
   combinePermissions,
   LOCAL_PRIVATE_KEYS,
+  provider,
 } from '../../utils/helpers';
 import { BigNumber } from 'ethers';
 
@@ -1046,7 +1047,10 @@ export const shouldBehaveLikePermissionCall = (
 
         let controllerCanOnlySign;
 
-        let targetContract;
+        let controllerCanSuperCall;
+        let controllerCanSuperTransferValue;
+
+        let targetContract: FallbackInitializer;
 
         let executePayload;
 
@@ -1058,9 +1062,13 @@ export const shouldBehaveLikePermissionCall = (
           controllerCanTransferValue = accounts[1];
           controllerCanTransferValueAndCall = accounts[2];
           controllerCanCall = accounts[3];
+
           controllerCanOnlySign = accounts[4];
 
-          targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+          controllerCanSuperCall = accounts[5];
+          controllerCanSuperTransferValue = accounts[6];
+
+          targetContract = await new FallbackInitializer__factory(context.accounts[0]).deploy();
 
           const permissionKeys = [
             // permissions
@@ -1072,6 +1080,10 @@ export const shouldBehaveLikePermissionCall = (
               controllerCanCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
               controllerCanOnlySign.address.substring(2),
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+              controllerCanSuperCall.address.substring(2),
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+              controllerCanSuperTransferValue.address.substring(2),
             // allowed calls
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
               controllerCanTransferValue.address.substring(2),
@@ -1094,6 +1106,8 @@ export const shouldBehaveLikePermissionCall = (
             combinePermissions(PERMISSIONS.TRANSFERVALUE, PERMISSIONS.CALL),
             PERMISSIONS.CALL,
             PERMISSIONS.SIGN,
+            PERMISSIONS.SUPER_CALL,
+            PERMISSIONS.SUPER_TRANSFERVALUE,
             // allowed calls,
             allowedCall,
             allowedCall,
@@ -1101,59 +1115,253 @@ export const shouldBehaveLikePermissionCall = (
           ];
 
           await setupKeyManager(context, permissionKeys, permissionValues);
-
-          executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            36,
-            '0xdeadbeef',
-          ]);
-
-          // edit the `data` offset to points to the `value` parameter
-          executePayload = executePayload.replace(
-            '0000000000000000000000000000000000000000000000000000000000000080',
-            '0000000000000000000000000000000000000000000000000000000000000040',
-          );
         });
 
-        describe('when caller has permission TRANSFERVALUE only', () => {
-          it("should revert with 'NotAuthorised' error to 'CALL'", async () => {
-            await expect(
-              context.keyManager.connect(controllerCanTransferValue).execute(executePayload),
-            )
-              .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-              .withArgs(controllerCanTransferValue.address, 'CALL');
+        afterEach('clearing target contract storage', async () => {
+          await context.accounts[0].sendTransaction({
+            to: targetContract.address,
+            data: '0xcafecafe',
           });
         });
 
-        describe('when caller has permission CALL only', () => {
-          it("should revert with 'NotAuthorised' error to 'TRANSFERVALUE'", async () => {
-            await expect(
-              context.keyManager.connect(controllerCanCall).execute(executePayload, { value: 100 }),
-            )
-              .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-              .withArgs(controllerCanCall.address, 'TRANSFERVALUE');
-          });
-        });
+        describe('when the `value` parameter has some number, that points to some `data == 0x0000...04deadbe`', () => {
+          before(async () => {
+            executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              36,
+              '0xdeadbeef',
+            ]);
 
-        describe('when caller does not have neither CALL nor TRANSFERVALUE permissions', () => {
-          it("should revert with 'NotAuthorised' error to 'TRANSFERVALUE' (as value transfer is the first thing being checked", async () => {
-            await expect(context.keyManager.connect(controllerCanOnlySign).execute(executePayload))
-              .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-              .withArgs(controllerCanOnlySign.address, 'TRANSFERVALUE');
+            // edit the `data` offset to points to the `value` parameter
+            executePayload = executePayload.replace(
+              '0000000000000000000000000000000000000000000000000000000000000080',
+              '0000000000000000000000000000000000000000000000000000000000000040',
+            );
           });
-        });
 
-        describe('when caller has both permissions CALL + TRANSFERVALUE', () => {
-          it('should pass and allow to call the contract (but fallback to default handler because of unrecognised selector)', async () => {
-            // Here the controller has the permissions to do the external call
-            // but the default error handler is triggered because there is no function selector `0x40deadbe'
-            // in the contract and it is not recognised
-            await expect(
-              context.keyManager
+          describe('when caller has permission TRANSFERVALUE only', () => {
+            it("should revert with 'NotAuthorised' error to 'CALL'", async () => {
+              await expect(
+                context.keyManager.connect(controllerCanTransferValue).execute(executePayload),
+              )
+                .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+                .withArgs(controllerCanTransferValue.address, 'CALL');
+            });
+          });
+
+          describe('when caller has permission CALL only', () => {
+            it("should revert with 'NotAuthorised' error to 'TRANSFERVALUE'", async () => {
+              await expect(context.keyManager.connect(controllerCanCall).execute(executePayload))
+                .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+                .withArgs(controllerCanCall.address, 'TRANSFERVALUE');
+            });
+          });
+
+          describe('when caller does not have neither CALL nor TRANSFERVALUE permissions', () => {
+            it("should revert with 'NotAuthorised' error to 'TRANSFERVALUE' (as value transfer is the first thing being checked", async () => {
+              await expect(
+                context.keyManager.connect(controllerCanOnlySign).execute(executePayload),
+              )
+                .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+                .withArgs(controllerCanOnlySign.address, 'TRANSFERVALUE');
+            });
+          });
+
+          describe('when caller has both permissions CALL + TRANSFERVALUE', () => {
+            it('should pass and allow to call the contract', async () => {
+              expect(await provider.getBalance(targetContract.address)).to.equal(0);
+
+              await context.keyManager
                 .connect(controllerCanTransferValueAndCall)
-                .callStatic.execute(executePayload),
-            ).to.be.revertedWith('ERC725X: Unknown Error');
+                .execute(executePayload);
+
+              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+              expect(await provider.getBalance(targetContract.address)).to.equal(36);
+            });
+          });
+        });
+
+        describe('when the `value` parameter is 0, meaning calldata is empty (= empty call)', () => {
+          before(async () => {
+            executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              '0x',
+            ]);
+
+            // edit the `data` offset to points to the `value` parameter
+            executePayload = executePayload.replace(
+              '0000000000000000000000000000000000000000000000000000000000000080',
+              '0000000000000000000000000000000000000000000000000000000000000040',
+            );
+          });
+
+          describe('when controller has permission CALL only', () => {
+            it('should pass', async () => {
+              await context.keyManager.connect(controllerCanCall).execute(executePayload);
+              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+            });
+          });
+
+          describe('when controller has SUPER_CALL', () => {
+            it('should pass', async () => {
+              await context.keyManager.connect(controllerCanSuperCall).execute(executePayload);
+              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+            });
+          });
+
+          describe('when controller does not have permission CALL', () => {
+            it('should revert with `NotAuthorised` error to `CALL`', async () => {
+              await expect(
+                context.keyManager.connect(controllerCanOnlySign).execute(executePayload),
+              )
+                .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+                .withArgs(controllerCanOnlySign.address, 'CALL');
+            });
+          });
+        });
+      });
+
+      describe("if the offset points forwards (there are 32 random bytes between the data's offset and the data's length", () => {
+        // We add the target in the allowed calls for each of these controller
+        let controllerCanCall;
+        let controllerCanSuperCall;
+        let controllerCanOnlySign;
+
+        let targetContract: FallbackInitializer;
+
+        let executePayload;
+
+        before(async () => {
+          context = await buildContext(ethers.utils.parseEther('50'));
+
+          const accounts = await ethers.getSigners();
+
+          controllerCanCall = accounts[1];
+          controllerCanSuperCall = accounts[2];
+          controllerCanOnlySign = accounts[3];
+
+          targetContract = await new FallbackInitializer__factory(context.accounts[0]).deploy();
+
+          const permissionKeys = [
+            // permissions
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+              controllerCanCall.address.substring(2),
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+              controllerCanSuperCall.address.substring(2),
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+              controllerCanOnlySign.address.substring(2),
+            // allowed calls
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+              controllerCanCall.address.substring(2),
+          ];
+
+          const allowedCall = combineAllowedCalls(
+            [combineCallTypes(CALLTYPE.CALL)],
+            [targetContract.address],
+            ['0xffffffff'],
+            ['0xffffffff'],
+          );
+
+          const permissionValues = [
+            // permissions
+            PERMISSIONS.CALL,
+            PERMISSIONS.SUPER_CALL,
+            PERMISSIONS.SIGN,
+            // allowed calls,
+            allowedCall,
+          ];
+
+          await setupKeyManager(context, permissionKeys, permissionValues);
+        });
+
+        afterEach('clearing target contract storage', async () => {
+          await context.accounts[0].sendTransaction({
+            to: targetContract.address,
+            data: '0xcafecafe',
+          });
+        });
+
+        describe('the length byte points to some number', () => {
+          before('constructing manually the payload', async () => {
+            // 0x44c028fe                                                         --> ERC725X.execute(uint256,address,uint256,bytes) selector
+            //   0000000000000000000000000000000000000000000000000000000000000000 --> operationType = CALL (0)
+            //   0000000000000000000000004ed7c70f96b99c776995fb64377f0d4ab3b0e1c1 --> target = targetContract.address
+            //   0000000000000000000000000000000000000000000000000000000000000000 --> value = 0
+            //   00000000000000000000000000000000000000000000000000000000000000a0 --> offset = 160
+            //   cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe --> 32 random bytes in between
+            //   0000000000000000000000000000000000000000000000000000000000000004 --> `data.length` = 4
+            //   deadbeef00000000000000000000000000000000000000000000000000000000 --> `data` = 0xdeadbeef
+            executePayload =
+              '0x44c028fe0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000' +
+              targetContract.address.substring(2).toLowerCase() +
+              '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe0000000000000000000000000000000000000000000000000000000000000004deadbeef00000000000000000000000000000000000000000000000000000000';
+          });
+
+          describe('when caller has permission CALL', () => {
+            it('should pass', async () => {
+              await context.keyManager.connect(controllerCanCall).execute(executePayload);
+              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+            });
+          });
+
+          describe('when caller has permission SUPER_CALL', () => {
+            it('should pass', async () => {
+              await context.keyManager.connect(controllerCanSuperCall).execute(executePayload);
+              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+            });
+          });
+
+          describe("when caller does not have permission 'CALL' nor 'SUPER_CALL'", () => {
+            it("should revert with 'NotAuthorised' error to 'CALL'", async () => {
+              await expect(
+                context.keyManager.connect(controllerCanOnlySign).execute(executePayload),
+              )
+                .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+                .withArgs(controllerCanOnlySign.address, 'CALL');
+            });
+          });
+        });
+
+        describe('the length byte points to `0x0000...0000` (= no data, this is an empty call)', () => {
+          before('constructing manually the payload', async () => {
+            // 0x44c028fe                                                         --> ERC725X.execute(uint256,address,uint256,bytes) selector
+            //   0000000000000000000000000000000000000000000000000000000000000000 --> operationType = CALL (0)
+            //   0000000000000000000000004ed7c70f96b99c776995fb64377f0d4ab3b0e1c1 --> target = targetContract.address
+            //   0000000000000000000000000000000000000000000000000000000000000000 --> value = 0
+            //   00000000000000000000000000000000000000000000000000000000000000a0 --> offset = 160
+            //   cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe --> 32 random bytes in between
+            //   0000000000000000000000000000000000000000000000000000000000000000 --> `data.length` = 0
+            executePayload =
+              '0x44c028fe0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000' +
+              targetContract.address.substring(2).toLowerCase() +
+              '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe0000000000000000000000000000000000000000000000000000000000000000';
+          });
+
+          describe('when caller has permission CALL', () => {
+            it('should pass', async () => {
+              await context.keyManager.connect(controllerCanCall).execute(executePayload);
+              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+            });
+          });
+
+          describe('when caller has permission SUPER_CALL', () => {
+            it('should pass', async () => {
+              await context.keyManager.connect(controllerCanSuperCall).execute(executePayload);
+              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+            });
+          });
+
+          describe("when caller does not have permission 'CALL' nor 'SUPER_CALL'", () => {
+            it("should revert with 'NotAuthorised' error to 'CALL'", async () => {
+              await expect(
+                context.keyManager.connect(controllerCanOnlySign).execute(executePayload),
+              )
+                .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+                .withArgs(controllerCanOnlySign.address, 'CALL');
+            });
           });
         });
       });
