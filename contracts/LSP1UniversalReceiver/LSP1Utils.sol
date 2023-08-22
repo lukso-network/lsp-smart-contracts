@@ -6,10 +6,17 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
 import "./ILSP1UniversalReceiver.sol";
-import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+
+// constants
+import {
+    _INTERFACEID_LSP1,
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY,
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
+} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import "../LSP0ERC725Account/LSP0Constants.sol";
 import "../LSP5ReceivedAssets/LSP5Constants.sol";
 import "../LSP7DigitalAsset/LSP7Constants.sol";
@@ -90,6 +97,42 @@ library LSP1Utils {
             "Call to universalReceiver failed"
         );
         return result.length != 0 ? abi.decode(result, (bytes)) : result;
+    }
+
+    /**
+     * @notice Retrieving the value stored under the ERC725Y data key `LSP1UniversalReceiverDelegate`.
+     *
+     * @dev Query internally the ERC725Y storage of a `ERC725Y` smart contract to retrieve
+     * the value set under the `LSP1UniversalReceiverDelegate` data key.
+     *
+     * @param erc725YStorage A reference to the ERC725Y storage mapping of the contract.
+     * @return The bytes value stored under the `LSP1UniversalReceiverDelegate` data key.
+     */
+    function getLSP1DelegateValue(
+        mapping(bytes32 => bytes) storage erc725YStorage
+    ) internal view returns (bytes memory) {
+        return erc725YStorage[_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY];
+    }
+
+    /**
+     * @notice Retrieving the value stored under the ERC725Y data key `LSP1UniversalReceiverDelegate:<type-id>` for a specific `typeId`.
+     *
+     * @dev Query internally the ERC725Y storage of a `ERC725Y` smart contract to retrieve
+     * the value set under the `LSP1UniversalReceiverDelegate:<bytes32>` data key for a specific LSP1 `typeId`.
+     *
+     * @param erc725YStorage A reference to the ERC725Y storage mapping of the contract.
+     * @param typeId A bytes32 LSP1 `typeId`;
+     * @return The bytes value stored under the `LSP1UniversalReceiverDelegate:<bytes32>` data key.
+     */
+    function getLSP1DelegateValueForTypeId(
+        mapping(bytes32 => bytes) storage erc725YStorage,
+        bytes32 typeId
+    ) internal view returns (bytes memory) {
+        bytes32 lsp1TypeIdDataKey = LSP2Utils.generateMappingKey(
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+            bytes20(typeId)
+        );
+        return erc725YStorage[lsp1TypeIdDataKey];
     }
 
     /**
