@@ -11,14 +11,16 @@ import {
 } from "../LSP8IdentifiableDigitalAsset.sol";
 
 /**
- * @dev LSP8 extension.
+ * @title LSP8IdentifiableDigitalAsset deployable preset contract with a public {mint} function callable only by the contract {owner}.
  */
 contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable {
     /**
-     * @notice Sets the token-Metadata and register LSP8InterfaceId
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the the token-Metadata
+     * @notice Deploying a `LSP8Mintable` token contract with: token name = `name_`, token symbol = `symbol_`, and
+     * address `newOwner_` as the token contract owner.
+     *
+     * @param name_ The name of the token.
+     * @param symbol_ The symbol of the token.
+     * @param newOwner_ The owner of the token contract.
      */
     constructor(
         string memory name_,
@@ -27,7 +29,14 @@ contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable {
     ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {}
 
     /**
-     * @inheritdoc ILSP8Mintable
+     * @notice Minting tokenId `tokenId` for address `to` with the additional data `data` (Note: allow non-LSP1 recipient is set to `allowNonLSP1Recipient`).
+     *
+     * @dev Public {_mint} function only callable by the {owner}.
+     *
+     * @param to The address that will receive the minted `tokenId`.
+     * @param tokenId The tokenId to mint.
+     * @param allowNonLSP1Recipient Set to `false` to ensure that you are minting for a recipient that implements LSP1, `false` otherwise for forcing the minting.
+     * @param data Any addition data to be sent alongside the minting.
      */
     function mint(
         address to,
