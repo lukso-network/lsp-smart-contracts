@@ -17,6 +17,7 @@ export const dodocConfig = {
     'contracts/LSP17ContractExtension/LSP17Extension.sol',
     'contracts/LSP20CallVerification/LSP20CallVerification.sol',
     'contracts/LSP23LinkedContractsDeployment/LSP23LinkedContractsFactory.sol',
+    'contracts/LSP25ExecuteRelayCall/LSP25MultiChannelNonce.sol',
 
     // tokens
     'contracts/LSP4DigitalAssetMetadata/LSP4Compatibility.sol',
@@ -34,7 +35,6 @@ export const dodocConfig = {
     'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol',
     'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol',
     'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol',
-    'contracts/LSP25ExecuteRelayCall/LSP25MultiChannelNonce.sol',
 
     // libraries --------------------
     'contracts/LSP0ERC725Account/LSP0Utils.sol',

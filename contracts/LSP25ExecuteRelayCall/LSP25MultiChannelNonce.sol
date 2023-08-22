@@ -96,9 +96,7 @@ abstract contract LSP25MultiChannelNonce {
     }
 
     /**
-     * @notice Verifying if the current timestamp is within the date and time range provided by `validityTimestamps`.
-     *
-     * @dev Verify that the validity timestamp provided is within a valid range compared to the current timestamp.
+     * @dev Verify that the current timestamp is within the date and time range provided by `validityTimestamps`.
      *
      * @param validityTimestamps Two `uint128` concatenated together, where the left-most `uint128` represent the timestamp from which the transaction can be executed,
      * and the right-most `uint128` represents the timestamp after which the transaction expire.

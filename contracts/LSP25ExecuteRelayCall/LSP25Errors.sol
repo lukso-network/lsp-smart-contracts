@@ -10,6 +10,8 @@ pragma solidity ^0.8.4;
 error RelayCallBeforeStartTime();
 
 /**
+ * @notice Relay call expired (deadline passed).
+ *
  * @dev Reverts when the period to execute the relay call has expired.
  */
 error RelayCallExpired();

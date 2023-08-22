@@ -9,7 +9,7 @@ import {
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
+import {ILSP6KeyManager as ILSP6} from "./ILSP6KeyManager.sol";
 import {
     ILSP20CallVerifier as ILSP20
 } from "../LSP20CallVerification/ILSP20CallVerifier.sol";
@@ -72,7 +72,7 @@ import {_INTERFACEID_LSP25} from "../LSP25ExecuteRelayCall/LSP25Constants.sol";
  */
 abstract contract LSP6KeyManagerCore is
     ERC165,
-    ILSP6KeyManager,
+    ILSP6,
     ILSP20,
     ILSP25,
     LSP6SetDataModule,
