@@ -77,15 +77,6 @@ import {
  * @title The Core Implementation of [LSP-0-ERC725Account] Standard.
  *
  * @author Fabian Vogelsteller <fabian@lukso.network>, Jean Cavallera (CJ42)
- * @dev A smart contract account including basic functionalities such as:
- * - Detecting supported standards using [ERC-165]
- * - Executing several operation on other addresses including creating contracts using [ERC-725X]
- * - Storing data in a generic way using [ERC-725Y]
- * - Validating signatures using [ERC-1271]
- * - Receiving notification and react on them using [LSP-1-UniversalReceiver]
- * - Secure ownership management using [LSP-14-Ownable2Step]
- * - Extending the account with new functions and interfaceIds of future standards using [LSP-17-ContractExtension]
- * - Verifying calls on the owner to allow unified and standard interaction with the account using [LSP-20-CallVerification]
  */
 abstract contract LSP0ERC725AccountCore is
     ERC725XCore,
@@ -117,9 +108,12 @@ abstract contract LSP0ERC725AccountCore is
     // solhint-disable no-complex-fallback
 
     /**
-     * @notice Achieves the goal of [LSP-17-ContractExtension] standard by extending the contract to handle calls of functions that do not exist natively, forwarding the function call to the extension address mapped to the function being called.
+     * @notice The `fallback` function was called with the following amount of native tokens: `msg.value`; and the following calldata: `callData`.
      *
-     * @dev This function is executed when:
+     * @dev Achieves the goal of [LSP-17-ContractExtension] standard by extending the contract to handle calls of functions that do not exist natively,
+     * forwarding the function call to the extension address mapped to the function being called.
+     *
+     * This function is executed when:
      *    - Sending data of length less than 4 bytes to the contract.
      *    - The first 4 bytes of the calldata do not match any publicly callable functions from the contract ABI.
      *    - Receiving native tokens with some calldata.
@@ -390,13 +384,12 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @notice Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be notified about incoming/outgoing transactions and enabling reactions to these actions.
+     * @notice Notifying the contract by calling its `universalReceiver` function with the following informations: typeId: `typeId`; data: `data`.
      *
+     * @dev Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be notified about incoming/outgoing transactions and enabling reactions to these actions.
      * The reaction is achieved by having two external contracts ([LSP1UniversalReceiverDelegate]) that react on the whole transaction and on the specific typeId, respectively.
      *
-     * The notification is achieved by emitting a {UniversalReceiver} event on the call with the function parameters, call options, and the response of the UniversalReceiverDelegates (URD) contract.
-     *
-     * @dev The function performs the following steps:
+     * The function performs the following steps:
      *
      * 1. Query the [ERC-725Y] storage with the data key [_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY].
      *      - If there is an address stored under the data key, check if this address supports the LSP1 interfaceId.
@@ -418,7 +411,7 @@ abstract contract LSP0ERC725AccountCore is
      *
      * @custom:events
      * - {ValueReceived} when receiving native tokens.
-     * - {UniversalReceiver} event.
+     * - {UniversalReceiver} event with the function parameters, call options, and the response of the UniversalReceiverDelegates (URD) contract that was called.
      */
     function universalReceiver(
         bytes32 typeId,
@@ -628,15 +621,18 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @notice Achieves the goal of [ERC-165] to detect supported interfaces and [LSP-17-ContractExtension] by
-     * checking if the interfaceId being queried is supported on another linked extension.
+     * @notice Checking if this contract supports the interface defined by the bytes4 interface ID `interfaceId`.
      *
-     * @dev Returns true if this contract implements the interface defined by
-     * `interfaceId`.
+     * @dev Achieves the goal of [ERC-165] to detect supported interfaces and [LSP-17-ContractExtension] by
+     * checking if the interfaceId being queried is supported on another linked extension.
      *
      * If the contract doesn't support the `interfaceId`, it forwards the call to the
      * `supportsInterface` extension according to [LSP-17-ContractExtension], and checks if the extension
      * implements the interface defined by `interfaceId`.
+     *
+     * @param interfaceId The interface ID to check if the contract supports it.
+     *
+     * @return `true` if this contract implements the interface defined by `interfaceId`, `false` otherwise.
      */
     function supportsInterface(
         bytes4 interfaceId
@@ -792,7 +788,8 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @custom:events {DataChanged} event with only the first 256 bytes of {dataValue}.
      *
-     * @dev This function overrides the {ERC725YCore} internal {_setData} function to optimize gas usage by
+     * @dev This function overrides the {ERC725YCore} internal {_setData} function to optimize gas usage by emitting only the first 256 bytes of the `dataValue`.
+     *
      * @param dataKey The key to store the data value under.
      * @param dataValue The data value to be stored.
      */

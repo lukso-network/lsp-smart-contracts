@@ -14,7 +14,7 @@
 
 :::
 
-> Deployable Implementation of LSP0-ERC725Account Standard https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md
+> Deployable Implementation of [LSP-0-ERC725Account] Standard.
 
 A smart contract account including basic functionalities such as:
 
@@ -22,17 +22,17 @@ A smart contract account including basic functionalities such as:
 
 - Executing several operation on other addresses including creating contracts using [ERC-725X]
 
-- Storing data in a generic way using [ERC-725Y]
+- A generic data key-value store using [ERC-725Y]
 
 - Validating signatures using [ERC-1271]
 
 - Receiving notification and react on them using [LSP-1-UniversalReceiver]
 
-- Secure ownership management using [LSP-14-Ownable2Step]
+- Safer ownership management through 2-steps transfer using [LSP-14-Ownable2Step]
 
 - Extending the account with new functions and interfaceIds of future standards using [LSP-17-ContractExtension]
 
-- Verifying calls on the owner to allow unified and standard interaction with the account using [LSP-20-CallVerification]
+- Verifying calls on the owner to make it easier to interact with the account directly using [LSP-20-CallVerification]
 
 ## Public Methods
 
@@ -52,7 +52,7 @@ When marked as 'public', a method can be called both externally and internally, 
 constructor(address initialOwner);
 ```
 
-_Deploying an LSP0ERC725Account with owner set to: `initialOwner`_
+_Deploying a LSP0ERC725Account contract with owner set to address `initialOwner`._
 
 Set `initialOwner` as the contract owner. The `constructor` also allows funding the contract on deployment.
 
@@ -61,7 +61,7 @@ Set `initialOwner` as the contract owner. The `constructor` also allows funding 
 **Emitted events:**
 
 - [`ValueReceived`](#valuereceived) event when funding the contract on deployment.
-- [`OwnershipTransferred`](#ownershiptransferred) event when `initialOwner` is set.
+- [`OwnershipTransferred`](#ownershiptransferred) event when `initialOwner` is set as the contract [`owner`](#owner).
 
 </blockquote>
 
@@ -86,8 +86,10 @@ Set `initialOwner` as the contract owner. The `constructor` also allows funding 
 fallback(bytes calldata callData) external payable returns (bytes memory);
 ```
 
-_Achieves the goal of [LSP-17-ContractExtension] standard by extending the contract to handle calls of functions that do not exist natively, forwarding the function call to the extension address mapped to the function being called._
+_The `fallback` function was called with the following amount of native tokens: `msg.value`; and the following calldata: `callData`._
 
+Achieves the goal of [LSP-17-ContractExtension] standard by extending the contract to handle calls of functions that do not exist natively,
+forwarding the function call to the extension address mapped to the function being called.
 This function is executed when:
 
 - Sending data of length less than 4 bytes to the contract.
@@ -251,6 +253,8 @@ It&#39;s not possible to send value along the functions call due to the use of `
 function batchCalls(bytes[] data) external nonpayable returns (bytes[] results);
 ```
 
+_Executing the following batch of abi-encoded function calls on the contract: `data`._
+
 Allows a caller to batch different function calls in one call. Perform a `delegatecall` on self, to call different functions with preserving the context.
 
 #### Parameters
@@ -263,7 +267,7 @@ Allows a caller to batch different function calls in one call. Perform a `delega
 
 | Name      |   Type    | Description                                                      |
 | --------- | :-------: | ---------------------------------------------------------------- |
-| `results` | `bytes[]` | An array of abi-encoded returned data by the executed functions. |
+| `results` | `bytes[]` | An array of abi-encoded data returned by the functions executed. |
 
 <br/>
 
@@ -287,15 +291,21 @@ function execute(
 ) external payable returns (bytes);
 ```
 
-_Calling address `target` using `operationType`, transferring `value` wei and data: `data`. _
-
 Generic executor function to:
 
 - send native tokens to any address.
 
 - interact with any contract by passing an abi-encoded function call in the `data` parameter.
 
-- deploy a contract by providing its creation bytecode in the `data` parameter.
+- deploy a contract by providing its creation bytecode in the `data` parameter. Requirements:
+
+- SHOULD only be callable by the owner of the contract set via ERC173.
+
+- if a `value` is provided, the contract MUST have at least this amount in its balance to execute successfully.
+
+- if the operation type is STATICCALL or DELEGATECALL, `value` SHOULD be 0.
+
+- `target` SHOULD be address(0) when deploying a contract. Emits an [`Executed`](#executed) event, when a call is made with `operationType` 0 (CALL), 3 (STATICCALL) or 4 (DELEGATECALL) Emits a [`ContractCreated`](#contractcreated) event, when deploying a contract with `operationType` 1 (CREATE) or 2 (CREATE2)
 
 <blockquote>
 
@@ -325,7 +335,7 @@ Generic executor function to:
 | `operationType` | `uint256` | The operation type used: CALL = 0; CREATE = 1; CREATE2 = 2; STATICCALL = 3; DELEGATECALL = 4          |
 | `target`        | `address` | The address of the EOA or smart contract. (unused if a contract is created via operation type 1 or 2) |
 | `value`         | `uint256` | The amount of native tokens to transfer (in Wei)                                                      |
-| `data`          |  `bytes`  | The call data, or the creation bytecode of the contract to deploy if `operationType` is `1` or `2`.   |
+| `data`          |  `bytes`  | The call data, or the creation bytecode of the contract to deploy                                     |
 
 #### Returns
 
@@ -355,9 +365,23 @@ function executeBatch(
 ) external payable returns (bytes[]);
 ```
 
-_Calling multiple addresses `targets` using `operationsType`, transferring `values` wei and data: `datas`. _
+Generic batch executor function to:
 
-Batch executor function that behaves the same as [`execute`](#execute) but allowing multiple operations in the same transaction.
+- send native tokens to any address.
+
+- interact with any contract by passing an abi-encoded function call in the `datas` parameter.
+
+- deploy a contract by providing its creation bytecode in the `datas` parameter. Requirements:
+
+- The length of the parameters provided MUST be equal
+
+- SHOULD only be callable by the owner of the contract set via ERC173.
+
+- if a `values` is provided, the contract MUST have at least this amount in its balance to execute successfully.
+
+- if the operation type is STATICCALL or DELEGATECALL, `values` SHOULD be 0.
+
+- `targets` SHOULD be address(0) when deploying a contract. Emits an [`Executed`](#executed) event, when a call is made with `operationType` 0 (CALL), 3 (STATICCALL) or 4 (DELEGATECALL) Emits a [`ContractCreated`](#contractcreated) event, when deploying a contract with `operationType` 1 (CREATE) or 2 (CREATE2)
 
 <blockquote>
 
@@ -383,12 +407,12 @@ Batch executor function that behaves the same as [`execute`](#execute) but allow
 
 #### Parameters
 
-| Name             |    Type     | Description                                                                                                     |
-| ---------------- | :---------: | --------------------------------------------------------------------------------------------------------------- |
-| `operationsType` | `uint256[]` | The list of operations type used: `CALL = 0`; `CREATE = 1`; `CREATE2 = 2`; `STATICCALL = 3`; `DELEGATECALL = 4` |
-| `targets`        | `address[]` | The list of addresses to call. `targets` will be unused if a contract is created (operation types 1 and 2).     |
-| `values`         | `uint256[]` | The list of native token amounts to transfer (in Wei).                                                          |
-| `datas`          |  `bytes[]`  | The list of calldata, or the creation bytecode of the contract to deploy if `operationType` is `1` or `2`.      |
+| Name             |    Type     | Description                                                                                                 |
+| ---------------- | :---------: | ----------------------------------------------------------------------------------------------------------- |
+| `operationsType` | `uint256[]` | The list of operations type used: CALL = 0; CREATE = 1; CREATE2 = 2; STATICCALL = 3; DELEGATECALL = 4       |
+| `targets`        | `address[]` | The list of addresses to call. `targets` will be unused if a contract is created (operation types 1 and 2). |
+| `values`         | `uint256[]` | The list of native token amounts to transfer (in Wei)                                                       |
+| `datas`          |  `bytes[]`  | The list of call data, or the creation bytecode of the contract to deploy                                   |
 
 #### Returns
 
@@ -413,21 +437,19 @@ Batch executor function that behaves the same as [`execute`](#execute) but allow
 function getData(bytes32 dataKey) external view returns (bytes dataValue);
 ```
 
-_Reading the ERC725Y storage for data key `dataKey` returned the following value: `dataValue`._
-
-Get in the ERC725Y storage the bytes data stored at a specific data key `dataKey`.
+_Gets singular data at a given `dataKey`_
 
 #### Parameters
 
-| Name      |   Type    | Description                                   |
-| --------- | :-------: | --------------------------------------------- |
-| `dataKey` | `bytes32` | The data key for which to retrieve the value. |
+| Name      |   Type    | Description                     |
+| --------- | :-------: | ------------------------------- |
+| `dataKey` | `bytes32` | The key which value to retrieve |
 
 #### Returns
 
-| Name        |  Type   | Description                                          |
-| ----------- | :-----: | ---------------------------------------------------- |
-| `dataValue` | `bytes` | The bytes value stored under the specified data key. |
+| Name        |  Type   | Description                |
+| ----------- | :-----: | -------------------------- |
+| `dataValue` | `bytes` | The data stored at the key |
 
 <br/>
 
@@ -448,9 +470,7 @@ function getDataBatch(
 ) external view returns (bytes[] dataValues);
 ```
 
-_Reading the ERC725Y storage for data keys `dataKeys` returned the following values: `dataValues`._
-
-Get in the ERC725Y storage the bytes data stored at multiple data keys `dataKeys`.
+_Gets array of data for multiple given keys_
 
 #### Parameters
 
@@ -625,9 +645,7 @@ Renounce ownership of the contract in a 2-step process.
 function setData(bytes32 dataKey, bytes dataValue) external payable;
 ```
 
-_Setting the following data key value pair in the ERC725Y storage. Data key: `dataKey`, data value: `dataValue`. _
-
-Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data key `dataKey`. The function is marked as payable to enable flexibility on child contracts. For instance to implement a fee mechanism for setting specific data.
+_Sets singular data for a given `dataKey`_
 
 <blockquote>
 
@@ -648,10 +666,10 @@ Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data
 
 #### Parameters
 
-| Name        |   Type    | Description                                |
-| ----------- | :-------: | ------------------------------------------ |
-| `dataKey`   | `bytes32` | The data key for which to set a new value. |
-| `dataValue` |  `bytes`  | The new bytes value to set.                |
+| Name        |   Type    | Description                                                                                                                                                                                                                                                                                                           |
+| ----------- | :-------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dataKey`   | `bytes32` | The key to retrieve stored value                                                                                                                                                                                                                                                                                      |
+| `dataValue` |  `bytes`  | The value to set SHOULD only be callable by the owner of the contract set via ERC173 The function is marked as payable to enable flexibility on child contracts If the function is not intended to receive value, an additional check should be implemented to check that value equal 0. Emits a {DataChanged} event. |
 
 <br/>
 
@@ -670,9 +688,9 @@ Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data
 function setDataBatch(bytes32[] dataKeys, bytes[] dataValues) external payable;
 ```
 
-_Setting the following data key value pairs in the ERC725Y storage. Data keys: `dataKeys`, data values: `dataValues`. _
+Sets array of data for multiple given `dataKeys` SHOULD only be callable by the owner of the contract set via ERC173 The function is marked as payable to enable flexibility on child contracts If the function is not intended to receive value, an additional check should be implemented to check that value equal
 
-Batch data setting function that behaves the same as [`setData`](#setdata) but allowing to set multiple data key/value pairs in the ERC725Y storage in the same transaction.
+0. Emits a [`DataChanged`](#datachanged) event.
 
 <blockquote>
 
@@ -693,10 +711,10 @@ Batch data setting function that behaves the same as [`setData`](#setdata) but a
 
 #### Parameters
 
-| Name         |    Type     | Description                                          |
-| ------------ | :---------: | ---------------------------------------------------- |
-| `dataKeys`   | `bytes32[]` | An array of data keys to set bytes values for.       |
-| `dataValues` |  `bytes[]`  | An array of bytes values to set for each `dataKeys`. |
+| Name         |    Type     | Description                              |
+| ------------ | :---------: | ---------------------------------------- |
+| `dataKeys`   | `bytes32[]` | The array of data keys for values to set |
+| `dataValues` |  `bytes[]`  | The array of values to set               |
 
 <br/>
 
@@ -715,21 +733,21 @@ Batch data setting function that behaves the same as [`setData`](#setdata) but a
 function supportsInterface(bytes4 interfaceId) external view returns (bool);
 ```
 
-_Achieves the goal of [ERC-165] to detect supported interfaces and [LSP-17-ContractExtension] by checking if the interfaceId being queried is supported on another linked extension._
+_Checking if this contract supports the interface defined by the bytes4 interface ID `interfaceId`._
 
-Returns true if this contract implements the interface defined by `interfaceId`. If the contract doesn't support the `interfaceId`, it forwards the call to the `supportsInterface` extension according to [LSP-17-ContractExtension], and checks if the extension implements the interface defined by `interfaceId`.
+Achieves the goal of [ERC-165] to detect supported interfaces and [LSP-17-ContractExtension] by checking if the interfaceId being queried is supported on another linked extension. If the contract doesn't support the `interfaceId`, it forwards the call to the `supportsInterface` extension according to [LSP-17-ContractExtension], and checks if the extension implements the interface defined by `interfaceId`.
 
 #### Parameters
 
-| Name          |   Type   | Description |
-| ------------- | :------: | ----------- |
-| `interfaceId` | `bytes4` | -           |
+| Name          |   Type   | Description                                            |
+| ------------- | :------: | ------------------------------------------------------ |
+| `interfaceId` | `bytes4` | The interface ID to check if the contract supports it. |
 
 #### Returns
 
-| Name |  Type  | Description |
-| ---- | :----: | ----------- |
-| `0`  | `bool` | -           |
+| Name |  Type  | Description                                                                                   |
+| ---- | :----: | --------------------------------------------------------------------------------------------- |
+| `0`  | `bool` | `true` if this contract implements the interface defined by `interfaceId`, `false` otherwise. |
 
 <br/>
 
@@ -788,9 +806,9 @@ function universalReceiver(
 ) external payable returns (bytes returnedValues);
 ```
 
-_Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be notified about incoming/outgoing transactions and enabling reactions to these actions. The reaction is achieved by having two external contracts ([LSP1UniversalReceiverDelegate]) that react on the whole transaction and on the specific typeId, respectively. The notification is achieved by emitting a [`UniversalReceiver`](#universalreceiver) event on the call with the function parameters, call options, and the response of the UniversalReceiverDelegates (URD) contract._
+_Notifying the contract by calling its `universalReceiver` function with the following informations: typeId: `typeId`; data: `data`._
 
-The function performs the following steps:
+Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be notified about incoming/outgoing transactions and enabling reactions to these actions. The reaction is achieved by having two external contracts ([LSP1UniversalReceiverDelegate]) that react on the whole transaction and on the specific typeId, respectively. The function performs the following steps:
 
 1. Query the [ERC-725Y] storage with the data key [_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY].
 
@@ -809,7 +827,7 @@ The function performs the following steps:
 **Emitted events:**
 
 - [`ValueReceived`](#valuereceived) when receiving native tokens.
-- [`UniversalReceiver`](#universalreceiver) event.
+- [`UniversalReceiver`](#universalreceiver) event with the function parameters, call options, and the response of the UniversalReceiverDelegates (URD) contract that was called.
 
 </blockquote>
 
@@ -866,7 +884,8 @@ function _execute(
 ) internal nonpayable returns (bytes);
 ```
 
-check the `operationType` provided and perform the associated low-level opcode after checking for requirements (see [`execute`](#execute)).
+check the `operationType` provided and perform the associated low-level opcode.
+see `IERC725X.execute(uint256,address,uint256,bytes)`.
 
 <br/>
 
@@ -881,7 +900,8 @@ function _executeBatch(
 ) internal nonpayable returns (bytes[]);
 ```
 
-check each `operationType` provided in the batch and perform the associated low-level opcode after checking for requirements (see [`executeBatch`](#executebatch)).
+same as `_execute` but for batch execution
+see `IERC725X,execute(uint256[],address[],uint256[],bytes[])`
 
 <br/>
 
@@ -895,7 +915,7 @@ function _executeCall(
 ) internal nonpayable returns (bytes result);
 ```
 
-Perform low-level call (operation type = 0)
+perform low-level call (operation type = 0)
 
 #### Parameters
 
@@ -922,7 +942,7 @@ function _executeStaticCall(
 ) internal nonpayable returns (bytes result);
 ```
 
-Perform low-level staticcall (operation type = 3)
+perform low-level staticcall (operation type = 3)
 
 #### Parameters
 
@@ -948,7 +968,7 @@ function _executeDelegateCall(
 ) internal nonpayable returns (bytes result);
 ```
 
-Perform low-level delegatecall (operation type = 4)
+perform low-level delegatecall (operation type = 4)
 
 #### Parameters
 
@@ -974,7 +994,7 @@ function _deployCreate(
 ) internal nonpayable returns (bytes newContract);
 ```
 
-Deploy a contract using the `CREATE` opcode (operation type = 1)
+deploy a contract using the CREATE opcode (operation type = 1)
 
 #### Parameters
 
@@ -1000,7 +1020,7 @@ function _deployCreate2(
 ) internal nonpayable returns (bytes newContract);
 ```
 
-Deploy a contract using the `CREATE2` opcode (operation type = 2)
+deploy a contract using the CREATE2 opcode (operation type = 2)
 
 #### Parameters
 
@@ -1023,25 +1043,6 @@ Deploy a contract using the `CREATE2` opcode (operation type = 2)
 function _getData(bytes32 dataKey) internal view returns (bytes dataValue);
 ```
 
-Read the value stored under a specific `dataKey` inside the underlying ERC725Y storage,
-represented as a mapping of `bytes32` data keys mapped to their `bytes` data values.
-
-```solidity
-mapping(bytes32 => bytes) _store
-```
-
-#### Parameters
-
-| Name      |   Type    | Description                                                             |
-| --------- | :-------: | ----------------------------------------------------------------------- |
-| `dataKey` | `bytes32` | A bytes32 data key to read the associated `bytes` value from the store. |
-
-#### Returns
-
-| Name        |  Type   | Description                                                                   |
-| ----------- | :-----: | ----------------------------------------------------------------------------- |
-| `dataValue` | `bytes` | The `bytes` value associated with the given `dataKey` in the ERC725Y storage. |
-
 <br/>
 
 ### \_setData
@@ -1050,7 +1051,7 @@ mapping(bytes32 => bytes) _store
 function _setData(bytes32 dataKey, bytes dataValue) internal nonpayable;
 ```
 
-This function overrides the [`ERC725YCore`](#erc725ycore) internal [`_setData`](#_setdata) function to optimize gas usage by
+This function overrides the [`ERC725YCore`](#erc725ycore) internal [`_setData`](#_setdata) function to optimize gas usage by emitting only the first 256 bytes of the `dataValue`.
 
 <blockquote>
 
@@ -1228,18 +1229,16 @@ function _revertWithLSP20DefaultError(
 event ContractCreated(uint256 indexed operationType, address indexed contractAddress, uint256 indexed value, bytes32 salt);
 ```
 
-_Deployed new contract at address `contractAddress` and funded with `value` wei (deployed using opcode: `operationType`)._
-
-Emitted when a new contract was created and deployed.
+_Emitted when deploying a contract_
 
 #### Parameters
 
-| Name                            |   Type    | Description                                                                                                                               |
-| ------------------------------- | :-------: | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `operationType` **`indexed`**   | `uint256` | The opcode used to deploy the contract (`CREATE` or `CREATE2`).                                                                           |
-| `contractAddress` **`indexed`** | `address` | The created contract address.                                                                                                             |
-| `value` **`indexed`**           | `uint256` | The amount of native tokens (in Wei) sent to fund the created contract on deployment.                                                     |
-| `salt`                          | `bytes32` | The salt used to deterministically deploy the contract (`CREATE2` only). If `CREATE` opcode is used, the salt value will be `bytes32(0)`. |
+| Name                            |   Type    | Description                                                                    |
+| ------------------------------- | :-------: | ------------------------------------------------------------------------------ |
+| `operationType` **`indexed`**   | `uint256` | The opcode used to deploy the contract (CREATE or CREATE2)                     |
+| `contractAddress` **`indexed`** | `address` | The created contract address                                                   |
+| `value` **`indexed`**           | `uint256` | The amount of native tokens (in Wei) sent to fund the created contract address |
+| `salt`                          | `bytes32` | -                                                                              |
 
 <br/>
 
@@ -1258,16 +1257,14 @@ Emitted when a new contract was created and deployed.
 event DataChanged(bytes32 indexed dataKey, bytes dataValue);
 ```
 
-_The following data key/value pair has been changed in the ERC725Y storage: Data key: `dataKey`, data value: `dataValue`._
-
-Emitted when data at a specific `dataKey` was changed to a new value `dataValue`.
+_Emitted when data at a key is changed_
 
 #### Parameters
 
-| Name                    |   Type    | Description                                  |
-| ----------------------- | :-------: | -------------------------------------------- |
-| `dataKey` **`indexed`** | `bytes32` | The data key for which a bytes value is set. |
-| `dataValue`             |  `bytes`  | The value to set for the given data key.     |
+| Name                    |   Type    | Description                          |
+| ----------------------- | :-------: | ------------------------------------ |
+| `dataKey` **`indexed`** | `bytes32` | The data key which data value is set |
+| `dataValue`             |  `bytes`  | The data value to set                |
 
 <br/>
 
@@ -1286,18 +1283,16 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 event Executed(uint256 indexed operationType, address indexed target, uint256 indexed value, bytes4 selector);
 ```
 
-_Called address `target` using `operationType` with `value` wei and `data`._
-
-Emitted when calling an address `target` (EOA or contract) with `value`.
+_Emitted when calling an address (EOA or contract)_
 
 #### Parameters
 
-| Name                          |   Type    | Description                                                                                          |
-| ----------------------------- | :-------: | ---------------------------------------------------------------------------------------------------- |
-| `operationType` **`indexed`** | `uint256` | The low-level call opcode used to call the `target` address (`CALL`, `STATICALL` or `DELEGATECALL`). |
-| `target` **`indexed`**        | `address` | The address to call. `target` will be unused if a contract is created (operation types 1 and 2).     |
-| `value` **`indexed`**         | `uint256` | The amount of native tokens transferred along the call (in Wei).                                     |
-| `selector`                    | `bytes4`  | The first 4 bytes (= function selector) of the data sent with the call.                              |
+| Name                          |   Type    | Description                                                                                      |
+| ----------------------------- | :-------: | ------------------------------------------------------------------------------------------------ |
+| `operationType` **`indexed`** | `uint256` | The low-level call opcode used to call the `to` address (CALL, STATICALL or DELEGATECALL)        |
+| `target` **`indexed`**        | `address` | The address to call. `target` will be unused if a contract is created (operation types 1 and 2). |
+| `value` **`indexed`**         | `uint256` | The amount of native tokens transferred with the call (in Wei)                                   |
+| `selector`                    | `bytes4`  | The first 4 bytes (= function selector) of the data sent with the call                           |
 
 <br/>
 
@@ -1443,7 +1438,7 @@ Emitted when the [`universalReceiver`](#universalreceiver) function was called w
 event ValueReceived(address indexed sender, uint256 indexed value);
 ```
 
-_`value` tokens received from `sender`._
+_`value` native tokens received from `sender`._
 
 #### Parameters
 
@@ -1492,7 +1487,7 @@ Reverts when trying to transfer ownership to the `address(this)`.
 error ERC725X_ContractDeploymentFailed();
 ```
 
-Reverts when contract deployment failed via [`execute`](#execute) or [`executeBatch`](#executebatch) functions, This error can occur using either operation type 1 (`CREATE`) or 2 (`CREATE2`).
+reverts when contract deployment via `ERC725X.execute(...)`/`ERC725X.executeBatch(...)` failed. whether using operation type 1 (CREATE) or 2 (CREATE2).
 
 <br/>
 
@@ -1511,7 +1506,7 @@ Reverts when contract deployment failed via [`execute`](#execute) or [`executeBa
 error ERC725X_CreateOperationsRequireEmptyRecipientAddress();
 ```
 
-Reverts when passing a `to` address that is not `address(0)` (= address zero) while deploying a contract via [`execute`](#execute) or [`executeBatch`](#executebatch) functions. This error can occur using either operation type 1 (`CREATE`) or 2 (`CREATE2`).
+reverts when passing a `to` address while deploying a contract va `ERC725X.execute(...)`/`ERC725X.executeBatch(...)` whether using operation type 1 (CREATE) or 2 (CREATE2).
 
 <br/>
 
@@ -1530,7 +1525,7 @@ Reverts when passing a `to` address that is not `address(0)` (= address zero) wh
 error ERC725X_ExecuteParametersEmptyArray();
 ```
 
-Reverts when one of the array parameter provided to the [`executeBatch`](#executebatch) function is an empty array.
+reverts when one of the array parameter provided to `executeBatch(uint256[],address[],uint256[],bytes[]) is an empty array
 
 <br/>
 
@@ -1549,7 +1544,7 @@ Reverts when one of the array parameter provided to the [`executeBatch`](#execut
 error ERC725X_ExecuteParametersLengthMismatch();
 ```
 
-Reverts when there is not the same number of elements in the `operationTypes`, `targets` addresses, `values`, and `datas` array parameters provided when calling the [`executeBatch`](#executebatch) function.
+reverts when there is not the same number of operation, to addresses, value, and data.
 
 <br/>
 
@@ -1568,14 +1563,14 @@ Reverts when there is not the same number of elements in the `operationTypes`, `
 error ERC725X_InsufficientBalance(uint256 balance, uint256 value);
 ```
 
-Reverts when trying to send more native tokens `value` than available in current `balance`.
+reverts when trying to send more native tokens `value` than available in current `balance`.
 
 #### Parameters
 
-| Name      |   Type    | Description                                                                                                                            |
-| --------- | :-------: | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `balance` | `uint256` | The balance of native tokens of the ERC725X smart contract.                                                                            |
-| `value`   | `uint256` | The amount of native tokens sent via `ERC725X.execute(...)`/`ERC725X.executeBatch(...)` that is greater than the contract's `balance`. |
+| Name      |   Type    | Description                                                                              |
+| --------- | :-------: | ---------------------------------------------------------------------------------------- |
+| `balance` | `uint256` | the balance of the ERC725X contract.                                                     |
+| `value`   | `uint256` | the amount of native tokens sent via `ERC725X.execute(...)`/`ERC725X.executeBatch(...)`. |
 
 <br/>
 
@@ -1594,7 +1589,7 @@ Reverts when trying to send more native tokens `value` than available in current
 error ERC725X_MsgValueDisallowedInDelegateCall();
 ```
 
-Reverts when trying to send native tokens (`value` / `values[]` parameter of [`execute`](#execute) or [`executeBatch`](#executebatch) functions) while making a `delegatecall` (`operationType == 4`). Sending native tokens via `staticcall` is not allowed because `msg.value` is persisting.
+the `value` parameter (= sending native tokens) is not allowed when making a delegatecall via `ERC725X.execute(...)`/`ERC725X.executeBatch(...)` because msg.value is persisting.
 
 <br/>
 
@@ -1613,7 +1608,7 @@ Reverts when trying to send native tokens (`value` / `values[]` parameter of [`e
 error ERC725X_MsgValueDisallowedInStaticCall();
 ```
 
-Reverts when trying to send native tokens (`value` / `values[]` parameter of [`execute`](#execute) or [`executeBatch`](#executebatch) functions) while making a `staticcall` (`operationType == 3`). Sending native tokens via `staticcall` is not allowed because it is a state changing operation.
+the `value` parameter (= sending native tokens) is not allowed when making a staticcall via `ERC725X.execute(...)`/`ERC725X.executeBatch(...)` because sending native tokens is a state changing operation.
 
 <br/>
 
@@ -1632,7 +1627,7 @@ Reverts when trying to send native tokens (`value` / `values[]` parameter of [`e
 error ERC725X_NoContractBytecodeProvided();
 ```
 
-Reverts when no contract bytecode was provided as parameter when trying to deploy a contract via [`execute`](#execute) or [`executeBatch`](#executebatch). This error can occur using either operation type 1 (`CREATE`) or 2 (`CREATE2`).
+reverts when no contract bytecode was provided as parameter when trying to deploy a contract via `ERC725X.execute(...)`/`ERC725X.executeBatch(...)`, whether using operation type 1 (CREATE) or 2 (CREATE2).
 
 <br/>
 
@@ -1651,13 +1646,13 @@ Reverts when no contract bytecode was provided as parameter when trying to deplo
 error ERC725X_UnknownOperationType(uint256 operationTypeProvided);
 ```
 
-Reverts when the `operationTypeProvided` is none of the default operation types available. (CALL = 0; CREATE = 1; CREATE2 = 2; STATICCALL = 3; DELEGATECALL = 4)
+reverts when the `operationTypeProvided` is none of the default operation types available. (CALL = 0; CREATE = 1; CREATE2 = 2; STATICCALL = 3; DELEGATECALL = 4)
 
 #### Parameters
 
-| Name                    |   Type    | Description                                                                                            |
-| ----------------------- | :-------: | ------------------------------------------------------------------------------------------------------ |
-| `operationTypeProvided` | `uint256` | The unrecognised operation type number provided to `ERC725X.execute(...)`/`ERC725X.executeBatch(...)`. |
+| Name                    |   Type    | Description |
+| ----------------------- | :-------: | ----------- |
+| `operationTypeProvided` | `uint256` | -           |
 
 <br/>
 
@@ -1676,7 +1671,7 @@ Reverts when the `operationTypeProvided` is none of the default operation types 
 error ERC725Y_DataKeysValuesLengthMismatch();
 ```
 
-Reverts when there is not the same number of elements in the `datakeys` and `dataValues` array parameters provided when calling the [`setDataBatch`](#setdatabatch) function.
+reverts when there is not the same number of elements in the lists of data keys and data values when calling setDataBatch.
 
 <br/>
 

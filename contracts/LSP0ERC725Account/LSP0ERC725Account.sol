@@ -11,6 +11,16 @@ import {
  * @title Deployable Implementation of [LSP-0-ERC725Account] Standard.
  *
  * @author Fabian Vogelsteller <fabian@lukso.network>, Jean Cavallera (CJ42)
+ *
+ * @dev A smart contract account including basic functionalities such as:
+ * - Detecting supported standards using [ERC-165]
+ * - Executing several operation on other addresses including creating contracts using [ERC-725X]
+ * - A generic data key-value store using [ERC-725Y]
+ * - Validating signatures using [ERC-1271]
+ * - Receiving notification and react on them using [LSP-1-UniversalReceiver]
+ * - Safer ownership management through 2-steps transfer using [LSP-14-Ownable2Step]
+ * - Extending the account with new functions and interfaceIds of future standards using [LSP-17-ContractExtension]
+ * - Verifying calls on the owner to make it easier to interact with the account directly using [LSP-20-CallVerification]
  */
 contract LSP0ERC725Account is LSP0ERC725AccountCore {
     /**
