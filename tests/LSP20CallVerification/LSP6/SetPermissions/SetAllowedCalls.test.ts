@@ -191,50 +191,48 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
           .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
       });
 
-      /**
-       * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
-       */
-      it.skip('should fail with NotAuthorised -> when beneficiary had 32 x 0 bytes set initially as allowed calls', async () => {
-        const key =
-          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          zero32Bytes.address.substring(2);
+      // even if the controller had some 00 bytes set as allowed calls, it is not considered as it does not have any allowed calls set
+      // but rather that its allowed calls are "disabled"
+      describe('when beneficiary (= controller) had 00 bytes set initially as allowed calls (e.g: allowed calls disabled)', () => {
+        it('should fail with NotAuthorised -> beneficiary had 32 x 0 bytes set initially as allowed calls', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            zero32Bytes.address.substring(2);
 
-        const value = combineAllowedCalls(
-          [CALLTYPE.VALUE, CALLTYPE.VALUE],
-          [
-            '0xcafecafecafecafecafecafecafecafecafecafe',
-            '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef',
-          ],
-          ['0xffffffff', '0xffffffff'],
-          ['0xffffffff', '0xffffffff'],
-        );
+          const value = combineAllowedCalls(
+            [CALLTYPE.VALUE, CALLTYPE.VALUE],
+            [
+              '0xcafecafecafecafecafecafecafecafecafecafe',
+              '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef',
+            ],
+            ['0xffffffff', '0xffffffff'],
+            ['0xffffffff', '0xffffffff'],
+          );
 
-        await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
-          .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
-      });
+          await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
+        });
 
-      /**
-       * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
-       */
-      it.skip('should fail with NotAuthorised -> when beneficiary had 40 x 0 bytes set initially as allowed calls', async () => {
-        const key =
-          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          zero40Bytes.address.substring(2);
+        it('should fail with NotAuthorised -> beneficiary had 40 x 0 bytes set initially as allowed calls', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            zero40Bytes.address.substring(2);
 
-        const value = combineAllowedCalls(
-          [CALLTYPE.VALUE, CALLTYPE.VALUE],
-          [
-            '0xcafecafecafecafecafecafecafecafecafecafe',
-            '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef',
-          ],
-          ['0xffffffff', '0xffffffff'],
-          ['0xffffffff', '0xffffffff'],
-        );
+          const value = combineAllowedCalls(
+            [CALLTYPE.VALUE, CALLTYPE.VALUE],
+            [
+              '0xcafecafecafecafecafecafecafecafecafecafe',
+              '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef',
+            ],
+            ['0xffffffff', '0xffffffff'],
+            ['0xffffffff', '0xffffffff'],
+          );
 
-        await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
-          .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
+          await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
+        });
       });
 
       it('should pass when beneficiary had no values set under AddressPermissions:AllowedCalls:... + setting a valid bytes28[CompactBytesArray]', async () => {
@@ -365,54 +363,52 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
         expect(result).to.equal(value);
       });
 
-      /**
-       * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
-       */
-      it.skip('should pass when address had 32 x 0 bytes set initially as allowed calls', async () => {
-        const key =
-          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          zero32Bytes.address.substring(2);
+      // even if the controller had some 00 bytes set as allowed calls, it is not considered as it does not have any allowed calls set
+      // but rather that its allowed calls are "disabled"
+      describe('when beneficiary (= controller) had 00 bytes set initially as allowed calls (e.g: allowed calls disabled)', () => {
+        it('should pass when address had 32 x 0 bytes set initially as allowed calls', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            zero32Bytes.address.substring(2);
 
-        const value = combineAllowedCalls(
-          [CALLTYPE.VALUE, CALLTYPE.VALUE],
-          [
-            '0xcafecafecafecafecafecafecafecafecafecafe',
-            '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef',
-          ],
-          ['0xffffffff', '0xffffffff'],
-          ['0xffffffff', '0xffffffff'],
-        );
+          const value = combineAllowedCalls(
+            [CALLTYPE.VALUE, CALLTYPE.VALUE],
+            [
+              '0xcafecafecafecafecafecafecafecafecafecafe',
+              '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef',
+            ],
+            ['0xffffffff', '0xffffffff'],
+            ['0xffffffff', '0xffffffff'],
+          );
 
-        await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
+          await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
 
-        // prettier-ignore
-        const result = await context.universalProfile.getData(key);
-        expect(result).to.equal(value);
-      });
+          // prettier-ignore
+          const result = await context.universalProfile.getData(key);
+          expect(result).to.equal(value);
+        });
 
-      /**
-       * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
-       */
-      it.skip('should pass when address had 40 x 0 bytes set initially as allowed addresses', async () => {
-        const key =
-          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          zero40Bytes.address.substring(2);
+        it('should pass when address had 40 x 0 bytes set initially as allowed addresses', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            zero40Bytes.address.substring(2);
 
-        const value = combineAllowedCalls(
-          [CALLTYPE.VALUE, CALLTYPE.VALUE],
-          [
-            '0xcafecafecafecafecafecafecafecafecafecafe',
-            '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef',
-          ],
-          ['0xffffffff', '0xffffffff'],
-          ['0xffffffff', '0xffffffff'],
-        );
+          const value = combineAllowedCalls(
+            [CALLTYPE.VALUE, CALLTYPE.VALUE],
+            [
+              '0xcafecafecafecafecafecafecafecafecafecafe',
+              '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef',
+            ],
+            ['0xffffffff', '0xffffffff'],
+            ['0xffffffff', '0xffffffff'],
+          );
 
-        await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
+          await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
 
-        // prettier-ignore
-        const result = await context.universalProfile.getData(key);
-        expect(result).to.equal(value);
+          // prettier-ignore
+          const result = await context.universalProfile.getData(key);
+          expect(result).to.equal(value);
+        });
       });
 
       describe('when changing the list of allowed calls from existing ANY:<address>:ANY to an invalid value', () => {
@@ -537,50 +533,48 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
           .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
       });
 
-      /**
-       * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
-       */
-      it.skip('should fail with NotAuthorised -> when beneficiary had 32 x 0 bytes set initially as allowed calls', async () => {
-        const key =
-          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          zero32Bytes.address.substring(2);
+      // Even if the controller had some 00 bytes set as allowed calls, it is not considered as it does not have any allowed calls set
+      // but rather that its allowed calls are "disabled"
+      describe('when beneficiary (= controller) had 00 bytes set initially as allowed calls (e.g: allowed calls disabled)', () => {
+        it('should fail with NotAuthorised -> when beneficiary had 32 x 0 bytes set initially as allowed calls', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            zero32Bytes.address.substring(2);
 
-        const value = combineAllowedCalls(
-          [CALLTYPE.VALUE, CALLTYPE.VALUE],
-          ['0xffffffff', '0xffffffff'],
-          ['0xcafecafe', '0xca11ca11'],
-          [
-            '0xffffffffffffffffffffffffffffffffffffffff',
-            '0xffffffffffffffffffffffffffffffffffffffff',
-          ],
-        );
+          const value = combineAllowedCalls(
+            [CALLTYPE.VALUE, CALLTYPE.VALUE],
+            ['0xffffffff', '0xffffffff'],
+            ['0xcafecafe', '0xca11ca11'],
+            [
+              '0xffffffffffffffffffffffffffffffffffffffff',
+              '0xffffffffffffffffffffffffffffffffffffffff',
+            ],
+          );
 
-        await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
-          .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
-      });
+          await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
+        });
 
-      /**
-       * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
-       */
-      it.skip('should fail with NotAuthorised -> when beneficiary had 40 x 0 bytes set initially as allowed calls', async () => {
-        const key =
-          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          zero40Bytes.address.substring(2);
+        it('should fail with NotAuthorised -> when beneficiary had 40 x 0 bytes set initially as allowed calls', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            zero40Bytes.address.substring(2);
 
-        const value = combineAllowedCalls(
-          [CALLTYPE.CALL, CALLTYPE.CALL],
-          [
-            '0xffffffffffffffffffffffffffffffffffffffff',
-            '0xffffffffffffffffffffffffffffffffffffffff',
-          ],
-          ['0xffffffff', '0xffffffff'],
-          ['0xcafecafe', '0xca11ca11'],
-        );
+          const value = combineAllowedCalls(
+            [CALLTYPE.CALL, CALLTYPE.CALL],
+            [
+              '0xffffffffffffffffffffffffffffffffffffffff',
+              '0xffffffffffffffffffffffffffffffffffffffff',
+            ],
+            ['0xffffffff', '0xffffffff'],
+            ['0xcafecafe', '0xca11ca11'],
+          );
 
-        await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
-          .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
+          await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
+        });
       });
 
       it('should pass when beneficiary had no values set under AddressPermissions:AllowedCalls:... + setting a valid bytes28[CompactBytesArray]', async () => {
@@ -707,54 +701,52 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
         expect(result).to.equal(value);
       });
 
-      /**
-       * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
-       */
-      it.skip('should pass when address had 32 x 0 bytes set initially as allowed calls', async () => {
-        const key =
-          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          zero32Bytes.address.substring(2);
+      // Even if the controller had some 00 bytes set as allowed calls, it is not considered as it does not have any allowed calls set
+      // but rather that its allowed calls are "disabled"
+      describe('when beneficiary (= controller) had 00 bytes set initially as allowed calls (e.g: allowed calls disabled)', () => {
+        it('should pass when address had 32 x 0 bytes set initially as allowed calls', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            zero32Bytes.address.substring(2);
 
-        const value = combineAllowedCalls(
-          [CALLTYPE.CALL, CALLTYPE.CALL],
-          [
-            '0xffffffffffffffffffffffffffffffffffffffff',
-            '0xffffffffffffffffffffffffffffffffffffffff',
-          ],
-          ['0xffffffff', '0xffffffff'],
-          ['0xcafecafe', '0xbeefbeef'],
-        );
+          const value = combineAllowedCalls(
+            [CALLTYPE.CALL, CALLTYPE.CALL],
+            [
+              '0xffffffffffffffffffffffffffffffffffffffff',
+              '0xffffffffffffffffffffffffffffffffffffffff',
+            ],
+            ['0xffffffff', '0xffffffff'],
+            ['0xcafecafe', '0xbeefbeef'],
+          );
 
-        await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
+          await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
 
-        // prettier-ignore
-        const result = await context.universalProfile.getData(key);
-        expect(result).to.equal(value);
-      });
+          // prettier-ignore
+          const result = await context.universalProfile.getData(key);
+          expect(result).to.equal(value);
+        });
 
-      /**
-       * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
-       */
-      it.skip('should pass when address had 40 x 0 bytes set initially as allowed functions', async () => {
-        const key =
-          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          zero40Bytes.address.substring(2);
+        it('should pass when address had 40 x 0 bytes set initially as allowed functions', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            zero40Bytes.address.substring(2);
 
-        const value = combineAllowedCalls(
-          [CALLTYPE.CALL, CALLTYPE.CALL],
-          [
-            '0xffffffffffffffffffffffffffffffffffffffff',
-            '0xffffffffffffffffffffffffffffffffffffffff',
-          ],
-          ['0xffffffff', '0xffffffff'],
-          ['0xcafecafe', '0xbeefbeef'],
-        );
+          const value = combineAllowedCalls(
+            [CALLTYPE.CALL, CALLTYPE.CALL],
+            [
+              '0xffffffffffffffffffffffffffffffffffffffff',
+              '0xffffffffffffffffffffffffffffffffffffffff',
+            ],
+            ['0xffffffff', '0xffffffff'],
+            ['0xcafecafe', '0xbeefbeef'],
+          );
 
-        await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
+          await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
 
-        // prettier-ignore
-        const result = await context.universalProfile.getData(key);
-        expect(result).to.equal(value);
+          // prettier-ignore
+          const result = await context.universalProfile.getData(key);
+          expect(result).to.equal(value);
+        });
       });
 
       describe('when changing the list of selectors in allowed calls from existing ANY:ANY:<selector> to an invalid value', () => {
@@ -899,64 +891,62 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
           .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
       });
 
-      /**
-       * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
-       */
-      it.skip('should fail with NotAuthorised -> when beneficiary had 32 x 0 bytes set initially as allowed calls', async () => {
-        const key =
-          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          zero32Bytes.address.substring(2);
+      // Even if the controller had some 00 bytes set as allowed calls, it is not considered as it does not have any allowed calls set
+      // but rather that its allowed calls are "disabled"
+      describe('when beneficiary (= controller) had 00 bytes set initially as allowed calls (e.g: allowed calls disabled)', () => {
+        it('should fail with NotAuthorised -> when beneficiary had 32 x 0 bytes set initially as allowed calls', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            zero32Bytes.address.substring(2);
 
-        const value = combineAllowedCalls(
-          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
-          [
-            '0xffffffffffffffffffffffffffffffffffffffff',
-            '0xffffffffffffffffffffffffffffffffffffffff',
-            '0xffffffffffffffffffffffffffffffffffffffff',
-            '0xffffffffffffffffffffffffffffffffffffffff',
-          ],
-          [
-            INTERFACE_IDS.LSP7DigitalAsset,
-            INTERFACE_IDS.ERC20,
-            INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
-            INTERFACE_IDS.ERC721,
-          ],
-          ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
-        );
+          const value = combineAllowedCalls(
+            [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
+            [
+              '0xffffffffffffffffffffffffffffffffffffffff',
+              '0xffffffffffffffffffffffffffffffffffffffff',
+              '0xffffffffffffffffffffffffffffffffffffffff',
+              '0xffffffffffffffffffffffffffffffffffffffff',
+            ],
+            [
+              INTERFACE_IDS.LSP7DigitalAsset,
+              INTERFACE_IDS.ERC20,
+              INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
+              INTERFACE_IDS.ERC721,
+            ],
+            ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
+          );
 
-        await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
-          .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
-      });
+          await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
+        });
 
-      /**
-       * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
-       */
-      it.skip('should fail with NotAuthorised -> when beneficiary had 40 x 0 bytes set initially as allowed calls', async () => {
-        const key =
-          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          zero40Bytes.address.substring(2);
+        it('should fail with NotAuthorised -> when beneficiary had 40 x 0 bytes set initially as allowed calls', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            zero40Bytes.address.substring(2);
 
-        const value = combineAllowedCalls(
-          [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
-          [
-            '0xffffffffffffffffffffffffffffffffffffffff',
-            '0xffffffffffffffffffffffffffffffffffffffff',
-            '0xffffffffffffffffffffffffffffffffffffffff',
-            '0xffffffffffffffffffffffffffffffffffffffff',
-          ],
-          [
-            INTERFACE_IDS.LSP7DigitalAsset,
-            INTERFACE_IDS.ERC20,
-            INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
-            INTERFACE_IDS.ERC721,
-          ],
-          ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
-        );
+          const value = combineAllowedCalls(
+            [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
+            [
+              '0xffffffffffffffffffffffffffffffffffffffff',
+              '0xffffffffffffffffffffffffffffffffffffffff',
+              '0xffffffffffffffffffffffffffffffffffffffff',
+              '0xffffffffffffffffffffffffffffffffffffffff',
+            ],
+            [
+              INTERFACE_IDS.LSP7DigitalAsset,
+              INTERFACE_IDS.ERC20,
+              INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
+              INTERFACE_IDS.ERC721,
+            ],
+            ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
+          );
 
-        await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
-          .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
+          await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
+        });
       });
 
       it('should pass when beneficiary had no values set under AddressPermissions:AllowedCalls:... + setting a valid bytes28[CompactBytesArray]', async () => {
@@ -1102,54 +1092,52 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
         expect(result).to.equal(value);
       });
 
-      /**
-       * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
-       */
-      it.skip('should pass when address had 32 x 0 bytes set initially as allowed calls', async () => {
-        const key =
-          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          zero32Bytes.address.substring(2);
+      // Even if the controller had some 00 bytes set as allowed calls, it is not considered as it does not have any allowed calls set
+      // but rather that its allowed calls are "disabled"
+      describe('when beneficiary (= controller) had 00 bytes set initially as allowed calls (e.g: allowed calls disabled)', () => {
+        it('should pass when address had 32 x 0 bytes set initially as allowed calls', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            zero32Bytes.address.substring(2);
 
-        const value = combineAllowedCalls(
-          [CALLTYPE.CALL, CALLTYPE.CALL],
-          [
-            '0xffffffffffffffffffffffffffffffffffffffff',
-            '0xffffffffffffffffffffffffffffffffffffffff',
-          ],
-          [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
-          ['0xffffffff', '0xffffffff'],
-        );
+          const value = combineAllowedCalls(
+            [CALLTYPE.CALL, CALLTYPE.CALL],
+            [
+              '0xffffffffffffffffffffffffffffffffffffffff',
+              '0xffffffffffffffffffffffffffffffffffffffff',
+            ],
+            [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
+            ['0xffffffff', '0xffffffff'],
+          );
 
-        await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
+          await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
 
-        // prettier-ignore
-        const result = await context.universalProfile.getData(key);
-        expect(result).to.equal(value);
-      });
+          // prettier-ignore
+          const result = await context.universalProfile.getData(key);
+          expect(result).to.equal(value);
+        });
 
-      /**
-       * TODO: this test pass but behaviour when some zero bytes are stored must be clarified.
-       */
-      it.skip('should pass when address had 40 x 0 bytes set initially as allowed calls', async () => {
-        const key =
-          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          zero40Bytes.address.substring(2);
+        it('should pass when address had 40 x 0 bytes set initially as allowed calls', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            zero40Bytes.address.substring(2);
 
-        const value = combineAllowedCalls(
-          [CALLTYPE.CALL, CALLTYPE.CALL],
-          [
-            '0xffffffffffffffffffffffffffffffffffffffff',
-            '0xffffffffffffffffffffffffffffffffffffffff',
-          ],
-          [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
-          ['0xffffffff', '0xffffffff'],
-        );
+          const value = combineAllowedCalls(
+            [CALLTYPE.CALL, CALLTYPE.CALL],
+            [
+              '0xffffffffffffffffffffffffffffffffffffffff',
+              '0xffffffffffffffffffffffffffffffffffffffff',
+            ],
+            [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
+            ['0xffffffff', '0xffffffff'],
+          );
 
-        await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
+          await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
 
-        // prettier-ignore
-        const result = await context.universalProfile.getData(key);
-        expect(result).to.equal(value);
+          // prettier-ignore
+          const result = await context.universalProfile.getData(key);
+          expect(result).to.equal(value);
+        });
       });
 
       describe('when changing the list of interface IDs in allowed calls <standard>:ANY:ANY to an invalid value', () => {

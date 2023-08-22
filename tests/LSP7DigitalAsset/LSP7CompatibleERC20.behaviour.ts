@@ -364,9 +364,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           txParams.to,
         );
 
-        // TODO: the Helper contract TokenReceiverWithLSP1 does not emit the standard `UniversalReceiver` event.
-        // modify this behaviour to emit the UniversalReceiver event
-        await expect(tx).to.emit(receiver, 'UniversalReceiverCalled');
+        await expect(tx).to.emit(receiver, 'UniversalReceiver');
       }
     };
 

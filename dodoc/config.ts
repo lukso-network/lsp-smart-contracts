@@ -36,7 +36,6 @@ export const dodocConfig = {
     'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol',
 
     // libraries --------------------
-    'contracts/LSP0ERC725Account/LSP0Utils.sol',
     'contracts/LSP1UniversalReceiver/LSP1Utils.sol',
     'contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol',
     'contracts/LSP5ReceivedAssets/LSP5Utils.sol',
@@ -48,7 +47,6 @@ export const dodocConfig = {
     '@erc725/smart-contracts/contracts/ERC725.sol',
   ],
   libraries: [
-    'contracts/LSP0ERC725Account/LSP0Utils.sol',
     'contracts/LSP1UniversalReceiver/LSP1Utils.sol',
     'contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol',
     'contracts/LSP5ReceivedAssets/LSP5Utils.sol',

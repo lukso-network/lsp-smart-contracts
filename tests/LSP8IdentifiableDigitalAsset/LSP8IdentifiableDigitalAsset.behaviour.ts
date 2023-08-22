@@ -639,8 +639,8 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
                 );
 
                 await expect(tx)
-                  .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiverCalled')
-                  .withArgs(typeId, packedData);
+                  .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiver')
+                  .withArgs(context.lsp8.address, 0, typeId, packedData, '0x');
               });
             });
 
@@ -738,8 +738,8 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
                 );
 
                 await expect(tx)
-                  .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiverCalled')
-                  .withArgs(typeId, packedData);
+                  .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiver')
+                  .withArgs(context.lsp8.address, 0, typeId, packedData, '0x');
               });
             });
 
@@ -1087,8 +1087,8 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
                     );
 
                     await expect(tx)
-                      .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiverCalled')
-                      .withArgs(typeId, packedData);
+                      .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiver')
+                      .withArgs(context.lsp8.address, 0, typeId, packedData, '0x');
                   }),
                 );
               });

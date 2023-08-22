@@ -15,8 +15,6 @@ import {
 import {_INTERFACEID_LSP1} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
 contract TokenReceiverWithLSP1 is ERC165Storage, ILSP1UniversalReceiver {
-    event UniversalReceiverCalled(bytes32 typeId, bytes data);
-
     constructor() {
         _registerInterface(_INTERFACEID_LSP1);
     }
@@ -25,7 +23,7 @@ contract TokenReceiverWithLSP1 is ERC165Storage, ILSP1UniversalReceiver {
         bytes32 typeId,
         bytes memory data
     ) external payable override returns (bytes memory returnValue) {
-        emit UniversalReceiverCalled(typeId, data);
+        emit UniversalReceiver(msg.sender, msg.value, typeId, data, "");
 
         return "thanks for calling";
     }

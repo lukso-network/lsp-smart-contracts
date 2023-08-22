@@ -75,7 +75,7 @@ export const testAllowedCallsInternals = (
       });
 
       it('should return `false` if there are just 2 x length bytes but not followed by the value (the allowed calls)', async () => {
-        const allowedCalls = '0x001c';
+        const allowedCalls = '0x0020';
         const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
           allowedCalls,
         );
@@ -566,19 +566,7 @@ export const testAllowedCallsInternals = (
   });
 
   describe("testing 'zero bytes' stored under AddressPermission:AllowedCalls:<address>", () => {
-    type ControllersContext = {
-      noBytes: SignerWithAddress;
-      oneZeroByte: SignerWithAddress;
-      tenZeroBytes: SignerWithAddress;
-      twentyZeroBytes: SignerWithAddress;
-      thirtyTwoZeroBytes: SignerWithAddress;
-      fourtyZeroBytes: SignerWithAddress;
-      sixtyFourZeroBytes: SignerWithAddress;
-      hundredZeroBytes: SignerWithAddress;
-    };
-
     const zeroBytesValues = [
-      '0x',
       '0x' + '00'.repeat(1),
       '0x' + '00'.repeat(10),
       '0x' + '00'.repeat(20),
@@ -588,43 +576,48 @@ export const testAllowedCallsInternals = (
       '0x' + '00'.repeat(100),
     ];
 
-    let controller: ControllersContext;
+    let controllers: { description: string; account: SignerWithAddress }[];
 
     before(async () => {
       context = await buildContext();
 
-      controller = {
-        noBytes: context.accounts[1],
-        oneZeroByte: context.accounts[2],
-        tenZeroBytes: context.accounts[3],
-        twentyZeroBytes: context.accounts[4],
-        thirtyTwoZeroBytes: context.accounts[5],
-        fourtyZeroBytes: context.accounts[6],
-        sixtyFourZeroBytes: context.accounts[7],
-        hundredZeroBytes: context.accounts[8],
-      };
+      controllers = [
+        { description: 'noBytes', account: context.accounts[1] },
+        { description: 'oneZeroByte', account: context.accounts[2] },
+        { description: 'tenZeroBytes', account: context.accounts[3] },
+        { description: 'twentyZeroBytes', account: context.accounts[4] },
+        { description: 'thirtyTwoZeroBytes', account: context.accounts[5] },
+        { description: 'fourtyZeroBytes', account: context.accounts[6] },
+        { description: 'sixtyFourZeroBytes', account: context.accounts[7] },
+        { description: 'hundredZeroBytes', account: context.accounts[8] },
+      ];
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
-        ...Object.values(controller).map(
+        ...Object.values(controllers).map(
           (controller) =>
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controller.address.substring(2),
+            controller.account.address.substring(2),
         ),
-        ...Object.values(controller).map(
+        ...Object.values(controllers).map(
           (controller) =>
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-            controller.address.substring(2),
+            controller.account.address.substring(2),
         ),
       ];
 
       let permissionValues = [ALL_PERMISSIONS];
 
-      for (let ii = 0; ii < Object.values(controller).length; ii++) {
+      for (let ii = 0; ii < Object.values(controllers).length; ii++) {
         permissionValues.push(combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE));
       }
 
+      // set the AllowedCalls to zero bytes for the first test to test for `NoCallsAllowed` error
+      permissionValues.push('0x');
+
       permissionValues = permissionValues.concat(zeroBytesValues);
+
+      console.log(permissionValues);
 
       await setupKeyManagerHelper(context, permissionKeys, permissionValues);
     });
@@ -642,121 +635,53 @@ export const testAllowedCallsInternals = (
         randomData,
       ]);
 
-      describe('should revert with `NoAllowedCall` error', () => {
-        it(`noBytes -> ${zeroBytesValues[0]}`, async () => {
-          await expect(
-            context.keyManagerInternalTester.verifyAllowedCall(controller.noBytes.address, payload),
-          ).to.be.reverted;
-        });
-
-        it(`oneZeroByte -> ${zeroBytesValues[1]}`, async () => {
+      describe('should revert with `NoCallsAllowed` error', () => {
+        it(`when AllowedCalls contain noBytes -> 0x`, async () => {
           await expect(
             context.keyManagerInternalTester.verifyAllowedCall(
-              controller.oneZeroByte.address,
+              controllers[0].account.address,
               payload,
             ),
-          ).to.be.reverted;
-        });
-
-        it(`tenZeroBytes -> ${zeroBytesValues[2]}`, async () => {
-          await expect(
-            context.keyManagerInternalTester.verifyAllowedCall(
-              controller.tenZeroBytes.address,
-              payload,
-            ),
-          ).to.be.reverted;
-        });
-
-        it(`twentyZeroBytes -> ${zeroBytesValues[3]}`, async () => {
-          await expect(
-            context.keyManagerInternalTester.verifyAllowedCall(
-              controller.twentyZeroBytes.address,
-              payload,
-            ),
-          ).to.be.reverted;
+          ).to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NoCallsAllowed');
         });
       });
 
-      /**
-       * TODO: define the new behaviour when some empty zero bytes 0x00 are stored under `AddressPermissions:AllowedCalls:<address>`
-       */
-      describe('should revert with NotAllowedCall(...) error for:', () => {
-        it.skip(`thirtyTwoZeroBytes -> ${zeroBytesValues[4]}`, async () => {
-          await expect(
-            context.keyManagerInternalTester.verifyAllowedCall(
-              controller.thirtyTwoZeroBytes.address,
-              payload,
-            ),
-          )
-            .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
-            .withArgs(
-              controller.thirtyTwoZeroBytes.address,
-              ethers.utils.getAddress(randomAddress),
-              randomData,
-            );
-        });
+      describe('should revert with `InvalidEncodedAllowedCalls` error', () => {
+        zeroBytesValues.forEach((testCase, index) => {
+          // count number of bytes (without the `0x` prefix)
+          const numberOfZeroBytes = testCase.substring(2).length / 2;
 
-        it.skip(`fourtyZeroBytes -> ${zeroBytesValues[5]}`, async () => {
-          await expect(
-            context.keyManagerInternalTester.verifyAllowedCall(
-              controller.fourtyZeroBytes.address,
-              randomAddress,
-            ),
-          )
-            .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
-            .withArgs(
-              controller.fourtyZeroBytes.address,
-              ethers.utils.getAddress(randomAddress),
-              randomData,
-            );
-        });
-
-        it.skip(`sixtyFourZeroBytes -> ${zeroBytesValues[6]}`, async () => {
-          await expect(
-            context.keyManagerInternalTester.verifyAllowedCall(
-              controller.sixtyFourZeroBytes.address,
-              randomAddress,
-            ),
-          )
-            .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedAddress')
-            .withArgs(
-              controller.sixtyFourZeroBytes.address,
-              ethers.utils.getAddress(randomAddress),
-            );
-        });
-
-        it.skip(`hundredZeroBytes -> ${zeroBytesValues[7]}`, async () => {
-          await expect(
-            context.keyManagerInternalTester.verifyAllowedCall(
-              controller.hundredZeroBytes.address,
-              randomAddress,
-            ),
-          )
-            .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedAddress')
-            .withArgs(controller.hundredZeroBytes.address, ethers.utils.getAddress(randomAddress));
+          it(`when AllowedCalls contain ${numberOfZeroBytes} x 0x00 bytes -> ${testCase}`, async () => {
+            await expect(
+              context.keyManagerInternalTester.verifyAllowedCall(
+                controllers[index + 1].account.address,
+                payload,
+              ),
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManagerInternalTester,
+                'InvalidEncodedAllowedCalls',
+              )
+              .withArgs(testCase);
+          });
         });
       });
     });
   });
 
-  describe('testing random values under the key `AddressPermissions:AllowedCalls:<address>`', () => {
-    type ControllersContext = {
-      multipleOf29Bytes: SignerWithAddress;
-      shortBytes: SignerWithAddress;
-      longBytes: SignerWithAddress;
-    };
+  describe('testing multiple of 34 x `0x00` bytes values set under the CompactBytesArray of `AddressPermissions:AllowedCalls:<address>`', () => {
+    let context: LSP6InternalsTestContext;
 
-    const randomValues = [
-      '0x001c00000000000000000000000000000000000000000000000000000000001c00000000000000000000000000000000000000000000000000000000',
-      '0xaabbccdd',
-      '0x1234567890abcdef1234567890abcdef1234',
+    const allowedCallsValues = [
+      '0x00200000000000000000000000000000000000000000000000000000000000000000',
+      '0x0020000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000',
+      '0x002000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000',
     ];
 
     const randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
     const randomData = '0xaabbccdd';
 
     let payload: string;
-    let controller: ControllersContext;
 
     before(async () => {
       context = await buildContext();
@@ -768,26 +693,20 @@ export const testAllowedCallsInternals = (
         randomData,
       ]);
 
-      controller = {
-        multipleOf29Bytes: context.accounts[1],
-        shortBytes: context.accounts[2],
-        longBytes: context.accounts[3],
-      };
-
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          controller.multipleOf29Bytes.address.substring(2),
+          context.accounts[1].address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          controller.shortBytes.address.substring(2),
+          context.accounts[2].address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          controller.longBytes.address.substring(2),
+          context.accounts[3].address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          controller.multipleOf29Bytes.address.substring(2),
+          context.accounts[1].address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          controller.shortBytes.address.substring(2),
+          context.accounts[2].address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          controller.longBytes.address.substring(2),
+          context.accounts[3].address.substring(2),
       ];
 
       let permissionValues = [
@@ -797,48 +716,29 @@ export const testAllowedCallsInternals = (
         combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       ];
 
-      permissionValues = permissionValues.concat(randomValues);
+      permissionValues = permissionValues.concat(allowedCallsValues);
 
       await setupKeyManagerHelper(context, permissionKeys, permissionValues);
     });
 
     describe('`verifyAllowedCall(...)`', () => {
       describe('should revert with NotAllowedCall(...) error for:', () => {
-        // this test is invalid
-        it.skip(`multipleOf29Bytes -> ${randomValues[0]}`, async () => {
-          await expect(
-            context.keyManagerInternalTester.verifyAllowedCall(
-              controller.multipleOf29Bytes.address,
-              payload,
-            ),
-          )
-            .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
-            .withArgs(
-              controller.multipleOf29Bytes.address,
-              ethers.utils.getAddress(randomAddress),
-              randomData,
-            );
-        });
-      });
-
-      describe('should revert', () => {
-        it(`shortBytes -> ${randomValues[1]}`, async () => {
-          await expect(
-            context.keyManagerInternalTester.verifyAllowedCall(
-              controller.shortBytes.address,
-              payload,
-            ),
-          ).to.be.reverted;
-        });
-
-        // TODO: resolve this test
-        it.skip(`longBytes -> ${randomValues[2]}`, async () => {
-          await expect(
-            context.keyManagerInternalTester.verifyAllowedCall(
-              controller.longBytes.address,
-              randomAddress,
-            ),
-          ).to.be.reverted;
+        allowedCallsValues.forEach((testCase, index) => {
+          it(`multiple of 34 bytes -> ${testCase}`, async () => {
+            await expect(
+              context.keyManagerInternalTester.verifyAllowedCall(
+                // `index + 1` because `accounts[0]` has all permissions
+                context.accounts[index + 1].address,
+                payload,
+              ),
+            )
+              .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
+              .withArgs(
+                context.accounts[index + 1].address,
+                ethers.utils.getAddress(randomAddress),
+                randomData,
+              );
+          });
         });
       });
     });
@@ -864,10 +764,9 @@ export const testAllowedCallsInternals = (
         ALL_PERMISSIONS,
         combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
         combineAllowedCalls(
-          // we do not consider the first 4 bytes (32 bits) of the allowed call
-          // as they are for the call types
-          // the test below should revert regardless of the call type
-          // TODO: is this the correct behaviour?
+          // We do not consider the first 4 bytes (32 bits) of the allowed calls as they are for the call types
+          // The expected behaviour for this test below is to always revert regardless of the call type
+          // if we have 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff as an Allowed Call
           ['0x00000000'],
           ['0xffffffffffffffffffffffffffffffffffffffff'],
           ['0xffffffff'],
