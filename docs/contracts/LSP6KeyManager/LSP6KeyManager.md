@@ -71,7 +71,7 @@ Execute A `payload` on the linked [`target`](#target) contract after having veri
 
 **Emitted events:**
 
-- VerifiedCall event when the permissions related to `payload` have been verified successfully.
+- [`PermissionsVerified`](#permissionsverified) event when the permissions related to `payload` have been verified successfully.
 
 </blockquote>
 
@@ -119,7 +119,7 @@ Same as [`execute`](#execute) but execute a batch of payloads (abi-encoded funct
 
 **Emitted events:**
 
-- VerifiedCall event for each permissions related to each `payload` that have been verified successfully.
+- [`PermissionsVerified`](#permissionsverified) event for each permissions related to each `payload` that have been verified successfully.
 
 </blockquote>
 
@@ -172,7 +172,7 @@ Allows any address (executor) to execute a payload (= abi-encoded function call)
 
 **Emitted events:**
 
-- [`VerifiedCall`](#verifiedcall) event when the permissions related to `payload` have been verified successfully.
+- [`PermissionsVerified`](#permissionsverified) event when the permissions related to `payload` have been verified successfully.
 
 </blockquote>
 
@@ -776,7 +776,10 @@ function _verifyCanExecute(
   address controlledContract,
   address controller,
   bytes32 permissions,
-  bytes payload
+  uint256 operationType,
+  address to,
+  uint256 value,
+  bytes data
 ) internal view;
 ```
 
@@ -789,7 +792,10 @@ verify if `controllerAddress` has the required permissions to interact with othe
 | `controlledContract` | `address` | the address of the ERC725 contract where the payload is executed and where the permissions are verified. |
 | `controller`         | `address` | the address who want to run the execute function on the ERC725Account.                                   |
 | `permissions`        | `bytes32` | the permissions of the controller address.                                                               |
-| `payload`            |  `bytes`  | the ABI encoded payload `controlledContract.execute(...)`.                                               |
+| `operationType`      | `uint256` | -                                                                                                        |
+| `to`                 | `address` | -                                                                                                        |
+| `value`              | `uint256` | -                                                                                                        |
+| `data`               |  `bytes`  | -                                                                                                        |
 
 <br/>
 
@@ -812,7 +818,9 @@ function _verifyCanStaticCall(
   address controlledContract,
   address controller,
   bytes32 permissions,
-  bytes payload
+  address to,
+  uint256 value,
+  bytes data
 ) internal view;
 ```
 
@@ -825,7 +833,9 @@ function _verifyCanCall(
   address controlledContract,
   address controller,
   bytes32 permissions,
-  bytes payload
+  address to,
+  uint256 value,
+  bytes data
 ) internal view;
 ```
 
@@ -837,7 +847,10 @@ function _verifyCanCall(
 function _verifyAllowedCall(
   address controlledContract,
   address controllerAddress,
-  bytes payload
+  uint256 operationType,
+  address to,
+  uint256 value,
+  bytes data
 ) internal view;
 ```
 
@@ -868,16 +881,6 @@ extract the bytes4 representation of a single bit for the type of call according
 | Name                |   Type   | Description                                               |
 | ------------------- | :------: | --------------------------------------------------------- |
 | `requiredCallTypes` | `bytes4` | a bytes4 value containing a single 1 bit for the callType |
-
-<br/>
-
-### \_extractExecuteParameters
-
-```solidity
-function _extractExecuteParameters(
-  bytes executeCalldata
-) internal pure returns (uint256, address, uint256, bytes4, bool);
-```
 
 <br/>
 
@@ -1071,19 +1074,19 @@ Used in the end of the `nonReentrant` modifier after the method execution is ter
 
 ## Events
 
-### VerifiedCall
+### PermissionsVerified
 
 :::note References
 
-- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#verifiedcall)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#permissionsverified)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
-- Event signature: `VerifiedCall(address,uint256,bytes4)`
-- Event topic hash: `0xa54458b75709e42f79700ffb6cfc57c7e224d8a77a52c457ee7ecb8e22636280`
+- Event signature: `PermissionsVerified(address,uint256,bytes4)`
+- Event topic hash: `0xc0a62328f6bf5e3172bb1fcb2019f54b2c523b6a48e3513a2298fbf0150b781e`
 
 :::
 
 ```solidity
-event VerifiedCall(address indexed signer, uint256 indexed value, bytes4 indexed selector);
+event PermissionsVerified(address indexed signer, uint256 indexed value, bytes4 indexed selector);
 ```
 
 _Verified the permissions of `signer` for calling function `selector` on the linked account and sending `value` of native token._
@@ -1453,6 +1456,25 @@ Reverts when a `from` address has _"any whitelisted call"_ as allowed call set. 
 
 <br/>
 
+### KeyManagerCannotBeSetAsExtensionForLSP20Functions
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#keymanagercannotbesetasextensionforlsp20functions)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `KeyManagerCannotBeSetAsExtensionForLSP20Functions()`
+- Error hash: `0x4a9fa8cf`
+
+:::
+
+```solidity
+error KeyManagerCannotBeSetAsExtensionForLSP20Functions();
+```
+
+reverts when the address of the Key Manager is being set as extensions for lsp20 functions
+
+<br/>
+
 ### LSP6BatchExcessiveValueSent
 
 :::note References
@@ -1528,7 +1550,7 @@ This error occurs when there was not enough funds sent to the batch functions `e
 error NoCallsAllowed(address from);
 ```
 
-_The address `from` is not authorised to use the linked account contract to make external calls, because it has Allowed Calls set._
+_The address `from` is not authorised to use the linked account contract to make external calls, because it has no Allowed Calls set._
 
 Reverts when the `from` address has no `AllowedCalls` set and cannot interact with any address using the linked [`target`](#target).
 

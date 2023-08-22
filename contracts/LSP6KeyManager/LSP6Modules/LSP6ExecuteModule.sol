@@ -55,7 +55,6 @@ abstract contract LSP6ExecuteModule {
      * @param controller the address who want to run the execute function on the ERC725Account.
      * @param permissions the permissions of the controller address.
      */
-    //  * @param payload the ABI encoded payload `controlledContract.execute(...)`.
     function _verifyCanExecute(
         address controlledContract,
         address controller,
