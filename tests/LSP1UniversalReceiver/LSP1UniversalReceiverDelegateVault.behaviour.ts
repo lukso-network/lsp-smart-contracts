@@ -13,6 +13,7 @@ import {
   LSP1UniversalReceiverDelegateVault,
   LSP7MintWhenDeployed__factory,
   LSP7MintWhenDeployed,
+  LSP1UniversalReceiverDelegateVault__factory,
 } from '../../types';
 
 import { ARRAY_LENGTH, LSP1_HOOK_PLACEHOLDER, abiCoder } from '../utils/helpers';
@@ -81,9 +82,9 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
     });
   });
 
-  describe('When testing EOA call to URD through the UR function', () => {
+  describe.only('When testing EOA call to URD through the UR function', () => {
     describe('when calling with tokens typeId', () => {
-      it('should revert with custom error', async () => {
+      it('should return error message', async () => {
         const URD_TypeIds = [
           LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification,
           LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
@@ -107,18 +108,30 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
     });
 
     describe('when calling with vaults sender and recipient typeIds', () => {
-      it('should pass and return typeId out of scope return value', async () => {
+      it("should pass and return 'LSP1: typeId out of scope'", async () => {
         const Vault_TypeIds = [
           LSP1_TYPE_IDS.LSP14OwnershipTransferred_RecipientNotification,
           LSP1_TYPE_IDS.LSP14OwnershipTransferred_SenderNotification,
         ];
 
         for (let i = 0; i < Vault_TypeIds.length; i++) {
-          const result = await context.lsp9Vault1
-            .connect(context.accounts.any)
-            .callStatic.universalReceiver(Vault_TypeIds[i], '0x');
+          const universalReceiverCalldata = context.lsp9Vault2.interface.encodeFunctionData(
+            'universalReceiver',
+            [Vault_TypeIds[i], '0x'],
+          );
 
-          const [resultDelegate, resultTypeID] = abiCoder.decode(['bytes', 'bytes'], result);
+          const result = await context.universalProfile
+            .connect(context.accounts.owner1)
+            .callStatic.execute(
+              OPERATION_TYPES.CALL,
+              context.lsp9Vault1.address,
+              0,
+              universalReceiverCalldata,
+            );
+
+          const [decodedResult] = abiCoder.decode(['bytes'], result);
+
+          const [resultDelegate, resultTypeID] = abiCoder.decode(['bytes', 'bytes'], decodedResult);
 
           expect(resultDelegate).to.equal(
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: typeId out of scope')),
@@ -130,18 +143,47 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
     });
 
     describe('when calling with random bytes32 typeId', () => {
-      it('should pass and return typeId out of scope return value', async () => {
-        const result = await context.lsp9Vault1
-          .connect(context.accounts.any)
-          .callStatic.universalReceiver(LSP1_HOOK_PLACEHOLDER, '0x');
+      describe('when caller is an EOA', () => {
+        it('should revert with custom error `CannotRegisterEOAsAsAssets`', async () => {
+          await expect(
+            context.lsp9Vault1
+              .connect(context.accounts.any)
+              .callStatic.universalReceiver(LSP1_HOOK_PLACEHOLDER, '0x'),
+          )
+            .to.be.revertedWithCustomError(
+              context.lsp1universalReceiverDelegateVault,
+              'CannotRegisterEOAsAsAssets',
+            )
+            .withArgs(context.accounts.any.address);
+        });
+      });
 
-        const [resultDelegate, resultTypeID] = abiCoder.decode(['bytes', 'bytes'], result);
+      describe('when caller is a contract', () => {
+        it("should pass and return 'LSP1: typeId out of scope'", async () => {
+          const universalReceiverCalldata = context.lsp9Vault2.interface.encodeFunctionData(
+            'universalReceiver',
+            [LSP1_HOOK_PLACEHOLDER, '0x'],
+          );
 
-        expect(resultDelegate).to.equal(
-          ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: typeId out of scope')),
-        );
+          const result = await context.universalProfile
+            .connect(context.accounts.owner1)
+            .callStatic.execute(
+              OPERATION_TYPES.CALL,
+              context.lsp9Vault2.address,
+              0,
+              universalReceiverCalldata,
+            );
 
-        expect(resultTypeID).to.equal('0x');
+          const [decodedResult] = abiCoder.decode(['bytes'], result);
+
+          const [resultDelegate, resultTypeID] = abiCoder.decode(['bytes', 'bytes'], decodedResult);
+
+          expect(resultDelegate).to.equal(
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: typeId out of scope')),
+          );
+
+          expect(resultTypeID).to.equal('0x');
+        });
       });
     });
   });
@@ -892,7 +934,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
         const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
           ['string', 'bytes'],
-          ['LSP1: asset data corrupted', '0x'],
+          ['LSP5: Error generating data key/value pairs', '0x'],
         );
 
         await expect(tokenTransferTx)
@@ -977,8 +1019,8 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         ).toLowerCase();
 
         const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
-          ['bytes', 'bytes'],
-          ['0x', '0x'],
+          ['string', 'bytes'],
+          ['LSP5: Error generating data key/value pairs', '0x'],
         );
 
         await expect(tokenTransferTx)
@@ -992,10 +1034,14 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
           );
       });
 
-      it('should de-register the asset properly', async () => {
+      it('should not de-register the asset', async () => {
         expect(
           await context.lsp9Vault1.getDataBatch([arrayKey, arrayIndexKey, assetMapKey]),
-        ).to.deep.equal(['0x' + '00'.repeat(16), '0x', '0x']);
+        ).to.deep.equal([
+          '0x' + '00'.repeat(15) + '01',
+          token.address.toLowerCase(),
+          '0xda1f85e400000000000000000000000000000000cafecafe',
+        ]);
       });
     });
 
@@ -1060,7 +1106,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
         const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
           ['string', 'bytes'],
-          ['LSP1: asset data corrupted', '0x'],
+          ['LSP5: Error generating data key/value pairs', '0x'],
         );
 
         await expect(tokenTransferTx)
@@ -1622,6 +1668,96 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
           expect(arrayLength).to.equal(ARRAY_LENGTH.ONE);
           expect(elementAddress).to.equal(lsp8TokenB.address);
         });
+      });
+    });
+  });
+
+  describe('when URD has no permissions', () => {
+    before('deploying new URD', async () => {
+      const newURD = await new LSP1UniversalReceiverDelegateVault__factory(
+        context.accounts.owner1,
+      ).deploy();
+
+      const LSP9_setDataCalldata = context.lsp9Vault1.interface.encodeFunctionData('setData', [
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+        newURD.address,
+      ]);
+
+      await context.universalProfile
+        .connect(context.accounts.owner1)
+        .execute(OPERATION_TYPES.CALL, context.lsp9Vault1.address, 0, LSP9_setDataCalldata);
+
+      await context.universalProfile
+        .connect(context.accounts.owner1)
+        .execute(OPERATION_TYPES.CALL, context.lsp9Vault2.address, 0, LSP9_setDataCalldata);
+    });
+
+    describe('when receiving LSP7', () => {
+      it('should not revert', async () => {
+        const LSP7 = await new LSP7MintWhenDeployed__factory(context.accounts.owner1).deploy(
+          'MyToken',
+          'MTK',
+          context.lsp9Vault1.address,
+        );
+
+        const LSP7_TransferCalldata = LSP7.interface.encodeFunctionData('transfer', [
+          context.lsp9Vault1.address,
+          context.lsp9Vault2.address,
+          1,
+          false,
+          '0x',
+        ]);
+
+        const LSP9_ExecuteCalldata = context.lsp9Vault1.interface.encodeFunctionData('execute', [
+          OPERATION_TYPES.CALL,
+          LSP7.address,
+          0,
+          LSP7_TransferCalldata,
+        ]);
+
+        expect(await LSP7.balanceOf(context.lsp9Vault1.address)).to.equal(1000);
+        expect(await LSP7.balanceOf(context.lsp9Vault2.address)).to.equal(0);
+
+        await context.universalProfile
+          .connect(context.accounts.owner1)
+          .execute(OPERATION_TYPES.CALL, context.lsp9Vault1.address, 0, LSP9_ExecuteCalldata);
+
+        expect(await LSP7.balanceOf(context.lsp9Vault1.address)).to.equal(999);
+        expect(await LSP7.balanceOf(context.lsp9Vault2.address)).to.equal(1);
+      });
+    });
+
+    describe('when receiving LSP8', () => {
+      it('should not revert', async () => {
+        const LSP8 = await new LSP8Tester__factory(context.accounts.owner1).deploy(
+          'MyToken',
+          'MTK',
+          context.lsp9Vault1.address,
+        );
+        await LSP8.mint(context.lsp9Vault1.address, '0x' + '0'.repeat(64), false, '0x');
+
+        const LSP8_TransferCalldata = LSP8.interface.encodeFunctionData('transfer', [
+          context.lsp9Vault1.address,
+          context.lsp9Vault2.address,
+          '0x' + '0'.repeat(64),
+          false,
+          '0x',
+        ]);
+
+        const LSP9_ExecuteCalldata = context.lsp9Vault1.interface.encodeFunctionData('execute', [
+          OPERATION_TYPES.CALL,
+          LSP8.address,
+          0,
+          LSP8_TransferCalldata,
+        ]);
+
+        expect(await LSP8.tokenOwnerOf('0x' + '0'.repeat(64))).to.equal(context.lsp9Vault1.address);
+
+        await context.universalProfile
+          .connect(context.accounts.owner1)
+          .execute(OPERATION_TYPES.CALL, context.lsp9Vault1.address, 0, LSP9_ExecuteCalldata);
+
+        expect(await LSP8.tokenOwnerOf('0x' + '0'.repeat(64))).to.equal(context.lsp9Vault2.address);
       });
     });
   });

@@ -220,10 +220,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             // set some random bytes under AddressPermissions[7]
 
             await expect(context.universalProfile.connect(context.owner).setData(key, randomValue))
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                'AddressPermissionArrayIndexValueNotAnAddress',
-              )
+              .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
 
@@ -236,10 +233,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             // set some random bytes under AddressPermissions[7]
 
             await expect(context.universalProfile.connect(context.owner).setData(key, randomValue))
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                'AddressPermissionArrayIndexValueNotAnAddress',
-              )
+              .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
         });
@@ -270,10 +264,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             // set some random bytes under AddressPermissions[7]
 
             await expect(context.universalProfile.connect(context.owner).setData(key, randomValue))
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                'AddressPermissionArrayIndexValueNotAnAddress',
-              )
+              .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
 
@@ -286,10 +277,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             // set some random bytes under AddressPermissions[7]
 
             await expect(context.universalProfile.connect(context.owner).setData(key, randomValue))
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                'AddressPermissionArrayIndexValueNotAnAddress',
-              )
+              .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
         });
@@ -434,10 +422,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile.connect(canOnlyAddController).setData(key, randomValue),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                'AddressPermissionArrayIndexValueNotAnAddress',
-              )
+              .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
 
@@ -450,10 +435,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile.connect(canOnlyAddController).setData(key, randomValue),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                'AddressPermissionArrayIndexValueNotAnAddress',
-              )
+              .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
         });
@@ -590,7 +572,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             const newLength = ethers.BigNumber.from(currentLength).sub(1).toNumber();
 
-            const value = ethers.utils.hexZeroPad(ethers.utils.hexlify(newLength), 32);
+            const value = ethers.utils.hexZeroPad(ethers.utils.hexlify(newLength), 16);
 
             await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
 
@@ -643,10 +625,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile.connect(canOnlyEditPermissions).setData(key, randomValue),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                'AddressPermissionArrayIndexValueNotAnAddress',
-              )
+              .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
 
@@ -661,10 +640,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             await expect(
               context.universalProfile.connect(canOnlyEditPermissions).setData(key, randomValue),
             )
-              .to.be.revertedWithCustomError(
-                context.keyManager,
-                'AddressPermissionArrayIndexValueNotAnAddress',
-              )
+              .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
         });

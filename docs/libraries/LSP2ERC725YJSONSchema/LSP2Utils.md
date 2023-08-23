@@ -428,3 +428,78 @@ Verify if `data` is a valid array of value encoded as a `CompactBytesArray` acco
 | `0`  | `bool` | `true` if the `data` is correctly encoded CompactBytesArray, `false` otherwise. |
 
 <br/>
+
+### isValidLSP2ArrayLengthValue
+
+```solidity
+function isValidLSP2ArrayLengthValue(
+  bytes arrayLength
+) internal pure returns (bool);
+```
+
+Validates if the bytes `arrayLength` are exactly 16 bytes long, and are of the exact size of an LSP2 Array length value
+
+#### Parameters
+
+| Name          |  Type   | Description                           |
+| ------------- | :-----: | ------------------------------------- |
+| `arrayLength` | `bytes` | Plain bytes that should be validated. |
+
+#### Returns
+
+| Name |  Type  | Description                                              |
+| ---- | :----: | -------------------------------------------------------- |
+| `0`  | `bool` | `true` if the value is 16 bytes long, `false` otherwise. |
+
+<br/>
+
+### removeLastElementFromArrayAndMap
+
+```solidity
+function removeLastElementFromArrayAndMap(
+  bytes32 arrayKey,
+  uint128 newArrayLength,
+  bytes32 removedElementIndexKey,
+  bytes32 removedElementMapKey
+) internal pure returns (bytes32[] dataKeys, bytes[] dataValues);
+```
+
+Generates Data Key/Value pairs for removing the last element from an LSP2 Array and a mapping Data Key.
+
+#### Parameters
+
+| Name                     |   Type    | Description                                                   |
+| ------------------------ | :-------: | ------------------------------------------------------------- |
+| `arrayKey`               | `bytes32` | The Data Key of Key Type Array.                               |
+| `newArrayLength`         | `uint128` | The new Array Length for the `arrayKey`.                      |
+| `removedElementIndexKey` | `bytes32` | The Data Key of Key Type Array Index for the removed element. |
+| `removedElementMapKey`   | `bytes32` | The Data Key of a mapping to be removed.                      |
+
+<br/>
+
+### removeElementFromArrayAndMap
+
+:::info
+
+The function assumes that the Data Value stored under the mapping Data Key is of length 20 where the last 16 bytes are the index of the element in the array.
+
+:::
+
+```solidity
+function removeElementFromArrayAndMap(contract IERC725Y ERC725YContract, bytes32 arrayKey, uint128 newArrayLength, bytes32 removedElementIndexKey, uint128 removedElementIndex, bytes32 removedElementMapKey) internal view returns (bytes32[] dataKeys, bytes[] dataValues);
+```
+
+Generates Data Key/Value pairs for removing an element from an LSP2 Array and a mapping Data Key.
+
+#### Parameters
+
+| Name                     |        Type         | Description                                                   |
+| ------------------------ | :-----------------: | ------------------------------------------------------------- |
+| `ERC725YContract`        | `contract IERC725Y` | The ERC725Y contract.                                         |
+| `arrayKey`               |      `bytes32`      | The Data Key of Key Type Array.                               |
+| `newArrayLength`         |      `uint128`      | The new Array Length for the `arrayKey`.                      |
+| `removedElementIndexKey` |      `bytes32`      | The Data Key of Key Type Array Index for the removed element. |
+| `removedElementIndex`    |      `uint128`      | the index of the removed element.                             |
+| `removedElementMapKey`   |      `bytes32`      | The Data Key of a mapping to be removed.                      |
+
+<br/>
