@@ -26,172 +26,88 @@ Internal functions cannot be called externally, whether from other smart contrac
 
 ### generateReceivedVaultKeys
 
+:::caution Warning
+
+This function returns empty arrays when encountering errors. Otherwise the arrays will contain 3 data keys and 3 data values.
+
+:::
+
 ```solidity
 function generateReceivedVaultKeys(
   address receiver,
-  address vault,
-  bytes32 vaultMapKey
-) internal view returns (bytes32[] keys, bytes[] values);
+  address vaultAddress
+) internal view returns (bytes32[] lsp10DataKeys, bytes[] lsp10DataValues);
 ```
 
 Generate an array of data keys/values pairs to be set on the receiver address after receiving vaults.
 
 #### Parameters
 
-| Name          |   Type    | Description                                                                                                           |
-| ------------- | :-------: | --------------------------------------------------------------------------------------------------------------------- |
-| `receiver`    | `address` | The address receiving the vault and where the LSP10 data keys should be added.                                        |
-| `vault`       | `address` | @param vaultMapKey The `LSP10VaultMap:<vault>` data key of the vault being received containing the interfaceId of the |
-| `vaultMapKey` | `bytes32` | The `LSP10VaultMap:<vault>` data key of the vault being received containing the interfaceId of the                    |
+| Name           |   Type    | Description                                                                    |
+| -------------- | :-------: | ------------------------------------------------------------------------------ |
+| `receiver`     | `address` | The address receiving the vault and where the LSP10 data keys should be added. |
+| `vaultAddress` | `address` | The address of the vault being received.                                       |
 
 #### Returns
 
-| Name     |    Type     | Description                                                                                                         |
-| -------- | :---------: | ------------------------------------------------------------------------------------------------------------------- |
-| `keys`   | `bytes32[]` | An array of 3 x data keys: `LSP10Vaults[]`, `LSP10Vaults[index]` and `LSP10VaultMap:<asset>`.                       |
-| `values` |  `bytes[]`  | An array of 3 x data values: the new length of `LSP10Vaults[]`, the address of the asset under `LSP10Vaults[index]` |
+| Name              |    Type     | Description                                                           |
+| ----------------- | :---------: | --------------------------------------------------------------------- |
+| `lsp10DataKeys`   | `bytes32[]` | An array data keys used to update the [LSP-10-ReceivedAssets] data.   |
+| `lsp10DataValues` |  `bytes[]`  | An array data values used to update the [LSP-10-ReceivedAssets] data. |
 
 <br/>
 
 ### generateSentVaultKeys
 
+:::caution Warning
+
+Returns empty arrays when encountering errors. Otherwise the arrays must have at least 3 data keys and 3 data values.
+
+:::
+
 ```solidity
 function generateSentVaultKeys(
   address sender,
-  bytes32 vaultMapKey,
-  uint128 vaultIndex
-) internal view returns (bytes32[] keys, bytes[] values);
+  address vaultAddress
+) internal view returns (bytes32[] lsp10DataKeys, bytes[] lsp10DataValues);
 ```
 
 Generate an array of data key/value pairs to be set on the sender address after sending vaults.
 
 #### Parameters
 
-| Name          |   Type    | Description                                                                                    |
-| ------------- | :-------: | ---------------------------------------------------------------------------------------------- |
-| `sender`      | `address` | The address sending the vault and where the LSP10 data keys should be updated.                 |
-| `vaultMapKey` | `bytes32` | The `LSP10VaultMap:<vault>` data key of the vault being sent containing the interfaceId of the |
-| `vaultIndex`  | `uint128` | The index at which the vault address is stored under `LSP10Vaults[]` Array.                    |
+| Name           |   Type    | Description                                                                    |
+| -------------- | :-------: | ------------------------------------------------------------------------------ |
+| `sender`       | `address` | The address sending the vault and where the LSP10 data keys should be updated. |
+| `vaultAddress` | `address` | The address of the vault that is being sent.                                   |
 
 #### Returns
 
-| Name     |    Type     | Description                                                                                                         |
-| -------- | :---------: | ------------------------------------------------------------------------------------------------------------------- |
-| `keys`   | `bytes32[]` | An array of 3 x data keys: `LSP10Vaults[]`, `LSP10Vaults[index]` and `LSP10VaultsMap:<asset>`.                      |
-| `values` |  `bytes[]`  | An array of 3 x data values: the new length of `LSP10Vaults[]`, the address of the asset under `LSP10Vaults[index]` |
+| Name              |    Type     | Description                                                           |
+| ----------------- | :---------: | --------------------------------------------------------------------- |
+| `lsp10DataKeys`   | `bytes32[]` | An array data keys used to update the [LSP-10-ReceivedAssets] data.   |
+| `lsp10DataValues` |  `bytes[]`  | An array data values used to update the [LSP-10-ReceivedAssets] data. |
 
 <br/>
 
-### getLSP10ReceivedVaultsCount
-
-:::info
-
-This function does not return a number but the raw bytes stored under the `LSP10Vaults[]` Array data key.
-
-:::
+### getLSP10ArrayLengthBytes
 
 ```solidity
-function getLSP10ReceivedVaultsCount(contract IERC725Y account) internal view returns (bytes);
+function getLSP10ArrayLengthBytes(contract IERC725Y erc725YContract) internal view returns (bytes);
 ```
 
-Get the total number of vault addresses stored under the `LSP10Vaults[]` Array data key.
+Get the raw bytes value stored under the `_LSP10_VAULTS_ARRAY_KEY`.
 
 #### Parameters
 
-| Name      |        Type         | Description                                          |
-| --------- | :-----------------: | ---------------------------------------------------- |
-| `account` | `contract IERC725Y` | The ERC725Y smart contract to read the storage from. |
+| Name              |        Type         | Description                                     |
+| ----------------- | :-----------------: | ----------------------------------------------- |
+| `erc725YContract` | `contract IERC725Y` | The contract to query the ERC725Y storage from. |
 
 #### Returns
 
-| Name |  Type   | Description                                              |
-| ---- | :-----: | -------------------------------------------------------- |
-| `0`  | `bytes` | The raw bytes stored under the `LSP10Vaults[]` data key. |
-
-<br/>
-
-## Errors
-
-### InvalidLSP10ReceivedVaultsArrayLength
-
-:::note References
-
-- Specification details: [**LSP-10-ReceivedVaults**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-10-ReceivedVaults.md#,))
-- Solidity implementation: [`LSP10Utils.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP10ReceivedVaults/LSP10Utils.sol)
-- Error signature: `,)`
-- Error hash: `0x9f47dbd3`
-
-:::
-
-```solidity
-InvalidLSP10ReceivedVaultsArrayLength(bytes,uint256);
-```
-
-Reverts when the value stored under the 'LSP10ReceivedVaults[]' Array data key is not valid.
-The value stored under this data key should be exactly 16 bytes long.
-Only possible valid values are:
-
-- any valid uint128 values
-  _e.g: `0x00000000000000000000000000000000` (zero), meaning empty array, no vaults received._
-  _e.g: `0x00000000000000000000000000000005` (non-zero), meaning 5 array elements, 5 vaults received._
-
-- `0x` (nothing stored under this data key, equivalent to empty array)
-
-#### Parameters
-
-| Name                 |   Type    | Description                                                                                                                     |
-| -------------------- | :-------: | ------------------------------------------------------------------------------------------------------------------------------- |
-| `invalidValueStored` |  `bytes`  | invalidValueLength The invalid number of bytes stored under the `LSP10ReceivedVaults[]` Array data key (MUST be 16 bytes long). |
-| `invalidValueLength` | `uint256` | The invalid number of bytes stored under the `LSP10ReceivedVaults[]` Array data key (MUST be 16 bytes long).                    |
-
-<br/>
-
-### MaxLSP10VaultsCountReached
-
-:::note References
-
-- Specification details: [**LSP-10-ReceivedVaults**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-10-ReceivedVaults.md#))
-- Solidity implementation: [`LSP10Utils.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP10ReceivedVaults/LSP10Utils.sol)
-- Error signature: `)`
-- Error hash: `0x59d76dc3`
-
-:::
-
-```solidity
-MaxLSP10VaultsCountReached(address);
-```
-
-Reverts when the `LSP10Vaults[]` Array reaches its maximum limit (`max(uint128)`)
-
-#### Parameters
-
-| Name                 |   Type    | Description                                                |
-| -------------------- | :-------: | ---------------------------------------------------------- |
-| `notRegisteredVault` | `address` | The address of the LSP9Vault that could not be registered. |
-
-<br/>
-
-### VaultIndexSuperiorToUint128
-
-:::note References
-
-- Specification details: [**LSP-10-ReceivedVaults**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-10-ReceivedVaults.md#))
-- Solidity implementation: [`LSP10Utils.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP10ReceivedVaults/LSP10Utils.sol)
-- Error signature: `)`
-- Error hash: `0x59d76dc3`
-
-:::
-
-```solidity
-VaultIndexSuperiorToUint128(uint256);
-```
-
-Reverts when the vault index is superior to `max(uint128)`
-
-#### Parameters
-
-| Name    |   Type    | Description      |
-| ------- | :-------: | ---------------- |
-| `index` | `uint256` | The vault index. |
+| Name |  Type   | Description                                     |
+| ---- | :-----: | ----------------------------------------------- |
+| `0`  | `bytes` | The raw bytes value stored under this data key. |
 
 <br/>

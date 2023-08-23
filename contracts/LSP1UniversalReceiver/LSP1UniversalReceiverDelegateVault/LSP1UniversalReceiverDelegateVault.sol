@@ -18,6 +18,16 @@ import {LSP5Utils} from "../../LSP5ReceivedAssets/LSP5Utils.sol";
 
 // constants
 import "../LSP1Constants.sol";
+import {
+    _TYPEID_LSP7_TOKENSSENDER,
+    _TYPEID_LSP7_TOKENSRECIPIENT,
+    _INTERFACEID_LSP7
+} from "../../LSP7DigitalAsset/LSP7Constants.sol";
+import {
+    _TYPEID_LSP8_TOKENSSENDER,
+    _TYPEID_LSP8_TOKENSRECIPIENT,
+    _INTERFACEID_LSP8
+} from "../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 import "../../LSP9Vault/LSP9Constants.sol";
 
 // errors
@@ -43,101 +53,142 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
      * @notice Reacted on received notification with `typeId`.
      *
      * @custom:requirements Cannot accept native tokens.
+     * @custom:info
+     * - If some issues occured with generating the `dataKeys` or `dataValues` the `returnedMessage` will be an error message, otherwise it will be empty.
+     * - If an error occured when trying to use `setDataBatch(dataKeys,dataValues)`, it will return the raw error data back to the caller.
      *
      * @param typeId Unique identifier for a specific notification.
-     * @return result The result of the reaction for `typeId`.
+     * @return The result of the reaction for `typeId`.
      */
     function universalReceiver(
         bytes32 typeId,
         bytes memory /* data */
-    ) public payable virtual returns (bytes memory result) {
-        if (msg.value != 0) revert NativeTokensNotAccepted();
-        // This contract acts like a UniversalReceiverDelegate of a Vault where we append the
-        // address and the value, sent to the universalReceiver function of the LSP9, to the msg.data
-        // Check https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#universalreceiver
+    ) public payable virtual returns (bytes memory) {
+        // CHECK that we did not send any native tokens to the LSP1 Delegate, as it cannot transfer them back.
+        if (msg.value != 0) {
+            revert NativeTokensNotAccepted();
+        }
+
         address notifier = address(bytes20(msg.data[msg.data.length - 52:]));
 
-        (
-            bool invalid,
-            bytes10 mapPrefix,
-            bytes4 interfaceID,
-            bool isReceiving
-        ) = LSP1Utils.getTransferDetails(typeId);
-
-        if (invalid || interfaceID == _INTERFACEID_LSP9)
-            return "LSP1: typeId out of scope";
-
+        // The notifier is supposed to be either the LSP7 or LSP8 contract
+        // If it's EOA we revert to avoid registering the EOA as asset (spam protection)
         // solhint-disable avoid-tx-origin
-        if (notifier == tx.origin) revert CannotRegisterEOAsAsAssets(notifier);
+        if (notifier == tx.origin) {
+            revert CannotRegisterEOAsAsAssets(notifier);
+        }
 
-        bytes32 notifierMapKey = LSP2Utils.generateMappingKey(
-            mapPrefix,
-            bytes20(notifier)
-        );
-        bytes memory notifierMapValue = IERC725Y(msg.sender).getData(
-            notifierMapKey
-        );
+        if (typeId == _TYPEID_LSP7_TOKENSSENDER) {
+            return _tokenSender(notifier);
+        }
 
-        bytes32[] memory dataKeys;
-        bytes[] memory dataValues;
+        if (typeId == _TYPEID_LSP7_TOKENSRECIPIENT) {
+            return _tokenRecipient(notifier, _INTERFACEID_LSP7);
+        }
 
-        if (isReceiving) {
-            // if the map value is already set, then do nothing
-            if (bytes20(notifierMapValue) != bytes20(0))
-                return "URD: asset received is already registered";
+        if (typeId == _TYPEID_LSP8_TOKENSSENDER) {
+            return _tokenSender(notifier);
+        }
 
-            // CHECK balance only when the Token contract is already deployed,
-            // not when tokens are being transferred on deployment through the `constructor`
-            if (notifier.code.length > 0) {
-                // if the amount sent is 0, then do not update the keys
-                uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(
-                    msg.sender
-                );
-                if (balance == 0) return "LSP1: balance not updated";
+        if (typeId == _TYPEID_LSP8_TOKENSRECIPIENT) {
+            return _tokenRecipient(notifier, _INTERFACEID_LSP8);
+        }
+
+        return "LSP1: typeId out of scope";
+    }
+
+    /**
+     * @dev Handler for LSP7 and LSP8 token sender type id.
+     *
+     * @custom:info
+     * - Tries to generate LSP5 data key/value pairs for removing asset from the ERC725Y storage.
+     * - Tries to use `setDataBatch(bytes32[],bytes[])` if generated proper LSP5 data key/value pairs.
+     * - Does not revert. But returns an error message. Use off-chain lib to get even more info.
+     *
+     * @param notifier The LSP7 or LSP8 token address.
+     */
+    function _tokenSender(address notifier) internal returns (bytes memory) {
+        // if the amount sent is not the full balance, then do not update the keys
+        try ILSP7DigitalAsset(notifier).balanceOf(msg.sender) returns (
+            uint256 balance
+        ) {
+            if (balance != 0) {
+                return "LSP1: full balance is not sent";
             }
+        } catch {
+            return "LSP1: `balanceOf(address)` function not found";
+        }
 
-            (dataKeys, dataValues) = LSP5Utils.generateReceivedAssetKeys(
-                msg.sender,
-                notifier,
-                notifierMapKey,
-                interfaceID
-            );
+        (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP5Utils
+            .generateSentAssetKeys(msg.sender, notifier);
 
-            IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
-        } else {
-            // if there is no map value for the asset to remove, then do nothing
-            if (bytes20(notifierMapValue) == bytes20(0))
-                return "LSP1: asset sent is not registered";
+        // `generateSentAssetKeys(...)` returns empty arrays when encountering errors
+        if (dataKeys.length == 0 && dataValues.length == 0) {
+            return "LSP5: Error generating data key/value pairs";
+        }
 
-            // if it's a token transfer (LSP7/LSP8)
-            uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
-            if (balance != 0) return "LSP1: full balance is not sent";
+        // Set the LSP5 generated data keys on the account
+        return _setDataBatchWithoutReverting(dataKeys, dataValues);
+    }
 
-            // if the value under the `LSP5ReceivedAssetsMap:<asset-address>`
-            // is not a valid tuple as `(bytes4,uint128)`
-            if (notifierMapValue.length < 20)
-                return "LSP1: asset data corrupted";
+    /**
+     * @dev Handler for LSP7 and LSP8 token recipient type id.
+     *
+     * @custom:info
+     * - Tries to generate LSP5 data key/value pairs for adding asset to the ERC725Y storage.
+     * - Tries to use `setDataBatch(bytes32[],bytes[])` if generated proper LSP5 data key/value pairs.
+     * - Does not revert. But returns an error message. Use off-chain lib to get even more info.
+     *
+     * @param notifier The LSP7 or LSP8 token address.
+     * @param interfaceId The LSP7 or LSP8 interface id.
+     */
+    function _tokenRecipient(
+        address notifier,
+        bytes4 interfaceId
+    ) internal returns (bytes memory) {
+        // CHECK balance only when the Token contract is already deployed,
+        // not when tokens are being transferred on deployment through the `constructor`
+        if (notifier.code.length > 0) {
+            // if the amount sent is 0, then do not update the keys
+            try ILSP7DigitalAsset(notifier).balanceOf(msg.sender) returns (
+                uint256 balance
+            ) {
+                if (balance == 0) {
+                    return "LSP1: balance is zero";
+                }
+            } catch {
+                return "LSP1: `balanceOf(address)` function not found";
+            }
+        }
 
-            // Identify where the asset is located in the `LSP5ReceivedAssets[]` Array
-            // by extracting the index from the tuple value `(bytes4,uint128)`
-            // fetched under the LSP5ReceivedAssetsMap/LSP10VaultsMap data key
-            uint128 assetIndex = uint128(uint160(bytes20(notifierMapValue)));
+        (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP5Utils
+            .generateReceivedAssetKeys(msg.sender, notifier, interfaceId);
 
-            (dataKeys, dataValues) = LSP5Utils.generateSentAssetKeys(
-                msg.sender,
-                notifierMapKey,
-                assetIndex
-            );
+        // `generateReceivedAssetKeys(...)` returns empty arrays when encountering errors
+        if (dataKeys.length == 0 && dataValues.length == 0) {
+            return "LSP5: Error generating data key/value pairs";
+        }
 
-            /**
-             * `generateSentAssetKeys(...)` returns empty arrays in the following cases:
-             * - the index returned from the data key `notifierMapKey` is bigger than
-             * the length of the `LSP5ReceivedAssets[]`, meaning, index is out of bounds.
-             */
-            if (dataKeys.length == 0 && dataValues.length == 0)
-                return "LSP1: asset data corrupted";
+        // Set the LSP5 generated data keys on the account
+        return _setDataBatchWithoutReverting(dataKeys, dataValues);
+    }
 
-            IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues);
+    /**
+     * @dev Calls `bytes4(keccak256(setDataBatch(bytes32[],bytes[])))` without checking for `bool succes`, but it returns all the data back.
+     *
+     * @custom:info If an the low-level transaction revert, the returned data will be forwarded. Th contract that uses this function can use the `Address` library to revert with the revert reason.
+     *
+     * @param dataKeys Data Keys to be set.
+     * @param dataValues Data Values to be set.
+     */
+    function _setDataBatchWithoutReverting(
+        bytes32[] memory dataKeys,
+        bytes[] memory dataValues
+    ) internal returns (bytes memory) {
+        try IERC725Y(msg.sender).setDataBatch(dataKeys, dataValues) {
+            return "";
+        } catch (bytes memory errorData) {
+            return errorData;
         }
     }
 
