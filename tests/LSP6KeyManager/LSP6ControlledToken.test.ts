@@ -431,7 +431,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
         const key =
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           addressCanSetData.address.substring(2);
-        const value = ARRAY_LENGTH.ZERO;
+        const value = '0x';
         const payload = context.token.interface.encodeFunctionData('setData', [key, value]);
 
         await expect(context.keyManager.connect(addressCanAddController).execute(payload))
@@ -443,7 +443,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
         const key =
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           addressCanSetData.address.substring(2);
-        const value = ARRAY_LENGTH.ZERO;
+        const value = '0x';
         const payload = context.token.interface.encodeFunctionData('setData', [key, value]);
 
         await context.keyManager.connect(context.owner).execute(payload);

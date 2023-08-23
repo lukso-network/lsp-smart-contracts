@@ -17,7 +17,7 @@ import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
-  LSP6_VERSION,
+  LSP25_VERSION,
   OPERATION_TYPES,
   CALLTYPE,
 } from '../../../constants';
@@ -590,7 +590,7 @@ export const shouldBehaveLikePermissionCall = (
             const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
-                LSP6_VERSION,
+                LSP25_VERSION,
                 HARDHAT_CHAINID,
                 nonce,
                 validityTimestamps,
@@ -647,7 +647,7 @@ export const shouldBehaveLikePermissionCall = (
             const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
-                LSP6_VERSION,
+                LSP25_VERSION,
                 HARDHAT_CHAINID,
                 nonce,
                 validityTimestamps,
@@ -709,7 +709,7 @@ export const shouldBehaveLikePermissionCall = (
               const encodedMessage = ethers.utils.solidityPack(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
-                  LSP6_VERSION,
+                  LSP25_VERSION,
                   HARDHAT_CHAINID,
                   nonce,
                   validityTimestamps,
@@ -764,7 +764,7 @@ export const shouldBehaveLikePermissionCall = (
               const encodedMessage = ethers.utils.solidityPack(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
-                  LSP6_VERSION,
+                  LSP25_VERSION,
                   HARDHAT_CHAINID,
                   nonce,
                   validityTimestamps,
@@ -821,7 +821,7 @@ export const shouldBehaveLikePermissionCall = (
             const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
-                LSP6_VERSION,
+                LSP25_VERSION,
                 HARDHAT_CHAINID,
                 nonce,
                 validityTimestamps,
@@ -882,7 +882,7 @@ export const shouldBehaveLikePermissionCall = (
             const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
-                LSP6_VERSION,
+                LSP25_VERSION,
                 HARDHAT_CHAINID,
                 nonce,
                 validityTimestamps,
@@ -942,7 +942,7 @@ export const shouldBehaveLikePermissionCall = (
             const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
-                LSP6_VERSION,
+                LSP25_VERSION,
                 HARDHAT_CHAINID,
                 nonce,
                 validityTimestamps,

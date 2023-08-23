@@ -20,7 +20,7 @@ import {
   CALLTYPE,
   ERC725YDataKeys,
   LSP1_TYPE_IDS,
-  LSP6_VERSION,
+  LSP25_VERSION,
   OPERATION_TYPES,
   PERMISSIONS,
 } from '../../../constants';
@@ -152,7 +152,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
           const encodedMessage = ethers.utils.solidityPack(
             ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
             [
-              LSP6_VERSION,
+              LSP25_VERSION,
               HARDHAT_CHAINID,
               nonce,
               validityTimestamps,

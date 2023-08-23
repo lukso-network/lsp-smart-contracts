@@ -88,6 +88,11 @@ describe('Calculate LSP interfaces', () => {
     const result = await contract.calculateInterfaceLSP20CallVerifier();
     expect(result).to.equal(INTERFACE_IDS.LSP20CallVerifier);
   });
+
+  it('LSP25ExecuteRelayCall', async () => {
+    const result = await contract.calculateInterfaceLSP25ExecuteRelayCall();
+    expect(result).to.equal(INTERFACE_IDS.LSP25ExecuteRelayCall);
+  });
 });
 
 describe('Calculate ERC interfaces', () => {

@@ -59,9 +59,9 @@ error InvalidLSP6Target();
  *
  * @dev Reverts when the `signer` address retrieved from the `signature` has an invalid nonce: `invalidNonce`.
  *
- * @param signer The address of the signer
- * @param invalidNonce The nonce retrieved for the `signer` address
- * @param signature The signature used to retrieve the `signer` address
+ * @param signer The address of the signer.
+ * @param invalidNonce The nonce retrieved for the `signer` address.
+ * @param signature The signature used to retrieve the `signer` address.
  */
 error InvalidRelayNonce(address signer, uint256 invalidNonce, bytes signature);
 
@@ -90,18 +90,6 @@ error InvalidERC725Function(bytes4 invalidFunction);
  * @param allowedCallsValue The list of allowedCalls that are not encoded correctly as a `(bytes4,address,bytes4,bytes4)[CompactBytesArray]`.
  */
 error InvalidEncodedAllowedCalls(bytes allowedCallsValue);
-
-/**
- * @notice Could not store `invalidValue` inside the `AddressPermissions[]` Array at index: `dataKey`.
- * @dev Reverts when trying to set a value that is not 20 bytes long (not an `address`) under the `AddressPermissions[index]` data key.
- *
- * @param dataKey The `AddressPermissions[index]` data key, that specify the index in the `AddressPermissions[]` array.
- * @param invalidValue The invalid value that was attempted to be set under `AddressPermissions[index]`.
- */
-error AddressPermissionArrayIndexValueNotAnAddress(
-    bytes32 dataKey,
-    bytes invalidValue
-);
 
 /**
  * @notice The address `from` is not authorised to set data, because it has no ERC725Y Data Key allowed.
@@ -241,6 +229,18 @@ error RelayCallBeforeStartTime();
 error RelayCallExpired();
 
 /**
- * @dev reverts when the address of the Key Manager is being set as extensions for lsp20 functions
+ * @notice Key Manager cannot be used as an LSP17 extension for LSP20 functions.
+ *
+ * @dev Reverts when the address of the Key Manager is being set as extensions for lsp20 functions
  */
 error KeyManagerCannotBeSetAsExtensionForLSP20Functions();
+
+/**
+ * @notice Data value: `dataValue` length is different from the required length for the data key which is set.
+ *
+ * @dev Reverts when the data value length is not one of the required lengths for the specific data key.
+ *
+ * @param dataKey The data key that has a required length for the data value.
+ * @param dataValue The data value that has an invalid length.
+ */
+error InvalidDataValuesForDataKeys(bytes32 dataKey, bytes dataValue);

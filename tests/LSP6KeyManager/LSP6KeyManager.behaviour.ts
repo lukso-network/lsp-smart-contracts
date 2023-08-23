@@ -147,6 +147,13 @@ export const shouldInitializeLikeLSP6 = (buildContext: () => Promise<LSP6TestCon
       expect(result).to.be.true;
     });
 
+    it('should support LSP25 interface', async () => {
+      const result = await context.keyManager.supportsInterface(
+        INTERFACE_IDS.LSP25ExecuteRelayCall,
+      );
+      expect(result).to.be.true;
+    });
+
     it('should be linked to the right ERC725 account contract', async () => {
       const account = await context.keyManager.target();
       expect(account).to.equal(context.universalProfile.address);

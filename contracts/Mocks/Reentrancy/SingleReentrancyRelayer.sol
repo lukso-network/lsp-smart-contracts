@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
+import {
+    ILSP25ExecuteRelayCall
+} from "../../LSP25ExecuteRelayCall/ILSP25ExecuteRelayCall.sol";
 
 contract SingleReentrancyRelayer {
     bytes private _signature;
@@ -28,7 +30,7 @@ contract SingleReentrancyRelayer {
         address keyManagerAddress
     ) external returns (bytes memory) {
         return
-            ILSP6KeyManager(keyManagerAddress).executeRelayCall(
+            ILSP25ExecuteRelayCall(keyManagerAddress).executeRelayCall(
                 _signature,
                 _nonce,
                 _validityTimestamps,
