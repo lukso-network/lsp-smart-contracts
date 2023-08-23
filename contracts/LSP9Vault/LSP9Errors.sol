@@ -2,7 +2,8 @@
 pragma solidity ^0.8.4;
 
 /**
- * @dev reverts when the UniversalReceiverDelegates of the Vault sets LSP1/6/17 Data Keys
- * @param dataKey The data key that the UniversalReceiverDelegate is not allowed to set
+ * @notice The `LSP1UniversalReceiverDelegate` is not allowed to set the following data key: `dataKey`.
+ * @dev Reverts when the Vault version of [LSP1UniversalReceiverDelegate] sets LSP1/6/17 Data Keys.
+ * @param dataKey The data key that the Vault version of [LSP1UniversalReceiverDelegate] is not allowed to set.
  */
 error LSP1DelegateNotAllowedToSetDataKey(bytes32 dataKey);

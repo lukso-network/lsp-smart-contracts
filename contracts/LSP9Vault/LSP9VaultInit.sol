@@ -18,9 +18,16 @@ contract LSP9VaultInit is LSP9VaultInitAbstract {
     }
 
     /**
-     * @notice Initializing the contract owner to: `newOwner`
-     * @dev Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key
-     * @param newOwner the owner of the contract
+     * @notice Initializing a LSP9Vault contract with owner set to address `initialOwner`.
+     * @dev Sets `initialOwner` as the contract owner and the `SupportedStandards:LSP9Vault` Data Key. The `initialize(address)` also allows funding the contract on deployment.
+     *
+     * @param newOwner The new owner of the contract.
+     *
+     * @custom:events
+     * - {ValueReceived} event when funding the contract on deployment.
+     * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
+     * - {DataChanged} event when updating the {_LSP9_SUPPORTED_STANDARDS_KEY}.
+     * - {UniversalReceiver} event when notifying the `initialOwner`.
      */
     function initialize(address newOwner) external payable virtual initializer {
         LSP9VaultInitAbstract._initialize(newOwner);

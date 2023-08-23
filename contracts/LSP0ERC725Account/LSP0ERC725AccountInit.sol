@@ -24,24 +24,22 @@ import {
 contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract {
     /**
      * @notice deploying a `LSP0ERC725AccountInit` base contract to be used behind proxy
-     * @dev Locks the base contract on deployment, so that it cannot be initialized, owned and controlled by anyone
-     * after it has been deployed. This is intended so that the sole purpose of this contract is to be used as a base
-     * contract behind a proxy.
+     * @dev Locks the base contract on deployment, so that it cannot be initialized, owned and controlled by anyone after it has been deployed. This is intended so that the sole purpose of this contract is to be used as a base contract behind a proxy.
      */
     constructor() {
         _disableInitializers();
     }
 
     /**
-     * @notice Initializing the contract owner to: `initialOwner`
-     * @dev Set `initialOwner` as the contract owner.
-     * The `initialOwner` will then be allowed to call protected functions marked with the `onlyOwner` modifier.
-     * The `initialize(address)` function also allows funding the contract on initialization.
+     * @notice Initializing a LSP0ERC725Account contract with owner set to address `initialOwner`.
      *
-     * Emitted Events:
-     * - ValueReceived: when the contract is funded on initialization.
+     * @dev Set `initialOwner` as the contract owner. The `initialize(address)` also allows funding the contract on deployment.
      *
-     * @param initialOwner the owner of the contract
+     * @param initialOwner The owner of the contract.
+     *
+     * @custom:events
+     * - {ValueReceived} event when funding the contract on deployment.
+     * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
      */
     function initialize(
         address initialOwner

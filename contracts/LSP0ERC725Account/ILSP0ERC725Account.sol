@@ -22,8 +22,8 @@ import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
  */
 interface ILSP0ERC725Account {
     /**
-     * @dev Emitted when receiving native tokens.
      * @notice `value` native tokens received from `sender`.
+     * @dev Emitted when receiving native tokens.
      * @param sender The address that sent some native tokens to this contract.
      * @param value The amount of native tokens received.
      */
