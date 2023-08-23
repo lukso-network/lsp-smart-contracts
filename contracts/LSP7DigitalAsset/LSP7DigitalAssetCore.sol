@@ -36,13 +36,13 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     // --- Storage
 
     // Mapping from `tokenOwner` to an `amount` of tokens
-    mapping(address => uint256) private _tokenOwnerBalances;
+    mapping(address => uint256) internal _tokenOwnerBalances;
 
     // Mapping a `tokenOwner` to an `operator` to `amount` of tokens.
     mapping(address => mapping(address => uint256))
-        private _operatorAuthorizedAmount;
+        internal _operatorAuthorizedAmount;
 
-    uint256 private _existingTokens;
+    uint256 internal _existingTokens;
 
     bool internal _isNonDivisible;
 

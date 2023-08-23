@@ -2,6 +2,15 @@
 pragma solidity ^0.8.4;
 
 interface ILSP23LinkedContractsFactory {
+    /**
+     * @dev Emitted when a primary and secondary contract are deployed.
+     * @param primaryContract Address of the deployed primary contract.
+     * @param secondaryContract Address of the deployed secondary contract.
+     * @param primaryContractDeployment Parameters used for the primary contract deployment.
+     * @param secondaryContractDeployment Parameters used for the secondary contract deployment.
+     * @param postDeploymentModule Address of the post-deployment module.
+     * @param postDeploymentModuleCalldata Calldata passed to the post-deployment module.
+     */
     event DeployedContracts(
         address indexed primaryContract,
         address indexed secondaryContract,
@@ -11,6 +20,15 @@ interface ILSP23LinkedContractsFactory {
         bytes postDeploymentModuleCalldata
     );
 
+    /**
+     * @dev Emitted when proxies of a primary and secondary contract are deployed.
+     * @param primaryContract Address of the deployed primary contract proxy.
+     * @param secondaryContract Address of the deployed secondary contract proxy.
+     * @param primaryContractDeploymentInit Parameters used for the primary contract proxy deployment.
+     * @param secondaryContractDeploymentInit Parameters used for the secondary contract proxy deployment.
+     * @param postDeploymentModule Address of the post-deployment module.
+     * @param postDeploymentModuleCalldata Calldata passed to the post-deployment module.
+     */
     event DeployedERC1167Proxies(
         address indexed primaryContract,
         address indexed secondaryContract,

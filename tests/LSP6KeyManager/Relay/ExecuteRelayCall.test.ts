@@ -336,11 +336,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
             it('should revert', async () => {
               const nameToSet = 'Alice';
               const targetContractPayload = targetContract.interface.encodeFunctionData(
-                'setNamePayable',
+                'setNamePayableMinimumValue',
                 [nameToSet],
               );
 
-              const requiredValueForExecution = 51; // specified in `setNamePayable(..)`
+              const requiredValueForExecution = 51; // specified in `setNamePayableMinimumValue(..)`
 
               const latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
 
@@ -413,11 +413,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
             it('should pass if signer has the target contract address in its list of allowed calls', async () => {
               const nameToSet = 'Alice';
               const targetContractPayload = targetContract.interface.encodeFunctionData(
-                'setNamePayable',
+                'setNamePayableMinimumValue',
                 [nameToSet],
               );
 
-              const requiredValueForExecution = 51; // specified in `setNamePayable(..)`
+              const requiredValueForExecution = 51; // specified in `setNamePayableMinimumValue(..)`
 
               const latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
 
@@ -481,11 +481,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
             it("should revert with 'NotAllowedCall' error if signer does not have any listed under its allowed calls", async () => {
               const nameToSet = 'Alice';
               const targetContractPayload = targetContract.interface.encodeFunctionData(
-                'setNamePayable',
+                'setNamePayableMinimumValue',
                 [nameToSet],
               );
 
-              const requiredValueForExecution = 51; // specified in `setNamePayable(..)`
+              const requiredValueForExecution = 51; // specified in `setNamePayableMinimumValue(..)`
 
               const latestNonce = await context.keyManager.callStatic.getNonce(
                 signerNoAllowedCalls.address,

@@ -91,7 +91,7 @@ abstract contract LSP6KeyManagerCore is
     bool internal _reentrancyStatus;
 
     /**
-     * @inheritdoc ILSP6KeyManager
+     * @inheritdoc ILSP6
      */
     function target() public view returns (address) {
         return _target;
@@ -163,9 +163,9 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @inheritdoc ILSP6KeyManager
+     * @inheritdoc ILSP6
      *
-     * @custom:events VerifiedCall event when the permissions related to `payload` have been verified successfully.
+     * @custom:events {PermissionsVerified} event when the permissions related to `payload` have been verified successfully.
      */
     function execute(
         bytes calldata payload
@@ -174,9 +174,9 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @inheritdoc ILSP6KeyManager
+     * @inheritdoc ILSP6
      *
-     * @custom:events VerifiedCall event for each permissions related to each `payload` that have been verified successfully.
+     * @custom:events {PermissionsVerified} event for each permissions related to each `payload` that have been verified successfully.
      */
     function executeBatch(
         uint256[] calldata values,
@@ -217,7 +217,7 @@ abstract contract LSP6KeyManagerCore is
      * The signer that generated the `signature` MUST be a controller with some permissions on the linked {target}.
      * The `payload` will be executed on the {target} contract once the LSP25 signature and the permissions of the signer have been verified.
      *
-     * @custom:events {VerifiedCall} event when the permissions related to `payload` have been verified successfully.
+     * @custom:events {PermissionsVerified} event when the permissions related to `payload` have been verified successfully.
      *
      * @custom:hint If you are looking to learn how to sign and execute relay transactions via the Key Manager,
      * see our Javascript step by step guide [_"Execute Relay Transactions"_](../../guides/key-manager/execute-relay-transactions.md).
@@ -528,11 +528,21 @@ abstract contract LSP6KeyManagerCore is
 
             // ERC725X.execute(uint256,address,uint256,bytes)
         } else if (erc725Function == IERC725X.execute.selector) {
+            (
+                uint256 operationType,
+                address to,
+                uint256 value,
+                bytes memory data
+            ) = abi.decode(payload[4:], (uint256, address, uint256, bytes));
+
             LSP6ExecuteModule._verifyCanExecute(
                 _target,
                 from,
                 permissions,
-                payload
+                operationType,
+                to,
+                value,
+                data
             );
         } else if (
             erc725Function == ILSP14Ownable2Step.transferOwnership.selector ||

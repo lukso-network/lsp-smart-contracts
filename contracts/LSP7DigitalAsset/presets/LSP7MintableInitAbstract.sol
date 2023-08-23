@@ -11,7 +11,7 @@ import {
 } from "../LSP7DigitalAssetInitAbstract.sol";
 
 /**
- * @dev LSP7 extension, mintable.
+ * @dev LSP7DigitalAsset deployable preset contract (inheritable proxy version) with a public {mint} function callable only by the contract {owner}.
  */
 abstract contract LSP7MintableInitAbstract is
     LSP7DigitalAssetInitAbstract,

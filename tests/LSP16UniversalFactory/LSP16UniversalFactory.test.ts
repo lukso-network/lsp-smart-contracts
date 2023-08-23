@@ -17,6 +17,7 @@ import {
   ImplementationTester__factory,
   FallbackInitializer,
   FallbackInitializer__factory,
+  LSP6KeyManager__factory,
 } from '../../types';
 
 import web3 from 'web3';
@@ -25,10 +26,10 @@ import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 import { provider, AddressOffset } from '../utils/helpers';
 
-import { bytecode as UniversalProfileBytecode } from '../../artifacts/contracts/UniversalProfile.sol/UniversalProfile.json';
-import { bytecode as LSP6KeyManagerBytecode } from '../../artifacts/contracts/LSP6KeyManager/LSP6KeyManager.sol/LSP6KeyManager.json';
-import { bytecode as ImplementationTesterBytecode } from '../../artifacts/contracts/Mocks/ImplementationTester.sol/ImplementationTester.json';
-import { bytecode as FallbackInitializerBytecode } from '../../artifacts/contracts/Mocks/FallbackInitializer.sol/FallbackInitializer.json';
+const UniversalProfileBytecode = UniversalProfile__factory.bytecode;
+const LSP6KeyManagerBytecode = LSP6KeyManager__factory.bytecode;
+const ImplementationTesterBytecode = ImplementationTester__factory.bytecode;
+const FallbackInitializerBytecode = FallbackInitializer__factory.bytecode;
 
 type UniversalFactoryTestAccounts = {
   random: SignerWithAddress;

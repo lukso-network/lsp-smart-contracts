@@ -69,9 +69,9 @@ import {
 } from "../LSP14Ownable2Step/LSP14Errors.sol";
 
 /**
- * @title Core Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
+ * @title Core Implementation of LSP9Vault built on top of [ERC725], [LSP1UniversalReceiver]
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
- * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
+ * @dev Could be owned by an EOA or by a contract and is able to receive and send assets. Also allows for registering received assets by leveraging the key-value storage.
  */
 contract LSP9VaultCore is
     ERC725XCore,
@@ -87,11 +87,11 @@ contract LSP9VaultCore is
     address private _reentrantDelegate;
 
     /**
-     * @dev Emits an event when receiving native tokens
+     * @dev  Executed:
+     * - When receiving some native tokens without any additional data.
+     * - On empty calls to the contract.
      *
-     * Executed:
-     *     - when receiving some native tokens without any additional data.
-     *     - on empty calls to the contract.
+     * @custom:events {ValueReceived} when receiving native tokens.
      */
     receive() external payable virtual {
         if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
@@ -100,21 +100,25 @@ contract LSP9VaultCore is
     // solhint-disable no-complex-fallback
 
     /**
-     * @dev Emits an event when receiving native tokens
+     * @notice The `fallback` function was called with the following amount of native tokens: `msg.value`; and the following calldata: `callData`.
      *
-     * Forwards the call to an extension contract (address). This address can be retrieved from
-     * the ERC725Y data key-value store using the data key below (function selector appended to the prefix):
-     *_LSP17_FALLBACK_EXTENSIONS_HANDLER_ + <function-selector>
-     * If there is no extension stored under the data key, return.
+     * @dev Achieves the goal of [LSP-17-ContractExtension] standard by extending the contract to handle calls of functions that do not exist natively,
+     * forwarding the function call to the extension address mapped to the function being called.
      *
-     * The call to the extension is appended with bytes20 (msg.sender) and bytes32 (msg.value).
-     * Returns the return value on success and revert in case of failure.
+     * This function is executed when:
+     *    - Sending data of length less than 4 bytes to the contract.
+     *    - The first 4 bytes of the calldata do not match any publicly callable functions from the contract ABI.
+     *    - Receiving native tokens with some calldata.
      *
-     * If the msg.data is shorter than 4 bytes do not check for an extension and return
+     * 1. If the data is equal or longer than 4 bytes, the [ERC-725Y] storage is queried with the following data key: [_LSP17_EXTENSION_PREFIX] + `bytes4(msg.sig)` (Check [LSP-2-ERC725YJSONSchema] for encoding the data key)
      *
-     * Executed when:
-     * - the first 4 bytes of the calldata do not match any publicly callable functions from the contract ABI.
-     * - receiving native tokens with some calldata.
+     *   - If there is no address stored under the following data key, revert with {NoExtensionFoundForFunctionSelector(bytes4)}. The data key relative to `bytes4(0)` is an exception, where no reverts occurs if there is no extension address stored under. This exception is made to allow users to send random data (graffiti) to the account and to be able to react on it.
+     *
+     *   - If there is an address, forward the `msg.data` to the extension using the CALL opcode, appending 52 bytes (20 bytes of `msg.sender` and 32 bytes of `msg.value`). Return what the calls returns, or revert if the call failed.
+     *
+     * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), return.
+     *
+     * @custom:events {ValueReceived} event when receiving native tokens.
      */
     fallback(
         bytes calldata callData
@@ -131,96 +135,9 @@ contract LSP9VaultCore is
     }
 
     /**
-     * @dev Forwards the call to an extension mapped to a function selector.
+     * @inheritdoc ILSP9Vault
      *
-     * Calls {_getExtension} to get the address of the extension mapped to the function selector being
-     * called on the account. If there is no extension, the `address(0)` will be returned.
-     *
-     * Reverts if there is no extension for the function being called, except for the bytes4(0) function
-     * selector, which passes even if there is no extension for it.
-     *
-     * If there is an extension for the function selector being called, it calls the extension with the
-     * CALL opcode, passing the `msg.data` appended with the 20 bytes of the `msg.sender` and
-     * 32 bytes of the `msg.value`
-     */
-    function _fallbackLSP17Extendable(
-        bytes calldata callData
-    ) internal virtual override returns (bytes memory) {
-        // If there is a function selector
-        address extension = _getExtension(msg.sig);
-
-        // if no extension was found for bytes4(0) return don't revert
-        if (msg.sig == bytes4(0) && extension == address(0)) return "";
-
-        // if no extension was found for other function selectors, revert
-        if (extension == address(0))
-            revert NoExtensionFoundForFunctionSelector(msg.sig);
-
-        (bool success, bytes memory result) = extension.call(
-            abi.encodePacked(callData, msg.sender, msg.value)
-        );
-
-        if (success) {
-            return result;
-        } else {
-            // `mload(result)` -> offset in memory where `result.length` is located
-            // `add(result, 32)` -> offset in memory where `result` data starts
-            // solhint-disable no-inline-assembly
-            /// @solidity memory-safe-assembly
-            assembly {
-                let resultdata_size := mload(result)
-                revert(add(result, 32), resultdata_size)
-            }
-        }
-    }
-
-    /**
-     * @dev Returns the extension stored under the `_LSP17_EXTENSION_PREFIX` data key
-     * mapped to the functionSelector provided.
-     *
-     * If no extension is stored, returns the address(0)
-     */
-    function _getExtension(
-        bytes4 functionSelector
-    ) internal view virtual override returns (address) {
-        bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
-            _LSP17_EXTENSION_PREFIX,
-            functionSelector
-        );
-
-        // Check if there is an extension for the function selector provided
-        address extension = address(bytes20(_getData(mappedExtensionDataKey)));
-
-        return extension;
-    }
-
-    /**
-     * @dev Returns true if this contract implements the interface defined by
-     * `interfaceId`.
-     *
-     * If the contract doesn't support the `interfaceId`, it forwards the call to the
-     * `supportsInterface` extension according to LSP17, and checks if the extension
-     * implements the interface defined by `interfaceId`.
-     */
-    function supportsInterface(
-        bytes4 interfaceId
-    )
-        public
-        view
-        virtual
-        override(ERC725XCore, ERC725YCore, LSP17Extendable)
-        returns (bool)
-    {
-        return
-            interfaceId == _INTERFACEID_LSP9 ||
-            interfaceId == _INTERFACEID_LSP1 ||
-            interfaceId == _INTERFACEID_LSP14 ||
-            super.supportsInterface(interfaceId) ||
-            _supportsInterfaceInERC165Extension(interfaceId);
-    }
-
-    /**
-     * @dev Receives and executes a batch of function calls on this contract.
+     * @custom:info It's not possible to send value along the functions call due to the use of `delegatecall`.
      */
     function batchCalls(
         bytes[] calldata data
@@ -256,13 +173,19 @@ contract LSP9VaultCore is
 
     /**
      * @inheritdoc IERC725X
-     * @param operationType The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3
-     * @dev Executes any other smart contract.
-     * SHOULD only be callable by the owner of the contract set via ERC173
      *
-     * Emits a {Executed} event, when a call is executed under `operationType` 0 and 3
-     * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2
-     * Emits a {ValueReceived} event, when receives native token
+     * @custom:requirements
+     * - Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
+     * - If a `value` is provided, the contract must have at least this amount in its balance to execute successfully.
+     * - If the operation type is `CREATE` (1) or `CREATE2` (2), `target` must be `address(0)`.
+     * - If the operation type is `STATICCALL` (3), `value` transfer is disallowed and must be 0.
+     *
+     * @custom:events
+     * - {Executed} event for each call that uses under `operationType`: `CALL` (0) and `STATICCALL` (3).
+     * - {ContractCreated} event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2).
+     * - {ValueReceived} event when receiving native tokens.
+     *
+     * @custom:info The `operationType` 4 `DELEGATECALL` is disabled by default in the LSP9 Vault.
      */
     function execute(
         uint256 operationType,
@@ -277,7 +200,19 @@ contract LSP9VaultCore is
     /**
      * @inheritdoc ERC725XCore
      *
-     * @dev Emits a {ValueReceived} event when receiving native tokens.
+     * @custom:requirements
+     * - The length of the parameters provided must be equal.
+     * - Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
+     * - If a `value` is provided, the contract must have at least this amount in its balance to execute successfully.
+     * - If the operation type is `CREATE` (1) or `CREATE2` (2), `target` must be `address(0)`.
+     * - If the operation type is `STATICCALL` (3), `value` transfer is disallowed and must be 0.
+     *
+     * @custom:events
+     * - {Executed} event for each call that uses under `operationType`: `CALL` (0) and `STATICCALL` (3). (each iteration)
+     * - {ContractCreated} event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2). (each iteration)
+     * - {ValueReceived} event when receiving native tokens.
+     *
+     * @custom:info The `operationType` 4 `DELEGATECALL` is disabled by default in the LSP9 Vault.
      */
     function executeBatch(
         uint256[] memory operationsType,
@@ -291,11 +226,12 @@ contract LSP9VaultCore is
 
     /**
      * @inheritdoc IERC725Y
-     * @dev Sets data as bytes in the vault storage for a single key.
-     * SHOULD only be callable by the owner of the contract set via ERC173
-     * and the UniversalReceiverDelegate
      *
-     * Emits a {DataChanged} event.
+     * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
+     *
+     * @custom:events
+     * - {ValueReceived} event when receiving native tokens.
+     * - {DataChanged} event.
      */
     function setData(
         bytes32 dataKey,
@@ -318,11 +254,12 @@ contract LSP9VaultCore is
 
     /**
      * @inheritdoc IERC725Y
-     * @dev Sets array of data at multiple given `key`
-     * SHOULD only be callable by the owner of the contract set via ERC173
-     * and the UniversalReceiverDelegate
      *
-     * Emits a {DataChanged} event.
+     * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
+     *
+     * @custom:events
+     * - {ValueReceived} event when receiving native tokens.
+     * - {DataChanged} event. (on each iteration of setting data)
      */
     function setDataBatch(
         bytes32[] memory dataKeys,
@@ -355,38 +292,43 @@ contract LSP9VaultCore is
     }
 
     /**
-     * @dev Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
-     */
-    function _validateAndIdentifyCaller()
-        internal
-        view
-        virtual
-        returns (bool isURD)
-    {
-        if (msg.sender != owner()) {
-            require(
-                msg.sender == _reentrantDelegate,
-                "Only Owner or reentered Universal Receiver Delegate allowed"
-            );
-            isURD = true;
-        }
-    }
-
-    /**
-     * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
-     * Forwards the call to the addresses stored in the ERC725Y storage under the LSP1UniversalReceiverDelegate
-     * Key and the typeId Key (param) respectively. The call will be discarded if no addresses are set.
+     * @notice Notifying the contract by calling its `universalReceiver` function with the following informations: typeId: `typeId`; data: `data`.
+     *
+     * @dev Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be notified about incoming/outgoing transactions and enabling reactions to these actions.
+     * The reaction is achieved by having two external contracts ([LSP1UniversalReceiverDelegate]) that react on the whole transaction and on the specific typeId, respectively.
+     *
+     * The function performs the following steps:
+     *
+     * 1. Query the [ERC-725Y] storage with the data key [_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY].
+     *      - If there is an address stored under the data key, check if this address supports the LSP1 interfaceId.
+     *
+     *      - If yes, call this address with the typeId and data (params), along with additional calldata consisting of 20 bytes of `msg.sender` and 32 bytes of `msg.value`. If not, continue the execution of the function.
+     *
+     *
+     * 2. Query the [ERC-725Y] storage with the data key [_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX] + `bytes32(typeId)`.
+     *   (Check [LSP-2-ERC725YJSONSchema] for encoding the data key)
+     *
+     *      - If there is an address stored under the data key, check if this address supports the LSP1 interfaceId.
+     *
+     *      - If yes, call this address with the typeId and data (params), along with additional calldata consisting of 20 bytes of `msg.sender` and 32 bytes of `msg.value`. If not, continue the execution of the function.
      *
      * @param typeId The type of call received.
      * @param receivedData The data received.
-     * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call
-     * and the LSP1TypeIdDelegate call.
+     *
+     * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call and the LSP1TypeIdDelegate call.
+     *
+     * @custom:events
+     * - {ValueReceived} when receiving native tokens.
+     * - {UniversalReceiver} event with the function parameters, call options, and the response of the UniversalReceiverDelegates (URD) contract that was called.
      */
     function universalReceiver(
         bytes32 typeId,
         bytes calldata receivedData
     ) public payable virtual returns (bytes memory returnedValues) {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0) {
+            emit ValueReceived(msg.sender, msg.value);
+        }
+
         bytes memory lsp1DelegateValue = _getData(
             _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
         );
@@ -459,10 +401,10 @@ contract LSP9VaultCore is
     /**
      * @inheritdoc LSP14Ownable2Step
      *
-     * @dev same as ILSP14.transferOwnership with the additional requirement:
-     *
-     * Requirements:
-     *  - when notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP9OwnershipTransferStarted')
+     * @custom:requirements
+     * - Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
+     * - When notifying the new owner via LSP1, the `typeId` used must be the `keccak256(...)` hash of [LSP0OwnershipTransferStarted].
+     * - Pending owner cannot accept ownership in the same tx via the LSP1 hook.
      */
     function transferOwnership(
         address newOwner
@@ -487,11 +429,10 @@ contract LSP9VaultCore is
     /**
      * @inheritdoc LSP14Ownable2Step
      *
-     * @dev same as ILSP14.acceptOwnership with the additional requirement:
-     *
-     * Requirements:
-     * - when notifying the previous owner via LSP1, the typeId used MUST be keccak256('LSP9OwnershipTransferred_SenderNotification')
-     * - when notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP9OwnershipTransferred_RecipientNotification')
+     * @custom:requirements
+     * - Only the {pendingOwner} can call this function.
+     * - When notifying the previous owner via LSP1, the typeId used must be the `keccak256(...)` hash of [LSP0OwnershipTransferred_SenderNotification].
+     * - When notifying the new owner via LSP1, the typeId used must be the `keccak256(...)` hash of [LSP0OwnershipTransferred_RecipientNotification].
      */
     function acceptOwnership() public virtual override NotInTransferOwnership {
         address previousOwner = owner();
@@ -511,6 +452,10 @@ contract LSP9VaultCore is
 
     /**
      * @inheritdoc LSP14Ownable2Step
+     *
+     * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
+     *
+     * @custom:danger Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
      */
     function renounceOwnership()
         public
@@ -518,11 +463,132 @@ contract LSP9VaultCore is
         override(LSP14Ownable2Step, OwnableUnset)
         onlyOwner
     {
+        address previousOwner = owner();
         LSP14Ownable2Step._renounceOwnership();
+
+        if (owner() == address(0)) {
+            previousOwner.tryNotifyUniversalReceiver(
+                _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
+                ""
+            );
+        }
     }
 
     /**
-     * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
+     * @notice Checking if this contract supports the interface defined by the `bytes4` interface ID `interfaceId`.
+     *
+     * @dev Achieves the goal of [ERC-165] to detect supported interfaces and [LSP-17-ContractExtension] by
+     * checking if the interfaceId being queried is supported on another linked extension.
+     *
+     * If the contract doesn't support the `interfaceId`, it forwards the call to the
+     * `supportsInterface` extension according to [LSP-17-ContractExtension], and checks if the extension
+     * implements the interface defined by `interfaceId`.
+     *
+     * @param interfaceId The interface ID to check if the contract supports it.
+     *
+     * @return `true` if this contract implements the interface defined by `interfaceId`, `false` otherwise.
+     */
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(ERC725XCore, ERC725YCore, LSP17Extendable)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_LSP9 ||
+            interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_LSP14 ||
+            super.supportsInterface(interfaceId) ||
+            _supportsInterfaceInERC165Extension(interfaceId);
+    }
+
+    /**
+     * @dev Forwards the call to an extension mapped to a function selector.
+     *
+     * Calls {_getExtension} to get the address of the extension mapped to the function selector being called on the account. If there is no extension, the `address(0)` will be returned.
+     *
+     * Reverts if there is no extension for the function being called, except for the bytes4(0) function selector, which passes even if there is no extension for it.
+     *
+     * If there is an extension for the function selector being called, it calls the extension with the CALL opcode, passing the `msg.data` appended with the 20 bytes of the `msg.sender` and 32 bytes of the `msg.value`
+     */
+    function _fallbackLSP17Extendable(
+        bytes calldata callData
+    ) internal virtual override returns (bytes memory) {
+        // If there is a function selector
+        address extension = _getExtension(msg.sig);
+
+        // if no extension was found for bytes4(0) return don't revert
+        if (msg.sig == bytes4(0) && extension == address(0)) return "";
+
+        // if no extension was found for other function selectors, revert
+        if (extension == address(0))
+            revert NoExtensionFoundForFunctionSelector(msg.sig);
+
+        (bool success, bytes memory result) = extension.call(
+            abi.encodePacked(callData, msg.sender, msg.value)
+        );
+
+        if (success) {
+            return result;
+        } else {
+            // `mload(result)` -> offset in memory where `result.length` is located
+            // `add(result, 32)` -> offset in memory where `result` data starts
+            // solhint-disable no-inline-assembly
+            /// @solidity memory-safe-assembly
+            assembly {
+                let resultdata_size := mload(result)
+                revert(add(result, 32), resultdata_size)
+            }
+        }
+    }
+
+    /**
+     * @dev Returns the extension address stored under the following data key:
+     * - {_LSP17_EXTENSION_PREFIX} + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
+     * - If no extension is stored, returns the address(0).
+     */
+    function _getExtension(
+        bytes4 functionSelector
+    ) internal view virtual override returns (address) {
+        bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
+            _LSP17_EXTENSION_PREFIX,
+            functionSelector
+        );
+
+        // Check if there is an extension for the function selector provided
+        address extension = address(bytes20(_getData(mappedExtensionDataKey)));
+
+        return extension;
+    }
+
+    /**
+     * @dev Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
+     */
+    function _validateAndIdentifyCaller()
+        internal
+        view
+        virtual
+        returns (bool isURD)
+    {
+        if (msg.sender != owner()) {
+            require(
+                msg.sender == _reentrantDelegate,
+                "Only Owner or reentered Universal Receiver Delegate allowed"
+            );
+            isURD = true;
+        }
+    }
+
+    /**
+     * @dev This function overrides the {ERC725YCore} internal {_setData} function to optimize gas usage by emitting only the first 256 bytes of the `dataValue`.
+     *
+     * @custom:events {DataChanged} event with only the first 256 bytes of {dataValue}.
+     *
+     * @param dataKey The key to store the data value under.
+     * @param dataValue The data value to be stored.
      */
     function _setData(
         bytes32 dataKey,
@@ -538,9 +604,14 @@ contract LSP9VaultCore is
     }
 
     /**
-     * @dev disable operation type DELEGATECALL (4).
-     * NB: providing operation type DELEGATECALL (4) as argument will result
-     * in custom error ERC725X_UnknownOperationType(4)
+     * @dev This function overrides the {ERC725XCore} internal {_execute} function to disable operation type DELEGATECALL (4).
+     *
+     * @custom:warning Providing operation type DELEGATECALL (4) as argument will result in custom error {ERC725X_UnknownOperationType(4)}
+     *
+     * @param operationType The operation type used: CALL = 0; CREATE = 1; CREATE2 = 2; STATICCALL = 3.
+     * @param target The address of the EOA or smart contract.  (unused if a contract is created via operation type 1 or 2).
+     * @param value The amount of native tokens to transfer (in Wei).
+     * @param data The call data, or the creation bytecode of the contract to deploy if `operationType` is `1` or `2`.
      */
     function _execute(
         uint256 operationType,

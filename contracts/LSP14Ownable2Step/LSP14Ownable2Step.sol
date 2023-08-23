@@ -133,7 +133,15 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         override(OwnableUnset, ILSP14Ownable2Step)
         onlyOwner
     {
+        address previousOwner = owner();
         _renounceOwnership();
+
+        if (owner() == address(0)) {
+            previousOwner.tryNotifyUniversalReceiver(
+                _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
+                ""
+            );
+        }
     }
 
     // --- Internal methods

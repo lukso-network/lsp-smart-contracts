@@ -71,7 +71,7 @@ Execute A `payload` on the linked [`target`](#target) contract after having veri
 
 **Emitted events:**
 
-- VerifiedCall event when the permissions related to `payload` have been verified successfully.
+- [`PermissionsVerified`](#permissionsverified) event when the permissions related to `payload` have been verified successfully.
 
 </blockquote>
 
@@ -119,7 +119,7 @@ Same as [`execute`](#execute) but execute a batch of payloads (abi-encoded funct
 
 **Emitted events:**
 
-- VerifiedCall event for each permissions related to each `payload` that have been verified successfully.
+- [`PermissionsVerified`](#permissionsverified) event for each permissions related to each `payload` that have been verified successfully.
 
 </blockquote>
 
@@ -172,7 +172,7 @@ Allows any address (executor) to execute a payload (= abi-encoded function call)
 
 **Emitted events:**
 
-- [`VerifiedCall`](#verifiedcall) event when the permissions related to `payload` have been verified successfully.
+- [`PermissionsVerified`](#permissionsverified) event when the permissions related to `payload` have been verified successfully.
 
 </blockquote>
 
@@ -780,7 +780,10 @@ function _verifyCanExecute(
   address controlledContract,
   address controller,
   bytes32 permissions,
-  bytes payload
+  uint256 operationType,
+  address to,
+  uint256 value,
+  bytes data
 ) internal view;
 ```
 
@@ -793,7 +796,10 @@ verify if `controllerAddress` has the required permissions to interact with othe
 | `controlledContract` | `address` | the address of the ERC725 contract where the payload is executed and where the permissions are verified. |
 | `controller`         | `address` | the address who want to run the execute function on the ERC725Account.                                   |
 | `permissions`        | `bytes32` | the permissions of the controller address.                                                               |
-| `payload`            |  `bytes`  | the ABI encoded payload `controlledContract.execute(...)`.                                               |
+| `operationType`      | `uint256` | -                                                                                                        |
+| `to`                 | `address` | -                                                                                                        |
+| `value`              | `uint256` | -                                                                                                        |
+| `data`               |  `bytes`  | -                                                                                                        |
 
 <br/>
 
@@ -816,7 +822,9 @@ function _verifyCanStaticCall(
   address controlledContract,
   address controller,
   bytes32 permissions,
-  bytes payload
+  address to,
+  uint256 value,
+  bytes data
 ) internal view;
 ```
 
@@ -829,7 +837,9 @@ function _verifyCanCall(
   address controlledContract,
   address controller,
   bytes32 permissions,
-  bytes payload
+  address to,
+  uint256 value,
+  bytes data
 ) internal view;
 ```
 
@@ -841,7 +851,10 @@ function _verifyCanCall(
 function _verifyAllowedCall(
   address controlledContract,
   address controllerAddress,
-  bytes payload
+  uint256 operationType,
+  address to,
+  uint256 value,
+  bytes data
 ) internal view;
 ```
 
@@ -872,16 +885,6 @@ extract the bytes4 representation of a single bit for the type of call according
 | Name                |   Type   | Description                                               |
 | ------------------- | :------: | --------------------------------------------------------- |
 | `requiredCallTypes` | `bytes4` | a bytes4 value containing a single 1 bit for the callType |
-
-<br/>
-
-### \_extractExecuteParameters
-
-```solidity
-function _extractExecuteParameters(
-  bytes executeCalldata
-) internal pure returns (uint256, address, uint256, bytes4, bool);
-```
 
 <br/>
 
@@ -1672,7 +1675,7 @@ This error occurs when there was not enough funds sent to the batch functions `e
 error NoCallsAllowed(address from);
 ```
 
-_The address `from` is not authorised to use the linked account contract to make external calls, because it has Allowed Calls set._
+_The address `from` is not authorised to use the linked account contract to make external calls, because it has no Allowed Calls set._
 
 Reverts when the `from` address has no `AllowedCalls` set and cannot interact with any address using the linked [`target`](#target).
 

@@ -1,4 +1,4 @@
-import { ethers } from 'hardhat';
+import { ethers, network } from 'hardhat';
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
@@ -2417,6 +2417,52 @@ export const shouldBehaveLikeLSP1Delegate = (
           expect(arrayLength).to.equal(ARRAY_LENGTH.ONE);
           expect(elementAddress).to.equal(lsp9VaultC.address);
         });
+      });
+    });
+
+    describe('When renouncing Ownership of VaultC from UP2', () => {
+      let tx: Transaction;
+      before(async () => {
+        const renounceOwnershipCalldata =
+          lsp9VaultC.interface.encodeFunctionData('renounceOwnership');
+
+        // Call renounceOwnership for the first time
+        await context.universalProfile2
+          .connect(context.accounts.owner2)
+          .execute(OPERATION_TYPES.CALL, lsp9VaultC.address, 0, renounceOwnershipCalldata);
+
+        // Skip 199 block to reach the time where renouncing ownership can happen
+        await network.provider.send('hardhat_mine', [ethers.utils.hexValue(199)]);
+
+        // Call renounceOwnership for the second time
+        tx = await context.universalProfile2
+          .connect(context.accounts.owner2)
+          .execute(OPERATION_TYPES.CALL, lsp9VaultC.address, 0, renounceOwnershipCalldata);
+      });
+
+      it('Should emit `UnviersalReceiver` event', async () => {
+        await expect(tx)
+          .to.emit(context.universalProfile2, 'UniversalReceiver')
+          .withArgs(
+            lsp9VaultC.address,
+            0,
+            LSP1_TYPE_IDS.LSP9OwnershipTransferred_SenderNotification,
+            '0x',
+            ethers.utils.defaultAbiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
+          );
+      });
+
+      it('should remove all lsp10keys : arrayLength 0, no map, no VaultC address in UP2', async () => {
+        const [mapValue, arrayLength, elementAddress] =
+          await context.universalProfile2.getDataBatch([
+            ERC725YDataKeys.LSP10.LSP10VaultsMap + lsp9VaultC.address.substring(2),
+            ERC725YDataKeys.LSP10['LSP10Vaults[]'].length,
+            ERC725YDataKeys.LSP10['LSP10Vaults[]'].index + '00000000000000000000000000000000',
+          ]);
+
+        expect(mapValue).to.equal('0x');
+        expect(arrayLength).to.equal(ARRAY_LENGTH.ZERO);
+        expect(elementAddress).to.equal('0x');
       });
     });
 

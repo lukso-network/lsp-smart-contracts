@@ -1712,4 +1712,46 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
       });
     });
   });
+
+  describe('`0x0000` set under AllowedERC725YDataKeys', () => {
+    let controllerCanSetSomeKeys: SignerWithAddress;
+
+    const compactBytesArrayOfAllowedERC725YDataKeys = '0x0000';
+
+    before(async () => {
+      context = await buildContext();
+
+      controllerCanSetSomeKeys = context.accounts[1];
+
+      const permissionKeys = [
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          controllerCanSetSomeKeys.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
+          controllerCanSetSomeKeys.address.substring(2),
+      ];
+
+      const permissionValues = [
+        ALL_PERMISSIONS,
+        PERMISSIONS.SETDATA,
+        compactBytesArrayOfAllowedERC725YDataKeys,
+      ];
+
+      await setupKeyManager(context, permissionKeys, permissionValues);
+    });
+
+    it('should revert when trying to set `bytes32(0)` as an input data key', async () => {
+      const dataKey = '0x0000000000000000000000000000000000000000000000000000000000000000';
+      const dataValue = '0x';
+
+      const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+        dataKey,
+        dataValue,
+      ]);
+
+      await expect(context.keyManager.connect(controllerCanSetSomeKeys).execute(setDataPayload))
+        .to.be.revertedWithCustomError(context.keyManager, 'InvalidEncodedAllowedERC725YDataKeys')
+        .withArgs(compactBytesArrayOfAllowedERC725YDataKeys, "couldn't DECODE from storage");
+    });
+  });
 };
