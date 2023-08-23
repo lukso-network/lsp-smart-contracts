@@ -29,6 +29,9 @@ import {
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {
+    LSP1UniversalReceiver
+} from "../LSP1UniversalReceiver/LSP1UniversalReceiver.sol";
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 
@@ -70,12 +73,12 @@ import "../LSP17ContractExtension/LSP17Errors.sol";
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
 contract LSP9VaultCore is
+    ILSP9Vault,
     ERC725XCore,
     ERC725YCore,
+    LSP1UniversalReceiver,
     LSP14Ownable2Step,
-    LSP17Extendable,
-    ILSP1UniversalReceiver,
-    ILSP9Vault
+    LSP17Extendable
 {
     using ERC165Checker for address;
     using LSP1Utils for address;
@@ -394,75 +397,11 @@ contract LSP9VaultCore is
     function universalReceiver(
         bytes32 typeId,
         bytes calldata receivedData
-    ) public payable virtual returns (bytes memory returnedValues) {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
-        bytes memory lsp1DelegateValue = _getData(
-            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-        );
-        bytes memory resultDefaultDelegate;
-
-        if (lsp1DelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(
-                bytes20(lsp1DelegateValue)
-            );
-
-            if (
-                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
-                    _INTERFACEID_LSP1
-                )
-            ) {
-                _reentrantDelegate = universalReceiverDelegate;
-                resultDefaultDelegate = universalReceiverDelegate
-                    .callUniversalReceiverWithCallerInfos(
-                        typeId,
-                        receivedData,
-                        msg.sender,
-                        msg.value
-                    );
-            }
+    ) public payable virtual override returns (bytes memory returnedValues) {
+        if (msg.value != 0) {
+            emit ValueReceived(msg.sender, msg.value);
         }
-
-        bytes32 lsp1typeIdDelegateKey = LSP2Utils.generateMappingKey(
-            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
-            bytes20(typeId)
-        );
-
-        bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
-        bytes memory resultTypeIdDelegate;
-
-        if (lsp1TypeIdDelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(
-                bytes20(lsp1TypeIdDelegateValue)
-            );
-
-            if (
-                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
-                    _INTERFACEID_LSP1
-                )
-            ) {
-                _reentrantDelegate = universalReceiverDelegate;
-                resultTypeIdDelegate = universalReceiverDelegate
-                    .callUniversalReceiverWithCallerInfos(
-                        typeId,
-                        receivedData,
-                        msg.sender,
-                        msg.value
-                    );
-            }
-        }
-
-        delete _reentrantDelegate;
-        returnedValues = abi.encode(
-            resultDefaultDelegate,
-            resultTypeIdDelegate
-        );
-        emit UniversalReceiver(
-            msg.sender,
-            msg.value,
-            typeId,
-            receivedData,
-            returnedValues
-        );
+        return super.universalReceiver(typeId, receivedData);
     }
 
     /**
@@ -582,5 +521,72 @@ contract LSP9VaultCore is
         }
 
         revert ERC725X_UnknownOperationType(operationType);
+    }
+
+    /**
+     * @dev overriden for the LSP1 delegate reentrancy guard specific to LSP9
+     */
+    function _callUniversalReceiverDelegates(
+        bytes32 typeId,
+        bytes calldata receivedData
+    ) internal virtual override returns (bytes memory) {
+        bytes memory lsp1DelegateValue = _getData(
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
+        );
+        bytes memory resultDefaultDelegate;
+
+        if (lsp1DelegateValue.length >= 20) {
+            address universalReceiverDelegate = address(
+                bytes20(lsp1DelegateValue)
+            );
+
+            if (
+                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
+                    _INTERFACEID_LSP1
+                )
+            ) {
+                _reentrantDelegate = universalReceiverDelegate;
+                resultDefaultDelegate = universalReceiverDelegate
+                    .callUniversalReceiverWithCallerInfos(
+                        typeId,
+                        receivedData,
+                        msg.sender,
+                        msg.value
+                    );
+            }
+        }
+
+        bytes32 lsp1typeIdDelegateKey = LSP2Utils.generateMappingKey(
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+            bytes20(typeId)
+        );
+
+        bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
+        bytes memory resultTypeIdDelegate;
+
+        if (lsp1TypeIdDelegateValue.length >= 20) {
+            address universalReceiverDelegate = address(
+                bytes20(lsp1TypeIdDelegateValue)
+            );
+
+            if (
+                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
+                    _INTERFACEID_LSP1
+                )
+            ) {
+                _reentrantDelegate = universalReceiverDelegate;
+                resultTypeIdDelegate = universalReceiverDelegate
+                    .callUniversalReceiverWithCallerInfos(
+                        typeId,
+                        receivedData,
+                        msg.sender,
+                        msg.value
+                    );
+            }
+        }
+
+        delete _reentrantDelegate;
+
+        return abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
     }
 }

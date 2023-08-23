@@ -31,6 +31,23 @@ abstract contract LSP1UniversalReceiver is ERC725YCore, ILSP1UniversalReceiver {
         bytes32 typeId,
         bytes calldata receivedData
     ) public payable virtual returns (bytes memory returnedValues) {
+        returnedValues = _callUniversalReceiverDelegates(typeId, receivedData);
+
+        emit UniversalReceiver(
+            msg.sender,
+            msg.value,
+            typeId,
+            receivedData,
+            returnedValues
+        );
+
+        return returnedValues;
+    }
+
+    function _callUniversalReceiverDelegates(
+        bytes32 typeId,
+        bytes calldata receivedData
+    ) internal virtual returns (bytes memory) {
         // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY}
         bytes memory lsp1DelegateValue = _getData(
             _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
@@ -91,16 +108,6 @@ abstract contract LSP1UniversalReceiver is ERC725YCore, ILSP1UniversalReceiver {
             }
         }
 
-        returnedValues = abi.encode(
-            resultDefaultDelegate,
-            resultTypeIdDelegate
-        );
-        emit UniversalReceiver(
-            msg.sender,
-            msg.value,
-            typeId,
-            receivedData,
-            returnedValues
-        );
+        return abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
     }
 }

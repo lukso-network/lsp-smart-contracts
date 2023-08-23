@@ -90,10 +90,10 @@ import {
  *   https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-20-CallVerification.md
  */
 abstract contract LSP0ERC725AccountCore is
-    ERC725XCore,
-    ERC725YCore,
     IERC1271,
     ILSP0ERC725Account,
+    ERC725XCore,
+    ERC725YCore,
     LSP1UniversalReceiver,
     LSP14Ownable2Step,
     LSP17Extendable,
