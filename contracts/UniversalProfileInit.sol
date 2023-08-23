@@ -21,15 +21,15 @@ contract UniversalProfileInit is UniversalProfileInitAbstract {
     }
 
     /**
-     * @notice Initializing the contract owner to: `initialOwner`
-     * @dev Set `initialOwner` as the contract owner and set the `SupportedStandards:LSP3UniversalProfile` data key in the ERC725Y data key/value store.
-     * The `initialOwner` will then be allowed to call protected functions marked with the `onlyOwner` modifier.
-     * The `initialize(address)` function also allows funding the contract on initialization.
+     * @notice Initializing a UniversalProfile contract with owner set to address `initialOwner`.
      *
-     * Emitted Events:
-     * - ValueReceived: when the contract is funded on initialization.
+     * @dev Set `initialOwner` as the contract owner and the `SupportedStandards:LSP3UniversalProfile` data key in the ERC725Y data key/value store. The `constructor` also allows funding the contract on deployment. The `initialOwner` will then be allowed to call protected functions marked with the `onlyOwner` modifier. The `initialize(address)` function also allows funding the contract on initialization.
      *
      * @param initialOwner the owner of the contract
+     *
+     * @custom:events
+     * - {ValueReceived} event when funding the contract on deployment.
+     * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
      */
     function initialize(
         address initialOwner
