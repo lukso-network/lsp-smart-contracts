@@ -10,7 +10,7 @@ import { TargetContract__factory, UniversalProfile__factory } from '../../../typ
 import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
-  LSP6_VERSION,
+  LSP25_VERSION,
   PERMISSIONS,
   OPERATION_TYPES,
 } from '../../../constants';
@@ -606,7 +606,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
             const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
+              [LSP25_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
             );
 
             const ethereumSignature = await addressCannotDeploy.signMessage(encodedMessage);
@@ -656,7 +656,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
             const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
+              [LSP25_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
             );
 
             const eip191Signer = new EIP191Signer();
@@ -705,7 +705,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
             const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
+              [LSP25_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
             );
 
             const ethereumSignature = await addressCannotDeploy.signMessage(encodedMessage);
@@ -755,7 +755,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
             const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
+              [LSP25_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
             );
 
             const lsp6Signer = new EIP191Signer();

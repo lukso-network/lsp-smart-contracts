@@ -23,7 +23,7 @@ import {
 import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
-  LSP6_VERSION,
+  LSP25_VERSION,
   PERMISSIONS,
   OPERATION_TYPES,
   CALLTYPE,
@@ -370,7 +370,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           const encodedMessage = ethers.utils.solidityPack(
             ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
             [
-              LSP6_VERSION,
+              LSP25_VERSION,
               HARDHAT_CHAINID,
               0,
               validityTimestamps,
@@ -413,7 +413,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           const encodedMessage = ethers.utils.solidityPack(
             ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
             [
-              LSP6_VERSION,
+              LSP25_VERSION,
               HARDHAT_CHAINID,
               0,
               validityTimestamps,

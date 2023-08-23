@@ -11,15 +11,16 @@ import {LSP6KeyManagerInitAbstract} from "./LSP6KeyManagerInitAbstract.sol";
  */
 contract LSP6KeyManagerInit is LSP6KeyManagerInitAbstract {
     /**
-     * @dev Initialize (= lock) base implementation contract on deployment
+     * @notice Deploying a LSP6KeyManagerInit to be used as base contract behind proxy.
+     * @dev Initialize (= lock) base implementation contract on deployment.
      */
     constructor() {
         _disableInitializers();
     }
 
     /**
-     * @notice Deploying a LSP6KeyManager linked to contract at address `target_`.
-     * @dev Deploy a Key Manager and set the `target_` address in the contract storage,
+     * @notice Initializing a LSP6KeyManagerInit linked to contract at address `target_`.
+     * @dev Initialise a LSP6KeyManager and set the `target_` address in the contract storage,
      * making this Key Manager linked to this `target_` contract.
      *
      * @param target_ The address of the contract to control and forward calldata payloads to.
