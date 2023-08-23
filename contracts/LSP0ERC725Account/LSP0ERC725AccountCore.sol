@@ -189,8 +189,8 @@ abstract contract LSP0ERC725AccountCore is
      * - If the operation type is `STATICCALL` (3) or `DELEGATECALL` (4), `value` transfer is disallowed and must be 0.
      *
      * @custom:events
-     * - {Executed} event for each call that uses under `operationType`: `CALL` (0), `STATICCALL` (3) and `DELEGATECALL` (4). (each iteration)
-     * - {ContractCreated} event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2) (each iteration)
+     * - {Executed} event for each call that uses under `operationType`: `CALL` (0), `STATICCALL` (3) and `DELEGATECALL` (4).
+     * - {ContractCreated} event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2).
      * - {ValueReceived} event when receiving native tokens.
      */
     function execute(
@@ -621,7 +621,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @notice Checking if this contract supports the interface defined by the bytes4 interface ID `interfaceId`.
+     * @notice Checking if this contract supports the interface defined by the `bytes4` interface ID `interfaceId`.
      *
      * @dev Achieves the goal of [ERC-165] to detect supported interfaces and [LSP-17-ContractExtension] by
      * checking if the interfaceId being queried is supported on another linked extension.
@@ -723,15 +723,11 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @dev Forwards the call to an extension mapped to a function selector.
      *
-     * Calls {_getExtension} to get the address of the extension mapped to the function selector being
-     * called on the account. If there is no extension, the `address(0)` will be returned.
+     * Calls {_getExtension} to get the address of the extension mapped to the function selector being called on the account. If there is no extension, the `address(0)` will be returned.
      *
-     * Reverts if there is no extension for the function being called, except for the bytes4(0) function
-     * selector, which passes even if there is no extension for it.
+     * Reverts if there is no extension for the function being called, except for the bytes4(0) function selector, which passes even if there is no extension for it.
      *
-     * If there is an extension for the function selector being called, it calls the extension with the
-     * CALL opcode, passing the `msg.data` appended with the 20 bytes of the `msg.sender` and
-     * 32 bytes of the `msg.value`
+     * If there is an extension for the function selector being called, it calls the extension with the CALL opcode, passing the `msg.data` appended with the 20 bytes of the `msg.sender` and 32 bytes of the `msg.value`
      */
     function _fallbackLSP17Extendable(
         bytes calldata callData
@@ -764,9 +760,8 @@ abstract contract LSP0ERC725AccountCore is
 
     /**
      * @dev Returns the extension address stored under the following data key:
-     * {_LSP17_EXTENSION_PREFIX + <bytes4>} (Check [LSP2-ERC725YJSONSchema] for encoding the data key)
-     *
-     * If no extension is stored, returns the address(0)
+     * - {_LSP17_EXTENSION_PREFIX} + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
+     * - If no extension is stored, returns the address(0).
      */
     function _getExtension(
         bytes4 functionSelector
@@ -786,9 +781,9 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @custom:events {DataChanged} event with only the first 256 bytes of {dataValue}.
-     *
      * @dev This function overrides the {ERC725YCore} internal {_setData} function to optimize gas usage by emitting only the first 256 bytes of the `dataValue`.
+     *
+     * @custom:events {DataChanged} event with only the first 256 bytes of {dataValue}.
      *
      * @param dataKey The key to store the data value under.
      * @param dataValue The data value to be stored.

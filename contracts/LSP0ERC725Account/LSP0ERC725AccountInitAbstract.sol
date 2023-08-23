@@ -20,15 +20,15 @@ abstract contract LSP0ERC725AccountInitAbstract is
     LSP0ERC725AccountCore
 {
     /**
-     * @dev Set `initialOwner` as the contract owner. ERC725X & ERC725Y parent contracts
-     * are not initialised as they don't have non-zero initial state.
-     * If you decide to add non-zero initial state to any of those
-     * contracts, you MUST initialize them here
+     * @dev Set `initialOwner` as the contract owner.
      *
-     * Emitted Events:
-     * - ValueReceived: if the transaction that triggered this internal `_initialize` function contained some `msg.value`.
+     * @param initialOwner The owner of the contract.
      *
-     * @param initialOwner the owner of the contract
+     * @custom:warning ERC725X & ERC725Y parent contracts are not initialised as they don't have non-zero initial state. If you decide to add non-zero initial state to any of those contracts, you must initialize them here.
+     *
+     * @custom:events
+     * - {ValueReceived} event when funding the contract on deployment.
+     * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
      */
     function _initialize(
         address initialOwner
