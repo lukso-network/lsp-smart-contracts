@@ -23,13 +23,23 @@ abstract contract LSP8EnumerableInitAbstract is
     mapping(bytes32 => uint256) private _tokenIndex;
 
     /**
-     * @dev Returns a token id at index. See totalSupply() to get total number of minted tokens.
-     * @return TokenId or 0x00 if no token exist at the index `index`
+     * @notice Retrieving the `tokenId` for `msg.sender` located in its list at index number `index`.
+     *
+     * @dev Returns a token id at index. See {totalSupply} to get total number of minted tokens.
+     * @param index The index to search to search in the enumerable mapping.
+     * @return TokenId or `bytes32(0)` if no tokenId exist at `index`.
      */
     function tokenAt(uint256 index) public view returns (bytes32) {
         return _indexToken[index];
     }
 
+    /**
+     * @inheritdoc LSP8IdentifiableDigitalAssetCore
+     *
+     * @param from The address sending the `tokenId` (`address(0)` when `tokenId` is being minted).
+     * @param to The address receiving the `tokenId` (`address(0)` when `tokenId` is being burnt).
+     * @param tokenId The bytes32 identifier of the token being transferred.
+     */
     function _beforeTokenTransfer(
         address from,
         address to,
