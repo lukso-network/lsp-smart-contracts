@@ -153,7 +153,7 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP6KeyManager
      *
-     * @custom:events VerifiedCall event when the permissions related to `payload` have been verified successfully.
+     * @custom:events {PermissionsVerified} event when the permissions related to `payload` have been verified successfully.
      */
     function execute(
         bytes calldata payload
@@ -164,7 +164,7 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP6KeyManager
      *
-     * @custom:events VerifiedCall event for each permissions related to each `payload` that have been verified successfully.
+     * @custom:events {PermissionsVerified} event for each permissions related to each `payload` that have been verified successfully.
      */
     function executeBatch(
         uint256[] calldata values,
@@ -199,7 +199,7 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP6KeyManager
      *
-     * @custom:events {VerifiedCall} event when the permissions related to `payload` have been verified successfully.
+     * @custom:events {PermissionsVerified} event when the permissions related to `payload` have been verified successfully.
      *
      * @custom:hint You can use `validityTimestamps == 0` to define an `executeRelayCall` transaction that is indefinitely valid,
      * meaning that does not require to start from a specific date/time, or that has an expiration date/time/
@@ -528,11 +528,21 @@ abstract contract LSP6KeyManagerCore is
 
             // ERC725X.execute(uint256,address,uint256,bytes)
         } else if (erc725Function == IERC725X.execute.selector) {
+            (
+                uint256 operationType,
+                address to,
+                uint256 value,
+                bytes memory data
+            ) = abi.decode(payload[4:], (uint256, address, uint256, bytes));
+
             LSP6ExecuteModule._verifyCanExecute(
                 _target,
                 from,
                 permissions,
-                payload
+                operationType,
+                to,
+                value,
+                data
             );
         } else if (
             erc725Function == ILSP14Ownable2Step.transferOwnership.selector ||

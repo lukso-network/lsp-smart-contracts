@@ -114,10 +114,9 @@ error AddressPermissionArrayIndexValueNotAnAddress(
 error NoERC725YDataKeysAllowed(address from);
 
 /**
- * @notice The address `from` is not authorised to use the linked account contract to make external calls, because it has Allowed Calls set.
+ * @notice The address `from` is not authorised to use the linked account contract to make external calls, because it has no Allowed Calls set.
  *
- * @dev Reverts when the `from` address has no `AllowedCalls` set and cannot interact with any address
- * using the linked {target}.
+ * @dev Reverts when the `from` address has no `AllowedCalls` set and cannot interact with any address using the linked {target}.
  *
  * @param from The address that has no AllowedCalls.
  */

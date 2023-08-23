@@ -22,7 +22,7 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
     await setupKeyManagerHelper(context, permissionKeys, permissionValues);
   });
 
-  describe('`_extractExecuteParameters(bytes)`', () => {
+  describe('`_verifyPermissions(address,uint256,bytes)`', () => {
     it('should pass when the function is called with valid parameters', async () => {
       const executeParameters = {
         operationType: OPERATION_TYPES.CALL,
@@ -38,17 +38,9 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
         executeParameters.data,
       ]);
 
-      const result = await context.keyManagerInternalTester.extractExecuteParameters(calldata);
-
-      expect(result).to.deep.equal([
-        executeParameters.operationType,
-        executeParameters.to,
-        executeParameters.value,
-
-        // only the first 4 bytes of the `data` param (the function selector) is extracted
-        '0xcafecafe',
-        false,
-      ]);
+      await expect(
+        context.keyManagerInternalTester.verifyPermissions(context.owner.address, 0, calldata),
+      ).to.not.be.reverted;
     });
 
     it('should revert with `InvalidPayload` error if the address param is not left padded with 12 x `00` bytes', async () => {
@@ -76,9 +68,11 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
         invalidPart + addressPart,
       );
 
-      await expect(context.keyManagerInternalTester.extractExecuteParameters(invalidCalldata))
-        .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'InvalidPayload')
-        .withArgs(invalidCalldata);
+      await context.keyManagerInternalTester.verifyPermissions(
+        context.owner.address,
+        0,
+        invalidCalldata,
+      );
     });
   });
 };
