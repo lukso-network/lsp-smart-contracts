@@ -1230,37 +1230,6 @@ Emitted when the LSP6KeyManager contract verified the permissions of the `signer
 
 ## Errors
 
-### AddressPermissionArrayIndexValueNotAnAddress
-
-:::note References
-
-- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#addresspermissionarrayindexvaluenotanaddress)
-- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
-- Error signature: `AddressPermissionArrayIndexValueNotAnAddress(bytes32,bytes)`
-- Error hash: `0x8f4afa38`
-
-:::
-
-```solidity
-error AddressPermissionArrayIndexValueNotAnAddress(
-  bytes32 dataKey,
-  bytes invalidValue
-);
-```
-
-_Could not store `invalidValue` inside the `AddressPermissions[]` Array at index: `dataKey`._
-
-Reverts when trying to set a value that is not 20 bytes long (not an `address`) under the `AddressPermissions[index]` data key.
-
-#### Parameters
-
-| Name           |   Type    | Description                                                                                           |
-| -------------- | :-------: | ----------------------------------------------------------------------------------------------------- |
-| `dataKey`      | `bytes32` | The `AddressPermissions[index]` data key, that specify the index in the `AddressPermissions[]` array. |
-| `invalidValue` |  `bytes`  | The invalid value that was attempted to be set under `AddressPermissions[index]`.                     |
-
-<br/>
-
 ### BatchExecuteParamsLengthMismatch
 
 :::note References
@@ -1381,7 +1350,35 @@ Reverts when trying to do a `delegatecall` via the ERC725X.execute(uint256,addre
 error ERC725Y_DataKeysValuesLengthMismatch();
 ```
 
-reverts when there is not the same number of elements in the lists of data keys and data values when calling setDataBatch.
+Reverts when there is not the same number of elements in the `datakeys` and `dataValues` array parameters provided when calling the [`setDataBatch`](#setdatabatch) function.
+
+<br/>
+
+### InvalidDataValuesForDataKeys
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#invaliddatavaluesfordatakeys)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `InvalidDataValuesForDataKeys(bytes32,bytes)`
+- Error hash: `0x1fa41397`
+
+:::
+
+```solidity
+error InvalidDataValuesForDataKeys(bytes32 dataKey, bytes dataValue);
+```
+
+_Data value: `dataValue` length is different from the required length for the data key which is set._
+
+Reverts when the data value length is not one of the required lengths for the specific data key.
+
+#### Parameters
+
+| Name        |   Type    | Description                                                 |
+| ----------- | :-------: | ----------------------------------------------------------- |
+| `dataKey`   | `bytes32` | The data key that has a required length for the data value. |
+| `dataValue` |  `bytes`  | The data value that has an invalid length.                  |
 
 <br/>
 
@@ -1596,7 +1593,9 @@ Reverts when a `from` address has _"any whitelisted call"_ as allowed call set. 
 error KeyManagerCannotBeSetAsExtensionForLSP20Functions();
 ```
 
-reverts when the address of the Key Manager is being set as extensions for lsp20 functions
+_Key Manager cannot be used as an LSP17 extension for LSP20 functions._
+
+Reverts when the address of the Key Manager is being set as extensions for lsp20 functions
 
 <br/>
 

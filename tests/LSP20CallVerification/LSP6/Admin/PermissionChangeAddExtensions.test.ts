@@ -552,7 +552,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             ],
             dataValues: [
               extensionB,
-              ethers.utils.hexZeroPad(ethers.utils.hexlify(8), 32),
+              ethers.utils.hexZeroPad(ethers.utils.hexlify(8), 16),
               '0xaabb',
             ],
           };
