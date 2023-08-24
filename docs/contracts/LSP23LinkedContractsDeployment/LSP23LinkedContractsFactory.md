@@ -254,16 +254,18 @@ function _generatePrimaryContractProxySalt(struct ILSP23LinkedContractsFactory.P
 event DeployedContracts(address indexed primaryContract, address indexed secondaryContract, ILSP23LinkedContractsFactory.PrimaryContractDeployment primaryContractDeployment, ILSP23LinkedContractsFactory.SecondaryContractDeployment secondaryContractDeployment, address postDeploymentModule, bytes postDeploymentModuleCalldata);
 ```
 
+Emitted when a primary and secondary contract are deployed.
+
 #### Parameters
 
-| Name                              |                            Type                            | Description |
-| --------------------------------- | :--------------------------------------------------------: | ----------- |
-| `primaryContract` **`indexed`**   |                         `address`                          | -           |
-| `secondaryContract` **`indexed`** |                         `address`                          | -           |
-| `primaryContractDeployment`       |  `ILSP23LinkedContractsFactory.PrimaryContractDeployment`  | -           |
-| `secondaryContractDeployment`     | `ILSP23LinkedContractsFactory.SecondaryContractDeployment` | -           |
-| `postDeploymentModule`            |                         `address`                          | -           |
-| `postDeploymentModuleCalldata`    |                          `bytes`                           | -           |
+| Name                              |                            Type                            | Description                                            |
+| --------------------------------- | :--------------------------------------------------------: | ------------------------------------------------------ |
+| `primaryContract` **`indexed`**   |                         `address`                          | Address of the deployed primary contract.              |
+| `secondaryContract` **`indexed`** |                         `address`                          | Address of the deployed secondary contract.            |
+| `primaryContractDeployment`       |  `ILSP23LinkedContractsFactory.PrimaryContractDeployment`  | Parameters used for the primary contract deployment.   |
+| `secondaryContractDeployment`     | `ILSP23LinkedContractsFactory.SecondaryContractDeployment` | Parameters used for the secondary contract deployment. |
+| `postDeploymentModule`            |                         `address`                          | Address of the post-deployment module.                 |
+| `postDeploymentModuleCalldata`    |                          `bytes`                           | Calldata passed to the post-deployment module.         |
 
 <br/>
 
@@ -282,16 +284,18 @@ event DeployedContracts(address indexed primaryContract, address indexed seconda
 event DeployedERC1167Proxies(address indexed primaryContract, address indexed secondaryContract, ILSP23LinkedContractsFactory.PrimaryContractDeploymentInit primaryContractDeploymentInit, ILSP23LinkedContractsFactory.SecondaryContractDeploymentInit secondaryContractDeploymentInit, address postDeploymentModule, bytes postDeploymentModuleCalldata);
 ```
 
+Emitted when proxies of a primary and secondary contract are deployed.
+
 #### Parameters
 
-| Name                              |                              Type                              | Description |
-| --------------------------------- | :------------------------------------------------------------: | ----------- |
-| `primaryContract` **`indexed`**   |                           `address`                            | -           |
-| `secondaryContract` **`indexed`** |                           `address`                            | -           |
-| `primaryContractDeploymentInit`   |  `ILSP23LinkedContractsFactory.PrimaryContractDeploymentInit`  | -           |
-| `secondaryContractDeploymentInit` | `ILSP23LinkedContractsFactory.SecondaryContractDeploymentInit` | -           |
-| `postDeploymentModule`            |                           `address`                            | -           |
-| `postDeploymentModuleCalldata`    |                            `bytes`                             | -           |
+| Name                              |                              Type                              | Description                                                  |
+| --------------------------------- | :------------------------------------------------------------: | ------------------------------------------------------------ |
+| `primaryContract` **`indexed`**   |                           `address`                            | Address of the deployed primary contract proxy.              |
+| `secondaryContract` **`indexed`** |                           `address`                            | Address of the deployed secondary contract proxy.            |
+| `primaryContractDeploymentInit`   |  `ILSP23LinkedContractsFactory.PrimaryContractDeploymentInit`  | Parameters used for the primary contract proxy deployment.   |
+| `secondaryContractDeploymentInit` | `ILSP23LinkedContractsFactory.SecondaryContractDeploymentInit` | Parameters used for the secondary contract proxy deployment. |
+| `postDeploymentModule`            |                           `address`                            | Address of the post-deployment module.                       |
+| `postDeploymentModuleCalldata`    |                            `bytes`                             | Calldata passed to the post-deployment module.               |
 
 <br/>
 

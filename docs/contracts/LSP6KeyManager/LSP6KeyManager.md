@@ -1027,9 +1027,7 @@ The address of the signer will be recovered using the LSP25 signature format.
 function _verifyValidityTimestamps(uint256 validityTimestamps) internal view;
 ```
 
-_Verifying if the current timestamp is within the date and time range provided by `validityTimestamps`._
-
-Verify that the validity timestamp provided is within a valid range compared to the current timestamp.
+Verify that the current timestamp is within the date and time range provided by `validityTimestamps`.
 
 #### Parameters
 
@@ -1350,7 +1348,7 @@ Reverts when trying to do a `delegatecall` via the ERC725X.execute(uint256,addre
 error ERC725Y_DataKeysValuesLengthMismatch();
 ```
 
-Reverts when there is not the same number of elements in the `datakeys` and `dataValues` array parameters provided when calling the [`setDataBatch`](#setdatabatch) function.
+reverts when there is not the same number of elements in the lists of data keys and data values when calling setDataBatch.
 
 <br/>
 
@@ -1887,6 +1885,8 @@ Reverts when the relay call is cannot yet bet executed. This mean that the start
 ```solidity
 error RelayCallExpired();
 ```
+
+_Relay call expired (deadline passed)._
 
 Reverts when the period to execute the relay call has expired.
 
