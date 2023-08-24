@@ -46,8 +46,8 @@ Executes post-deployment logic for the primary and secondary contracts.
 
 | Name                             |   Type    | Description                                              |
 | -------------------------------- | :-------: | -------------------------------------------------------- |
-| `primaryContract`                | `address` | Address of the deployed primary contract.                |
-| `secondaryContract`              | `address` | Address of the deployed secondary contract.              |
+| `primaryContract`                | `address` | The address of the deployed primary contract.            |
+| `secondaryContract`              | `address` | The address of the deployed secondary contract.          |
 | `calldataToPostDeploymentModule` |  `bytes`  | Calldata to be passed for the post-deployment execution. |
 
 <br/>

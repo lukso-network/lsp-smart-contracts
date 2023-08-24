@@ -16,7 +16,7 @@
 
 > Implementation of a LSP8 Identifiable Digital Asset, a contract that represents a non-fungible token.
 
-Standard implementation contract of the LSP8 standard. Minting and transferring are done using by giving a unique `tokenId`. This implementation is agnostic to the way tokens are created. A supply mechanism has to be added in a derived contract using [`_mint`](#_mint) For a generic mechanism, see [`LSP7Mintable`](#lsp7mintable).
+Standard implementation contract of the LSP8 standard. Minting and transferring are done by providing a unique `tokenId`. This implementation is agnostic to the way tokens are created. A supply mechanism has to be added in a derived contract using [`_mint`](#_mint) For a generic mechanism, see [`LSP7Mintable`](#lsp7mintable).
 
 ## Public Methods
 
@@ -849,7 +849,7 @@ The receiver may revert when the token being sent is not wanted.
 event AuthorizedOperator(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId);
 ```
 
-Emitted when `tokenOwner` enables `operator` to transfer or burn `tokenId` on its behalf.
+Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
 
 #### Parameters
 
@@ -930,11 +930,11 @@ Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on i
 
 #### Parameters
 
-| Name                       |   Type    | Description                                          |
-| -------------------------- | :-------: | ---------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address revoked as an operator.                  |
-| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                          |
-| `tokenId` **`indexed`**    | `bytes32` | The tokenId `operator` is revoked from operating on. |
+| Name                       |   Type    | Description                                                     |
+| -------------------------- | :-------: | --------------------------------------------------------------- |
+| `operator` **`indexed`**   | `address` | The address revoked from the operator array ({getOperatorsOf}). |
+| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                     |
+| `tokenId` **`indexed`**    | `bytes32` | The tokenId `operator` is revoked from operating on.            |
 
 <br/>
 

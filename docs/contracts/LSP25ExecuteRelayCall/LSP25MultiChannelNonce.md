@@ -108,9 +108,7 @@ The address of the signer will be recovered using the LSP25 signature format.
 function _verifyValidityTimestamps(uint256 validityTimestamps) internal view;
 ```
 
-_Verifying if the current timestamp is within the date and time range provided by `validityTimestamps`._
-
-Verify that the validity timestamp provided is within a valid range compared to the current timestamp.
+Verify that the current timestamp is within the date and time range provided by `validityTimestamps`.
 
 #### Parameters
 
