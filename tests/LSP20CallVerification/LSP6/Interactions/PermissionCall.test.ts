@@ -482,15 +482,8 @@ export const shouldBehaveLikePermissionCall = (
   });
 
   describe('`execute(...)` edge cases', async () => {
-    let targetContract: TargetContract;
-    let addressWithNoPermissions: SignerWithAddress;
-
     before(async () => {
       context = await buildContext();
-
-      addressWithNoPermissions = context.accounts[1];
-
-      targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
