@@ -10,22 +10,34 @@ jobs:
   build-artifacts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout main branch
+        uses: actions/checkout@v3
         with:
+          ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 0
 
-      - name: Check if version changed
-        uses: EndBug/version-check@v2
-        id: check
+      - name: Grab version in `package.json` in main
+        run: echo "version=$(cat package.json | jq -r .version)" >> $GITHUB_OUTPUT
+        id: base-version
 
-      - name: Use Node.js '16.15.0'
-        uses: actions/setup-node@v2
+      - name: Checkout develop branch
+        uses: actions/checkout@v3
+
+      - name: Grab version in `package.json` in develop
+        run: echo "version=$(cat package.json | jq -r .version)" >> $GITHUB_OUTPUT
+        id: new-version
+
+      - name: Compare versions
+        uses: madhead/semver-utils@latest
+        id: comparison
         with:
-          node-version: "16.15.0"
-          cache: "npm"
+          version: ${{ steps.new-version.outputs.version }}
+          compare-to: ${{ steps.base-version.outputs.version }}
 
-      - name: Install Dependencies
-        run: npm ci
+      - name: Check if version increased
+        id: check
+        run: |
+          [[ ">" == "${{ steps.comparison.outputs.comparison-result }}" ]] && echo "changed=true" || echo "changed=false" >> "$GITHUB_OUTPUT"
 
       # Trigger Release
       - name: Repository Dispatch
