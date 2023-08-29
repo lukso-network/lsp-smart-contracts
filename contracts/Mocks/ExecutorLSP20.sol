@@ -8,11 +8,9 @@ import {
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {ILSP6KeyManager} from "../LSP6KeyManager/ILSP6KeyManager.sol";
 
 // modules
 import {UniversalProfile} from "../UniversalProfile.sol";
-import {LSP6KeyManager} from "../LSP6KeyManager/LSP6KeyManager.sol";
 
 // constants
 import {

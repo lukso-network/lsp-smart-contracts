@@ -11,7 +11,6 @@ import {
 } from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
 import {
     LSP7DigitalAsset,
-    LSP7DigitalAssetCore,
     LSP4DigitalAssetMetadata,
     ERC725YCore
 } from "../LSP7DigitalAsset.sol";
@@ -104,7 +103,7 @@ abstract contract LSP7CompatibleERC20 is
     }
 
     /**
-     * @inheritdoc LSP7DigitalAssetCore
+     * @inheritdoc LSP7DigitalAsset
      */
     function _updateOperator(
         address tokenOwner,
@@ -116,7 +115,7 @@ abstract contract LSP7CompatibleERC20 is
     }
 
     /**
-     * @inheritdoc LSP7DigitalAssetCore
+     * @inheritdoc LSP7DigitalAsset
      *
      * @custom:events
      * - LSP7 {Transfer} event.
@@ -134,7 +133,7 @@ abstract contract LSP7CompatibleERC20 is
     }
 
     /**
-     * @inheritdoc LSP7DigitalAssetCore
+     * @inheritdoc LSP7DigitalAsset
      *
      * @custom:events
      * - LSP7 {Transfer} event with `address(0)` as `from`.
@@ -151,7 +150,7 @@ abstract contract LSP7CompatibleERC20 is
     }
 
     /**
-     * @inheritdoc LSP7DigitalAssetCore
+     * @inheritdoc LSP7DigitalAsset
      *
      * @custom:events
      * - LSP7 {Transfer} event with `address(0)` as the `to` address.

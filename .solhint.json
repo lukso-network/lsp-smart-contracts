@@ -16,6 +16,7 @@
     "imports-on-top": "error",
     "visibility-modifier-order": "error",
     "reason-string": ["warn", { "maxLength": 120 }],
+    "no-unused-import": "error",
     "avoid-low-level-calls": "off",
     "no-empty-blocks": "off"
   }

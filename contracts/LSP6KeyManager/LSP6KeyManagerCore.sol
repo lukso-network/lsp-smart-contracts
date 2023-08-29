@@ -2,7 +2,6 @@
 pragma solidity ^0.8.5;
 
 // interfaces
-import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {
     IERC725X
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
@@ -133,10 +132,11 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @inheritdoc IERC1271
-     *
      * @dev Checks if a signature was signed by a controller that has the permission `SIGN`.
      * If the signer is a controller with the permission `SIGN`, it will return the ERC1271 magic value.
+     *
+     * @param dataHash The keccak256 hash of the data that was signed.
+     * @param signature A 65 bytes long signature (as a `bytes` array associated) with `dataHash`.
      *
      * @return magicValue `0x1626ba7e` on success, or `0xffffffff` on failure.
      */

@@ -313,10 +313,10 @@ Checks if a signature was signed by a controller that has the permission `SIGN`.
 
 #### Parameters
 
-| Name        |   Type    | Description                                 |
-| ----------- | :-------: | ------------------------------------------- |
-| `dataHash`  | `bytes32` | -                                           |
-| `signature` |  `bytes`  | Signature byte array associated with \_data |
+| Name        |   Type    | Description                                                                |
+| ----------- | :-------: | -------------------------------------------------------------------------- |
+| `dataHash`  | `bytes32` | The keccak256 hash of the data that was signed.                            |
+| `signature` |  `bytes`  | A 65 bytes long signature (as a `bytes` array associated) with `dataHash`. |
 
 #### Returns
 
