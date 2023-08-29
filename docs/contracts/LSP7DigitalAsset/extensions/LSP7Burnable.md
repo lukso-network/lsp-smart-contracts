@@ -244,19 +244,21 @@ Atomically decreases the allowance granted to `operator` by the caller. This is 
 function getData(bytes32 dataKey) external view returns (bytes dataValue);
 ```
 
-_Gets singular data at a given `dataKey`_
+_Reading the ERC725Y storage for data key `dataKey` returned the following value: `dataValue`._
+
+Get in the ERC725Y storage the bytes data stored at a specific data key `dataKey`.
 
 #### Parameters
 
-| Name      |   Type    | Description                     |
-| --------- | :-------: | ------------------------------- |
-| `dataKey` | `bytes32` | The key which value to retrieve |
+| Name      |   Type    | Description                                   |
+| --------- | :-------: | --------------------------------------------- |
+| `dataKey` | `bytes32` | The data key for which to retrieve the value. |
 
 #### Returns
 
-| Name        |  Type   | Description                |
-| ----------- | :-----: | -------------------------- |
-| `dataValue` | `bytes` | The data stored at the key |
+| Name        |  Type   | Description                                          |
+| ----------- | :-----: | ---------------------------------------------------- |
+| `dataValue` | `bytes` | The bytes value stored under the specified data key. |
 
 <br/>
 
@@ -277,7 +279,9 @@ function getDataBatch(
 ) external view returns (bytes[] dataValues);
 ```
 
-_Gets array of data for multiple given keys_
+_Reading the ERC725Y storage for data keys `dataKeys` returned the following values: `dataValues`._
+
+Get in the ERC725Y storage the bytes data stored at multiple data keys `dataKeys`.
 
 #### Parameters
 
@@ -427,18 +431,42 @@ Removes the `operator` address as an operator of callers tokens, disallowing it 
 
 :::
 
+:::caution Warning
+
+**Note for developers:** despite the fact that this function is set as `payable`, if the function is not intended to receive value (= native tokens), **an additional check should be implemented to ensure that `msg.value` sent was equal to 0**.
+
+:::
+
 ```solidity
 function setData(bytes32 dataKey, bytes dataValue) external payable;
 ```
 
-_Sets singular data for a given `dataKey`_
+_Setting the following data key value pair in the ERC725Y storage. Data key: `dataKey`, data value: `dataValue`._
+
+Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data key `dataKey`. The function is marked as payable to enable flexibility on child contracts. For instance to implement a fee mechanism for setting specific data.
+
+<blockquote>
+
+**Requirements:**
+
+- SHOULD only be callable by the [`owner`](#owner).
+
+</blockquote>
+
+<blockquote>
+
+**Emitted events:**
+
+- [`DataChanged`](#datachanged) event.
+
+</blockquote>
 
 #### Parameters
 
-| Name        |   Type    | Description                                                                                                                                                                                                                                                                                                           |
-| ----------- | :-------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `dataKey`   | `bytes32` | The key to retrieve stored value                                                                                                                                                                                                                                                                                      |
-| `dataValue` |  `bytes`  | The value to set SHOULD only be callable by the owner of the contract set via ERC173 The function is marked as payable to enable flexibility on child contracts If the function is not intended to receive value, an additional check should be implemented to check that value equal 0. Emits a {DataChanged} event. |
+| Name        |   Type    | Description                                |
+| ----------- | :-------: | ------------------------------------------ |
+| `dataKey`   | `bytes32` | The data key for which to set a new value. |
+| `dataValue` |  `bytes`  | The new bytes value to set.                |
 
 <br/>
 
@@ -453,20 +481,42 @@ _Sets singular data for a given `dataKey`_
 
 :::
 
+:::caution Warning
+
+**Note for developers:** despite the fact that this function is set as `payable`, if the function is not intended to receive value (= native tokens), **an additional check should be implemented to ensure that `msg.value` sent was equal to 0**.
+
+:::
+
 ```solidity
 function setDataBatch(bytes32[] dataKeys, bytes[] dataValues) external payable;
 ```
 
-Sets array of data for multiple given `dataKeys` SHOULD only be callable by the owner of the contract set via ERC173 The function is marked as payable to enable flexibility on child contracts If the function is not intended to receive value, an additional check should be implemented to check that value equal
+_Setting the following data key value pairs in the ERC725Y storage. Data keys: `dataKeys`, data values: `dataValues`._
 
-0. Emits a [`DataChanged`](#datachanged) event.
+Batch data setting function that behaves the same as [`setData`](#setdata) but allowing to set multiple data key/value pairs in the ERC725Y storage in the same transaction.
+
+<blockquote>
+
+**Requirements:**
+
+- SHOULD only be callable by the [`owner`](#owner) of the contract.
+
+</blockquote>
+
+<blockquote>
+
+**Emitted events:**
+
+- [`DataChanged`](#datachanged) event **for each data key/value pair set**.
+
+</blockquote>
 
 #### Parameters
 
-| Name         |    Type     | Description                              |
-| ------------ | :---------: | ---------------------------------------- |
-| `dataKeys`   | `bytes32[]` | The array of data keys for values to set |
-| `dataValues` |  `bytes[]`  | The array of values to set               |
+| Name         |    Type     | Description                                          |
+| ------------ | :---------: | ---------------------------------------------------- |
+| `dataKeys`   | `bytes32[]` | An array of data keys to set bytes values for.       |
+| `dataValues` |  `bytes[]`  | An array of bytes values to set for each `dataKeys`. |
 
 <br/>
 
@@ -653,6 +703,25 @@ This pattern is useful in inheritance.
 ```solidity
 function _getData(bytes32 dataKey) internal view returns (bytes dataValue);
 ```
+
+Read the value stored under a specific `dataKey` inside the underlying ERC725Y storage,
+represented as a mapping of `bytes32` data keys mapped to their `bytes` data values.
+
+```solidity
+mapping(bytes32 => bytes) _store
+```
+
+#### Parameters
+
+| Name      |   Type    | Description                                                             |
+| --------- | :-------: | ----------------------------------------------------------------------- |
+| `dataKey` | `bytes32` | A bytes32 data key to read the associated `bytes` value from the store. |
+
+#### Returns
+
+| Name        |  Type   | Description                                                                   |
+| ----------- | :-----: | ----------------------------------------------------------------------------- |
+| `dataValue` | `bytes` | The `bytes` value associated with the given `dataKey` in the ERC725Y storage. |
 
 <br/>
 
@@ -902,14 +971,16 @@ Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
 event DataChanged(bytes32 indexed dataKey, bytes dataValue);
 ```
 
-_Emitted when data at a key is changed_
+_The following data key/value pair has been changed in the ERC725Y storage: Data key: `dataKey`, data value: `dataValue`._
+
+Emitted when data at a specific `dataKey` was changed to a new value `dataValue`.
 
 #### Parameters
 
-| Name                    |   Type    | Description                          |
-| ----------------------- | :-------: | ------------------------------------ |
-| `dataKey` **`indexed`** | `bytes32` | The data key which data value is set |
-| `dataValue`             |  `bytes`  | The data value to set                |
+| Name                    |   Type    | Description                                  |
+| ----------------------- | :-------: | -------------------------------------------- |
+| `dataKey` **`indexed`** | `bytes32` | The data key for which a bytes value is set. |
+| `dataValue`             |  `bytes`  | The value to set for the given data key.     |
 
 <br/>
 
@@ -1010,7 +1081,7 @@ Emitted when `tokenId` token is transferred from the `from` to the `to` address.
 error ERC725Y_DataKeysValuesEmptyArray();
 ```
 
-reverts when one of the array parameter provided to `setDataBatch` is an empty array
+Reverts when one of the array parameter provided to [`setDataBatch`](#setdatabatch) function is an empty array.
 
 <br/>
 
@@ -1029,7 +1100,7 @@ reverts when one of the array parameter provided to `setDataBatch` is an empty a
 error ERC725Y_DataKeysValuesLengthMismatch();
 ```
 
-reverts when there is not the same number of elements in the lists of data keys and data values when calling setDataBatch.
+Reverts when there is not the same number of elements in the `datakeys` and `dataValues` array parameters provided when calling the [`setDataBatch`](#setdatabatch) function.
 
 <br/>
 
@@ -1048,7 +1119,7 @@ reverts when there is not the same number of elements in the lists of data keys 
 error ERC725Y_MsgValueDisallowed();
 ```
 
-reverts when sending value to the `setData(..)` functions
+Reverts when sending value to the [`setData`](#setdata) or [`setDataBatch`](#setdatabatch) function.
 
 <br/>
 
