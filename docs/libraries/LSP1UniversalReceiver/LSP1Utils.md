@@ -135,38 +135,3 @@ the value set under the `LSP1UniversalReceiverDelegate:<bytes32>` data key for a
 | `0`  | `bytes` | The bytes value stored under the `LSP1UniversalReceiverDelegate:<bytes32>` data key. |
 
 <br/>
-
-### getTransferDetails
-
-```solidity
-function getTransferDetails(
-  bytes32 typeId
-)
-  internal
-  pure
-  returns (
-    bool invalid,
-    bytes10 mapPrefix,
-    bytes4 interfaceId,
-    bool isReceiving
-  );
-```
-
-Gets all the transfer details based on the provided `bytes32 typeId`.
-
-#### Parameters
-
-| Name     |   Type    | Description                                                         |
-| -------- | :-------: | ------------------------------------------------------------------- |
-| `typeId` | `bytes32` | A `bytes32` unique identifier for a specific action or information. |
-
-#### Returns
-
-| Name          |   Type    | Description                                                                                   |
-| ------------- | :-------: | --------------------------------------------------------------------------------------------- |
-| `invalid`     |  `bool`   | `true` if the `typeId` was not recognised, `false otherwise.                                  |
-| `mapPrefix`   | `bytes10` | The standard 10 bytes defined in a LSP standard associated with the specific `typeId`.        |
-| `interfaceId` | `bytes4`  | The bytes4 ERC165 interface ID defined in a LSP standard associated with a specific `typeId`. |
-| `isReceiving` |  `bool`   | When the typeId relate to LSP7/8 tokens or LSP9 Vaults, describe if the `typeId` relates      |
-
-<br/>

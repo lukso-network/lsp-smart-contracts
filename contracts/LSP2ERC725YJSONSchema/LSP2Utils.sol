@@ -476,7 +476,7 @@ library LSP2Utils {
      *
      * @custom:info The function assumes that the Data Value stored under the mapping Data Key is of length 20 where the last 16 bytes are the index of the element in the array.
      *
-     * @param ERC725YContract The ERC725Y contract.
+     * @param erc725YContract The ERC725Y contract.
      * @param arrayKey The Data Key of Key Type Array.
      * @param newArrayLength The new Array Length for the `arrayKey`.
      * @param removedElementIndexKey The Data Key of Key Type Array Index for the removed element.
@@ -484,7 +484,7 @@ library LSP2Utils {
      * @param removedElementMapKey The Data Key of a mapping to be removed.
      */
     function removeElementFromArrayAndMap(
-        IERC725Y ERC725YContract,
+        IERC725Y erc725YContract,
         bytes32 arrayKey,
         uint128 newArrayLength,
         bytes32 removedElementIndexKey,
@@ -514,7 +514,7 @@ library LSP2Utils {
 
         // Get the data value from the key of the last element in the array
         bytes20 lastElementIndexValue = bytes20(
-            ERC725YContract.getData(lastElementIndexKey)
+            erc725YContract.getData(lastElementIndexKey)
         );
 
         // Set data value of the last element instead of the element from the array that will be removed
@@ -533,7 +533,7 @@ library LSP2Utils {
 
         // Generate the mapping value for the swapped array element
         bytes memory lastElementMapValue = abi.encodePacked(
-            bytes4(ERC725YContract.getData(lastElementMapKey)),
+            bytes4(erc725YContract.getData(lastElementMapKey)),
             removedElementIndex
         );
 

@@ -17,13 +17,6 @@ import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
-import "../LSP0ERC725Account/LSP0Constants.sol";
-import "../LSP5ReceivedAssets/LSP5Constants.sol";
-import "../LSP7DigitalAsset/LSP7Constants.sol";
-import "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
-import "../LSP9Vault/LSP9Constants.sol";
-import "../LSP14Ownable2Step/LSP14Constants.sol";
-import "../LSP10ReceivedVaults/LSP10Constants.sol";
 
 /**
  * @title LSP1 Utility library.
@@ -133,57 +126,5 @@ library LSP1Utils {
             bytes20(typeId)
         );
         return erc725YStorage[lsp1TypeIdDataKey];
-    }
-
-    /**
-     * @dev Gets all the transfer details based on the provided `bytes32 typeId`.
-     *
-     * @param typeId A `bytes32` unique identifier for a specific action or information.
-     *
-     * @return invalid `true` if the `typeId` was not recognised, `false otherwise.
-     * @return mapPrefix The standard 10 bytes defined in a LSP standard associated with the specific `typeId`.
-     * @return interfaceId The bytes4 ERC165 interface ID defined in a LSP standard associated with a specific `typeId`.
-     * @return isReceiving When the typeId relate to LSP7/8 tokens or LSP9 Vaults, describe if the `typeId` relates
-     * to receiving assets/vaults (`true`), or sending them (`false`).
-     */
-    function getTransferDetails(
-        bytes32 typeId
-    )
-        internal
-        pure
-        returns (
-            bool invalid,
-            bytes10 mapPrefix,
-            bytes4 interfaceId,
-            bool isReceiving
-        )
-    {
-        if (
-            typeId == _TYPEID_LSP7_TOKENSSENDER ||
-            typeId == _TYPEID_LSP7_TOKENSRECIPIENT
-        ) {
-            mapPrefix = _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX;
-            interfaceId = _INTERFACEID_LSP7;
-            isReceiving = typeId == _TYPEID_LSP7_TOKENSRECIPIENT ? true : false;
-        } else if (
-            typeId == _TYPEID_LSP8_TOKENSSENDER ||
-            typeId == _TYPEID_LSP8_TOKENSRECIPIENT
-        ) {
-            mapPrefix = _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX;
-            interfaceId = _INTERFACEID_LSP8;
-            isReceiving = typeId == _TYPEID_LSP8_TOKENSRECIPIENT ? true : false;
-        } else if (
-            typeId == _TYPEID_LSP9_OwnershipTransferred_SenderNotification ||
-            typeId == _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
-        ) {
-            mapPrefix = _LSP10_VAULTS_MAP_KEY_PREFIX;
-            interfaceId = _INTERFACEID_LSP9;
-            isReceiving = (typeId ==
-                _TYPEID_LSP9_OwnershipTransferred_RecipientNotification)
-                ? true
-                : false;
-        } else {
-            invalid = true;
-        }
     }
 }
