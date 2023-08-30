@@ -68,3 +68,10 @@ error LSP7TokenOwnerCannotBeOperator();
  * @dev Reverts when trying to decrease an operator's allowance to more than its current allowance.
  */
 error LSP7DecreasedAllowanceBelowZero();
+
+/**
+ * @dev Reverts when trying to edit the data key `LSP7NonTransferable` after the digital asset contract has been deployed.
+ * The `LSP7NonTransferable` data key is located inside the ERC725Y Data key-value store of the digital asset contract.
+ * It can be set only once inside the constructor/initializer when the digital asset contract is being deployed.
+ */
+error LSP7NonTransferableNotEditable();

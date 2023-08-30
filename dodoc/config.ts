@@ -25,6 +25,7 @@ export const dodocConfig = {
     'contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol',
     'contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply.sol',
     'contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol',
+    'contracts/LSP7DigitalAsset/extensions/LSP7NonTransferable.sol',
     'contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol',
     'contracts/LSP7DigitalAsset/presets/LSP7Mintable.sol',
     'contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol',
@@ -32,6 +33,7 @@ export const dodocConfig = {
     'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol',
     'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721.sol',
     'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol',
+    'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8NonTransferable.sol',
     'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol',
     'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol',
 

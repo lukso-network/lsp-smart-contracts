@@ -180,6 +180,14 @@ export const ERC725YDataKeys = {
   LSP9: {
     SupportedStandards_LSP9: SupportedStandards.LSP9Vault.key,
   },
+  LSP7: {
+    // keccak256('LSP7NonTransferable')
+    LSP7NonTransferable: '0xb48a0085fb2c841c614d8c650033c5b790f407c071b9176ca4f2003db3613a1f',
+  },
+  LSP8: {
+    // keccak256('LSP8NonTransferable')
+    LSP8NonTransferable: '0x0c9f377ecc6456a1dd41eb14df797a662dd42fc0d4cbcc3f4532f70736eb56ba',
+  },
   LSP10: {
     // keccak256('LSP10VaultsMap') + bytes2(0)
     LSP10VaultsMap: '0x192448c3c0f88c7f238c0000',

@@ -71,3 +71,10 @@ error LSP8NotifyTokenReceiverIsEOA(address tokenReceiver);
  * @dev reverts when trying to authorize or revoke the token's owner as an operator.
  */
 error LSP8TokenOwnerCannotBeOperator();
+
+/**
+ * @dev Reverts when trying to edit the data key `LSP8NonTransferable` after the digital asset contract has been deployed.
+ * The `LSP8NonTransferable` data key is located inside the ERC725Y Data key-value store of the digital asset contract.
+ * It can be set only once inside the constructor/initializer when the digital asset contract is being deployed.
+ */
+error LSP8NonTransferableNotEditable();
