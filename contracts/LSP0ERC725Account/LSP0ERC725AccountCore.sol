@@ -46,7 +46,7 @@ import {
     _TYPEID_LSP0_OwnershipTransferStarted,
     _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP0_OwnershipTransferred_RecipientNotification
-} from "../LSP0ERC725Account/LSP0Constants.sol";
+} from "./LSP0Constants.sol";
 import {
     _INTERFACEID_LSP1,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
@@ -63,7 +63,8 @@ import {
 
 // errors
 import {
-    ERC725Y_DataKeysValuesLengthMismatch
+    ERC725Y_DataKeysValuesLengthMismatch,
+    ERC725Y_DataKeysValuesEmptyArray
 } from "@erc725/smart-contracts/contracts/errors.sol";
 import {
     NoExtensionFoundForFunctionSelector
@@ -203,16 +204,16 @@ abstract contract LSP0ERC725AccountCore is
             emit ValueReceived(msg.sender, msg.value);
         }
 
-        address _owner = owner();
+        address accountOwner = owner();
 
         // If the caller is the owner perform execute directly
-        if (msg.sender == _owner) {
+        if (msg.sender == accountOwner) {
             return ERC725XCore._execute(operationType, target, value, data);
         }
 
         // If the caller is not the owner, call {lsp20VerifyCall} on the owner
         // Depending on the magicValue returned, a second call is done after execution
-        bool verifyAfter = LSP20CallVerification._verifyCall(_owner);
+        bool verifyAfter = LSP20CallVerification._verifyCall(accountOwner);
 
         // Perform the execution
         bytes memory result = ERC725XCore._execute(
@@ -224,7 +225,10 @@ abstract contract LSP0ERC725AccountCore is
 
         // if verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         if (verifyAfter) {
-            LSP20CallVerification._verifyCallResult(_owner, abi.encode(result));
+            LSP20CallVerification._verifyCallResult(
+                accountOwner,
+                abi.encode(result)
+            );
         }
 
         return result;
@@ -255,10 +259,10 @@ abstract contract LSP0ERC725AccountCore is
             emit ValueReceived(msg.sender, msg.value);
         }
 
-        address _owner = owner();
+        address accountOwner = owner();
 
         // If the caller is the owner perform execute directly
-        if (msg.sender == _owner) {
+        if (msg.sender == accountOwner) {
             return
                 ERC725XCore._executeBatch(
                     operationsType,
@@ -270,7 +274,7 @@ abstract contract LSP0ERC725AccountCore is
 
         // If the caller is not the owner, call {lsp20VerifyCall} on the owner
         // Depending on the magicValue returned, a second call is done after execution
-        bool verifyAfter = LSP20CallVerification._verifyCall(_owner);
+        bool verifyAfter = LSP20CallVerification._verifyCall(accountOwner);
 
         // Perform the execution
         bytes[] memory results = ERC725XCore._executeBatch(
@@ -283,7 +287,7 @@ abstract contract LSP0ERC725AccountCore is
         // if verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         if (verifyAfter) {
             LSP20CallVerification._verifyCallResult(
-                _owner,
+                accountOwner,
                 abi.encode(results)
             );
         }
@@ -308,23 +312,23 @@ abstract contract LSP0ERC725AccountCore is
             emit ValueReceived(msg.sender, msg.value);
         }
 
-        address _owner = owner();
+        address accountOwner = owner();
 
         // If the caller is the owner perform setData directly
-        if (msg.sender == _owner) {
+        if (msg.sender == accountOwner) {
             return _setData(dataKey, dataValue);
         }
 
         // If the caller is not the owner, call {lsp20VerifyCall} on the owner
         // Depending on the magicValue returned, a second call is done after setting data
-        bool verifyAfter = _verifyCall(_owner);
+        bool verifyAfter = _verifyCall(accountOwner);
 
         _setData(dataKey, dataValue);
 
         // If verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         // The setData function does not return, second parameter of {_verifyCallResult} will be empty
         if (verifyAfter) {
-            _verifyCallResult(_owner, "");
+            _verifyCallResult(accountOwner, "");
         }
     }
 
@@ -349,10 +353,14 @@ abstract contract LSP0ERC725AccountCore is
             revert ERC725Y_DataKeysValuesLengthMismatch();
         }
 
-        address _owner = owner();
+        if (dataKeys.length == 0) {
+            revert ERC725Y_DataKeysValuesEmptyArray();
+        }
+
+        address accountOwner = owner();
 
         // If the caller is the owner perform setData directly
-        if (msg.sender == _owner) {
+        if (msg.sender == accountOwner) {
             for (uint256 i = 0; i < dataKeys.length; ) {
                 _setData(dataKeys[i], dataValues[i]);
 
@@ -366,7 +374,7 @@ abstract contract LSP0ERC725AccountCore is
 
         // If the caller is not the owner, call {lsp20VerifyCall} on the owner
         // Depending on the magicValue returned, a second call is done after setting data
-        bool verifyAfter = _verifyCall(_owner);
+        bool verifyAfter = _verifyCall(accountOwner);
 
         for (uint256 i = 0; i < dataKeys.length; ) {
             _setData(dataKeys[i], dataValues[i]);
@@ -379,7 +387,7 @@ abstract contract LSP0ERC725AccountCore is
         // If verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         // The setData function does not return, second parameter of {_verifyCallResult} will be empty
         if (verifyAfter) {
-            _verifyCallResult(_owner, "");
+            _verifyCallResult(accountOwner, "");
         }
     }
 
@@ -584,7 +592,7 @@ abstract contract LSP0ERC725AccountCore is
      *
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
-     * @custom:danger Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
+     * @custom:danger Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner or an address allowed by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
      *
      */
     function renounceOwnership()
@@ -592,16 +600,16 @@ abstract contract LSP0ERC725AccountCore is
         virtual
         override(LSP14Ownable2Step, OwnableUnset)
     {
-        address _owner = owner();
+        address accountOwner = owner();
 
         // If the caller is the owner perform renounceOwnership directly
-        if (msg.sender == _owner) {
+        if (msg.sender == accountOwner) {
             return LSP14Ownable2Step._renounceOwnership();
         }
 
         // If the caller is not the owner, call {lsp20VerifyCall} on the owner
         // Depending on the magicValue returned, a second call is done after transferring ownership
-        bool verifyAfter = _verifyCall(_owner);
+        bool verifyAfter = _verifyCall(accountOwner);
 
         address previousOwner = owner();
         LSP14Ownable2Step._renounceOwnership();
@@ -616,7 +624,7 @@ abstract contract LSP0ERC725AccountCore is
         // If verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         // The transferOwnership function does not return, second parameter of {_verifyCallResult} will be empty
         if (verifyAfter) {
-            _verifyCallResult(_owner, "");
+            _verifyCallResult(accountOwner, "");
         }
     }
 

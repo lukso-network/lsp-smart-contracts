@@ -305,13 +305,8 @@ abstract contract LSP6KeyManagerCore is
         uint256 msgValue,
         bytes calldata data
     ) external virtual returns (bytes4) {
-        bool isSetData = false;
-        if (
-            bytes4(data) == IERC725Y.setData.selector ||
-            bytes4(data) == IERC725Y.setDataBatch.selector
-        ) {
-            isSetData = true;
-        }
+        bool isSetData = bytes4(data) == IERC725Y.setData.selector ||
+            bytes4(data) == IERC725Y.setDataBatch.selector;
 
         // If target is invoking the verification, emit the event and change the reentrancy guard
         if (msg.sender == _target) {
@@ -372,13 +367,8 @@ abstract contract LSP6KeyManagerCore is
             revert InvalidPayload(payload);
         }
 
-        bool isSetData = false;
-        if (
-            bytes4(payload) == IERC725Y.setData.selector ||
-            bytes4(payload) == IERC725Y.setDataBatch.selector
-        ) {
-            isSetData = true;
-        }
+        bool isSetData = bytes4(payload) == IERC725Y.setData.selector ||
+            bytes4(payload) == IERC725Y.setDataBatch.selector;
 
         bool isReentrantCall = _nonReentrantBefore(isSetData, msg.sender);
 
@@ -437,13 +427,8 @@ abstract contract LSP6KeyManagerCore is
 
         LSP25MultiChannelNonce._verifyValidityTimestamps(validityTimestamps);
 
-        bool isSetData = false;
-        if (
-            bytes4(payload) == IERC725Y.setData.selector ||
-            bytes4(payload) == IERC725Y.setDataBatch.selector
-        ) {
-            isSetData = true;
-        }
+        bool isSetData = bytes4(payload) == IERC725Y.setData.selector ||
+            bytes4(payload) == IERC725Y.setDataBatch.selector;
 
         bool isReentrantCall = _nonReentrantBefore(isSetData, signer);
 
