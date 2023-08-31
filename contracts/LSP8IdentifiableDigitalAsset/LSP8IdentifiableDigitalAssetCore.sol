@@ -335,7 +335,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         _beforeTokenTransfer(address(0), to, tokenId);
 
         // token being minted
-        _existingTokens += 1;
+        ++_existingTokens;
 
         _ownedTokens[to].add(tokenId);
         _tokenOwners[tokenId] = to;
@@ -380,7 +380,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         _beforeTokenTransfer(tokenOwner, address(0), tokenId);
 
         // token being burned
-        _existingTokens -= 1;
+        --_existingTokens;
 
         _clearOperators(tokenOwner, tokenId);
 
@@ -516,7 +516,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 lsp1Data
             );
         } else if (!allowNonLSP1Recipient) {
-            if (to.code.length > 0) {
+            if (to.code.length != 0) {
                 revert LSP8NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {
                 revert LSP8NotifyTokenReceiverIsEOA(to);

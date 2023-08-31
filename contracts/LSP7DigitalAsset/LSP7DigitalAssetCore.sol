@@ -384,7 +384,9 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
                     amount
                 );
             }
-            _operatorAuthorizedAmount[from][operator] -= amount;
+            _operatorAuthorizedAmount[from][operator] =
+                authorizedAmount -
+                amount;
         }
 
         _beforeTokenTransfer(from, address(0), amount);
@@ -392,7 +394,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         // tokens being burnt
         _existingTokens -= amount;
 
-        _tokenOwnerBalances[from] -= amount;
+        _tokenOwnerBalances[from] = balance - amount;
 
         emit Transfer(operator, from, address(0), amount, false, data);
 
@@ -448,7 +450,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         _beforeTokenTransfer(from, to, amount);
 
-        _tokenOwnerBalances[from] -= amount;
+        _tokenOwnerBalances[from] = balance - amount;
         _tokenOwnerBalances[to] += amount;
 
         emit Transfer(operator, from, to, amount, allowNonLSP1Recipient, data);
@@ -526,7 +528,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
                 lsp1Data
             );
         } else if (!allowNonLSP1Recipient) {
-            if (to.code.length > 0) {
+            if (to.code.length != 0) {
                 revert LSP7NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {
                 revert LSP7NotifyTokenReceiverIsEOA(to);
