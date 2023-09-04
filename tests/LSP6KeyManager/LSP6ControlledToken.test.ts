@@ -608,9 +608,9 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
           mintPayload,
         ]);
 
-        await expect(context.keyManager.connect(context.owner).execute(payload)).to.be.revertedWithCustomError(newTokenContract,
-          'NoExtensionFoundForFunctionSelector'
-        );
+        await expect(
+          context.keyManager.connect(context.owner).execute(payload),
+        ).to.be.revertedWithCustomError(newTokenContract, 'NoExtensionFoundForFunctionSelector');
       });
     });
 
