@@ -66,7 +66,6 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
     onERC721ReceivedFunctionExtensionHandlerKey,
     buyFunctionExtensionHandlerKey,
     supportsInterfaceFunctionExtensionHandlerKey;
-  
 
   before(async () => {
     context = await buildContext();
@@ -151,8 +150,8 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
       ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       onERC721ReceivedFunctionSelector.substring(2) +
       '00000000000000000000000000000000'; // zero padded
-    
-        buyFunctionExtensionHandlerKey =
+
+    buyFunctionExtensionHandlerKey =
       ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       buyFunctionSelector.substring(2) +
       '00000000000000000000000000000000'; // zero padded
@@ -559,7 +558,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             expect(balanceAfter).to.equal(100);
           });
-        })
+        });
 
         describe('when calling an extension that reenter the fallback function of the account', () => {
           let reenterAccountExtension: ReenterAccountExtension;
