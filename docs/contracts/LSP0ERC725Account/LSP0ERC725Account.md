@@ -291,7 +291,7 @@ function execute(
 ) external payable returns (bytes);
 ```
 
-_Calling address `target` using `operationType`, transferring `value` wei and data: `data`. _
+_Calling address `target` using `operationType`, transferring `value` wei and data: `data`._
 
 Generic executor function to:
 
@@ -359,7 +359,7 @@ function executeBatch(
 ) external payable returns (bytes[]);
 ```
 
-_Calling multiple addresses `targets` using `operationsType`, transferring `values` wei and data: `datas`. _
+_Calling multiple addresses `targets` using `operationsType`, transferring `values` wei and data: `datas`._
 
 Batch executor function that behaves the same as [`execute`](#execute) but allowing multiple operations in the same transaction.
 
@@ -629,7 +629,7 @@ Renounce ownership of the contract in a 2-step process.
 function setData(bytes32 dataKey, bytes dataValue) external payable;
 ```
 
-_Setting the following data key value pair in the ERC725Y storage. Data key: `dataKey`, data value: `dataValue`. _
+_Setting the following data key value pair in the ERC725Y storage. Data key: `dataKey`, data value: `dataValue`._
 
 Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data key `dataKey`. The function is marked as payable to enable flexibility on child contracts. For instance to implement a fee mechanism for setting specific data.
 
@@ -674,7 +674,7 @@ Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data
 function setDataBatch(bytes32[] dataKeys, bytes[] dataValues) external payable;
 ```
 
-_Setting the following data key value pairs in the ERC725Y storage. Data keys: `dataKeys`, data values: `dataValues`. _
+_Setting the following data key value pairs in the ERC725Y storage. Data keys: `dataKeys`, data values: `dataValues`._
 
 Batch data setting function that behaves the same as [`setData`](#setdata) but allowing to set multiple data key/value pairs in the ERC725Y storage in the same transaction.
 
