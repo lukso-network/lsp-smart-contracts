@@ -24,6 +24,8 @@ import {
   RequireCallbackToken__factory,
   RevertFallbackExtension,
   RevertFallbackExtension__factory,
+  BuyExtension,
+  BuyExtension__factory,
 } from '../../types';
 
 // helpers
@@ -50,6 +52,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
     revertStringFunctionSelector,
     revertCustomFunctionSelector,
     emitEventFunctionSelector,
+    buyFunctionSelector,
     supportsInterfaceFunctionSelector;
 
   let checkMsgVariableFunctionExtensionHandlerKey,
@@ -61,7 +64,9 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
     revertCustomFunctionExtensionHandlerKey,
     emitEventFunctionExtensionHandlerKey,
     onERC721ReceivedFunctionExtensionHandlerKey,
+    buyFunctionExtensionHandlerKey,
     supportsInterfaceFunctionExtensionHandlerKey;
+  
 
   before(async () => {
     context = await buildContext();
@@ -95,6 +100,9 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
     // onERC721Received(address,address,uint256,bytes)
     onERC721ReceivedFunctionSelector = '0x150b7a02';
+
+    // buy()
+    buyFunctionSelector = '0xa6f2ae3a';
 
     // supportsInterface(bytes4)
     supportsInterfaceFunctionSelector = '0x01ffc9a7';
@@ -143,6 +151,11 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
       ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       onERC721ReceivedFunctionSelector.substring(2) +
       '00000000000000000000000000000000'; // zero padded
+    
+        buyFunctionExtensionHandlerKey =
+      ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+      buyFunctionSelector.substring(2) +
+      '00000000000000000000000000000000'; // zero padded
 
     supportsInterfaceFunctionExtensionHandlerKey =
       ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
@@ -152,54 +165,29 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
   describe('when calling the contract with empty calldata', () => {
     describe('when making a call without any value', () => {
-      it('should pass and not emit ValueReceived', async () => {
+      it('should revert', async () => {
         await expect(
           context.accounts[0].sendTransaction({
             to: context.contract.address,
           }),
-        ).to.not.be.reverted.to.not.emit(context.contract, 'ValueReceived');
+        ).to.be.revertedWithCustomError(context.contract, 'InvalidFunctionSelector');
       });
     });
 
     describe('when making a call with sending value', () => {
-      it('should pass and emit ValueReceived', async () => {
+      it('should revert', async () => {
         const amountSent = 200;
         await expect(
           context.accounts[0].sendTransaction({
             to: context.contract.address,
             value: amountSent,
           }),
-        )
-          .to.emit(context.contract, 'ValueReceived')
-          .withArgs(context.accounts[0].address, amountSent);
+        ).to.be.revertedWithCustomError(context.contract, 'InvalidFunctionSelector');
       });
     });
   });
 
   describe('when calling the contract with calldata', () => {
-    describe('when calling method that exist', () => {
-      describe('when calling the contract with transferOwnership Signature', () => {
-        it('should pass and set the pending owner', async () => {
-          const pendingOwnerBefore = await context.contract.callStatic.pendingOwner();
-          expect(pendingOwnerBefore).to.equal(ethers.constants.AddressZero);
-
-          const transferOwnershipPayload = context.contract.interface.encodeFunctionData(
-            'transferOwnership',
-            [context.accounts[2].address],
-          );
-
-          await context.accounts[0].sendTransaction({
-            to: context.contract.address,
-            data: transferOwnershipPayload,
-          });
-
-          const pendingOwnerAfter = await context.contract.callStatic.pendingOwner();
-
-          expect(pendingOwnerAfter).to.equal(context.accounts[2].address);
-        });
-      });
-    });
-
     describe("when calling method that doesn't exist", () => {
       describe('when there is no extension for the function called', () => {
         describe('when calling without sending any value', () => {
@@ -545,6 +533,34 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
           });
         });
 
+        describe('when calling a payable extension with value', () => {
+          let buyExtension: BuyExtension;
+
+          before(async () => {
+            buyExtension = await new BuyExtension__factory(context.accounts[0]).deploy();
+
+            await context.contract
+              .connect(context.deployParams.owner)
+              .setData(buyFunctionExtensionHandlerKey, buyExtension.address);
+          });
+
+          it('should pass and receive the value sent within the contract', async () => {
+            const balanceBefore = await provider.getBalance(buyExtension.address);
+
+            expect(balanceBefore).to.equal(0);
+
+            await context.accounts[0].sendTransaction({
+              to: context.contract.address,
+              value: 100,
+              data: buyFunctionSelector,
+            });
+
+            const balanceAfter = await provider.getBalance(buyExtension.address);
+
+            expect(balanceAfter).to.equal(100);
+          });
+        })
+
         describe('when calling an extension that reenter the fallback function of the account', () => {
           let reenterAccountExtension: ReenterAccountExtension;
 
@@ -556,20 +572,6 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
             await context.contract
               .connect(context.deployParams.owner)
               .setData(reenterAccountFunctionExtensionHandlerKey, reenterAccountExtension.address);
-          });
-
-          describe('when reentering the fallback function without calling any other extension', () => {
-            it('should pass', async () => {
-              const reenterAccountFunctionSignature =
-                reenterAccountFunctionSelector + abiCoder.encode(['bytes'], ['0x']).substring(2);
-
-              await expect(
-                context.accounts[0].sendTransaction({
-                  to: context.contract.address,
-                  data: reenterAccountFunctionSignature,
-                }),
-              ).to.not.be.reverted;
-            });
           });
 
           describe('when reentering with a call to an extension that emits an event', () => {
@@ -653,187 +655,13 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
       describe('when calling with a payload of length less than 4bytes', () => {
         let revertFallbackExtension: RevertFallbackExtension;
 
-        before(async () => {
-          revertFallbackExtension = await new RevertFallbackExtension__factory(
-            context.accounts[0],
-          ).deploy();
-
-          const bytes1ZeroPaddedExtensionHandlerKey =
-            ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-            '01000000' +
-            '00000000000000000000000000000000'; // zero padded
-
-          await context.contract
-            .connect(context.deployParams.owner)
-            .setData(bytes1ZeroPaddedExtensionHandlerKey, revertFallbackExtension.address);
-        });
-
-        it('should pass even if there is an extension for it that reverts', async () => {
+        it('should revert', async () => {
           await expect(
             context.accounts[0].sendTransaction({
               to: context.contract.address,
               data: '0x01',
             }),
-          ).to.not.be.reverted;
-        });
-      });
-
-      describe('when calling with a payload prepended with 4 bytes of 0', () => {
-        describe('when no extension is set for bytes4(0)', () => {
-          describe('when the payload is `0x00000000`', () => {
-            describe('with sending value', () => {
-              it('should pass and emit ValueReceived value', async () => {
-                const amountSent = 2;
-                await expect(
-                  context.accounts[0].sendTransaction({
-                    to: context.contract.address,
-                    data: '0x00000000',
-                    value: amountSent,
-                  }),
-                )
-                  .to.emit(context.contract, 'ValueReceived')
-                  .withArgs(context.accounts[0].address, amountSent);
-              });
-            });
-
-            describe('without sending value', () => {
-              it('should pass', async () => {
-                await expect(
-                  context.accounts[0].sendTransaction({
-                    to: context.contract.address,
-                    data: '0x00000000',
-                  }),
-                ).to.not.be.reverted;
-              });
-            });
-          });
-
-          describe("when the payload is `0x00000000` + some random data ('graffiti')", () => {
-            describe('with sending value', () => {
-              it('should pass and emit ValueReceived value', async () => {
-                const amountSent = 2;
-                const graffiti =
-                  '0x00000000' +
-                  ethers.utils
-                    .hexlify(ethers.utils.toUtf8Bytes('This is a small tip for you!'))
-                    .substring(2);
-
-                await expect(
-                  context.accounts[0].sendTransaction({
-                    to: context.contract.address,
-                    data: graffiti,
-                    value: amountSent,
-                  }),
-                )
-                  .to.emit(context.contract, 'ValueReceived')
-                  .withArgs(context.accounts[0].address, amountSent);
-              });
-            });
-
-            describe('without sending value', () => {
-              it('should pass', async () => {
-                const graffiti =
-                  '0x00000000' +
-                  ethers.utils
-                    .hexlify(ethers.utils.toUtf8Bytes('Sending a decentralized message'))
-                    .substring(2);
-
-                await expect(
-                  context.accounts[0].sendTransaction({
-                    to: context.contract.address,
-                    data: graffiti,
-                  }),
-                ).to.not.be.reverted;
-              });
-            });
-          });
-        });
-
-        describe('when there is an extension set for bytes4(0)', () => {
-          describe('when setting an extension that reverts', () => {
-            let revertFallbackExtension: RevertFallbackExtension;
-
-            before(async () => {
-              revertFallbackExtension = await new RevertFallbackExtension__factory(
-                context.accounts[0],
-              ).deploy();
-
-              const bytes1ZeroPaddedExtensionHandlerKey =
-                ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-                '00000000' +
-                '00000000000000000000000000000000'; // zero padded
-
-              await context.contract
-                .connect(context.deployParams.owner)
-                .setData(bytes1ZeroPaddedExtensionHandlerKey, revertFallbackExtension.address);
-            });
-
-            describe('when the payload is `0x00000000`', () => {
-              it('should revert', async () => {
-                await expect(
-                  context.accounts[0].sendTransaction({
-                    to: context.contract.address,
-                    data: '0x00000000',
-                  }),
-                ).to.be.reverted;
-              });
-            });
-
-            describe("when the payload is `0x00000000` + some random data ('graffiti')", () => {
-              it('should revert', async () => {
-                const graffiti =
-                  '0x00000000' +
-                  ethers.utils
-                    .hexlify(ethers.utils.toUtf8Bytes('Sending a decentralized message'))
-                    .substring(2);
-
-                await expect(
-                  context.accounts[0].sendTransaction({
-                    to: context.contract.address,
-                    data: graffiti,
-                  }),
-                ).to.be.reverted;
-              });
-            });
-          });
-        });
-      });
-    });
-
-    describe('use cases', async () => {
-      describe('when interacting with a contract that require the recipient to implement onERC721Received function to mint', () => {
-        let token: RequireCallbackToken;
-
-        before(async () => {
-          token = await new RequireCallbackToken__factory(context.accounts[0]).deploy();
-        });
-
-        describe('when minting to the account', () => {
-          describe('before setting the onERC721ReceivedExtension', () => {
-            it('should fail since onERC721Received is not implemented', async () => {
-              await expect(token.mint(context.contract.address)).to.be.reverted;
-            });
-          });
-
-          describe('after setting the onERC721ReceivedExtension', () => {
-            let onERC721ReceivedExtension: OnERC721ReceivedExtension;
-
-            before(async () => {
-              onERC721ReceivedExtension = await new OnERC721ReceivedExtension__factory(
-                context.accounts[0],
-              ).deploy();
-
-              await context.contract
-                .connect(context.deployParams.owner)
-                .setData(
-                  onERC721ReceivedFunctionExtensionHandlerKey,
-                  onERC721ReceivedExtension.address,
-                );
-            });
-            it('should pass since onERC721Received is implemented as a fallback extension', async () => {
-              await expect(token.mint(context.contract.address)).to.emit(token, 'Minted');
-            });
-          });
+          ).to.be.revertedWithCustomError(context.contract, 'InvalidFunctionSelector');
         });
       });
     });
