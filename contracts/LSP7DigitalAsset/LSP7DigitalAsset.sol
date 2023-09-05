@@ -151,7 +151,7 @@ abstract contract LSP7DigitalAsset is
         bytes memory extensionAddress = ERC725YCore._getData(
             mappedExtensionDataKey
         );
-        if (extensionAddress.length != 20)
+        if (extensionAddress.length != 20 && extensionAddress.length != 0)
             revert InvalidExtensionAddress(extensionAddress);
 
         return address(bytes20(extensionAddress));
