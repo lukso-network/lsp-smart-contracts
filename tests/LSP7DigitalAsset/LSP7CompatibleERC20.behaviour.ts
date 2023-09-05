@@ -82,7 +82,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
         await expect(tx)
           .to.emit(context.lsp7CompatibleERC20, 'AuthorizedOperator')
-          .withArgs(operator, tokenOwner, authorizedAmount);
+          .withArgs(operator, tokenOwner, authorizedAmount, '0x');
 
         await expect(tx)
           .to.emit(context.lsp7CompatibleERC20, 'Approval')
@@ -110,7 +110,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
           await expect(tx)
             .to.emit(context.lsp7CompatibleERC20, 'AuthorizedOperator')
-            .withArgs(operator, tokenOwner, authorizedAmount);
+            .withArgs(operator, tokenOwner, authorizedAmount, '0x');
 
           await expect(tx)
             .to.emit(context.lsp7CompatibleERC20, 'Approval')
@@ -137,7 +137,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
           await expect(tx)
             .to.emit(context.lsp7CompatibleERC20, 'RevokedOperator')
-            .withArgs(operator, tokenOwner);
+            .withArgs(operator, tokenOwner, '0x');
 
           await expect(tx)
             .to.emit(context.lsp7CompatibleERC20, 'Approval')
