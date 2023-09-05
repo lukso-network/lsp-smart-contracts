@@ -17,6 +17,8 @@ import {
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } from '../../constants';
 
+import { abiCoder } from '../utils/helpers';
+
 export type LSP7TestAccounts = {
   owner: SignerWithAddress;
 
@@ -812,7 +814,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                   const tx = await transferSuccessScenario(txParams, operator);
 
                   const typeId = LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification;
-                  const packedData = ethers.utils.solidityPack(
+                  const packedData = abiCoder.encode(
                     ['address', 'address', 'uint256', 'bytes'],
                     [txParams.from, txParams.to, txParams.amount, txParams.data],
                   );
@@ -885,7 +887,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                   const tx = await transferSuccessScenario(txParams, operator);
 
                   const typeId = LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification;
-                  const packedData = ethers.utils.solidityPack(
+                  const packedData = abiCoder.encode(
                     ['address', 'address', 'uint256', 'bytes'],
                     [txParams.from, txParams.to, txParams.amount, txParams.data],
                   );
@@ -1306,7 +1308,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                     txParams.amount.map((_, index) => async () => {
                       const typeId =
                         '0x29ddb589b1fb5fc7cf394961c1adf5f8c6454761adf795e67fe149f658abe895';
-                      const packedData = ethers.utils.solidityPack(
+                      const packedData = abiCoder.encode(
                         ['address', 'address', 'uint256', 'bytes'],
                         [
                           txParams.from[index],

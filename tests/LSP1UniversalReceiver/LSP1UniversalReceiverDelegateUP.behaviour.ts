@@ -958,7 +958,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         // the call to the universalReceiver(...) in LSP7 sends the transfer details as `data` argument
         // all the params are packed/concatenated together.
-        const expectedReceivedData = ethers.utils.solidityPack(
+        const expectedReceivedData = abiCoder.encode(
           ['address', 'address', 'uint256', 'bytes'],
           [txParams.from, txParams.to, txParams.amount, txParams.data],
         );
@@ -1140,7 +1140,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             token.address,
             0,
             LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification,
-            ethers.utils.solidityPack(
+            abiCoder.encode(
               ['address', 'address', 'uint256', 'bytes'],
               [ethers.constants.AddressZero, context.universalProfile1.address, 10_000, '0x'],
             ),
@@ -1275,11 +1275,15 @@ export const shouldBehaveLikeLSP1Delegate = (
       it('should emit UniversalReceiver event', async () => {
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(balance.toHexString(), 32);
 
-        const tokenTransferData = (
-          context.universalProfile1.address +
-          context.accounts.owner1.address.substring(2) +
-          tokensSentBytes32Value.substring(2)
-        ).toLowerCase();
+        const tokenTransferData = abiCoder.encode(
+          ['address', 'address', 'uint256', 'bytes'],
+          [
+            context.universalProfile1.address,
+            context.accounts.owner1.address,
+            tokensSentBytes32Value,
+            '0x',
+          ],
+        );
 
         const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
           ['string', 'bytes'],
@@ -1354,11 +1358,15 @@ export const shouldBehaveLikeLSP1Delegate = (
       it('should emit UniversalReceiver event', async () => {
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(balance.toHexString(), 32);
 
-        const tokenTransferData = (
-          context.universalProfile1.address +
-          context.accounts.owner1.address.substring(2) +
-          tokensSentBytes32Value.substring(2)
-        ).toLowerCase();
+        const tokenTransferData = abiCoder.encode(
+          ['address', 'address', 'uint256', 'bytes'],
+          [
+            context.universalProfile1.address,
+            context.accounts.owner1.address,
+            tokensSentBytes32Value,
+            '0x',
+          ],
+        );
 
         const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
           ['string', 'bytes'],
@@ -1437,11 +1445,15 @@ export const shouldBehaveLikeLSP1Delegate = (
       it('should emit UniversalReceiver event', async () => {
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(balance.toHexString(), 32);
 
-        const tokenTransferData = (
-          context.universalProfile1.address +
-          context.accounts.owner1.address.substring(2) +
-          tokensSentBytes32Value.substring(2)
-        ).toLowerCase();
+        const tokenTransferData = abiCoder.encode(
+          ['address', 'address', 'uint256', 'bytes'],
+          [
+            context.universalProfile1.address,
+            context.accounts.owner1.address,
+            tokensSentBytes32Value,
+            '0x',
+          ],
+        );
 
         const lsp1ReturnedData = ethers.utils.defaultAbiCoder.encode(
           ['string', 'bytes'],
