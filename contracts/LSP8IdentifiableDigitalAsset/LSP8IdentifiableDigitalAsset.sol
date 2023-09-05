@@ -27,7 +27,8 @@ import "../LSP17ContractExtension/LSP17Constants.sol";
 
 import {
     NoExtensionFoundForFunctionSelector,
-    InvalidFunctionSelector
+    InvalidFunctionSelector,
+    InvalidExtensionAddress
 } from "../LSP17ContractExtension/LSP17Errors.sol";
 
 /**
@@ -148,11 +149,13 @@ abstract contract LSP8IdentifiableDigitalAsset is
         );
 
         // Check if there is an extension stored under the generated data key
-        address extension = address(
-            bytes20(ERC725YCore._getData(mappedExtensionDataKey))
+        bytes memory extensionAddress = ERC725YCore._getData(
+            mappedExtensionDataKey
         );
+        if (extensionAddress.length != 20)
+            revert InvalidExtensionAddress(extensionAddress);
 
-        return extension;
+        return address(bytes20(extensionAddress));
     }
 
     /**
