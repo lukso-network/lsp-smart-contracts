@@ -349,7 +349,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             data
         );
 
-        bytes memory lsp1Data = abi.encodePacked(address(0), to, tokenId, data);
+        bytes memory lsp1Data = abi.encode(address(0), to, tokenId, data);
         _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
     }
 
@@ -389,7 +389,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         emit Transfer(operator, tokenOwner, address(0), tokenId, false, data);
 
-        bytes memory lsp1Data = abi.encodePacked(
+        bytes memory lsp1Data = abi.encode(
             tokenOwner,
             address(0),
             tokenId,
@@ -453,7 +453,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         emit Transfer(operator, from, to, tokenId, allowNonLSP1Recipient, data);
 
-        bytes memory lsp1Data = abi.encodePacked(from, to, tokenId, data);
+        bytes memory lsp1Data = abi.encode(from, to, tokenId, data);
 
         _notifyTokenSender(from, lsp1Data);
         _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
