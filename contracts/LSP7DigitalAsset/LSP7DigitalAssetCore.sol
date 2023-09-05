@@ -12,6 +12,10 @@ import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+
 // errors
 import "./LSP7Errors.sol";
 
@@ -34,6 +38,7 @@ import {
  * have been added to mitigate the well-known issues around setting allowances.
  */
 abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
+    using EnumerableSet for EnumerableSet.AddressSet;
     // --- Storage
 
     // Mapping from `tokenOwner` to an `amount` of tokens
@@ -42,6 +47,9 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     // Mapping a `tokenOwner` to an `operator` to `amount` of tokens.
     mapping(address => mapping(address => uint256))
         internal _operatorAuthorizedAmount;
+
+    // Mapping an `address` to its authorized operator addresses.
+    mapping(address => EnumerableSet.AddressSet) internal _operators;
 
     uint256 internal _existingTokens;
 
@@ -124,6 +132,15 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         } else {
             return _operatorAuthorizedAmount[tokenOwner][operator];
         }
+    }
+
+    /**
+     * @inheritdoc ILSP7DigitalAsset
+     */
+    function getOperatorsOf(
+        address tokenOwner
+    ) public view virtual returns (address[] memory) {
+        return _operators[tokenOwner].values();
     }
 
     // --- Transfer functionality
@@ -280,6 +297,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
     /**
      * @dev Changes token `amount` the `operator` has access to from `tokenOwner` tokens.
+     * If the amount is zero the operator is removed from the list of operators, otherwise he is added to the list of operators.
      * If the amount is zero then the operator is being revoked, otherwise the operator amount is being modified.
      *
      * @custom:events
@@ -307,8 +325,10 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         _operatorAuthorizedAmount[tokenOwner][operator] = amount;
 
         if (amount != 0) {
+            _operators[tokenOwner].add(operator);
             emit AuthorizedOperator(operator, tokenOwner, amount, operatorData);
         } else {
+            _operators[tokenOwner].remove(operator);
             emit RevokedOperator(operator, tokenOwner, operatorData);
         }
     }
@@ -354,7 +374,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             data
         );
 
-        bytes memory lsp1Data = abi.encodePacked(address(0), to, amount, data);
+        bytes memory lsp1Data = abi.encode(address(0), to, amount, data);
         _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
     }
 
@@ -420,12 +440,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         emit Transfer(operator, from, address(0), amount, false, data);
 
-        bytes memory lsp1Data = abi.encodePacked(
-            from,
-            address(0),
-            amount,
-            data
-        );
+        bytes memory lsp1Data = abi.encode(from, address(0), amount, data);
         _notifyTokenSender(from, lsp1Data);
     }
 
@@ -477,7 +492,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         emit Transfer(operator, from, to, amount, allowNonLSP1Recipient, data);
 
-        bytes memory lsp1Data = abi.encodePacked(from, to, amount, data);
+        bytes memory lsp1Data = abi.encode(from, to, amount, data);
 
         _notifyTokenSender(from, lsp1Data);
         _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);

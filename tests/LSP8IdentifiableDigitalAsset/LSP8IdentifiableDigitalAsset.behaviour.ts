@@ -16,6 +16,7 @@ import {
 
 // helpers
 import { tokenIdAsBytes32 } from '../utils/tokens';
+import { abiCoder } from '../utils/helpers';
 
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } from '../../constants';
@@ -636,7 +637,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
                 const tx = await transferSuccessScenario(txParams, operator);
 
                 const typeId = LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification;
-                const packedData = ethers.utils.solidityPack(
+                const packedData = abiCoder.encode(
                   ['address', 'address', 'bytes32', 'bytes'],
                   [txParams.from, txParams.to, txParams.tokenId, txParams.data],
                 );
@@ -735,7 +736,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
                 const tx = await transferSuccessScenario(txParams, operator);
 
                 const typeId = LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification;
-                const packedData = ethers.utils.solidityPack(
+                const packedData = abiCoder.encode(
                   ['address', 'address', 'bytes32', 'bytes'],
                   [txParams.from, txParams.to, txParams.tokenId, txParams.data],
                 );
@@ -1081,7 +1082,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
                   txParams.tokenId.map((_, index) => async () => {
                     const typeId =
                       '0x29ddb589b1fb5fc7cf394961c1adf5f8c6454761adf795e67fe149f658abe895';
-                    const packedData = ethers.utils.solidityPack(
+                    const packedData = abiCoder.encode(
                       ['address', 'address', 'bytes32', 'bytes'],
                       [
                         txParams.from[index],

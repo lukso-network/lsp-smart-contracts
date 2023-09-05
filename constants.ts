@@ -27,7 +27,7 @@ export const INTERFACE_IDS = {
   LSP0ERC725Account: '0x24871b3d',
   LSP1UniversalReceiver: '0x6bb56a14',
   LSP6KeyManager: '0x66918867',
-  LSP7DigitalAsset: '0x119dd91b',
+  LSP7DigitalAsset: '0xc6b21b81',
   LSP8IdentifiableDigitalAsset: '0xa9ac26fe',
   LSP9Vault: '0x28af17e6',
   LSP11BasicSocialRecovery: '0x049a28f1',

@@ -17,6 +17,8 @@ import {
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } from '../../constants';
 
+import { abiCoder } from '../utils/helpers';
+
 export type LSP7TestAccounts = {
   owner: SignerWithAddress;
 
@@ -233,6 +235,13 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 
             expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
           });
+
+          it('should add the operator to the list of operators', async () => {
+            const operator = context.accounts.operator.address;
+            const tokenOwner = context.accounts.owner.address;
+
+            expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([operator]);
+          });
         });
       });
 
@@ -282,8 +291,9 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         });
 
         describe('when there was no allowance before for the operator (`authorizedAmountFor` operator = 0)', () => {
-          it('should authorize for the `addedAmount`', async () => {
-            const operator = context.accounts.anyone.address;
+          it('should authorize for the `addedAmount` and add the operator to the list of operators', async () => {
+            const oldOperator = context.accounts.operator.address;
+            const newOperator = context.accounts.anyone.address;
             const tokenOwner = context.accounts.owner.address;
 
             const tx = await context.lsp7.increaseAllowance(operator, addedAmount, '0x');
@@ -292,9 +302,14 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
               .to.emit(context.lsp7, 'AuthorizedOperator')
               .withArgs(operator, tokenOwner, addedAmount, '0x');
 
-            expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
+            expect(await context.lsp7.authorizedAmountFor(newOperator, tokenOwner)).to.equal(
               addedAmount,
             );
+
+            expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([
+              oldOperator,
+              newOperator,
+            ]);
           });
         });
 
@@ -316,6 +331,13 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
             expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
               expectedNewAllowance,
             );
+          });
+
+          it('should not duplicate the existing operator in the list of operators', async () => {
+            const operator = context.accounts.operator.address;
+            const tokenOwner = context.accounts.owner.address;
+
+            expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([operator]);
           });
         });
       });
@@ -536,6 +558,29 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
           ethers.constants.Zero,
         );
+      });
+
+      it('should remove operator from list of operators', async () => {
+        const operator = context.accounts.operator.address;
+        const tokenOwner = context.accounts.owner.address;
+        const amount = context.initialSupply;
+
+        // pre-conditions
+        await context.lsp7.authorizeOperator(operator, amount);
+        expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
+
+        expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([operator]);
+
+        // effects
+        const tx = await context.lsp7.revokeOperator(operator);
+        await expect(tx).to.emit(context.lsp7, 'RevokedOperator').withArgs(operator, tokenOwner);
+
+        // post-conditions
+        expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
+          ethers.constants.Zero,
+        );
+
+        expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([]);
       });
     });
 
@@ -785,7 +830,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                   const tx = await transferSuccessScenario(txParams, operator);
 
                   const typeId = LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification;
-                  const packedData = ethers.utils.solidityPack(
+                  const packedData = abiCoder.encode(
                     ['address', 'address', 'uint256', 'bytes'],
                     [txParams.from, txParams.to, txParams.amount, txParams.data],
                   );
@@ -858,7 +903,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                   const tx = await transferSuccessScenario(txParams, operator);
 
                   const typeId = LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification;
-                  const packedData = ethers.utils.solidityPack(
+                  const packedData = abiCoder.encode(
                     ['address', 'address', 'uint256', 'bytes'],
                     [txParams.from, txParams.to, txParams.amount, txParams.data],
                   );
@@ -1286,7 +1331,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                     txParams.amount.map((_, index) => async () => {
                       const typeId =
                         '0x29ddb589b1fb5fc7cf394961c1adf5f8c6454761adf795e67fe149f658abe895';
-                      const packedData = ethers.utils.solidityPack(
+                      const packedData = abiCoder.encode(
                         ['address', 'address', 'uint256', 'bytes'],
                         [
                           txParams.from[index],
