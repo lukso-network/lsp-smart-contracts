@@ -116,7 +116,10 @@ contract CalculateLSPInterfaces {
     }
 
     function calculateInterfaceLSP6KeyManager() public pure returns (bytes4) {
-        bytes4 interfaceId = type(ILSP6).interfaceId;
+        bytes4 interfaceId = type(ILSP6).interfaceId ^
+            type(IERC1271).interfaceId ^
+            calculateInterfaceLSP20CallVerifier() ^
+            calculateInterfaceLSP25ExecuteRelayCall();
         require(
             interfaceId == _INTERFACEID_LSP6,
             "hardcoded _INTERFACEID_LSP6 does not match type(ILSP6).interfaceId"
@@ -126,7 +129,9 @@ contract CalculateLSPInterfaces {
     }
 
     function calculateInterfaceLSP7() public pure returns (bytes4) {
-        bytes4 interfaceId = type(ILSP7).interfaceId;
+        bytes4 interfaceId = type(ILSP7).interfaceId ^
+            type(IERC725Y).interfaceId ^
+            calculateInterfaceLSP17Extendable();
         require(
             interfaceId == _INTERFACEID_LSP7,
             "hardcoded _INTERFACEID_LSP7 does not match type(ILSP7).interfaceId"
@@ -136,7 +141,9 @@ contract CalculateLSPInterfaces {
     }
 
     function calculateInterfaceLSP8() public pure returns (bytes4) {
-        bytes4 interfaceId = type(ILSP8).interfaceId;
+        bytes4 interfaceId = type(ILSP8).interfaceId ^
+            type(IERC725Y).interfaceId ^
+            calculateInterfaceLSP17Extendable();
         require(
             interfaceId == _INTERFACEID_LSP8,
             "hardcoded _INTERFACEID_LSP8 does not match type(ILSP8).interfaceId"
