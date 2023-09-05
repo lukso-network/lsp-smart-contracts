@@ -18,6 +18,7 @@ import "./LSP7Errors.sol";
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {
+    _TYPEID_LSP7_TOKENOPERATOR,
     _TYPEID_LSP7_TOKENSSENDER,
     _TYPEID_LSP7_TOKENSRECIPIENT
 } from "./LSP7Constants.sol";
@@ -89,16 +90,26 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      */
     function authorizeOperator(
         address operator,
-        uint256 amount
+        uint256 amount,
+        bytes memory operatorData
     ) public virtual {
-        _updateOperator(msg.sender, operator, amount);
+        _updateOperator(msg.sender, operator, amount, operatorData);
+
+        bytes memory lsp1Data = abi.encode(msg.sender, amount, operatorData);
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function revokeOperator(address operator) public virtual {
-        _updateOperator(msg.sender, operator, 0);
+    function revokeOperator(
+        address operator,
+        bytes memory operatorData
+    ) public virtual {
+        _updateOperator(msg.sender, operator, 0, operatorData);
+
+        bytes memory lsp1Data = abi.encode(msg.sender, 0, operatorData);
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
@@ -141,7 +152,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
                 );
             }
 
-            _updateOperator(from, operator, operatorAmount - amount);
+            _updateOperator(from, operator, operatorAmount - amount, "");
         }
 
         _transfer(from, to, amount, allowNonLSP1Recipient, data);
@@ -205,13 +216,19 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      */
     function increaseAllowance(
         address operator,
-        uint256 addedAmount
+        uint256 addedAmount,
+        bytes memory operatorData
     ) public virtual {
-        _updateOperator(
+        uint256 newAllowance = authorizedAmountFor(operator, msg.sender) +
+            addedAmount;
+        _updateOperator(msg.sender, operator, newAllowance, operatorData);
+
+        bytes memory lsp1Data = abi.encode(
             msg.sender,
-            operator,
-            authorizedAmountFor(operator, msg.sender) + addedAmount
+            newAllowance,
+            operatorData
         );
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
@@ -239,20 +256,26 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      */
     function decreaseAllowance(
         address operator,
-        uint256 substractedAmount
+        uint256 substractedAmount,
+        bytes memory operatorData
     ) public virtual {
         uint256 currentAllowance = authorizedAmountFor(operator, msg.sender);
         if (currentAllowance < substractedAmount) {
             revert LSP7DecreasedAllowanceBelowZero();
         }
 
+        uint256 newAllowance;
         unchecked {
-            _updateOperator(
-                msg.sender,
-                operator,
-                currentAllowance - substractedAmount
-            );
+            newAllowance = currentAllowance - substractedAmount;
+            _updateOperator(msg.sender, operator, newAllowance, operatorData);
         }
+
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            newAllowance,
+            operatorData
+        );
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
@@ -270,7 +293,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     function _updateOperator(
         address tokenOwner,
         address operator,
-        uint256 amount
+        uint256 amount,
+        bytes memory operatorData
     ) internal virtual {
         if (operator == address(0)) {
             revert LSP7CannotUseAddressZeroAsOperator();
@@ -283,9 +307,9 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         _operatorAuthorizedAmount[tokenOwner][operator] = amount;
 
         if (amount != 0) {
-            emit AuthorizedOperator(operator, tokenOwner, amount);
+            emit AuthorizedOperator(operator, tokenOwner, amount, operatorData);
         } else {
-            emit RevokedOperator(operator, tokenOwner);
+            emit RevokedOperator(operator, tokenOwner, operatorData);
         }
     }
 
@@ -472,6 +496,34 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address to,
         uint256 amount
     ) internal virtual {}
+
+    /**
+     * @dev Attempt to notify the operator `operator` about the `amount` tokens being authorized with.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
+     * If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+     
+     * @param operator The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+     * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
+     */
+    function _notifyTokenOperator(
+        address operator,
+        bytes memory lsp1Data
+    ) internal virtual {
+        if (
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                operator,
+                _INTERFACEID_LSP1
+            )
+        ) {
+            (bool sucess, bytes memory returnData) = operator.call(
+                abi.encodeWithSelector(
+                    ILSP1UniversalReceiver.universalReceiver.selector,
+                    _TYPEID_LSP7_TOKENOPERATOR,
+                    lsp1Data
+                )
+            );
+        }
+    }
 
     /**
      * @dev Attempt to notify the token sender `from` about the `amount` of tokens being transferred.

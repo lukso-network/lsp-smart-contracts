@@ -23,6 +23,7 @@ import "./LSP8Errors.sol";
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {
+    _TYPEID_LSP8_TOKENOPERATOR,
     _TYPEID_LSP8_TOKENSSENDER,
     _TYPEID_LSP8_TOKENSRECIPIENT
 } from "./LSP8Constants.sol";
@@ -104,7 +105,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      */
     function authorizeOperator(
         address operator,
-        bytes32 tokenId
+        bytes32 tokenId,
+        bytes memory operatorData
     ) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
 
@@ -123,13 +125,20 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool isAdded = _operators[tokenId].add(operator);
         if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
 
-        emit AuthorizedOperator(operator, tokenOwner, tokenId);
+        emit AuthorizedOperator(operator, tokenOwner, tokenId, operatorData);
+
+        bytes memory lsp1Data = abi.encode(msg.sender, tokenId, operatorData);
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function revokeOperator(address operator, bytes32 tokenId) public virtual {
+    function revokeOperator(
+        address operator,
+        bytes32 tokenId,
+        bytes memory operatorData
+    ) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
 
         if (tokenOwner != msg.sender) {
@@ -144,7 +153,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8TokenOwnerCannotBeOperator();
         }
 
-        _revokeOperator(operator, tokenOwner, tokenId);
+        _revokeOperator(operator, tokenOwner, tokenId, operatorData);
+
+        bytes memory lsp1Data = abi.encode(msg.sender, tokenId, operatorData);
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
@@ -245,11 +257,12 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function _revokeOperator(
         address operator,
         address tokenOwner,
-        bytes32 tokenId
+        bytes32 tokenId,
+        bytes memory operatorData
     ) internal virtual {
         bool isRemoved = _operators[tokenId].remove(operator);
         if (!isRemoved) revert LSP8NonExistingOperator(operator, tokenId);
-        emit RevokedOperator(operator, tokenOwner, tokenId);
+        emit RevokedOperator(operator, tokenOwner, tokenId, operatorData);
     }
 
     /**
@@ -276,7 +289,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         for (uint256 i = 0; i < operatorListLength; ) {
             // we are emptying the list, always remove from index 0
             address operator = operatorsForTokenId.at(0);
-            _revokeOperator(operator, tokenOwner, tokenId);
+            _revokeOperator(operator, tokenOwner, tokenId, "");
 
             unchecked {
                 ++i;
@@ -472,6 +485,35 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address to,
         bytes32 tokenId
     ) internal virtual {}
+
+
+    /**
+     * @dev Attempt to notify the operator `operator` about the `tokenId` tokens being authorized.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
+     * If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+     
+     * @param operator The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+     * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
+     */
+    function _notifyTokenOperator(
+        address operator,
+        bytes memory lsp1Data
+    ) internal virtual {
+        if (
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                operator,
+                _INTERFACEID_LSP1
+            )
+        ) {
+            (bool sucess, bytes memory returnData) = operator.call(
+                abi.encodeWithSelector(
+                    ILSP1UniversalReceiver.universalReceiver.selector,
+                    _TYPEID_LSP8_TOKENOPERATOR,
+                    lsp1Data
+                )
+            );
+        }
+    }
 
     /**
      * @dev An attempt is made to notify the token sender about the `tokenId` changing owners using

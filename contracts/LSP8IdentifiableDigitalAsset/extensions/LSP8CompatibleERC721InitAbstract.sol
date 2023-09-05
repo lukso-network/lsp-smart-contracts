@@ -161,7 +161,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
      * @inheritdoc ILSP8CompatibleERC721
      */
     function approve(address operator, uint256 tokenId) public virtual {
-        authorizeOperator(operator, bytes32(tokenId));
+        authorizeOperator(operator, bytes32(tokenId), "");
         emit Approval(tokenOwnerOf(bytes32(tokenId)), operator, tokenId);
     }
 
@@ -223,7 +223,8 @@ abstract contract LSP8CompatibleERC721InitAbstract is
      */
     function authorizeOperator(
         address operator,
-        bytes32 tokenId
+        bytes32 tokenId,
+        bytes memory operatorData
     )
         public
         virtual
@@ -252,8 +253,11 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         bool isAdded = _operators[tokenId].add(operator);
         if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
 
-        emit AuthorizedOperator(operator, tokenOwner, tokenId);
+        emit AuthorizedOperator(operator, tokenOwner, tokenId, operatorData);
         emit Approval(tokenOwnerOf(tokenId), operator, uint256(tokenId));
+
+        bytes memory lsp1Data = abi.encode(msg.sender, tokenId, operatorData);
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**

@@ -41,7 +41,8 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     event AuthorizedOperator(
         address indexed operator,
         address indexed tokenOwner,
-        bytes32 indexed tokenId
+        bytes32 indexed tokenId,
+        bytes operatorData
     );
 
     /**
@@ -53,7 +54,8 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     event RevokedOperator(
         address indexed operator,
         address indexed tokenOwner,
-        bytes32 indexed tokenId
+        bytes32 indexed tokenId,
+        bytes operatorData
     );
 
     // --- Token queries
@@ -100,7 +102,8 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @dev Allow an `operator` address to transfer or burn a specific `tokenId` on behalf of its token owner. See {isOperatorFor}.
      *
      * @param operator The address to authorize as an operator.
-     * @param tokenId The token ID operator has access to..
+     * @param tokenId The token ID operator has access to.
+     * @param operatorData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
      * - `tokenId` must exist.
@@ -110,7 +113,11 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * @custom:events {AuthorizedOperator} event.
      */
-    function authorizeOperator(address operator, bytes32 tokenId) external;
+    function authorizeOperator(
+        address operator,
+        bytes32 tokenId,
+        bytes memory operatorData
+    ) external;
 
     /**
      * @dev Remove access of `operator` for a given `tokenId`, disallowing it to transfer `tokenId` on behalf of its owner.
@@ -118,6 +125,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * @param operator The address to revoke as an operator.
      * @param tokenId The tokenId `operator` is revoked from operating on.
+     * @param operatorData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
      * - `tokenId` must exist.
@@ -127,7 +135,11 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * @custom:events {RevokedOperator} event with address of the operator being revoked for the caller (token owner)..
      */
-    function revokeOperator(address operator, bytes32 tokenId) external;
+    function revokeOperator(
+        address operator,
+        bytes32 tokenId,
+        bytes memory operatorData
+    ) external;
 
     /**
      * @dev Returns whether `operator` address is an operator for a given `tokenId`.

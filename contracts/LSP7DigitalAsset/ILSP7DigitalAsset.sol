@@ -41,7 +41,8 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
     event AuthorizedOperator(
         address indexed operator,
         address indexed tokenOwner,
-        uint256 indexed amount
+        uint256 indexed amount,
+        bytes operatorData
     );
 
     /**
@@ -49,7 +50,11 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param operator The address revoked from operating
      * @param tokenOwner The token owner
      */
-    event RevokedOperator(address indexed operator, address indexed tokenOwner);
+    event RevokedOperator(
+        address indexed operator,
+        address indexed tokenOwner,
+        bytes operatorData
+    );
 
     // --- Token queries
 
@@ -97,6 +102,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      *
      * @param operator The address to authorize as an operator.
      * @param amount The allowance amount of tokens operator has access to.
+     * @param operatorData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
      * - `operator` cannot be the zero address.
@@ -104,13 +110,18 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @custom:events {AuthorizedOperator} when allowance is given to a new operator or
      * an existing operator's allowance is updated.
      */
-    function authorizeOperator(address operator, uint256 amount) external;
+    function authorizeOperator(
+        address operator,
+        uint256 amount,
+        bytes memory operatorData
+    ) external;
 
     /**
      * @dev Removes the `operator` address as an operator of callers tokens, disallowing it to send any amount of tokens
      * on behalf of the token owner (the caller of the function `msg.sender`). See also {authorizedAmountFor}.
      *
      * @param operator The address to revoke as an operator.
+     * @param operatorData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
      * - `operator` cannot be calling address.
@@ -118,7 +129,10 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      *
      * @custom:events {RevokedOperator} event with address of the operator being revoked for the caller (token holder).
      */
-    function revokeOperator(address operator) external;
+    function revokeOperator(
+        address operator,
+        bytes memory operatorData
+    ) external;
 
     /**
      * @dev Get the amount of tokens `operator` address has access to from `tokenOwner`.
