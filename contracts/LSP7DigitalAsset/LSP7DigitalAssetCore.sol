@@ -350,7 +350,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             data
         );
 
-        bytes memory lsp1Data = abi.encodePacked(address(0), to, amount, data);
+        bytes memory lsp1Data = abi.encode(address(0), to, amount, data);
         _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
     }
 
@@ -416,12 +416,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         emit Transfer(operator, from, address(0), amount, false, data);
 
-        bytes memory lsp1Data = abi.encodePacked(
-            from,
-            address(0),
-            amount,
-            data
-        );
+        bytes memory lsp1Data = abi.encode(from, address(0), amount, data);
         _notifyTokenSender(from, lsp1Data);
     }
 
@@ -473,7 +468,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         emit Transfer(operator, from, to, amount, allowNonLSP1Recipient, data);
 
-        bytes memory lsp1Data = abi.encodePacked(from, to, amount, data);
+        bytes memory lsp1Data = abi.encode(from, to, amount, data);
 
         _notifyTokenSender(from, lsp1Data);
         _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
