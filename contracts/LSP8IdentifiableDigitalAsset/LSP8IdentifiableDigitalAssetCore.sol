@@ -486,7 +486,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bytes32 tokenId
     ) internal virtual {}
 
-
     /**
      * @dev Attempt to notify the operator `operator` about the `tokenId` tokens being authorized.
      * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
