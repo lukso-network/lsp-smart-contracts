@@ -82,7 +82,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
     });
   });
 
-  describe.only('When testing EOA call to URD through the UR function', () => {
+  describe('When testing EOA call to URD through the UR function', () => {
     describe('when calling with tokens typeId', () => {
       it('should return error message', async () => {
         const URD_TypeIds = [
@@ -970,7 +970,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
         const vaultSetDataCalldata = context.lsp9Vault1.interface.encodeFunctionData('setData', [
           ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap + token.address.substring(2),
-          '0x119dd91b00000000000000000000000000000000cafecafe',
+          '0xc6b21b8100000000000000000000000000000000cafecafe',
         ]);
 
         await context.universalProfile
@@ -982,7 +982,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         ).to.deep.equal([
           '0x' + '00'.repeat(15) + '01',
           token.address.toLowerCase(),
-          '0x119dd91b00000000000000000000000000000000cafecafe',
+          '0xc6b21b8100000000000000000000000000000000cafecafe',
         ]);
 
         balance = await token.balanceOf(context.lsp9Vault1.address);
@@ -1040,7 +1040,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         ).to.deep.equal([
           '0x' + '00'.repeat(15) + '01',
           token.address.toLowerCase(),
-          '0x119dd91b00000000000000000000000000000000cafecafe',
+          '0xc6b21b8100000000000000000000000000000000cafecafe',
         ]);
       });
     });

@@ -137,6 +137,16 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
         address tokenOwner
     ) external view returns (uint256);
 
+    /**
+     * @dev Returns all `operator` addresses that are allowed to transfer or burn on behalf of `tokenOwner`.
+     *
+     * @param tokenOwner The token owner to get the operators for.
+     * @return An array of operators allowed to transfer or burn tokens on behalf of `tokenOwner`.
+     */
+    function getOperatorsOf(
+        address tokenOwner
+    ) external view returns (address[] memory);
+
     // --- Transfer functionality
 
     /**
