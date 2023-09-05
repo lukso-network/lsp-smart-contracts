@@ -11,6 +11,11 @@ import {
 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 
 import {
+  LSP17TestContext,
+  shouldBehaveLikeLSP17,
+} from '../../LSP17ContractExtension/LSP17ExtendableTokens.behaviour';
+
+import {
   LS4DigitalAssetMetadataTestContext,
   shouldBehaveLikeLSP4DigitalAssetMetadata,
 } from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour';
@@ -47,6 +52,23 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
         deployParams,
       };
     };
+
+  const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
+    const accounts = await ethers.getSigners();
+
+    const deployParams = {
+      name: 'LSP8 - deployed with constructor',
+      symbol: 'NFT',
+      owner: accounts[0],
+    };
+    const contract = await new LSP8Tester__factory(accounts[0]).deploy(
+      deployParams.name,
+      deployParams.symbol,
+      deployParams.owner.address,
+    );
+
+    return { accounts, contract, deployParams };
+  };
 
   describe('when deploying the contract', () => {
     it('should revert when deploying with address(0) as owner', async () => {
@@ -89,5 +111,6 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
   describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP4DigitalAssetMetadata(buildLSP4DigitalAssetMetadataTestContext);
     shouldBehaveLikeLSP8(buildTestContext);
+    shouldBehaveLikeLSP17(buildLSP17TestContext);
   });
 });

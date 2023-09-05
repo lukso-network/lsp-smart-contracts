@@ -2042,6 +2042,10 @@ export const shouldInitializeLikeLSP7 = (
       expect(await context.lsp7.supportsInterface(INTERFACE_IDS.LSP7DigitalAsset));
     });
 
+    it('should have registered the LSP17Extendable interface', async () => {
+      expect(await context.lsp7.supportsInterface(INTERFACE_IDS.LSP17Extendable));
+    });
+
     it('should have set expected entries with ERC725Y.setData', async () => {
       await expect(context.initializeTransaction)
         .to.emit(context.lsp7, 'DataChanged')
