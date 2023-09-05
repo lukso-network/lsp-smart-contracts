@@ -233,7 +233,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
             expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
           });
 
-          it("should add the operator to the list of operators", async () => {
+          it('should add the operator to the list of operators', async () => {
             const operator = context.accounts.operator.address;
             const tokenOwner = context.accounts.owner.address;
 
@@ -303,7 +303,10 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
               addedAmount,
             );
 
-            expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([oldOperator, newOperator]);
+            expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([
+              oldOperator,
+              newOperator,
+            ]);
           });
         });
 
@@ -327,9 +330,9 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
             );
           });
 
-          it("should not duplicate the existing operator in the list of operators", async () => {
+          it('should not duplicate the existing operator in the list of operators', async () => {
             const operator = context.accounts.operator.address;
-            const tokenOwner = context.accounts.owner.address; 
+            const tokenOwner = context.accounts.owner.address;
 
             expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([operator]);
           });
@@ -553,7 +556,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         await context.lsp7.authorizeOperator(operator, amount);
         expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
 
-      expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([operator]);
+        expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([operator]);
 
         // effects
         const tx = await context.lsp7.revokeOperator(operator);

@@ -37,7 +37,6 @@ import {
  * have been added to mitigate the well-known issues around setting allowances.
  */
 abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
-
     using EnumerableSet for EnumerableSet.AddressSet;
     // --- Storage
 
