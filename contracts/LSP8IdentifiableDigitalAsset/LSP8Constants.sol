@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 
 // --- ERC165 interface ids
-bytes4 constant _INTERFACEID_LSP8 = 0xa9ac26fe;
+bytes4 constant _INTERFACEID_LSP8 = 0x1ae9ba1f;
 
 // --- ERC725Y Data Keys
 
@@ -19,3 +19,6 @@ bytes32 constant _TYPEID_LSP8_TOKENSSENDER = 0xb23eae7e6d1564b295b4c3e3be402d9a2
 
 // keccak256('LSP8Tokens_RecipientNotification')
 bytes32 constant _TYPEID_LSP8_TOKENSRECIPIENT = 0x0b084a55ebf70fd3c06fd755269dac2212c4d3f0f4d09079780bfa50c1b2984d;
+
+// keccak256('LSP8Tokens_OperatorNotification')
+bytes32 constant _TYPEID_LSP8_TOKENOPERATOR = 0x8a1c15a8799f71b547e08e2bcb2e85257e81b0a07eee2ce6712549eef1f00970;

@@ -70,7 +70,7 @@ abstract contract LSP7CompatibleERC20 is
         address operator,
         uint256 amount
     ) public virtual returns (bool) {
-        authorizeOperator(operator, amount);
+        authorizeOperator(operator, amount, "");
         return true;
     }
 
@@ -109,9 +109,15 @@ abstract contract LSP7CompatibleERC20 is
     function _updateOperator(
         address tokenOwner,
         address operator,
-        uint256 amount
+        uint256 amount,
+        bytes memory operatorNotificationData
     ) internal virtual override {
-        super._updateOperator(tokenOwner, operator, amount);
+        super._updateOperator(
+            tokenOwner,
+            operator,
+            amount,
+            operatorNotificationData
+        );
         emit Approval(tokenOwner, operator, amount);
     }
 

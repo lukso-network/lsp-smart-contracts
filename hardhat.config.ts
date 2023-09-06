@@ -99,6 +99,9 @@ const config: HardhatUserConfig = {
       },
     },
   },
+  mocha: {
+    timeout: 10000000,
+  },
   packager: {
     // What contracts to keep the artifacts and the bindings for.
     contracts: [
