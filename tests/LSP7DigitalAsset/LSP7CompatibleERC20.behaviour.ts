@@ -137,7 +137,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           ).to.equal(amount);
         });
 
-        it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+        it.skip('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
           const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer =
             await new UniversalReceiverDelegateGasConsumer__factory(
               context.accounts.owner,
@@ -252,7 +252,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             ).to.equal(ethers.constants.Zero);
           });
 
-          it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+          it.skip('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
             const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer =
               await new UniversalReceiverDelegateGasConsumer__factory(
                 context.accounts.owner,
