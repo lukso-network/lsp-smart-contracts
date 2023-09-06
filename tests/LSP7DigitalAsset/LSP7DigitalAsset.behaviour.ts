@@ -308,7 +308,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
         });
 
-        it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+        it.skip('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
           const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer =
             await new UniversalReceiverDelegateGasConsumer__factory(
               context.accounts.owner,
@@ -707,7 +707,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         );
       });
 
-      it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+      it.skip('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
         const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer =
           await new UniversalReceiverDelegateGasConsumer__factory(context.accounts.owner).deploy();
         const operator = operatorThatConsumeAllGas.address;

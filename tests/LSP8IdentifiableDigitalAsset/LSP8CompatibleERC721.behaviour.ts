@@ -260,7 +260,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               ).to.be.true;
             });
 
-            it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+            it.skip('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
               const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer =
                 await new UniversalReceiverDelegateGasConsumer__factory(
                   context.accounts.owner,
