@@ -288,10 +288,8 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           });
 
           it('should succeed and inform the operator', async () => {
-            const tokenReceiverWithLSP1: TokenReceiverWithLSP1;
-            tokenReceiverWithLSP1 = await new TokenReceiverWithLSP1__factory(
-              context.accounts.owner,
-            ).deploy();
+            const tokenReceiverWithLSP1: TokenReceiverWithLSP1 =
+              await new TokenReceiverWithLSP1__factory(context.accounts.owner).deploy();
             const operator = tokenReceiverWithLSP1.address;
             const tokenOwner = context.accounts.owner.address;
             const tokenId = newMintedTokenId;
@@ -308,10 +306,8 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           });
 
           it('should succeed and inform the operator even if the operator revert', async () => {
-            const operatorThatReverts: UniversalReceiverDelegateRevert;
-            operatorThatReverts = await new UniversalReceiverDelegateRevert__factory(
-              context.accounts.owner,
-            ).deploy();
+            const operatorThatReverts: UniversalReceiverDelegateRevert =
+              await new UniversalReceiverDelegateRevert__factory(context.accounts.owner).deploy();
             const operator = operatorThatReverts.address;
             const tokenOwner = context.accounts.owner.address;
             const tokenId = newMintedTokenId;
@@ -326,10 +322,10 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           });
 
           it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
-            const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer;
-            operatorThatConsumeAllGas = await new UniversalReceiverDelegateGasConsumer__factory(
-              context.accounts.owner,
-            ).deploy();
+            const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer =
+              await new UniversalReceiverDelegateGasConsumer__factory(
+                context.accounts.owner,
+              ).deploy();
             const operator = operatorThatConsumeAllGas.address;
             const tokenOwner = context.accounts.owner.address;
             const tokenId = newMintedTokenId;
@@ -434,10 +430,8 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
         });
 
         it('should succeed and inform the operator', async () => {
-          const tokenReceiverWithLSP1: TokenReceiverWithLSP1;
-          tokenReceiverWithLSP1 = await new TokenReceiverWithLSP1__factory(
-            context.accounts.owner,
-          ).deploy();
+          const tokenReceiverWithLSP1: TokenReceiverWithLSP1 =
+            await new TokenReceiverWithLSP1__factory(context.accounts.owner).deploy();
           const operator = tokenReceiverWithLSP1.address;
           const tokenOwner = context.accounts.owner.address;
           const tokenId = newMintedTokenId;
@@ -459,10 +453,8 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
         });
 
         it('should succeed and inform the operator even if the operator revert', async () => {
-          const operatorThatReverts: UniversalReceiverDelegateRevert;
-          operatorThatReverts = await new UniversalReceiverDelegateRevert__factory(
-            context.accounts.owner,
-          ).deploy();
+          const operatorThatReverts: UniversalReceiverDelegateRevert =
+            await new UniversalReceiverDelegateRevert__factory(context.accounts.owner).deploy();
           const operator = operatorThatReverts.address;
           const tokenOwner = context.accounts.owner.address;
           const tokenId = newMintedTokenId;
@@ -480,10 +472,10 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
         });
 
         it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
-          const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer;
-          operatorThatConsumeAllGas = await new UniversalReceiverDelegateGasConsumer__factory(
-            context.accounts.owner,
-          ).deploy();
+          const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer =
+            await new UniversalReceiverDelegateGasConsumer__factory(
+              context.accounts.owner,
+            ).deploy();
           const operator = operatorThatConsumeAllGas.address;
           const tokenOwner = context.accounts.owner.address;
           const tokenId = newMintedTokenId;
