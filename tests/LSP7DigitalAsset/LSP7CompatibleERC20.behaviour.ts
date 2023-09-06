@@ -98,7 +98,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
       describe('approving an LSP1 contract', () => {
         it('should succeed and inform the operator', async () => {
-          let tokenReceiverWithLSP1: TokenReceiverWithLSP1;
+          const tokenReceiverWithLSP1: TokenReceiverWithLSP1;
           tokenReceiverWithLSP1 = await new TokenReceiverWithLSP1__factory(
             context.accounts.owner,
           ).deploy();
@@ -120,7 +120,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
         });
 
         it('should succeed and inform the operator even if the operator revert', async () => {
-          let operatorThatReverts: UniversalReceiverDelegateRevert;
+          const operatorThatReverts: UniversalReceiverDelegateRevert;
           operatorThatReverts = await new UniversalReceiverDelegateRevert__factory(
             context.accounts.owner,
           ).deploy();
@@ -140,7 +140,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
         });
 
         it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
-          let operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer;
+          const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer;
           operatorThatConsumeAllGas = await new UniversalReceiverDelegateGasConsumer__factory(
             context.accounts.owner,
           ).deploy();
@@ -217,7 +217,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
         describe('changing the allowance of an LSP1 contract to zero', () => {
           it('should succeed and inform the operator', async () => {
-            let tokenReceiverWithLSP1: TokenReceiverWithLSP1;
+            const tokenReceiverWithLSP1: TokenReceiverWithLSP1;
             tokenReceiverWithLSP1 = await new TokenReceiverWithLSP1__factory(
               context.accounts.owner,
             ).deploy();
@@ -238,7 +238,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           });
 
           it('should succeed and inform the operator even if the operator revert', async () => {
-            let operatorThatReverts: UniversalReceiverDelegateRevert;
+            const operatorThatReverts: UniversalReceiverDelegateRevert;
             operatorThatReverts = await new UniversalReceiverDelegateRevert__factory(
               context.accounts.owner,
             ).deploy();
@@ -257,7 +257,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           });
 
           it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
-            let operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer;
+            const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer;
             operatorThatConsumeAllGas = await new UniversalReceiverDelegateGasConsumer__factory(
               context.accounts.owner,
             ).deploy();

@@ -280,7 +280,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
         });
 
         describe('with sending data and notifying an LSP1 contract', () => {
-          let newMintedTokenId = tokenIdAsBytes32(18);
+          const newMintedTokenId = tokenIdAsBytes32(18);
           before(async () => {
             await context.lsp8.mint(context.accounts.owner.address, newMintedTokenId, true, '0x');
 
@@ -288,7 +288,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           });
 
           it('should succeed and inform the operator', async () => {
-            let tokenReceiverWithLSP1: TokenReceiverWithLSP1;
+            const tokenReceiverWithLSP1: TokenReceiverWithLSP1;
             tokenReceiverWithLSP1 = await new TokenReceiverWithLSP1__factory(
               context.accounts.owner,
             ).deploy();
@@ -308,7 +308,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           });
 
           it('should succeed and inform the operator even if the operator revert', async () => {
-            let operatorThatReverts: UniversalReceiverDelegateRevert;
+            const operatorThatReverts: UniversalReceiverDelegateRevert;
             operatorThatReverts = await new UniversalReceiverDelegateRevert__factory(
               context.accounts.owner,
             ).deploy();
@@ -326,7 +326,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           });
 
           it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
-            let operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer;
+            const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer;
             operatorThatConsumeAllGas = await new UniversalReceiverDelegateGasConsumer__factory(
               context.accounts.owner,
             ).deploy();
@@ -426,7 +426,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
       });
 
       describe('with sending data and notifying an LSP1 contract', () => {
-        let newMintedTokenId = tokenIdAsBytes32(16);
+        const newMintedTokenId = tokenIdAsBytes32(16);
         before(async () => {
           await context.lsp8.mint(context.accounts.owner.address, newMintedTokenId, true, '0x');
 
@@ -434,7 +434,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
         });
 
         it('should succeed and inform the operator', async () => {
-          let tokenReceiverWithLSP1: TokenReceiverWithLSP1;
+          const tokenReceiverWithLSP1: TokenReceiverWithLSP1;
           tokenReceiverWithLSP1 = await new TokenReceiverWithLSP1__factory(
             context.accounts.owner,
           ).deploy();
@@ -459,7 +459,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
         });
 
         it('should succeed and inform the operator even if the operator revert', async () => {
-          let operatorThatReverts: UniversalReceiverDelegateRevert;
+          const operatorThatReverts: UniversalReceiverDelegateRevert;
           operatorThatReverts = await new UniversalReceiverDelegateRevert__factory(
             context.accounts.owner,
           ).deploy();
@@ -480,7 +480,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
         });
 
         it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
-          let operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer;
+          const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer;
           operatorThatConsumeAllGas = await new UniversalReceiverDelegateGasConsumer__factory(
             context.accounts.owner,
           ).deploy();
