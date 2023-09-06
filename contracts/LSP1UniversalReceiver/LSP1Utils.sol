@@ -6,19 +6,34 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
 import "./ILSP1UniversalReceiver.sol";
-import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
-import "../LSP0ERC725Account/LSP0Constants.sol";
-import "../LSP5ReceivedAssets/LSP5Constants.sol";
-import "../LSP7DigitalAsset/LSP7Constants.sol";
-import "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
-import "../LSP9Vault/LSP9Constants.sol";
-import "../LSP14Ownable2Step/LSP14Constants.sol";
-import "../LSP10ReceivedVaults/LSP10Constants.sol";
 
+// constants
+import {
+    _INTERFACEID_LSP1,
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY,
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
+} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+
+/**
+ * @title LSP1 Utility library.
+ * @author Jean Cavallera <CJ42>, Yamen Merhi <YamenMerhi>, Daniel Afteni <B00ste>
+ * @dev LSP1Utils is a library of utility functions that can be used to notify the `universalReceiver` function of a contract
+ * that implements LSP1 and retrieve informations related to LSP1 `typeId`.
+ * Based on LSP1 Universal Receiver standard.
+ */
 library LSP1Utils {
+    /**
+     * @dev Notify a contract at `lsp1Implementation` address by calling its `universalReceiver` function if this contract
+     * supports the LSP1 interface.
+     *
+     * @param lsp1Implementation The address of the contract to notify.
+     * @param typeId A `bytes32` typeId.
+     * @param data Any optional data to send to the `universalReceiver` function to the `lsp1Implementation` address.
+     */
     function tryNotifyUniversalReceiver(
         address lsp1Implementation,
         bytes32 typeId,
@@ -37,6 +52,18 @@ library LSP1Utils {
         }
     }
 
+    /**
+     * @dev Call a LSP1UniversalReceiverDelegate contract at `universalReceiverDelegate` address and append `msgSender` and `msgValue`
+     * as additional informations in the calldata.
+     *
+     * @param universalReceiverDelegate The address of the LSP1UniversalReceiverDelegate to delegate the `universalReceiver` function to.
+     * @param typeId A `bytes32` typeId.
+     * @param receivedData The data sent initially to the `universalReceiver` function.
+     * @param msgSender The address that initially called the `universalReceiver` function.
+     * @param msgValue The amount of native token received initially by the `universalReceiver` function.
+     *
+     * @return The data returned by the LSP1UniversalReceiverDelegate contract.
+     */
     function callUniversalReceiverWithCallerInfos(
         address universalReceiverDelegate,
         bytes32 typeId,
@@ -66,47 +93,38 @@ library LSP1Utils {
     }
 
     /**
-     * @dev Gets all the transfer details depending on the `typeId`
-     * @param typeId A unique identifier for a specific action
+     * @notice Retrieving the value stored under the ERC725Y data key `LSP1UniversalReceiverDelegate`.
+     *
+     * @dev Query internally the ERC725Y storage of a `ERC725Y` smart contract to retrieve
+     * the value set under the `LSP1UniversalReceiverDelegate` data key.
+     *
+     * @param erc725YStorage A reference to the ERC725Y storage mapping of the contract.
+     * @return The bytes value stored under the `LSP1UniversalReceiverDelegate` data key.
      */
-    function getTransferDetails(
+    function getLSP1DelegateValue(
+        mapping(bytes32 => bytes) storage erc725YStorage
+    ) internal view returns (bytes memory) {
+        return erc725YStorage[_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY];
+    }
+
+    /**
+     * @notice Retrieving the value stored under the ERC725Y data key `LSP1UniversalReceiverDelegate:<type-id>` for a specific `typeId`.
+     *
+     * @dev Query internally the ERC725Y storage of a `ERC725Y` smart contract to retrieve
+     * the value set under the `LSP1UniversalReceiverDelegate:<bytes32>` data key for a specific LSP1 `typeId`.
+     *
+     * @param erc725YStorage A reference to the ERC725Y storage mapping of the contract.
+     * @param typeId A bytes32 LSP1 `typeId`;
+     * @return The bytes value stored under the `LSP1UniversalReceiverDelegate:<bytes32>` data key.
+     */
+    function getLSP1DelegateValueForTypeId(
+        mapping(bytes32 => bytes) storage erc725YStorage,
         bytes32 typeId
-    )
-        internal
-        pure
-        returns (
-            bool invalid,
-            bytes10 mapPrefix,
-            bytes4 interfaceId,
-            bool isReceiving
-        )
-    {
-        if (
-            typeId == _TYPEID_LSP7_TOKENSSENDER ||
-            typeId == _TYPEID_LSP7_TOKENSRECIPIENT
-        ) {
-            mapPrefix = _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX;
-            interfaceId = _INTERFACEID_LSP7;
-            isReceiving = typeId == _TYPEID_LSP7_TOKENSRECIPIENT ? true : false;
-        } else if (
-            typeId == _TYPEID_LSP8_TOKENSSENDER ||
-            typeId == _TYPEID_LSP8_TOKENSRECIPIENT
-        ) {
-            mapPrefix = _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX;
-            interfaceId = _INTERFACEID_LSP8;
-            isReceiving = typeId == _TYPEID_LSP8_TOKENSRECIPIENT ? true : false;
-        } else if (
-            typeId == _TYPEID_LSP9_OwnershipTransferred_SenderNotification ||
-            typeId == _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
-        ) {
-            mapPrefix = _LSP10_VAULTS_MAP_KEY_PREFIX;
-            interfaceId = _INTERFACEID_LSP9;
-            isReceiving = (typeId ==
-                _TYPEID_LSP9_OwnershipTransferred_RecipientNotification)
-                ? true
-                : false;
-        } else {
-            invalid = true;
-        }
+    ) internal view returns (bytes memory) {
+        bytes32 lsp1TypeIdDataKey = LSP2Utils.generateMappingKey(
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+            bytes20(typeId)
+        );
+        return erc725YStorage[lsp1TypeIdDataKey];
     }
 }

@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.5;
 
+// interfaces
+import {
+    ILSP20CallVerifier as ILSP20
+} from "../../LSP20CallVerification/ILSP20CallVerifier.sol";
+
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {
@@ -38,12 +43,13 @@ import {
 // errors
 import {
     NotRecognisedPermissionKey,
-    AddressPermissionArrayIndexValueNotAnAddress,
     InvalidEncodedAllowedCalls,
     InvalidEncodedAllowedERC725YDataKeys,
     NoERC725YDataKeysAllowed,
     NotAllowedERC725YDataKey,
-    NotAuthorised
+    NotAuthorised,
+    KeyManagerCannotBeSetAsExtensionForLSP20Functions,
+    InvalidDataValuesForDataKeys
 } from "../LSP6Errors.sol";
 
 abstract contract LSP6SetDataModule {
@@ -222,6 +228,14 @@ abstract contract LSP6SetDataModule {
                 bytes12(inputDataKey) ==
                 _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX
             ) {
+                // CHECK that `dataValue` contains exactly 32 bytes, which is the required length for a permission BitArray
+                if (inputDataValue.length != 32 && inputDataValue.length != 0) {
+                    revert InvalidDataValuesForDataKeys(
+                        inputDataKey,
+                        inputDataValue
+                    );
+                }
+
                 // controller already has the permissions needed. Do not run internal function.
                 if (hasBothAddControllerAndEditPermissions) return (bytes32(0));
 
@@ -280,6 +294,14 @@ abstract contract LSP6SetDataModule {
             inputDataKey == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY ||
             bytes12(inputDataKey) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
         ) {
+            // CHECK that `dataValue` contains exactly 20 bytes, which corresponds to an address for a LSP1 Delegate contract
+            if (inputDataValue.length != 20 && inputDataValue.length != 0) {
+                revert InvalidDataValuesForDataKeys(
+                    inputDataKey,
+                    inputDataValue
+                );
+            }
+
             // same as above. If controller has both permissions, do not read the `target` storage
             // to save gas by avoiding an extra external `view` call.
             if (
@@ -299,6 +321,26 @@ abstract contract LSP6SetDataModule {
 
             // LSP17Extension:<bytes4>
         } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
+            // CHECK that `dataValue` contains exactly 20 bytes, which corresponds to an address for a LSP17 Extension
+            if (inputDataValue.length != 20 && inputDataValue.length != 0) {
+                revert InvalidDataValuesForDataKeys(
+                    inputDataKey,
+                    inputDataValue
+                );
+            }
+
+            // reverts when the address of the Key Manager is being set as extensions for lsp20 functions
+            bytes4 selector = bytes4(inputDataKey << 96);
+
+            if (
+                (selector == ILSP20.lsp20VerifyCall.selector ||
+                    selector == ILSP20.lsp20VerifyCallResult.selector)
+            ) {
+                if (address(bytes20(inputDataValue)) == address(this)) {
+                    revert KeyManagerCannotBeSetAsExtensionForLSP20Functions();
+                }
+            }
+
             // same as above. If controller has both permissions, do not read the `target` storage
             // to save gas by avoiding an extra external `view` call.
             if (
@@ -337,6 +379,14 @@ abstract contract LSP6SetDataModule {
     ) internal view virtual returns (bytes32) {
         // AddressPermissions[] -> array length
         if (inputDataKey == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY) {
+            // CHECK that `dataValue` is exactly 16 bytes long or `0x` (= not set), as the array length of `AddressPermissions[]` MUST be a `uint128` value.
+            if (inputDataValue.length != 16 && inputDataValue.length != 0) {
+                revert InvalidDataValuesForDataKeys(
+                    inputDataKey,
+                    inputDataValue
+                );
+            }
+
             // if the controller already has both permissions from one of the two required,
             // No permission required as CHECK is already done. We don't need to read `target` storage.
             if (hasBothAddControllerAndEditPermissions) return bytes32(0);
@@ -358,10 +408,7 @@ abstract contract LSP6SetDataModule {
 
         // CHECK that we either ADD an address (20 bytes long) or REMOVE an address (0x)
         if (inputDataValue.length != 0 && inputDataValue.length != 20) {
-            revert AddressPermissionArrayIndexValueNotAnAddress(
-                inputDataKey,
-                inputDataValue
-            );
+            revert InvalidDataValuesForDataKeys(inputDataKey, inputDataValue);
         }
 
         // if the controller already has both permissions from one of the two required below,
@@ -552,13 +599,14 @@ abstract contract LSP6SetDataModule {
              * The length of a data key is 32 bytes.
              * Therefore we can have a fixed allowed data key which has
              * a length of 32 bytes or we can have a dynamic data key
-             * which can have a length of up to 31 bytes.
+             * which can have a length from 1 up to 31 bytes.
              */
-            if (length > 32)
+            if (length == 0 || length > 32) {
                 revert InvalidEncodedAllowedERC725YDataKeys(
                     allowedERC725YDataKeysCompacted,
                     "couldn't DECODE from storage"
                 );
+            }
 
             /**
              * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &
@@ -672,13 +720,14 @@ abstract contract LSP6SetDataModule {
              * The length of a data key is 32 bytes.
              * Therefore we can have a fixed allowed data key which has
              * a length of 32 bytes or we can have a dynamic data key
-             * which can have a length of up to 31 bytes.
+             * which can have a length from 1 up to 31 bytes.
              */
-            if (length > 32)
+            if (length == 0 || length > 32) {
                 revert InvalidEncodedAllowedERC725YDataKeys(
                     allowedERC725YDataKeysCompacted,
                     "couldn't DECODE from storage"
                 );
+            }
 
             /**
              * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &

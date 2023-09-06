@@ -3,7 +3,7 @@ import { ethers } from 'hardhat';
 import { LSP6KeyManager } from '../../types';
 
 // constants
-import { LSP6_VERSION } from '../../constants';
+import { LSP25_VERSION } from '../../constants';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 export const abiCoder = ethers.utils.defaultAbiCoder;
@@ -153,7 +153,7 @@ export async function signLSP6ExecuteRelayCall(
   _payload: string,
 ) {
   const signedMessageParams = {
-    lsp6Version: LSP6_VERSION,
+    lsp25Version: LSP25_VERSION,
     chainId: 31337, // HARDHAT_CHAINID
     nonce: _signerNonce,
     validityTimestamps: _signerValidityTimestamps,
@@ -164,7 +164,7 @@ export async function signLSP6ExecuteRelayCall(
   const encodedMessage = ethers.utils.solidityPack(
     ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
     [
-      signedMessageParams.lsp6Version,
+      signedMessageParams.lsp25Version,
       signedMessageParams.chainId,
       signedMessageParams.nonce,
       signedMessageParams.validityTimestamps,

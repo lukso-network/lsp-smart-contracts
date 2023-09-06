@@ -16,7 +16,7 @@ import {
 import {
   ERC725YDataKeys,
   OPERATION_TYPES,
-  LSP6_VERSION,
+  LSP25_VERSION,
   PERMISSIONS,
   INTERFACE_IDS,
   CALLTYPE,
@@ -219,7 +219,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
           const encodedMessage = ethers.utils.solidityPack(
             ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
             [
-              LSP6_VERSION,
+              LSP25_VERSION,
               HARDHAT_CHAINID,
               nonce,
               validityTimestamps,
@@ -272,7 +272,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
           const encodedMessage = ethers.utils.solidityPack(
             ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
             [
-              LSP6_VERSION,
+              LSP25_VERSION,
               HARDHAT_CHAINID,
               nonce,
               validityTimestamps,
@@ -399,7 +399,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
         const authorizeOperatorPayload = lsp8Contract.interface.encodeFunctionData(
           'authorizeOperator',
-          [operator, tokenIdToTransfer],
+          [operator, tokenIdToTransfer, '0x'],
         );
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
@@ -518,7 +518,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           const authorizeOperatorPayload = lsp7Contract.interface.encodeFunctionData(
             'authorizeOperator',
-            [operator, amount],
+            [operator, amount, '0x'],
           );
 
           const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
@@ -627,7 +627,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           const authorizeOperatorPayload = lsp8Contract.interface.encodeFunctionData(
             'authorizeOperator',
-            [recipient, tokenIdToApprove],
+            [recipient, tokenIdToApprove, '0x'],
           );
 
           const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [

@@ -24,11 +24,11 @@ export const INTERFACE_IDS = {
   ERC1155: '0xd9b67a26',
   ERC725X: '0x7545acac',
   ERC725Y: '0x629aa694',
-  LSP0ERC725Account: '0x3e89ad98',
+  LSP0ERC725Account: '0x24871b3d',
   LSP1UniversalReceiver: '0x6bb56a14',
-  LSP6KeyManager: '0x38bb3cdb',
-  LSP7DigitalAsset: '0xda1f85e4',
-  LSP8IdentifiableDigitalAsset: '0x622e7a01',
+  LSP6KeyManager: '0x66918867',
+  LSP7DigitalAsset: '0x05519512',
+  LSP8IdentifiableDigitalAsset: '0x1ae9ba1f',
   LSP9Vault: '0x28af17e6',
   LSP11BasicSocialRecovery: '0x049a28f1',
   LSP14Ownable2Step: '0x94be5999',
@@ -36,6 +36,7 @@ export const INTERFACE_IDS = {
   LSP17Extension: '0xcee78b40',
   LSP20CallVerification: '0x1a0eb6a5',
   LSP20CallVerifier: '0x480c0ec2',
+  LSP25ExecuteRelayCall: '0x5ac79908',
 };
 
 // ERC1271
@@ -95,9 +96,9 @@ export type LSPSupportedStandard = { key: string; value: string };
  * and contain a set of pre-defined ERC725Y Data Keys.
  */
 export const SupportedStandards = {
-  LSP3UniversalProfile: {
-    key: '0xeafec4d89fa9619884b60000abe425d64acd861a49b8ddf5c0b6962110481f38',
-    value: '0xabe425d6',
+  LSP3Profile: {
+    key: '0xeafec4d89fa9619884b600005ef83ad9559033e6e941db7d7c495acdce616347',
+    value: '0x5ef83ad9',
   } as LSPSupportedStandard,
   LSP4DigitalAsset: {
     key: '0xeafec4d89fa9619884b60000a4d96624a38f7ac2d8d9a604ecf07c12c77e480c',
@@ -123,7 +124,7 @@ export const ERC725YDataKeys = {
       '0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47',
   },
   LSP3: {
-    SupportedStandards_LSP3: SupportedStandards.LSP3UniversalProfile.key,
+    SupportedStandards_LSP3: SupportedStandards.LSP3Profile.key,
 
     // keccak256('LSP3Profile')
     LSP3Profile: '0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5',
@@ -210,12 +211,6 @@ export const ERC725YDataKeys = {
 // ----------
 
 /**
- * @dev LSP6 version number for signing `executeRelayCall(...)` transaction using EIP191
- * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#executerelaycall
- */
-export const LSP6_VERSION = 6;
-
-/**
  * @dev The types of calls for an AllowedCall
  */
 export const CALLTYPE = {
@@ -287,6 +282,10 @@ export const LSP1_TYPE_IDS = {
   LSP7Tokens_RecipientNotification:
     '0x20804611b3e2ea21c480dc465142210acf4a2485947541770ec1fb87dee4a55c',
 
+  // keccak256('LSP7Tokens_OperatorNotification')
+  LSP7Tokens_OperatorNotification:
+    '0x386072cc5a58e61263b434c722725f21031cd06e7c552cfaa06db5de8a320dbc',
+
   // keccak256('LSP8Tokens_SenderNotification')
   LSP8Tokens_SenderNotification:
     '0xb23eae7e6d1564b295b4c3e3be402d9a2f0776c57bdf365903496f6fa481ab00',
@@ -294,6 +293,10 @@ export const LSP1_TYPE_IDS = {
   // keccak256('LSP8Tokens_RecipientNotification')
   LSP8Tokens_RecipientNotification:
     '0x0b084a55ebf70fd3c06fd755269dac2212c4d3f0f4d09079780bfa50c1b2984d',
+
+  // keccak256('LSP8Tokens_OperatorNotification')
+  LSP8Tokens_OperatorNotification:
+    '0x8a1c15a8799f71b547e08e2bcb2e85257e81b0a07eee2ce6712549eef1f00970',
 
   // keccak256('LSP9OwnershipTransferStarted')
   LSP9OwnershipTransferStarted:
@@ -319,3 +322,12 @@ export const LSP1_TYPE_IDS = {
   LSP14OwnershipTransferred_RecipientNotification:
     '0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
 };
+
+// LSP25
+// ----------
+
+/**
+ * @dev LSP25 version number for signing `executeRelayCall(...)` transaction using EIP191
+ * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-25-ExecuteRelayCall.md#executerelaycall
+ */
+export const LSP25_VERSION = 25;

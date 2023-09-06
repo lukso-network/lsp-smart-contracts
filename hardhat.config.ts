@@ -99,6 +99,9 @@ const config: HardhatUserConfig = {
       },
     },
   },
+  mocha: {
+    timeout: 10000000,
+  },
   packager: {
     // What contracts to keep the artifacts and the bindings for.
     contracts: [
@@ -150,7 +153,7 @@ const config: HardhatUserConfig = {
       // ------------------
       'Create2Factory',
       'LSP16UniversalFactory',
-      'LinkedContractsFactory',
+      'LSP23LinkedContractsFactory',
     ],
     // Whether to include the TypeChain factories or not.
     // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.

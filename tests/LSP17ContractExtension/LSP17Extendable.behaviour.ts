@@ -34,8 +34,8 @@ import { ERC725YDataKeys } from '../../constants';
 
 export type LSP17TestContext = {
   accounts: SignerWithAddress[];
-  contract: LSP0ERC725Account | LSP9Vault;
-  deployParams: { owner: SignerWithAddress };
+  contract: LSP0ERC725Account | LSP9Vault | any;
+  deployParams: any;
 };
 
 export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestContext>) => {
@@ -265,7 +265,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                   .withArgs(checkMsgVariableFunctionSelector);
               });
 
-              it('should pass even if passed a different value from the msg.value', async () => {
+              it('should revert with NoExtensionFoundForFunctionSelector, even if passed a different value from the msg.value', async () => {
                 const sender = context.accounts[0];
                 const supposedValue = 200;
                 const checkMsgVariableFunctionSignature =
@@ -667,6 +667,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
             .connect(context.deployParams.owner)
             .setData(bytes1ZeroPaddedExtensionHandlerKey, revertFallbackExtension.address);
         });
+
         it('should pass even if there is an extension for it that reverts', async () => {
           await expect(
             context.accounts[0].sendTransaction({
@@ -677,7 +678,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         });
       });
 
-      describe('when calling with a payload preprended with 4 bytes of 0', () => {
+      describe('when calling with a payload prepended with 4 bytes of 0', () => {
         describe('when no extension is set for bytes4(0)', () => {
           describe('when the payload is `0x00000000`', () => {
             describe('with sending value', () => {
@@ -694,6 +695,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                   .withArgs(context.accounts[0].address, amountSent);
               });
             });
+
             describe('without sending value', () => {
               it('should pass', async () => {
                 await expect(
@@ -705,6 +707,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               });
             });
           });
+
           describe("when the payload is `0x00000000` + some random data ('graffiti')", () => {
             describe('with sending value', () => {
               it('should pass and emit ValueReceived value', async () => {
@@ -726,6 +729,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                   .withArgs(context.accounts[0].address, amountSent);
               });
             });
+
             describe('without sending value', () => {
               it('should pass', async () => {
                 const graffiti =
@@ -744,6 +748,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
             });
           });
         });
+
         describe('when there is an extension set for bytes4(0)', () => {
           describe('when setting an extension that reverts', () => {
             let revertFallbackExtension: RevertFallbackExtension;
@@ -762,6 +767,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                 .connect(context.deployParams.owner)
                 .setData(bytes1ZeroPaddedExtensionHandlerKey, revertFallbackExtension.address);
             });
+
             describe('when the payload is `0x00000000`', () => {
               it('should revert', async () => {
                 await expect(
@@ -772,6 +778,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                 ).to.be.reverted;
               });
             });
+
             describe("when the payload is `0x00000000` + some random data ('graffiti')", () => {
               it('should revert', async () => {
                 const graffiti =
@@ -801,7 +808,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
           token = await new RequireCallbackToken__factory(context.accounts[0]).deploy();
         });
 
-        describe('when minitng to the account', () => {
+        describe('when minting to the account', () => {
           describe('before setting the onERC721ReceivedExtension', () => {
             it('should fail since onERC721Received is not implemented', async () => {
               await expect(token.mint(context.contract.address)).to.be.reverted;

@@ -49,10 +49,3 @@ jobs:
           PR_BODY: ${{ steps.findPR.outputs.body }}
         run: |-
           echo ${PR_BODY}|cat - RELEASENOTES.md > /tmp/out && mv /tmp/out RELEASENOTES.md
-
-      - uses: ncipollo/release-action@v1
-        with:
-          artifacts: "ios/LSPSmartContracts.swift"
-          bodyFile: "RELEASENOTES.md"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ env.APP_VERSION }}

@@ -1,7 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-interface ILinkedContractsFactory {
+interface ILSP23LinkedContractsFactory {
+    /**
+     * @dev Emitted when a primary and secondary contract are deployed.
+     * @param primaryContract Address of the deployed primary contract.
+     * @param secondaryContract Address of the deployed secondary contract.
+     * @param primaryContractDeployment Parameters used for the primary contract deployment.
+     * @param secondaryContractDeployment Parameters used for the secondary contract deployment.
+     * @param postDeploymentModule Address of the post-deployment module.
+     * @param postDeploymentModuleCalldata Calldata passed to the post-deployment module.
+     */
     event DeployedContracts(
         address indexed primaryContract,
         address indexed secondaryContract,
@@ -11,6 +20,15 @@ interface ILinkedContractsFactory {
         bytes postDeploymentModuleCalldata
     );
 
+    /**
+     * @dev Emitted when proxies of a primary and secondary contract are deployed.
+     * @param primaryContract Address of the deployed primary contract proxy.
+     * @param secondaryContract Address of the deployed secondary contract proxy.
+     * @param primaryContractDeploymentInit Parameters used for the primary contract proxy deployment.
+     * @param secondaryContractDeploymentInit Parameters used for the secondary contract proxy deployment.
+     * @param postDeploymentModule Address of the post-deployment module.
+     * @param postDeploymentModuleCalldata Calldata passed to the post-deployment module.
+     */
     event DeployedERC1167Proxies(
         address indexed primaryContract,
         address indexed secondaryContract,
@@ -21,7 +39,7 @@ interface ILinkedContractsFactory {
     );
 
     /**
-     * @param salt A unique value used to ensure each created proxies are unique. (Can be used to deploy the contract at a desired address.)
+     * @param salt A unique value used to ensure each created proxies are unique (used for deterministic deployments).
      * @param fundingAmount The value to be sent with the deployment transaction.
      * @param creationBytecode The bytecode of the contract with the constructor params.
      */
@@ -33,7 +51,7 @@ interface ILinkedContractsFactory {
 
     /**
      * @param fundingAmount The value to be sent with the deployment transaction.
-     * @param creationBytecode The constructor + runtime bytecode (without the primary contract's address as param)
+     * @param creationBytecode The bytecode for contract creation, up to but not including the primary contract address (if it needs to be appended).
      * @param addPrimaryContractAddress If set to `true`, this will append the primary contract's address + the `extraConstructorParams` to the `creationBytecode`.
      * @param extraConstructorParams Params to be appended to the `creationBytecode` (after the primary contract address) if `addPrimaryContractAddress` is set to `true`.
      */
@@ -48,7 +66,7 @@ interface ILinkedContractsFactory {
      * @param salt A unique value used to ensure each created proxies are unique. (Can be used to deploy the contract at a desired address.)
      * @param fundingAmount The value to be sent with the deployment transaction.
      * @param implementationContract The address of the contract that will be used as a base contract for the proxy.
-     * @param initializationCalldata The calldata used to initialise the contract. (initialization should be similar to a constructor in a normal contract.)
+     * @param initializationCalldata The calldata used to initialize the contract.
      */
     struct PrimaryContractDeploymentInit {
         bytes32 salt;
@@ -60,7 +78,7 @@ interface ILinkedContractsFactory {
     /**
      * @param fundingAmount The value to be sent with the deployment transaction.
      * @param implementationContract The address of the contract that will be used as a base contract for the proxy.
-     * @param initializationCalldata The first part of the initialisation calldata, everything before the primary contract address.
+     * @param initializationCalldata Initialization calldata up to, but not including, the primary contract address (if it needs to be appended).
      * @param addPrimaryContractAddress If set to `true`, this will append the primary contract's address + the `extraInitializationParams` to the `initializationCalldata`.
      * @param extraInitializationParams Params to be appended to the `initializationCalldata` (after the primary contract address) if `addPrimaryContractAddress` is set to `true`
      */
@@ -78,7 +96,7 @@ interface ILinkedContractsFactory {
      *
      * @param primaryContractDeployment Contains the needed parameter to deploy a contract. (`salt`, `fundingAmount`, `creationBytecode`)
      * @param secondaryContractDeployment Contains the needed parameter to deploy the secondary contract. (`fundingAmount`, `creationBytecode`, `addPrimaryContractAddress`, `extraConstructorParams`)
-     * @param postDeploymentModule The module to be executed after deployment
+     * @param postDeploymentModule The optional module to be executed after deployment
      * @param postDeploymentModuleCalldata The data to be passed to the post deployment module
      *
      * @return primaryContractAddress The address of the primary contract.
@@ -98,12 +116,12 @@ interface ILinkedContractsFactory {
         );
 
     /**
-     * @dev Deploys proxies of a primary contract and a secondary linked contract
+     * @dev Deploys ERC1167 proxies of a primary contract and a secondary linked contract
      * @notice Contract proxies deployed. Primary Proxy Address: `primaryContractAddress`. Secondary Contract Proxy Address: `secondaryContractAddress`
      *
      * @param primaryContractDeploymentInit Contains the needed parameters to deploy a proxy contract. (`salt`, `fundingAmount`, `implementationContract`, `initializationCalldata`)
-     * @param secondaryContractDeploymentInit Contains the needed parameters to deploy the secondary proxy contract. (`fundingAmount`, `implementationContract`, `addPrimaryContractAddress`, `initializationCalldata`, `extraInitializationParams`)
-     * @param postDeploymentModule The module to be executed after deployment.
+     * @param secondaryContractDeploymentInit Contains the needed parameters to deploy the secondary proxy contract. (`fundingAmount`, `implementationContract`, `initializationCalldata`, `addPrimaryContractAddress`, `extraInitializationParams`)
+     * @param postDeploymentModule The optional module to be executed after deployment.
      * @param postDeploymentModuleCalldata The data to be passed to the post deployment module.
      *
      * @return primaryContractAddress The address of the deployed primary contract proxy
@@ -128,7 +146,7 @@ interface ILinkedContractsFactory {
      *
      * @param primaryContractDeployment Contains the needed parameter to deploy the primary contract. (`salt`, `fundingAmount`, `creationBytecode`)
      * @param secondaryContractDeployment Contains the needed parameter to deploy the secondary contract. (`fundingAmount`, `creationBytecode`, `addPrimaryContractAddress`, `extraConstructorParams`)
-     * @param postDeploymentModule The module to be executed after deployment
+     * @param postDeploymentModule The optional module to be executed after deployment
      * @param postDeploymentModuleCalldata The data to be passed to the post deployment module
      *
      * @return primaryContractAddress The address of the deployed primary contract.
@@ -148,11 +166,11 @@ interface ILinkedContractsFactory {
         );
 
     /**
-     * @dev Computes the addresses of a primary and a secondary linked contracts proxies to be created
+     * @dev Computes the addresses of a primary and a secondary linked contracts ERC1167 proxies to be created
      *
      * @param primaryContractDeploymentInit Contains the needed parameters to deploy a primary proxy contract. (`salt`, `fundingAmount`, `implementationContract`, `initializationCalldata`)
-     * @param secondaryContractDeploymentInit Contains the needed parameters to deploy the secondary proxy contract. (`fundingAmount`, `implementationContract`, `addPrimaryContractAddress`, `initializationCalldata`, `extraInitializationParams`)
-     * @param postDeploymentModule The module to be executed after deployment.
+     * @param secondaryContractDeploymentInit Contains the needed parameters to deploy the secondary proxy contract. (`fundingAmount`, `implementationContract`, `initializationCalldata`, `addPrimaryContractAddress`, `extraInitializationParams`)
+     * @param postDeploymentModule The optional module to be executed after deployment.
      * @param postDeploymentModuleCalldata The data to be passed to the post deployment module.
      *
      * @return primaryContractAddress The address of the deployed primary contract proxy

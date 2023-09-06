@@ -27,6 +27,10 @@ contract TargetContract {
     }
 
     function setNamePayable(string memory name) public payable {
+        _name = name;
+    }
+
+    function setNamePayableMinimumValue(string memory name) public payable {
         require(msg.value >= 50, "Not enough value provided");
         _name = name;
     }

@@ -12,10 +12,15 @@ import {
   TokenReceiverWithLSP1__factory,
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
+  UniversalReceiverDelegateRevert,
+  UniversalReceiverDelegateRevert__factory,
+  UniversalReceiverDelegateGasConsumer,
+  UniversalReceiverDelegateGasConsumer__factory,
 } from '../../types';
 
 // helpers
 import { tokenIdAsBytes32 } from '../utils/tokens';
+import { abiCoder } from '../utils/helpers';
 
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } from '../../constants';
@@ -205,7 +210,11 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
     describe('when tokenId does not exist', () => {
       it('should revert', async () => {
         await expect(
-          context.lsp8.authorizeOperator(context.accounts.operator.address, neverMintedTokenId),
+          context.lsp8.authorizeOperator(
+            context.accounts.operator.address,
+            neverMintedTokenId,
+            '0x',
+          ),
         )
           .to.be.revertedWithCustomError(context.lsp8, 'LSP8NonExistentTokenId')
           .withArgs(neverMintedTokenId);
@@ -217,7 +226,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
         await expect(
           context.lsp8
             .connect(context.accounts.anyone)
-            .authorizeOperator(context.accounts.operator.address, mintedTokenId),
+            .authorizeOperator(context.accounts.operator.address, mintedTokenId, '0x'),
         )
           .to.be.revertedWithCustomError(context.lsp8, 'LSP8NotTokenOwner')
           .withArgs(context.accounts.owner.address, mintedTokenId, context.accounts.anyone.address);
@@ -227,7 +236,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
     describe('when operator is the token owner', () => {
       it('should revert', async () => {
         await expect(
-          context.lsp8.authorizeOperator(context.accounts.owner.address, mintedTokenId),
+          context.lsp8.authorizeOperator(context.accounts.owner.address, mintedTokenId, '0x'),
         ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenOwnerCannotBeOperator');
       });
     });
@@ -239,11 +248,11 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           const tokenOwner = context.accounts.owner.address;
           const tokenId = mintedTokenId;
 
-          const tx = await context.lsp8.authorizeOperator(operator, tokenId);
+          const tx = await context.lsp8.authorizeOperator(operator, tokenId, '0x');
 
           await expect(tx)
             .to.emit(context.lsp8, 'AuthorizedOperator')
-            .withArgs(operator, tokenOwner, tokenId);
+            .withArgs(operator, tokenOwner, tokenId, '0x');
 
           expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.true;
         });
@@ -253,7 +262,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
             const operator = context.accounts.operator.address;
             const tokenId = mintedTokenId;
 
-            await expect(context.lsp8.authorizeOperator(operator, tokenId))
+            await expect(context.lsp8.authorizeOperator(operator, tokenId, '0x'))
               .to.be.revertedWithCustomError(context.lsp8, 'LSP8OperatorAlreadyAuthorized')
               .withArgs(operator, tokenId);
           });
@@ -265,8 +274,71 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
             const tokenId = mintedTokenId;
 
             await expect(
-              context.lsp8.authorizeOperator(operator, tokenId),
+              context.lsp8.authorizeOperator(operator, tokenId, '0x'),
             ).to.be.revertedWithCustomError(context.lsp8, 'LSP8CannotUseAddressZeroAsOperator');
+          });
+        });
+
+        describe('with sending data and notifying an LSP1 contract', () => {
+          const newMintedTokenId = tokenIdAsBytes32(18);
+          before(async () => {
+            await context.lsp8.mint(context.accounts.owner.address, newMintedTokenId, true, '0x');
+
+            expectedTotalSupply++;
+          });
+
+          it('should succeed and inform the operator', async () => {
+            const tokenReceiverWithLSP1: TokenReceiverWithLSP1 =
+              await new TokenReceiverWithLSP1__factory(context.accounts.owner).deploy();
+            const operator = tokenReceiverWithLSP1.address;
+            const tokenOwner = context.accounts.owner.address;
+            const tokenId = newMintedTokenId;
+
+            const tx = await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd', {
+              gasLimit: 2000000,
+            });
+
+            await expect(tx)
+              .to.emit(context.lsp8, 'AuthorizedOperator')
+              .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
+
+            await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
+
+            expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.true;
+          });
+
+          it('should succeed and inform the operator even if the operator revert', async () => {
+            const operatorThatReverts: UniversalReceiverDelegateRevert =
+              await new UniversalReceiverDelegateRevert__factory(context.accounts.owner).deploy();
+            const operator = operatorThatReverts.address;
+            const tokenOwner = context.accounts.owner.address;
+            const tokenId = newMintedTokenId;
+
+            const tx = await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
+
+            await expect(tx)
+              .to.emit(context.lsp8, 'AuthorizedOperator')
+              .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
+
+            expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.true;
+          });
+
+          it.skip('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+            const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer =
+              await new UniversalReceiverDelegateGasConsumer__factory(
+                context.accounts.owner,
+              ).deploy();
+            const operator = operatorThatConsumeAllGas.address;
+            const tokenOwner = context.accounts.owner.address;
+            const tokenId = newMintedTokenId;
+
+            const tx = await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
+
+            await expect(tx)
+              .to.emit(context.lsp8, 'AuthorizedOperator')
+              .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
+
+            expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.true;
           });
         });
       });
@@ -277,7 +349,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
     describe('when tokenId does not exist', () => {
       it('should revert', async () => {
         await expect(
-          context.lsp8.revokeOperator(context.accounts.operator.address, neverMintedTokenId),
+          context.lsp8.revokeOperator(context.accounts.operator.address, neverMintedTokenId, '0x'),
         )
           .to.be.revertedWithCustomError(context.lsp8, 'LSP8NonExistentTokenId')
           .withArgs(neverMintedTokenId);
@@ -289,7 +361,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
         await expect(
           context.lsp8
             .connect(context.accounts.anyone)
-            .authorizeOperator(context.accounts.operator.address, mintedTokenId),
+            .authorizeOperator(context.accounts.operator.address, mintedTokenId, '0x'),
         )
           .to.be.revertedWithCustomError(context.lsp8, 'LSP8NotTokenOwner')
           .withArgs(context.accounts.owner.address, mintedTokenId, context.accounts.anyone.address);
@@ -301,7 +373,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
         await expect(
           context.lsp8
             .connect(context.accounts.anyone)
-            .revokeOperator(context.accounts.operator.address, mintedTokenId),
+            .revokeOperator(context.accounts.operator.address, mintedTokenId, '0x'),
         )
           .to.be.revertedWithCustomError(context.lsp8, 'LSP8NotTokenOwner')
           .withArgs(context.accounts.owner.address, mintedTokenId, context.accounts.anyone.address);
@@ -319,10 +391,10 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.true;
 
           // effects
-          const tx = await context.lsp8.revokeOperator(operator, tokenId);
+          const tx = await context.lsp8.revokeOperator(operator, tokenId, '0x');
           await expect(tx)
             .to.emit(context.lsp8, 'RevokedOperator')
-            .withArgs(operator, tokenOwner, tokenId);
+            .withArgs(operator, tokenOwner, tokenId, '0x');
 
           // post-conditions
           expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.false;
@@ -335,7 +407,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           const tokenId = mintedTokenId;
 
           await expect(
-            context.lsp8.revokeOperator(operator, tokenId),
+            context.lsp8.revokeOperator(operator, tokenId, '0x'),
           ).to.be.revertedWithCustomError(context.lsp8, 'LSP8CannotUseAddressZeroAsOperator');
         });
       });
@@ -345,9 +417,81 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           const operator = context.accounts.anyone.address;
           const tokenId = mintedTokenId;
 
-          await expect(context.lsp8.revokeOperator(operator, tokenId))
+          await expect(context.lsp8.revokeOperator(operator, tokenId, '0x'))
             .to.be.revertedWithCustomError(context.lsp8, 'LSP8NonExistingOperator')
             .withArgs(operator, tokenId);
+        });
+      });
+
+      describe('with sending data and notifying an LSP1 contract', () => {
+        const newMintedTokenId = tokenIdAsBytes32(16);
+        before(async () => {
+          await context.lsp8.mint(context.accounts.owner.address, newMintedTokenId, true, '0x');
+
+          expectedTotalSupply++;
+        });
+
+        it('should succeed and inform the operator', async () => {
+          const tokenReceiverWithLSP1: TokenReceiverWithLSP1 =
+            await new TokenReceiverWithLSP1__factory(context.accounts.owner).deploy();
+          const operator = tokenReceiverWithLSP1.address;
+          const tokenOwner = context.accounts.owner.address;
+          const tokenId = newMintedTokenId;
+
+          // pre-condition
+          await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
+
+          const tx = await context.lsp8.revokeOperator(operator, tokenId, '0xaabbccdd', {
+            gasLimit: 2000000,
+          });
+
+          await expect(tx)
+            .to.emit(context.lsp8, 'RevokedOperator')
+            .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
+
+          await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
+
+          expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.false;
+        });
+
+        it('should succeed and inform the operator even if the operator revert', async () => {
+          const operatorThatReverts: UniversalReceiverDelegateRevert =
+            await new UniversalReceiverDelegateRevert__factory(context.accounts.owner).deploy();
+          const operator = operatorThatReverts.address;
+          const tokenOwner = context.accounts.owner.address;
+          const tokenId = newMintedTokenId;
+
+          // pre-condition
+          await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
+
+          const tx = await context.lsp8.revokeOperator(operator, tokenId, '0xaabbccdd');
+
+          await expect(tx)
+            .to.emit(context.lsp8, 'RevokedOperator')
+            .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
+
+          expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.false;
+        });
+
+        it.skip('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+          const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer =
+            await new UniversalReceiverDelegateGasConsumer__factory(
+              context.accounts.owner,
+            ).deploy();
+          const operator = operatorThatConsumeAllGas.address;
+          const tokenOwner = context.accounts.owner.address;
+          const tokenId = newMintedTokenId;
+
+          // pre-condition
+          await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
+
+          const tx = await context.lsp8.revokeOperator(operator, tokenId, '0xaabbccdd');
+
+          await expect(tx)
+            .to.emit(context.lsp8, 'RevokedOperator')
+            .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
+
+          expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.false;
         });
       });
     });
@@ -374,7 +518,11 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
 
       describe('when one account have been authorized for the tokenId', () => {
         it('should return true', async () => {
-          await context.lsp8.authorizeOperator(context.accounts.operator.address, mintedTokenId);
+          await context.lsp8.authorizeOperator(
+            context.accounts.operator.address,
+            mintedTokenId,
+            '0x',
+          );
 
           expect(await context.lsp8.isOperatorFor(context.accounts.operator.address, mintedTokenId))
             .to.be.true;
@@ -386,6 +534,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           await context.lsp8.authorizeOperator(
             context.accounts.anotherOperator.address,
             mintedTokenId,
+            '0x',
           );
 
           expect(await context.lsp8.isOperatorFor(context.accounts.operator.address, mintedTokenId))
@@ -412,18 +561,23 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
 
     describe('when tokenId has been minted', () => {
       after('cleanup operators', async () => {
-        await context.lsp8.revokeOperator(context.accounts.operator.address, mintedTokenId);
+        await context.lsp8.revokeOperator(context.accounts.operator.address, mintedTokenId, '0x');
 
-        await context.lsp8.revokeOperator(context.accounts.anotherOperator.address, mintedTokenId);
+        await context.lsp8.revokeOperator(
+          context.accounts.anotherOperator.address,
+          mintedTokenId,
+          '0x',
+        );
       });
 
       describe('when operator has not been authorized', () => {
         before('remove operators', async () => {
-          await context.lsp8.revokeOperator(context.accounts.operator.address, mintedTokenId);
+          await context.lsp8.revokeOperator(context.accounts.operator.address, mintedTokenId, '0x');
 
           await context.lsp8.revokeOperator(
             context.accounts.anotherOperator.address,
             mintedTokenId,
+            '0x',
           );
         });
 
@@ -434,7 +588,11 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
 
       describe('when one account have been authorized for the tokenId', () => {
         before('authorize 1 x operator', async () => {
-          await context.lsp8.authorizeOperator(context.accounts.operator.address, mintedTokenId);
+          await context.lsp8.authorizeOperator(
+            context.accounts.operator.address,
+            mintedTokenId,
+            '0x',
+          );
         });
 
         it('should return array with 1x operator', async () => {
@@ -449,6 +607,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           await context.lsp8.authorizeOperator(
             context.accounts.anotherOperator.address,
             mintedTokenId,
+            '0x',
           );
         });
 
@@ -492,8 +651,12 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
       );
 
       // setup so we can observe operators being cleared during transfer tests
-      await context.lsp8.authorizeOperator(context.accounts.operator.address, mintedTokenId);
-      await context.lsp8.authorizeOperator(context.accounts.anotherOperator.address, mintedTokenId);
+      await context.lsp8.authorizeOperator(context.accounts.operator.address, mintedTokenId, '0x');
+      await context.lsp8.authorizeOperator(
+        context.accounts.anotherOperator.address,
+        mintedTokenId,
+        '0x',
+      );
     });
 
     describe('transfer', () => {
@@ -538,11 +701,11 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
 
         await expect(tx)
           .to.emit(context.lsp8, 'RevokedOperator')
-          .withArgs(context.accounts.operator.address, from, tokenId);
+          .withArgs(context.accounts.operator.address, from, tokenId, '0x');
 
         await expect(tx)
           .to.emit(context.lsp8, 'RevokedOperator')
-          .withArgs(context.accounts.anotherOperator.address, from, tokenId);
+          .withArgs(context.accounts.anotherOperator.address, from, tokenId, '0x');
 
         // post-conditions
         const postTokenOwnerOf = await context.lsp8.tokenOwnerOf(tokenId);
@@ -633,14 +796,14 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
                 const tx = await transferSuccessScenario(txParams, operator);
 
                 const typeId = LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification;
-                const packedData = ethers.utils.solidityPack(
+                const packedData = abiCoder.encode(
                   ['address', 'address', 'bytes32', 'bytes'],
                   [txParams.from, txParams.to, txParams.tokenId, txParams.data],
                 );
 
                 await expect(tx)
-                  .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiverCalled')
-                  .withArgs(typeId, packedData);
+                  .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiver')
+                  .withArgs(context.lsp8.address, 0, typeId, packedData, '0x');
               });
             });
 
@@ -732,14 +895,14 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
                 const tx = await transferSuccessScenario(txParams, operator);
 
                 const typeId = LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification;
-                const packedData = ethers.utils.solidityPack(
+                const packedData = abiCoder.encode(
                   ['address', 'address', 'bytes32', 'bytes'],
                   [txParams.from, txParams.to, txParams.tokenId, txParams.data],
                 );
 
                 await expect(tx)
-                  .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiverCalled')
-                  .withArgs(typeId, packedData);
+                  .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiver')
+                  .withArgs(context.lsp8.address, 0, typeId, packedData, '0x');
               });
             });
 
@@ -906,10 +1069,12 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
         await context.lsp8.authorizeOperator(
           context.accounts.operator.address,
           anotherMintedTokenId,
+          '0x',
         );
         await context.lsp8.authorizeOperator(
           context.accounts.anotherOperator.address,
           anotherMintedTokenId,
+          '0x',
         );
       });
 
@@ -958,10 +1123,15 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
               );
             await expect(tx)
               .to.emit(context.lsp8, 'RevokedOperator')
-              .withArgs(context.accounts.operator.address, from[index], tokenId[index]);
+              .withArgs(context.accounts.operator.address, from[index], tokenId[index], '0x');
             await expect(tx)
               .to.emit(context.lsp8, 'RevokedOperator')
-              .withArgs(context.accounts.anotherOperator.address, from[index], tokenId[index]);
+              .withArgs(
+                context.accounts.anotherOperator.address,
+                from[index],
+                tokenId[index],
+                '0x',
+              );
           }),
         );
 
@@ -1076,7 +1246,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
                   txParams.tokenId.map((_, index) => async () => {
                     const typeId =
                       '0x29ddb589b1fb5fc7cf394961c1adf5f8c6454761adf795e67fe149f658abe895';
-                    const packedData = ethers.utils.solidityPack(
+                    const packedData = abiCoder.encode(
                       ['address', 'address', 'bytes32', 'bytes'],
                       [
                         txParams.from[index],
@@ -1087,8 +1257,8 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
                     );
 
                     await expect(tx)
-                      .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiverCalled')
-                      .withArgs(typeId, packedData);
+                      .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiver')
+                      .withArgs(context.lsp8.address, 0, typeId, packedData, '0x');
                   }),
                 );
               });
@@ -1416,11 +1586,13 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
               await context.lsp8.authorizeOperator(
                 context.accounts.operator.address,
                 mintedTokenId,
+                '0x',
               );
 
               await context.lsp8.authorizeOperator(
                 context.accounts.anotherOperator.address,
                 mintedTokenId,
+                '0x',
               );
 
               const operatorsForTokenIdBefore = await context.lsp8.getOperatorsOf(mintedTokenId);
@@ -1458,7 +1630,11 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
 
       describe('when caller is an operator', () => {
         beforeEach(async () => {
-          await context.lsp8.authorizeOperator(context.accounts.operator.address, mintedTokenId);
+          await context.lsp8.authorizeOperator(
+            context.accounts.operator.address,
+            mintedTokenId,
+            '0x',
+          );
         });
 
         describe('after burning a tokenId', () => {
@@ -1501,6 +1677,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
               await context.lsp8.authorizeOperator(
                 context.accounts.anotherOperator.address,
                 mintedTokenId,
+                '0x',
               );
 
               const operatorsForTokenIdBefore = await context.lsp8.getOperatorsOf(mintedTokenId);
@@ -1639,6 +1816,10 @@ export const shouldInitializeLikeLSP8 = (
 
     it('should have registered the LSP8 interface', async () => {
       expect(await context.lsp8.supportsInterface(INTERFACE_IDS.LSP8IdentifiableDigitalAsset));
+    });
+
+    it('should have registered the LSP17Extendable interface', async () => {
+      expect(await context.lsp8.supportsInterface(INTERFACE_IDS.LSP17Extendable));
     });
 
     it('should have set expected entries with ERC725Y.setData', async () => {

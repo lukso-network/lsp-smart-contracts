@@ -4,16 +4,16 @@ pragma solidity ^0.8.4;
 import {Create2} from "@openzeppelin/contracts/utils/Create2.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {IPostDeploymentModule} from "./IPostDeploymentModule.sol";
-import {ILinkedContractsFactory} from "./ILinkedContractsFactory.sol";
+import {ILSP23LinkedContractsFactory} from "./ILSP23LinkedContractsFactory.sol";
 import {
     InvalidValueSum,
     PrimaryContractProxyInitFailureError,
     SecondaryContractProxyInitFailureError
 } from "./LSP23Errors.sol";
 
-contract LinkedContractsFactory is ILinkedContractsFactory {
+contract LSP23LinkedContractsFactory is ILSP23LinkedContractsFactory {
     /**
-     * @inheritdoc ILinkedContractsFactory
+     * @inheritdoc ILSP23LinkedContractsFactory
      */
     function deployContracts(
         PrimaryContractDeployment calldata primaryContractDeployment,
@@ -58,16 +58,19 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
             postDeploymentModuleCalldata
         );
 
-        /* execute the post deployment module logic in the postDeploymentModule */
-        IPostDeploymentModule(postDeploymentModule).executePostDeployment(
-            primaryContractAddress,
-            secondaryContractAddress,
-            postDeploymentModuleCalldata
-        );
+        /* execute the post deployment logic in the postDeploymentModule if postDeploymentModule is not address(0) */
+        if (postDeploymentModule != address(0)) {
+            /* execute the post deployment module logic in the postDeploymentModule */
+            IPostDeploymentModule(postDeploymentModule).executePostDeployment(
+                primaryContractAddress,
+                secondaryContractAddress,
+                postDeploymentModuleCalldata
+            );
+        }
     }
 
     /**
-     * @inheritdoc ILinkedContractsFactory
+     * @inheritdoc ILSP23LinkedContractsFactory
      */
     function deployERC1167Proxies(
         PrimaryContractDeploymentInit calldata primaryContractDeploymentInit,
@@ -115,16 +118,19 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
             postDeploymentModuleCalldata
         );
 
-        /* execute the post deployment logic in the postDeploymentModule */
-        IPostDeploymentModule(postDeploymentModule).executePostDeployment(
-            primaryContractAddress,
-            secondaryContractAddress,
-            postDeploymentModuleCalldata
-        );
+        /* execute the post deployment logic in the postDeploymentModule if postDeploymentModule is not address(0) */
+        if (postDeploymentModule != address(0)) {
+            /* execute the post deployment logic in the postDeploymentModule */
+            IPostDeploymentModule(postDeploymentModule).executePostDeployment(
+                primaryContractAddress,
+                secondaryContractAddress,
+                postDeploymentModuleCalldata
+            );
+        }
     }
 
     /**
-     * @inheritdoc ILinkedContractsFactory
+     * @inheritdoc ILSP23LinkedContractsFactory
      */
     function computeAddresses(
         PrimaryContractDeployment calldata primaryContractDeployment,
@@ -170,7 +176,7 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
     }
 
     /**
-     * @inheritdoc ILinkedContractsFactory
+     * @inheritdoc ILSP23LinkedContractsFactory
      */
     function computeERC1167Addresses(
         PrimaryContractDeploymentInit calldata primaryContractDeploymentInit,
@@ -274,7 +280,7 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
 
         /* initialize the primary contract proxy */
         (bool success, bytes memory returnedData) = primaryContractAddress.call{
-            value: msg.value
+            value: primaryContractDeploymentInit.fundingAmount
         }(primaryContractDeploymentInit.initializationCalldata);
         if (!success) {
             revert PrimaryContractProxyInitFailureError(returnedData);
@@ -295,7 +301,7 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
         /**
          * If `addPrimaryContractAddress` is `true`, the following will be appended to the `initializationCalldata`:
          * - The primary contract address
-         * - `extraInitialisationBytes`
+         * - `extraInitializationBytes`
          */
         bytes
             memory secondaryInitializationBytes = secondaryContractDeploymentInit
@@ -311,7 +317,9 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
 
         /* initialize the primary contract proxy */
         (bool success, bytes memory returnedData) = secondaryContractAddress
-            .call{value: msg.value}(secondaryInitializationBytes);
+            .call{value: secondaryContractDeploymentInit.fundingAmount}(
+            secondaryInitializationBytes
+        );
         if (!success) {
             revert SecondaryContractProxyInitFailureError(returnedData);
         }
@@ -362,8 +370,8 @@ contract LinkedContractsFactory is ILinkedContractsFactory {
          * The salt is generated by hashing the following elements:
          *  - the salt
          *  - the secondary implementation contract address
-         *  - the secondary contract addPrimaryContractAddress boolean
          *  - the secondary contract initialization calldata
+         *  - the secondary contract addPrimaryContractAddress boolean
          *  - the secondary contract extra initialization params (if any)
          *  - the postDeploymentModule address
          *  - the callda to the post deployment module

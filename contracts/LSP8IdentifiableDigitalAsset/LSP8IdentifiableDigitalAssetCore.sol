@@ -23,6 +23,7 @@ import "./LSP8Errors.sol";
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {
+    _TYPEID_LSP8_TOKENOPERATOR,
     _TYPEID_LSP8_TOKENSSENDER,
     _TYPEID_LSP8_TOKENSRECIPIENT
 } from "./LSP8Constants.sol";
@@ -40,18 +41,18 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
     // --- Storage
 
-    uint256 private _existingTokens;
+    uint256 internal _existingTokens;
 
     // Mapping from `tokenId` to `tokenOwner`
-    mapping(bytes32 => address) private _tokenOwners;
+    mapping(bytes32 => address) internal _tokenOwners;
 
     // Mapping `tokenOwner` to owned tokenIds
-    mapping(address => EnumerableSet.Bytes32Set) private _ownedTokens;
+    mapping(address => EnumerableSet.Bytes32Set) internal _ownedTokens;
 
     // Mapping a `tokenId` to its authorized operator addresses.
-    mapping(bytes32 => EnumerableSet.AddressSet) private _operators;
+    mapping(bytes32 => EnumerableSet.AddressSet) internal _operators;
 
-    mapping(address => EnumerableSet.Bytes32Set) private _tokenIdsForOperator;
+    mapping(address => EnumerableSet.Bytes32Set) internal _tokenIdsForOperator;
 
     // --- Token queries
 
@@ -104,7 +105,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      */
     function authorizeOperator(
         address operator,
-        bytes32 tokenId
+        bytes32 tokenId,
+        bytes memory operatorNotificationData
     ) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
 
@@ -123,13 +125,29 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool isAdded = _operators[tokenId].add(operator);
         if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
 
-        emit AuthorizedOperator(operator, tokenOwner, tokenId);
+        emit AuthorizedOperator(
+            operator,
+            tokenOwner,
+            tokenId,
+            operatorNotificationData
+        );
+
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            tokenId,
+            operatorNotificationData
+        );
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function revokeOperator(address operator, bytes32 tokenId) public virtual {
+    function revokeOperator(
+        address operator,
+        bytes32 tokenId,
+        bytes memory operatorNotificationData
+    ) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
 
         if (tokenOwner != msg.sender) {
@@ -144,7 +162,19 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8TokenOwnerCannotBeOperator();
         }
 
-        _revokeOperator(operator, tokenOwner, tokenId);
+        _revokeOperator(
+            operator,
+            tokenOwner,
+            tokenId,
+            operatorNotificationData
+        );
+
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            tokenId,
+            operatorNotificationData
+        );
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
@@ -245,15 +275,24 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function _revokeOperator(
         address operator,
         address tokenOwner,
-        bytes32 tokenId
+        bytes32 tokenId,
+        bytes memory operatorNotificationData
     ) internal virtual {
         bool isRemoved = _operators[tokenId].remove(operator);
         if (!isRemoved) revert LSP8NonExistingOperator(operator, tokenId);
-        emit RevokedOperator(operator, tokenOwner, tokenId);
+        emit RevokedOperator(
+            operator,
+            tokenOwner,
+            tokenId,
+            operatorNotificationData
+        );
     }
 
     /**
-     * @dev clear all the operators for the `tokenId`
+     * @dev revoke all the current operators for a specific `tokenId` token which belongs to `tokenOwner`.
+     *
+     * @param tokenOwner The address that is the owner of the `tokenId`.
+     * @param tokenId The token to remove the associated operators for.
      */
     function _clearOperators(
         address tokenOwner,
@@ -273,7 +312,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         for (uint256 i = 0; i < operatorListLength; ) {
             // we are emptying the list, always remove from index 0
             address operator = operatorsForTokenId.at(0);
-            _revokeOperator(operator, tokenOwner, tokenId);
+            _revokeOperator(operator, tokenOwner, tokenId, "");
 
             unchecked {
                 ++i;
@@ -284,8 +323,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     /**
      * @dev Returns whether `tokenId` exists.
      *
-     * Tokens start existing when they are minted (`_mint`), and stop existing when they are burned
-     * (`_burn`).
+     * Tokens start existing when they are minted ({_mint}), and stop existing when they are burned ({_burn}).
      */
     function _exists(bytes32 tokenId) internal view virtual returns (bool) {
         return _tokenOwners[tokenId] != address(0);
@@ -301,14 +339,18 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     }
 
     /**
-     * @dev Mints `tokenId` and transfers it to `to`.
+     * @dev Create `tokenId` by minting it and transfers it to `to`.
      *
-     * Requirements:
-     *
-     * - `tokenId` must not exist.
+     * @custom:requirements
+     * - `tokenId` must not exist and not have been already minted.
      * - `to` cannot be the zero address.
      *
-     * Emits a {Transfer} event.
+     * @param to The address that will receive the minted `tokenId`.
+     * @param tokenId The token ID to create (= mint).
+     * @param allowNonLSP1Recipient When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard.
+     * @param data Any additional data the caller wants included in the emitted event, and sent in the hook of the `to` address.
+     *
+     * @custom:events {Transfer} event with `address(0)` as `from` address.
      */
     function _mint(
         address to,
@@ -343,18 +385,29 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             data
         );
 
-        bytes memory lsp1Data = abi.encodePacked(address(0), to, tokenId, data);
+        bytes memory lsp1Data = abi.encode(address(0), to, tokenId, data);
         _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
     }
 
     /**
-     * @dev Destroys `tokenId`, clearing authorized operators.
+     * @dev Burn a specific `tokenId`, removing the `tokenId` from the {tokenIdsOf} the caller and decreasing its {balanceOf} by -1.
+     * This will also clear all the operators allowed to transfer the `tokenId`.
      *
-     * Requirements:
+     * The owner of the `tokenId` will be notified about the `tokenId` being transferred through its LSP1 {universalReceiver}
+     * function, if it is a contract that supports the LSP1 interface. Its {universalReceiver} function will receive
+     * all the parameters in the calldata packed encoded.
      *
+     * Any logic in the {_beforeTokenTransfer} function will run before burning `tokenId` and updating the balances.
+     *
+     * @param tokenId The token to burn.
+     * @param data Any additional data the caller wants included in the emitted event, and sent in the LSP1 hook on the token owner's address.
+     *
+     * @custom:hint In dApps, you can know which addresses are burning tokens by listening for the `Transfer` event and filter with the zero address as `to`.
+     *
+     * @custom:requirements
      * - `tokenId` must exist.
      *
-     * Emits a {Transfer} event.
+     * @custom:events {Transfer} event with `address(0)` as the `to` address.
      */
     function _burn(bytes32 tokenId, bytes memory data) internal virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
@@ -372,7 +425,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         emit Transfer(operator, tokenOwner, address(0), tokenId, false, data);
 
-        bytes memory lsp1Data = abi.encodePacked(
+        bytes memory lsp1Data = abi.encode(
             tokenOwner,
             address(0),
             tokenId,
@@ -382,14 +435,27 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     }
 
     /**
-     * @dev Transfers `tokenId` from `from` to `to`.
+     * @dev Change the owner of the `tokenId` from `from` to `to`.
      *
-     * Requirements:
+     * Both the sender and recipient will be notified of the `tokenId` being transferred through their LSP1 {universalReceiver}
+     * function, if they are contracts that support the LSP1 interface. Their `universalReceiver` function will receive
+     * all the parameters in the calldata packed encoded.
      *
+     * Any logic in the {_beforeTokenTransfer} function will run before changing the owner of `tokenId`.
+     *
+     * @param from The sender address.
+     * @param to The recipient address.
+     * @param tokenId The token to transfer.
+     * @param allowNonLSP1Recipient When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard.
+     * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
+     *
+     * @custom:requirements
      * - `to` cannot be the zero address.
      * - `tokenId` token must be owned by `from`.
      *
-     * Emits a {Transfer} event.
+     * @custom:events {Transfer} event.
+     *
+     * @custom:danger This internal function does not check if the sender is authorized or not to operate on the `tokenId`.
      */
     function _transfer(
         address from,
@@ -423,29 +489,53 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         emit Transfer(operator, from, to, tokenId, allowNonLSP1Recipient, data);
 
-        bytes memory lsp1Data = abi.encodePacked(from, to, tokenId, data);
+        bytes memory lsp1Data = abi.encode(from, to, tokenId, data);
 
         _notifyTokenSender(from, lsp1Data);
         _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
     }
 
     /**
-     * @dev Hook that is called before any token transfer. This includes minting
-     * and burning.
+     * @dev Hook that is called before any token transfer, including minting and burning.
+     * * Allows to run custom logic before updating balances and notifiying sender/recipient by overriding this function.
      *
-     * Calling conditions:
-     *
-     * - When `from` and `to` are both non-zero, ``from``'s `tokenId` will be
-     * transferred to `to`.
-     * - When `from` is zero, `tokenId` will be minted for `to`.
-     * - When `to` is zero, ``from``'s `tokenId` will be burned.
-     * - `from` and `to` are never both zero.
+     * @param from The sender address
+     * @param to The recipient address
+     * @param tokenId The tokenId to transfer
      */
     function _beforeTokenTransfer(
         address from,
         address to,
         bytes32 tokenId
     ) internal virtual {}
+
+    /**
+     * @dev Attempt to notify the operator `operator` about the `tokenId` tokens being authorized.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
+     * If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+     
+     * @param operator The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+     * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
+     */
+    function _notifyTokenOperator(
+        address operator,
+        bytes memory lsp1Data
+    ) internal virtual {
+        if (
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                operator,
+                _INTERFACEID_LSP1
+            )
+        ) {
+            operator.call(
+                abi.encodeWithSelector(
+                    ILSP1UniversalReceiver.universalReceiver.selector,
+                    _TYPEID_LSP8_TOKENOPERATOR,
+                    lsp1Data
+                )
+            );
+        }
+    }
 
     /**
      * @dev An attempt is made to notify the token sender about the `tokenId` changing owners using

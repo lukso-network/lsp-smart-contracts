@@ -17,7 +17,7 @@ import {
   ALL_PERMISSIONS,
   ERC725YDataKeys,
   OPERATION_TYPES,
-  LSP6_VERSION,
+  LSP25_VERSION,
   PERMISSIONS,
   CALLTYPE,
   INTERFACE_IDS,
@@ -102,7 +102,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const valueToSign = 5;
 
             const signedMessageParams = {
-              lsp6Version: LSP6_VERSION,
+              lsp25Version: LSP25_VERSION,
               chainId: 31337, // HARDHAT_CHAINID
               nonce: latestNonce,
               validityTimestamps,
@@ -115,7 +115,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
-                signedMessageParams.lsp6Version,
+                signedMessageParams.lsp25Version,
                 signedMessageParams.chainId,
                 signedMessageParams.nonce,
                 signedMessageParams.validityTimestamps,
@@ -160,7 +160,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const valueToSign = 5;
 
             const signedMessageParams = {
-              lsp6Version: LSP6_VERSION,
+              lsp25Version: LSP25_VERSION,
               chainId: 31337, // HARDHAT_CHAINID
               nonce: latestNonce,
               validityTimestamps,
@@ -173,7 +173,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
-                signedMessageParams.lsp6Version,
+                signedMessageParams.lsp25Version,
                 signedMessageParams.chainId,
                 signedMessageParams.nonce,
                 signedMessageParams.validityTimestamps,
@@ -218,7 +218,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const valueToSendFromRelayer = 10;
 
             const signedMessageParams = {
-              lsp6Version: LSP6_VERSION,
+              lsp25Version: LSP25_VERSION,
               chainId: 31337, // HARDHAT_CHAINID
               nonce: latestNonce,
               validityTimestamps,
@@ -229,7 +229,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
-                signedMessageParams.lsp6Version,
+                signedMessageParams.lsp25Version,
                 signedMessageParams.chainId,
                 signedMessageParams.nonce,
                 signedMessageParams.validityTimestamps,
@@ -259,7 +259,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               );
 
             expect(tx)
-              .to.emit(context.keyManager, 'VerifiedCall')
+              .to.emit(context.keyManager, 'PermissionsVerified')
               .withArgs(
                 context.accounts[1].address,
                 signedMessageParams.msgValue,
@@ -287,7 +287,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const valueToSendFromRelayer = 10;
 
             const signedMessageParams = {
-              lsp6Version: LSP6_VERSION,
+              lsp25Version: LSP25_VERSION,
               chainId: 31337, // HARDHAT_CHAINID
               nonce: latestNonce,
               validityTimestamps,
@@ -298,7 +298,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const encodedMessage = ethers.utils.solidityPack(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
-                signedMessageParams.lsp6Version,
+                signedMessageParams.lsp25Version,
                 signedMessageParams.chainId,
                 signedMessageParams.nonce,
                 signedMessageParams.validityTimestamps,
@@ -336,11 +336,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
             it('should revert', async () => {
               const nameToSet = 'Alice';
               const targetContractPayload = targetContract.interface.encodeFunctionData(
-                'setNamePayable',
+                'setNamePayableMinimumValue',
                 [nameToSet],
               );
 
-              const requiredValueForExecution = 51; // specified in `setNamePayable(..)`
+              const requiredValueForExecution = 51; // specified in `setNamePayableMinimumValue(..)`
 
               const latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
 
@@ -359,7 +359,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const valueToSendFromRelayer = 0;
 
               const signedMessageParams = {
-                lsp6Version: LSP6_VERSION,
+                lsp25Version: LSP25_VERSION,
                 chainId: 31337, // HARDHAT_CHAINID
                 nonce: latestNonce,
                 validityTimestamps,
@@ -370,7 +370,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const encodedMessage = ethers.utils.solidityPack(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
-                  signedMessageParams.lsp6Version,
+                  signedMessageParams.lsp25Version,
                   signedMessageParams.chainId,
                   signedMessageParams.nonce,
                   signedMessageParams.validityTimestamps,
@@ -413,11 +413,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
             it('should pass if signer has the target contract address in its list of allowed calls', async () => {
               const nameToSet = 'Alice';
               const targetContractPayload = targetContract.interface.encodeFunctionData(
-                'setNamePayable',
+                'setNamePayableMinimumValue',
                 [nameToSet],
               );
 
-              const requiredValueForExecution = 51; // specified in `setNamePayable(..)`
+              const requiredValueForExecution = 51; // specified in `setNamePayableMinimumValue(..)`
 
               const latestNonce = await context.keyManager.callStatic.getNonce(signer.address, 0);
 
@@ -436,7 +436,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const valueToSendFromRelayer = 51;
 
               const signedMessageParams = {
-                lsp6Version: LSP6_VERSION,
+                lsp25Version: LSP25_VERSION,
                 chainId: 31337, // HARDHAT_CHAINID
                 nonce: latestNonce,
                 validityTimestamps,
@@ -447,7 +447,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const encodedMessage = ethers.utils.solidityPack(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
-                  signedMessageParams.lsp6Version,
+                  signedMessageParams.lsp25Version,
                   signedMessageParams.chainId,
                   signedMessageParams.nonce,
                   signedMessageParams.validityTimestamps,
@@ -481,11 +481,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
             it("should revert with 'NotAllowedCall' error if signer does not have any listed under its allowed calls", async () => {
               const nameToSet = 'Alice';
               const targetContractPayload = targetContract.interface.encodeFunctionData(
-                'setNamePayable',
+                'setNamePayableMinimumValue',
                 [nameToSet],
               );
 
-              const requiredValueForExecution = 51; // specified in `setNamePayable(..)`
+              const requiredValueForExecution = 51; // specified in `setNamePayableMinimumValue(..)`
 
               const latestNonce = await context.keyManager.callStatic.getNonce(
                 signerNoAllowedCalls.address,
@@ -507,7 +507,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const valueToSendFromRelayer = 51;
 
               const signedMessageParams = {
-                lsp6Version: LSP6_VERSION,
+                lsp25Version: LSP25_VERSION,
                 chainId: 31337, // HARDHAT_CHAINID
                 nonce: latestNonce,
                 validityTimestamps,
@@ -518,7 +518,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const encodedMessage = ethers.utils.solidityPack(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
-                  signedMessageParams.lsp6Version,
+                  signedMessageParams.lsp25Version,
                   signedMessageParams.chainId,
                   signedMessageParams.nonce,
                   signedMessageParams.validityTimestamps,
@@ -554,8 +554,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
       });
 
       describe('When testing `validityTimestamps`', () => {
-        describe('(invalid timestamps) `startingTimestamp` is greter than `endingTimestamp`', () => {
-          describe('`now` is equal to `startingTimestamp` and `now` is greter than `endingTimestamp`', () => {
+        describe('(invalid timestamps) `startingTimestamp` is greater than `endingTimestamp`', () => {
+          describe('`now` is equal to `startingTimestamp` and `now` is greater than `endingTimestamp`', () => {
             it('reverts', async () => {
               const now = await time.latest();
               const startingTimestamp = now;
@@ -1100,7 +1100,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
       // the Key Manager recovers the address based on:
       // - the signature provided
       // - the encoded message generated internally using:
-      //        `abi.encodePacked(LSP6_VERSION, block.chainid,nonce, msg.value, payload);`
+      //        `abi.encodePacked(LSP25_VERSION, block.chainid,nonce, msg.value, payload);`
       //
       // the address is recovered as follow:
       //    `address signer = address(this).toDataWithIntendedValidator(encodedMessage).recover(signature);`
@@ -1116,7 +1116,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       const encodedMessage = ethers.utils.solidityPack(
         ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
-        [6, 31337, ownerNonce.add(1), validityTimestamps, 0, transferLyxPayload],
+        [LSP25_VERSION, 31337, ownerNonce.add(1), validityTimestamps, 0, transferLyxPayload],
       );
 
       const hashedDataWithIntendedValidator = eip191.hashDataWithIntendedValidator(

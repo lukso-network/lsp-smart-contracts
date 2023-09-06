@@ -9,10 +9,13 @@ import {
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
+import {ILSP6KeyManager as ILSP6} from "./ILSP6KeyManager.sol";
 import {
     ILSP20CallVerifier as ILSP20
 } from "../LSP20CallVerification/ILSP20CallVerifier.sol";
+import {
+    ILSP25ExecuteRelayCall as ILSP25
+} from "../LSP25ExecuteRelayCall/ILSP25ExecuteRelayCall.sol";
 
 // modules
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
@@ -21,6 +24,9 @@ import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {LSP6SetDataModule} from "./LSP6Modules/LSP6SetDataModule.sol";
 import {LSP6ExecuteModule} from "./LSP6Modules/LSP6ExecuteModule.sol";
 import {LSP6OwnershipModule} from "./LSP6Modules/LSP6OwnershipModule.sol";
+import {
+    LSP25MultiChannelNonce
+} from "../LSP25ExecuteRelayCall/LSP25MultiChannelNonce.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -38,9 +44,7 @@ import {
     InvalidRelayNonce,
     NoPermissionsSet,
     InvalidERC725Function,
-    CannotSendValueToSetData,
-    RelayCallBeforeStartTime,
-    RelayCallExpired
+    CannotSendValueToSetData
 } from "./LSP6Errors.sol";
 
 import {
@@ -49,26 +53,32 @@ import {
     _ERC1271_FAILVALUE
 } from "../LSP0ERC725Account/LSP0Constants.sol";
 import {
-    LSP6_VERSION,
     _INTERFACEID_LSP6,
     _PERMISSION_SIGN,
     _PERMISSION_REENTRANCY
 } from "./LSP6Constants.sol";
 import "../LSP20CallVerification/LSP20Constants.sol";
+import {_INTERFACEID_LSP25} from "../LSP25ExecuteRelayCall/LSP25Constants.sol";
 
 /**
  * @title Core implementation of the LSP6 Key Manager standard.
  * @author Fabian Vogelsteller <frozeman>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
  * @dev This contract acts as a controller for an ERC725 Account.
  *      Permissions for controllers are stored in the ERC725Y storage of the ERC725 Account and can be updated using `setData(...)`.
+ *
+ * @custom:danger Because of its potential malicious impact on the linked contract, the current implementation of the Key Manager
+ * disallows the operation type **[DELEGATECALL](../universal-profile/lsp6-key-manager.md#permissions-value)** operation via the
+ * `execute(...)` function of the linked contract.
  */
 abstract contract LSP6KeyManagerCore is
     ERC165,
-    ILSP6KeyManager,
+    ILSP6,
     ILSP20,
+    ILSP25,
     LSP6SetDataModule,
     LSP6ExecuteModule,
-    LSP6OwnershipModule
+    LSP6OwnershipModule,
+    LSP25MultiChannelNonce
 {
     using LSP6Utils for *;
     using ECDSA for *;
@@ -80,14 +90,15 @@ abstract contract LSP6KeyManagerCore is
     // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/security/ReentrancyGuard.sol
     bool internal _reentrancyStatus;
 
-    mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
-
-    function target() public view virtual returns (address) {
+    /**
+     * @inheritdoc ILSP6
+     */
+    function target() public view returns (address) {
         return _target;
     }
 
     /**
-     * @dev See {IERC165-supportsInterface}.
+     * @inheritdoc ERC165
      */
     function supportsInterface(
         bytes4 interfaceId
@@ -96,22 +107,38 @@ abstract contract LSP6KeyManagerCore is
             interfaceId == _INTERFACEID_LSP6 ||
             interfaceId == _INTERFACEID_ERC1271 ||
             interfaceId == _INTERFACEID_LSP20_CALL_VERIFIER ||
+            interfaceId == _INTERFACEID_LSP25 ||
             super.supportsInterface(interfaceId);
     }
 
     /**
-     * @inheritdoc ILSP6KeyManager
+     * @inheritdoc ILSP25
+     *
+     * @custom:hint A signer can choose its channel number arbitrarily. The recommended practice is to:
+     * - use `channelId == 0` for transactions for which the ordering of execution matters.abi
+     *
+     * _Example: you have two transactions A and B, and transaction A must be executed first and complete successfully before
+     * transaction B should be executed)._
+     *
+     * - use any other `channelId` number for transactions that you want to be order independant (out-of-order execution, execution _"in parallel"_).
+     *
+     * _Example: you have two transactions A and B. You want transaction B to be executed a) without having to wait for transaction A to complete,
+     * or b) regardless if transaction A completed successfully or not.
      */
     function getNonce(
         address from,
         uint128 channelId
-    ) public view returns (uint256) {
-        uint256 nonceInChannel = _nonceStore[from][channelId];
-        return (uint256(channelId) << 128) | nonceInChannel;
+    ) public view virtual returns (uint256) {
+        return LSP25MultiChannelNonce._getNonce(from, channelId);
     }
 
     /**
      * @inheritdoc IERC1271
+     *
+     * @dev Checks if a signature was signed by a controller that has the permission `SIGN`.
+     * If the signer is a controller with the permission `SIGN`, it will return the ERC1271 magic value.
+     *
+     * @return magicValue `0x1626ba7e` on success, or `0xffffffff` on failure.
      */
     function isValidSignature(
         bytes32 dataHash,
@@ -136,7 +163,9 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @inheritdoc ILSP6KeyManager
+     * @inheritdoc ILSP6
+     *
+     * @custom:events {PermissionsVerified} event when the permissions related to `payload` have been verified successfully.
      */
     function execute(
         bytes calldata payload
@@ -145,7 +174,9 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @inheritdoc ILSP6KeyManager
+     * @inheritdoc ILSP6
+     *
+     * @custom:events {PermissionsVerified} event for each permissions related to each `payload` that have been verified successfully.
      */
     function executeBatch(
         uint256[] calldata values,
@@ -178,7 +209,20 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @inheritdoc ILSP6KeyManager
+     * @inheritdoc ILSP25
+     *
+     * @dev Allows any address (executor) to execute a payload (= abi-encoded function call), given they have a valid signature from a signer address and a valid `nonce` for this signer.
+     * The signature MUST be generated according to the signature format defined by the LSP25 standard.
+     *
+     * The signer that generated the `signature` MUST be a controller with some permissions on the linked {target}.
+     * The `payload` will be executed on the {target} contract once the LSP25 signature and the permissions of the signer have been verified.
+     *
+     * @custom:events {PermissionsVerified} event when the permissions related to `payload` have been verified successfully.
+     *
+     * @custom:hint If you are looking to learn how to sign and execute relay transactions via the Key Manager,
+     * see our Javascript step by step guide [_"Execute Relay Transactions"_](../../../guides/key-manager/execute-relay-transactions.md).
+     * See the LSP6 Standard page for more details on how to
+     * [generate a valid signature for Execute Relay Call](../../../standards/universal-profile/lsp6-key-manager.md#how-to-sign-relay-transactions).
      */
     function executeRelayCall(
         bytes memory signature,
@@ -197,7 +241,17 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @inheritdoc ILSP6KeyManager
+     * @inheritdoc ILSP25
+     *
+     * @dev Same as {executeRelayCall} but execute a batch of signed calldata payloads (abi-encoded function calls) in a single transaction.
+     *
+     * The `signatures` can be from multiple controllers, not necessarely the same controller, as long as each of these controllers
+     * that signed have the right permissions related to the calldata `payload` they signed.
+     *
+     * @custom:requirements
+     * - the length of `signatures`, `nonces`, `validityTimestamps`, `values` and `payloads` MUST be the same.
+     * - the value sent to this function (`msg.value`) MUST be equal to the sum of all `values` in the batch.
+     * There should not be any excess value sent to this function.
      */
     function executeRelayCallBatch(
         bytes[] memory signatures,
@@ -264,7 +318,7 @@ abstract contract LSP6KeyManagerCore is
             bool isReentrantCall = _nonReentrantBefore(isSetData, caller);
 
             _verifyPermissions(caller, msgValue, data);
-            emit VerifiedCall(caller, msgValue, bytes4(data));
+            emit PermissionsVerified(caller, msgValue, bytes4(data));
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
@@ -329,73 +383,7 @@ abstract contract LSP6KeyManagerCore is
         bool isReentrantCall = _nonReentrantBefore(isSetData, msg.sender);
 
         _verifyPermissions(msg.sender, msgValue, payload);
-        emit VerifiedCall(msg.sender, msgValue, bytes4(payload));
-
-        bytes memory result = _executePayload(msgValue, payload);
-
-        if (!isReentrantCall && !isSetData) {
-            _nonReentrantAfter();
-        }
-
-        return result;
-    }
-
-    function _executeRelayCall(
-        bytes memory signature,
-        uint256 nonce,
-        uint256 validityTimestamps,
-        uint256 msgValue,
-        bytes calldata payload
-    ) internal virtual returns (bytes memory) {
-        if (payload.length < 4) {
-            revert InvalidPayload(payload);
-        }
-
-        bytes memory encodedMessage = abi.encodePacked(
-            LSP6_VERSION,
-            block.chainid,
-            nonce,
-            validityTimestamps,
-            msgValue,
-            payload
-        );
-
-        address signer = address(this)
-            .toDataWithIntendedValidatorHash(encodedMessage)
-            .recover(signature);
-
-        bool isSetData = false;
-        if (
-            bytes4(payload) == IERC725Y.setData.selector ||
-            bytes4(payload) == IERC725Y.setDataBatch.selector
-        ) {
-            isSetData = true;
-        }
-
-        bool isReentrantCall = _nonReentrantBefore(isSetData, signer);
-
-        if (!_isValidNonce(signer, nonce)) {
-            revert InvalidRelayNonce(signer, nonce, signature);
-        }
-
-        // increase nonce after successful verification
-        _nonceStore[signer][nonce >> 128]++;
-
-        if (validityTimestamps != 0) {
-            uint128 startingTimestamp = uint128(validityTimestamps >> 128);
-            uint128 endingTimestamp = uint128(validityTimestamps);
-
-            // solhint-disable not-rely-on-time
-            if (block.timestamp < startingTimestamp) {
-                revert RelayCallBeforeStartTime();
-            }
-            if (block.timestamp > endingTimestamp) {
-                revert RelayCallExpired();
-            }
-        }
-
-        _verifyPermissions(signer, msgValue, payload);
-        emit VerifiedCall(signer, msgValue, bytes4(payload));
+        emit PermissionsVerified(msg.sender, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
 
@@ -407,9 +395,74 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @notice execute the `payload` passed to `execute(...)` or `executeRelayCall(...)`
-     * @param payload the abi-encoded function call to execute on the target.
-     * @return bytes the result from calling the target with `payload`
+     * @dev Validate that the `nonce` given for the `signature` signed and the `payload` to execute is valid
+     * and conform to the signature format according to the LSP25 standard.
+     *
+     * @param signature A valid signature for a signer, generated according to the signature format specified in the LSP25 standard.
+     * @param nonce The nonce that the signer used to generate the `signature`.
+     * @param validityTimestamps Two `uint128` concatenated together, where the left-most `uint128` represent the timestamp from which the transaction can be executed,
+     * and the right-most `uint128` represents the timestamp after which the transaction expire.
+     * @param payload The abi-encoded function call to execute.
+     *
+     * @custom:warning Be aware that this function can also throw an error if the `callData` was signed incorrectly (not conforming to the signature format defined in the LSP25 standard).
+     * This is because the contract cannot distinguish if the data is signed correctly or not. Instead, it will recover an incorrect signer address from the signature
+     * and throw an {InvalidRelayNonce} error with the incorrect signer address as the first parameter.
+     */
+    function _executeRelayCall(
+        bytes memory signature,
+        uint256 nonce,
+        uint256 validityTimestamps,
+        uint256 msgValue,
+        bytes calldata payload
+    ) internal virtual returns (bytes memory) {
+        if (payload.length < 4) {
+            revert InvalidPayload(payload);
+        }
+
+        address signer = LSP25MultiChannelNonce
+            ._recoverSignerFromLSP25Signature(
+                signature,
+                nonce,
+                validityTimestamps,
+                msgValue,
+                payload
+            );
+
+        if (!_isValidNonce(signer, nonce)) {
+            revert InvalidRelayNonce(signer, nonce, signature);
+        }
+
+        // increase nonce after successful verification
+        _nonceStore[signer][nonce >> 128]++;
+
+        LSP25MultiChannelNonce._verifyValidityTimestamps(validityTimestamps);
+
+        bool isSetData = false;
+        if (
+            bytes4(payload) == IERC725Y.setData.selector ||
+            bytes4(payload) == IERC725Y.setDataBatch.selector
+        ) {
+            isSetData = true;
+        }
+
+        bool isReentrantCall = _nonReentrantBefore(isSetData, signer);
+
+        _verifyPermissions(signer, msgValue, payload);
+        emit PermissionsVerified(signer, msgValue, bytes4(payload));
+
+        bytes memory result = _executePayload(msgValue, payload);
+
+        if (!isReentrantCall && !isSetData) {
+            _nonReentrantAfter();
+        }
+
+        return result;
+    }
+
+    /**
+     * @notice Execute the `payload` passed to `execute(...)` or `executeRelayCall(...)`
+     * @param payload The abi-encoded function call to execute on the {target} contract.
+     * @return bytes The data returned by the call made to the linked {target} contract.
      */
     function _executePayload(
         uint256 msgValue,
@@ -429,28 +482,9 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @notice verify the nonce `_idx` for `_from` (obtained via `getNonce(...)`)
-     * @dev "idx" is a 256bits (unsigned) integer, where:
-     *          - the 128 leftmost bits = channelId
-     *      and - the 128 rightmost bits = nonce within the channel
-     * @param from caller address
-     * @param idx (channel id + nonce within the channel)
-     */
-    function _isValidNonce(
-        address from,
-        uint256 idx
-    ) internal view virtual returns (bool) {
-        uint256 mask = ~uint128(0);
-        // Alternatively:
-        // uint256 mask = (1<<128)-1;
-        // uint256 mask = 0xffffffffffffffffffffffffffffffff;
-        return (idx & mask) == (_nonceStore[from][idx >> 128]);
-    }
-
-    /**
-     * @dev verify if the `from` address is allowed to execute the `payload` on the `target`.
-     * @param from either the caller of `execute(...)` or the signer of `executeRelayCall(...)`.
-     * @param payload the payload to execute on the `target`.
+     * @dev Verify if the `from` address is allowed to execute the `payload` on the {target} contract linked to this Key Manager.
+     * @param from Either the caller of {execute} or the signer of {executeRelayCall}.
+     * @param payload The abi-encoded function call to execute on the {target} contract.
      */
     function _verifyPermissions(
         address from,
@@ -494,11 +528,21 @@ abstract contract LSP6KeyManagerCore is
 
             // ERC725X.execute(uint256,address,uint256,bytes)
         } else if (erc725Function == IERC725X.execute.selector) {
+            (
+                uint256 operationType,
+                address to,
+                uint256 value,
+                bytes memory data
+            ) = abi.decode(payload[4:], (uint256, address, uint256, bytes));
+
             LSP6ExecuteModule._verifyCanExecute(
                 _target,
                 from,
                 permissions,
-                payload
+                operationType,
+                to,
+                value,
+                data
             );
         } else if (
             erc725Function == ILSP14Ownable2Step.transferOwnership.selector ||
@@ -552,7 +596,8 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @dev revert if `controller`'s `addressPermissions` doesn't contain `permissionsRequired`
+     * @dev Check if the `controller` has the `permissionRequired` among its permission listed in `controllerPermissions`
+     * If not, this function will revert with the error `NotAuthorised` and the name of the permission missing by the controller.
      * @param controller the caller address
      * @param addressPermissions the caller's permissions BitArray
      * @param permissionRequired the required permission

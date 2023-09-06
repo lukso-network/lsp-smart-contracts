@@ -6,6 +6,9 @@ import {
     LSP8CompatibleERC721MintableInitAbstract
 } from "./LSP8CompatibleERC721MintableInitAbstract.sol";
 
+/**
+ * @title LSP8CompatibleERC721MintableInit deployable preset contract (proxy version) with a public mint function callable only by the contract {owner}
+ */
 contract LSP8CompatibleERC721MintableInit is
     LSP8CompatibleERC721MintableInitAbstract
 {
@@ -17,10 +20,12 @@ contract LSP8CompatibleERC721MintableInit is
     }
 
     /**
-     * @notice Sets the name, the symbol and the owner of the token
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the token
+     * @notice Initializing a `LSP8CompatibleERC721MintableInit` token contract with: token name = `name_`, token symbol = `symbol_`, and
+     * address `newOwner_` as the token contract owner.
+     *
+     * @param name_ The name of the token.
+     * @param symbol_ The symbol of the token.
+     * @param newOwner_ The owner of the token contract.
      */
     function initialize(
         string memory name_,

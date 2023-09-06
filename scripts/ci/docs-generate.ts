@@ -153,7 +153,7 @@ task('ts-gen', 'Generate NatSpec documentation automatically on compilation')
           methods: object;
           errors: object;
         };
-        userdoc?: { events: object; methods: object };
+        userdoc?: { events: object; methods: object; errors: object };
       };
 
       const fileName = `${name}.json`;
@@ -203,14 +203,14 @@ task('ts-gen', 'Generate NatSpec documentation automatically on compilation')
         }
         for (const [sig, error] of Object.entries(errors)) {
           if (error.length) {
-            allMembers[sig].userdoc = error;
+            allMembers[sig].devdoc = error;
           }
         }
       }
       {
         // Handle userdoc
 
-        const { events = {}, methods = {} } = userdoc;
+        const { events = {}, methods = {}, errors = {} } = userdoc;
         for (const [sig, event] of Object.entries(events)) {
           if (Object.keys(event).length) {
             allMembers[sig].userdoc = event;
@@ -219,6 +219,11 @@ task('ts-gen', 'Generate NatSpec documentation automatically on compilation')
         for (const [sig, method] of Object.entries(methods)) {
           if (Object.keys(method).length) {
             allMembers[sig].userdoc = method;
+          }
+        }
+        for (const [sig, error] of Object.entries(errors)) {
+          if (error.length) {
+            allMembers[sig].userdoc = error;
           }
         }
       }

@@ -12,10 +12,16 @@ import {
   TokenReceiverWithLSP1__factory,
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
+  UniversalReceiverDelegateRevert,
+  UniversalReceiverDelegateRevert__factory,
+  UniversalReceiverDelegateGasConsumer,
+  UniversalReceiverDelegateGasConsumer__factory,
 } from '../../types';
 
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } from '../../constants';
+
+import { abiCoder } from '../utils/helpers';
 
 export type LSP7TestAccounts = {
   owner: SignerWithAddress;
@@ -194,64 +200,130 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
     });
 
     describe('authorizeOperator', () => {
-      describe('when operator is not the zero address', () => {
-        it('should succeed', async () => {
-          const operator = context.accounts.operator.address;
+      describe('without sending data', () => {
+        describe('when operator is not the zero address', () => {
+          it('should succeed', async () => {
+            const operator = context.accounts.operator.address;
+            const tokenOwner = context.accounts.owner.address;
+            const amount = context.initialSupply;
+
+            const tx = await context.lsp7.authorizeOperator(operator, amount, '0x');
+
+            await expect(tx)
+              .to.emit(context.lsp7, 'AuthorizedOperator')
+              .withArgs(operator, tokenOwner, amount, '0x');
+
+            expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
+          });
+
+          describe('when operator is already authorized', () => {
+            beforeEach(async () => {
+              await context.lsp7.authorizeOperator(
+                context.accounts.operator.address,
+                context.initialSupply,
+                '0x',
+              );
+            });
+
+            it('should succeed', async () => {
+              const operator = context.accounts.operator.address;
+              const tokenOwner = context.accounts.owner.address;
+              const amount = context.initialSupply.add(1);
+
+              await context.lsp7.authorizeOperator(operator, amount, '0x');
+
+              const tx = await context.lsp7.authorizeOperator(operator, amount, '0x');
+
+              await expect(tx)
+                .to.emit(context.lsp7, 'AuthorizedOperator')
+                .withArgs(operator, tokenOwner, amount, '0x');
+
+              expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
+            });
+
+            it('should add the operator to the list of operators', async () => {
+              const operator = context.accounts.operator.address;
+              const tokenOwner = context.accounts.owner.address;
+
+              expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([operator]);
+            });
+          });
+        });
+
+        describe('when operator is the zero address', () => {
+          it('should revert', async () => {
+            const operator = ethers.constants.AddressZero;
+
+            await expect(
+              context.lsp7.authorizeOperator(operator, context.initialSupply, '0x'),
+            ).to.be.revertedWithCustomError(context.lsp7, 'LSP7CannotUseAddressZeroAsOperator');
+          });
+        });
+
+        describe('when operator is the token owner', () => {
+          it('should revert', async () => {
+            const operator = context.accounts.owner.address;
+
+            await expect(
+              context.lsp7.authorizeOperator(operator, context.initialSupply, '0x'),
+            ).to.be.revertedWithCustomError(context.lsp7, 'LSP7TokenOwnerCannotBeOperator');
+          });
+        });
+      });
+
+      describe('with sending data and notifying an LSP1 contract', () => {
+        it('should succeed and inform the operator', async () => {
+          const tokenReceiverWithLSP1: TokenReceiverWithLSP1 =
+            await new TokenReceiverWithLSP1__factory(context.accounts.owner).deploy();
+          const operator = tokenReceiverWithLSP1.address;
           const tokenOwner = context.accounts.owner.address;
           const amount = context.initialSupply;
 
-          const tx = await context.lsp7.authorizeOperator(operator, amount);
+          const tx = await context.lsp7.authorizeOperator(operator, amount, '0xaabbccdd', {
+            gasLimit: 2000000,
+          });
 
           await expect(tx)
             .to.emit(context.lsp7, 'AuthorizedOperator')
-            .withArgs(operator, tokenOwner, amount);
+            .withArgs(operator, tokenOwner, amount, '0xaabbccdd');
+
+          await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
 
           expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
         });
 
-        describe('when operator is already authorized', () => {
-          beforeEach(async () => {
-            await context.lsp7.authorizeOperator(
-              context.accounts.operator.address,
-              context.initialSupply,
-            );
-          });
+        it('should succeed and inform the operator even if the operator revert', async () => {
+          const operatorThatReverts: UniversalReceiverDelegateRevert =
+            await new UniversalReceiverDelegateRevert__factory(context.accounts.owner).deploy();
+          const operator = operatorThatReverts.address;
+          const tokenOwner = context.accounts.owner.address;
+          const amount = context.initialSupply;
 
-          it('should succeed', async () => {
-            const operator = context.accounts.operator.address;
-            const tokenOwner = context.accounts.owner.address;
-            const amount = context.initialSupply.add(1);
+          const tx = await context.lsp7.authorizeOperator(operator, amount, '0xaabbccdd');
 
-            await context.lsp7.authorizeOperator(operator, amount);
+          await expect(tx)
+            .to.emit(context.lsp7, 'AuthorizedOperator')
+            .withArgs(operator, tokenOwner, amount, '0xaabbccdd');
 
-            const tx = await context.lsp7.authorizeOperator(operator, amount);
-
-            await expect(tx)
-              .to.emit(context.lsp7, 'AuthorizedOperator')
-              .withArgs(operator, tokenOwner, amount);
-
-            expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
-          });
+          expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
         });
-      });
 
-      describe('when operator is the zero address', () => {
-        it('should revert', async () => {
-          const operator = ethers.constants.AddressZero;
+        it.skip('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+          const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer =
+            await new UniversalReceiverDelegateGasConsumer__factory(
+              context.accounts.owner,
+            ).deploy();
+          const operator = operatorThatConsumeAllGas.address;
+          const tokenOwner = context.accounts.owner.address;
+          const amount = context.initialSupply;
 
-          await expect(
-            context.lsp7.authorizeOperator(operator, context.initialSupply),
-          ).to.be.revertedWithCustomError(context.lsp7, 'LSP7CannotUseAddressZeroAsOperator');
-        });
-      });
+          const tx = await context.lsp7.authorizeOperator(operator, amount, '0xaabbccdd');
 
-      describe('when operator is the token owner', () => {
-        it('should revert', async () => {
-          const operator = context.accounts.owner.address;
+          await expect(tx)
+            .to.emit(context.lsp7, 'AuthorizedOperator')
+            .withArgs(operator, tokenOwner, amount, '0xaabbccdd');
 
-          await expect(
-            context.lsp7.authorizeOperator(operator, context.initialSupply),
-          ).to.be.revertedWithCustomError(context.lsp7, 'LSP7TokenOwnerCannotBeOperator');
+          expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
         });
       });
     });
@@ -262,11 +334,11 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         const tokenOwner = context.accounts.owner.address;
         const amount = context.initialSupply;
 
-        const tx = await context.lsp7.authorizeOperator(operator, amount);
+        const tx = await context.lsp7.authorizeOperator(operator, amount, '0x');
 
         await expect(tx)
           .to.emit(context.lsp7, 'AuthorizedOperator')
-          .withArgs(operator, tokenOwner, amount);
+          .withArgs(operator, tokenOwner, amount, '0x');
 
         expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
       });
@@ -281,19 +353,25 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         });
 
         describe('when there was no allowance before for the operator (`authorizedAmountFor` operator = 0)', () => {
-          it('should authorize for the `addedAmount`', async () => {
-            const operator = context.accounts.anyone.address;
+          it('should authorize for the `addedAmount` and add the operator to the list of operators', async () => {
+            const oldOperator = context.accounts.operator.address;
+            const newOperator = context.accounts.anyone.address;
             const tokenOwner = context.accounts.owner.address;
 
-            const tx = await context.lsp7.increaseAllowance(operator, addedAmount);
+            const tx = await context.lsp7.increaseAllowance(newOperator, addedAmount, '0x');
 
             await expect(tx)
               .to.emit(context.lsp7, 'AuthorizedOperator')
-              .withArgs(operator, tokenOwner, addedAmount);
+              .withArgs(newOperator, tokenOwner, addedAmount, '0x');
 
-            expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
+            expect(await context.lsp7.authorizedAmountFor(newOperator, tokenOwner)).to.equal(
               addedAmount,
             );
+
+            expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([
+              oldOperator,
+              newOperator,
+            ]);
           });
         });
 
@@ -306,15 +384,22 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 
             const expectedNewAllowance = allowanceBefore.add(addedAmount);
 
-            const tx = await context.lsp7.increaseAllowance(operator, addedAmount);
+            const tx = await context.lsp7.increaseAllowance(operator, addedAmount, '0x');
 
             await expect(tx)
               .to.emit(context.lsp7, 'AuthorizedOperator')
-              .withArgs(operator, tokenOwner, expectedNewAllowance);
+              .withArgs(operator, tokenOwner, expectedNewAllowance, '0x');
 
             expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
               expectedNewAllowance,
             );
+          });
+
+          it('should not duplicate the existing operator in the list of operators', async () => {
+            const operator = context.accounts.operator.address;
+            const tokenOwner = context.accounts.owner.address;
+
+            expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([operator]);
           });
         });
       });
@@ -333,11 +418,15 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
             const operator = context.accounts.anyone.address;
             const tokenOwner = context.accounts.owner.address;
 
-            const tx = await context.lsp7.increaseAllowance(operator, addedAmountLargerThanBalance);
+            const tx = await context.lsp7.increaseAllowance(
+              operator,
+              addedAmountLargerThanBalance,
+              '0x',
+            );
 
             await expect(tx)
               .to.emit(context.lsp7, 'AuthorizedOperator')
-              .withArgs(operator, tokenOwner, addedAmountLargerThanBalance);
+              .withArgs(operator, tokenOwner, addedAmountLargerThanBalance, '0x');
 
             expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
               addedAmountLargerThanBalance,
@@ -354,11 +443,15 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 
             const expectedNewAllowance = allowanceBefore.add(addedAmountLargerThanBalance);
 
-            const tx = await context.lsp7.increaseAllowance(operator, addedAmountLargerThanBalance);
+            const tx = await context.lsp7.increaseAllowance(
+              operator,
+              addedAmountLargerThanBalance,
+              '0x',
+            );
 
             await expect(tx)
               .to.emit(context.lsp7, 'AuthorizedOperator')
-              .withArgs(operator, tokenOwner, expectedNewAllowance);
+              .withArgs(operator, tokenOwner, expectedNewAllowance, '0x');
 
             expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
               expectedNewAllowance,
@@ -372,7 +465,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           const addedAmount = ethers.BigNumber.from('1');
 
           await expect(
-            context.lsp7.increaseAllowance(ethers.constants.AddressZero, addedAmount),
+            context.lsp7.increaseAllowance(ethers.constants.AddressZero, addedAmount, '0x'),
           ).to.be.revertedWithCustomError(context.lsp7, 'LSP7CannotUseAddressZeroAsOperator');
         });
       });
@@ -382,7 +475,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           const addedAmount = ethers.BigNumber.from('1');
 
           await expect(
-            context.lsp7.increaseAllowance(context.accounts.owner.address, addedAmount),
+            context.lsp7.increaseAllowance(context.accounts.owner.address, addedAmount, '0x'),
           ).to.be.revertedWithCustomError(context.lsp7, 'LSP7TokenOwnerCannotBeOperator');
         });
       });
@@ -394,11 +487,11 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         const tokenOwner = context.accounts.owner.address;
         const amount = context.initialSupply;
 
-        const tx = await context.lsp7.authorizeOperator(operator, amount);
+        const tx = await context.lsp7.authorizeOperator(operator, amount, '0x');
 
         await expect(tx)
           .to.emit(context.lsp7, 'AuthorizedOperator')
-          .withArgs(operator, tokenOwner, amount);
+          .withArgs(operator, tokenOwner, amount, '0x');
 
         expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
       });
@@ -408,7 +501,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           const subtractedAmount = ethers.BigNumber.from('1');
 
           await expect(
-            context.lsp7.decreaseAllowance(ethers.constants.AddressZero, subtractedAmount),
+            context.lsp7.decreaseAllowance(ethers.constants.AddressZero, subtractedAmount, '0x'),
           ).to.be.revertedWithCustomError(
             context.lsp7,
             // Since we can never grant allowance for address(0), address(0) will always have 0 allowance
@@ -428,7 +521,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           const subtractedAmount = authorizedAmountFor.add(1);
 
           await expect(
-            context.lsp7.decreaseAllowance(operator, subtractedAmount),
+            context.lsp7.decreaseAllowance(operator, subtractedAmount, '0x'),
           ).to.be.revertedWithCustomError(context.lsp7, 'LSP7DecreasedAllowanceBelowZero');
         });
       });
@@ -443,13 +536,13 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 
             const allowanceBefore = await context.lsp7.authorizedAmountFor(operator, tokenOwner);
 
-            const tx = await context.lsp7.decreaseAllowance(operator, subtractedAmount);
+            const tx = await context.lsp7.decreaseAllowance(operator, subtractedAmount, '0x');
 
             const expectedNewAllowance = allowanceBefore.sub(subtractedAmount);
 
             await expect(tx)
               .to.emit(context.lsp7, 'AuthorizedOperator')
-              .withArgs(operator, tokenOwner, expectedNewAllowance);
+              .withArgs(operator, tokenOwner, expectedNewAllowance, '0x');
 
             expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
               expectedNewAllowance,
@@ -464,13 +557,13 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 
             const operatorAllowance = await context.lsp7.authorizedAmountFor(operator, tokenOwner);
 
-            const tx = await context.lsp7.decreaseAllowance(operator, operatorAllowance);
+            const tx = await context.lsp7.decreaseAllowance(operator, operatorAllowance, '0x');
 
             const expectedNewAllowance = 0;
 
             await expect(tx)
               .to.emit(context.lsp7, 'RevokedOperator')
-              .withArgs(operator, tokenOwner);
+              .withArgs(operator, tokenOwner, '0x');
 
             expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
               expectedNewAllowance,
@@ -484,7 +577,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           const subtractedAmount = ethers.BigNumber.from('1');
 
           await expect(
-            context.lsp7.decreaseAllowance(context.accounts.owner.address, subtractedAmount),
+            context.lsp7.decreaseAllowance(context.accounts.owner.address, subtractedAmount, '0x'),
           ).to.be.revertedWithCustomError(context.lsp7, 'LSP7TokenOwnerCannotBeOperator');
         });
       });
@@ -499,7 +592,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           const subtractedAmountLargerThanAllowance = authorizedAmountFor.add(5);
 
           await expect(
-            context.lsp7.decreaseAllowance(operator, subtractedAmountLargerThanAllowance),
+            context.lsp7.decreaseAllowance(operator, subtractedAmountLargerThanAllowance, '0x'),
           ).to.be.revertedWithCustomError(context.lsp7, 'LSP7DecreasedAllowanceBelowZero');
         });
       });
@@ -514,17 +607,44 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         const amount = context.initialSupply;
 
         // pre-conditions
-        await context.lsp7.authorizeOperator(operator, amount);
+        await context.lsp7.authorizeOperator(operator, amount, '0x');
         expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
 
         // effects
-        const tx = await context.lsp7.revokeOperator(operator);
-        await expect(tx).to.emit(context.lsp7, 'RevokedOperator').withArgs(operator, tokenOwner);
+        const tx = await context.lsp7.revokeOperator(operator, '0x');
+        await expect(tx)
+          .to.emit(context.lsp7, 'RevokedOperator')
+          .withArgs(operator, tokenOwner, '0x');
 
         // post-conditions
         expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
           ethers.constants.Zero,
         );
+      });
+
+      it('should remove operator from list of operators', async () => {
+        const operator = context.accounts.operator.address;
+        const tokenOwner = context.accounts.owner.address;
+        const amount = context.initialSupply;
+
+        // pre-conditions
+        await context.lsp7.authorizeOperator(operator, amount, '0x');
+        expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(amount);
+
+        expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([operator]);
+
+        // effects
+        const tx = await context.lsp7.revokeOperator(operator, '0x');
+        await expect(tx)
+          .to.emit(context.lsp7, 'RevokedOperator')
+          .withArgs(operator, tokenOwner, '0x');
+
+        // post-conditions
+        expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
+          ethers.constants.Zero,
+        );
+
+        expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([]);
       });
     });
 
@@ -532,7 +652,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
       it('should revert', async () => {
         const operator = ethers.constants.AddressZero;
 
-        await expect(context.lsp7.revokeOperator(operator)).to.be.revertedWithCustomError(
+        await expect(context.lsp7.revokeOperator(operator, '0x')).to.be.revertedWithCustomError(
           context.lsp7,
           'LSP7CannotUseAddressZeroAsOperator',
         );
@@ -543,9 +663,64 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
       it('should revert', async () => {
         const operator = context.accounts.owner.address;
 
-        await expect(context.lsp7.revokeOperator(operator)).to.be.revertedWithCustomError(
+        await expect(context.lsp7.revokeOperator(operator, '0x')).to.be.revertedWithCustomError(
           context.lsp7,
           'LSP7TokenOwnerCannotBeOperator',
+        );
+      });
+    });
+
+    describe('with sending data and notifying an LSP1 contract', () => {
+      it('should succeed and inform the operator', async () => {
+        const tokenReceiverWithLSP1: TokenReceiverWithLSP1 =
+          await new TokenReceiverWithLSP1__factory(context.accounts.owner).deploy();
+        const operator = tokenReceiverWithLSP1.address;
+        const tokenOwner = context.accounts.owner.address;
+
+        const tx = await context.lsp7.revokeOperator(operator, '0xaabbccdd', { gasLimit: 2000000 });
+
+        await expect(tx)
+          .to.emit(context.lsp7, 'RevokedOperator')
+          .withArgs(operator, tokenOwner, '0xaabbccdd');
+
+        await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
+
+        expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
+          ethers.constants.Zero,
+        );
+      });
+
+      it('should succeed and inform the operator even if the operator revert', async () => {
+        const operatorThatReverts: UniversalReceiverDelegateRevert =
+          await new UniversalReceiverDelegateRevert__factory(context.accounts.owner).deploy();
+        const operator = operatorThatReverts.address;
+        const tokenOwner = context.accounts.owner.address;
+
+        const tx = await context.lsp7.revokeOperator(operator, '0xaabbccdd');
+
+        await expect(tx)
+          .to.emit(context.lsp7, 'RevokedOperator')
+          .withArgs(operator, tokenOwner, '0xaabbccdd');
+
+        expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
+          ethers.constants.Zero,
+        );
+      });
+
+      it.skip('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+        const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer =
+          await new UniversalReceiverDelegateGasConsumer__factory(context.accounts.owner).deploy();
+        const operator = operatorThatConsumeAllGas.address;
+        const tokenOwner = context.accounts.owner.address;
+
+        const tx = await context.lsp7.revokeOperator(operator, '0xaabbccdd');
+
+        await expect(tx)
+          .to.emit(context.lsp7, 'RevokedOperator')
+          .withArgs(operator, tokenOwner, '0xaabbccdd');
+
+        expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
+          ethers.constants.Zero,
         );
       });
     });
@@ -578,6 +753,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           await context.lsp7.authorizeOperator(
             context.accounts.operator.address,
             context.initialSupply,
+            '0x',
           );
 
           expect(
@@ -594,10 +770,12 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           await context.lsp7.authorizeOperator(
             context.accounts.operator.address,
             context.initialSupply,
+            '0x',
           );
           await context.lsp7.authorizeOperator(
             context.accounts.operatorWithLowAuthorizedAmount.address,
             ethers.BigNumber.from('1'),
+            '0x',
           );
 
           expect(
@@ -640,10 +818,12 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         await context.lsp7.authorizeOperator(
           context.accounts.operator.address,
           context.initialSupply,
+          '0x',
         );
         await context.lsp7.authorizeOperator(
           context.accounts.operatorWithLowAuthorizedAmount.address,
           ethers.BigNumber.from('1'),
+          '0x',
         );
       });
 
@@ -690,11 +870,11 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
             if (postIsOperatorFor.eq('0')) {
               await expect(tx)
                 .to.emit(context.lsp7, 'RevokedOperator')
-                .withArgs(context.accounts.operator.address, from);
+                .withArgs(context.accounts.operator.address, from, '0x');
             } else {
               await expect(tx)
                 .to.emit(context.lsp7, 'AuthorizedOperator')
-                .withArgs(context.accounts.operator.address, from, postIsOperatorFor);
+                .withArgs(context.accounts.operator.address, from, postIsOperatorFor, '0x');
             }
           }
 
@@ -769,14 +949,14 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                   const tx = await transferSuccessScenario(txParams, operator);
 
                   const typeId = LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification;
-                  const packedData = ethers.utils.solidityPack(
+                  const packedData = abiCoder.encode(
                     ['address', 'address', 'uint256', 'bytes'],
                     [txParams.from, txParams.to, txParams.amount, txParams.data],
                   );
 
                   await expect(tx)
-                    .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiverCalled')
-                    .withArgs(typeId, packedData);
+                    .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiver')
+                    .withArgs(context.lsp7.address, 0, typeId, packedData, '0x');
                 });
               });
 
@@ -842,14 +1022,14 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                   const tx = await transferSuccessScenario(txParams, operator);
 
                   const typeId = LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification;
-                  const packedData = ethers.utils.solidityPack(
+                  const packedData = abiCoder.encode(
                     ['address', 'address', 'uint256', 'bytes'],
                     [txParams.from, txParams.to, txParams.amount, txParams.data],
                   );
 
                   await expect(tx)
-                    .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiverCalled')
-                    .withArgs(typeId, packedData);
+                    .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiver')
+                    .withArgs(context.lsp7.address, 0, typeId, packedData, '0x');
                 });
               });
 
@@ -895,7 +1075,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
               };
 
               if (txParams.from !== operator.address) {
-                await context.lsp7.authorizeOperator(operator.address, txParams.amount);
+                await context.lsp7.authorizeOperator(operator.address, txParams.amount, '0x');
               }
 
               await expect(
@@ -1097,10 +1277,12 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           await context.lsp7.authorizeOperator(
             context.accounts.operator.address,
             context.initialSupply,
+            '0x',
           );
           await context.lsp7.authorizeOperator(
             context.accounts.operatorWithLowAuthorizedAmount.address,
             ethers.BigNumber.from('1'),
+            '0x',
           );
         });
 
@@ -1160,11 +1342,16 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                 if (postIsOperatorFor.eq('0')) {
                   await expect(tx)
                     .to.emit(context.lsp7, 'RevokedOperator')
-                    .withArgs(context.accounts.operator.address, from[index], postIsOperatorFor);
+                    .withArgs(
+                      context.accounts.operator.address,
+                      from[index],
+                      postIsOperatorFor,
+                      '',
+                    );
                 } else {
                   await expect(tx)
                     .to.emit(context.lsp7, 'AuthorizedOperator')
-                    .withArgs(context.accounts.operator.address, from, postIsOperatorFor);
+                    .withArgs(context.accounts.operator.address, from, postIsOperatorFor, '');
                 }
               }
             }),
@@ -1263,7 +1450,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                     txParams.amount.map((_, index) => async () => {
                       const typeId =
                         '0x29ddb589b1fb5fc7cf394961c1adf5f8c6454761adf795e67fe149f658abe895';
-                      const packedData = ethers.utils.solidityPack(
+                      const packedData = abiCoder.encode(
                         ['address', 'address', 'uint256', 'bytes'],
                         [
                           txParams.from[index],
@@ -1274,8 +1461,8 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                       );
 
                       await expect(tx)
-                        .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiverCalled')
-                        .withArgs(typeId, packedData);
+                        .to.emit(helperContracts.tokenReceiverWithLSP1, 'UniversalReceiver')
+                        .withArgs(context.lsp7.address, 0, typeId, packedData, '0x');
                     }),
                   );
                 });
@@ -1451,7 +1638,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                   (acc, amount) => acc.add(amount),
                   ethers.BigNumber.from('0'),
                 );
-                await context.lsp7.authorizeOperator(operator.address, totalAmount);
+                await context.lsp7.authorizeOperator(operator.address, totalAmount, '0x');
               }
 
               await transferBatchFailScenario(txParams, operator, {
@@ -1750,7 +1937,11 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         // mint some initial tokens
         await context.lsp7.mint(context.accounts.owner.address, 100, true, '0x');
 
-        await context.lsp7.authorizeOperator(context.accounts.operator.address, operatorAllowance);
+        await context.lsp7.authorizeOperator(
+          context.accounts.operator.address,
+          operatorAllowance,
+          '0x',
+        );
       });
 
       describe('when burning all its allowance', () => {
@@ -1997,6 +2188,10 @@ export const shouldInitializeLikeLSP7 = (
 
     it('should have registered the LSP7 interface', async () => {
       expect(await context.lsp7.supportsInterface(INTERFACE_IDS.LSP7DigitalAsset));
+    });
+
+    it('should have registered the LSP17Extendable interface', async () => {
+      expect(await context.lsp7.supportsInterface(INTERFACE_IDS.LSP17Extendable));
     });
 
     it('should have set expected entries with ERC725Y.setData', async () => {

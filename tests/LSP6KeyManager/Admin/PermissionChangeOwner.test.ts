@@ -4,7 +4,7 @@ import { BigNumber } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 // constants
-import { ERC725YDataKeys, PERMISSIONS, OPERATION_TYPES, LSP6_VERSION } from '../../../constants';
+import { ERC725YDataKeys, PERMISSIONS, OPERATION_TYPES, LSP25_VERSION } from '../../../constants';
 
 import { LSP6KeyManager, LSP6KeyManager__factory } from '../../../types';
 
@@ -355,7 +355,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         const encodedMessage = ethers.utils.solidityPack(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
-          [LSP6_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
+          [LSP25_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
         );
 
         const eip191Signer = new EIP191Signer();

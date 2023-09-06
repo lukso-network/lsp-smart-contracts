@@ -11,12 +11,20 @@ import {
 } from "../LSP7DigitalAssetInitAbstract.sol";
 
 /**
- * @dev LSP7 extension, mintable.
+ * @dev LSP7DigitalAsset deployable preset contract (inheritable proxy version) with a public {mint} function callable only by the contract {owner}.
  */
 abstract contract LSP7MintableInitAbstract is
     LSP7DigitalAssetInitAbstract,
     ILSP7Mintable
 {
+    /**
+     * @notice Initialize a `LSP7MintableInitAbstract` token contract with: token name = `name_`, token symbol = `symbol_`, and
+     * address `newOwner_` as the token contract owner.
+     *
+     * @param name_ The name of the token.
+     * @param symbol_ The symbol of the token.
+     * @param newOwner_ The owner of the token contract.
+     */
     function _initialize(
         string memory name_,
         string memory symbol_,
@@ -32,7 +40,7 @@ abstract contract LSP7MintableInitAbstract is
     }
 
     /**
-     * @inheritdoc ILSP7Mintable
+     * @dev Public {_mint} function only callable by the {owner}.
      */
     function mint(
         address to,

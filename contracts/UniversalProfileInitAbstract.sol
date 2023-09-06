@@ -10,7 +10,7 @@ import {
 import {
     _LSP3_SUPPORTED_STANDARDS_KEY,
     _LSP3_SUPPORTED_STANDARDS_VALUE
-} from "./LSP3UniversalProfile/LSP3Constants.sol";
+} from "./LSP3ProfileMetadata/LSP3Constants.sol";
 
 /**
  * @title Inheritable Proxy implementation of a LUKSO's Universal Profile based on LSP3
@@ -21,8 +21,15 @@ abstract contract UniversalProfileInitAbstract is
     LSP0ERC725AccountInitAbstract
 {
     /**
-     * @inheritdoc LSP0ERC725AccountInitAbstract
-     * @dev Set the `SupportedStandards:LSP3UniversalProfile` data key in the ERC725Y data key/value store.
+     * @dev Set `initialOwner` as the contract owner and the `SupportedStandards:LSP3UniversalProfile` data key in the ERC725Y data key/value store.
+     *
+     * @param initialOwner The owner of the contract.
+     *
+     * @custom:warning ERC725X & ERC725Y parent contracts are not initialised as they don't have non-zero initial state. If you decide to add non-zero initial state to any of those contracts, you must initialize them here.
+     *
+     * @custom:events
+     * - {ValueReceived} event when funding the contract on deployment.
+     * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
      */
     function _initialize(
         address initialOwner

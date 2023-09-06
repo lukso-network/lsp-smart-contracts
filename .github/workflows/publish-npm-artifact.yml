@@ -23,7 +23,8 @@ jobs:
         run: |
           npm ci
 
-      # This will also generate the Typechain types used by the Chai tests
+      # This will also generate the auto-generated constants for methods, errors and events,
+      # including extracting their devdocs and userdocs
       - name: Build and Test
         run: |
           npx hardhat compile

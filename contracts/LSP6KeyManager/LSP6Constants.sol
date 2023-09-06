@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.4;
 
-uint256 constant LSP6_VERSION = 6;
-
 // --- ERC165 interface ids
-bytes4 constant _INTERFACEID_LSP6 = 0x38bb3cdb;
+bytes4 constant _INTERFACEID_LSP6 = 0x66918867;
 
 // --- ERC725Y Data Keys
 

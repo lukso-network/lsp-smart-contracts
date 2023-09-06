@@ -338,32 +338,66 @@ contract LSP6UtilsTests is Test {
     }
 
     function testCombinePermissions(
-        uint64 firstPermission,
-        uint64 secondPermission,
-        uint64 thirdPermission,
-        uint64 fourthPermission
+        bytes32 firstPermission,
+        bytes32 secondPermission,
+        bytes32 thirdPermission,
+        bytes32 fourthPermission
     ) public pure {
-        uint256 totalPermissions = uint256(firstPermission) +
-            uint256(secondPermission) +
-            uint256(thirdPermission) +
-            uint256(fourthPermission);
-        bytes32 totalPermissionsBytes32 = bytes32(totalPermissions);
+        bytes32 combinedPermissions = firstPermission |
+            secondPermission |
+            thirdPermission |
+            fourthPermission;
 
-        bytes32[] memory combinePermissions = new bytes32[](4);
-        combinePermissions[0] = bytes32(uint256(firstPermission));
-        combinePermissions[1] = bytes32(uint256(secondPermission));
-        combinePermissions[2] = bytes32(uint256(thirdPermission));
-        combinePermissions[3] = bytes32(uint256(fourthPermission));
+        bytes32[] memory permissionsList = new bytes32[](4);
+        permissionsList[0] = firstPermission;
+        permissionsList[1] = secondPermission;
+        permissionsList[2] = thirdPermission;
+        permissionsList[3] = fourthPermission;
 
         assert(
-            totalPermissionsBytes32 ==
-                LSP6Utils.combinePermissions(combinePermissions)
+            combinedPermissions == LSP6Utils.combinePermissions(permissionsList)
         );
+    }
+
+    function testCombinePermissionsWithSamePermissionListedTwice() public pure {
+        bytes32[] memory permissionsList = new bytes32[](2);
+
+        permissionsList[0] = _PERMISSION_STATICCALL;
+        permissionsList[1] = _PERMISSION_STATICCALL;
+
+        // CHECK that if the same permission is mentioned twice in the array param, it results
+        // in the same permission and not something else
+        assert(
+            LSP6Utils.combinePermissions(permissionsList) ==
+                _PERMISSION_STATICCALL
+        );
+    }
+
+    function testCombinePermissionsWithMultiplePermissionListedMultipleTimes()
+        public
+        pure
+    {
+        bytes32[] memory permissionsList = new bytes32[](7);
+
+        permissionsList[0] = _PERMISSION_STATICCALL;
+        permissionsList[1] = _PERMISSION_STATICCALL;
+        permissionsList[2] = _PERMISSION_TRANSFERVALUE;
+        permissionsList[3] = _PERMISSION_TRANSFERVALUE;
+        permissionsList[4] = _PERMISSION_TRANSFERVALUE;
+        permissionsList[5] = _PERMISSION_SETDATA;
+        permissionsList[6] = _PERMISSION_SIGN;
+
+        bytes32 expectedResult = _PERMISSION_STATICCALL |
+            _PERMISSION_TRANSFERVALUE |
+            _PERMISSION_SETDATA |
+            _PERMISSION_SIGN;
+
+        assert(LSP6Utils.combinePermissions(permissionsList) == expectedResult);
     }
 
     function testHasPermissionShouldReturnTrueToAllRegularPermission(
         uint256 randomNumber
-    ) public view {
+    ) public pure {
         // number between 1 and 17 (number of permissions with non regulars)
         uint8 numberOfPermissions = uint8((randomNumber % 18) + 1);
 
