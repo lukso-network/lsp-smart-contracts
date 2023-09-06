@@ -8,17 +8,17 @@ pragma solidity ^0.8.4;
 error InvalidValueSum();
 
 /**
- * @dev Reverts when the deployment & intialisation of the contract has failed.
- * @notice Failed to deploy & initialise the Primary Contract Proxy. Error: `errorData`.
+ * @dev Reverts when the deployment & intialization of the contract has failed.
+ * @notice Failed to deploy & initialize the Primary Contract Proxy. Error: `errorData`.
  *
- * @param errorData Potentially information about why the deployment & intialisation have failed.
+ * @param errorData Potentially information about why the deployment & intialization have failed.
  */
 error PrimaryContractProxyInitFailureError(bytes errorData);
 
 /**
- * @dev Reverts when the deployment & intialisation of the secondary contract has failed.
- * @notice Failed to deploy & initialise the Secondary Contract Proxy. Error: `errorData`.
+ * @dev Reverts when the deployment & intialization of the secondary contract has failed.
+ * @notice Failed to deploy & initialize the Secondary Contract Proxy. Error: `errorData`.
  *
- * @param errorData Potentially information about why the deployment & intialisation have failed.
+ * @param errorData Potentially information about why the deployment & intialization have failed.
  */
 error SecondaryContractProxyInitFailureError(bytes errorData);
