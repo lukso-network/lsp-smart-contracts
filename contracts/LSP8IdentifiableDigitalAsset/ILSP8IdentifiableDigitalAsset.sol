@@ -42,7 +42,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
         address indexed operator,
         address indexed tokenOwner,
         bytes32 indexed tokenId,
-        bytes operatorData
+        bytes operatorNotificationData
     );
 
     /**
@@ -55,7 +55,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
         address indexed operator,
         address indexed tokenOwner,
         bytes32 indexed tokenId,
-        bytes operatorData
+        bytes operatorNotificationData
     );
 
     // --- Token queries
@@ -103,7 +103,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * @param operator The address to authorize as an operator.
      * @param tokenId The token ID operator has access to.
-     * @param operatorData The data to notify the operator about via LSP1.
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
      * - `tokenId` must exist.
@@ -116,7 +116,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     function authorizeOperator(
         address operator,
         bytes32 tokenId,
-        bytes memory operatorData
+        bytes memory operatorNotificationData
     ) external;
 
     /**
@@ -125,7 +125,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * @param operator The address to revoke as an operator.
      * @param tokenId The tokenId `operator` is revoked from operating on.
-     * @param operatorData The data to notify the operator about via LSP1.
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
      * - `tokenId` must exist.
@@ -138,7 +138,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     function revokeOperator(
         address operator,
         bytes32 tokenId,
-        bytes memory operatorData
+        bytes memory operatorNotificationData
     ) external;
 
     /**

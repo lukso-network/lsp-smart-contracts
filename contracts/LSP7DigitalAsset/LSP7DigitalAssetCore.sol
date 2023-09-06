@@ -99,11 +99,15 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     function authorizeOperator(
         address operator,
         uint256 amount,
-        bytes memory operatorData
+        bytes memory operatorNotificationData
     ) public virtual {
-        _updateOperator(msg.sender, operator, amount, operatorData);
+        _updateOperator(msg.sender, operator, amount, operatorNotificationData);
 
-        bytes memory lsp1Data = abi.encode(msg.sender, amount, operatorData);
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            amount,
+            operatorNotificationData
+        );
         _notifyTokenOperator(operator, lsp1Data);
     }
 
@@ -112,11 +116,15 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      */
     function revokeOperator(
         address operator,
-        bytes memory operatorData
+        bytes memory operatorNotificationData
     ) public virtual {
-        _updateOperator(msg.sender, operator, 0, operatorData);
+        _updateOperator(msg.sender, operator, 0, operatorNotificationData);
 
-        bytes memory lsp1Data = abi.encode(msg.sender, 0, operatorData);
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            0,
+            operatorNotificationData
+        );
         _notifyTokenOperator(operator, lsp1Data);
     }
 
@@ -234,16 +242,21 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     function increaseAllowance(
         address operator,
         uint256 addedAmount,
-        bytes memory operatorData
+        bytes memory operatorNotificationData
     ) public virtual {
         uint256 newAllowance = authorizedAmountFor(operator, msg.sender) +
             addedAmount;
-        _updateOperator(msg.sender, operator, newAllowance, operatorData);
+        _updateOperator(
+            msg.sender,
+            operator,
+            newAllowance,
+            operatorNotificationData
+        );
 
         bytes memory lsp1Data = abi.encode(
             msg.sender,
             newAllowance,
-            operatorData
+            operatorNotificationData
         );
         _notifyTokenOperator(operator, lsp1Data);
     }
@@ -274,7 +287,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     function decreaseAllowance(
         address operator,
         uint256 substractedAmount,
-        bytes memory operatorData
+        bytes memory operatorNotificationData
     ) public virtual {
         uint256 currentAllowance = authorizedAmountFor(operator, msg.sender);
         if (currentAllowance < substractedAmount) {
@@ -284,13 +297,18 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         uint256 newAllowance;
         unchecked {
             newAllowance = currentAllowance - substractedAmount;
-            _updateOperator(msg.sender, operator, newAllowance, operatorData);
+            _updateOperator(
+                msg.sender,
+                operator,
+                newAllowance,
+                operatorNotificationData
+            );
         }
 
         bytes memory lsp1Data = abi.encode(
             msg.sender,
             newAllowance,
-            operatorData
+            operatorNotificationData
         );
         _notifyTokenOperator(operator, lsp1Data);
     }
@@ -312,7 +330,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address tokenOwner,
         address operator,
         uint256 amount,
-        bytes memory operatorData
+        bytes memory operatorNotificationData
     ) internal virtual {
         if (operator == address(0)) {
             revert LSP7CannotUseAddressZeroAsOperator();
@@ -326,10 +344,19 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         if (amount != 0) {
             _operators[tokenOwner].add(operator);
-            emit AuthorizedOperator(operator, tokenOwner, amount, operatorData);
+            emit AuthorizedOperator(
+                operator,
+                tokenOwner,
+                amount,
+                operatorNotificationData
+            );
         } else {
             _operators[tokenOwner].remove(operator);
-            emit RevokedOperator(operator, tokenOwner, operatorData);
+            emit RevokedOperator(
+                operator,
+                tokenOwner,
+                operatorNotificationData
+            );
         }
     }
 

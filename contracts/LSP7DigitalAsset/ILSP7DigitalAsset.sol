@@ -42,7 +42,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
         address indexed operator,
         address indexed tokenOwner,
         uint256 indexed amount,
-        bytes operatorData
+        bytes operatorNotificationData
     );
 
     /**
@@ -53,7 +53,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
     event RevokedOperator(
         address indexed operator,
         address indexed tokenOwner,
-        bytes operatorData
+        bytes operatorNotificationData
     );
 
     // --- Token queries
@@ -102,7 +102,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      *
      * @param operator The address to authorize as an operator.
      * @param amount The allowance amount of tokens operator has access to.
-     * @param operatorData The data to notify the operator about via LSP1.
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
      * - `operator` cannot be the zero address.
@@ -113,7 +113,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
     function authorizeOperator(
         address operator,
         uint256 amount,
-        bytes memory operatorData
+        bytes memory operatorNotificationData
     ) external;
 
     /**
@@ -121,7 +121,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * on behalf of the token owner (the caller of the function `msg.sender`). See also {authorizedAmountFor}.
      *
      * @param operator The address to revoke as an operator.
-     * @param operatorData The data to notify the operator about via LSP1.
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
      * - `operator` cannot be calling address.
@@ -131,7 +131,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      */
     function revokeOperator(
         address operator,
-        bytes memory operatorData
+        bytes memory operatorNotificationData
     ) external;
 
     /**

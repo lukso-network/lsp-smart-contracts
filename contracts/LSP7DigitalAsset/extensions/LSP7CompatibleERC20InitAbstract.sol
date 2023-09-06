@@ -117,9 +117,14 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         address tokenOwner,
         address operator,
         uint256 amount,
-        bytes memory operatorData
+        bytes memory operatorNotificationData
     ) internal virtual override {
-        super._updateOperator(tokenOwner, operator, amount, operatorData);
+        super._updateOperator(
+            tokenOwner,
+            operator,
+            amount,
+            operatorNotificationData
+        );
         emit Approval(tokenOwner, operator, amount);
     }
 

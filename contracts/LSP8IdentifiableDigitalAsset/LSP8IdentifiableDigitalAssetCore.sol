@@ -106,7 +106,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function authorizeOperator(
         address operator,
         bytes32 tokenId,
-        bytes memory operatorData
+        bytes memory operatorNotificationData
     ) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
 
@@ -125,9 +125,18 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool isAdded = _operators[tokenId].add(operator);
         if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
 
-        emit AuthorizedOperator(operator, tokenOwner, tokenId, operatorData);
+        emit AuthorizedOperator(
+            operator,
+            tokenOwner,
+            tokenId,
+            operatorNotificationData
+        );
 
-        bytes memory lsp1Data = abi.encode(msg.sender, tokenId, operatorData);
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            tokenId,
+            operatorNotificationData
+        );
         _notifyTokenOperator(operator, lsp1Data);
     }
 
@@ -137,7 +146,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function revokeOperator(
         address operator,
         bytes32 tokenId,
-        bytes memory operatorData
+        bytes memory operatorNotificationData
     ) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
 
@@ -153,9 +162,18 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8TokenOwnerCannotBeOperator();
         }
 
-        _revokeOperator(operator, tokenOwner, tokenId, operatorData);
+        _revokeOperator(
+            operator,
+            tokenOwner,
+            tokenId,
+            operatorNotificationData
+        );
 
-        bytes memory lsp1Data = abi.encode(msg.sender, tokenId, operatorData);
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            tokenId,
+            operatorNotificationData
+        );
         _notifyTokenOperator(operator, lsp1Data);
     }
 
@@ -258,11 +276,16 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address operator,
         address tokenOwner,
         bytes32 tokenId,
-        bytes memory operatorData
+        bytes memory operatorNotificationData
     ) internal virtual {
         bool isRemoved = _operators[tokenId].remove(operator);
         if (!isRemoved) revert LSP8NonExistingOperator(operator, tokenId);
-        emit RevokedOperator(operator, tokenOwner, tokenId, operatorData);
+        emit RevokedOperator(
+            operator,
+            tokenOwner,
+            tokenId,
+            operatorNotificationData
+        );
     }
 
     /**
