@@ -221,7 +221,9 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               const tokenOwner = context.accounts.owner.address;
               const tokenId = mintedTokenId;
 
-              const tx = await context.lsp8CompatibleERC721.approve(operator, tokenId);
+              const tx = await context.lsp8CompatibleERC721.approve(operator, tokenId, {
+                gasLimit: 2000000,
+              });
 
               await expect(tx)
                 .to.emit(context.lsp8CompatibleERC721, 'AuthorizedOperator')

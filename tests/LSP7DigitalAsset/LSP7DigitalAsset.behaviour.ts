@@ -279,7 +279,9 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           const tokenOwner = context.accounts.owner.address;
           const amount = context.initialSupply;
 
-          const tx = await context.lsp7.authorizeOperator(operator, amount, '0xaabbccdd');
+          const tx = await context.lsp7.authorizeOperator(operator, amount, '0xaabbccdd', {
+            gasLimit: 2000000,
+          });
 
           await expect(tx)
             .to.emit(context.lsp7, 'AuthorizedOperator')
@@ -675,7 +677,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         const operator = tokenReceiverWithLSP1.address;
         const tokenOwner = context.accounts.owner.address;
 
-        const tx = await context.lsp7.revokeOperator(operator, '0xaabbccdd');
+        const tx = await context.lsp7.revokeOperator(operator, '0xaabbccdd', { gasLimit: 2000000 });
 
         await expect(tx)
           .to.emit(context.lsp7, 'RevokedOperator')

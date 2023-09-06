@@ -294,7 +294,9 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
             const tokenOwner = context.accounts.owner.address;
             const tokenId = newMintedTokenId;
 
-            const tx = await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
+            const tx = await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd', {
+              gasLimit: 2000000,
+            });
 
             await expect(tx)
               .to.emit(context.lsp8, 'AuthorizedOperator')

@@ -104,7 +104,9 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           const tokenOwner = context.accounts.owner.address;
           const amount = 1;
 
-          const tx = await context.lsp7CompatibleERC20.approve(operator, amount);
+          const tx = await context.lsp7CompatibleERC20.approve(operator, amount, {
+            gasLimit: 2000000,
+          });
 
           await expect(tx)
             .to.emit(context.lsp7CompatibleERC20, 'AuthorizedOperator')
@@ -218,7 +220,9 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             const operator = tokenReceiverWithLSP1.address;
             const tokenOwner = context.accounts.owner.address;
 
-            const tx = await context.lsp7CompatibleERC20.approve(operator, 0);
+            const tx = await context.lsp7CompatibleERC20.approve(operator, 0, {
+              gasLimit: 2000000,
+            });
 
             await expect(tx)
               .to.emit(context.lsp7CompatibleERC20, 'RevokedOperator')
