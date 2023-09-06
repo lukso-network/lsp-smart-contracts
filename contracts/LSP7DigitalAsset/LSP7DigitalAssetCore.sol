@@ -557,6 +557,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
                 _INTERFACEID_LSP1
             )
         ) {
+            // solhint-disable-next-line no-unused-vars
             (bool sucess, bytes memory returnData) = operator.call(
                 abi.encodeWithSelector(
                     ILSP1UniversalReceiver.universalReceiver.selector,

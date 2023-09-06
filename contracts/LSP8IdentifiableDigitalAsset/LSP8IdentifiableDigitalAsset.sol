@@ -61,6 +61,7 @@ abstract contract LSP8IdentifiableDigitalAsset is
 
     // fallback function
 
+    // solhint-disable no-complex-fallback
     /**
      * @notice The `fallback` function was called with the following amount of native tokens: `msg.value`; and the following calldata: `callData`.
      *
