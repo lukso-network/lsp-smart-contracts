@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.11.0-rc.1...v0.11.0) (2023-09-06)
+
+### ⚠ BREAKING CHANGES
+
+- Include LSP20 in interfaceId calculation ([#668](https://github.com/lukso-network/lsp-smart-contracts/pull/668)), from: `0x3e89ad98` to `0x24871b3d`
+
+- Return instead of revert when the `LSP1UniversalReceiverDelegateUP` is not able to register LSP5-LSP10 data keys. ([#672](https://github.com/lukso-network/lsp-smart-contracts/pull/672))
+
+- Change event name in LSP6 from `VerifiedCall` to `PermissionsVerified`. ([#673](https://github.com/lukso-network/lsp-smart-contracts/pull/673))
+
+- Rename LSP23 to `LSP23LinkedContractsFactory`. ([#675](https://github.com/lukso-network/lsp-smart-contracts/pull/675))
+
+- Change LSP6 interfaceId from `0x38bb3cdb` to `0x66918867`. ([#696](https://github.com/lukso-network/lsp-smart-contracts/pull/696))
+
+- Change LSP7 interfaceId from `0xda1f85e4` to `0x05519512`. ([#700](https://github.com/lukso-network/lsp-smart-contracts/pull/700))
+
+- Change LSP8 interfaceId from `0x622e7a01` to `0x1ae9ba1f`. ([#700](https://github.com/lukso-network/lsp-smart-contracts/pull/700))
+
+- Remove `LSP0Utils.sol`. ([#683](https://github.com/lukso-network/lsp-smart-contracts/pull/683))
+
+- Change token LSP1 notification data format from `abi.encodepacked` to `abi.encode`. ([#699](https://github.com/lukso-network/lsp-smart-contracts/pull/699))
+
+- Notify Operator via LSP1 in `authorizeOperator` in LSP7 and LSP8. ([#700](https://github.com/lukso-network/lsp-smart-contracts/pull/700))
+
+### Features
+
+- Add LSP25ExecuteRelayCall as its seperate standard. ([#678](https://github.com/lukso-network/lsp-smart-contracts/pull/678))
+
+### Bug Fixes
+
+- Refactor `_fallbackLSP17Extendable` function to enable to run code after it is called + prevent potential solc bug "storage write removal". ([#674](https://github.com/lukso-network/lsp-smart-contracts/pull/674))
+
+- Update lsp8 compatible approve() logic to allow operators themselves to authorize operators. ([#681](https://github.com/lukso-network/lsp-smart-contracts/pull/681))
+
+### Build
+
+- upgrade `@erc725/smart-contracts` version to 5.2.0 ([#696](https://github.com/lukso-network/lsp-smart-contracts/pull/696))
+
 ## [0.11.0-rc.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.1...v0.11.0-rc.1) (2023-08-08)
 
 ### ⚠ BREAKING CHANGES
