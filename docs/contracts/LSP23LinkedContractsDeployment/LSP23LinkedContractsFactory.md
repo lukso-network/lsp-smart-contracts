@@ -337,15 +337,15 @@ Reverts when the `msg.value` sent is not equal to the sum of value used for the 
 error PrimaryContractProxyInitFailureError(bytes errorData);
 ```
 
-_Failed to deploy & initialise the Primary Contract Proxy. Error: `errorData`._
+_Failed to deploy & initialize the Primary Contract Proxy. Error: `errorData`._
 
-Reverts when the deployment & intialisation of the contract has failed.
+Reverts when the deployment & intialization of the contract has failed.
 
 #### Parameters
 
 | Name        |  Type   | Description                                                                   |
 | ----------- | :-----: | ----------------------------------------------------------------------------- |
-| `errorData` | `bytes` | Potentially information about why the deployment & intialisation have failed. |
+| `errorData` | `bytes` | Potentially information about why the deployment & intialization have failed. |
 
 <br/>
 
@@ -364,14 +364,14 @@ Reverts when the deployment & intialisation of the contract has failed.
 error SecondaryContractProxyInitFailureError(bytes errorData);
 ```
 
-_Failed to deploy & initialise the Secondary Contract Proxy. Error: `errorData`._
+_Failed to deploy & initialize the Secondary Contract Proxy. Error: `errorData`._
 
-Reverts when the deployment & intialisation of the secondary contract has failed.
+Reverts when the deployment & intialization of the secondary contract has failed.
 
 #### Parameters
 
 | Name        |  Type   | Description                                                                   |
 | ----------- | :-----: | ----------------------------------------------------------------------------- |
-| `errorData` | `bytes` | Potentially information about why the deployment & intialisation have failed. |
+| `errorData` | `bytes` | Potentially information about why the deployment & intialization have failed. |
 
 <br/>
