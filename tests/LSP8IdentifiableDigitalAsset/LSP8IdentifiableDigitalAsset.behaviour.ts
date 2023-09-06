@@ -12,6 +12,10 @@ import {
   TokenReceiverWithLSP1__factory,
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
+  UniversalReceiverDelegateRevert,
+  UniversalReceiverDelegateRevert__factory,
+  UniversalReceiverDelegateGasConsumer,
+  UniversalReceiverDelegateGasConsumer__factory,
 } from '../../types';
 
 // helpers
@@ -274,6 +278,71 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
             ).to.be.revertedWithCustomError(context.lsp8, 'LSP8CannotUseAddressZeroAsOperator');
           });
         });
+
+        describe('with sending data and notifying an LSP1 contract', () => {
+          let newMintedTokenId = tokenIdAsBytes32(18);
+          before(async () => {
+            await context.lsp8.mint(context.accounts.owner.address, newMintedTokenId, true, '0x');
+
+            expectedTotalSupply++;
+          });
+
+          it('should succeed and inform the operator', async () => {
+            let tokenReceiverWithLSP1: TokenReceiverWithLSP1;
+            tokenReceiverWithLSP1 = await new TokenReceiverWithLSP1__factory(
+              context.accounts.owner,
+            ).deploy();
+            const operator = tokenReceiverWithLSP1.address;
+            const tokenOwner = context.accounts.owner.address;
+            const tokenId = newMintedTokenId;
+
+            const tx = await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
+
+            await expect(tx)
+              .to.emit(context.lsp8, 'AuthorizedOperator')
+              .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
+
+            await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
+
+            expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.true;
+          });
+
+          it('should succeed and inform the operator even if the operator revert', async () => {
+            let operatorThatReverts: UniversalReceiverDelegateRevert;
+            operatorThatReverts = await new UniversalReceiverDelegateRevert__factory(
+              context.accounts.owner,
+            ).deploy();
+            const operator = operatorThatReverts.address;
+            const tokenOwner = context.accounts.owner.address;
+            const tokenId = newMintedTokenId;
+
+            const tx = await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
+
+            await expect(tx)
+              .to.emit(context.lsp8, 'AuthorizedOperator')
+              .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
+
+            expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.true;
+          });
+
+          it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+            let operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer;
+            operatorThatConsumeAllGas = await new UniversalReceiverDelegateGasConsumer__factory(
+              context.accounts.owner,
+            ).deploy();
+            const operator = operatorThatConsumeAllGas.address;
+            const tokenOwner = context.accounts.owner.address;
+            const tokenId = newMintedTokenId;
+
+            const tx = await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
+
+            await expect(tx)
+              .to.emit(context.lsp8, 'AuthorizedOperator')
+              .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
+
+            expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.true;
+          });
+        });
       });
     });
   });
@@ -353,6 +422,82 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           await expect(context.lsp8.revokeOperator(operator, tokenId, '0x'))
             .to.be.revertedWithCustomError(context.lsp8, 'LSP8NonExistingOperator')
             .withArgs(operator, tokenId);
+        });
+      });
+
+      describe('with sending data and notifying an LSP1 contract', () => {
+        let newMintedTokenId = tokenIdAsBytes32(16);
+        before(async () => {
+          await context.lsp8.mint(context.accounts.owner.address, newMintedTokenId, true, '0x');
+
+          expectedTotalSupply++;
+        });
+
+        it('should succeed and inform the operator', async () => {
+          let tokenReceiverWithLSP1: TokenReceiverWithLSP1;
+          tokenReceiverWithLSP1 = await new TokenReceiverWithLSP1__factory(
+            context.accounts.owner,
+          ).deploy();
+          const operator = tokenReceiverWithLSP1.address;
+          const tokenOwner = context.accounts.owner.address;
+          const tokenId = newMintedTokenId;
+
+          // pre-condition
+          await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
+
+          const tx = await context.lsp8.revokeOperator(operator, tokenId, '0xaabbccdd', {
+            gasLimit: 2000000,
+          });
+
+          await expect(tx)
+            .to.emit(context.lsp8, 'RevokedOperator')
+            .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
+
+          await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
+
+          expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.false;
+        });
+
+        it('should succeed and inform the operator even if the operator revert', async () => {
+          let operatorThatReverts: UniversalReceiverDelegateRevert;
+          operatorThatReverts = await new UniversalReceiverDelegateRevert__factory(
+            context.accounts.owner,
+          ).deploy();
+          const operator = operatorThatReverts.address;
+          const tokenOwner = context.accounts.owner.address;
+          const tokenId = newMintedTokenId;
+
+          // pre-condition
+          await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
+
+          const tx = await context.lsp8.revokeOperator(operator, tokenId, '0xaabbccdd');
+
+          await expect(tx)
+            .to.emit(context.lsp8, 'RevokedOperator')
+            .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
+
+          expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.false;
+        });
+
+        it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+          let operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer;
+          operatorThatConsumeAllGas = await new UniversalReceiverDelegateGasConsumer__factory(
+            context.accounts.owner,
+          ).deploy();
+          const operator = operatorThatConsumeAllGas.address;
+          const tokenOwner = context.accounts.owner.address;
+          const tokenId = newMintedTokenId;
+
+          // pre-condition
+          await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
+
+          const tx = await context.lsp8.revokeOperator(operator, tokenId, '0xaabbccdd');
+
+          await expect(tx)
+            .to.emit(context.lsp8, 'RevokedOperator')
+            .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
+
+          expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.false;
         });
       });
     });

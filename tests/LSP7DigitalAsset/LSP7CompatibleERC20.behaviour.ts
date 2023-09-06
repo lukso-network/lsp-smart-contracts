@@ -14,6 +14,10 @@ import {
   TokenReceiverWithLSP1__factory,
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
+  UniversalReceiverDelegateGasConsumer,
+  UniversalReceiverDelegateGasConsumer__factory,
+  UniversalReceiverDelegateRevert,
+  UniversalReceiverDelegateRevert__factory,
 } from '../../types';
 import { ERC725YDataKeys } from '../../constants';
 
@@ -91,6 +95,70 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
         const postAllowance = await context.lsp7CompatibleERC20.allowance(tokenOwner, operator);
         expect(postAllowance).to.equal(authorizedAmount);
       });
+
+      describe('approving an LSP1 contract', () => {
+        it('should succeed and inform the operator', async () => {
+          let tokenReceiverWithLSP1: TokenReceiverWithLSP1;
+          tokenReceiverWithLSP1 = await new TokenReceiverWithLSP1__factory(
+            context.accounts.owner,
+          ).deploy();
+          const operator = tokenReceiverWithLSP1.address;
+          const tokenOwner = context.accounts.owner.address;
+          const amount = 1;
+
+          const tx = await context.lsp7CompatibleERC20.approve(operator, amount);
+
+          await expect(tx)
+            .to.emit(context.lsp7CompatibleERC20, 'AuthorizedOperator')
+            .withArgs(operator, tokenOwner, amount, '0x');
+
+          await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
+
+          expect(
+            await context.lsp7CompatibleERC20.authorizedAmountFor(operator, tokenOwner),
+          ).to.equal(amount);
+        });
+
+        it('should succeed and inform the operator even if the operator revert', async () => {
+          let operatorThatReverts: UniversalReceiverDelegateRevert;
+          operatorThatReverts = await new UniversalReceiverDelegateRevert__factory(
+            context.accounts.owner,
+          ).deploy();
+          const operator = operatorThatReverts.address;
+          const tokenOwner = context.accounts.owner.address;
+          const amount = 1;
+
+          const tx = await context.lsp7CompatibleERC20.approve(operator, amount);
+
+          await expect(tx)
+            .to.emit(context.lsp7CompatibleERC20, 'AuthorizedOperator')
+            .withArgs(operator, tokenOwner, amount, '0x');
+
+          expect(
+            await context.lsp7CompatibleERC20.authorizedAmountFor(operator, tokenOwner),
+          ).to.equal(amount);
+        });
+
+        it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+          let operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer;
+          operatorThatConsumeAllGas = await new UniversalReceiverDelegateGasConsumer__factory(
+            context.accounts.owner,
+          ).deploy();
+          const operator = operatorThatConsumeAllGas.address;
+          const tokenOwner = context.accounts.owner.address;
+          const amount = 1;
+
+          const tx = await context.lsp7CompatibleERC20.approve(operator, amount);
+
+          await expect(tx)
+            .to.emit(context.lsp7CompatibleERC20, 'AuthorizedOperator')
+            .withArgs(operator, tokenOwner, amount, '0x');
+
+          expect(
+            await context.lsp7CompatibleERC20.authorizedAmountFor(operator, tokenOwner),
+          ).to.equal(amount);
+        });
+      });
     });
 
     describe('when the operator had an authorized amount', () => {
@@ -145,6 +213,67 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
           const postAllowance = await context.lsp7CompatibleERC20.allowance(tokenOwner, operator);
           expect(postAllowance).to.equal(authorizedAmount);
+        });
+
+        describe('changing the allowance of an LSP1 contract to zero', () => {
+          it('should succeed and inform the operator', async () => {
+            let tokenReceiverWithLSP1: TokenReceiverWithLSP1;
+            tokenReceiverWithLSP1 = await new TokenReceiverWithLSP1__factory(
+              context.accounts.owner,
+            ).deploy();
+            const operator = tokenReceiverWithLSP1.address;
+            const tokenOwner = context.accounts.owner.address;
+
+            const tx = await context.lsp7CompatibleERC20.approve(operator, 0);
+
+            await expect(tx)
+              .to.emit(context.lsp7CompatibleERC20, 'RevokedOperator')
+              .withArgs(operator, tokenOwner, '0x');
+
+            await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
+
+            expect(
+              await context.lsp7CompatibleERC20.authorizedAmountFor(operator, tokenOwner),
+            ).to.equal(ethers.constants.Zero);
+          });
+
+          it('should succeed and inform the operator even if the operator revert', async () => {
+            let operatorThatReverts: UniversalReceiverDelegateRevert;
+            operatorThatReverts = await new UniversalReceiverDelegateRevert__factory(
+              context.accounts.owner,
+            ).deploy();
+            const operator = operatorThatReverts.address;
+            const tokenOwner = context.accounts.owner.address;
+
+            const tx = await context.lsp7CompatibleERC20.approve(operator, 0);
+
+            await expect(tx)
+              .to.emit(context.lsp7CompatibleERC20, 'RevokedOperator')
+              .withArgs(operator, tokenOwner, '0x');
+
+            expect(
+              await context.lsp7CompatibleERC20.authorizedAmountFor(operator, tokenOwner),
+            ).to.equal(ethers.constants.Zero);
+          });
+
+          it('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+            let operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer;
+            operatorThatConsumeAllGas = await new UniversalReceiverDelegateGasConsumer__factory(
+              context.accounts.owner,
+            ).deploy();
+            const operator = operatorThatConsumeAllGas.address;
+            const tokenOwner = context.accounts.owner.address;
+
+            const tx = await context.lsp7CompatibleERC20.approve(operator, 0);
+
+            await expect(tx)
+              .to.emit(context.lsp7CompatibleERC20, 'RevokedOperator')
+              .withArgs(operator, tokenOwner, '0x');
+
+            expect(
+              await context.lsp7CompatibleERC20.authorizedAmountFor(operator, tokenOwner),
+            ).to.equal(ethers.constants.Zero);
+          });
         });
       });
     });
