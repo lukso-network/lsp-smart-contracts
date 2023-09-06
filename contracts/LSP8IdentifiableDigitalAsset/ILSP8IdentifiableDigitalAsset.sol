@@ -37,6 +37,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param operator The address authorized as an operator.
      * @param tokenOwner The owner of the `tokenId`.
      * @param tokenId The tokenId `operator` address has access on behalf of `tokenOwner`.
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
     event AuthorizedOperator(
         address indexed operator,
@@ -50,6 +51,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param operator The address revoked from the operator array ({getOperatorsOf}).
      * @param tokenOwner The owner of the `tokenId`.
      * @param tokenId The tokenId `operator` is revoked from operating on.
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
     event RevokedOperator(
         address indexed operator,

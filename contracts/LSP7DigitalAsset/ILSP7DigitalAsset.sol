@@ -37,6 +37,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param operator The address authorized as an operator
      * @param tokenOwner The token owner
      * @param amount The amount of tokens `operator` address has access to from `tokenOwner`
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
     event AuthorizedOperator(
         address indexed operator,
@@ -49,6 +50,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @dev Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its {`authorizedAmountFor(...)`} to `0`.
      * @param operator The address revoked from operating
      * @param tokenOwner The token owner
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
     event RevokedOperator(
         address indexed operator,
