@@ -527,8 +527,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 _INTERFACEID_LSP1
             )
         ) {
-            // solhint-disable-next-line no-unused-vars
-            (bool sucess, bytes memory returnData) = operator.call(
+            operator.call(
                 abi.encodeWithSelector(
                     ILSP1UniversalReceiver.universalReceiver.selector,
                     _TYPEID_LSP8_TOKENOPERATOR,
