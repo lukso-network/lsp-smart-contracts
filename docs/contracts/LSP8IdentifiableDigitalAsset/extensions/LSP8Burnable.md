@@ -21,21 +21,57 @@ LSP8 token extension that allows token holders to destroy both their own tokens 
 Public methods are accessible externally from users, allowing interaction with this function from dApps or other smart contracts.
 When marked as 'public', a method can be called both externally and internally, on the other hand, when marked as 'external', a method can only be called externally.
 
+### fallback
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#fallback)
+- Solidity implementation: [`LSP8Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol)
+
+:::
+
+```solidity
+fallback(bytes calldata callData) external payable returns (bytes memory);
+```
+
+_The `fallback` function was called with the following amount of native tokens: `msg.value`; and the following calldata: `callData`._
+
+Achieves the goal of [LSP-17-ContractExtension] standard by extending the contract to handle calls of functions that do not exist natively,
+forwarding the function call to the extension address mapped to the function being called.
+This function is executed when:
+
+- Sending data of length less than 4 bytes to the contract.
+
+- The first 4 bytes of the calldata do not match any publicly callable functions from the contract ABI.
+
+- Receiving native tokens
+
+1. If the data is equal or longer than 4 bytes, the [ERC-725Y] storage is queried with the following data key: [_LSP17_EXTENSION_PREFIX] + `bytes4(msg.sig)` (Check [LSP-2-ERC725YJSONSchema] for encoding the data key)
+
+- If there is no address stored under the following data key, revert with [`NoExtensionFoundForFunctionSelector(bytes4)`](#noextensionfoundforfunctionselector). The data key relative to `bytes4(0)` is an exception, where no reverts occurs if there is no extension address stored under. This exception is made to allow users to send random data (graffiti) to the account and to be able to react on it.
+
+- If there is an address, forward the `msg.data` to the extension using the CALL opcode, appending 52 bytes (20 bytes of `msg.sender` and 32 bytes of `msg.value`). Return what the calls returns, or revert if the call failed.
+
+2. If the data sent to this function is of length less than 4 bytes (not a function selector), revert.
+
+<br/>
+
 ### authorizeOperator
 
 :::note References
 
 - Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#authorizeoperator)
 - Solidity implementation: [`LSP8Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol)
-- Function signature: `authorizeOperator(address,bytes32)`
-- Function selector: `0xcf5182ba`
+- Function signature: `authorizeOperator(address,bytes32,bytes)`
+- Function selector: `0x86a10ddd`
 
 :::
 
 ```solidity
 function authorizeOperator(
   address operator,
-  bytes32 tokenId
+  bytes32 tokenId,
+  bytes operatorNotificationData
 ) external nonpayable;
 ```
 
@@ -43,10 +79,11 @@ Allow an `operator` address to transfer or burn a specific `tokenId` on behalf o
 
 #### Parameters
 
-| Name       |   Type    | Description                              |
-| ---------- | :-------: | ---------------------------------------- |
-| `operator` | `address` | The address to authorize as an operator. |
-| `tokenId`  | `bytes32` | The token ID operator has access to..    |
+| Name                       |   Type    | Description                                     |
+| -------------------------- | :-------: | ----------------------------------------------- |
+| `operator`                 | `address` | The address to authorize as an operator.        |
+| `tokenId`                  | `bytes32` | The token ID operator has access to.            |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1. |
 
 <br/>
 
@@ -293,23 +330,28 @@ Leaves the contract without owner. It will not be possible to call `onlyOwner` f
 
 - Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#revokeoperator)
 - Solidity implementation: [`LSP8Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol)
-- Function signature: `revokeOperator(address,bytes32)`
-- Function selector: `0x0b0c6d82`
+- Function signature: `revokeOperator(address,bytes32,bytes)`
+- Function selector: `0xf1b97e04`
 
 :::
 
 ```solidity
-function revokeOperator(address operator, bytes32 tokenId) external nonpayable;
+function revokeOperator(
+  address operator,
+  bytes32 tokenId,
+  bytes operatorNotificationData
+) external nonpayable;
 ```
 
 Remove access of `operator` for a given `tokenId`, disallowing it to transfer `tokenId` on behalf of its owner. See also [`isOperatorFor`](#isoperatorfor).
 
 #### Parameters
 
-| Name       |   Type    | Description                                          |
-| ---------- | :-------: | ---------------------------------------------------- |
-| `operator` | `address` | The address to revoke as an operator.                |
-| `tokenId`  | `bytes32` | The tokenId `operator` is revoked from operating on. |
+| Name                       |   Type    | Description                                          |
+| -------------------------- | :-------: | ---------------------------------------------------- |
+| `operator`                 | `address` | The address to revoke as an operator.                |
+| `tokenId`                  | `bytes32` | The tokenId `operator` is revoked from operating on. |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.      |
 
 <br/>
 
@@ -715,7 +757,8 @@ verifies if the `caller` is operator or owner for the `tokenId`
 function _revokeOperator(
   address operator,
   address tokenOwner,
-  bytes32 tokenId
+  bytes32 tokenId,
+  bytes operatorNotificationData
 ) internal nonpayable;
 ```
 
@@ -900,6 +943,28 @@ Hook that is called before any token transfer, including minting and burning.
 
 <br/>
 
+### \_notifyTokenOperator
+
+```solidity
+function _notifyTokenOperator(
+  address operator,
+  bytes lsp1Data
+) internal nonpayable;
+```
+
+Attempt to notify the operator `operator` about the `tokenId` tokens being authorized.
+This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP8_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
+If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+
+#### Parameters
+
+| Name       |   Type    | Description                                                                    |
+| ---------- | :-------: | ------------------------------------------------------------------------------ |
+| `operator` | `address` | The address to call the {universalReceiver} function on.                       |
+| `lsp1Data` |  `bytes`  | the data to be sent to the `operator` address in the `universalReceiver` call. |
+
+<br/>
+
 ### \_notifyTokenSender
 
 ```solidity
@@ -927,6 +992,57 @@ The receiver may revert when the token being sent is not wanted.
 
 <br/>
 
+### \_supportsInterfaceInERC165Extension
+
+```solidity
+function _supportsInterfaceInERC165Extension(
+  bytes4 interfaceId
+) internal view returns (bool);
+```
+
+Returns whether the interfaceId being checked is supported in the extension of the
+[`supportsInterface`](#supportsinterface) selector.
+To be used by extendable contracts wishing to extend the ERC165 interfaceIds originally
+supported by reading whether the interfaceId queried is supported in the `supportsInterface`
+extension if the extension is set, if not it returns false.
+
+<br/>
+
+### \_getExtension
+
+```solidity
+function _getExtension(bytes4 functionSelector) internal view returns (address);
+```
+
+Returns the extension address stored under the following data key:
+
+- [`_LSP17_EXTENSION_PREFIX`](#_lsp17_extension_prefix) + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
+
+- If no extension is stored, returns the address(0).
+
+<br/>
+
+### \_fallbackLSP17Extendable
+
+```solidity
+function _fallbackLSP17Extendable(
+  bytes callData
+) internal nonpayable returns (bytes);
+```
+
+Forwards the call with the received value to an extension mapped to a function selector.
+Calls [`_getExtension`](#_getextension) to get the address of the extension mapped to the function selector being
+called on the account. If there is no extension, the address(0) will be returned.
+Reverts if there is no extension for the function being called.
+If there is an extension for the function selector being called, it calls the extension with the
+CALL opcode, passing the [`msg.data`](#msg.data) appended with the 20 bytes of the [`msg.sender`](#msg.sender) and
+32 bytes of the [`msg.value`](#msg.value)
+Because the function uses assembly [`return()/revert()`](#return) to terminate the call, it cannot be
+called before other codes in fallback().
+Otherwise, the codes after \_fallbackLSP17Extendable() may never be reached.
+
+<br/>
+
 ## Events
 
 ### AuthorizedOperator
@@ -935,13 +1051,13 @@ The receiver may revert when the token being sent is not wanted.
 
 - Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#authorizedoperator)
 - Solidity implementation: [`LSP8Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol)
-- Event signature: `AuthorizedOperator(address,address,bytes32)`
-- Event topic hash: `0x34b797fc5a526f7bf1d2b5de25f6564fd85ae364e3ee939aee7c1ac27871a988`
+- Event signature: `AuthorizedOperator(address,address,bytes32,bytes)`
+- Event topic hash: `0x0052e433f2d4225671bc164dd1cdc9a76044356091f27ad234798bd0cbf08349`
 
 :::
 
 ```solidity
-event AuthorizedOperator(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId);
+event AuthorizedOperator(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bytes operatorNotificationData);
 ```
 
 Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
@@ -953,6 +1069,7 @@ Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
 | `operator` **`indexed`**   | `address` | The address authorized as an operator.                               |
 | `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                          |
 | `tokenId` **`indexed`**    | `bytes32` | The tokenId `operator` address has access on behalf of `tokenOwner`. |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                      |
 
 <br/>
 
@@ -1014,13 +1131,13 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 
 - Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#revokedoperator)
 - Solidity implementation: [`LSP8Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol)
-- Event signature: `RevokedOperator(address,address,bytes32)`
-- Event topic hash: `0x17d5389f6ab6adb2647dfa0aa365c323d37adacc30b33a65310b6158ce1373d5`
+- Event signature: `RevokedOperator(address,address,bytes32,bytes)`
+- Event topic hash: `0x501bc920d7f604417e315bcf29247652b2327fa1076b27b7f132bd8927cb15ea`
 
 :::
 
 ```solidity
-event RevokedOperator(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId);
+event RevokedOperator(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bytes operatorNotificationData);
 ```
 
 Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on its behalf.
@@ -1032,6 +1149,7 @@ Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on i
 | `operator` **`indexed`**   | `address` | The address revoked from the operator array ({getOperatorsOf}). |
 | `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                     |
 | `tokenId` **`indexed`**    | `bytes32` | The tokenId `operator` is revoked from operating on.            |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                 |
 
 <br/>
 
@@ -1121,6 +1239,56 @@ error ERC725Y_MsgValueDisallowed();
 ```
 
 Reverts when sending value to the [`setData`](#setdata) or [`setDataBatch`](#setdatabatch) function.
+
+<br/>
+
+### InvalidExtensionAddress
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#invalidextensionaddress)
+- Solidity implementation: [`LSP8Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol)
+- Error signature: `InvalidExtensionAddress(bytes)`
+- Error hash: `0x42bfe79f`
+
+:::
+
+```solidity
+error InvalidExtensionAddress(bytes storedData);
+```
+
+reverts when the bytes retrieved from the LSP17 data key is not a valid address (not 20 bytes)
+
+#### Parameters
+
+| Name         |  Type   | Description |
+| ------------ | :-----: | ----------- |
+| `storedData` | `bytes` | -           |
+
+<br/>
+
+### InvalidFunctionSelector
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#invalidfunctionselector)
+- Solidity implementation: [`LSP8Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol)
+- Error signature: `InvalidFunctionSelector(bytes)`
+- Error hash: `0xe5099ee3`
+
+:::
+
+```solidity
+error InvalidFunctionSelector(bytes data);
+```
+
+reverts when the contract is called with a function selector not valid (less than 4 bytes of data)
+
+#### Parameters
+
+| Name   |  Type   | Description |
+| ------ | :-----: | ----------- |
+| `data` | `bytes` | -           |
 
 <br/>
 
@@ -1436,5 +1604,30 @@ error LSP8TokenOwnerCannotBeOperator();
 ```
 
 reverts when trying to authorize or revoke the token's owner as an operator.
+
+<br/>
+
+### NoExtensionFoundForFunctionSelector
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#noextensionfoundforfunctionselector)
+- Solidity implementation: [`LSP8Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol)
+- Error signature: `NoExtensionFoundForFunctionSelector(bytes4)`
+- Error hash: `0xbb370b2b`
+
+:::
+
+```solidity
+error NoExtensionFoundForFunctionSelector(bytes4 functionSelector);
+```
+
+reverts when there is no extension for the function selector being called with
+
+#### Parameters
+
+| Name               |   Type   | Description |
+| ------------------ | :------: | ----------- |
+| `functionSelector` | `bytes4` | -           |
 
 <br/>
