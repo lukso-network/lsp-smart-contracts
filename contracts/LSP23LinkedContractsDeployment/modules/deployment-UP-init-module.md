@@ -7,11 +7,11 @@ You also need to make sure that the LSP23 Linked Contracts Factory is deployed o
 
 ## Standardized Address
 
-`0x00000055310029B01ac22A443C32Be1f6fe84475`
+`0x000000000066093407b6704B89793beFfD0D8F00`
 
 ## Standardized Salt
 
-`0xcd5d41be13150afe793b463be6fefccd77a0bf38eb41905ebddd97284987c724 `
+`0x12a6712f113536d8b01d99f72ce168c7e10901240d73e80eeb821d01aa4c2b1a`
 
 ## Standardized Bytecode
 
