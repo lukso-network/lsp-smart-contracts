@@ -30,10 +30,23 @@ jobs:
           npx hardhat compile
           npm run test
 
-      - name: Publish
+      - name: Prepare artifacts package
         run: |
           npm run build:js
           npm run package
-          npm publish --access public
+
+      - name: Minify the JSON artifacts
+        run: |
+          curl -OL https://github.com/tidwall/jj/releases/download/v1.9.2/jj-1.9.2-linux-amd64.tar.gz;
+          tar xvzf jj-1.9.2-linux-amd64.tar.gz;
+          rm jj-1.9.2-linux-amd64.tar.gz;
+          for FILE in ./artifacts/*.json;
+          do
+            ./jj-1.9.2-linux-amd64/jj -u < $FILE -o $FILE;
+          done
+          rm -r jj-1.9.2-linux-amd64
+
+      - name: Publish
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
