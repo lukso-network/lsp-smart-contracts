@@ -3,7 +3,7 @@
 Before the deployment of the `UniversalProfilePostDeploymentModule` on any network, people should make sure that the [Nick's Factory contract](https://github.com/Arachnid/deterministic-deployment-proxy/tree/master) is deployed on the same network.
 You also need to make sure that the LSP23 Linked Contracts Factory is deployed on the same network. Please refer to [LSP23 Linked Contracts Deployment Factory LIP](https://github.com/lukso-network/LIPs/LSPs/LSP-23-LinkedContractsFactory.md#lsp23linkedcontractsfactory-deployment) in order to deploy it.
 
-# Deployment of the Universal Profile Init Post Deployment Module
+# Deployment of the Universal Profile Post Deployment Module
 
 ## Standardized Address
 
