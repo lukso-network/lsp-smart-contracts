@@ -19,6 +19,7 @@ import {
   LS4DigitalAssetMetadataTestContext,
   shouldBehaveLikeLSP4DigitalAssetMetadata,
 } from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour';
+import { LSP8_TOKEN_ID_TYPES } from '../../../constants';
 
 describe('LSP8IdentifiableDigitalAsset with constructor', () => {
   const buildTestContext = async (nftType: number): Promise<LSP8TestContext> => {
@@ -62,7 +63,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
       name: 'LSP8 - deployed with constructor',
       symbol: 'NFT',
       owner: accounts[0],
-      tokenIdType: 0,
+      tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
     };
     const contract = await new LSP8Tester__factory(accounts[0]).deploy(
       deployParams.name,

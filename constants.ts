@@ -374,6 +374,21 @@ export const LSP1_TYPE_IDS = {
     '0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
 };
 
+// LSP8
+// ----------
+
+/**
+ * @dev list of LSP8 Token ID types that can be used to create different types of NFTs.
+ * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidtype
+ */
+export const LSP8_TOKEN_ID_TYPES = {
+  NUMBER: 0,
+  STRING: 1,
+  UNIQUE_ID: 2,
+  HASH: 3,
+  ADDRESS: 4,
+};
+
 // LSP25
 // ----------
 

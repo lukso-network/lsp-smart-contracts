@@ -14,6 +14,7 @@ import {
 } from '../LSP8CompatibleERC721.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
+import { LSP8_TOKEN_ID_TYPES } from '../../../constants';
 
 describe('LSP8CompatibleERC721Init with proxy', () => {
   const buildTestContext = async (): Promise<LSP8CompatibleERC721TestContext> => {
@@ -31,7 +32,7 @@ describe('LSP8CompatibleERC721Init with proxy', () => {
       name: 'LSP8 - deployed with constructor',
       symbol: 'NFT',
       newOwner: accounts.owner.address,
-      tokenIdType: 0,
+      tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
       lsp4MetadataValue,
     };
 

@@ -25,3 +25,11 @@ bytes32 constant _TYPEID_LSP8_TOKENSRECIPIENT = 0x0b084a55ebf70fd3c06fd755269dac
 
 // keccak256('LSP8Tokens_OperatorNotification')
 bytes32 constant _TYPEID_LSP8_TOKENOPERATOR = 0x8a1c15a8799f71b547e08e2bcb2e85257e81b0a07eee2ce6712549eef1f00970;
+
+// --- Types of token IDs
+
+uint256 constant _LSP8_TOKENIDTYPE_NUMBER = 0;
+uint256 constant _LSP8_TOKENIDTYPE_STRING = 1;
+uint256 constant _LSP8_TOKENIDTYPE_UNIQUE_ID = 2;
+uint256 constant _LSP8_TOKENIDTYPE_HASH = 3;
+uint256 constant _LSP8_TOKENIDTYPE_ADDRESS = 4;

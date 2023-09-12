@@ -10,6 +10,7 @@ import {
 } from '../LSP8Mintable.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
+import { LSP8_TOKEN_ID_TYPES } from '../../../constants';
 
 describe('LSP8MintableInit with proxy', () => {
   const buildTestContext = async () => {
@@ -18,7 +19,7 @@ describe('LSP8MintableInit with proxy', () => {
       name: 'LSP8 Mintable - deployed with proxy',
       symbol: 'MNTBL',
       newOwner: accounts.owner.address,
-      tokenIdType: 0,
+      tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
     };
 
     const LSP8MintableInit: LSP8MintableInit = await new LSP8MintableInit__factory(
