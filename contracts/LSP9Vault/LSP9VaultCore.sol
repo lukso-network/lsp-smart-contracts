@@ -64,10 +64,6 @@ import {
 import "./LSP9Errors.sol";
 import "../LSP17ContractExtension/LSP17Errors.sol";
 
-import {
-    LSP14MustAcceptOwnershipInSeparateTransaction
-} from "../LSP14Ownable2Step/LSP14Errors.sol";
-
 /**
  * @title Core Implementation of LSP9Vault built on top of [ERC725], [LSP1UniversalReceiver]
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
