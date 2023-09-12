@@ -10,7 +10,12 @@ import {
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
 // constants
-import "./LSP4Constants.sol";
+import {
+    _LSP4_SUPPORTED_STANDARDS_KEY,
+    _LSP4_SUPPORTED_STANDARDS_VALUE,
+    _LSP4_TOKEN_NAME_KEY,
+    _LSP4_TOKEN_SYMBOL_KEY
+} from "./LSP4Constants.sol";
 
 // errors
 import {
