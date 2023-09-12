@@ -12,12 +12,10 @@ import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // libraries
-import {LSP1Utils} from "../LSP1Utils.sol";
-import {LSP2Utils} from "../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP5Utils} from "../../LSP5ReceivedAssets/LSP5Utils.sol";
 
 // constants
-import "../LSP1Constants.sol";
+import {_INTERFACEID_LSP1} from "../LSP1Constants.sol";
 import {
     _TYPEID_LSP7_TOKENSSENDER,
     _TYPEID_LSP7_TOKENSRECIPIENT,
@@ -28,10 +26,12 @@ import {
     _TYPEID_LSP8_TOKENSRECIPIENT,
     _INTERFACEID_LSP8
 } from "../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
-import "../../LSP9Vault/LSP9Constants.sol";
 
 // errors
-import "../LSP1Errors.sol";
+import {
+    CannotRegisterEOAsAsAssets,
+    NativeTokensNotAccepted
+} from "../LSP1Errors.sol";
 
 /**
  * @title Implementation of a UniversalReceiverDelegate for the [LSP9Vault]
