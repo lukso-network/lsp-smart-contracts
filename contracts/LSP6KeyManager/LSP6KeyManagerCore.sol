@@ -57,7 +57,12 @@ import {
     _PERMISSION_SIGN,
     _PERMISSION_REENTRANCY
 } from "./LSP6Constants.sol";
-import "../LSP20CallVerification/LSP20Constants.sol";
+import {
+    _INTERFACEID_LSP20_CALL_VERIFIER,
+    _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION,
+    _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION,
+    _LSP20_VERIFY_CALL_RESULT_MAGIC_VALUE
+} from "../LSP20CallVerification/LSP20Constants.sol";
 import {_INTERFACEID_LSP25} from "../LSP25ExecuteRelayCall/LSP25Constants.sol";
 
 /**
@@ -72,6 +77,7 @@ import {_INTERFACEID_LSP25} from "../LSP25ExecuteRelayCall/LSP25Constants.sol";
  */
 abstract contract LSP6KeyManagerCore is
     ERC165,
+    IERC1271,
     ILSP6,
     ILSP20,
     ILSP25,
