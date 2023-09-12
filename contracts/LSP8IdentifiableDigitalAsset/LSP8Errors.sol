@@ -73,11 +73,6 @@ error LSP8NotifyTokenReceiverIsEOA(address tokenReceiver);
 error LSP8TokenOwnerCannotBeOperator();
 
 /**
- * @dev Reverts when providing a value for tokenId type on deployment / initialization that is not between `0` and `4`.
- */
-error LSP8InvalidTokenIdType();
-
-/**
  * @dev Reverts when trying to edit the data key `LSP8TokenIdType` after the identifiable digital asset contract has been deployed.
  * The `LSP8TokenIdType` data key is located inside the ERC725Y Data key-value store of the identifiable digital asset contract.
  * It can be set only once inside the constructor/initializer when the identifiable digital asset contract is being deployed.

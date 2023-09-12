@@ -22,10 +22,7 @@ import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {_INTERFACEID_LSP8, _LSP8_TOKENID_TYPE_KEY} from "./LSP8Constants.sol";
 
 // errors
-import {
-    LSP8InvalidTokenIdType,
-    LSP8TokenIdTypeNotEditable
-} from "./LSP8Errors.sol";
+import {LSP8TokenIdTypeNotEditable} from "./LSP8Errors.sol";
 
 import {
     _LSP17_EXTENSION_PREFIX
@@ -57,9 +54,15 @@ abstract contract LSP8IdentifiableDigitalAsset is
 {
     /**
      * @notice Sets the token-Metadata
+     *
+     * @dev Deploy a `LSP8IdentifiableDigitalAsset` contract and set the tokenId type inside the ERC725Y storage of the contract.
+     *
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
      * @param newOwner_ The owner of the the token-Metadata
+     *
+     * @custom:warning Make sure the tokenId type provided on deployment is correct, as it can only be set once
+     * and cannot be changed in the ERC725Y storage after the contract has been deployed.
      */
     constructor(
         string memory name_,
@@ -67,10 +70,6 @@ abstract contract LSP8IdentifiableDigitalAsset is
         address newOwner_,
         uint256 tokenIdType
     ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {
-        if (tokenIdType > 4) {
-            revert LSP8InvalidTokenIdType();
-        }
-
         LSP4DigitalAssetMetadata._setData(
             _LSP8_TOKENID_TYPE_KEY,
             abi.encode(tokenIdType)

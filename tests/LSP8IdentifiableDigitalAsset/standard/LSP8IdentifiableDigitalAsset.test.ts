@@ -95,31 +95,6 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
       ).to.be.revertedWith('Ownable: new owner is the zero address');
     });
 
-    [{ tokenIdType: 6 }, { tokenIdType: 414 }, { tokenIdType: 1111111 }].forEach(
-      ({ tokenIdType }) => {
-        it(`should revert when deploying with value = ${tokenIdType} for the tokenId type`, async () => {
-          const accounts = await ethers.getSigners();
-
-          const deployParams = {
-            name: 'LSP8 - deployed with constructor',
-            symbol: 'NFT',
-            newOwner: accounts[0].address,
-          };
-
-          const lsp8ContractToDeploy = new LSP8Tester__factory(accounts[0]);
-
-          await expect(
-            lsp8ContractToDeploy.deploy(
-              deployParams.name,
-              deployParams.symbol,
-              accounts[0].address,
-              tokenIdType,
-            ),
-          ).to.be.revertedWithCustomError(lsp8ContractToDeploy, 'LSP8InvalidTokenIdType');
-        });
-      },
-    );
-
     describe('once the contract was deployed', () => {
       let context: LSP8TestContext;
 

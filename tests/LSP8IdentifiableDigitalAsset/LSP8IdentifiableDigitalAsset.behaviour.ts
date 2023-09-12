@@ -1846,6 +1846,16 @@ export const shouldInitializeLikeLSP8 = (
         .to.emit(context.lsp8, 'DataChanged')
         .withArgs(symbolKey, expectedSymbolValue);
       expect(await context.lsp8.getData(symbolKey)).to.equal(expectedSymbolValue);
+
+      const lsp8TokenIdTypeDataKey = ERC725YDataKeys.LSP8['LSP8TokenIdType'];
+      const expectedTokenIdDataValue = abiCoder.encode(
+        ['uint256'],
+        [context.deployParams.tokenIdType],
+      );
+      await expect(context.initializeTransaction)
+        .to.emit(context.lsp8, 'DataChanged')
+        .withArgs(lsp8TokenIdTypeDataKey, expectedTokenIdDataValue);
+      expect(await context.lsp8.getData(lsp8TokenIdTypeDataKey)).to.equal(expectedTokenIdDataValue);
     });
   });
 };

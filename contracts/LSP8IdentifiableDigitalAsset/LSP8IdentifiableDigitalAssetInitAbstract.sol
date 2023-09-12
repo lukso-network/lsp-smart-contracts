@@ -22,10 +22,7 @@ import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {_INTERFACEID_LSP8, _LSP8_TOKENID_TYPE_KEY} from "./LSP8Constants.sol";
 
 // errors
-import {
-    LSP8InvalidTokenIdType,
-    LSP8TokenIdTypeNotEditable
-} from "./LSP8Errors.sol";
+import {LSP8TokenIdTypeNotEditable} from "./LSP8Errors.sol";
 
 import {
     _LSP17_EXTENSION_PREFIX
@@ -61,10 +58,6 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         address newOwner_,
         uint256 tokenIdType
     ) internal virtual onlyInitializing {
-        if (tokenIdType > 4) {
-            revert LSP8InvalidTokenIdType();
-        }
-
         LSP4DigitalAssetMetadataInitAbstract._initialize(
             name_,
             symbol_,
