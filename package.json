@@ -108,7 +108,7 @@
     "solidity-bytes-utils": "0.8.0"
   },
   "devDependencies": {
-    "@b00ste/hardhat-dodoc": "^0.3.11",
+    "@b00ste/hardhat-dodoc": "^0.3.15",
     "@defi-wonderland/smock": "^2.3.4",
     "@erc725/erc725.js": "0.17.2",
     "@lukso/eip191-signer.js": "^0.2.2",
