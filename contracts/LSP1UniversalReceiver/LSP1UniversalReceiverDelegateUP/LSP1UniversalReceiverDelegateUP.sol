@@ -37,8 +37,8 @@ import {
 
 // errors
 import {
-    _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
-    _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
+    NativeTokensNotAccepted,
+    CannotRegisterEOAsAsAssets
 } from "../LSP1Errors.sol";
 
 /**
