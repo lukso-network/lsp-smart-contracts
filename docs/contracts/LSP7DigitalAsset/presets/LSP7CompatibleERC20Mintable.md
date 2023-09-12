@@ -34,7 +34,7 @@ When marked as 'public', a method can be called both externally and internally, 
 constructor(string name_, string symbol_, address newOwner_);
 ```
 
-_Deploying a `LSP7CompatibleERC20Mintable` token contract with: token name = `name_`, token symbol = `symbol*`, and address `newOwner*` as the token contract owner.\_
+_Deploying a `LSP7CompatibleERC20Mintable` token contract with: token name = `name_`, token symbol = `symbol_`, and address `newOwner_` as the token contract owner._
 
 #### Parameters
 
@@ -1224,15 +1224,15 @@ Otherwise, the codes after \_fallbackLSP17Extendable() may never be reached.
 event Approval(address indexed owner, address indexed spender, uint256 value);
 ```
 
-ERC721 `Approval` event emitted when `owner` enables `operator` for `tokenId`. To provide compatibility with indexing ERC721 events.
+Emitted when the allowance of a `spender` for an `owner` is set by a call to [`approve`](#approve). `value` is the new allowance.
 
 #### Parameters
 
-| Name                    |   Type    | Description                                |
-| ----------------------- | :-------: | ------------------------------------------ |
-| `owner` **`indexed`**   | `address` | The address of the owner of the `tokenId`. |
-| `spender` **`indexed`** | `address` | -                                          |
-| `value`                 | `uint256` | -                                          |
+| Name                    |   Type    | Description                                               |
+| ----------------------- | :-------: | --------------------------------------------------------- |
+| `owner` **`indexed`**   | `address` | The account giving approval                               |
+| `spender` **`indexed`** | `address` | The account receiving approval                            |
+| `value`                 | `uint256` | The amount of tokens `spender` has access to from `owner` |
 
 <br/>
 
@@ -1251,14 +1251,14 @@ ERC721 `Approval` event emitted when `owner` enables `operator` for `tokenId`. T
 event AuthorizedOperator(address indexed operator, address indexed tokenOwner, uint256 indexed amount, bytes operatorNotificationData);
 ```
 
-Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
+Emitted when `tokenOwner` enables `operator` for `amount` tokens.
 
 #### Parameters
 
 | Name                       |   Type    | Description                                                             |
 | -------------------------- | :-------: | ----------------------------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address authorized as an operator.                                  |
-| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                             |
+| `operator` **`indexed`**   | `address` | The address authorized as an operator                                   |
+| `tokenOwner` **`indexed`** | `address` | The token owner                                                         |
 | `amount` **`indexed`**     | `uint256` | The amount of tokens `operator` address has access to from `tokenOwner` |
 | `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                         |
 
@@ -1331,15 +1331,42 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 event RevokedOperator(address indexed operator, address indexed tokenOwner, bytes operatorNotificationData);
 ```
 
-Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on its behalf.
+Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`authorizedAmountFor(...)`](#`authorizedamountfor) to `0`.
 
 #### Parameters
 
-| Name                       |   Type    | Description                                                     |
-| -------------------------- | :-------: | --------------------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address revoked from the operator array ({getOperatorsOf}). |
-| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                     |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                 |
+| Name                       |   Type    | Description                                     |
+| -------------------------- | :-------: | ----------------------------------------------- |
+| `operator` **`indexed`**   | `address` | The address revoked from operating              |
+| `tokenOwner` **`indexed`** | `address` | The token owner                                 |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1. |
+
+<br/>
+
+### Transfer
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#transfer)
+- Solidity implementation: [`LSP7CompatibleERC20Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol)
+- Event signature: `Transfer(address,address,uint256)`
+- Event topic hash: `0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef`
+
+:::
+
+```solidity
+event Transfer(address indexed from, address indexed to, uint256 value);
+```
+
+Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.
+
+#### Parameters
+
+| Name                 |   Type    | Description                      |
+| -------------------- | :-------: | -------------------------------- |
+| `from` **`indexed`** | `address` | The sending address              |
+| `to` **`indexed`**   | `address` | The receiving address            |
+| `value`              | `uint256` | The amount of tokens transfered. |
 
 <br/>
 
@@ -1358,18 +1385,18 @@ Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on i
 event Transfer(address indexed operator, address indexed from, address indexed to, uint256 amount, bool allowNonLSP1Recipient, bytes data);
 ```
 
-Emitted when `tokenId` token is transferred from the `from` to the `to` address.
+Emitted when the `from` transferred successfully `amount` of tokens to `to`.
 
 #### Parameters
 
-| Name                     |   Type    | Description                                                                                                                        |
-| ------------------------ | :-------: | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `operator` **`indexed`** | `address` | The address of operator that sent the `tokenId`                                                                                    |
-| `from` **`indexed`**     | `address` | The previous owner of the `tokenId`                                                                                                |
-| `to` **`indexed`**       | `address` | The new owner of `tokenId`                                                                                                         |
-| `amount`                 | `uint256` | The amount of tokens transferred.                                                                                                  |
-| `allowNonLSP1Recipient`  |  `bool`   | If the token transfer enforces the `to` recipient address to be a contract that implements the LSP1 standard or not.               |
-| `data`                   |  `bytes`  | Any additional data the caller included by the caller during the transfer, and sent in the hooks to the `from` and `to` addresses. |
+| Name                     |   Type    | Description                                                                                                                  |
+| ------------------------ | :-------: | ---------------------------------------------------------------------------------------------------------------------------- |
+| `operator` **`indexed`** | `address` | The address of the operator that executed the transfer.                                                                      |
+| `from` **`indexed`**     | `address` | The address which tokens were sent from (balance decreased by `-amount`).                                                    |
+| `to` **`indexed`**       | `address` | The address that received the tokens (balance increased by `+amount`).                                                       |
+| `amount`                 | `uint256` | The amount of tokens transferred.                                                                                            |
+| `allowNonLSP1Recipient`  |  `bool`   | if the transferred enforced the `to` recipient address to be a contract that implements the LSP1 standard or not.            |
+| `data`                   |  `bytes`  | Any additional data included by the caller during the transfer, and sent in the LSP1 hooks to the `from` and `to` addresses. |
 
 <br/>
 

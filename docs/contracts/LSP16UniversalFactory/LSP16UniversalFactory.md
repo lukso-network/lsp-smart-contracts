@@ -342,7 +342,7 @@ Bubble the revert reason if present, revert with `ContractInitializationFailed` 
 event ContractCreated(address indexed contractCreated, bytes32 indexed providedSalt, bytes32 generatedSalt, bool indexed initialized, bytes initializeCalldata);
 ```
 
-Emitted when a new contract was created and deployed.
+Emitted whenever a contract is created
 
 #### Parameters
 
