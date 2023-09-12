@@ -702,7 +702,8 @@ mapping(bytes32 => bytes) _store
 function _setData(bytes32 dataKey, bytes dataValue) internal nonpayable;
 ```
 
-Save gas by emitting the [`DataChanged`](#datachanged) event with only the first 256 bytes of dataValue
+The ERC725Y data key `_LSP8_TOKENID_TYPE_KEY` cannot be changed
+once the identifiable digital asset contract has been deployed.
 
 <br/>
 
@@ -1323,7 +1324,7 @@ Reverts when trying to edit the data key `LSP4TokenSymbol` after the digital ass
 error LSP8CannotSendToAddressZero();
 ```
 
-reverts when trying to send token to the zero address.
+Reverts when trying to send token to the zero address.
 
 <br/>
 
@@ -1342,7 +1343,7 @@ reverts when trying to send token to the zero address.
 error LSP8CannotSendToSelf();
 ```
 
-reverts when specifying the same address for `from` and `to` in a token transfer.
+Reverts when specifying the same address for `from` and `to` in a token transfer.
 
 <br/>
 
@@ -1361,7 +1362,7 @@ reverts when specifying the same address for `from` and `to` in a token transfer
 error LSP8CannotUseAddressZeroAsOperator();
 ```
 
-reverts when trying to set the zero address as an operator.
+Reverts when trying to set the zero address as an operator.
 
 <br/>
 
@@ -1380,7 +1381,7 @@ reverts when trying to set the zero address as an operator.
 error LSP8InvalidTransferBatch();
 ```
 
-reverts when the parameters used for `transferBatch` have different lengths.
+Reverts when the parameters used for `transferBatch` have different lengths.
 
 <br/>
 
@@ -1399,7 +1400,7 @@ reverts when the parameters used for `transferBatch` have different lengths.
 error LSP8NonExistentTokenId(bytes32 tokenId);
 ```
 
-reverts when `tokenId` has not been minted.
+Reverts when `tokenId` has not been minted.
 
 #### Parameters
 
@@ -1424,7 +1425,7 @@ reverts when `tokenId` has not been minted.
 error LSP8NonExistingOperator(address operator, bytes32 tokenId);
 ```
 
-reverts when `operator` is not an operator for the `tokenId`.
+Reverts when `operator` is not an operator for the `tokenId`.
 
 #### Parameters
 
@@ -1450,7 +1451,7 @@ reverts when `operator` is not an operator for the `tokenId`.
 error LSP8NotTokenOperator(bytes32 tokenId, address caller);
 ```
 
-reverts when `caller` is not an allowed operator for `tokenId`.
+Reverts when `caller` is not an allowed operator for `tokenId`.
 
 #### Parameters
 
@@ -1476,7 +1477,7 @@ reverts when `caller` is not an allowed operator for `tokenId`.
 error LSP8NotTokenOwner(address tokenOwner, bytes32 tokenId, address caller);
 ```
 
-reverts when `caller` is not the `tokenOwner` of the `tokenId`.
+Reverts when `caller` is not the `tokenOwner` of the `tokenId`.
 
 #### Parameters
 
@@ -1505,7 +1506,7 @@ error LSP8NotifyTokenReceiverContractMissingLSP1Interface(
 );
 ```
 
-reverts if the `tokenReceiver` does not implement LSP1 when minting or transferring tokens with `bool force` set as `false`.
+Reverts if the `tokenReceiver` does not implement LSP1 when minting or transferring tokens with `bool force` set as `false`.
 
 #### Parameters
 
@@ -1530,7 +1531,7 @@ reverts if the `tokenReceiver` does not implement LSP1 when minting or transferr
 error LSP8NotifyTokenReceiverIsEOA(address tokenReceiver);
 ```
 
-reverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool force` set as `false`.
+Reverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool force` set as `false`.
 
 #### Parameters
 
@@ -1555,7 +1556,7 @@ reverts if the `tokenReceiver` is an EOA when minting or transferring tokens wit
 error LSP8OperatorAlreadyAuthorized(address operator, bytes32 tokenId);
 ```
 
-reverts when `operator` is already authorized for the `tokenId`.
+Reverts when `operator` is already authorized for the `tokenId`.
 
 #### Parameters
 
@@ -1563,6 +1564,25 @@ reverts when `operator` is already authorized for the `tokenId`.
 | ---------- | :-------: | ----------- |
 | `operator` | `address` | -           |
 | `tokenId`  | `bytes32` | -           |
+
+<br/>
+
+### LSP8TokenIdTypeNotEditable
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidtypenoteditable)
+- Solidity implementation: [`LSP8IdentifiableDigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol)
+- Error signature: `LSP8TokenIdTypeNotEditable()`
+- Error hash: `0x53bc1122`
+
+:::
+
+```solidity
+error LSP8TokenIdTypeNotEditable();
+```
+
+Reverts when trying to edit the data key `LSP8TokenIdType` after the identifiable digital asset contract has been deployed. The `LSP8TokenIdType` data key is located inside the ERC725Y Data key-value store of the identifiable digital asset contract. It can be set only once inside the constructor/initializer when the identifiable digital asset contract is being deployed.
 
 <br/>
 
@@ -1581,7 +1601,7 @@ reverts when `operator` is already authorized for the `tokenId`.
 error LSP8TokenOwnerCannotBeOperator();
 ```
 
-reverts when trying to authorize or revoke the token's owner as an operator.
+Reverts when trying to authorize or revoke the token's owner as an operator.
 
 <br/>
 
