@@ -6,7 +6,10 @@ pragma solidity ^0.8.4;
 import {ILSP20CallVerifier as ILSP20} from "./ILSP20CallVerifier.sol";
 
 // errors
-import "./LSP20Errors.sol";
+import {
+    LSP20InvalidMagicValue,
+    LSP20CallingVerifierFailed
+} from "./LSP20Errors.sol";
 
 /**
  * @title Implementation of a contract calling the verification functions according to LSP20 - Call Verification standard.

@@ -13,7 +13,11 @@ import {
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 
 // errors
-import "./LSP14Errors.sol";
+import {
+    LSP14MustAcceptOwnershipInSeparateTransaction,
+    CannotTransferOwnershipToSelf,
+    NotInRenounceOwnershipInterval
+} from "./LSP14Errors.sol";
 
 // constants
 import {
