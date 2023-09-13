@@ -5,12 +5,12 @@
 
 :::info Standard Specifications
 
-[`LSP-23-LinkedContractsDeployment`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-23-LinkedContractsDeployment.md)
+[`LSP-23-LinkedContractsFactory`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-23-LinkedContractsFactory.md)
 
 :::
 :::info Solidity implementation
 
-[`IPostDeploymentModule.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP23LinkedContractsDeployment/IPostDeploymentModule.sol)
+[`IPostDeploymentModule.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP23LinkedContractsFactory/IPostDeploymentModule.sol)
 
 :::
 
@@ -23,8 +23,8 @@ When marked as 'public', a method can be called both externally and internally, 
 
 :::note References
 
-- Specification details: [**LSP-23-LinkedContractsDeployment**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-23-LinkedContractsDeployment.md#executepostdeployment)
-- Solidity implementation: [`IPostDeploymentModule.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP23LinkedContractsDeployment/IPostDeploymentModule.sol)
+- Specification details: [**LSP-23-LinkedContractsFactory**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-23-LinkedContractsFactory.md#executepostdeployment)
+- Solidity implementation: [`IPostDeploymentModule.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP23LinkedContractsFactory/IPostDeploymentModule.sol)
 - Function signature: `executePostDeployment(address,address,bytes)`
 - Function selector: `0x28c4d14e`
 

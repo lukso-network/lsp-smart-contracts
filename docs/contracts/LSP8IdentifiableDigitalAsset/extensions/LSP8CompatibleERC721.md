@@ -1354,15 +1354,15 @@ event Approval(address indexed owner, address indexed operator, uint256 indexed 
 
 _ERC721 `Approval` compatible event emitted. Successfully approved operator `operator` to operate on tokenId `tokenId` on behalf of token owner `owner`._
 
-ERC721 `Approval` event emitted when `owner` enables `operator` for `tokenId`. To provide compatibility with indexing ERC721 events.
+Emitted when the allowance of a `spender` for an `owner` is set by a call to [`approve`](#approve). `value` is the new allowance.
 
 #### Parameters
 
-| Name                     |   Type    | Description                                |
-| ------------------------ | :-------: | ------------------------------------------ |
-| `owner` **`indexed`**    | `address` | The address of the owner of the `tokenId`. |
-| `operator` **`indexed`** | `address` | The address set as operator.               |
-| `tokenId` **`indexed`**  | `uint256` | The approved tokenId.                      |
+| Name                     |   Type    | Description                  |
+| ------------------------ | :-------: | ---------------------------- |
+| `owner` **`indexed`**    | `address` | The account giving approval  |
+| `operator` **`indexed`** | `address` | The address set as operator. |
+| `tokenId` **`indexed`**  | `uint256` | The approved tokenId.        |
 
 <br/>
 
@@ -1383,7 +1383,7 @@ event ApprovalForAll(address indexed owner, address indexed operator, bool appro
 
 _ERC721 `ApprovalForAll` compatible event emitted. Successfully set "approved for all" status to `approved` for operator `operator` for token owner `owner`._
 
-ERC721 `ApprovalForAll` event emitted when an `operator` is enabled or disabled for an owner to transfer any of its tokenIds. The operator can manage all NFTs of the owner.
+Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to `approved`.
 
 #### Parameters
 
@@ -1509,6 +1509,35 @@ Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on i
 
 - Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#transfer)
 - Solidity implementation: [`LSP8CompatibleERC721.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721.sol)
+- Event signature: `Transfer(address,address,uint256)`
+- Event topic hash: `0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef`
+
+:::
+
+```solidity
+event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+```
+
+_ERC721 `Transfer` compatible event emitted. Successfully transferred tokenId `tokenId` from `from` to `to`._
+
+Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.
+
+#### Parameters
+
+| Name                    |   Type    | Description              |
+| ----------------------- | :-------: | ------------------------ |
+| `from` **`indexed`**    | `address` | The sending address      |
+| `to` **`indexed`**      | `address` | The receiving address    |
+| `tokenId` **`indexed`** | `uint256` | The tokenId to transfer. |
+
+<br/>
+
+### Transfer
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#transfer)
+- Solidity implementation: [`LSP8CompatibleERC721.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721.sol)
 - Event signature: `Transfer(address,address,address,bytes32,bool,bytes)`
 - Event topic hash: `0xb333c813a7426a7a11e2b190cad52c44119421594b47f6f32ace6d8c7207b2bf`
 
@@ -1517,8 +1546,6 @@ Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on i
 ```solidity
 event Transfer(address operator, address indexed from, address indexed to, bytes32 indexed tokenId, bool allowNonLSP1Recipient, bytes data);
 ```
-
-_ERC721 `Transfer` compatible event emitted. Successfully transferred tokenId `tokenId` from `from` to `to`._
 
 Emitted when `tokenId` token is transferred from the `from` to the `to` address.
 

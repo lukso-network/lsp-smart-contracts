@@ -16,8 +16,8 @@ export const dodocConfig = {
     'contracts/LSP17ContractExtension/LSP17Extendable.sol',
     'contracts/LSP17ContractExtension/LSP17Extension.sol',
     'contracts/LSP20CallVerification/LSP20CallVerification.sol',
-    'contracts/LSP23LinkedContractsDeployment/LSP23LinkedContractsFactory.sol',
-    'contracts/LSP23LinkedContractsDeployment/IPostDeploymentModule.sol',
+    'contracts/LSP23LinkedContractsFactory/LSP23LinkedContractsFactory.sol',
+    'contracts/LSP23LinkedContractsFactory/IPostDeploymentModule.sol',
     'contracts/LSP25ExecuteRelayCall/LSP25MultiChannelNonce.sol',
 
     // tokens
