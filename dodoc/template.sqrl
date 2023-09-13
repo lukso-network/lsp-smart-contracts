@@ -233,7 +233,7 @@ Internal functions cannot be called externally, whether from other smart contrac
 
 
 {{@foreach(it.events) => key, val}}
-### {{key}}
+### {{key.split('(')[0]}}
 
 
 :::note References{{'\n\n'}}{{@generateAdditionalEventInfo(it.name, val.code) /}}{{'\n\n'}}:::
@@ -275,7 +275,7 @@ Internal functions cannot be called externally, whether from other smart contrac
 
 
 {{@foreach(it.errors) => key, val}}
-### {{key}}
+### {{key.split('(')[0]}}
 
 
 :::note References{{'\n\n'}}{{@generateAdditionalErrorInfo(it.name, val.code) /}}{{'\n\n'}}:::
