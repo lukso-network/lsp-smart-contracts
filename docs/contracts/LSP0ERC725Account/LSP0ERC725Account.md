@@ -802,7 +802,7 @@ Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be not
 
 - If yes, call this address with the typeId and data (params), along with additional calldata consisting of 20 bytes of `msg.sender` and 32 bytes of `msg.value`. If not, continue the execution of the function.
 
-2. Query the [ERC-725Y] storage with the data key [_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX] + `bytes32(typeId)`. (Check [LSP-2-ERC725YJSONSchema] for encoding the data key)
+2. Query the [ERC-725Y] storage with the data key [_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX] + `bytes2(0)` + `bytes20(typeId)`. (Check [LSP-2-ERC725YJSONSchema] for encoding the data key)
 
 - If there is an address stored under the data key, check if this address supports the LSP1 interfaceId.
 
