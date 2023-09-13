@@ -24,7 +24,7 @@ abstract contract LSP7CappedSupply is LSP7DigitalAsset {
     error LSP7CappedSupplyCannotMintOverCap();
 
     // --- Storage
-    uint256 private immutable _tokenSupplyCap;
+    uint256 private immutable _TOKEN_SUPPLY_CAP;
 
     /**
      * @notice Deploying a `LSP7CappedSupply` token contract with max token supply cap set to `tokenSupplyCap_`.
@@ -41,13 +41,13 @@ abstract contract LSP7CappedSupply is LSP7DigitalAsset {
             revert LSP7CappedSupplyRequired();
         }
 
-        _tokenSupplyCap = tokenSupplyCap_;
+        _TOKEN_SUPPLY_CAP = tokenSupplyCap_;
     }
 
     // --- Token queries
 
     /**
-     * @notice The maximum supply amount of tokens allowed to exist is `_tokenSupplyCap`.
+     * @notice The maximum supply amount of tokens allowed to exist is `_TOKEN_SUPPLY_CAP`.
      *
      * @dev Get the maximum number of tokens that can exist to circulate. Once {totalSupply} reaches
      * reaches {totalSuuplyCap}, it is not possible to mint more tokens.
@@ -55,7 +55,7 @@ abstract contract LSP7CappedSupply is LSP7DigitalAsset {
      * @return The maximum number of tokens that can exist in the contract.
      */
     function tokenSupplyCap() public view virtual returns (uint256) {
-        return _tokenSupplyCap;
+        return _TOKEN_SUPPLY_CAP;
     }
 
     // --- Transfer functionality
