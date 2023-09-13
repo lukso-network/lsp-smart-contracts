@@ -31,7 +31,13 @@ import {
 } from "../LSP8IdentifiableDigitalAssetCore.sol";
 
 // errors
-import "../LSP8Errors.sol";
+import {
+    LSP8NotTokenOwner,
+    LSP8CannotUseAddressZeroAsOperator,
+    LSP8TokenOwnerCannotBeOperator,
+    LSP8OperatorAlreadyAuthorized,
+    LSP8NotTokenOperator
+} from "../LSP8Errors.sol";
 
 // constants
 import {

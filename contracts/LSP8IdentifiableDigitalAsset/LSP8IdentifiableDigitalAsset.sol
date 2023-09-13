@@ -21,7 +21,9 @@ import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 // constants
 import {_INTERFACEID_LSP8} from "./LSP8Constants.sol";
 
-import "../LSP17ContractExtension/LSP17Constants.sol";
+import {
+    _LSP17_EXTENSION_PREFIX
+} from "../LSP17ContractExtension/LSP17Constants.sol";
 
 // errors
 

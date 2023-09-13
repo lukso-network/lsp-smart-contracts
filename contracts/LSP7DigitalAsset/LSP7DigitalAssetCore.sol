@@ -17,7 +17,18 @@ import {
 } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
-import "./LSP7Errors.sol";
+import {
+    LSP7CannotSendToSelf,
+    LSP7AmountExceedsAuthorizedAmount,
+    LSP7InvalidTransferBatch,
+    LSP7AmountExceedsBalance,
+    LSP7DecreasedAllowanceBelowZero,
+    LSP7CannotUseAddressZeroAsOperator,
+    LSP7TokenOwnerCannotBeOperator,
+    LSP7CannotSendWithAddressZero,
+    LSP7NotifyTokenReceiverContractMissingLSP1Interface,
+    LSP7NotifyTokenReceiverIsEOA
+} from "./LSP7Errors.sol";
 
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
