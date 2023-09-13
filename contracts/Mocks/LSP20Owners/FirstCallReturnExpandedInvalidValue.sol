@@ -2,9 +2,6 @@
 pragma solidity ^0.8.4;
 
 import {
-    ILSP20CallVerifier
-} from "../../LSP20CallVerification/ILSP20CallVerifier.sol";
-import {
     ILSP14Ownable2Step
 } from "../../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 

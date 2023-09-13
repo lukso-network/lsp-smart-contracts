@@ -1,3 +1,4 @@
+// solhint-disable one-contract-per-file
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
@@ -7,8 +8,7 @@ import {
 import {
     IERC725X
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import "../../LSP6KeyManager/ILSP6KeyManager.sol";
+import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 
 /**
  * The purpose of these contracts is to perform tests on chained reentrancy scenarios

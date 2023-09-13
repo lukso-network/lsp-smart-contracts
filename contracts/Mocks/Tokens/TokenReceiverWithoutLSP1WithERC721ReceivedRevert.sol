@@ -6,9 +6,6 @@ import {
     ERC721Holder
 } from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 
-// constants
-import {_INTERFACEID_LSP1} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
-
 contract TokenReceiverWithoutLSP1WithERC721ReceivedRevert is ERC721Holder {
     receive() external payable {}
 
