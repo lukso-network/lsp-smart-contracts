@@ -109,10 +109,12 @@ abstract contract LSP25MultiChannelNonce {
         uint128 startingTimestamp = uint128(validityTimestamps >> 128);
         uint128 endingTimestamp = uint128(validityTimestamps);
 
-        // solhint-disable not-rely-on-time
+        // solhint-disable-next-line not-rely-on-time
         if (block.timestamp < startingTimestamp) {
             revert RelayCallBeforeStartTime();
         }
+
+        // solhint-disable-next-line not-rely-on-time
         if (block.timestamp > endingTimestamp) {
             revert RelayCallExpired();
         }

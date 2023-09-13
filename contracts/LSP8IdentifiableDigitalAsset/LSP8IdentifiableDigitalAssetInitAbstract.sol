@@ -63,7 +63,6 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
 
     // fallback function
 
-    // solhint-disable no-complex-fallback
     /**
      * @notice The `fallback` function was called with the following amount of native tokens: `msg.value`; and the following calldata: `callData`.
      *
@@ -83,6 +82,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
      *
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), revert.
      */
+    // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {

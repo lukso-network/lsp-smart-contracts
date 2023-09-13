@@ -520,8 +520,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function _beforeTokenTransfer(
         address from,
         address to,
-        bytes32 tokenId
-    ) internal virtual {} // solhint-disable no-empty-blocks
+        bytes32 tokenId // solhint-disable-next-line no-empty-blocks
+    ) internal virtual {}
 
     /**
      * @dev Attempt to notify the operator `operator` about the `tokenId` tokens being authorized.

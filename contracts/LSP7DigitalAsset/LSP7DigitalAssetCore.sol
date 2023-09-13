@@ -547,8 +547,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     function _beforeTokenTransfer(
         address from,
         address to,
-        uint256 amount
-    ) internal virtual {} // solhint-disable no-empty-blocks
+        uint256 amount // solhint-disable-next-line no-empty-blocks
+    ) internal virtual {}
 
     /**
      * @dev Attempt to notify the operator `operator` about the `amount` tokens being authorized with.

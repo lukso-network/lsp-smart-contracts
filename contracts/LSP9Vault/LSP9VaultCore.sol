@@ -95,8 +95,6 @@ contract LSP9VaultCore is
         if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
     }
 
-    // solhint-disable no-complex-fallback
-
     /**
      * @notice The `fallback` function was called with the following amount of native tokens: `msg.value`; and the following calldata: `callData`.
      *
@@ -118,6 +116,7 @@ contract LSP9VaultCore is
      *
      * @custom:events {ValueReceived} event when receiving native tokens.
      */
+    // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {

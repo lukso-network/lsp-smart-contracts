@@ -89,7 +89,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
 
         // The notifier is supposed to be either the LSP7 or LSP8 or LSP9 contract
         // If it's EOA we revert to avoid registering the EOA as asset or vault (spam protection)
-        // solhint-disable avoid-tx-origin
+        // solhint-disable-next-line avoid-tx-origin
         if (notifier == tx.origin) {
             revert CannotRegisterEOAsAsAssets(notifier);
         }

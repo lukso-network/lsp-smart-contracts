@@ -94,8 +94,6 @@ abstract contract LSP0ERC725AccountCore is
         }
     }
 
-    // solhint-disable no-complex-fallback
-
     /**
      * @notice The `fallback` function was called with the following amount of native tokens: `msg.value`; and the following calldata: `callData`.
      *
@@ -117,6 +115,7 @@ abstract contract LSP0ERC725AccountCore is
      *
      * @custom:events {ValueReceived} event when receiving native tokens.
      */
+    // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
