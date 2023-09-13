@@ -9,8 +9,6 @@ import {ILSP9Vault} from "./ILSP9Vault.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
@@ -18,14 +16,8 @@ import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // modules
-import {
-    ERC725XCore,
-    IERC725X
-} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
-import {
-    ERC725YCore,
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
+import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
+import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
@@ -33,7 +25,14 @@ import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 
 // constants
-import "@erc725/smart-contracts/contracts/errors.sol";
+import {
+    ERC725Y_MsgValueDisallowed,
+    ERC725Y_DataKeysValuesLengthMismatch,
+    ERC725X_CreateOperationsRequireEmptyRecipientAddress,
+    ERC725X_CreateOperationsRequireEmptyRecipientAddress,
+    ERC725X_MsgValueDisallowedInStaticCall,
+    ERC725X_UnknownOperationType
+} from "@erc725/smart-contracts/contracts/errors.sol";
 import {
     OPERATION_0_CALL,
     OPERATION_1_CREATE,
@@ -61,8 +60,11 @@ import {
 } from "../LSP17ContractExtension/LSP17Constants.sol";
 
 // errors
-import "./LSP9Errors.sol";
-import "../LSP17ContractExtension/LSP17Errors.sol";
+import {LSP1DelegateNotAllowedToSetDataKey} from "./LSP9Errors.sol";
+
+import {
+    NoExtensionFoundForFunctionSelector
+} from "../LSP17ContractExtension/LSP17Errors.sol";
 
 /**
  * @title Core Implementation of LSP9Vault built on top of [ERC725], [LSP1UniversalReceiver]
@@ -168,7 +170,7 @@ contract LSP9VaultCore is
     }
 
     /**
-     * @inheritdoc IERC725X
+     * @inheritdoc ERC725XCore
      *
      * @custom:requirements
      * - Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
@@ -221,7 +223,7 @@ contract LSP9VaultCore is
     }
 
     /**
-     * @inheritdoc IERC725Y
+     * @inheritdoc ERC725YCore
      *
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
@@ -249,7 +251,7 @@ contract LSP9VaultCore is
     }
 
     /**
-     * @inheritdoc IERC725Y
+     * @inheritdoc ERC725YCore
      *
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
@@ -622,15 +624,17 @@ contract LSP9VaultCore is
 
         // Deploy with CREATE
         if (operationType == uint256(OPERATION_1_CREATE)) {
-            if (target != address(0))
+            if (target != address(0)) {
                 revert ERC725X_CreateOperationsRequireEmptyRecipientAddress();
+            }
             return _deployCreate(value, data);
         }
 
         // Deploy with CREATE2
         if (operationType == uint256(OPERATION_2_CREATE2)) {
-            if (target != address(0))
+            if (target != address(0)) {
                 revert ERC725X_CreateOperationsRequireEmptyRecipientAddress();
+            }
             return _deployCreate2(value, data);
         }
 
