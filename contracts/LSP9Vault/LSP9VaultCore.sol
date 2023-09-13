@@ -242,9 +242,9 @@ contract LSP9VaultCore is
         bool isURD = _validateAndIdentifyCaller();
         if (isURD) {
             if (
-                bytes12(dataKey) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ||
+                bytes10(dataKey) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ||
                 bytes6(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
-                bytes12(dataKey) == _LSP17_EXTENSION_PREFIX
+                bytes10(dataKey) == _LSP17_EXTENSION_PREFIX
             ) {
                 revert LSP1DelegateNotAllowedToSetDataKey(dataKey);
             }
@@ -275,10 +275,10 @@ contract LSP9VaultCore is
         for (uint256 i = 0; i < dataKeys.length; ) {
             if (isURD) {
                 if (
-                    bytes12(dataKeys[i]) ==
+                    bytes10(dataKeys[i]) ==
                     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ||
                     bytes6(dataKeys[i]) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
-                    bytes12(dataKeys[i]) == _LSP17_EXTENSION_PREFIX
+                    bytes10(dataKeys[i]) == _LSP17_EXTENSION_PREFIX
                 ) {
                     revert LSP1DelegateNotAllowedToSetDataKey(dataKeys[i]);
                 }

@@ -292,7 +292,7 @@ abstract contract LSP6SetDataModule {
             // LSP1UniversalReceiverDelegate or LSP1UniversalReceiverDelegate:<typeId>
         } else if (
             inputDataKey == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY ||
-            bytes12(inputDataKey) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
+            bytes10(inputDataKey) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
         ) {
             // CHECK that `dataValue` contains exactly 20 bytes, which corresponds to an address for a LSP1 Delegate contract
             if (inputDataValue.length != 20 && inputDataValue.length != 0) {

@@ -43,8 +43,8 @@ contract LSP6SetDataTest is Test {
         // dataKey cannot be LSP1, LSP6, or LSP17 data key
         vm.assume(bytes16(dataKey) != _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX);
         vm.assume(bytes6(dataKey) != _LSP6KEY_ADDRESSPERMISSIONS_PREFIX);
-        vm.assume(bytes12(dataKey) != _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX);
-        vm.assume(bytes12(dataKey) != _LSP17_EXTENSION_PREFIX);
+        vm.assume(bytes10(dataKey) != _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX);
+        vm.assume(bytes10(dataKey) != _LSP17_EXTENSION_PREFIX);
 
         // Give owner ability to transfer ownership
         bytes32 ownerDataKey = LSP2Utils.generateMappingWithGroupingKey(
@@ -126,8 +126,8 @@ contract LSP6SetDataTest is Test {
         // dataKey cannot be LSP1, LSP6, or LSP17 data key
         vm.assume(bytes16(dataKey) != _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX);
         vm.assume(bytes6(dataKey) != _LSP6KEY_ADDRESSPERMISSIONS_PREFIX);
-        vm.assume(bytes12(dataKey) != _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX);
-        vm.assume(bytes12(dataKey) != _LSP17_EXTENSION_PREFIX);
+        vm.assume(bytes10(dataKey) != _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX);
+        vm.assume(bytes10(dataKey) != _LSP17_EXTENSION_PREFIX);
 
         // Give owner ability to transfer ownership
         bytes32 ownerDataKey = LSP2Utils.generateMappingWithGroupingKey(
