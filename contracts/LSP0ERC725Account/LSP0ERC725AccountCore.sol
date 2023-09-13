@@ -449,13 +449,13 @@ abstract contract LSP0ERC725AccountCore is
             }
         }
 
-        // Generate the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY + <bytes32 typeId>}
+        // Generate the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX + <bytes32 typeId>}
         bytes32 lsp1typeIdDelegateKey = LSP2Utils.generateMappingKey(
             _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
             bytes20(typeId)
         );
 
-        // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY + <bytes32 typeId>}
+        // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX + <bytes32 typeId>}
         bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
         bytes memory resultTypeIdDelegate;
 
