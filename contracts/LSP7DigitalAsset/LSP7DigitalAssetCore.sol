@@ -548,7 +548,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address from,
         address to,
         uint256 amount
-    ) internal virtual {}
+    ) internal virtual {} // solhint-disable no-empty-blocks
 
     /**
      * @dev Attempt to notify the operator `operator` about the `amount` tokens being authorized with.

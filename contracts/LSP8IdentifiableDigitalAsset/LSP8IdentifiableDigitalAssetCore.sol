@@ -521,7 +521,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address from,
         address to,
         bytes32 tokenId
-    ) internal virtual {}
+    ) internal virtual {} // solhint-disable no-empty-blocks
 
     /**
      * @dev Attempt to notify the operator `operator` about the `tokenId` tokens being authorized.
