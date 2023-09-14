@@ -167,7 +167,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7InvalidTransferBatch();
         }
 
-        for (uint256 i = 0; i < fromLength; ) {
+        for (uint256 i; i < fromLength; ) {
             // using the public transfer function to handle updates to operator authorized amounts
             transfer(
                 from[i],

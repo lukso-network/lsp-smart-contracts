@@ -224,7 +224,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8InvalidTransferBatch();
         }
 
-        for (uint256 i = 0; i < fromLength; ) {
+        for (uint256 i; i < fromLength; ) {
             transfer(
                 from[i],
                 to[i],
@@ -273,7 +273,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         ];
 
         uint256 operatorListLength = operatorsForTokenId.length();
-        for (uint256 i = 0; i < operatorListLength; ) {
+        for (uint256 i; i < operatorListLength; ) {
             // we are emptying the list, always remove from index 0
             address operator = operatorsForTokenId.at(0);
             _revokeOperator(operator, tokenOwner, tokenId);
