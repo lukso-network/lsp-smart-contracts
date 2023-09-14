@@ -337,6 +337,15 @@ Checks if a signature was signed by a controller that has the permission `SIGN`.
 
 :::
 
+:::tip Hint
+
+This function can call by any other address than the {`target`}. This allows to verify permissions in a _&quot;read-only&quot;_ manner. Anyone can call this function to verify if the `caller` has the right permissions to perform the abi-encoded function call `data` on the {`target`} contract (while sending `msgValue` alongside the call). If the permissions have been verified successfully and `caller` is authorized, one of the following two LSP20 magic value will be returned:
+
+- `0x9bf04b00`: LSP20 magic value **without** post verification (last byte is `0x00`).
+- `0x9bf04b01`: LSP20 magic value **with** post-verification (last byte is `0x01`).
+
+:::
+
 ```solidity
 function lsp20VerifyCall(
   address caller,

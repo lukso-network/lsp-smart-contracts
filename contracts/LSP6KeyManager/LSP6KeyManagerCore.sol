@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.5;
 
-import "hardhat/console.sol";
-
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {
@@ -552,8 +550,6 @@ abstract contract LSP6KeyManagerCore is
                 uint256 value,
                 bytes memory data
             ) = abi.decode(payload[4:], (uint256, address, uint256, bytes));
-
-            console.log("breakpoint");
 
             LSP6ExecuteModule._verifyCanExecute(
                 _target,
