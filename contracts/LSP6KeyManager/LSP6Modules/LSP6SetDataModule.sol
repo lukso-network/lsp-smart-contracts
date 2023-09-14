@@ -431,12 +431,16 @@ abstract contract LSP6SetDataModule {
         address controlledContract,
         bytes32 inputPermissionDataKey
     ) internal view virtual returns (bytes32) {
+        // extract the address of the controller from the data key `AddressPermissions:Permissions:<controller>`
+        address controller = address(bytes20(inputPermissionDataKey << 96));
+
+        bytes32 controllerPermissions = ERC725Y(controlledContract)
+            .getPermissionsFor(controller);
+
         return
             // if there is nothing stored under the data key, we are trying to ADD a new controller.
             // if there are already some permissions set under the data key, we are trying to CHANGE the permissions of a controller.
-            bytes32(
-                ERC725Y(controlledContract).getData(inputPermissionDataKey)
-            ) == bytes32(0)
+            controllerPermissions == bytes32(0)
                 ? _PERMISSION_ADDCONTROLLER
                 : _PERMISSION_EDITPERMISSIONS;
     }

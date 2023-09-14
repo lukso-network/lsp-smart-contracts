@@ -50,6 +50,9 @@ library LSP6Utils {
      * @param caller The controller address to read the permissions from.
      *
      * @return A `bytes32` BitArray containing the permissions of a controller address.
+     *
+     * @custom:info If the raw value fetched from the ERC725Y storage of `target` is not 32 bytes long, this is considered
+     * like _"no permissions are set"_ and will return 32 x `0x00` bytes as `bytes32(0)`.
      */
     function getPermissionsFor(
         IERC725Y target,
@@ -61,6 +64,10 @@ library LSP6Utils {
                 bytes20(caller)
             )
         );
+
+        if (permissions.length != 32) {
+            return bytes32(0);
+        }
 
         return bytes32(permissions);
     }
