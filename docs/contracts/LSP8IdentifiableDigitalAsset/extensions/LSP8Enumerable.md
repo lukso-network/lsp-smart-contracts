@@ -1025,6 +1025,13 @@ Returns the extension address stored under the following data key:
 
 ### \_fallbackLSP17Extendable
 
+:::info
+
+The LSP8 Token contract should not hold any native tokens. Any native tokens received by the contract
+will be forwarded to the extension address mapped to the selector from `msg.sig`.
+
+:::
+
 ```solidity
 function _fallbackLSP17Extendable(
   bytes callData
@@ -1038,9 +1045,6 @@ Reverts if there is no extension for the function being called.
 If there is an extension for the function selector being called, it calls the extension with the
 CALL opcode, passing the [`msg.data`](#msg.data) appended with the 20 bytes of the [`msg.sender`](#msg.sender) and
 32 bytes of the [`msg.value`](#msg.value)
-Because the function uses assembly [`return()/revert()`](#return) to terminate the call, it cannot be
-called before other codes in fallback().
-Otherwise, the codes after \_fallbackLSP17Extendable() may never be reached.
 
 <br/>
 
