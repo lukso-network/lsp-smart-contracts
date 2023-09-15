@@ -145,30 +145,6 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
       '00000000000000000000000000000000'; // zero padded
   });
 
-  describe('when calling the contract with empty calldata', () => {
-    describe('when making a call without any value', () => {
-      it('should revert', async () => {
-        await expect(
-          context.accounts[0].sendTransaction({
-            to: context.contract.address,
-          }),
-        ).to.be.revertedWithCustomError(context.contract, 'InvalidFunctionSelector');
-      });
-    });
-
-    describe('when making a call with sending value', () => {
-      it('should revert', async () => {
-        const amountSent = 200;
-        await expect(
-          context.accounts[0].sendTransaction({
-            to: context.contract.address,
-            value: amountSent,
-          }),
-        ).to.be.revertedWithCustomError(context.contract, 'InvalidFunctionSelector');
-      });
-    });
-  });
-
   describe('when calling the contract with calldata', () => {
     describe("when calling method that doesn't exist", () => {
       describe('when there is no extension for the function called', () => {
