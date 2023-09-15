@@ -534,13 +534,16 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 _INTERFACEID_LSP1
             )
         ) {
-            operator.call(
-                abi.encodeWithSelector(
-                    ILSP1UniversalReceiver.universalReceiver.selector,
+            try
+                ILSP1UniversalReceiver(operator).universalReceiver(
                     _TYPEID_LSP8_TOKENOPERATOR,
                     lsp1Data
                 )
-            );
+            {
+                return;
+            } catch {
+                return;
+            }
         }
     }
 
