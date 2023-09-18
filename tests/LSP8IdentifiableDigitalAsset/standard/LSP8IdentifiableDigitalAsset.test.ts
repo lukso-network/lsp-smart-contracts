@@ -42,7 +42,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
 
   const buildLSP4DigitalAssetMetadataTestContext =
     async (): Promise<LS4DigitalAssetMetadataTestContext> => {
-      const { lsp8 } = await buildTestContext(0);
+      const { lsp8 } = await buildTestContext(LSP8_TOKEN_ID_TYPES.NUMBER);
       const accounts = await ethers.getSigners();
 
       const deployParams = {
@@ -90,7 +90,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
           deployParams.name,
           deployParams.symbol,
           ethers.constants.AddressZero,
-          0,
+          LSP8_TOKEN_ID_TYPES.NUMBER,
         ),
       ).to.be.revertedWith('Ownable: new owner is the zero address');
     });

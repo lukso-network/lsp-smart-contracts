@@ -70,7 +70,7 @@ import {
   ERC725YDataKeys,
   PERMISSIONS,
   ALL_PERMISSIONS,
-  LSP8_TOKENID_TYPES,
+  LSP8_TOKEN_ID_TYPES,
   LSP25_VERSION,
   ErrorSelectors,
   EventSigHashes,
