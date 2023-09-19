@@ -54,7 +54,7 @@ export const shouldBehaveLikeLSP8Mintable = (
       await context.lsp8Mintable.mint(
         context.accounts.tokenReceiver.address,
         randomTokenId,
-        true, // beneficiary is an EOA, so we need to allowNonLSP1Recipient minting
+        true, // beneficiary is an EOA, so we need to force minting
         '0x',
       );
 
