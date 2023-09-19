@@ -20,7 +20,17 @@ import {
 // constants
 import {ALL_REGULAR_PERMISSIONS} from "../LSP6KeyManager/LSP6Constants.sol";
 import {_INTERFACEID_LSP11} from "./LSP11Constants.sol";
-import "./LSP11Errors.sol";
+import {
+    CallerIsNotGuardian,
+    GuardianAlreadyExist,
+    GuardianDoNotExist,
+    GuardiansNumberCannotGoBelowThreshold,
+    ThresholdCannotBeHigherThanGuardiansNumber,
+    SecretHashCannotBeZero,
+    AddressZeroNotAllowed,
+    ThresholdNotReachedForRecoverer,
+    WrongPlainSecret
+} from "./LSP11Errors.sol";
 
 /**
  * @title Core Implementation of LSP11-BasicSocialRecovery standard

@@ -535,7 +535,7 @@ Returns the list of `tokenIds` for the `tokenOwner` address.
 function tokenSupplyCap() external view returns (uint256);
 ```
 
-_The maximum supply amount of tokens allowed to exist is `_tokenSupplyCap`._
+_The maximum supply amount of tokens allowed to exist is `_TOKEN_SUPPLY_CAP`._
 
 Get the maximum number of tokens that can exist to circulate. Once [`totalSupply`](#totalsupply) reaches reaches [`totalSuuplyCap`](#totalsuuplycap), it is not possible to mint more tokens.
 

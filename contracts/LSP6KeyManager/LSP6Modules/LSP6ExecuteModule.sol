@@ -41,7 +41,6 @@ import {
     InvalidEncodedAllowedCalls,
     InvalidWhitelistedCall,
     NotAuthorised,
-    InvalidPayload,
     CallingKeyManagerNotAllowed
 } from "../LSP6Errors.sol";
 

@@ -24,6 +24,7 @@ contract UniversalReceiverDelegateGasConsumer is
         bytes32 /* typeId */,
         bytes memory /* data */
     ) public payable virtual returns (bytes memory) {
+        // solhint-disable no-empty-blocks
         for (uint256 i = 0; ; i++) {
             // nothing
         }

@@ -18,7 +18,9 @@ import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 // constants
 import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";
 
-import "../LSP17ContractExtension/LSP17Constants.sol";
+import {
+    _LSP17_EXTENSION_PREFIX
+} from "../LSP17ContractExtension/LSP17Constants.sol";
 
 // errors
 
@@ -60,7 +62,6 @@ abstract contract LSP7DigitalAsset is
 
     // fallback function
 
-    // solhint-disable no-complex-fallback
     /**
      * @notice The `fallback` function was called with the following amount of native tokens: `msg.value`; and the following calldata: `callData`.
      *
@@ -80,6 +81,7 @@ abstract contract LSP7DigitalAsset is
      *
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), revert.
      */
+    // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
@@ -125,8 +127,8 @@ abstract contract LSP7DigitalAsset is
         } else {
             // `mload(result)` -> offset in memory where `result.length` is located
             // `add(result, 32)` -> offset in memory where `result` data starts
-            // solhint-disable no-inline-assembly
             /// @solidity memory-safe-assembly
+            // solhint-disable-next-line no-inline-assembly
             assembly {
                 let resultdata_size := mload(result)
                 revert(add(result, 32), resultdata_size)

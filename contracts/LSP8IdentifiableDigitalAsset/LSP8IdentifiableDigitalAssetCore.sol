@@ -18,7 +18,21 @@ import {
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // errors
-import "./LSP8Errors.sol";
+import {
+    LSP8NonExistentTokenId,
+    LSP8NotTokenOwner,
+    LSP8CannotUseAddressZeroAsOperator,
+    LSP8TokenOwnerCannotBeOperator,
+    LSP8OperatorAlreadyAuthorized,
+    LSP8NotTokenOperator,
+    LSP8InvalidTransferBatch,
+    LSP8NonExistingOperator,
+    LSP8CannotSendToAddressZero,
+    LSP8TokenIdAlreadyMinted,
+    LSP8CannotSendToSelf,
+    LSP8NotifyTokenReceiverContractMissingLSP1Interface,
+    LSP8NotifyTokenReceiverIsEOA
+} from "./LSP8Errors.sol";
 
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -506,7 +520,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function _beforeTokenTransfer(
         address from,
         address to,
-        bytes32 tokenId
+        bytes32 tokenId // solhint-disable-next-line no-empty-blocks
     ) internal virtual {}
 
     /**

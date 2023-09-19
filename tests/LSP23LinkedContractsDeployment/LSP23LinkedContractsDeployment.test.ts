@@ -456,8 +456,8 @@ describe('UniversalProfileDeployer', function () {
       // CHECK that the `target()` of the KeyManager contract is the UP contract
       expect(await keyManagerInstance.target()).to.equal(upContract);
 
-      expect(await keyManagerInstance.firstParam()).to.deep.equal(firstAddress);
-      expect(await keyManagerInstance.lastParam()).to.deep.equal(lastAddress);
+      expect(await keyManagerInstance.FIRST_PARAM()).to.deep.equal(firstAddress);
+      expect(await keyManagerInstance.LAST_PARAM()).to.deep.equal(lastAddress);
     });
   });
   describe('for proxies deployment', function () {

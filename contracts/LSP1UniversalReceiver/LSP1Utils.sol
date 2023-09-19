@@ -9,7 +9,7 @@ import {
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
-import "./ILSP1UniversalReceiver.sol";
+import {ILSP1UniversalReceiver as ILSP1} from "./ILSP1UniversalReceiver.sol";
 
 // constants
 import {
@@ -45,10 +45,7 @@ library LSP1Utils {
                 _INTERFACEID_LSP1
             )
         ) {
-            ILSP1UniversalReceiver(lsp1Implementation).universalReceiver(
-                typeId,
-                data
-            );
+            ILSP1(lsp1Implementation).universalReceiver(typeId, data);
         }
     }
 
@@ -73,7 +70,7 @@ library LSP1Utils {
     ) internal returns (bytes memory) {
         bytes memory callData = abi.encodePacked(
             abi.encodeWithSelector(
-                ILSP1UniversalReceiver.universalReceiver.selector,
+                ILSP1.universalReceiver.selector,
                 typeId,
                 receivedData
             ),

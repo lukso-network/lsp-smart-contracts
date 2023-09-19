@@ -2,7 +2,9 @@
 
 pragma solidity ^0.8.4;
 
-import "../FallbackExtensions/OnERC721ReceivedExtension.sol";
+import {
+    OnERC721ReceivedExtension
+} from "../FallbackExtensions/OnERC721ReceivedExtension.sol";
 
 /**
  * @dev This contract is used only for testing purposes

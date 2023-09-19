@@ -10,8 +10,14 @@ import {
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 
 // constants
-import "../../LSP1UniversalReceiver/LSP1Constants.sol";
-import "../../LSP6KeyManager/LSP6Constants.sol";
+import {
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
+} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+
+import {
+    _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
+    ALL_REGULAR_PERMISSIONS
+} from "../../LSP6KeyManager/LSP6Constants.sol";
 
 contract LSP20ReentrantContract {
     event ValueReceived(uint256);

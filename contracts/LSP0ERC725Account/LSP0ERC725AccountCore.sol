@@ -19,14 +19,8 @@ import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // modules
-import {
-    ERC725YCore,
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
-import {
-    ERC725XCore,
-    IERC725X
-} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
+import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
+import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
@@ -37,7 +31,6 @@ import {
 } from "../LSP20CallVerification/LSP20CallVerification.sol";
 
 // constants
-import "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_LSP0,
     _INTERFACEID_ERC1271,
@@ -68,10 +61,6 @@ import {
 import {
     NoExtensionFoundForFunctionSelector
 } from "../LSP17ContractExtension/LSP17Errors.sol";
-
-import {
-    LSP14MustAcceptOwnershipInSeparateTransaction
-} from "../LSP14Ownable2Step/LSP14Errors.sol";
 
 /**
  * @title The Core Implementation of [LSP-0-ERC725Account] Standard.
@@ -105,8 +94,6 @@ abstract contract LSP0ERC725AccountCore is
         }
     }
 
-    // solhint-disable no-complex-fallback
-
     /**
      * @notice The `fallback` function was called with the following amount of native tokens: `msg.value`; and the following calldata: `callData`.
      *
@@ -128,6 +115,7 @@ abstract contract LSP0ERC725AccountCore is
      *
      * @custom:events {ValueReceived} event when receiving native tokens.
      */
+    // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
@@ -180,7 +168,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @inheritdoc IERC725X
+     * @inheritdoc ERC725XCore
      *
      * @custom:requirements
      * - Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
@@ -231,7 +219,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @inheritdoc IERC725X
+     * @inheritdoc ERC725XCore
      *
      * @custom:requirements
      * - The length of the parameters provided must be equal.
@@ -292,7 +280,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @inheritdoc IERC725Y
+     * @inheritdoc ERC725YCore
      *
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
@@ -329,7 +317,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @inheritdoc IERC725Y
+     * @inheritdoc ERC725YCore
      *
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *

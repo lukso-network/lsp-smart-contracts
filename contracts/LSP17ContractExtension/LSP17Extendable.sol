@@ -11,7 +11,7 @@ import {
 import {_INTERFACEID_LSP17_EXTENDABLE} from "./LSP17Constants.sol";
 
 // errors
-import "./LSP17Errors.sol";
+import {NoExtensionFoundForFunctionSelector} from "./LSP17Errors.sol";
 
 /**
  * @title Module to add more functionalities to a contract using extensions.
