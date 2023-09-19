@@ -668,7 +668,7 @@ function transfer(
   address from,
   address to,
   uint256 amount,
-  bool allowNonLSP1Recipient,
+  bool force,
   bytes data
 ) external nonpayable;
 ```
@@ -677,13 +677,13 @@ Transfers an `amount` of tokens from the `from` address to the `to` address and 
 
 #### Parameters
 
-| Name                    |   Type    | Description                                                                                                                                                          |
-| ----------------------- | :-------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `from`                  | `address` | The sender address.                                                                                                                                                  |
-| `to`                    | `address` | The recipient address.                                                                                                                                               |
-| `amount`                | `uint256` | The amount of tokens to transfer.                                                                                                                                    |
-| `allowNonLSP1Recipient` |  `bool`   | When set to `true`, the `to` address CAN be any address. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard. |
-| `data`                  |  `bytes`  | Any additional data the caller wants included in the emitted event, and sent in the hooks of the `from` and `to` addresses.                                          |
+| Name     |   Type    | Description                                                                                                                                                          |
+| -------- | :-------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `from`   | `address` | The sender address.                                                                                                                                                  |
+| `to`     | `address` | The recipient address.                                                                                                                                               |
+| `amount` | `uint256` | The amount of tokens to transfer.                                                                                                                                    |
+| `force`  |  `bool`   | When set to `true`, the `to` address CAN be any address. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard. |
+| `data`   |  `bytes`  | Any additional data the caller wants included in the emitted event, and sent in the hooks of the `from` and `to` addresses.                                          |
 
 <br/>
 
@@ -703,7 +703,7 @@ function transferBatch(
   address[] from,
   address[] to,
   uint256[] amount,
-  bool[] allowNonLSP1Recipient,
+  bool[] force,
   bytes[] data
 ) external nonpayable;
 ```
@@ -712,13 +712,13 @@ Same as [`transfer(...)`](#`transfer) but transfer multiple tokens based on the 
 
 #### Parameters
 
-| Name                    |    Type     | Description                                                                                                                                                                             |
-| ----------------------- | :---------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `from`                  | `address[]` | An array of sending addresses.                                                                                                                                                          |
-| `to`                    | `address[]` | An array of receiving addresses.                                                                                                                                                        |
-| `amount`                | `uint256[]` | An array of amount of tokens to transfer for each `from -> to` transfer.                                                                                                                |
-| `allowNonLSP1Recipient` |  `bool[]`   | For each transfer, when set to `true`, the `to` address CAN be any address. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard. |
-| `data`                  |  `bytes[]`  | An array of additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.                                                         |
+| Name     |    Type     | Description                                                                                                                                                                             |
+| -------- | :---------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `from`   | `address[]` | An array of sending addresses.                                                                                                                                                          |
+| `to`     | `address[]` | An array of receiving addresses.                                                                                                                                                        |
+| `amount` | `uint256[]` | An array of amount of tokens to transfer for each `from -> to` transfer.                                                                                                                |
+| `force`  |  `bool[]`   | For each transfer, when set to `true`, the `to` address CAN be any address. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard. |
+| `data`   |  `bytes[]`  | An array of additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.                                                         |
 
 <br/>
 
@@ -834,7 +834,7 @@ If the amount is zero then the operator is being revoked, otherwise the operator
 function _mint(
   address to,
   uint256 amount,
-  bool allowNonLSP1Recipient,
+  bool force,
   bytes data
 ) internal nonpayable;
 ```
@@ -874,8 +874,8 @@ Any logic in the [`_beforeTokenTransfer`](#_beforetokentransfer) function will r
 
 | Name     |   Type    | Description                                                                                                               |
 | -------- | :-------: | ------------------------------------------------------------------------------------------------------------------------- |
-| `from`   | `address` | the address to burn tokens from its balance.                                                                              |
-| `amount` | `uint256` | the amount of tokens to burn.                                                                                             |
+| `from`   | `address` | The address to burn tokens from its balance.                                                                              |
+| `amount` | `uint256` | The amount of tokens to burn.                                                                                             |
 | `data`   |  `bytes`  | Additional data the caller wants included in the emitted event, and sent in the LSP1 hook to the `from` and `to` address. |
 
 <br/>
@@ -887,7 +887,7 @@ function _transfer(
   address from,
   address to,
   uint256 amount,
-  bool allowNonLSP1Recipient,
+  bool force,
   bytes data
 ) internal nonpayable;
 ```
@@ -909,13 +909,13 @@ Any logic in the [`_beforeTokenTransfer`](#_beforetokentransfer) function will r
 
 #### Parameters
 
-| Name                    |   Type    | Description                                                                                                               |
-| ----------------------- | :-------: | ------------------------------------------------------------------------------------------------------------------------- |
-| `from`                  | `address` | the address to decrease the balance.                                                                                      |
-| `to`                    | `address` | the address to increase the balance.                                                                                      |
-| `amount`                | `uint256` | the amount of tokens to transfer from `from` to `to`.                                                                     |
-| `allowNonLSP1Recipient` |  `bool`   | a boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.                       |
-| `data`                  |  `bytes`  | Additional data the caller wants included in the emitted event, and sent in the LSP1 hook to the `from` and `to` address. |
+| Name     |   Type    | Description                                                                                                               |
+| -------- | :-------: | ------------------------------------------------------------------------------------------------------------------------- |
+| `from`   | `address` | The address to decrease the balance.                                                                                      |
+| `to`     | `address` | The address to increase the balance.                                                                                      |
+| `amount` | `uint256` | The amount of tokens to transfer from `from` to `to`.                                                                     |
+| `force`  |  `bool`   | A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.                       |
+| `data`   |  `bytes`  | Additional data the caller wants included in the emitted event, and sent in the LSP1 hook to the `from` and `to` address. |
 
 <br/>
 
@@ -988,26 +988,26 @@ If `from` is an EOA or a contract that does not support the LSP1 interface, noth
 ```solidity
 function _notifyTokenReceiver(
   address to,
-  bool allowNonLSP1Recipient,
+  bool force,
   bytes lsp1Data
 ) internal nonpayable;
 ```
 
 Attempt to notify the token receiver `to` about the `amount` tokens being received.
 This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP7_TOKENSRECIPIENT` as typeId, if `to` is a contract that supports the LSP1 interface.
-If `to` is is an EOA or a contract that does not support the LSP1 interface, the behaviour will depend on the `allowNonLSP1Recipient` boolean flag.
+If `to` is is an EOA or a contract that does not support the LSP1 interface, the behaviour will depend on the `force` boolean flag.
 
-- if `allowNonLSP1Recipient` is set to `true`, nothing will happen and no notification will be sent.
+- if `force` is set to `true`, nothing will happen and no notification will be sent.
 
-- if `allowNonLSP1Recipient` is set to `false, the transaction will revert.
+- if `force` is set to `false, the transaction will revert.
 
 #### Parameters
 
-| Name                    |   Type    | Description                                                                                         |
-| ----------------------- | :-------: | --------------------------------------------------------------------------------------------------- |
-| `to`                    | `address` | The address to call the {universalReceiver} function on.                                            |
-| `allowNonLSP1Recipient` |  `bool`   | a boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not. |
-| `lsp1Data`              |  `bytes`  | the data to be sent to the `to` address in the `universalReceiver(...)` call.                       |
+| Name       |   Type    | Description                                                                                         |
+| ---------- | :-------: | --------------------------------------------------------------------------------------------------- |
+| `to`       | `address` | The address to call the {universalReceiver} function on.                                            |
+| `force`    |  `bool`   | A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not. |
+| `lsp1Data` |  `bytes`  | The data to be sent to the `to` address in the `universalReceiver(...)` call.                       |
 
 <br/>
 
@@ -1183,7 +1183,7 @@ Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`
 :::
 
 ```solidity
-event Transfer(address indexed operator, address indexed from, address indexed to, uint256 amount, bool allowNonLSP1Recipient, bytes data);
+event Transfer(address indexed operator, address indexed from, address indexed to, uint256 amount, bool force, bytes data);
 ```
 
 Emitted when the `from` transferred successfully `amount` of tokens to `to`.
@@ -1196,7 +1196,7 @@ Emitted when the `from` transferred successfully `amount` of tokens to `to`.
 | `from` **`indexed`**     | `address` | The address which tokens were sent from (balance decreased by `-amount`).                                                    |
 | `to` **`indexed`**       | `address` | The address that received the tokens (balance increased by `+amount`).                                                       |
 | `amount`                 | `uint256` | The amount of tokens transferred.                                                                                            |
-| `allowNonLSP1Recipient`  |  `bool`   | if the transferred enforced the `to` recipient address to be a contract that implements the LSP1 standard or not.            |
+| `force`                  |  `bool`   | if the transferred enforced the `to` recipient address to be a contract that implements the LSP1 standard or not.            |
 | `data`                   |  `bytes`  | Any additional data included by the caller during the transfer, and sent in the LSP1 hooks to the `from` and `to` addresses. |
 
 <br/>
@@ -1572,7 +1572,7 @@ error LSP7NotifyTokenReceiverContractMissingLSP1Interface(
 );
 ```
 
-reverts if the `tokenReceiver` does not implement LSP1 when minting or transferring tokens with `bool allowNonLSP1Recipient` set as `false`.
+reverts if the `tokenReceiver` does not implement LSP1 when minting or transferring tokens with `bool force` set as `false`.
 
 #### Parameters
 
@@ -1597,7 +1597,7 @@ reverts if the `tokenReceiver` does not implement LSP1 when minting or transferr
 error LSP7NotifyTokenReceiverIsEOA(address tokenReceiver);
 ```
 
-reverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool allowNonLSP1Recipient` set as `false`.
+reverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool force` set as `false`.
 
 #### Parameters
 
