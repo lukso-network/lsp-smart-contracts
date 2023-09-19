@@ -90,6 +90,54 @@ export const OPERATION_TYPES = {
 export type LSP2ArrayKey = { length: string; index: string };
 export type LSPSupportedStandard = { key: string; value: string };
 
+// JSON Metadata
+
+export type LSP3ProfileMetadataJSON = {
+  LSP3Profile: LSP3ProfileMetadata;
+};
+
+export type LSP3ProfileMetadata = {
+  name: string;
+  description: string;
+  profileImage?: ImageMetadata[];
+  backgroundImage?: ImageMetadata[];
+  tags?: string[];
+  links?: LinkMetadata[];
+  avatar?: AssetMetadata[];
+};
+
+export type LSP4DigitalAssetMetadataJSON = {
+  LSP4Metadata: LSP4DigitalAssetMetadata;
+};
+
+export type LSP4DigitalAssetMetadata = {
+  description: string;
+  links: LinkMetadata[];
+  images: ImageMetadata[][];
+  assets: AssetMetadata[];
+  icon: ImageMetadata[];
+};
+
+export type ImageMetadata = {
+  width: number;
+  height: number;
+  hashFunction: string;
+  hash: string;
+  url: string;
+};
+
+export type LinkMetadata = {
+  title: string;
+  url: string;
+};
+
+export type AssetMetadata = {
+  hashFunction: string;
+  hash: string;
+  url: string;
+  fileType: string;
+};
+
 /**
  * @dev list of ERC725Y keys from the LSP standards.
  * Can be used to detect if a contract implements a specific LSP Metadata standard
