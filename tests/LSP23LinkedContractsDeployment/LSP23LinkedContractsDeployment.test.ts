@@ -779,12 +779,8 @@ describe('UniversalProfileDeployer', function () {
       expect(secondaryAddress).to.not.equal(ethers.constants.AddressZero);
     });
     it('should deploy proxies with correct initialization calldata (with secondary contract contains extraParams)', async function () {
-      const {
-        LSP23LinkedContractsFactory,
-        upInitPostDeploymentModule,
-        universalProfileInit,
-        keyManagerInit,
-      } = await deployImplementationContracts();
+      const { LSP23LinkedContractsFactory, upInitPostDeploymentModule, universalProfileInit } =
+        await deployImplementationContracts();
 
       const KeyManagerWithExtraParamsFactory = await ethers.getContractFactory(
         'KeyManagerInitWithExtraParams',
