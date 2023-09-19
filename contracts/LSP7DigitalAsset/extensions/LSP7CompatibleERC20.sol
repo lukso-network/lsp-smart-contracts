@@ -76,7 +76,7 @@ abstract contract LSP7CompatibleERC20 is
     /**
      * @inheritdoc ILSP7CompatibleERC20
      *
-     * @custom:info This function uses the `allowNonLSP1Recipient` parameter as `true` so that EOA and any contract can receive tokens.
+     * @custom:info This function uses the `force` parameter as `true` so that EOA and any contract can receive tokens.
      */
     function transferFrom(
         address from,
@@ -92,7 +92,7 @@ abstract contract LSP7CompatibleERC20 is
     /**
      * @inheritdoc ILSP7CompatibleERC20
      *
-     * @custom:info This function uses the `allowNonLSP1Recipient` parameter as `true` so that EOA and any contract can receive tokens.
+     * @custom:info This function uses the `force` parameter as `true` so that EOA and any contract can receive tokens.
      */
     function transfer(
         address to,
@@ -126,11 +126,11 @@ abstract contract LSP7CompatibleERC20 is
         address from,
         address to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual override {
         emit Transfer(from, to, amount);
-        super._transfer(from, to, amount, allowNonLSP1Recipient, data);
+        super._transfer(from, to, amount, force, data);
     }
 
     /**
@@ -141,11 +141,11 @@ abstract contract LSP7CompatibleERC20 is
     function _mint(
         address to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual override {
         emit Transfer(address(0), to, amount);
-        super._mint(to, amount, allowNonLSP1Recipient, data);
+        super._mint(to, amount, force, data);
     }
 
     /**

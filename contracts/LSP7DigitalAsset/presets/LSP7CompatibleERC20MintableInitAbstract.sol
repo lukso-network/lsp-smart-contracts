@@ -29,9 +29,9 @@ abstract contract LSP7CompatibleERC20MintableInitAbstract is
     function mint(
         address to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) public virtual onlyOwner {
-        _mint(to, amount, allowNonLSP1Recipient, data);
+        _mint(to, amount, force, data);
     }
 }

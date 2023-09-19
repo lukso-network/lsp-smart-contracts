@@ -171,7 +171,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address from,
         address to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) public virtual {
         if (from == to) revert LSP7CannotSendToSelf();
@@ -191,7 +191,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             _updateOperator(from, operator, operatorAmount - amount, "");
         }
 
-        _transfer(from, to, amount, allowNonLSP1Recipient, data);
+        _transfer(from, to, amount, force, data);
     }
 
     /**
@@ -201,14 +201,14 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address[] memory from,
         address[] memory to,
         uint256[] memory amount,
-        bool[] memory allowNonLSP1Recipient,
+        bool[] memory force,
         bytes[] memory data
     ) public virtual {
         uint256 fromLength = from.length;
         if (
             fromLength != to.length ||
             fromLength != amount.length ||
-            fromLength != allowNonLSP1Recipient.length ||
+            fromLength != force.length ||
             fromLength != data.length
         ) {
             revert LSP7InvalidTransferBatch();
@@ -216,13 +216,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         for (uint256 i = 0; i < fromLength; ) {
             // using the public transfer function to handle updates to operator authorized amounts
-            transfer(
-                from[i],
-                to[i],
-                amount[i],
-                allowNonLSP1Recipient[i],
-                data[i]
-            );
+            transfer(from[i], to[i], amount[i], force[i], data[i]);
 
             unchecked {
                 ++i;
@@ -374,9 +368,9 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     /**
      * @dev Mints `amount` of tokens and transfers it to `to`.
      *
-     * @param to the address to mint tokens for.
-     * @param amount the amount of tokens to mint.
-     * @param allowNonLSP1Recipient a boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
+     * @param to The address to mint tokens for.
+     * @param amount The amount of tokens to mint.
+     * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
      * @param data Additional data the caller wants included in the emitted {Transfer} event, and sent in the LSP1 hook to the `to` address.
      *
      * @custom:requirements
@@ -387,7 +381,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     function _mint(
         address to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual {
         if (to == address(0)) {
@@ -403,17 +397,10 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         _tokenOwnerBalances[to] += amount;
 
-        emit Transfer(
-            operator,
-            address(0),
-            to,
-            amount,
-            allowNonLSP1Recipient,
-            data
-        );
+        emit Transfer(operator, address(0), to, amount, force, data);
 
         bytes memory lsp1Data = abi.encode(address(0), to, amount, data);
-        _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
+        _notifyTokenReceiver(to, force, lsp1Data);
     }
 
     /**
@@ -425,8 +412,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      *
      * Any logic in the {_beforeTokenTransfer} function will run before updating the balances.
      *
-     * @param from the address to burn tokens from its balance.
-     * @param amount the amount of tokens to burn.
+     * @param from The address to burn tokens from its balance.
+     * @param amount The amount of tokens to burn.
      * @param data Additional data the caller wants included in the emitted event, and sent in the LSP1 hook to the `from` and `to` address.
      *
      * @custom:hint In dApps, you can know which address is burning tokens by listening for the `Transfer` event and filter with the zero address as `to`.
@@ -492,10 +479,10 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      *
      * Any logic in the {_beforeTokenTransfer} function will run before updating the balances.
      *
-     * @param from the address to decrease the balance.
-     * @param to the address to increase the balance.
-     * @param amount the amount of tokens to transfer from `from` to `to`.
-     * @param allowNonLSP1Recipient a boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
+     * @param from The address to decrease the balance.
+     * @param to The address to increase the balance.
+     * @param amount The amount of tokens to transfer from `from` to `to`.
+     * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
      * @param data Additional data the caller wants included in the emitted event, and sent in the LSP1 hook to the `from` and `to` address.
      *
      * @custom:requirements
@@ -509,7 +496,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address from,
         address to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual {
         if (from == address(0) || to == address(0)) {
@@ -528,12 +515,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         _tokenOwnerBalances[from] -= amount;
         _tokenOwnerBalances[to] += amount;
 
-        emit Transfer(operator, from, to, amount, allowNonLSP1Recipient, data);
+        emit Transfer(operator, from, to, amount, force, data);
 
         bytes memory lsp1Data = abi.encode(from, to, amount, data);
 
         _notifyTokenSender(from, lsp1Data);
-        _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
+        _notifyTokenReceiver(to, force, lsp1Data);
     }
 
     /**
@@ -607,17 +594,17 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @dev Attempt to notify the token receiver `to` about the `amount` tokens being received.
      * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENSRECIPIENT` as typeId, if `to` is a contract that supports the LSP1 interface.
      *
-     * If `to` is is an EOA or a contract that does not support the LSP1 interface, the behaviour will depend on the `allowNonLSP1Recipient` boolean flag.
-     * - if `allowNonLSP1Recipient` is set to `true`, nothing will happen and no notification will be sent.
-     * - if `allowNonLSP1Recipient` is set to `false, the transaction will revert.
+     * If `to` is is an EOA or a contract that does not support the LSP1 interface, the behaviour will depend on the `force` boolean flag.
+     * - if `force` is set to `true`, nothing will happen and no notification will be sent.
+     * - if `force` is set to `false, the transaction will revert.
      *
      * @param to The address to call the {universalReceiver} function on.
-     * @param allowNonLSP1Recipient a boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
-     * @param lsp1Data the data to be sent to the `to` address in the `universalReceiver(...)` call.
+     * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
+     * @param lsp1Data The data to be sent to the `to` address in the `universalReceiver(...)` call.
      */
     function _notifyTokenReceiver(
         address to,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory lsp1Data
     ) internal virtual {
         if (
@@ -630,7 +617,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
                 _TYPEID_LSP7_TOKENSRECIPIENT,
                 lsp1Data
             );
-        } else if (!allowNonLSP1Recipient) {
+        } else if (!force) {
             if (to.code.length > 0) {
                 revert LSP7NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {

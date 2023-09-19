@@ -731,7 +731,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
     const transferSuccessScenario = async (
       { operator, from, to, tokenId, data }: TransferTxParams,
       transferFn: string,
-      allowNonLSP1Recipient: boolean,
+      force: boolean,
       expectedData: string,
     ) => {
       // pre-conditions
@@ -749,14 +749,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           context.lsp8CompatibleERC721,
           'Transfer(address,address,address,bytes32,bool,bytes)',
         )
-        .withArgs(
-          operator,
-          from,
-          to,
-          tokenIdAsBytes32(tokenId),
-          allowNonLSP1Recipient,
-          expectedData,
-        );
+        .withArgs(operator, from, to, tokenIdAsBytes32(tokenId), force, expectedData);
 
       await expect(tx)
         .to.emit(context.lsp8CompatibleERC721, 'Transfer(address,address,uint256)')
@@ -773,7 +766,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
 
     describe('transferFrom', () => {
       const transferFn = 'transferFrom';
-      const allowNonLSP1Recipient = true;
+      const force = true;
       const expectedData = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(''));
 
       describe('when the from address is the tokenId owner', () => {
@@ -786,12 +779,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               tokenId: mintedTokenId,
             };
 
-            await transferSuccessScenario(
-              txParams,
-              transferFn,
-              allowNonLSP1Recipient,
-              expectedData,
-            );
+            await transferSuccessScenario(txParams, transferFn, force, expectedData);
           });
         });
 
@@ -805,12 +793,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 tokenId: mintedTokenId,
               };
 
-              await transferSuccessScenario(
-                txParams,
-                transferFn,
-                allowNonLSP1Recipient,
-                expectedData,
-              );
+              await transferSuccessScenario(txParams, transferFn, force, expectedData);
             });
           });
 
@@ -823,12 +806,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 tokenId: mintedTokenId,
               };
 
-              await transferSuccessScenario(
-                txParams,
-                transferFn,
-                allowNonLSP1Recipient,
-                expectedData,
-              );
+              await transferSuccessScenario(txParams, transferFn, force, expectedData);
             });
           });
         });

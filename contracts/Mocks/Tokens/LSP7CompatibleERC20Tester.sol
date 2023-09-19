@@ -15,7 +15,7 @@ contract LSP7CompatibleERC20Tester is LSP7CompatibleERC20 {
     ) LSP7CompatibleERC20(name_, symbol_, newOwner_) {}
 
     function mint(address to, uint256 amount, bytes calldata data) public {
-        // using allowNonLSP1Recipient=true so we can send to EOA in test
+        // using force=true so we can send to EOA in test
         _mint(to, amount, true, data);
     }
 

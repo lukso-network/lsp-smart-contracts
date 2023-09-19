@@ -236,7 +236,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address from,
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) public virtual {
         address operator = msg.sender;
@@ -245,7 +245,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8NotTokenOperator(tokenId, operator);
         }
 
-        _transfer(from, to, tokenId, allowNonLSP1Recipient, data);
+        _transfer(from, to, tokenId, force, data);
     }
 
     /**
@@ -255,27 +255,21 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address[] memory from,
         address[] memory to,
         bytes32[] memory tokenId,
-        bool[] memory allowNonLSP1Recipient,
+        bool[] memory force,
         bytes[] memory data
     ) public virtual {
         uint256 fromLength = from.length;
         if (
             fromLength != to.length ||
             fromLength != tokenId.length ||
-            fromLength != allowNonLSP1Recipient.length ||
+            fromLength != force.length ||
             fromLength != data.length
         ) {
             revert LSP8InvalidTransferBatch();
         }
 
         for (uint256 i = 0; i < fromLength; ) {
-            transfer(
-                from[i],
-                to[i],
-                tokenId[i],
-                allowNonLSP1Recipient[i],
-                data[i]
-            );
+            transfer(from[i], to[i], tokenId[i], force[i], data[i]);
 
             unchecked {
                 ++i;
@@ -361,7 +355,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      *
      * @param to The address that will receive the minted `tokenId`.
      * @param tokenId The token ID to create (= mint).
-     * @param allowNonLSP1Recipient When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard.
+     * @param force When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard.
      * @param data Any additional data the caller wants included in the emitted event, and sent in the hook of the `to` address.
      *
      * @custom:events {Transfer} event with `address(0)` as `from` address.
@@ -369,7 +363,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function _mint(
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual {
         if (to == address(0)) {
@@ -390,17 +384,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         _ownedTokens[to].add(tokenId);
         _tokenOwners[tokenId] = to;
 
-        emit Transfer(
-            operator,
-            address(0),
-            to,
-            tokenId,
-            allowNonLSP1Recipient,
-            data
-        );
+        emit Transfer(operator, address(0), to, tokenId, force, data);
 
         bytes memory lsp1Data = abi.encode(address(0), to, tokenId, data);
-        _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
+        _notifyTokenReceiver(to, force, lsp1Data);
     }
 
     /**
@@ -460,7 +447,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      * @param from The sender address.
      * @param to The recipient address.
      * @param tokenId The token to transfer.
-     * @param allowNonLSP1Recipient When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard.
+     * @param force When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard.
      * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
      *
      * @custom:requirements
@@ -475,7 +462,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address from,
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual {
         if (from == to) {
@@ -501,12 +488,12 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         _ownedTokens[to].add(tokenId);
         _tokenOwners[tokenId] = to;
 
-        emit Transfer(operator, from, to, tokenId, allowNonLSP1Recipient, data);
+        emit Transfer(operator, from, to, tokenId, force, data);
 
         bytes memory lsp1Data = abi.encode(from, to, tokenId, data);
 
         _notifyTokenSender(from, lsp1Data);
-        _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
+        _notifyTokenReceiver(to, force, lsp1Data);
     }
 
     /**
@@ -574,13 +561,13 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
     /**
      * @dev An attempt is made to notify the token receiver about the `tokenId` changing owners
-     * using LSP1 interface. When allowNonLSP1Recipient is FALSE the token receiver MUST support LSP1.
+     * using LSP1 interface. When force is FALSE the token receiver MUST support LSP1.
      *
      * The receiver may revert when the token being sent is not wanted.
      */
     function _notifyTokenReceiver(
         address to,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory lsp1Data
     ) internal virtual {
         if (
@@ -593,7 +580,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 _TYPEID_LSP8_TOKENSRECIPIENT,
                 lsp1Data
             );
-        } else if (!allowNonLSP1Recipient) {
+        } else if (!force) {
             if (to.code.length > 0) {
                 revert LSP8NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {

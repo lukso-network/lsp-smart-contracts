@@ -29,9 +29,9 @@ contract LSP8InitTester is
     function mint(
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) public {
-        _mint(to, tokenId, allowNonLSP1Recipient, data);
+        _mint(to, tokenId, force, data);
     }
 }

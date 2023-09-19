@@ -327,7 +327,7 @@ export const shouldBehaveLikeBatchExecute = (
         [sender, sender, sender], // address[] memory from,
         recipients, // address[] memory to,
         amounts, // uint256[] memory amount,
-        [true, true, true], // bool[] memory allowNonLSP1Recipient,
+        [true, true, true], // bool[] memory force,
         ['0x', '0x', '0x'], // bytes[] memory data
       ]);
 
