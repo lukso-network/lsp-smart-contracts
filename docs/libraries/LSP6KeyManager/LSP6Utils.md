@@ -26,6 +26,13 @@ Internal functions cannot be called externally, whether from other smart contrac
 
 ### getPermissionsFor
 
+:::info
+
+If the raw value fetched from the ERC725Y storage of `target` is not 32 bytes long, this is considered
+like _&quot;no permissions are set&quot;_ and will return 32 x `0x00` bytes as `bytes32(0)`.
+
+:::
+
 ```solidity
 function getPermissionsFor(contract IERC725Y target, address caller) internal view returns (bytes32);
 ```
