@@ -181,7 +181,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
     /**
      * @inheritdoc ILSP8CompatibleERC721
      *
-     * @custom:info This function sets the `allowNonLSP1Recipient` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
+     * @custom:info This function sets the `force` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */
     function transferFrom(
         address from,
@@ -194,7 +194,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
     /**
      * @inheritdoc ILSP8CompatibleERC721
      *
-     * @custom:info This function sets the `allowNonLSP1Recipient` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
+     * @custom:info This function sets the `force` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */
     function safeTransferFrom(
         address from,
@@ -207,7 +207,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
     /**
      * @inheritdoc ILSP8CompatibleERC721
      *
-     * @custom:info This function sets the `allowNonLSP1Recipient` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
+     * @custom:info This function sets the `force` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */
     function safeTransferFrom(
         address from,
@@ -286,7 +286,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         address from,
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual override {
         address operator = msg.sender;
@@ -299,7 +299,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         }
 
         emit Transfer(from, to, uint256(tokenId));
-        super._transfer(from, to, tokenId, allowNonLSP1Recipient, data);
+        super._transfer(from, to, tokenId, force, data);
     }
 
     /**
@@ -330,11 +330,11 @@ abstract contract LSP8CompatibleERC721InitAbstract is
     function _mint(
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual override {
         emit Transfer(address(0), to, uint256(tokenId));
-        super._mint(to, tokenId, allowNonLSP1Recipient, data);
+        super._mint(to, tokenId, force, data);
     }
 
     /**
