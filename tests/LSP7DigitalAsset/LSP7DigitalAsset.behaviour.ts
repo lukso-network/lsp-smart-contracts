@@ -1776,6 +1776,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           );
       });
     });
+
     describe('when caller is the `from` address', () => {
       describe('when using address(0) as `from` address', () => {
         it('should revert', async () => {
