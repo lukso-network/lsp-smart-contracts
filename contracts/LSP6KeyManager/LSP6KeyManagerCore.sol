@@ -577,7 +577,8 @@ abstract contract LSP6KeyManagerCore is
             );
         } else if (
             erc725Function == ILSP14Ownable2Step.transferOwnership.selector ||
-            erc725Function == ILSP14Ownable2Step.acceptOwnership.selector
+            erc725Function == ILSP14Ownable2Step.acceptOwnership.selector ||
+            erc725Function == ILSP14Ownable2Step.renounceOwnership.selector
         ) {
             LSP6OwnershipModule._verifyOwnershipPermissions(from, permissions);
         } else {
