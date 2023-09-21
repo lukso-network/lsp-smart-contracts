@@ -42,7 +42,6 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
       await expect(
         context.keyManagerInternalTester.verifyPermissions(
           context.mainController.address,
-          0,
           calldata,
         ),
       ).to.not.be.reverted;
@@ -78,7 +77,6 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
       await expect(
         context.keyManagerInternalTester.verifyPermissions(
           context.mainController.address,
-          0,
           invalidCalldata,
         ),
       ).to.be.reverted;
