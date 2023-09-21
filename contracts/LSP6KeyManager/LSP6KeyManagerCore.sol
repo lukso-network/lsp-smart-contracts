@@ -305,6 +305,16 @@ abstract contract LSP6KeyManagerCore is
 
     /**
      * @inheritdoc ILSP20
+     *
+     * @custom:hint This function can call by any other address than the {`target`}.
+     * This allows to verify permissions in a _"read-only"_ manner.
+     *
+     * Anyone can call this function to verify if the `caller` has the right permissions to perform the abi-encoded function call `data`
+     * on the {`target`} contract (while sending `msgValue` alongside the call).
+     *
+     * If the permissions have been verified successfully and `caller` is authorized, one of the following two LSP20 magic value will be returned:
+     *  - `0x9bf04b00`: LSP20 magic value **without** post verification (last byte is `0x00`).
+     *  - `0x9bf04b01`: LSP20 magic value **with** post-verification (last byte is `0x01`).
      */
     function lsp20VerifyCall(
         address caller,
@@ -332,8 +342,8 @@ abstract contract LSP6KeyManagerCore is
                     ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
                     : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
         }
-        // If a different address is invoking the verification, do not change the state
-        // and do read-only verification
+        /// @dev If a different address is invoking the verification,
+        /// do not change the state or emit the event to allow read-only verification
         else {
             bool isReentrantCall = _reentrancyStatus;
 
