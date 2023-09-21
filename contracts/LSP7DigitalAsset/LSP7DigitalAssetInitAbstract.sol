@@ -98,10 +98,8 @@ abstract contract LSP7DigitalAssetInitAbstract is
      * CALL opcode, passing the {msg.data} appended with the 20 bytes of the {msg.sender} and
      * 32 bytes of the {msg.value}
      *
-     * Because the function uses assembly {return()/revert()} to terminate the call, it cannot be
-     * called before other codes in fallback().
-     *
-     * Otherwise, the codes after _fallbackLSP17Extendable() may never be reached.
+     * @custom:info The LSP7 Token contract should not hold any native tokens. Any native tokens received by the contract
+     * will be forwarded to the extension address mapped to the selector from `msg.sig`.
      */
     function _fallbackLSP17Extendable(
         bytes calldata callData
