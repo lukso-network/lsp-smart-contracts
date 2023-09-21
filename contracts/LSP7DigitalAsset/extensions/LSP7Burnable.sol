@@ -4,12 +4,6 @@ pragma solidity ^0.8.4;
 // modules
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
 
-// errors
-import {
-    LSP7AmountExceedsAuthorizedAmount,
-    LSP7CannotSendWithAddressZero
-} from "../LSP7Errors.sol";
-
 /**
  * @title LSP7 token extension that allows token holders to destroy both
  * their own tokens and those that they have an allowance for as an operator.

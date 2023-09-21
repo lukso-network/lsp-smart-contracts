@@ -277,7 +277,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      *    indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
      *
      * @param operator The operator to decrease allowance for `msg.sender`
-     * @param substractedAmount The amount to decrease by in the operator's allowance.
+     * @param subtractedAmount The amount to decrease by in the operator's allowance.
      *
      * @custom:requirements
      *  - `operator` cannot be the zero address.
@@ -458,7 +458,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     }
 
     /**
-     * @dev Spend `amount` from the `operator`'s authorized on behalf of the `tokenOwner`.
+     * @dev Spend `amountToSpend` from the `operator`'s authorized on behalf of the `tokenOwner`.
      *
      * @param operator The address of the operator to decrease the allowance of.
      * @param tokenOwner The address that granted an allowance on its balance to `operator`.

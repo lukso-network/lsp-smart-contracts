@@ -321,8 +321,8 @@ Atomically decreases the allowance granted to `operator` by the caller. This is 
 
 | Name                       |   Type    | Description                                            |
 | -------------------------- | :-------: | ------------------------------------------------------ |
-| `operator`                 | `address` | the operator to decrease allowance for `msg.sender`    |
-| `subtractedAmount`         | `uint256` | the amount to decrease by in the operator's allowance. |
+| `operator`                 | `address` | The operator to decrease allowance for `msg.sender`    |
+| `subtractedAmount`         | `uint256` | The amount to decrease by in the operator's allowance. |
 | `operatorNotificationData` |  `bytes`  | -                                                      |
 
 <br/>
@@ -476,8 +476,8 @@ Atomically increases the allowance granted to `operator` by the caller. This is 
 
 | Name                       |   Type    | Description                                                             |
 | -------------------------- | :-------: | ----------------------------------------------------------------------- |
-| `operator`                 | `address` | the operator to increase the allowance for `msg.sender`                 |
-| `addedAmount`              | `uint256` | the additional amount to add on top of the current operator's allowance |
+| `operator`                 | `address` | The operator to increase the allowance for `msg.sender`                 |
+| `addedAmount`              | `uint256` | The additional amount to add on top of the current operator's allowance |
 | `operatorNotificationData` |  `bytes`  | -                                                                       |
 
 <br/>
@@ -1062,6 +1062,28 @@ function _mint(
 ```solidity
 function _burn(address from, uint256 amount, bytes data) internal nonpayable;
 ```
+
+<br/>
+
+### \_spendAllowance
+
+```solidity
+function _spendAllowance(
+  address operator,
+  address tokenOwner,
+  uint256 amountToSpend
+) internal nonpayable;
+```
+
+Spend `amountToSpend` from the `operator`'s authorized on behalf of the `tokenOwner`.
+
+#### Parameters
+
+| Name            |   Type    | Description                                                         |
+| --------------- | :-------: | ------------------------------------------------------------------- |
+| `operator`      | `address` | The address of the operator to decrease the allowance of.           |
+| `tokenOwner`    | `address` | The address that granted an allowance on its balance to `operator`. |
+| `amountToSpend` | `uint256` | The amount of tokens to substract in allowance of `operator`.       |
 
 <br/>
 
