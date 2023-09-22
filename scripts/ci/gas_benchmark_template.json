@@ -1,0 +1,90 @@
+{
+  "deployment_costs": {
+    "Universal Profile": "",
+    "Key Manager": "",
+    "LSP1 Delegate UP": "",
+    "LSP7 Digital Asset": "",
+    "LSP8 Identifiable Digital Asset": ""
+  },
+  "runtime_costs": {
+    "execute": {
+      "case_1": {
+        "description": "LYX transfer --> to an EOA",
+        "main_controller": "",
+        "restricted_controller": ""
+      },
+      "case_2": {
+        "description": "LYX transfer --> to a UP",
+        "main_controller": "",
+        "restricted_controller": ""
+      },
+      "case_3": {
+        "description": "LSP7 token transfer --> to an EOA",
+        "main_controller": "",
+        "restricted_controller": ""
+      },
+      "case_4": {
+        "description": "LSP7 token transfer --> to a UP",
+        "main_controller": "",
+        "restricted_controller": ""
+      },
+      "case_5": {
+        "description": "LSP8 NFT transfer --> to an EOA",
+        "main_controller": "",
+        "restricted_controller": ""
+      },
+      "case_6": {
+        "description": "LSP8 NFT transfer --> to a UP",
+        "main_controller": "",
+        "restricted_controller": ""
+      }
+    },
+    "setData": {
+      "case_1": {
+        "description": "Update Profile details (LSP3Profile Metadata)",
+        "main_controller": "",
+        "restricted_controller": ""
+      },
+      "case_2": {
+        "description": "Add a new controller with permission to `SET_DATA` + 3x allowed data keys: <br/> `AddressPermissions[]` <br/> + `AddressPermissions[index]` <br/> + `AddressPermissions:Permissions:<controller>` <br/> + `AddressPermissions:AllowedERC725YDataKeys:<controller`)",
+        "main_controller": "",
+        "restricted_controller": ""
+      },
+      "case_3": {
+        "description": "Update permissions of previous controller. Allow it now to `SUPER_SETDATA`",
+        "main_controller": "",
+        "restricted_controller": ""
+      },
+      "case_4": {
+        "description": "Remove a controller: <br/> 1. decrease `AddressPermissions[]` Array length <br/> 2. remove the controller address at `AddressPermissions[index]` <br/> 3. set \"0x\" for the controller permissions under AddressPermissions:Permissions:<controller-address>",
+        "main_controller": "",
+        "restricted_controller": ""
+      },
+      "case_5": {
+        "description": "Write 5x new LSP12 Issued Assets",
+        "main_controller": "",
+        "restricted_controller": ""
+      },
+      "case_6": {
+        "description": "Update 3x data keys (first 3)",
+        "main_controller": "",
+        "restricted_controller": ""
+      },
+      "case_7": {
+        "description": "Update 3x data keys (middle 3)",
+        "main_controller": "",
+        "restricted_controller": ""
+      },
+      "case_8": {
+        "description": "Update 3x data keys (last 3)",
+        "main_controller": "",
+        "restricted_controller": ""
+      },
+      "case_9": {
+        "description": "Set 2 x new data keys + add 3x new controllers",
+        "main_controller": "",
+        "restricted_controller": ""
+      }
+    }
+  }
+}

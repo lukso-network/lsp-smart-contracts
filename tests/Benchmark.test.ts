@@ -652,6 +652,18 @@ describe('⛽📊 Gas Benchmark', () => {
   });
 
   describe('KeyManager', () => {
+    let gasBenchmark;
+
+    before('setup benchmark file', async () => {
+      gasBenchmark = JSON.parse(
+        fs.readFileSync('./scripts/ci/gas_benchmark_template.json', 'utf8'),
+      );
+    });
+
+    after(async () => {
+      fs.writeFileSync('gas_benchmark_result.json', JSON.stringify(gasBenchmark, null, 2));
+    });
+
     describe('`execute(...)` via Key Manager', () => {
       describe('main controller (this browser extension)', () => {
         const casesExecuteMainController: Row[] = [];
@@ -718,6 +730,9 @@ describe('⛽📊 Gas Benchmark', () => {
             'transfer LYX to an EOA',
             receipt.gasUsed.toNumber().toString(),
           ]);
+
+          gasBenchmark['runtime_costs']['execute']['case_1']['main_controller'] =
+            receipt.gasUsed.toNumber();
         });
 
         it('transfers some LYXes to a UP', async () => {
@@ -731,6 +746,9 @@ describe('⛽📊 Gas Benchmark', () => {
             'transfer LYX to a UP',
             receipt.gasUsed.toNumber().toString(),
           ]);
+
+          gasBenchmark['runtime_costs']['execute']['case_2']['main_controller'] =
+            receipt.gasUsed.toNumber();
         });
 
         it('transfers some tokens (LSP7) to an EOA (no data)', async () => {
@@ -755,6 +773,9 @@ describe('⛽📊 Gas Benchmark', () => {
             'transfer tokens (LSP7) to an EOA (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
+
+          gasBenchmark['runtime_costs']['execute']['case_3']['main_controller'] =
+            receipt.gasUsed.toNumber();
         });
 
         it('transfer some tokens (LSP7) to a UP (no data)', async () => {
@@ -779,6 +800,9 @@ describe('⛽📊 Gas Benchmark', () => {
             'transfer tokens (LSP7) to a UP (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
+
+          gasBenchmark['runtime_costs']['execute']['case_4']['main_controller'] =
+            receipt.gasUsed.toNumber();
         });
 
         it('transfer a NFT (LSP8) to a EOA (no data)', async () => {
@@ -803,6 +827,9 @@ describe('⛽📊 Gas Benchmark', () => {
             'transfer a NFT (LSP8) to a EOA (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
+
+          gasBenchmark['runtime_costs']['execute']['case_5']['main_controller'] =
+            receipt.gasUsed.toNumber();
         });
 
         it('transfer a NFT (LSP8) to a UP (no data)', async () => {
@@ -827,6 +854,9 @@ describe('⛽📊 Gas Benchmark', () => {
             'transfer a NFT (LSP8) to a UP (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
+
+          gasBenchmark['runtime_costs']['execute']['case_6']['main_controller'] =
+            receipt.gasUsed.toNumber();
         });
 
         after(async () => {
@@ -944,7 +974,7 @@ describe('⛽📊 Gas Benchmark', () => {
               PERMISSIONS.TRANSFERVALUE,
               PERMISSIONS.CALL,
               PERMISSIONS.CALL,
-              combineAllowedCalls([CALLTYPE.VALUE], [allowedAddressToTransferValue], ["0xffffffff"], ["0xffffffff"]),
+              combineAllowedCalls([CALLTYPE.VALUE, CALLTYPE.VALUE], [allowedAddressToTransferValue, aliceUP.address], ["0xffffffff", "0xffffffff"], ["0xffffffff", "0xffffffff"]),
               combineAllowedCalls(
                 [CALLTYPE.CALL, CALLTYPE.CALL],
                 [lsp7MetaCoin.address, lsp7LyxDai.address],
@@ -961,7 +991,7 @@ describe('⛽📊 Gas Benchmark', () => {
           )
         });
 
-        it('transfer some LYXes to an EOA - restricted to 1 x allowed address only (TRANSFERVALUE + 1x AllowedCalls)', async () => {
+        it('transfer some LYXes to an EOA - restricted to 2 x allowed address only (TRANSFERVALUE + 2x AllowedCalls)', async () => {
           const lyxAmount = 10;
 
           const tx = await context.universalProfile
@@ -970,9 +1000,30 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           casesExecuteRestrictedController.push([
-            'transfer some LYXes to an EOA - restricted to 1 x allowed address only (TRANSFERVALUE + 1x AllowedCalls)',
+            'transfer some LYXes to an EOA - restricted to 2 x allowed address only (an EOA + a UP) (TRANSFERVALUE + 2x AllowedCalls)',
             receipt.gasUsed.toNumber().toString(),
           ]);
+
+          gasBenchmark['runtime_costs']['execute']['case_1']['restricted_controller'] =
+            receipt.gasUsed.toNumber();
+        });
+
+        it('transfer some LYXes to a UP - restricted to 2 x allowed address only (an EOA + a UP) (TRANSFERVALUE + 2x AllowedCalls)', async () => {
+          // ...
+          const lyxAmount = 10;
+
+          const tx = await context.universalProfile
+            .connect(canTransferValueToOneAddress)
+            .execute(OPERATION_TYPES.CALL, aliceUP.address, lyxAmount, '0x');
+          const receipt = await tx.wait();
+
+          casesExecuteRestrictedController.push([
+            'transfer some LYXes to a UP - restricted to 2 x allowed address only (an EOA + a UP) (TRANSFERVALUE + 2x AllowedCalls)',
+            receipt.gasUsed.toNumber().toString(),
+          ]);
+
+          gasBenchmark['runtime_costs']['execute']['case_2']['restricted_controller'] =
+            receipt.gasUsed.toNumber();
         });
 
         it('transfers some tokens (LSP7) to an EOA - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)', async () => {
@@ -997,6 +1048,9 @@ describe('⛽📊 Gas Benchmark', () => {
             'transfers some tokens (LSP7) to an EOA - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
+
+          gasBenchmark['runtime_costs']['execute']['case_3']['restricted_controller'] =
+            receipt.gasUsed.toNumber();
         });
 
         it('transfers some tokens (LSP7) to an other UP - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)', async () => {
@@ -1021,6 +1075,9 @@ describe('⛽📊 Gas Benchmark', () => {
             'transfers some tokens (LSP7) to an other UP - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
+
+          gasBenchmark['runtime_costs']['execute']['case_4']['restricted_controller'] =
+            receipt.gasUsed.toNumber();
         });
 
         it('transfers a NFT (LSP8) to an EOA - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)', async () => {
@@ -1045,6 +1102,9 @@ describe('⛽📊 Gas Benchmark', () => {
             'transfers a NFT (LSP8) to an EOA - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
+
+          gasBenchmark['runtime_costs']['execute']['case_5']['restricted_controller'] =
+            receipt.gasUsed.toNumber();
         });
 
         it('transfers a NFT (LSP8) to an other UP - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)', async () => {
@@ -1069,6 +1129,9 @@ describe('⛽📊 Gas Benchmark', () => {
             'transfers a NFT (LSP8) to an other UP - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)',
             receipt.gasUsed.toNumber().toString(),
           ]);
+
+          gasBenchmark['runtime_costs']['execute']['case_6']['restricted_controller'] =
+            receipt.gasUsed.toNumber();
         });
 
         after(async () => {
