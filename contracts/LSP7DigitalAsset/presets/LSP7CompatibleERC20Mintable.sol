@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.12;
 
 import {LSP7CompatibleERC20} from "../extensions/LSP7CompatibleERC20.sol";
