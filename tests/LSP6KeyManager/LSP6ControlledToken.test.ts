@@ -132,17 +132,21 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
   });
 
   describe('using renounceOwnership(..) in LSP7 through LSP6', () => {
-    it('should revert', async () => {
+    it('should pass', async () => {
       const renounceOwnershipPayload =
         context.token.interface.encodeFunctionData('renounceOwnership');
 
-      await expect(context.keyManager.connect(context.owner).execute(renounceOwnershipPayload))
-        .to.be.revertedWithCustomError(context.keyManager, 'InvalidERC725Function')
-        .withArgs(renounceOwnershipPayload);
+      await context.keyManager.connect(context.owner).execute(renounceOwnershipPayload);
+
+      expect(await context.token.owner()).to.equal(ethers.constants.AddressZero);
     });
   });
 
   describe('using transferOwnership(..) in LSP7 through LSP6', () => {
+    before("previous token contract's ownership was renounced, build new context", async () => {
+      context = await buildContext();
+    });
+
     it('should change the owner of LSP7 contract', async () => {
       const LSP7 = context.token as LSP7Mintable;
       const transferOwnershipPayload = LSP7.interface.encodeFunctionData('transferOwnership', [
@@ -173,7 +177,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
       expect(await context.token.getData(key)).to.equal(value);
     });
 
-    it("`mint(..)` -> should revert with 'caller is not the owner' error.", async () => {
+    it("`mint(..)` -> should revert with 'InvalidERC725Function' error.", async () => {
       const LSP7 = context.token as LSP7Mintable;
       const mintPayload = LSP7.interface.encodeFunctionData('mint', [
         context.owner.address,
@@ -216,9 +220,9 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
       const renounceOwnershipPayload =
         context.token.interface.encodeFunctionData('renounceOwnership');
 
-      await expect(context.keyManager.connect(context.owner).execute(renounceOwnershipPayload))
-        .to.be.revertedWithCustomError(context.keyManager, 'InvalidERC725Function')
-        .withArgs(renounceOwnershipPayload);
+      await expect(
+        context.keyManager.connect(context.owner).execute(renounceOwnershipPayload),
+      ).to.be.revertedWith('Ownable: caller is not the owner');
     });
 
     it('should allow the new owner to call renounceOwnership(..)', async () => {
