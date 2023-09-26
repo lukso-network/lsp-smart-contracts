@@ -332,8 +332,8 @@ Checks if a signature was signed by a controller that has the permission `SIGN`.
 
 - Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#lsp20verifycall)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
-- Function signature: `lsp20VerifyCall(address,uint256,bytes)`
-- Function selector: `0x9bf04b11`
+- Function signature: `lsp20VerifyCall(address,address,uint256,bytes)`
+- Function selector: `0x1a2380e1`
 
 :::
 
@@ -341,13 +341,14 @@ Checks if a signature was signed by a controller that has the permission `SIGN`.
 
 This function can call by any other address than the {`target`}. This allows to verify permissions in a _&quot;read-only&quot;_ manner. Anyone can call this function to verify if the `caller` has the right permissions to perform the abi-encoded function call `data` on the {`target`} contract (while sending `msgValue` alongside the call). If the permissions have been verified successfully and `caller` is authorized, one of the following two LSP20 magic value will be returned:
 
-- `0x9bf04b00`: LSP20 magic value **without** post verification (last byte is `0x00`).
-- `0x9bf04b01`: LSP20 magic value **with** post-verification (last byte is `0x01`).
+- `0x1a238000`: LSP20 magic value **without** post verification (last byte is `0x00`).
+- `0x1a238001`: LSP20 magic value **with** post-verification (last byte is `0x01`).
 
 :::
 
 ```solidity
 function lsp20VerifyCall(
+  address callee,
   address caller,
   uint256 msgValue,
   bytes data
@@ -356,11 +357,12 @@ function lsp20VerifyCall(
 
 #### Parameters
 
-| Name       |   Type    | Description                                           |
-| ---------- | :-------: | ----------------------------------------------------- |
-| `caller`   | `address` | The address who called the function on the msg.sender |
-| `msgValue` | `uint256` | -                                                     |
-| `data`     |  `bytes`  | -                                                     |
+| Name       |   Type    | Description                                                     |
+| ---------- | :-------: | --------------------------------------------------------------- |
+| `callee`   | `address` | The address of the contract that implements the LSP20 interface |
+| `caller`   | `address` | The address who called the function on the msg.sender           |
+| `msgValue` | `uint256` | -                                                               |
+| `data`     |  `bytes`  | -                                                               |
 
 #### Returns
 
@@ -1150,6 +1152,7 @@ _Execute the `payload` passed to `execute(...)` or `executeRelayCall(...)`_
 
 ```solidity
 function _verifyPermissions(
+  address callee,
   address from,
   uint256 msgValue,
   bytes payload
@@ -1162,6 +1165,7 @@ Verify if the `from` address is allowed to execute the `payload` on the [`target
 
 | Name       |   Type    | Description                                                         |
 | ---------- | :-------: | ------------------------------------------------------------------- |
+| `callee`   | `address` | -                                                                   |
 | `from`     | `address` | Either the caller of {execute} or the signer of {executeRelayCall}. |
 | `msgValue` | `uint256` | -                                                                   |
 | `payload`  |  `bytes`  | The abi-encoded function call to execute on the {target} contract.  |
