@@ -313,10 +313,11 @@ abstract contract LSP6KeyManagerCore is
      * on the {`target`} contract (while sending `msgValue` alongside the call).
      *
      * If the permissions have been verified successfully and `caller` is authorized, one of the following two LSP20 magic value will be returned:
-     *  - `0x9bf04b00`: LSP20 magic value **without** post verification (last byte is `0x00`).
-     *  - `0x9bf04b01`: LSP20 magic value **with** post-verification (last byte is `0x01`).
+     *  - `0x1a238000`: LSP20 magic value **without** post verification (last byte is `0x00`).
+     *  - `0x1a238001`: LSP20 magic value **with** post-verification (last byte is `0x01`).
      */
     function lsp20VerifyCall(
+        address callee,
         address caller,
         uint256 msgValue,
         bytes calldata data
@@ -330,10 +331,10 @@ abstract contract LSP6KeyManagerCore is
         }
 
         // If target is invoking the verification, emit the event and change the reentrancy guard
-        if (msg.sender == _target) {
+        if (msg.sender == callee) {
             bool isReentrantCall = _nonReentrantBefore(isSetData, caller);
 
-            _verifyPermissions(caller, msgValue, data);
+            _verifyPermissions(callee, caller, msgValue, data);
             emit PermissionsVerified(caller, msgValue, bytes4(data));
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
@@ -350,12 +351,12 @@ abstract contract LSP6KeyManagerCore is
             if (isReentrantCall) {
                 _requirePermissions(
                     caller,
-                    ERC725Y(_target).getPermissionsFor(caller),
+                    ERC725Y(callee).getPermissionsFor(caller),
                     _PERMISSION_REENTRANCY
                 );
             }
 
-            _verifyPermissions(caller, msgValue, data);
+            _verifyPermissions(callee, caller, msgValue, data);
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
@@ -398,7 +399,7 @@ abstract contract LSP6KeyManagerCore is
 
         bool isReentrantCall = _nonReentrantBefore(isSetData, msg.sender);
 
-        _verifyPermissions(msg.sender, msgValue, payload);
+        _verifyPermissions(_target, msg.sender, msgValue, payload);
         emit PermissionsVerified(msg.sender, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
@@ -463,7 +464,7 @@ abstract contract LSP6KeyManagerCore is
 
         bool isReentrantCall = _nonReentrantBefore(isSetData, signer);
 
-        _verifyPermissions(signer, msgValue, payload);
+        _verifyPermissions(_target, signer, msgValue, payload);
         emit PermissionsVerified(signer, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
@@ -503,11 +504,12 @@ abstract contract LSP6KeyManagerCore is
      * @param payload The abi-encoded function call to execute on the {target} contract.
      */
     function _verifyPermissions(
+        address callee,
         address from,
         uint256 msgValue,
         bytes calldata payload
     ) internal view virtual {
-        bytes32 permissions = ERC725Y(_target).getPermissionsFor(from);
+        bytes32 permissions = ERC725Y(callee).getPermissionsFor(from);
         if (permissions == bytes32(0)) revert NoPermissionsSet(from);
 
         bytes4 erc725Function = bytes4(payload);
@@ -521,7 +523,7 @@ abstract contract LSP6KeyManagerCore is
             );
 
             LSP6SetDataModule._verifyCanSetData(
-                _target,
+                callee,
                 from,
                 permissions,
                 inputKey,
@@ -535,7 +537,7 @@ abstract contract LSP6KeyManagerCore is
                 .decode(payload[4:], (bytes32[], bytes[]));
 
             LSP6SetDataModule._verifyCanSetData(
-                _target,
+                callee,
                 from,
                 permissions,
                 inputKeys,
@@ -552,7 +554,7 @@ abstract contract LSP6KeyManagerCore is
             ) = abi.decode(payload[4:], (uint256, address, uint256, bytes));
 
             LSP6ExecuteModule._verifyCanExecute(
-                _target,
+                callee,
                 from,
                 permissions,
                 operationType,
