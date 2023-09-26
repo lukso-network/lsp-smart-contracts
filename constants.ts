@@ -35,7 +35,7 @@ export const INTERFACE_IDS = {
   LSP17Extendable: '0xa918fa6b',
   LSP17Extension: '0xcee78b40',
   LSP20CallVerification: '0x1a0eb6a5',
-  LSP20CallVerifier: '0x480c0ec2',
+  LSP20CallVerifier: '0xc9dfc532',
   LSP25ExecuteRelayCall: '0x5ac79908',
 };
 

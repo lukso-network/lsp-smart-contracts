@@ -1023,7 +1023,7 @@ export const shouldBehaveLikePermissionCall = (
     it('Should revert when caller calls the KeyManager through execute', async () => {
       const lsp20VerifyCallPayload = context.keyManager.interface.encodeFunctionData(
         'lsp20VerifyCall',
-        [context.accounts[2].address, 0, '0xaabbccdd'], // random arguments
+        [context.keyManager.address, context.accounts[2].address, 0, '0xaabbccdd'], // random arguments
       );
 
       const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
