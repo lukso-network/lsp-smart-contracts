@@ -61,9 +61,9 @@ export const ERC1271_VALUES = {
 export const LSP20_MAGIC_VALUES = {
   VERIFY_CALL: {
     // bytes3(keccak256("lsp20VerifyCall(address,uint256,bytes)")) + "0x01"
-    WITH_POST_VERIFICATION: '0x9bf04b01',
+    WITH_POST_VERIFICATION: '0x1a238001',
     // bytes3(keccak256("lsp20VerifyCall(address,uint256,bytes)")) + "0x00"
-    NO_POST_VERIFICATION: '0x9bf04b00',
+    NO_POST_VERIFICATION: '0x1a238000',
   },
   // bytes4(keccak256("lsp20VerifyCallResult(bytes32,bytes)"))
   VERIFY_CALL_RESULT: '0xd3fc45d3',
