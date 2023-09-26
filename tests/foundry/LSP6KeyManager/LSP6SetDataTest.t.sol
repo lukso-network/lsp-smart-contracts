@@ -227,7 +227,12 @@ contract LSP6SetDataTest is Test {
         keyManager.execute(callData);
 
         // CHECK the LSP20 verification function reverts as well
-        keyManager.lsp20VerifyCall(malicious, 0, functionArgs);
+        keyManager.lsp20VerifyCall(
+            address(universalProfile),
+            malicious,
+            0,
+            functionArgs
+        );
 
         // CHECK it reverts when calling directly the Universal Profile
         universalProfile.setData(dataKey, dataValue);
