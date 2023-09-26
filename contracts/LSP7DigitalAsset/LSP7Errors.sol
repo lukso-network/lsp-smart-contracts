@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // --- Errors
@@ -48,14 +48,14 @@ error LSP7InvalidTransferBatch();
 
 /**
  * @dev reverts if the `tokenReceiver` does not implement LSP1
- * when minting or transferring tokens with `bool allowNonLSP1Recipient` set as `false`.
+ * when minting or transferring tokens with `bool force` set as `false`.
  */
 error LSP7NotifyTokenReceiverContractMissingLSP1Interface(
     address tokenReceiver
 );
 
 /**
- * @dev reverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool allowNonLSP1Recipient` set as `false`.
+ * @dev reverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool force` set as `false`.
  */
 error LSP7NotifyTokenReceiverIsEOA(address tokenReceiver);
 

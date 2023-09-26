@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
@@ -20,7 +20,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param from The previous owner of the `tokenId`
      * @param to The new owner of `tokenId`
      * @param tokenId The tokenId that was transferred
-     * @param allowNonLSP1Recipient If the token transfer enforces the `to` recipient address to be a contract that implements the LSP1 standard or not.
+     * @param force If the token transfer enforces the `to` recipient address to be a contract that implements the LSP1 standard or not.
      * @param data Any additional data the caller included by the caller during the transfer, and sent in the hooks to the `from` and `to` addresses.
      */
     event Transfer(
@@ -28,7 +28,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
         address indexed from,
         address indexed to,
         bytes32 indexed tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes data
     );
 
@@ -37,11 +37,13 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param operator The address authorized as an operator.
      * @param tokenOwner The owner of the `tokenId`.
      * @param tokenId The tokenId `operator` address has access on behalf of `tokenOwner`.
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
     event AuthorizedOperator(
         address indexed operator,
         address indexed tokenOwner,
-        bytes32 indexed tokenId
+        bytes32 indexed tokenId,
+        bytes operatorNotificationData
     );
 
     /**
@@ -49,11 +51,13 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param operator The address revoked from the operator array ({getOperatorsOf}).
      * @param tokenOwner The owner of the `tokenId`.
      * @param tokenId The tokenId `operator` is revoked from operating on.
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
     event RevokedOperator(
         address indexed operator,
         address indexed tokenOwner,
-        bytes32 indexed tokenId
+        bytes32 indexed tokenId,
+        bytes operatorNotificationData
     );
 
     // --- Token queries
@@ -100,7 +104,8 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @dev Allow an `operator` address to transfer or burn a specific `tokenId` on behalf of its token owner. See {isOperatorFor}.
      *
      * @param operator The address to authorize as an operator.
-     * @param tokenId The token ID operator has access to..
+     * @param tokenId The token ID operator has access to.
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
      * - `tokenId` must exist.
@@ -110,7 +115,11 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * @custom:events {AuthorizedOperator} event.
      */
-    function authorizeOperator(address operator, bytes32 tokenId) external;
+    function authorizeOperator(
+        address operator,
+        bytes32 tokenId,
+        bytes memory operatorNotificationData
+    ) external;
 
     /**
      * @dev Remove access of `operator` for a given `tokenId`, disallowing it to transfer `tokenId` on behalf of its owner.
@@ -118,6 +127,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * @param operator The address to revoke as an operator.
      * @param tokenId The tokenId `operator` is revoked from operating on.
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
      * - `tokenId` must exist.
@@ -127,7 +137,11 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * @custom:events {RevokedOperator} event with address of the operator being revoked for the caller (token owner)..
      */
-    function revokeOperator(address operator, bytes32 tokenId) external;
+    function revokeOperator(
+        address operator,
+        bytes32 tokenId,
+        bytes memory operatorNotificationData
+    ) external;
 
     /**
      * @dev Returns whether `operator` address is an operator for a given `tokenId`.
@@ -168,13 +182,13 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * If operators are set for a specific `tokenId`, all the operators are revoked after the tokenId have been transferred.
      *
-     * The `allowNonLSP1Recipient` parameter MUST be set to `true` when transferring tokens to Externally Owned Accounts (EOAs)
+     * The `force` parameter MUST be set to `true` when transferring tokens to Externally Owned Accounts (EOAs)
      * or contracts that do not implement the LSP1 standard.
      *
      * @param from The address that owns the given `tokenId`.
      * @param to The address that will receive the `tokenId`.
      * @param tokenId The token ID to transfer.
-     * @param allowNonLSP1Recipient When set to `true`, the `to` address CAN be any addres.
+     * @param force When set to `true`, the `to` address CAN be any addres.
      * When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard.
      * @param data Any additional data the caller wants included in the emitted event, and sent in the hooks of the `from` and `to` addresses.
      *
@@ -188,19 +202,19 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @custom:events
      * - {Transfer} event when the `tokenId` is successfully transferred.
      *
-     * @custom:hint The `allowNonLSP1Recipient` parameter **MUST be set to `true`** to transfer tokens to Externally Owned Accounts (EOAs)
+     * @custom:hint The `force` parameter **MUST be set to `true`** to transfer tokens to Externally Owned Accounts (EOAs)
      * or contracts that do not implement the LSP1 Universal Receiver Standard. Otherwise the function will revert making the transfer fail.
      *
-     * @custom:info if the `to` address is a contract that implements LSP1, it will always be notified via its `universalReceiver(...)` function, regardless if `allowNonLSP1Recipient` is set to `true` or `false`.
+     * @custom:info if the `to` address is a contract that implements LSP1, it will always be notified via its `universalReceiver(...)` function, regardless if `force` is set to `true` or `false`.
      *
      * @custom:warning Be aware that when either the sender or the recipient can have logic that revert in their `universalReceiver(...)` function when being notified.
-     * This even if the `allowNonLSP1Recipient` was set to `true`.
+     * This even if the `force` was set to `true`.
      */
     function transfer(
         address from,
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) external;
 
@@ -211,7 +225,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param from An array of sending addresses.
      * @param to An array of recipient addresses.
      * @param tokenId An array of token IDs to transfer.
-     * @param allowNonLSP1Recipient When set to `true`, `to` may be any address.
+     * @param force When set to `true`, `to` may be any address.
      * When set to `false`, `to` must be a contract that supports the LSP1 standard and not revert.
      * @param data Any additional data the caller wants included in the emitted event, and sent in the hooks to the `from` and `to` addresses.
      *
@@ -231,7 +245,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
         address[] memory from,
         address[] memory to,
         bytes32[] memory tokenId,
-        bool[] memory allowNonLSP1Recipient,
+        bool[] memory force,
         bytes[] memory data
     ) external;
 }

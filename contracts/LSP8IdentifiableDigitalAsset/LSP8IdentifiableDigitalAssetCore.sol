@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // interfaces
@@ -18,11 +18,26 @@ import {
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // errors
-import "./LSP8Errors.sol";
+import {
+    LSP8NonExistentTokenId,
+    LSP8NotTokenOwner,
+    LSP8CannotUseAddressZeroAsOperator,
+    LSP8TokenOwnerCannotBeOperator,
+    LSP8OperatorAlreadyAuthorized,
+    LSP8NotTokenOperator,
+    LSP8InvalidTransferBatch,
+    LSP8NonExistingOperator,
+    LSP8CannotSendToAddressZero,
+    LSP8TokenIdAlreadyMinted,
+    LSP8CannotSendToSelf,
+    LSP8NotifyTokenReceiverContractMissingLSP1Interface,
+    LSP8NotifyTokenReceiverIsEOA
+} from "./LSP8Errors.sol";
 
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {
+    _TYPEID_LSP8_TOKENOPERATOR,
     _TYPEID_LSP8_TOKENSSENDER,
     _TYPEID_LSP8_TOKENSRECIPIENT
 } from "./LSP8Constants.sol";
@@ -104,7 +119,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      */
     function authorizeOperator(
         address operator,
-        bytes32 tokenId
+        bytes32 tokenId,
+        bytes memory operatorNotificationData
     ) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
 
@@ -123,13 +139,29 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool isAdded = _operators[tokenId].add(operator);
         if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
 
-        emit AuthorizedOperator(operator, tokenOwner, tokenId);
+        emit AuthorizedOperator(
+            operator,
+            tokenOwner,
+            tokenId,
+            operatorNotificationData
+        );
+
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            tokenId,
+            operatorNotificationData
+        );
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function revokeOperator(address operator, bytes32 tokenId) public virtual {
+    function revokeOperator(
+        address operator,
+        bytes32 tokenId,
+        bytes memory operatorNotificationData
+    ) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
 
         if (tokenOwner != msg.sender) {
@@ -144,7 +176,19 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8TokenOwnerCannotBeOperator();
         }
 
-        _revokeOperator(operator, tokenOwner, tokenId);
+        _revokeOperator(
+            operator,
+            tokenOwner,
+            tokenId,
+            operatorNotificationData
+        );
+
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            tokenId,
+            operatorNotificationData
+        );
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
@@ -192,7 +236,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address from,
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) public virtual {
         address operator = msg.sender;
@@ -201,7 +245,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8NotTokenOperator(tokenId, operator);
         }
 
-        _transfer(from, to, tokenId, allowNonLSP1Recipient, data);
+        _transfer(from, to, tokenId, force, data);
     }
 
     /**
@@ -211,27 +255,21 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address[] memory from,
         address[] memory to,
         bytes32[] memory tokenId,
-        bool[] memory allowNonLSP1Recipient,
+        bool[] memory force,
         bytes[] memory data
     ) public virtual {
         uint256 fromLength = from.length;
         if (
             fromLength != to.length ||
             fromLength != tokenId.length ||
-            fromLength != allowNonLSP1Recipient.length ||
+            fromLength != force.length ||
             fromLength != data.length
         ) {
             revert LSP8InvalidTransferBatch();
         }
 
         for (uint256 i = 0; i < fromLength; ) {
-            transfer(
-                from[i],
-                to[i],
-                tokenId[i],
-                allowNonLSP1Recipient[i],
-                data[i]
-            );
+            transfer(from[i], to[i], tokenId[i], force[i], data[i]);
 
             unchecked {
                 ++i;
@@ -245,11 +283,17 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function _revokeOperator(
         address operator,
         address tokenOwner,
-        bytes32 tokenId
+        bytes32 tokenId,
+        bytes memory operatorNotificationData
     ) internal virtual {
         bool isRemoved = _operators[tokenId].remove(operator);
         if (!isRemoved) revert LSP8NonExistingOperator(operator, tokenId);
-        emit RevokedOperator(operator, tokenOwner, tokenId);
+        emit RevokedOperator(
+            operator,
+            tokenOwner,
+            tokenId,
+            operatorNotificationData
+        );
     }
 
     /**
@@ -276,7 +320,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         for (uint256 i = 0; i < operatorListLength; ) {
             // we are emptying the list, always remove from index 0
             address operator = operatorsForTokenId.at(0);
-            _revokeOperator(operator, tokenOwner, tokenId);
+            _revokeOperator(operator, tokenOwner, tokenId, "");
 
             unchecked {
                 ++i;
@@ -311,7 +355,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      *
      * @param to The address that will receive the minted `tokenId`.
      * @param tokenId The token ID to create (= mint).
-     * @param allowNonLSP1Recipient When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard.
+     * @param force When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard.
      * @param data Any additional data the caller wants included in the emitted event, and sent in the hook of the `to` address.
      *
      * @custom:events {Transfer} event with `address(0)` as `from` address.
@@ -319,7 +363,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function _mint(
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual {
         if (to == address(0)) {
@@ -340,17 +384,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         _ownedTokens[to].add(tokenId);
         _tokenOwners[tokenId] = to;
 
-        emit Transfer(
-            operator,
-            address(0),
-            to,
-            tokenId,
-            allowNonLSP1Recipient,
-            data
-        );
+        emit Transfer(operator, address(0), to, tokenId, force, data);
 
-        bytes memory lsp1Data = abi.encodePacked(address(0), to, tokenId, data);
-        _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
+        bytes memory lsp1Data = abi.encode(address(0), to, tokenId, data);
+        _notifyTokenReceiver(to, force, lsp1Data);
     }
 
     /**
@@ -389,7 +426,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         emit Transfer(operator, tokenOwner, address(0), tokenId, false, data);
 
-        bytes memory lsp1Data = abi.encodePacked(
+        bytes memory lsp1Data = abi.encode(
             tokenOwner,
             address(0),
             tokenId,
@@ -410,7 +447,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      * @param from The sender address.
      * @param to The recipient address.
      * @param tokenId The token to transfer.
-     * @param allowNonLSP1Recipient When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard.
+     * @param force When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard.
      * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
      *
      * @custom:requirements
@@ -425,7 +462,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address from,
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual {
         if (from == to) {
@@ -451,12 +488,12 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         _ownedTokens[to].add(tokenId);
         _tokenOwners[tokenId] = to;
 
-        emit Transfer(operator, from, to, tokenId, allowNonLSP1Recipient, data);
+        emit Transfer(operator, from, to, tokenId, force, data);
 
-        bytes memory lsp1Data = abi.encodePacked(from, to, tokenId, data);
+        bytes memory lsp1Data = abi.encode(from, to, tokenId, data);
 
         _notifyTokenSender(from, lsp1Data);
-        _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
+        _notifyTokenReceiver(to, force, lsp1Data);
     }
 
     /**
@@ -470,8 +507,36 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function _beforeTokenTransfer(
         address from,
         address to,
-        bytes32 tokenId
+        bytes32 tokenId // solhint-disable-next-line no-empty-blocks
     ) internal virtual {}
+
+    /**
+     * @dev Attempt to notify the operator `operator` about the `tokenId` tokens being authorized.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
+     * If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+     
+     * @param operator The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+     * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
+     */
+    function _notifyTokenOperator(
+        address operator,
+        bytes memory lsp1Data
+    ) internal virtual {
+        if (
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                operator,
+                _INTERFACEID_LSP1
+            )
+        ) {
+            operator.call(
+                abi.encodeWithSelector(
+                    ILSP1UniversalReceiver.universalReceiver.selector,
+                    _TYPEID_LSP8_TOKENOPERATOR,
+                    lsp1Data
+                )
+            );
+        }
+    }
 
     /**
      * @dev An attempt is made to notify the token sender about the `tokenId` changing owners using
@@ -496,13 +561,13 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
     /**
      * @dev An attempt is made to notify the token receiver about the `tokenId` changing owners
-     * using LSP1 interface. When allowNonLSP1Recipient is FALSE the token receiver MUST support LSP1.
+     * using LSP1 interface. When force is FALSE the token receiver MUST support LSP1.
      *
      * The receiver may revert when the token being sent is not wanted.
      */
     function _notifyTokenReceiver(
         address to,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory lsp1Data
     ) internal virtual {
         if (
@@ -515,7 +580,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 _TYPEID_LSP8_TOKENSRECIPIENT,
                 lsp1Data
             );
-        } else if (!allowNonLSP1Recipient) {
+        } else if (!force) {
             if (to.code.length > 0) {
                 revert LSP8NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {

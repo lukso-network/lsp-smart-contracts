@@ -486,7 +486,7 @@ The function assumes that the Data Value stored under the mapping Data Key is of
 :::
 
 ```solidity
-function removeElementFromArrayAndMap(contract IERC725Y ERC725YContract, bytes32 arrayKey, uint128 newArrayLength, bytes32 removedElementIndexKey, uint128 removedElementIndex, bytes32 removedElementMapKey) internal view returns (bytes32[] dataKeys, bytes[] dataValues);
+function removeElementFromArrayAndMap(contract IERC725Y erc725YContract, bytes32 arrayKey, uint128 newArrayLength, bytes32 removedElementIndexKey, uint128 removedElementIndex, bytes32 removedElementMapKey) internal view returns (bytes32[] dataKeys, bytes[] dataValues);
 ```
 
 Generates Data Key/Value pairs for removing an element from an LSP2 Array and a mapping Data Key.
@@ -495,7 +495,7 @@ Generates Data Key/Value pairs for removing an element from an LSP2 Array and a 
 
 | Name                     |        Type         | Description                                                   |
 | ------------------------ | :-----------------: | ------------------------------------------------------------- |
-| `ERC725YContract`        | `contract IERC725Y` | The ERC725Y contract.                                         |
+| `erc725YContract`        | `contract IERC725Y` | The ERC725Y contract.                                         |
 | `arrayKey`               |      `bytes32`      | The Data Key of Key Type Array.                               |
 | `newArrayLength`         |      `uint128`      | The new Array Length for the `arrayKey`.                      |
 | `removedElementIndexKey` |      `bytes32`      | The Data Key of Key Type Array Index for the removed element. |

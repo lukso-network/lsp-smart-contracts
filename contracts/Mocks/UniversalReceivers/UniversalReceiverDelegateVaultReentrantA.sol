@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // interfaces
@@ -16,11 +16,17 @@ import {
 
 // constants
 import {_INTERFACEID_LSP1} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+import {
+    NativeTokensNotAccepted
+} from "../../LSP1UniversalReceiver/LSP1Errors.sol";
 
 /**
  * @dev This contract is used only for testing purposes
  */
-contract UniversalReceiverDelegateVaultReentrantA is ERC165Storage {
+contract UniversalReceiverDelegateVaultReentrantA is
+    ILSP1UniversalReceiver,
+    ERC165Storage
+{
     constructor() {
         _registerInterface(_INTERFACEID_LSP1);
     }
@@ -28,7 +34,11 @@ contract UniversalReceiverDelegateVaultReentrantA is ERC165Storage {
     function universalReceiver(
         bytes32 /* typeId */,
         bytes memory data
-    ) external returns (bytes memory) {
+    ) external payable returns (bytes memory) {
+        if (msg.value != 0) {
+            revert NativeTokensNotAccepted();
+        }
+
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
 

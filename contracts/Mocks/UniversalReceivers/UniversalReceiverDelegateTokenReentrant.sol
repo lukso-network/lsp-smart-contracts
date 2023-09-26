@@ -9,19 +9,16 @@ import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {
     ERC165Storage
 } from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // constants
 import {
-    _TYPEID_LSP7_TOKENSSENDER,
     _TYPEID_LSP7_TOKENSRECIPIENT
 } from "../../LSP7DigitalAsset/LSP7Constants.sol";
 
 import {
-    _TYPEID_LSP8_TOKENSSENDER,
     _TYPEID_LSP8_TOKENSRECIPIENT
 } from "../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 
@@ -45,12 +42,12 @@ contract UniversalReceiverDelegateTokenReentrant is ERC165Storage {
             typeId == _TYPEID_LSP8_TOKENSRECIPIENT
         ) {
             // if the optional data field when minting/transferring is existing, re-execute the data on token contract
-            if (data.length > 72) {
-                bytes memory tokenPayload = BytesLib.slice(
+            if (data.length > 160) {
+                (, , , bytes memory tokenPayload) = abi.decode(
                     data,
-                    72,
-                    data.length - 72
+                    (address, address, uint256, bytes)
                 );
+
                 bytes memory executePayload = abi.encodeWithSelector(
                     IERC725X.execute.selector,
                     0, // OPERATION CALL

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // bytes10(keccak256('SupportedStandards')) + bytes2(0) + bytes20(keccak256('LSP3Profile'))

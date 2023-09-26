@@ -11,7 +11,27 @@ import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
-import "./LSP6Constants.sol";
+import {
+    _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
+    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX,
+    _LSP6KEY_ADDRESSPERMISSIONS_AllowedERC725YDataKeys_PREFIX,
+    _LSP6KEY_ADDRESSPERMISSIONS_ARRAY,
+    _PERMISSION_CHANGEOWNER,
+    _PERMISSION_EDITPERMISSIONS,
+    _PERMISSION_ADDCONTROLLER,
+    _PERMISSION_ADDEXTENSIONS,
+    _PERMISSION_CHANGEEXTENSIONS,
+    _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE,
+    _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE,
+    _PERMISSION_REENTRANCY,
+    _PERMISSION_SETDATA,
+    _PERMISSION_CALL,
+    _PERMISSION_STATICCALL,
+    _PERMISSION_DELEGATECALL,
+    _PERMISSION_DEPLOY,
+    _PERMISSION_TRANSFERVALUE,
+    _PERMISSION_SIGN
+} from "./LSP6Constants.sol";
 
 /**
  * @title LSP6 Utility library.
@@ -30,6 +50,9 @@ library LSP6Utils {
      * @param caller The controller address to read the permissions from.
      *
      * @return A `bytes32` BitArray containing the permissions of a controller address.
+     *
+     * @custom:info If the raw value fetched from the ERC725Y storage of `target` is not 32 bytes long, this is considered
+     * like _"no permissions are set"_ and will return 32 x `0x00` bytes as `bytes32(0)`.
      */
     function getPermissionsFor(
         IERC725Y target,
@@ -41,6 +64,10 @@ library LSP6Utils {
                 bytes20(caller)
             )
         );
+
+        if (permissions.length != 32) {
+            return bytes32(0);
+        }
 
         return bytes32(permissions);
     }

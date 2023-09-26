@@ -272,7 +272,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
         const authorizeOperatorPayload = lsp8Contract.interface.encodeFunctionData(
           'authorizeOperator',
-          [operator, tokenIdToApprove],
+          [operator, tokenIdToApprove, '0x'],
         );
 
         await expect(
@@ -349,7 +349,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           const authorizeOperatorPayload = lsp7Contract.interface.encodeFunctionData(
             'authorizeOperator',
-            [operator, amount],
+            [operator, amount, '0x'],
           );
 
           await context.universalProfile
@@ -382,7 +382,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           const authorizeOperatorPayload = lsp8Contract.interface.encodeFunctionData(
             'authorizeOperator',
-            [recipient, tokenIdToApprove],
+            [recipient, tokenIdToApprove, '0x'],
           );
 
           await context.universalProfile

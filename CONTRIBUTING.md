@@ -54,6 +54,10 @@ When merging a branch to `develop` PRs should be squashed into one conventional 
 
 ## Solidity Code Comments
 
+A good level of documentation is crucial for understanding the intended behaviour of the smart contracts and for identifying any potential discrepancies between the implementation and the intended behaviour.
+
+When making contributions, each smart contracts and functions should be well-documented, with clear comments explaining the purpose and functionality of each function and module.
+
 When changing or adding NatSpec comments to any `function`, `error` or `event` in any contract make sure to adhere to the following guidelines:
 
 1. `@dev` and `@notice` tags can both contain text descriptions and two types of lists: bullet points or numbered lists. Make sure that those tags always start with text descriptions first, not with lists.

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 bytes4 constant _INTERFACEID_LSP14 = 0x94be5999;

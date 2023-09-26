@@ -26,8 +26,8 @@ abstract contract LSP17Extension is ERC165 {
     }
 
     /**
-     * @dev Returns the original msg.data passed to the extendable contract
-     * without the appended msg.sender and msg.value
+     * @dev Returns the original `msg.data` passed to the extendable contract
+     * without the appended `msg.sender` and `msg.value`.
      */
     function _extendableMsgData()
         internal
@@ -39,7 +39,7 @@ abstract contract LSP17Extension is ERC165 {
     }
 
     /**
-     * @dev Returns the original msg.sender calling the extendable contract
+     * @dev Returns the original `msg.sender` calling the extendable contract.
      */
     function _extendableMsgSender() internal view virtual returns (address) {
         return
@@ -49,7 +49,7 @@ abstract contract LSP17Extension is ERC165 {
     }
 
     /**
-     * @dev Returns the original msg.value sent to the extendable contract
+     * @dev Returns the original `msg.value` sent to the extendable contract.
      */
     function _extendableMsgValue() internal view virtual returns (uint256) {
         return uint256(bytes32(msg.data[msg.data.length - 32:]));

@@ -151,7 +151,7 @@ Same as [`execute`](#execute) but execute a batch of payloads (abi-encoded funct
 
 :::tip Hint
 
-If you are looking to learn how to sign and execute relay transactions via the Key Manager, see our Javascript step by step guide [_&quot;Execute Relay Transactions&quot;_](../../guides/key-manager/execute-relay-transactions.md). See the LSP6 Standard page for more details on how to [generate a valid signature for Execute Relay Call](../universal-profile/lsp6-key-manager.md#how-to-sign-relay-transactions).
+If you are looking to learn how to sign and execute relay transactions via the Key Manager, see our Javascript step by step guide [_&quot;Execute Relay Transactions&quot;_](../../../guides/key-manager/execute-relay-transactions.md). See the LSP6 Standard page for more details on how to [generate a valid signature for Execute Relay Call](../../../standards/universal-profile/lsp6-key-manager.md#how-to-sign-relay-transactions).
 
 :::
 
@@ -334,6 +334,15 @@ Checks if a signature was signed by a controller that has the permission `SIGN`.
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
 - Function signature: `lsp20VerifyCall(address,uint256,bytes)`
 - Function selector: `0x9bf04b11`
+
+:::
+
+:::tip Hint
+
+This function can call by any other address than the {`target`}. This allows to verify permissions in a _&quot;read-only&quot;_ manner. Anyone can call this function to verify if the `caller` has the right permissions to perform the abi-encoded function call `data` on the {`target`} contract (while sending `msgValue` alongside the call). If the permissions have been verified successfully and `caller` is authorized, one of the following two LSP20 magic value will be returned:
+
+- `0x9bf04b00`: LSP20 magic value **without** post verification (last byte is `0x00`).
+- `0x9bf04b01`: LSP20 magic value **with** post-verification (last byte is `0x01`).
 
 :::
 
@@ -1348,7 +1357,7 @@ Reverts when trying to do a `delegatecall` via the ERC725X.execute(uint256,addre
 error ERC725Y_DataKeysValuesLengthMismatch();
 ```
 
-reverts when there is not the same number of elements in the lists of data keys and data values when calling setDataBatch.
+Reverts when there is not the same number of elements in the `datakeys` and `dataValues` array parameters provided when calling the [`setDataBatch`](#setdatabatch) function.
 
 <br/>
 

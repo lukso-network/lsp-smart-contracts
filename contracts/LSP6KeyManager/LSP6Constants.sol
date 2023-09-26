@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // --- ERC165 interface ids
-bytes4 constant _INTERFACEID_LSP6 = 0x627ca5d3;
+bytes4 constant _INTERFACEID_LSP6 = 0x66918867;
 
 // --- ERC725Y Data Keys
 

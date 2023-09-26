@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.12;
 
 // interfaces
@@ -31,7 +31,13 @@ import {
 } from "../LSP8IdentifiableDigitalAssetCore.sol";
 
 // errors
-import "../LSP8Errors.sol";
+import {
+    LSP8NotTokenOwner,
+    LSP8CannotUseAddressZeroAsOperator,
+    LSP8TokenOwnerCannotBeOperator,
+    LSP8OperatorAlreadyAuthorized,
+    LSP8NotTokenOperator
+} from "../LSP8Errors.sol";
 
 // constants
 import {
@@ -154,7 +160,7 @@ abstract contract LSP8CompatibleERC721 is
      * @inheritdoc ILSP8CompatibleERC721
      */
     function approve(address operator, uint256 tokenId) public virtual {
-        authorizeOperator(operator, bytes32(tokenId));
+        authorizeOperator(operator, bytes32(tokenId), "");
     }
 
     /**
@@ -167,7 +173,7 @@ abstract contract LSP8CompatibleERC721 is
     /**
      * @inheritdoc ILSP8CompatibleERC721
      *
-     * @custom:info This function sets the `allowNonLSP1Recipient` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
+     * @custom:info This function sets the `force` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */
     function transferFrom(
         address from,
@@ -180,7 +186,7 @@ abstract contract LSP8CompatibleERC721 is
     /**
      * @inheritdoc ILSP8CompatibleERC721
      *
-     * @custom:info This function sets the `allowNonLSP1Recipient` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
+     * @custom:info This function sets the `force` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */
     function safeTransferFrom(
         address from,
@@ -193,7 +199,7 @@ abstract contract LSP8CompatibleERC721 is
     /**
      * @inheritdoc ILSP8CompatibleERC721
      *
-     * @custom:info This function sets the `allowNonLSP1Recipient` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
+     * @custom:info This function sets the `force` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */
     function safeTransferFrom(
         address from,
@@ -215,7 +221,8 @@ abstract contract LSP8CompatibleERC721 is
      */
     function authorizeOperator(
         address operator,
-        bytes32 tokenId
+        bytes32 tokenId,
+        bytes memory operatorNotificationData
     )
         public
         virtual
@@ -244,8 +251,20 @@ abstract contract LSP8CompatibleERC721 is
         bool isAdded = _operators[tokenId].add(operator);
         if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
 
-        emit AuthorizedOperator(operator, tokenOwner, tokenId);
+        emit AuthorizedOperator(
+            operator,
+            tokenOwner,
+            tokenId,
+            operatorNotificationData
+        );
         emit Approval(tokenOwnerOf(tokenId), operator, uint256(tokenId));
+
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            tokenId,
+            operatorNotificationData
+        );
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
@@ -259,7 +278,7 @@ abstract contract LSP8CompatibleERC721 is
         address from,
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual override {
         if (
@@ -270,7 +289,7 @@ abstract contract LSP8CompatibleERC721 is
         }
 
         emit Transfer(from, to, uint256(tokenId));
-        super._transfer(from, to, tokenId, allowNonLSP1Recipient, data);
+        super._transfer(from, to, tokenId, force, data);
     }
 
     /**
@@ -301,11 +320,11 @@ abstract contract LSP8CompatibleERC721 is
     function _mint(
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual override {
         emit Transfer(address(0), to, uint256(tokenId));
-        super._mint(to, tokenId, allowNonLSP1Recipient, data);
+        super._mint(to, tokenId, force, data);
     }
 
     /**

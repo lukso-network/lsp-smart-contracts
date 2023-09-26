@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.12;
 
 // interfaces
@@ -10,7 +10,6 @@ import {
     LSP4Compatibility
 } from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
 import {
-    LSP7DigitalAssetCore,
     LSP7DigitalAssetInitAbstract,
     LSP4DigitalAssetMetadataInitAbstract,
     ERC725YCore
@@ -77,14 +76,14 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         address operator,
         uint256 amount
     ) public virtual returns (bool) {
-        authorizeOperator(operator, amount);
+        authorizeOperator(operator, amount, "");
         return true;
     }
 
     /**
      * @inheritdoc ILSP7CompatibleERC20
      *
-     * @custom:info This function uses the `allowNonLSP1Recipient` parameter as `true` so that EOA and any contract can receive tokens.
+     * @custom:info This function uses the `force` parameter as `true` so that EOA and any contract can receive tokens.
      */
     function transferFrom(
         address from,
@@ -100,7 +99,7 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     /**
      * @inheritdoc ILSP7CompatibleERC20
      *
-     * @custom:info This function uses the `allowNonLSP1Recipient` parameter as `true` so that EOA and any contract can receive tokens.
+     * @custom:info This function uses the `force` parameter as `true` so that EOA and any contract can receive tokens.
      */
     function transfer(
         address to,
@@ -110,21 +109,22 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         return true;
     }
 
-    /**
-     * @inheritdoc LSP7DigitalAssetCore
-     */
     function _updateOperator(
         address tokenOwner,
         address operator,
-        uint256 amount
+        uint256 amount,
+        bytes memory operatorNotificationData
     ) internal virtual override {
-        super._updateOperator(tokenOwner, operator, amount);
+        super._updateOperator(
+            tokenOwner,
+            operator,
+            amount,
+            operatorNotificationData
+        );
         emit Approval(tokenOwner, operator, amount);
     }
 
     /**
-     * @inheritdoc LSP7DigitalAssetCore
-     *
      * @custom:events
      * - LSP7 {Transfer} event.
      * - ERC20 {Transfer} event.
@@ -133,16 +133,14 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         address from,
         address to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual override {
         emit Transfer(from, to, amount);
-        super._transfer(from, to, amount, allowNonLSP1Recipient, data);
+        super._transfer(from, to, amount, force, data);
     }
 
     /**
-     * @inheritdoc LSP7DigitalAssetCore
-     *
      * @custom:events
      * - LSP7 {Transfer} event with `address(0)` as `from`.
      * - ERC20 {Transfer} event with `address(0)` as `from`.
@@ -150,16 +148,14 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     function _mint(
         address to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual override {
         emit Transfer(address(0), to, amount);
-        super._mint(to, amount, allowNonLSP1Recipient, data);
+        super._mint(to, amount, force, data);
     }
 
     /**
-     * @inheritdoc LSP7DigitalAssetCore
-     *
      * @custom:events
      * - LSP7 {Transfer} event with `address(0)` as the `to` address.
      * - ERC20 {Transfer} event with `address(0)` as the `to` address.

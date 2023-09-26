@@ -1,14 +1,16 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 import {
     OPERATION_4_DELEGATECALL
 } from "@erc725/smart-contracts/contracts/constants.sol";
 
-import {UniversalProfile} from "../../UniversalProfile.sol";
+import {UniversalProfileInit} from "../../UniversalProfileInit.sol";
 
-contract UniversalProfilePostDeploymentModule is UniversalProfile {
-    constructor() UniversalProfile(address(0)) {}
+contract UniversalProfileInitPostDeploymentModule is UniversalProfileInit {
+    constructor() {
+        _disableInitializers();
+    }
 
     function setDataAndTransferOwnership(
         bytes32[] memory dataKeys,
@@ -46,7 +48,7 @@ contract UniversalProfilePostDeploymentModule is UniversalProfile {
         );
 
         // call the execute function with delegate_call on the universalProfile contract to setData and transferOwnership
-        UniversalProfile(payable(universalProfile)).execute(
+        UniversalProfileInit(payable(universalProfile)).execute(
             OPERATION_4_DELEGATECALL,
             address(this),
             0,

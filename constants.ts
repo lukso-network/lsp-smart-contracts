@@ -26,9 +26,9 @@ export const INTERFACE_IDS = {
   ERC725Y: '0x629aa694',
   LSP0ERC725Account: '0x24871b3d',
   LSP1UniversalReceiver: '0x6bb56a14',
-  LSP6KeyManager: '0x627ca5d3',
-  LSP7DigitalAsset: '0xda1f85e4',
-  LSP8IdentifiableDigitalAsset: '0x622e7a01',
+  LSP6KeyManager: '0x66918867',
+  LSP7DigitalAsset: '0x05519512',
+  LSP8IdentifiableDigitalAsset: '0x1ae9ba1f',
   LSP9Vault: '0x28af17e6',
   LSP11BasicSocialRecovery: '0x049a28f1',
   LSP14Ownable2Step: '0x94be5999',
@@ -89,6 +89,54 @@ export const OPERATION_TYPES = {
 
 export type LSP2ArrayKey = { length: string; index: string };
 export type LSPSupportedStandard = { key: string; value: string };
+
+// JSON Metadata
+
+export type LSP3ProfileMetadataJSON = {
+  LSP3Profile: LSP3ProfileMetadata;
+};
+
+export type LSP3ProfileMetadata = {
+  name: string;
+  description: string;
+  profileImage?: ImageMetadata[];
+  backgroundImage?: ImageMetadata[];
+  tags?: string[];
+  links?: LinkMetadata[];
+  avatar?: AssetMetadata[];
+};
+
+export type LSP4DigitalAssetMetadataJSON = {
+  LSP4Metadata: LSP4DigitalAssetMetadata;
+};
+
+export type LSP4DigitalAssetMetadata = {
+  description: string;
+  links: LinkMetadata[];
+  images: ImageMetadata[][];
+  assets: AssetMetadata[];
+  icon: ImageMetadata[];
+};
+
+export type ImageMetadata = {
+  width: number;
+  height: number;
+  hashFunction: string;
+  hash: string;
+  url: string;
+};
+
+export type LinkMetadata = {
+  title: string;
+  url: string;
+};
+
+export type AssetMetadata = {
+  hashFunction: string;
+  hash: string;
+  url: string;
+  fileType: string;
+};
 
 /**
  * @dev list of ERC725Y keys from the LSP standards.
@@ -282,6 +330,10 @@ export const LSP1_TYPE_IDS = {
   LSP7Tokens_RecipientNotification:
     '0x20804611b3e2ea21c480dc465142210acf4a2485947541770ec1fb87dee4a55c',
 
+  // keccak256('LSP7Tokens_OperatorNotification')
+  LSP7Tokens_OperatorNotification:
+    '0x386072cc5a58e61263b434c722725f21031cd06e7c552cfaa06db5de8a320dbc',
+
   // keccak256('LSP8Tokens_SenderNotification')
   LSP8Tokens_SenderNotification:
     '0xb23eae7e6d1564b295b4c3e3be402d9a2f0776c57bdf365903496f6fa481ab00',
@@ -289,6 +341,10 @@ export const LSP1_TYPE_IDS = {
   // keccak256('LSP8Tokens_RecipientNotification')
   LSP8Tokens_RecipientNotification:
     '0x0b084a55ebf70fd3c06fd755269dac2212c4d3f0f4d09079780bfa50c1b2984d',
+
+  // keccak256('LSP8Tokens_OperatorNotification')
+  LSP8Tokens_OperatorNotification:
+    '0x8a1c15a8799f71b547e08e2bcb2e85257e81b0a07eee2ce6712549eef1f00970',
 
   // keccak256('LSP9OwnershipTransferStarted')
   LSP9OwnershipTransferStarted:

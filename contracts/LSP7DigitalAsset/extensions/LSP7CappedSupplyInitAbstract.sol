@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
@@ -74,13 +74,13 @@ abstract contract LSP7CappedSupplyInitAbstract is LSP7DigitalAssetInitAbstract {
     function _mint(
         address to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual override {
         if (totalSupply() + amount > tokenSupplyCap()) {
             revert LSP7CappedSupplyCannotMintOverCap();
         }
 
-        super._mint(to, amount, allowNonLSP1Recipient, data);
+        super._mint(to, amount, force, data);
     }
 }
