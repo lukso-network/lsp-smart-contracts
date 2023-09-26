@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
@@ -34,9 +34,9 @@ contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable {
     function mint(
         address to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) public virtual onlyOwner {
-        _mint(to, amount, allowNonLSP1Recipient, data);
+        _mint(to, amount, force, data);
     }
 }

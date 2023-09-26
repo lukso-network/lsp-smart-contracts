@@ -13,7 +13,7 @@ contract CheckerExtension {
     function checkMsgVariable(
         address originalMsgSender,
         uint256 originalMsgValue
-    ) public pure returns (bool) {
+    ) public payable returns (bool) {
         if (msg.data.length != 120) revert();
         if (
             originalMsgSender !=

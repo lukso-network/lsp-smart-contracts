@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
@@ -20,7 +20,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param from The address which tokens were sent from (balance decreased by `-amount`).
      * @param to The address that received the tokens (balance increased by `+amount`).
      * @param amount The amount of tokens transferred.
-     * @param allowNonLSP1Recipient if the transferred enforced the `to` recipient address to be a contract that implements the LSP1 standard or not.
+     * @param force if the transferred enforced the `to` recipient address to be a contract that implements the LSP1 standard or not.
      * @param data Any additional data included by the caller during the transfer, and sent in the LSP1 hooks to the `from` and `to` addresses.
      */
     event Transfer(
@@ -28,7 +28,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
         address indexed from,
         address indexed to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes data
     );
 
@@ -37,19 +37,26 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param operator The address authorized as an operator
      * @param tokenOwner The token owner
      * @param amount The amount of tokens `operator` address has access to from `tokenOwner`
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
     event AuthorizedOperator(
         address indexed operator,
         address indexed tokenOwner,
-        uint256 indexed amount
+        uint256 indexed amount,
+        bytes operatorNotificationData
     );
 
     /**
      * @dev Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its {`authorizedAmountFor(...)`} to `0`.
      * @param operator The address revoked from operating
      * @param tokenOwner The token owner
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
-    event RevokedOperator(address indexed operator, address indexed tokenOwner);
+    event RevokedOperator(
+        address indexed operator,
+        address indexed tokenOwner,
+        bytes operatorNotificationData
+    );
 
     // --- Token queries
 
@@ -97,6 +104,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      *
      * @param operator The address to authorize as an operator.
      * @param amount The allowance amount of tokens operator has access to.
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
      * - `operator` cannot be the zero address.
@@ -104,13 +112,18 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @custom:events {AuthorizedOperator} when allowance is given to a new operator or
      * an existing operator's allowance is updated.
      */
-    function authorizeOperator(address operator, uint256 amount) external;
+    function authorizeOperator(
+        address operator,
+        uint256 amount,
+        bytes memory operatorNotificationData
+    ) external;
 
     /**
      * @dev Removes the `operator` address as an operator of callers tokens, disallowing it to send any amount of tokens
      * on behalf of the token owner (the caller of the function `msg.sender`). See also {authorizedAmountFor}.
      *
      * @param operator The address to revoke as an operator.
+     * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
      * - `operator` cannot be calling address.
@@ -118,7 +131,10 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      *
      * @custom:events {RevokedOperator} event with address of the operator being revoked for the caller (token holder).
      */
-    function revokeOperator(address operator) external;
+    function revokeOperator(
+        address operator,
+        bytes memory operatorNotificationData
+    ) external;
 
     /**
      * @dev Get the amount of tokens `operator` address has access to from `tokenOwner`.
@@ -137,6 +153,16 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
         address tokenOwner
     ) external view returns (uint256);
 
+    /**
+     * @dev Returns all `operator` addresses that are allowed to transfer or burn on behalf of `tokenOwner`.
+     *
+     * @param tokenOwner The token owner to get the operators for.
+     * @return An array of operators allowed to transfer or burn tokens on behalf of `tokenOwner`.
+     */
+    function getOperatorsOf(
+        address tokenOwner
+    ) external view returns (address[] memory);
+
     // --- Transfer functionality
 
     /**
@@ -147,7 +173,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param from The sender address.
      * @param to The recipient address.
      * @param amount The amount of tokens to transfer.
-     * @param allowNonLSP1Recipient When set to `true`, the `to` address CAN be any address. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard.
+     * @param force When set to `true`, the `to` address CAN be any address. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard.
      * @param data Any additional data the caller wants included in the emitted event, and sent in the hooks of the `from` and `to` addresses.
      *
      * @custom:requirements
@@ -162,19 +188,19 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * - if the transfer is triggered by an operator, either the {AuthorizedOperator} event will be emitted with the updated allowance or the {RevokedOperator}
      * event will be emitted if the operator has no more allowance left.
      *
-     * @custom:hint The `allowNonLSP1Recipient` parameter **MUST be set to `true`** to transfer tokens to Externally Owned Accounts (EOAs)
+     * @custom:hint The `force` parameter **MUST be set to `true`** to transfer tokens to Externally Owned Accounts (EOAs)
      * or contracts that do not implement the LSP1 Universal Receiver Standard. Otherwise the function will revert making the transfer fail.
      *
-     * @custom:info if the `to` address is a contract that implements LSP1, it will always be notified via its `universalReceiver(...)` function, regardless if `allowNonLSP1Recipient` is set to `true` or `false`.
+     * @custom:info if the `to` address is a contract that implements LSP1, it will always be notified via its `universalReceiver(...)` function, regardless if `force` is set to `true` or `false`.
      *
      * @custom:warning Be aware that when either the sender or the recipient can have logic that revert in their `universalReceiver(...)` function when being notified.
-     * This even if the `allowNonLSP1Recipient` was set to `true`.
+     * This even if the `force` was set to `true`.
      */
     function transfer(
         address from,
         address to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) external;
 
@@ -186,7 +212,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param from An array of sending addresses.
      * @param to An array of receiving addresses.
      * @param amount An array of amount of tokens to transfer for each `from -> to` transfer.
-     * @param allowNonLSP1Recipient For each transfer, when set to `true`, the `to` address CAN be any address. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard.
+     * @param force For each transfer, when set to `true`, the `to` address CAN be any address. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard.
      * @param data An array of additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
      *
      * @custom:requirements
@@ -202,7 +228,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
         address[] memory from,
         address[] memory to,
         uint256[] memory amount,
-        bool[] memory allowNonLSP1Recipient,
+        bool[] memory force,
         bytes[] memory data
     ) external;
 }

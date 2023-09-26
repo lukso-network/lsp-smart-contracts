@@ -2,6 +2,82 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.11.0-rc.1...v0.11.0) (2023-09-07)
+
+### ⚠ BREAKING CHANGES
+
+- change visibility of `_reentrancyStatus` state variable from `private` to `internal` in `LSP6KeyManagerCore` ([#651](https://github.com/lukso-network/lsp-smart-contracts/pull/651))
+
+- change data key for `SupportedStandards` from `LSP3UniversalProfile` to `LSP3Profile` in `LSP3Constants.sol` and `constants.ts` ([#664](https://github.com/lukso-network/lsp-smart-contracts/pull/664))
+
+- Include LSP20 in interfaceId calculation ([#668](https://github.com/lukso-network/lsp-smart-contracts/pull/668)), from: `0x3e89ad98` to `0x24871b3d`.
+
+- Return instead of revert when the `LSP1UniversalReceiverDelegateUP` is not able to register LSP5-LSP10 data keys. ([#672](https://github.com/lukso-network/lsp-smart-contracts/pull/672))
+
+- Change event name in LSP6 from `VerifiedCall` to `PermissionsVerified`. ([#673](https://github.com/lukso-network/lsp-smart-contracts/pull/673))
+
+- Rename LSP23 to `LSP23LinkedContractsFactory`. ([#675](https://github.com/lukso-network/lsp-smart-contracts/pull/675))
+
+- Change LSP6 interfaceId from `0x38bb3cdb` to `0x66918867`. ([#696](https://github.com/lukso-network/lsp-smart-contracts/pull/696))
+
+- Change LSP7 interfaceId from `0xda1f85e4` to `0x05519512`. ([#700](https://github.com/lukso-network/lsp-smart-contracts/pull/700))
+
+- Change LSP8 interfaceId from `0x622e7a01` to `0x1ae9ba1f`. ([#700](https://github.com/lukso-network/lsp-smart-contracts/pull/700))
+
+- Remove `LSP0Utils.sol`. ([#683](https://github.com/lukso-network/lsp-smart-contracts/pull/683))
+
+- Add LSP17 in inheritance of LSP7 and LSP8 ([#697](https://github.com/lukso-network/lsp-smart-contracts/pull/697))
+
+- Change token LSP1 notification data format from `abi.encodePacked` to `abi.encode`. ([#699](https://github.com/lukso-network/lsp-smart-contracts/pull/699))
+
+- Notify Operator via LSP1 in `authorizeOperator` in LSP7 and LSP8. ([#700](https://github.com/lukso-network/lsp-smart-contracts/pull/700))
+
+### Features
+
+- Mark multiple functions as `virtual` across the smart contracts, so that their behaviour can be overriden through inheritance [#644](https://github.com/lukso-network/lsp-smart-contracts/pull/644).
+
+- Change visibility of `_reentrancyStatus` state variable from `private` to `internal` in `LSP6KeyManagerCore` ([#651](https://github.com/lukso-network/lsp-smart-contracts/pull/651))
+
+- Create implementation of `LSP23LinkedContractsFactory` ([#658](https://github.com/lukso-network/lsp-smart-contracts/pull/658))
+
+- Add external call (= hook) to LSP1 in LSP14 `renounceOwnership` function ([#663](https://github.com/lukso-network/lsp-smart-contracts/pull/663))
+
+- Add `LSP25ExecuteRelayCall` as its separate standard. ([#678](https://github.com/lukso-network/lsp-smart-contracts/pull/678))
+
+- Add `getOperatorsOf(address)` function to LSP7 ([#698](https://github.com/lukso-network/lsp-smart-contracts/pull/698))
+
+- Add LSP17 in inheritance of LSP7 and LSP8 ([#697](https://github.com/lukso-network/lsp-smart-contracts/pull/697))
+
+- Notify Operator via LSP1 in authorizeOperator in LSP7 and LSP8. (https://github.com/lukso-network/lsp-smart-contracts/pull/700)
+
+### Perfs
+
+- Improve deployment + runtime cost of LSP6 Key Manager by replacing calldata slices with `abi.decode` when verifying `ERC725X.execute(uint256,address,uint256,bytes)` calldata payloads ([#682](https://github.com/lukso-network/lsp-smart-contracts/pull/682))
+
+### Bug Fixes
+
+- Add lock guard when transferring ownership in LSP14 ([#645](https://github.com/lukso-network/lsp-smart-contracts/pull/645))
+
+- Delete pending when confirming renounce ownership the second time ([#646](https://github.com/lukso-network/lsp-smart-contracts/pull/646))
+
+- Disallowing setting LSP6 Key Manager as a LSP17 extension in setData paths in Key Manager ([#648](https://github.com/lukso-network/lsp-smart-contracts/pull/648))
+
+- Add check for `length == 0` when checking for Allowed ERC725Y Data Keys in Key Manager to prevent mask from allowing any data keys ([#659](https://github.com/lukso-network/lsp-smart-contracts/pull/659))
+
+- Use bitwise OR `|` operator in `LSP6Utils` function `combinePermissions(...)` to prevent from adding same permission twice and generate incorrect `bytes32` permission value ([#660](https://github.com/lukso-network/lsp-smart-contracts/pull/660))
+
+- Resolve inheritance of `LSP8Burnable` to include LSP4 ([#661](https://github.com/lukso-network/lsp-smart-contracts/pull/661))
+
+- Refactor `_fallbackLSP17Extendable` function to enable to run code after it is called + prevent potential solc bug "storage write removal". ([#674](https://github.com/lukso-network/lsp-smart-contracts/pull/674))
+
+- Update lsp8 compatible approve() logic to allow operators themselves to authorize operators. ([#681](https://github.com/lukso-network/lsp-smart-contracts/pull/681))
+
+- Add input validations for LSP6, LSP1 and LSP17 data keys when setting data in `LSP6SetDataModule` ([#679](https://github.com/lukso-network/lsp-smart-contracts/pull/679))
+
+### Build
+
+- upgrade `@erc725/smart-contracts` version to 5.2.0 ([#696](https://github.com/lukso-network/lsp-smart-contracts/pull/696))
+
 ## [0.11.0-rc.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.1...v0.11.0-rc.1) (2023-08-08)
 
 ### ⚠ BREAKING CHANGES

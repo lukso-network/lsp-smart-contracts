@@ -1,13 +1,10 @@
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // interfaces
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {
-    ILSP1UniversalReceiver
-} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
 // modules
 import {

@@ -19,14 +19,8 @@ import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // modules
-import {
-    ERC725YCore,
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
-import {
-    ERC725XCore,
-    IERC725X
-} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
+import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
+import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
@@ -37,7 +31,6 @@ import {
 } from "../LSP20CallVerification/LSP20CallVerification.sol";
 
 // constants
-import "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_LSP0,
     _INTERFACEID_ERC1271,
@@ -68,10 +61,6 @@ import {
 import {
     NoExtensionFoundForFunctionSelector
 } from "../LSP17ContractExtension/LSP17Errors.sol";
-
-import {
-    LSP14MustAcceptOwnershipInSeparateTransaction
-} from "../LSP14Ownable2Step/LSP14Errors.sol";
 
 /**
  * @title The Core Implementation of [LSP-0-ERC725Account] Standard.
@@ -105,8 +94,6 @@ abstract contract LSP0ERC725AccountCore is
         }
     }
 
-    // solhint-disable no-complex-fallback
-
     /**
      * @notice The `fallback` function was called with the following amount of native tokens: `msg.value`; and the following calldata: `callData`.
      *
@@ -128,6 +115,7 @@ abstract contract LSP0ERC725AccountCore is
      *
      * @custom:events {ValueReceived} event when receiving native tokens.
      */
+    // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
@@ -180,7 +168,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @inheritdoc IERC725X
+     * @inheritdoc ERC725XCore
      *
      * @custom:requirements
      * - Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
@@ -231,7 +219,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @inheritdoc IERC725X
+     * @inheritdoc ERC725XCore
      *
      * @custom:requirements
      * - The length of the parameters provided must be equal.
@@ -292,7 +280,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @inheritdoc IERC725Y
+     * @inheritdoc ERC725YCore
      *
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
@@ -329,7 +317,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @inheritdoc IERC725Y
+     * @inheritdoc ERC725YCore
      *
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
@@ -449,13 +437,13 @@ abstract contract LSP0ERC725AccountCore is
             }
         }
 
-        // Generate the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY + <bytes32 typeId>}
+        // Generate the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX + <bytes32 typeId>}
         bytes32 lsp1typeIdDelegateKey = LSP2Utils.generateMappingKey(
             _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
             bytes20(typeId)
         );
 
-        // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY + <bytes32 typeId>}
+        // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX + <bytes32 typeId>}
         bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
         bytes memory resultTypeIdDelegate;
 
@@ -723,11 +711,22 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @dev Forwards the call to an extension mapped to a function selector.
      *
-     * Calls {_getExtension} to get the address of the extension mapped to the function selector being called on the account. If there is no extension, the `address(0)` will be returned.
+     * Calls {_getExtension} to get the address of the extension mapped to the function selector being
+     * called on the account. If there is no extension, the `address(0)` will be returned.
      *
-     * Reverts if there is no extension for the function being called, except for the bytes4(0) function selector, which passes even if there is no extension for it.
+     * Reverts if there is no extension for the function being called, except for the `bytes4(0)` function selector, which passes even if there is no extension for it.
      *
-     * If there is an extension for the function selector being called, it calls the extension with the CALL opcode, passing the `msg.data` appended with the 20 bytes of the `msg.sender` and 32 bytes of the `msg.value`
+     * If there is an extension for the function selector being called, it calls the extension with the
+     * `CALL` opcode, passing the `msg.data` appended with the 20 bytes of the {msg.sender} and 32 bytes of the `msg.value`.
+     *
+     * @custom:hint This function does not forward to the extension contract the `msg.value` received by the contract that inherits `LSP17Extendable`.
+     * If you would like to forward the `msg.value` to the extension contract, you can override the code of this internal function as follow:
+     *
+     * ```solidity
+     * (bool success, bytes memory result) = extension.call{value: msg.value}(
+     *     abi.encodePacked(callData, msg.sender, msg.value)
+     * );
+     * ```
      */
     function _fallbackLSP17Extendable(
         bytes calldata callData

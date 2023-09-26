@@ -44,6 +44,17 @@ jobs:
       - name: 🧪 run import/requires tests
         run: npm run test:importRequire
 
+      - name: 📚 generate ABI docs
+        run: npm run build:docs
+
+      - name: 🔍 check if ABI auto-generated docs need to be updated
+        run: |-
+          if [[ $(git diff --name-only) != "" ]];
+          then
+            echo "Error: Please generate ABI docs after making changes to Solidity code and Natspec comments!"
+            exit 1
+          fi
+
   test-suites:
     strategy:
       matrix:

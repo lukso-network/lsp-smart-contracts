@@ -291,7 +291,7 @@ function execute(
 ) external payable returns (bytes);
 ```
 
-_Calling address `target` using `operationType`, transferring `value` wei and data: `data`. _
+_Calling address `target` using `operationType`, transferring `value` wei and data: `data`._
 
 Generic executor function to:
 
@@ -359,7 +359,7 @@ function executeBatch(
 ) external payable returns (bytes[]);
 ```
 
-_Calling multiple addresses `targets` using `operationsType`, transferring `values` wei and data: `datas`. _
+_Calling multiple addresses `targets` using `operationsType`, transferring `values` wei and data: `datas`._
 
 Batch executor function that behaves the same as [`execute`](#execute) but allowing multiple operations in the same transaction.
 
@@ -629,7 +629,7 @@ Renounce ownership of the contract in a 2-step process.
 function setData(bytes32 dataKey, bytes dataValue) external payable;
 ```
 
-_Setting the following data key value pair in the ERC725Y storage. Data key: `dataKey`, data value: `dataValue`. _
+_Setting the following data key value pair in the ERC725Y storage. Data key: `dataKey`, data value: `dataValue`._
 
 Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data key `dataKey`. The function is marked as payable to enable flexibility on child contracts. For instance to implement a fee mechanism for setting specific data.
 
@@ -674,7 +674,7 @@ Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data
 function setDataBatch(bytes32[] dataKeys, bytes[] dataValues) external payable;
 ```
 
-_Setting the following data key value pairs in the ERC725Y storage. Data keys: `dataKeys`, data values: `dataValues`. _
+_Setting the following data key value pairs in the ERC725Y storage. Data keys: `dataKeys`, data values: `dataValues`._
 
 Batch data setting function that behaves the same as [`setData`](#setdata) but allowing to set multiple data key/value pairs in the ERC725Y storage in the same transaction.
 
@@ -1149,6 +1149,19 @@ Returns the extension address stored under the following data key:
 
 ### \_fallbackLSP17Extendable
 
+:::tip Hint
+
+This function does not forward to the extension contract the `msg.value` received by the contract that inherits `LSP17Extendable`.
+If you would like to forward the `msg.value` to the extension contract, you can override the code of this internal function as follow:
+
+```solidity
+(bool success, bytes memory result) = extension.call{value: msg.value}(
+    abi.encodePacked(callData, msg.sender, msg.value)
+);
+```
+
+:::
+
 ```solidity
 function _fallbackLSP17Extendable(
   bytes callData
@@ -1156,9 +1169,11 @@ function _fallbackLSP17Extendable(
 ```
 
 Forwards the call to an extension mapped to a function selector.
-Calls [`_getExtension`](#_getextension) to get the address of the extension mapped to the function selector being called on the account. If there is no extension, the `address(0)` will be returned.
-Reverts if there is no extension for the function being called, except for the bytes4(0) function selector, which passes even if there is no extension for it.
-If there is an extension for the function selector being called, it calls the extension with the CALL opcode, passing the `msg.data` appended with the 20 bytes of the `msg.sender` and 32 bytes of the `msg.value`
+Calls [`_getExtension`](#_getextension) to get the address of the extension mapped to the function selector being
+called on the account. If there is no extension, the `address(0)` will be returned.
+Reverts if there is no extension for the function being called, except for the `bytes4(0)` function selector, which passes even if there is no extension for it.
+If there is an extension for the function selector being called, it calls the extension with the
+`CALL` opcode, passing the `msg.data` appended with the 20 bytes of the [`msg.sender`](#msg.sender) and 32 bytes of the `msg.value`.
 
 <br/>
 

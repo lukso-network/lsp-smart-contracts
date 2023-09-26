@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // interfaces
@@ -8,7 +8,10 @@ import {ILSP4Compatibility} from "./ILSP4Compatibility.sol";
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 
 // constants
-import "./LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_NAME_KEY,
+    _LSP4_TOKEN_SYMBOL_KEY
+} from "./LSP4Constants.sol";
 
 /**
  * @title LSP4Compatibility

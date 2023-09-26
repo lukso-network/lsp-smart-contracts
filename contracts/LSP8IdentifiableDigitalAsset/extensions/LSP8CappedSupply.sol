@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
@@ -26,7 +26,7 @@ abstract contract LSP8CappedSupply is LSP8IdentifiableDigitalAsset {
     error LSP8CappedSupplyCannotMintOverCap();
 
     // --- Storage
-    uint256 private immutable _tokenSupplyCap;
+    uint256 private immutable _TOKEN_SUPPLY_CAP;
 
     /**
      * @notice Deploying a `LSP8CappedSupply` token contract with max token supply cap set to `tokenSupplyCap_`.
@@ -43,13 +43,13 @@ abstract contract LSP8CappedSupply is LSP8IdentifiableDigitalAsset {
             revert LSP8CappedSupplyRequired();
         }
 
-        _tokenSupplyCap = tokenSupplyCap_;
+        _TOKEN_SUPPLY_CAP = tokenSupplyCap_;
     }
 
     // --- Token queries
 
     /**
-     * @notice The maximum supply amount of tokens allowed to exist is `_tokenSupplyCap`.
+     * @notice The maximum supply amount of tokens allowed to exist is `_TOKEN_SUPPLY_CAP`.
      *
      * @dev Get the maximum number of tokens that can exist to circulate. Once {totalSupply} reaches
      * reaches {totalSuuplyCap}, it is not possible to mint more tokens.
@@ -57,7 +57,7 @@ abstract contract LSP8CappedSupply is LSP8IdentifiableDigitalAsset {
      * @return The maximum number of tokens that can exist in the contract.
      */
     function tokenSupplyCap() public view virtual returns (uint256) {
-        return _tokenSupplyCap;
+        return _TOKEN_SUPPLY_CAP;
     }
 
     // --- Transfer functionality
@@ -74,13 +74,13 @@ abstract contract LSP8CappedSupply is LSP8IdentifiableDigitalAsset {
     function _mint(
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual override {
         if (totalSupply() + 1 > tokenSupplyCap()) {
             revert LSP8CappedSupplyCannotMintOverCap();
         }
 
-        super._mint(to, tokenId, allowNonLSP1Recipient, data);
+        super._mint(to, tokenId, force, data);
     }
 }

@@ -106,14 +106,20 @@ See the [issue related to Hardhat Typescript + ES Modules](https://hardhat.org/h
 
 ### Typescript types
 
-The following additional typescript types are also available.
+The following additional typescript types are also available, including types for the JSON format of the LSP3 Profile and LSP4 Digital Asset metadata.
 
 ```ts
 import {
   LSP2ArrayKey,
   LSPSupportedStandard,
   LSP6PermissionName,
-  LSPErrorInfo,
+  LSP3ProfileMetadataJSON,
+  LSP3ProfileMetadata,
+  LSP4DigitalAssetMetadataJSON,
+  LSP4DigitalAssetMetadata,
+  ImageMetadata,
+  LinkMetadata,
+  AssetMetadata,
 } from "@lukso/lsp-smart-contracts/constants";
 ```
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // interfaces
@@ -15,9 +15,11 @@ import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import {LSP1Utils} from "../LSP1Utils.sol";
-import {LSP2Utils} from "../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP5Utils} from "../../LSP5ReceivedAssets/LSP5Utils.sol";
+import {LSP10Utils} from "../../LSP10ReceivedVaults/LSP10Utils.sol";
+
+// constants
+import {_INTERFACEID_LSP1} from "../LSP1Constants.sol";
 import {
     _TYPEID_LSP7_TOKENSSENDER,
     _TYPEID_LSP7_TOKENSRECIPIENT,
@@ -32,18 +34,12 @@ import {
     _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
 } from "../../LSP9Vault/LSP9Constants.sol";
-import {LSP10Utils} from "../../LSP10ReceivedVaults/LSP10Utils.sol";
-
-// constants
-import "../LSP1Constants.sol";
-import "../../LSP0ERC725Account/LSP0Constants.sol";
-import "../../LSP6KeyManager/LSP6Constants.sol";
-import "../../LSP9Vault/LSP9Constants.sol";
-import "../../LSP10ReceivedVaults/LSP10Constants.sol";
-import "../../LSP14Ownable2Step/LSP14Constants.sol";
 
 // errors
-import "../LSP1Errors.sol";
+import {
+    NativeTokensNotAccepted,
+    CannotRegisterEOAsAsAssets
+} from "../LSP1Errors.sol";
 
 /**
  * @title Implementation of a UniversalReceiverDelegate for the [LSP-0-ERC725Account]
@@ -93,7 +89,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
 
         // The notifier is supposed to be either the LSP7 or LSP8 or LSP9 contract
         // If it's EOA we revert to avoid registering the EOA as asset or vault (spam protection)
-        // solhint-disable avoid-tx-origin
+        // solhint-disable-next-line avoid-tx-origin
         if (notifier == tx.origin) {
             revert CannotRegisterEOAsAsAssets(notifier);
         }

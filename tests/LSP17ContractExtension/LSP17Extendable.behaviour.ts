@@ -34,8 +34,8 @@ import { ERC725YDataKeys } from '../../constants';
 
 export type LSP17TestContext = {
   accounts: SignerWithAddress[];
-  contract: LSP0ERC725Account | LSP9Vault;
-  deployParams: { owner: SignerWithAddress };
+  contract: LSP0ERC725Account | LSP9Vault | any;
+  deployParams: any;
 };
 
 export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestContext>) => {

@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp-smart-contracts",
-  "version": "0.11.0-rc.1",
+  "version": "0.11.1",
   "description": "The reference implementation for universal profiles smart contracts",
   "directories": {
     "test": "test"
@@ -73,7 +73,8 @@
     "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
     "test:importRequire": "npm run build:js && ./tests/importRequire.sh",
     "clean": "hardhat clean && rm -rf module common",
-    "build": "hardhat dodoc && ts-node scripts/interfaceIds.ts && prettier -w ./docs ",
+    "build": "hardhat compile",
+    "build:docs": "hardhat dodoc && ts-node scripts/interfaceIds.ts && prettier -w ./docs",
     "build:js": "vite build && dts-bundle-generator --config dtsconfig.json",
     "package": "hardhat prepare-package",
     "release": "run-s clean build package && standard-version",
@@ -101,13 +102,13 @@
   },
   "homepage": "https://github.com/lukso-network/lsp-smart-contracts#readme",
   "dependencies": {
-    "@erc725/smart-contracts": "^5.1.0",
+    "@erc725/smart-contracts": "^5.2.0",
     "@openzeppelin/contracts": "^4.9.2",
     "@openzeppelin/contracts-upgradeable": "^4.9.2",
     "solidity-bytes-utils": "0.8.0"
   },
   "devDependencies": {
-    "@b00ste/hardhat-dodoc": "^0.3.11",
+    "@b00ste/hardhat-dodoc": "^0.3.15",
     "@defi-wonderland/smock": "^2.3.4",
     "@erc725/erc725.js": "0.17.2",
     "@lukso/eip191-signer.js": "^0.2.2",
@@ -138,7 +139,7 @@
     "prettier": "^2.8.8",
     "prettier-plugin-solidity": "^1.1.3",
     "rollup-plugin-esbuild": "^5.0.0",
-    "solhint": "^3.3.6",
+    "solhint": "^3.6.2",
     "standard-version": "^9.3.1",
     "ts-node": "^10.2.0",
     "typechain": "^8.0.0",

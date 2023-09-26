@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // libraries
@@ -8,13 +8,13 @@ import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 // errors
 
 /**
- * @dev Reverts when there is no revert reason bubbled up by the contract created when initializing
+ * @notice Couldn't initialize the contract.
+ * @dev Reverts when there is no revert reason bubbled up by the created contract when initializing
  */
 error ContractInitializationFailed();
 
 /**
- * @dev Reverts when msg.value sent to {deployCreate2AndInitialize} function is not equal to the sum of the
- * `initializeCalldataMsgValue` and `constructorMsgValue`
+ * @dev Reverts when `msg.value` sent to {deployCreate2AndInitialize(..)} function is not equal to the sum of the `initializeCalldataMsgValue` and `constructorMsgValue`
  */
 error InvalidValueSum();
 
@@ -61,16 +61,17 @@ contract LSP16UniversalFactory {
     bytes private constant _EMPTY_BYTE = "";
 
     /**
-     * @dev Emitted whenever a contract is created
-     * @param contractCreated The address of the contract created
-     * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt
-     * that will be used by the `CREATE2` opcode for contract deployment
-     * @param generatedSalt The salt used by the `CREATE2` opcode for contract deployment
-     * @param initialized The Boolean that specifies if the contract must be initialized or not
-     * @param initializeCalldata The bytes provided as initializeCalldata (Empty string when `initialized` is set to false)
+     * @notice Contract created. Contract address: `createdContract`.
+     * @dev Emitted whenever a contract is created.
+     *
+     * @param createdContract The address of the contract created.
+     * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt that will be used by the `CREATE2` opcode for contract deployment.
+     * @param generatedSalt The salt used by the `CREATE2` opcode for contract deployment.
+     * @param initialized The Boolean that specifies if the contract must be initialized or not.
+     * @param initializeCalldata The bytes provided as initializeCalldata (Empty string when `initialized` is set to false).
      */
     event ContractCreated(
-        address indexed contractCreated,
+        address indexed createdContract,
         bytes32 indexed providedSalt,
         bytes32 generatedSalt,
         bool indexed initialized,
@@ -78,24 +79,20 @@ contract LSP16UniversalFactory {
     );
 
     /**
-     * @dev Deploys a contract using the CREATE2 opcode. The address where the contract will be deployed
-     * can be known in advance via the {computeAddress} function.
+     * @notice Contract deployed. Salt, `providedSalt`, used.
+     *
+     * @dev Deploys a contract using the CREATE2 opcode. The address where the contract will be deployed can be known in advance via the {computeAddress} function.
      *
      * This function deploys contracts without initialization (external call after deployment).
      *
-     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with
-     * keccak256: `keccak256(abi.encodePacked(false, providedSalt))`. See {generateSalt} function for more details.
+     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with keccak256: `keccak256(abi.encodePacked(false, providedSalt))`. See {generateSalt} function for more details.
      *
-     * Using the same `byteCode` and `providedSalt` multiple times will revert, as the contract cannot be deployed
-     * twice at the same address.
+     * Using the same `byteCode` and `providedSalt` multiple times will revert, as the contract cannot be deployed twice at the same address.
      *
-     * If the constructor of the contract to deploy is payable, value can be sent to this function to fund
-     * the created contract. However, sending value to this function while the constructor is not payable will
-     * result in a revert.
+     * If the constructor of the contract to deploy is payable, value can be sent to this function to fund the created contract. However, sending value to this function while the constructor is not payable will result in a revert.
      *
      * @param byteCode The bytecode of the contract to be deployed
-     * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt
-     * that will be used by the `CREATE2` opcode for contract deployment
+     * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt that will be used by the `CREATE2` opcode for contract deployment
      *
      * @return The address of the deployed contract
      */
@@ -121,28 +118,22 @@ contract LSP16UniversalFactory {
     }
 
     /**
-     * @dev Deploys a contract using the CREATE2 opcode. The address where the contract will be deployed
-     * can be known in advance via the {computeAddress} function.
+     * @notice Contract deployed. Salt, `providedSalt`, used.
+     *
+     * @dev Deploys a contract using the CREATE2 opcode. The address where the contract will be deployed can be known in advance via the {computeAddress} function.
      *
      * This function deploys contracts with initialization (external call after deployment).
      *
-     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with
-     * keccak256: `keccak256(abi.encodePacked(true, initializeCalldata, providedSalt))`.
-     * See {generateSalt} function for more details.
+     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with keccak256: `keccak256(abi.encodePacked(true, initializeCalldata, providedSalt))`. See {generateSalt} function for more details.
      *
-     * Using the same `byteCode`, `providedSalt` and `initializeCalldata` multiple times will revert, as the
-     * contract cannot be deployed twice at the same address.
+     * Using the same `byteCode`, `providedSalt` and `initializeCalldata` multiple times will revert, as the contract cannot be deployed twice at the same address.
      *
-     * If the constructor or the initialize function of the contract to deploy is payable, value can be sent along
-     * with the deployment/initialization to fund the created contract. However, sending value to this function while
-     * the constructor/initialize function is not payable will result in a revert.
+     * If the constructor or the initialize function of the contract to deploy is payable, value can be sent along with the deployment/initialization to fund the created contract. However, sending value to this function while the constructor/initialize function is not payable will result in a revert.
      *
-     * Will revert if the `msg.value` sent to the function is not equal to the sum of `constructorMsgValue` and
-     * `initializeCalldataMsgValue`.
+     * Will revert if the `msg.value` sent to the function is not equal to the sum of `constructorMsgValue` and `initializeCalldataMsgValue`.
      *
      * @param byteCode The bytecode of the contract to be deployed
-     * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt
-     * that will be used by the `CREATE2` opcode for contract deployment
+     * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt that will be used by the `CREATE2` opcode for contract deployment
      * @param initializeCalldata The calldata to be executed on the created contract
      * @param constructorMsgValue The value sent to the contract during deployment
      * @param initializeCalldataMsgValue The value sent to the contract during initialization
@@ -186,24 +177,22 @@ contract LSP16UniversalFactory {
     }
 
     /**
-     * @dev Deploys an ERC1167 minimal proxy contract using the CREATE2 opcode. The address where the contract will be deployed
-     * can be known in advance via the {computeERC1167Address} function.
+     * @notice Proxy deployed. Salt, `providedSalt`, used.
+     *
+     * @dev Deploys an ERC1167 minimal proxy contract using the CREATE2 opcode. The address where the contract will be deployed can be known in advance via the {computeERC1167Address} function.
      *
      * This function deploys contracts without initialization (external call after deployment).
      *
-     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with
-     * keccak256: `keccak256(abi.encodePacked(false, providedSalt))`. See {generateSalt} function for more details.
+     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with keccak256: `keccak256(abi.encodePacked(false, providedSalt))`. See {generateSalt} function for more details.
      *
      * See {generateSalt} function for more details.
      *
-     * Using the same `implementationContract` and `providedSalt` multiple times will revert, as the contract cannot be deployed
-     * twice at the same address.
+     * Using the same `implementationContract` and `providedSalt` multiple times will revert, as the contract cannot be deployed twice at the same address.
      *
      * Sending value to the contract created is not possible since the constructor of the ERC1167 minimal proxy is not payable.
      *
      * @param implementationContract The contract address to use as the base implementation behind the proxy that will be deployed
-     * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt
-     * that will be used by the `CREATE2` opcode for contract deployment
+     * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt that will be used by the `CREATE2` opcode for contract deployment
      *
      * @return The address of the minimal proxy deployed
      */
@@ -229,25 +218,22 @@ contract LSP16UniversalFactory {
     }
 
     /**
+     * @notice Proxy deployed & initialized. Salt, `providedSalt`, used.
+     *
      * @dev Deploys an ERC1167 minimal proxy contract using the CREATE2 opcode. The address where the contract will be deployed
      * can be known in advance via the {computeERC1167Address} function.
      *
      * This function deploys contracts with initialization (external call after deployment).
      *
-     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with
-     * keccak256: `keccak256(abi.encodePacked(true, initializeCalldata, providedSalt))`.
+     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with keccak256: `keccak256(abi.encodePacked(true, initializeCalldata, providedSalt))`.
      * See {generateSalt} function for more details.
      *
-     * Using the same `implementationContract`, `providedSalt` and `initializeCalldata` multiple times will revert, as the
-     * contract cannot be deployed twice at the same address.
+     * Using the same `implementationContract`, `providedSalt` and `initializeCalldata` multiple times will revert, as the contract cannot be deployed twice at the same address.
      *
-     * If the initialize function of the contract to deploy is payable, value can be sent along to fund the created
-     * contract while initializing. However, sending value to this function while the initialize function is not
-     * payable will result in a revert.
+     * If the initialize function of the contract to deploy is payable, value can be sent along to fund the created contract while initializing. However, sending value to this function while the initialize function is not payable will result in a revert.
      *
      * @param implementationContract The contract address to use as the base implementation behind the proxy that will be deployed
-     * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt
-     * that will be used by the `CREATE2` opcode for contract deployment
+     * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt that will be used by the `CREATE2` opcode for contract deployment
      * @param initializeCalldata The calldata to be executed on the created contract
      *
      * @return The address of the minimal proxy deployed
@@ -285,14 +271,12 @@ contract LSP16UniversalFactory {
 
     /**
      * @dev Computes the address of a contract to be deployed using CREATE2, based on the input parameters.
-     * Any change in one of these parameters will result in a different address. When the `initializable`
-     * boolean is set to `false`, `initializeCalldata` will not affect the function output.
+     *
+     * Any change in one of these parameters will result in a different address. When the `initializable` boolean is set to `false`, `initializeCalldata` will not affect the function output.
      *
      * @param byteCodeHash The keccak256 hash of the bytecode to be deployed
-     * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt
-     * that will be used by the `CREATE2` opcode for contract deployment
-     * @param initializable A boolean that indicates whether an external call should be made to initialize the
-     * contract after deployment
+     * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt that will be used by the `CREATE2` opcode for contract deployment
+     * @param initializable A boolean that indicates whether an external call should be made to initialize the contract after deployment
      * @param initializeCalldata The calldata to be executed on the created contract if `initializable` is set to `true`
      *
      * @return The address where the contract will be deployed
@@ -313,14 +297,12 @@ contract LSP16UniversalFactory {
 
     /**
      * @dev Computes the address of an ERC1167 proxy contract based on the input parameters.
-     * Any change in one of these parameters will result in a different address. When the `initializable`
-     * boolean is set to `false`, `initializeCalldata` will not affect the function output.
+     *
+     * Any change in one of these parameters will result in a different address. When the `initializable` boolean is set to `false`, `initializeCalldata` will not affect the function output.
      *
      * @param implementationContract The contract to create a clone of according to ERC1167
-     * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt
-     * that will be used by the `CREATE2` opcode for contract deployment
-     * @param initializable A boolean that indicates whether an external call should be made to initialize the
-     * proxy contract after deployment
+     * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt that will be used by the `CREATE2` opcode for contract deployment
+     * @param initializable A boolean that indicates whether an external call should be made to initialize the proxy contract after deployment
      * @param initializeCalldata The calldata to be executed on the created contract if `initializable` is set to `true`
      *
      * @return The address where the ERC1167 proxy contract will be deployed
@@ -344,61 +326,48 @@ contract LSP16UniversalFactory {
     }
 
     /**
-     * @dev Generates the salt used to deploy the contract by hashing the following parameters (concatenated
-     * together) with keccak256:
+     * @dev Generates the salt used to deploy the contract by hashing the following parameters (concatenated together) with keccak256:
+     * 1. the `providedSalt`
+     * 2. the `initializable` boolean
+     * 3. the `initializeCalldata`, only if the contract is initializable (the `initializable` boolean is set to `true`)
      *
-     * - the `providedSalt`
-     * - the `initializable` boolean
-     * - the `initializeCalldata`, only if the contract is initializable (the `initializable` boolean is set to `true`)
+     * - The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is used along with these parameters:
+     *  1. `initializable` boolean
+     *  2. `initializeCalldata` (when the contract is initializable and `initializable` is set to `true`).
      *
-     * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is
-     * used along with these parameters:
-     *  - `initializable` boolean
-     *  - `initializeCalldata` (when the contract is initializable and `initializable` is set to `true`).
-     * These three parameters are concatenated together and hashed to generate the final salt for CREATE2.
+     * - This approach ensures that in order to reproduce an initializable contract at the same address on another chain, not only the `providedSalt` is required to be the same, but also the initialize parameters within the `initializeCalldata` must also be the same. This maintains consistent deployment behaviour. Users are required to initialize contracts with the same parameters across different chains to ensure contracts are deployed at the same address across different chains.
      *
-     * This approach ensures that in order to reproduce an initializable contract at the same address on another chain,
-     * not only the `providedSalt` is required to be the same, but also the initialize parameters within the `initializeCalldata`
-     * must also be the same.
+     * 1. Example (for initializable contracts)
      *
-     * This maintains consistent deployment behaviour. Users are required to initialize contracts with the same parameters across
-     * different chains to ensure contracts are deployed at the same address across different chains.
-     *
-     * -----------
-     * Example (for initializable contracts)
-     *
-     * For an existing contract A on chain 1 owned by X, to replicate the same contract at the same address with
+     * -  For an existing contract A on chain 1 owned by X, to replicate the same contract at the same address with
      * the same owner X on chain 2, the salt used to generate the address should include the initializeCalldata
      * that assigns X as the owner of contract A.
      *
-     * For instance, if another user, Y, tries to deploy the contract at the same address
+     * - For instance, if another user, Y, tries to deploy the contract at the same address
      * on chain 2 using the same providedSalt, but with a different initializeCalldata to make Y the owner instead of X,
      * the generated address would be different, preventing Y from deploying the contract with different ownership
      * at the same address.
-     * -----------
      *
-     * However, for non-initializable contracts, if the constructor has arguments that specify the deployment behavior, they
+     * - However, for non-initializable contracts, if the constructor has arguments that specify the deployment behavior, they
      * will be included in the bytecode. Any change in the constructor arguments will lead to a different contract's bytecode
      * which will result in a different address on other chains.
      *
-     * -----------
-     * Example (for non-initializable contracts)
+     * 2. Example (for non-initializable contracts)
      *
-     * If a contract is deployed with specific constructor arguments on chain 1, these arguments are embedded within the bytecode.
+     * - If a contract is deployed with specific constructor arguments on chain 1, these arguments are embedded within the bytecode.
      * For instance, if contract B is deployed with a specific `tokenName` and `tokenSymbol` on chain 1, and a user wants to deploy
      * the same contract with the same `tokenName` and `tokenSymbol` on chain 2, they must use the same constructor arguments to
      * produce the same bytecode. This ensures that the same deployment behaviour is maintained across different chains,
      * as long as the same bytecode is used.
      *
-     * If another user Z, tries to deploy the same contract B at the same address on chain 2 using the same `providedSalt`
+     * - If another user Z, tries to deploy the same contract B at the same address on chain 2 using the same `providedSalt`
      * but different constructor arguments (a different `tokenName` and/or `tokenSymbol`), the generated address will be different.
      * This prevents user Z from deploying the contract with different constructor arguments at the same address on chain 2.
-     * -----------
      *
-     * The providedSalt was hashed to produce the salt used by CREATE2 opcode to prevent users from deploying initializable contracts
+     * - The providedSalt was hashed to produce the salt used by CREATE2 opcode to prevent users from deploying initializable contracts
      * using non-initializable functions such as {deployCreate2} without having the initialization call.
      *
-     * In other words, if the providedSalt was not hashed and was used as it is as the salt by the CREATE2 opcode, malicious users
+     * - In other words, if the providedSalt was not hashed and was used as it is as the salt by the CREATE2 opcode, malicious users
      * can check the generated salt used for the already deployed initializable contract on chain 1, and deploy the contract
      * from {deployCreate2} function on chain 2, with passing the generated salt of the deployed contract as providedSalt
      * that will produce the same address but without the initialization, where the malicious user can initialize after.
