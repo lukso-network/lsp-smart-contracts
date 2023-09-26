@@ -34,7 +34,7 @@ When marked as 'public', a method can be called both externally and internally, 
 constructor(string name_, string symbol_, address newOwner_);
 ```
 
-_Deploying a `LSP8CompatibleERC721Mintable` token contract with: token name = `name_`, token symbol = `symbol*`, and address `newOwner*` as the token contract owner.\_
+_Deploying a `LSP8CompatibleERC721Mintable` token contract with: token name = `name_`, token symbol = `symbol_`, and address `newOwner_` as the token contract owner._
 
 #### Parameters
 
@@ -208,21 +208,19 @@ Compatible with ERC721 getApproved.
 function getData(bytes32 dataKey) external view returns (bytes dataValue);
 ```
 
-_Reading the ERC725Y storage for data key `dataKey` returned the following value: `dataValue`._
-
-Get in the ERC725Y storage the bytes data stored at a specific data key `dataKey`.
+_Gets singular data at a given `dataKey`_
 
 #### Parameters
 
-| Name      |   Type    | Description                                   |
-| --------- | :-------: | --------------------------------------------- |
-| `dataKey` | `bytes32` | The data key for which to retrieve the value. |
+| Name      |   Type    | Description                     |
+| --------- | :-------: | ------------------------------- |
+| `dataKey` | `bytes32` | The key which value to retrieve |
 
 #### Returns
 
-| Name        |  Type   | Description                                          |
-| ----------- | :-----: | ---------------------------------------------------- |
-| `dataValue` | `bytes` | The bytes value stored under the specified data key. |
+| Name        |  Type   | Description                |
+| ----------- | :-----: | -------------------------- |
+| `dataValue` | `bytes` | The data stored at the key |
 
 <br/>
 
@@ -243,9 +241,7 @@ function getDataBatch(
 ) external view returns (bytes[] dataValues);
 ```
 
-_Reading the ERC725Y storage for data keys `dataKeys` returned the following values: `dataValues`._
-
-Get in the ERC725Y storage the bytes data stored at multiple data keys `dataKeys`.
+_Gets array of data for multiple given keys_
 
 #### Parameters
 
@@ -645,42 +641,18 @@ See [`_setApprovalForAll`](#_setapprovalforall)
 
 :::
 
-:::caution Warning
-
-**Note for developers:** despite the fact that this function is set as `payable`, if the function is not intended to receive value (= native tokens), **an additional check should be implemented to ensure that `msg.value` sent was equal to 0**.
-
-:::
-
 ```solidity
 function setData(bytes32 dataKey, bytes dataValue) external payable;
 ```
 
-_Setting the following data key value pair in the ERC725Y storage. Data key: `dataKey`, data value: `dataValue`._
-
-Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data key `dataKey`. The function is marked as payable to enable flexibility on child contracts. For instance to implement a fee mechanism for setting specific data.
-
-<blockquote>
-
-**Requirements:**
-
-- SHOULD only be callable by the [`owner`](#owner).
-
-</blockquote>
-
-<blockquote>
-
-**Emitted events:**
-
-- [`DataChanged`](#datachanged) event.
-
-</blockquote>
+_Sets singular data for a given `dataKey`_
 
 #### Parameters
 
-| Name        |   Type    | Description                                |
-| ----------- | :-------: | ------------------------------------------ |
-| `dataKey`   | `bytes32` | The data key for which to set a new value. |
-| `dataValue` |  `bytes`  | The new bytes value to set.                |
+| Name        |   Type    | Description                                                                                                                                                                                                                                                                                                           |
+| ----------- | :-------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dataKey`   | `bytes32` | The key to retrieve stored value                                                                                                                                                                                                                                                                                      |
+| `dataValue` |  `bytes`  | The value to set SHOULD only be callable by the owner of the contract set via ERC173 The function is marked as payable to enable flexibility on child contracts If the function is not intended to receive value, an additional check should be implemented to check that value equal 0. Emits a {DataChanged} event. |
 
 <br/>
 
@@ -695,42 +667,20 @@ Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data
 
 :::
 
-:::caution Warning
-
-**Note for developers:** despite the fact that this function is set as `payable`, if the function is not intended to receive value (= native tokens), **an additional check should be implemented to ensure that `msg.value` sent was equal to 0**.
-
-:::
-
 ```solidity
 function setDataBatch(bytes32[] dataKeys, bytes[] dataValues) external payable;
 ```
 
-_Setting the following data key value pairs in the ERC725Y storage. Data keys: `dataKeys`, data values: `dataValues`._
+Sets array of data for multiple given `dataKeys` SHOULD only be callable by the owner of the contract set via ERC173 The function is marked as payable to enable flexibility on child contracts If the function is not intended to receive value, an additional check should be implemented to check that value equal
 
-Batch data setting function that behaves the same as [`setData`](#setdata) but allowing to set multiple data key/value pairs in the ERC725Y storage in the same transaction.
-
-<blockquote>
-
-**Requirements:**
-
-- SHOULD only be callable by the [`owner`](#owner) of the contract.
-
-</blockquote>
-
-<blockquote>
-
-**Emitted events:**
-
-- [`DataChanged`](#datachanged) event **for each data key/value pair set**.
-
-</blockquote>
+0. Emits a [`DataChanged`](#datachanged) event.
 
 #### Parameters
 
-| Name         |    Type     | Description                                          |
-| ------------ | :---------: | ---------------------------------------------------- |
-| `dataKeys`   | `bytes32[]` | An array of data keys to set bytes values for.       |
-| `dataValues` |  `bytes[]`  | An array of bytes values to set for each `dataKeys`. |
+| Name         |    Type     | Description                              |
+| ------------ | :---------: | ---------------------------------------- |
+| `dataKeys`   | `bytes32[]` | The array of data keys for values to set |
+| `dataValues` |  `bytes[]`  | The array of values to set               |
 
 <br/>
 
@@ -1073,25 +1023,6 @@ This pattern is useful in inheritance.
 function _getData(bytes32 dataKey) internal view returns (bytes dataValue);
 ```
 
-Read the value stored under a specific `dataKey` inside the underlying ERC725Y storage,
-represented as a mapping of `bytes32` data keys mapped to their `bytes` data values.
-
-```solidity
-mapping(bytes32 => bytes) _store
-```
-
-#### Parameters
-
-| Name      |   Type    | Description                                                             |
-| --------- | :-------: | ----------------------------------------------------------------------- |
-| `dataKey` | `bytes32` | A bytes32 data key to read the associated `bytes` value from the store. |
-
-#### Returns
-
-| Name        |  Type   | Description                                                                   |
-| ----------- | :-----: | ----------------------------------------------------------------------------- |
-| `dataValue` | `bytes` | The `bytes` value associated with the given `dataKey` in the ERC725Y storage. |
-
 <br/>
 
 ### \_setData
@@ -1398,15 +1329,15 @@ event Approval(address indexed owner, address indexed operator, uint256 indexed 
 
 _ERC721 `Approval` compatible event emitted. Successfully approved operator `operator` to operate on tokenId `tokenId` on behalf of token owner `owner`._
 
-Emitted when the allowance of a `spender` for an `owner` is set by a call to [`approve`](#approve). `value` is the new allowance.
+ERC721 `Approval` event emitted when `owner` enables `operator` for `tokenId`. To provide compatibility with indexing ERC721 events.
 
 #### Parameters
 
-| Name                     |   Type    | Description                  |
-| ------------------------ | :-------: | ---------------------------- |
-| `owner` **`indexed`**    | `address` | The account giving approval  |
-| `operator` **`indexed`** | `address` | The address set as operator. |
-| `tokenId` **`indexed`**  | `uint256` | The approved tokenId.        |
+| Name                     |   Type    | Description                                |
+| ------------------------ | :-------: | ------------------------------------------ |
+| `owner` **`indexed`**    | `address` | The address of the owner of the `tokenId`. |
+| `operator` **`indexed`** | `address` | The address set as operator.               |
+| `tokenId` **`indexed`**  | `uint256` | The approved tokenId.                      |
 
 <br/>
 
@@ -1427,7 +1358,7 @@ event ApprovalForAll(address indexed owner, address indexed operator, bool appro
 
 _ERC721 `ApprovalForAll` compatible event emitted. Successfully set "approved for all" status to `approved` for operator `operator` for token owner `owner`._
 
-Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to `approved`.
+ERC721 `ApprovalForAll` event emitted when an `operator` is enabled or disabled for an owner to transfer any of its tokenIds. The operator can manage all NFTs of the owner.
 
 #### Parameters
 
@@ -1482,16 +1413,14 @@ Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
 event DataChanged(bytes32 indexed dataKey, bytes dataValue);
 ```
 
-_The following data key/value pair has been changed in the ERC725Y storage: Data key: `dataKey`, data value: `dataValue`._
-
-Emitted when data at a specific `dataKey` was changed to a new value `dataValue`.
+_Emitted when data at a key is changed_
 
 #### Parameters
 
-| Name                    |   Type    | Description                                  |
-| ----------------------- | :-------: | -------------------------------------------- |
-| `dataKey` **`indexed`** | `bytes32` | The data key for which a bytes value is set. |
-| `dataValue`             |  `bytes`  | The value to set for the given data key.     |
+| Name                    |   Type    | Description                          |
+| ----------------------- | :-------: | ------------------------------------ |
+| `dataKey` **`indexed`** | `bytes32` | The data key which data value is set |
+| `dataValue`             |  `bytes`  | The data value to set                |
 
 <br/>
 
@@ -1553,35 +1482,6 @@ Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on i
 
 - Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#transfer)
 - Solidity implementation: [`LSP8CompatibleERC721Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol)
-- Event signature: `Transfer(address,address,uint256)`
-- Event topic hash: `0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef`
-
-:::
-
-```solidity
-event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
-```
-
-_ERC721 `Transfer` compatible event emitted. Successfully transferred tokenId `tokenId` from `from` to `to`._
-
-Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.
-
-#### Parameters
-
-| Name                    |   Type    | Description              |
-| ----------------------- | :-------: | ------------------------ |
-| `from` **`indexed`**    | `address` | The sending address      |
-| `to` **`indexed`**      | `address` | The receiving address    |
-| `tokenId` **`indexed`** | `uint256` | The tokenId to transfer. |
-
-<br/>
-
-### Transfer
-
-:::note References
-
-- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#transfer)
-- Solidity implementation: [`LSP8CompatibleERC721Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol)
 - Event signature: `Transfer(address,address,address,bytes32,bool,bytes)`
 - Event topic hash: `0xb333c813a7426a7a11e2b190cad52c44119421594b47f6f32ace6d8c7207b2bf`
 
@@ -1590,6 +1490,8 @@ Emitted when `value` tokens are moved from one account (`from`) to another (`to`
 ```solidity
 event Transfer(address operator, address indexed from, address indexed to, bytes32 indexed tokenId, bool force, bytes data);
 ```
+
+_ERC721 `Transfer` compatible event emitted. Successfully transferred tokenId `tokenId` from `from` to `to`._
 
 Emitted when `tokenId` token is transferred from the `from` to the `to` address.
 
@@ -1623,7 +1525,7 @@ Emitted when `tokenId` token is transferred from the `from` to the `to` address.
 error ERC725Y_DataKeysValuesEmptyArray();
 ```
 
-Reverts when one of the array parameter provided to [`setDataBatch`](#setdatabatch) function is an empty array.
+reverts when one of the array parameter provided to `setDataBatch` is an empty array
 
 <br/>
 
@@ -1642,7 +1544,7 @@ Reverts when one of the array parameter provided to [`setDataBatch`](#setdatabat
 error ERC725Y_DataKeysValuesLengthMismatch();
 ```
 
-Reverts when there is not the same number of elements in the `datakeys` and `dataValues` array parameters provided when calling the [`setDataBatch`](#setdatabatch) function.
+reverts when there is not the same number of elements in the lists of data keys and data values when calling setDataBatch.
 
 <br/>
 
@@ -1661,7 +1563,7 @@ Reverts when there is not the same number of elements in the `datakeys` and `dat
 error ERC725Y_MsgValueDisallowed();
 ```
 
-Reverts when sending value to the [`setData`](#setdata) or [`setDataBatch`](#setdatabatch) function.
+reverts when sending value to the `setData(..)` functions
 
 <br/>
 

@@ -372,8 +372,6 @@ event ContractCreated(address indexed createdContract, bytes32 indexed providedS
 
 _Contract created. Contract address: `createdContract`._
 
-Emitted whenever a contract is created.
-
 #### Parameters
 
 | Name                            |   Type    | Description                                                                                                                                         |

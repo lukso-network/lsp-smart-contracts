@@ -256,21 +256,19 @@ Atomically decreases the allowance granted to `operator` by the caller. This is 
 function getData(bytes32 dataKey) external view returns (bytes dataValue);
 ```
 
-_Reading the ERC725Y storage for data key `dataKey` returned the following value: `dataValue`._
-
-Get in the ERC725Y storage the bytes data stored at a specific data key `dataKey`.
+_Gets singular data at a given `dataKey`_
 
 #### Parameters
 
-| Name      |   Type    | Description                                   |
-| --------- | :-------: | --------------------------------------------- |
-| `dataKey` | `bytes32` | The data key for which to retrieve the value. |
+| Name      |   Type    | Description                     |
+| --------- | :-------: | ------------------------------- |
+| `dataKey` | `bytes32` | The key which value to retrieve |
 
 #### Returns
 
-| Name        |  Type   | Description                                          |
-| ----------- | :-----: | ---------------------------------------------------- |
-| `dataValue` | `bytes` | The bytes value stored under the specified data key. |
+| Name        |  Type   | Description                |
+| ----------- | :-----: | -------------------------- |
+| `dataValue` | `bytes` | The data stored at the key |
 
 <br/>
 
@@ -291,9 +289,7 @@ function getDataBatch(
 ) external view returns (bytes[] dataValues);
 ```
 
-_Reading the ERC725Y storage for data keys `dataKeys` returned the following values: `dataValues`._
-
-Get in the ERC725Y storage the bytes data stored at multiple data keys `dataKeys`.
+_Gets array of data for multiple given keys_
 
 #### Parameters
 
@@ -480,42 +476,18 @@ Removes the `operator` address as an operator of callers tokens, disallowing it 
 
 :::
 
-:::caution Warning
-
-**Note for developers:** despite the fact that this function is set as `payable`, if the function is not intended to receive value (= native tokens), **an additional check should be implemented to ensure that `msg.value` sent was equal to 0**.
-
-:::
-
 ```solidity
 function setData(bytes32 dataKey, bytes dataValue) external payable;
 ```
 
-_Setting the following data key value pair in the ERC725Y storage. Data key: `dataKey`, data value: `dataValue`._
-
-Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data key `dataKey`. The function is marked as payable to enable flexibility on child contracts. For instance to implement a fee mechanism for setting specific data.
-
-<blockquote>
-
-**Requirements:**
-
-- SHOULD only be callable by the [`owner`](#owner).
-
-</blockquote>
-
-<blockquote>
-
-**Emitted events:**
-
-- [`DataChanged`](#datachanged) event.
-
-</blockquote>
+_Sets singular data for a given `dataKey`_
 
 #### Parameters
 
-| Name        |   Type    | Description                                |
-| ----------- | :-------: | ------------------------------------------ |
-| `dataKey`   | `bytes32` | The data key for which to set a new value. |
-| `dataValue` |  `bytes`  | The new bytes value to set.                |
+| Name        |   Type    | Description                                                                                                                                                                                                                                                                                                           |
+| ----------- | :-------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dataKey`   | `bytes32` | The key to retrieve stored value                                                                                                                                                                                                                                                                                      |
+| `dataValue` |  `bytes`  | The value to set SHOULD only be callable by the owner of the contract set via ERC173 The function is marked as payable to enable flexibility on child contracts If the function is not intended to receive value, an additional check should be implemented to check that value equal 0. Emits a {DataChanged} event. |
 
 <br/>
 
@@ -530,42 +502,20 @@ Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data
 
 :::
 
-:::caution Warning
-
-**Note for developers:** despite the fact that this function is set as `payable`, if the function is not intended to receive value (= native tokens), **an additional check should be implemented to ensure that `msg.value` sent was equal to 0**.
-
-:::
-
 ```solidity
 function setDataBatch(bytes32[] dataKeys, bytes[] dataValues) external payable;
 ```
 
-_Setting the following data key value pairs in the ERC725Y storage. Data keys: `dataKeys`, data values: `dataValues`._
+Sets array of data for multiple given `dataKeys` SHOULD only be callable by the owner of the contract set via ERC173 The function is marked as payable to enable flexibility on child contracts If the function is not intended to receive value, an additional check should be implemented to check that value equal
 
-Batch data setting function that behaves the same as [`setData`](#setdata) but allowing to set multiple data key/value pairs in the ERC725Y storage in the same transaction.
-
-<blockquote>
-
-**Requirements:**
-
-- SHOULD only be callable by the [`owner`](#owner) of the contract.
-
-</blockquote>
-
-<blockquote>
-
-**Emitted events:**
-
-- [`DataChanged`](#datachanged) event **for each data key/value pair set**.
-
-</blockquote>
+0. Emits a [`DataChanged`](#datachanged) event.
 
 #### Parameters
 
-| Name         |    Type     | Description                                          |
-| ------------ | :---------: | ---------------------------------------------------- |
-| `dataKeys`   | `bytes32[]` | An array of data keys to set bytes values for.       |
-| `dataValues` |  `bytes[]`  | An array of bytes values to set for each `dataKeys`. |
+| Name         |    Type     | Description                              |
+| ------------ | :---------: | ---------------------------------------- |
+| `dataKeys`   | `bytes32[]` | The array of data keys for values to set |
+| `dataValues` |  `bytes[]`  | The array of values to set               |
 
 <br/>
 
@@ -779,25 +729,6 @@ This pattern is useful in inheritance.
 ```solidity
 function _getData(bytes32 dataKey) internal view returns (bytes dataValue);
 ```
-
-Read the value stored under a specific `dataKey` inside the underlying ERC725Y storage,
-represented as a mapping of `bytes32` data keys mapped to their `bytes` data values.
-
-```solidity
-mapping(bytes32 => bytes) _store
-```
-
-#### Parameters
-
-| Name      |   Type    | Description                                                             |
-| --------- | :-------: | ----------------------------------------------------------------------- |
-| `dataKey` | `bytes32` | A bytes32 data key to read the associated `bytes` value from the store. |
-
-#### Returns
-
-| Name        |  Type   | Description                                                                   |
-| ----------- | :-----: | ----------------------------------------------------------------------------- |
-| `dataValue` | `bytes` | The `bytes` value associated with the given `dataKey` in the ERC725Y storage. |
 
 <br/>
 
@@ -1083,14 +1014,14 @@ CALL opcode, passing the [`msg.data`](#msg.data) appended with the 20 bytes of t
 event AuthorizedOperator(address indexed operator, address indexed tokenOwner, uint256 indexed amount, bytes operatorNotificationData);
 ```
 
-Emitted when `tokenOwner` enables `operator` for `amount` tokens.
+Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
 
 #### Parameters
 
 | Name                       |   Type    | Description                                                             |
 | -------------------------- | :-------: | ----------------------------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address authorized as an operator                                   |
-| `tokenOwner` **`indexed`** | `address` | The token owner                                                         |
+| `operator` **`indexed`**   | `address` | The address authorized as an operator.                                  |
+| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                             |
 | `amount` **`indexed`**     | `uint256` | The amount of tokens `operator` address has access to from `tokenOwner` |
 | `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                         |
 
@@ -1111,16 +1042,14 @@ Emitted when `tokenOwner` enables `operator` for `amount` tokens.
 event DataChanged(bytes32 indexed dataKey, bytes dataValue);
 ```
 
-_The following data key/value pair has been changed in the ERC725Y storage: Data key: `dataKey`, data value: `dataValue`._
-
-Emitted when data at a specific `dataKey` was changed to a new value `dataValue`.
+_Emitted when data at a key is changed_
 
 #### Parameters
 
-| Name                    |   Type    | Description                                  |
-| ----------------------- | :-------: | -------------------------------------------- |
-| `dataKey` **`indexed`** | `bytes32` | The data key for which a bytes value is set. |
-| `dataValue`             |  `bytes`  | The value to set for the given data key.     |
+| Name                    |   Type    | Description                          |
+| ----------------------- | :-------: | ------------------------------------ |
+| `dataKey` **`indexed`** | `bytes32` | The data key which data value is set |
+| `dataValue`             |  `bytes`  | The data value to set                |
 
 <br/>
 
@@ -1163,15 +1092,15 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 event RevokedOperator(address indexed operator, address indexed tokenOwner, bytes operatorNotificationData);
 ```
 
-Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`authorizedAmountFor(...)`](#`authorizedamountfor) to `0`.
+Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on its behalf.
 
 #### Parameters
 
-| Name                       |   Type    | Description                                     |
-| -------------------------- | :-------: | ----------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address revoked from operating              |
-| `tokenOwner` **`indexed`** | `address` | The token owner                                 |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1. |
+| Name                       |   Type    | Description                                                     |
+| -------------------------- | :-------: | --------------------------------------------------------------- |
+| `operator` **`indexed`**   | `address` | The address revoked from the operator array ({getOperatorsOf}). |
+| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                     |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                 |
 
 <br/>
 
@@ -1190,18 +1119,18 @@ Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`
 event Transfer(address indexed operator, address indexed from, address indexed to, uint256 amount, bool force, bytes data);
 ```
 
-Emitted when the `from` transferred successfully `amount` of tokens to `to`.
+Emitted when `tokenId` token is transferred from the `from` to the `to` address.
 
 #### Parameters
 
-| Name                     |   Type    | Description                                                                                                                  |
-| ------------------------ | :-------: | ---------------------------------------------------------------------------------------------------------------------------- |
-| `operator` **`indexed`** | `address` | The address of the operator that executed the transfer.                                                                      |
-| `from` **`indexed`**     | `address` | The address which tokens were sent from (balance decreased by `-amount`).                                                    |
-| `to` **`indexed`**       | `address` | The address that received the tokens (balance increased by `+amount`).                                                       |
-| `amount`                 | `uint256` | The amount of tokens transferred.                                                                                            |
-| `force`                  |  `bool`   | if the transferred enforced the `to` recipient address to be a contract that implements the LSP1 standard or not.            |
-| `data`                   |  `bytes`  | Any additional data included by the caller during the transfer, and sent in the LSP1 hooks to the `from` and `to` addresses. |
+| Name                     |   Type    | Description                                                                                                                        |
+| ------------------------ | :-------: | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `operator` **`indexed`** | `address` | The address of operator that sent the `tokenId`                                                                                    |
+| `from` **`indexed`**     | `address` | The previous owner of the `tokenId`                                                                                                |
+| `to` **`indexed`**       | `address` | The new owner of `tokenId`                                                                                                         |
+| `amount`                 | `uint256` | The amount of tokens transferred.                                                                                                  |
+| `force`                  |  `bool`   | If the token transfer enforces the `to` recipient address to be a contract that implements the LSP1 standard or not.               |
+| `data`                   |  `bytes`  | Any additional data the caller included by the caller during the transfer, and sent in the hooks to the `from` and `to` addresses. |
 
 <br/>
 
@@ -1222,7 +1151,7 @@ Emitted when the `from` transferred successfully `amount` of tokens to `to`.
 error ERC725Y_DataKeysValuesEmptyArray();
 ```
 
-Reverts when one of the array parameter provided to [`setDataBatch`](#setdatabatch) function is an empty array.
+reverts when one of the array parameter provided to `setDataBatch` is an empty array
 
 <br/>
 
@@ -1241,7 +1170,7 @@ Reverts when one of the array parameter provided to [`setDataBatch`](#setdatabat
 error ERC725Y_DataKeysValuesLengthMismatch();
 ```
 
-Reverts when there is not the same number of elements in the `datakeys` and `dataValues` array parameters provided when calling the [`setDataBatch`](#setdatabatch) function.
+reverts when there is not the same number of elements in the lists of data keys and data values when calling setDataBatch.
 
 <br/>
 
@@ -1260,7 +1189,7 @@ Reverts when there is not the same number of elements in the `datakeys` and `dat
 error ERC725Y_MsgValueDisallowed();
 ```
 
-Reverts when sending value to the [`setData`](#setdata) or [`setDataBatch`](#setdatabatch) function.
+reverts when sending value to the `setData(..)` functions
 
 <br/>
 

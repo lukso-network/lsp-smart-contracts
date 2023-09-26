@@ -36,7 +36,7 @@ When marked as 'public', a method can be called both externally and internally, 
 constructor(address target_);
 ```
 
-_Deploying a LSP6KeyManager linked to the contract at address `target_`.\_
+_Deploying a LSP6KeyManager linked to the contract at address `target_`._
 
 Deploy a Key Manager and set the `target_` address in the contract storage, making this Key Manager linked to this `target_` contract.
 
@@ -1124,6 +1124,7 @@ and conform to the signature format according to the LSP25 standard.
 
 ```solidity
 function _executePayload(
+  address target_,
   uint256 msgValue,
   bytes payload
 ) internal nonpayable returns (bytes);
@@ -1135,6 +1136,7 @@ _Execute the `payload` passed to `execute(...)` or `executeRelayCall(...)`_
 
 | Name       |   Type    | Description                                                        |
 | ---------- | :-------: | ------------------------------------------------------------------ |
+| `target_`  | `address` | -                                                                  |
 | `msgValue` | `uint256` | -                                                                  |
 | `payload`  |  `bytes`  | The abi-encoded function call to execute on the {target} contract. |
 
@@ -1150,6 +1152,7 @@ _Execute the `payload` passed to `execute(...)` or `executeRelayCall(...)`_
 
 ```solidity
 function _verifyPermissions(
+  address target_,
   address from,
   uint256 msgValue,
   bytes payload
@@ -1162,6 +1165,7 @@ Verify if the `from` address is allowed to execute the `payload` on the [`target
 
 | Name       |   Type    | Description                                                         |
 | ---------- | :-------: | ------------------------------------------------------------------- |
+| `target_`  | `address` | -                                                                   |
 | `from`     | `address` | Either the caller of {execute} or the signer of {executeRelayCall}. |
 | `msgValue` | `uint256` | -                                                                   |
 | `payload`  |  `bytes`  | The abi-encoded function call to execute on the {target} contract.  |
@@ -1182,9 +1186,10 @@ Initialise \_reentrancyStatus to \_NOT_ENTERED.
 
 ```solidity
 function _nonReentrantBefore(
+  address target_,
   bool isSetData,
   address from
-) internal nonpayable returns (bool isReentrantCall);
+) internal nonpayable returns (uint8 reentrancyStatus);
 ```
 
 Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
@@ -1357,7 +1362,7 @@ Reverts when trying to do a `delegatecall` via the ERC725X.execute(uint256,addre
 error ERC725Y_DataKeysValuesLengthMismatch();
 ```
 
-Reverts when there is not the same number of elements in the `datakeys` and `dataValues` array parameters provided when calling the [`setDataBatch`](#setdatabatch) function.
+reverts when there is not the same number of elements in the lists of data keys and data values when calling setDataBatch.
 
 <br/>
 

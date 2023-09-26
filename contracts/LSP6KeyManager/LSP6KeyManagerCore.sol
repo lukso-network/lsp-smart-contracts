@@ -335,7 +335,7 @@ abstract contract LSP6KeyManagerCore is
 
         // If target is invoking the verification, emit the event and change the reentrancy guard
         if (msg.sender == target_) {
-            uint8 isReentrantCall = _nonReentrantBefore(
+            uint8 reentrancyStatus = _nonReentrantBefore(
                 target_,
                 isSetData,
                 caller
@@ -346,16 +346,16 @@ abstract contract LSP6KeyManagerCore is
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
-                isSetData || (isReentrantCall == _ENTERED)
+                isSetData || (reentrancyStatus == _ENTERED)
                     ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
                     : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
         }
         /// @dev If a different address is invoking the verification,
         /// do not change the state or emit the event to allow read-only verification
         else {
-            uint8 isReentrantCall = _reentrancyStatus;
+            uint8 reentrancyStatus = _reentrancyStatus;
 
-            if (isReentrantCall == _ENTERED) {
+            if (reentrancyStatus == _ENTERED) {
                 _requirePermissions(
                     caller,
                     ERC725Y(target_).getPermissionsFor(caller),
@@ -367,7 +367,7 @@ abstract contract LSP6KeyManagerCore is
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
-                isSetData || (isReentrantCall == _ENTERED)
+                isSetData || (reentrancyStatus == _ENTERED)
                     ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
                     : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
         }
@@ -406,7 +406,7 @@ abstract contract LSP6KeyManagerCore is
 
         address target_ = _target;
 
-        uint8 isReentrantCall = _nonReentrantBefore(
+        uint8 reentrancyStatus = _nonReentrantBefore(
             target_,
             isSetData,
             msg.sender
@@ -417,7 +417,7 @@ abstract contract LSP6KeyManagerCore is
 
         bytes memory result = _executePayload(target_, msgValue, payload);
 
-        if (isReentrantCall == _NOT_ENTERED && !isSetData) {
+        if (reentrancyStatus == _NOT_ENTERED && !isSetData) {
             _nonReentrantAfter();
         }
 
@@ -477,14 +477,14 @@ abstract contract LSP6KeyManagerCore is
             isSetData = true;
         }
 
-        uint8 isReentrantCall = _nonReentrantBefore(target_, isSetData, signer);
+        uint8 reentrancyStatus = _nonReentrantBefore(target_, isSetData, signer);
 
         _verifyPermissions(target_, signer, msgValue, payload);
         emit PermissionsVerified(signer, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(target_, msgValue, payload);
 
-        if (isReentrantCall == _NOT_ENTERED && !isSetData) {
+        if (reentrancyStatus == _NOT_ENTERED && !isSetData) {
             _nonReentrantAfter();
         }
 
@@ -604,9 +604,9 @@ abstract contract LSP6KeyManagerCore is
         address target_,
         bool isSetData,
         address from
-    ) internal virtual returns (uint8 isReentrantCall) {
-        isReentrantCall = _reentrancyStatus;
-        if (isReentrantCall == _ENTERED) {
+    ) internal virtual returns (uint8 reentrancyStatus) {
+        reentrancyStatus = _reentrancyStatus;
+        if (reentrancyStatus == _ENTERED) {
             // CHECK the caller has REENTRANCY permission
             _requirePermissions(
                 from,
