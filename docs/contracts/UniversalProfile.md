@@ -159,7 +159,7 @@ _`msg.sender` is accepting ownership of contract: `address(this)`._
 
 Transfer ownership of the contract from the current [`owner()`](#owner) to the [`pendingOwner()`](#pendingowner). Once this function is called:
 
-- The current [`owner()`](#owner) will loose access to the functions restricted to the [`owner()`](#owner) only.
+- The current [`owner()`](#owner) will lose access to the functions restricted to the [`owner()`](#owner) only.
 
 - The [`pendingOwner()`](#pendingowner) will gain access to the functions restricted to the [`owner()`](#owner) only.
 
@@ -290,6 +290,12 @@ Generic executor function to:
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `executeBatch(uint256[],address[],uint256[],bytes[])`
 - Function selector: `0x31858452`
+
+:::
+
+:::caution Warning
+
+- The `msg.value` should not be trusted for any method called with `operationType`: `DELEGATECALL` (4).
 
 :::
 
@@ -531,7 +537,7 @@ The address that ownership of the contract is transferred to. This address may u
 
 :::danger
 
-Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
+Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner or an address allowed by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
 
 :::
 
@@ -1439,6 +1445,31 @@ Reverts when trying to transfer ownership to the `address(this)`.
 
 <br/>
 
+### EOACannotVerifyCall
+
+:::note References
+
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#eoacannotverifycall)
+- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
+- Error signature: `EOACannotVerifyCall(address)`
+- Error hash: `0xc3911c1e`
+
+:::
+
+```solidity
+error EOACannotVerifyCall(address logicVerifier);
+```
+
+reverts when the logicVerifier is an EOA that cannot return magicValue
+
+#### Parameters
+
+| Name            |   Type    | Description                       |
+| --------------- | :-------: | --------------------------------- |
+| `logicVerifier` | `address` | The address of the logic verifier |
+
+<br/>
+
 ### ERC725X_ContractDeploymentFailed
 
 :::note References
@@ -1620,6 +1651,25 @@ Reverts when the `operationTypeProvided` is none of the default operation types 
 | Name                    |   Type    | Description                                                                                            |
 | ----------------------- | :-------: | ------------------------------------------------------------------------------------------------------ |
 | `operationTypeProvided` | `uint256` | The unrecognised operation type number provided to `ERC725X.execute(...)`/`ERC725X.executeBatch(...)`. |
+
+<br/>
+
+### ERC725Y_DataKeysValuesEmptyArray
+
+:::note References
+
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725y_datakeysvaluesemptyarray)
+- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
+- Error signature: `ERC725Y_DataKeysValuesEmptyArray()`
+- Error hash: `0x97da5f95`
+
+:::
+
+```solidity
+error ERC725Y_DataKeysValuesEmptyArray();
+```
+
+Reverts when one of the array parameter provided to [`setDataBatch`](#setdatabatch) function is an empty array.
 
 <br/>
 

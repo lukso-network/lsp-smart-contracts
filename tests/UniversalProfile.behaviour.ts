@@ -133,7 +133,7 @@ export const shouldBehaveLikeLSP3 = (
       '0xdaea594e385fc724449e3118b2db7e86dfba1826',
     ];
 
-    it('should fail when setting empty data keys', async () => {
+    it('should fail when passing empty arrays of data keys / values', async () => {
       const keys = [];
       const values = [];
 
@@ -440,8 +440,8 @@ export const shouldBehaveLikeLSP3 = (
         await expect(
           context.universalProfile.connect(context.accounts[4]).batchCalls([setDataPayload]),
         )
-          .to.be.revertedWithCustomError(context.universalProfile, 'LSP20InvalidMagicValue')
-          .withArgs(false, '0x');
+          .to.be.revertedWithCustomError(context.universalProfile, 'EOACannotVerifyCall')
+          .withArgs(context.deployParams.owner.address);
       });
     });
 

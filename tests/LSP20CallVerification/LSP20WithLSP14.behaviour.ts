@@ -144,8 +144,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
       const randomAddress = context.accounts[2];
 
       await expect(context.contract.connect(randomAddress).transferOwnership(randomAddress.address))
-        .to.be.revertedWithCustomError(context.contract, 'LSP20InvalidMagicValue')
-        .withArgs(false, '0x');
+        .to.be.revertedWithCustomError(context.contract, 'EOACannotVerifyCall')
+        .withArgs(context.deployParams.owner.address);
     });
   });
 
@@ -196,8 +196,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
           const value = '0xabcd';
 
           await expect(context.contract.connect(previousOwner).setData(key, value))
-            .to.be.to.be.revertedWithCustomError(context.contract, 'LSP20InvalidMagicValue')
-            .withArgs(false, '0x');
+            .to.be.to.be.revertedWithCustomError(context.contract, 'EOACannotVerifyCall')
+            .withArgs(newOwner.address);
         });
 
         it('should revert when calling `execute(...)`', async () => {
@@ -209,14 +209,14 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
               .connect(previousOwner)
               .execute(OPERATION_TYPES.CALL, recipient.address, amount, '0x'),
           )
-            .to.be.revertedWithCustomError(context.contract, 'LSP20InvalidMagicValue')
-            .withArgs(false, '0x');
+            .to.be.revertedWithCustomError(context.contract, 'EOACannotVerifyCall')
+            .withArgs(newOwner.address);
         });
 
         it('should revert when calling `renounceOwnership(...)`', async () => {
           await expect(context.contract.connect(previousOwner).renounceOwnership())
-            .to.be.revertedWithCustomError(context.contract, 'LSP20InvalidMagicValue')
-            .withArgs(false, '0x');
+            .to.be.revertedWithCustomError(context.contract, 'EOACannotVerifyCall')
+            .withArgs(newOwner.address);
         });
       });
 
@@ -257,8 +257,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         const tx = context.contract.connect(context.accounts[5]).renounceOwnership();
 
         await expect(tx)
-          .to.be.revertedWithCustomError(context.contract, 'LSP20InvalidMagicValue')
-          .withArgs(false, '0x');
+          .to.be.revertedWithCustomError(context.contract, 'EOACannotVerifyCall')
+          .withArgs(newOwner.address);
       });
     });
 
@@ -468,8 +468,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
             const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Random Value'));
 
             await expect(context.contract.connect(context.deployParams.owner).setData(key, value))
-              .to.be.revertedWithCustomError(context.contract, 'LSP20InvalidMagicValue')
-              .withArgs(false, '0x');
+              .to.be.revertedWithCustomError(context.contract, 'EOACannotVerifyCall')
+              .withArgs(ethers.constants.AddressZero);
           });
 
           it('transfer LYX via `execute(...)`', async () => {
@@ -481,8 +481,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
                 .connect(context.deployParams.owner)
                 .execute(OPERATION_TYPES.CALL, recipient, amount, '0x'),
             )
-              .to.be.revertedWithCustomError(context.contract, 'LSP20InvalidMagicValue')
-              .withArgs(false, '0x');
+              .to.be.revertedWithCustomError(context.contract, 'EOACannotVerifyCall')
+              .withArgs(ethers.constants.AddressZero);
           });
         });
       });
