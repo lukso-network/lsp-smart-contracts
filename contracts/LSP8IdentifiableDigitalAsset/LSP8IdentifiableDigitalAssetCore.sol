@@ -317,7 +317,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address operator;
         for (uint256 i; i < operatorListLength; ) {
             // we are emptying the list, always remove from index 0
-            operatorsForTokenId.at(0);
+            operator = operatorsForTokenId.at(0);
             _revokeOperator(operator, tokenOwner, tokenId, "");
 
             unchecked {
