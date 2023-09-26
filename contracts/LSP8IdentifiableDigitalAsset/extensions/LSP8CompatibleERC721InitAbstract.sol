@@ -23,7 +23,6 @@ import {
 } from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
 import {
     LSP8IdentifiableDigitalAssetInitAbstract,
-    LSP4DigitalAssetMetadataInitAbstract,
     ERC725YCore
 } from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
 import {
@@ -419,7 +418,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
     }
 
     /**
-     * @inheritdoc LSP4DigitalAssetMetadataInitAbstract
+     * @inheritdoc LSP8IdentifiableDigitalAssetInitAbstract
      */
     function _setData(
         bytes32 key,
