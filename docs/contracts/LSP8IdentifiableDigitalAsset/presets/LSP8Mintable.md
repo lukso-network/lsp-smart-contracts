@@ -34,7 +34,7 @@ When marked as 'public', a method can be called both externally and internally, 
 constructor(string name_, string symbol_, address newOwner_);
 ```
 
-_Deploying a `LSP8Mintable` token contract with: token name = `name_`, token symbol = `symbol_`, and address `newOwner_` as the token contract owner._
+_Deploying a `LSP8Mintable` token contract with: token name = `name_`, token symbol = `symbol*`, and address `newOwner*` as the token contract owner.\_
 
 #### Parameters
 

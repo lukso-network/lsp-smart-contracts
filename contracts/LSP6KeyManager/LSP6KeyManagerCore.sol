@@ -477,7 +477,11 @@ abstract contract LSP6KeyManagerCore is
             isSetData = true;
         }
 
-        uint8 reentrancyStatus = _nonReentrantBefore(target_, isSetData, signer);
+        uint8 reentrancyStatus = _nonReentrantBefore(
+            target_,
+            isSetData,
+            signer
+        );
 
         _verifyPermissions(target_, signer, msgValue, payload);
         emit PermissionsVerified(signer, msgValue, bytes4(payload));
