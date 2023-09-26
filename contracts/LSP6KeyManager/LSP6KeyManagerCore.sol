@@ -23,6 +23,9 @@ import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {LSP6SetDataModule} from "./LSP6Modules/LSP6SetDataModule.sol";
 import {LSP6ExecuteModule} from "./LSP6Modules/LSP6ExecuteModule.sol";
+import {
+    LSP6ExecuteRelayCallModule
+} from "./LSP6Modules/LSP6ExecuteRelayCallModule.sol";
 import {LSP6OwnershipModule} from "./LSP6Modules/LSP6OwnershipModule.sol";
 import {
     LSP25MultiChannelNonce
@@ -83,6 +86,7 @@ abstract contract LSP6KeyManagerCore is
     ILSP25,
     LSP6SetDataModule,
     LSP6ExecuteModule,
+    LSP6ExecuteRelayCallModule,
     LSP6OwnershipModule,
     LSP25MultiChannelNonce
 {
@@ -334,7 +338,7 @@ abstract contract LSP6KeyManagerCore is
         if (msg.sender == callee) {
             bool isReentrantCall = _nonReentrantBefore(isSetData, caller);
 
-            _verifyPermissions(callee, caller, msgValue, data);
+            _verifyPermissions(callee, caller, msgValue, false, data);
             emit PermissionsVerified(caller, msgValue, bytes4(data));
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
@@ -356,7 +360,7 @@ abstract contract LSP6KeyManagerCore is
                 );
             }
 
-            _verifyPermissions(callee, caller, msgValue, data);
+            _verifyPermissions(callee, caller, msgValue, false, data);
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
@@ -399,7 +403,7 @@ abstract contract LSP6KeyManagerCore is
 
         bool isReentrantCall = _nonReentrantBefore(isSetData, msg.sender);
 
-        _verifyPermissions(_target, msg.sender, msgValue, payload);
+        _verifyPermissions(_target, msg.sender, msgValue, false, payload);
         emit PermissionsVerified(msg.sender, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
@@ -464,7 +468,7 @@ abstract contract LSP6KeyManagerCore is
 
         bool isReentrantCall = _nonReentrantBefore(isSetData, signer);
 
-        _verifyPermissions(_target, signer, msgValue, payload);
+        _verifyPermissions(_target, signer, msgValue, true, payload);
         emit PermissionsVerified(signer, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
@@ -507,10 +511,18 @@ abstract contract LSP6KeyManagerCore is
         address callee,
         address from,
         uint256 msgValue,
+        bool isRelayedCall,
         bytes calldata payload
     ) internal view virtual {
         bytes32 permissions = ERC725Y(callee).getPermissionsFor(from);
         if (permissions == bytes32(0)) revert NoPermissionsSet(from);
+
+        if (isRelayedCall) {
+            LSP6ExecuteRelayCallModule._verifyExecuteRelayCallPermission(
+                from,
+                permissions
+            );
+        }
 
         bytes4 erc725Function = bytes4(payload);
 

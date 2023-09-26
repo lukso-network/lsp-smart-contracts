@@ -118,7 +118,7 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         uint256 msgValue,
         bytes calldata payload
     ) public {
-        super._verifyPermissions(_target, from, msgValue, payload);
+        super._verifyPermissions(_target, from, msgValue, false, payload);
 
         // This event is emitted just for a sake of not marking this function as `view`,
         // as Hardhat has a bug that does not catch error that occured from failed `abi.decode`
