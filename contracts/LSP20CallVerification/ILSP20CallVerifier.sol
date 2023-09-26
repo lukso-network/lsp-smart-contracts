@@ -12,11 +12,13 @@ interface ILSP20CallVerifier {
      * the function is allowed, concatened with a byte that determines if the lsp20VerifyCallResult function should
      * be called after the original function call. The byte that invoke the lsp20VerifyCallResult function is strictly `0x01`.
      *
+     * @param callee The address of the contract that implements the LSP20 interface
      * @param caller The address who called the function on the msg.sender
      * @param value The value sent by the caller to the function called on the msg.sender
      * @param receivedCalldata The receivedCalldata sent by the caller to the msg.sender
      */
     function lsp20VerifyCall(
+        address callee,
         address caller,
         uint256 value,
         bytes memory receivedCalldata
