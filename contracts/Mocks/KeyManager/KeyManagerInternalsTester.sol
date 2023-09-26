@@ -118,6 +118,6 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         uint256 msgValue,
         bytes calldata payload
     ) public view {
-        super._verifyPermissions(from, msgValue, payload);
+        super._verifyPermissions(target(), from, msgValue, payload);
     }
 }

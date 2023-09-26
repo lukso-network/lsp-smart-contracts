@@ -129,19 +129,19 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     ) public virtual {
         if (from == to) revert LSP7CannotSendToSelf();
 
-        address operator = msg.sender;
-        if (operator != from) {
-            uint256 operatorAmount = _operatorAuthorizedAmount[from][operator];
+        // if the caller is an operator
+        if (msg.sender != from) {
+            uint256 operatorAmount = _operatorAuthorizedAmount[from][msg.sender];
             if (amount > operatorAmount) {
                 revert LSP7AmountExceedsAuthorizedAmount(
                     from,
                     operatorAmount,
-                    operator,
+                    msg.sender,
                     amount
                 );
             }
 
-            _updateOperator(from, operator, operatorAmount - amount);
+            _updateOperator(from, msg.sender, operatorAmount - amount);
         }
 
         _transfer(from, to, amount, allowNonLSP1Recipient, data);
@@ -312,8 +312,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7CannotSendWithAddressZero();
         }
 
-        address operator = msg.sender;
-
         _beforeTokenTransfer(address(0), to, amount);
 
         // tokens being minted
@@ -322,7 +320,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         _tokenOwnerBalances[to] += amount;
 
         emit Transfer(
-            operator,
+            msg.sender,
             address(0),
             to,
             amount,
@@ -371,20 +369,20 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
 
-        address operator = msg.sender;
-        if (operator != from) {
+        // if the caller is an operator
+        if (msg.sender != from) {
             uint256 authorizedAmount = _operatorAuthorizedAmount[from][
-                operator
+                msg.sender
             ];
             if (amount > authorizedAmount) {
                 revert LSP7AmountExceedsAuthorizedAmount(
                     from,
                     authorizedAmount,
-                    operator,
+                    msg.sender,
                     amount
                 );
             }
-            _operatorAuthorizedAmount[from][operator] =
+            _operatorAuthorizedAmount[from][msg.sender] =
                 authorizedAmount -
                 amount;
         }
@@ -394,9 +392,9 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         // tokens being burnt
         _existingTokens -= amount;
 
-        _tokenOwnerBalances[from] = balance - amount;
+        _tokenOwnerBalances[from] -= amount;
 
-        emit Transfer(operator, from, address(0), amount, false, data);
+        emit Transfer(msg.sender, from, address(0), amount, false, data);
 
         bytes memory lsp1Data = abi.encodePacked(
             from,
@@ -446,14 +444,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
 
-        address operator = msg.sender;
-
         _beforeTokenTransfer(from, to, amount);
 
-        _tokenOwnerBalances[from] = balance - amount;
+        _tokenOwnerBalances[from] -= amount;
         _tokenOwnerBalances[to] += amount;
 
-        emit Transfer(operator, from, to, amount, allowNonLSP1Recipient, data);
+        emit Transfer(msg.sender, from, to, amount, allowNonLSP1Recipient, data);
 
         bytes memory lsp1Data = abi.encodePacked(from, to, amount, data);
 

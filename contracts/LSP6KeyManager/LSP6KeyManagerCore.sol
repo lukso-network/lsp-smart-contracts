@@ -88,7 +88,9 @@ abstract contract LSP6KeyManagerCore is
 
     // Variables, methods and modifier used for ReentrancyGuard are taken from the link below and modified accordingly.
     // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/security/ReentrancyGuard.sol
-    bool internal _reentrancyStatus;
+    uint8 internal _reentrancyStatus;
+    uint8 internal constant _NOT_ENTERED = 1;
+    uint8 internal constant _ENTERED = 2;
 
     /**
      * @inheritdoc ILSP6
@@ -313,37 +315,39 @@ abstract contract LSP6KeyManagerCore is
             isSetData = true;
         }
 
-        // If target is invoking the verification, emit the event and change the reentrancy guard
-        if (msg.sender == _target) {
-            bool isReentrantCall = _nonReentrantBefore(isSetData, caller);
+        address target_ = _target;
 
-            _verifyPermissions(caller, msgValue, data);
+        // If target is invoking the verification, emit the event and change the reentrancy guard
+        if (msg.sender == target_) {
+            uint8 isReentrantCall = _nonReentrantBefore(target_,isSetData, caller);
+
+            _verifyPermissions(target_, caller, msgValue, data);
             emit PermissionsVerified(caller, msgValue, bytes4(data));
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
-                isSetData || isReentrantCall
+                isSetData || (isReentrantCall == _ENTERED)
                     ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
                     : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
         }
         // If a different address is invoking the verification, do not change the state
         // and do read-only verification
         else {
-            bool isReentrantCall = _reentrancyStatus;
+            uint8 isReentrantCall = _reentrancyStatus;
 
-            if (isReentrantCall) {
+            if (isReentrantCall == _ENTERED) {
                 _requirePermissions(
                     caller,
-                    ERC725Y(_target).getPermissionsFor(caller),
+                    ERC725Y(target_).getPermissionsFor(caller),
                     _PERMISSION_REENTRANCY
                 );
             }
 
-            _verifyPermissions(caller, msgValue, data);
+            _verifyPermissions(target_ ,caller, msgValue, data);
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
-                isSetData || isReentrantCall
+                isSetData || (isReentrantCall == _ENTERED)
                     ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
                     : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
         }
@@ -380,14 +384,16 @@ abstract contract LSP6KeyManagerCore is
             isSetData = true;
         }
 
-        bool isReentrantCall = _nonReentrantBefore(isSetData, msg.sender);
+        address target_ = _target;
 
-        _verifyPermissions(msg.sender, msgValue, payload);
+        uint8 isReentrantCall = _nonReentrantBefore(target_, isSetData, msg.sender);
+
+        _verifyPermissions(target_, msg.sender, msgValue, payload);
         emit PermissionsVerified(msg.sender, msgValue, bytes4(payload));
 
-        bytes memory result = _executePayload(msgValue, payload);
+        bytes memory result = _executePayload(target_, msgValue, payload);
 
-        if (!isReentrantCall && !isSetData) {
+        if (isReentrantCall == _NOT_ENTERED && !isSetData) {
             _nonReentrantAfter();
         }
 
@@ -419,6 +425,8 @@ abstract contract LSP6KeyManagerCore is
             revert InvalidPayload(payload);
         }
 
+        address target_ = _target;
+
         address signer = LSP25MultiChannelNonce
             ._recoverSignerFromLSP25Signature(
                 signature,
@@ -445,14 +453,14 @@ abstract contract LSP6KeyManagerCore is
             isSetData = true;
         }
 
-        bool isReentrantCall = _nonReentrantBefore(isSetData, signer);
+        uint8 isReentrantCall = _nonReentrantBefore(target_, isSetData, signer);
 
-        _verifyPermissions(signer, msgValue, payload);
+        _verifyPermissions(target_, signer, msgValue, payload);
         emit PermissionsVerified(signer, msgValue, bytes4(payload));
 
-        bytes memory result = _executePayload(msgValue, payload);
+        bytes memory result = _executePayload(target_, msgValue, payload);
 
-        if (!isReentrantCall && !isSetData) {
+        if (isReentrantCall == _NOT_ENTERED && !isSetData) {
             _nonReentrantAfter();
         }
 
@@ -465,10 +473,11 @@ abstract contract LSP6KeyManagerCore is
      * @return bytes The data returned by the call made to the linked {target} contract.
      */
     function _executePayload(
+        address target_,
         uint256 msgValue,
         bytes calldata payload
     ) internal virtual returns (bytes memory) {
-        (bool success, bytes memory returnData) = _target.call{
+        (bool success, bytes memory returnData) = target_.call{
             value: msgValue,
             gas: gasleft()
         }(payload);
@@ -487,11 +496,12 @@ abstract contract LSP6KeyManagerCore is
      * @param payload The abi-encoded function call to execute on the {target} contract.
      */
     function _verifyPermissions(
+        address target_,
         address from,
         uint256 msgValue,
         bytes calldata payload
     ) internal view virtual {
-        bytes32 permissions = ERC725Y(_target).getPermissionsFor(from);
+        bytes32 permissions = ERC725Y(target_).getPermissionsFor(from);
         if (permissions == bytes32(0)) revert NoPermissionsSet(from);
 
         bytes4 erc725Function = bytes4(payload);
@@ -505,7 +515,7 @@ abstract contract LSP6KeyManagerCore is
             );
 
             LSP6SetDataModule._verifyCanSetData(
-                _target,
+                target_,
                 from,
                 permissions,
                 inputKey,
@@ -519,7 +529,7 @@ abstract contract LSP6KeyManagerCore is
                 .decode(payload[4:], (bytes32[], bytes[]));
 
             LSP6SetDataModule._verifyCanSetData(
-                _target,
+                target_,
                 from,
                 permissions,
                 inputKeys,
@@ -536,7 +546,7 @@ abstract contract LSP6KeyManagerCore is
             ) = abi.decode(payload[4:], (uint256, address, uint256, bytes));
 
             LSP6ExecuteModule._verifyCanExecute(
-                _target,
+                target_,
                 from,
                 permissions,
                 operationType,
@@ -558,7 +568,7 @@ abstract contract LSP6KeyManagerCore is
      * @dev Initialise _reentrancyStatus to _NOT_ENTERED.
      */
     function _setupLSP6ReentrancyGuard() internal virtual {
-        _reentrancyStatus = false;
+        _reentrancyStatus = 1;
     }
 
     /**
@@ -567,20 +577,21 @@ abstract contract LSP6KeyManagerCore is
      * Used in the beginning of the `nonReentrant` modifier, before the method execution starts.
      */
     function _nonReentrantBefore(
+        address target_,
         bool isSetData,
         address from
-    ) internal virtual returns (bool isReentrantCall) {
+    ) internal virtual returns (uint8 isReentrantCall) {
         isReentrantCall = _reentrancyStatus;
-        if (isReentrantCall) {
+        if (isReentrantCall == _ENTERED) {
             // CHECK the caller has REENTRANCY permission
             _requirePermissions(
                 from,
-                ERC725Y(_target).getPermissionsFor(from),
+                ERC725Y(target_).getPermissionsFor(from),
                 _PERMISSION_REENTRANCY
             );
         } else {
             if (!isSetData) {
-                _reentrancyStatus = true;
+                _reentrancyStatus = _ENTERED;
             }
         }
     }
@@ -592,7 +603,7 @@ abstract contract LSP6KeyManagerCore is
     function _nonReentrantAfter() internal virtual {
         // By storing the original value once again, a refund is triggered (see
         // https://eips.ethereum.org/EIPS/eip-2200)
-        _reentrancyStatus = false;
+        _reentrancyStatus = _NOT_ENTERED;
     }
 
     /**
