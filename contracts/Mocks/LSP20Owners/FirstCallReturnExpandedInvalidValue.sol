@@ -14,13 +14,14 @@ contract FirstCallReturnExpandedInvalidValue {
     address public target;
 
     function lsp20VerifyCall(
+        address callee,
         address caller,
         uint256 value,
         bytes memory data
     ) external returns (bytes32) {
         emit CallVerified();
 
-        return keccak256(abi.encode(caller, value, data));
+        return keccak256(abi.encode(callee, caller, value, data));
     }
 
     function acceptOwnership(address newTarget) external {
