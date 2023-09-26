@@ -36,7 +36,7 @@ When marked as 'public', a method can be called both externally and internally, 
 constructor(address target_);
 ```
 
-_Deploying a LSP6KeyManager linked to the contract at address `target_`.\_
+_Deploying a LSP6KeyManager linked to the contract at address `target_`._
 
 Deploy a Key Manager and set the `target_` address in the contract storage, making this Key Manager linked to this `target_` contract.
 
@@ -1362,7 +1362,7 @@ Reverts when trying to do a `delegatecall` via the ERC725X.execute(uint256,addre
 error ERC725Y_DataKeysValuesLengthMismatch();
 ```
 
-reverts when there is not the same number of elements in the lists of data keys and data values when calling setDataBatch.
+Reverts when there is not the same number of elements in the `datakeys` and `dataValues` array parameters provided when calling the [`setDataBatch`](#setdatabatch) function.
 
 <br/>
 
