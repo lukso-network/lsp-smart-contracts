@@ -361,50 +361,6 @@ Verify if `data` is an abi-encoded array.
 
 <br/>
 
-### isEncodedArrayOfAddresses
-
-```solidity
-function isEncodedArrayOfAddresses(bytes data) internal pure returns (bool);
-```
-
-Verify if `data` is an abi-encoded array of addresses (`address[]`) encoded according to the ABI specs.
-
-#### Parameters
-
-| Name   |  Type   | Description                |
-| ------ | :-----: | -------------------------- |
-| `data` | `bytes` | The bytes value to verify. |
-
-#### Returns
-
-| Name |  Type  | Description                                                                           |
-| ---- | :----: | ------------------------------------------------------------------------------------- |
-| `0`  | `bool` | `true` if the `data` represents an abi-encoded array of addresses, `false` otherwise. |
-
-<br/>
-
-### isBytes4EncodedArray
-
-```solidity
-function isBytes4EncodedArray(bytes data) internal pure returns (bool);
-```
-
-Verify if `data` is an abi-array of `bytes4` values (`bytes4[]`) encoded according to the ABI specs.
-
-#### Parameters
-
-| Name   |  Type   | Description                |
-| ------ | :-----: | -------------------------- |
-| `data` | `bytes` | The bytes value to verify. |
-
-#### Returns
-
-| Name |  Type  | Description                                                                          |
-| ---- | :----: | ------------------------------------------------------------------------------------ |
-| `0`  | `bool` | `true` if the `data` represents an abi-encoded array of `bytes4`, `false` otherwise. |
-
-<br/>
-
 ### isCompactBytesArray
 
 ```solidity

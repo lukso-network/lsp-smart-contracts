@@ -261,7 +261,7 @@ abstract contract LSP6ExecuteModule {
             isEmptyCall
         );
 
-        for (uint256 ii = 0; ii < allowedCalls.length; ii += 34) {
+        for (uint256 ii; ii < allowedCalls.length; ii += 34) {
             /// @dev structure of an AllowedCall
             //
             /// AllowedCall = 0x00200000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1

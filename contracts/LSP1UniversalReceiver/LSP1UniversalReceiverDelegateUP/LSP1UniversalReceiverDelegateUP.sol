@@ -172,7 +172,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
     ) internal returns (bytes memory) {
         // CHECK balance only when the Token contract is already deployed,
         // not when tokens are being transferred on deployment through the `constructor`
-        if (notifier.code.length > 0) {
+        if (notifier.code.length != 0) {
             // if the amount sent is 0, then do not update the keys
             try ILSP7DigitalAsset(notifier).balanceOf(msg.sender) returns (
                 uint256 balance

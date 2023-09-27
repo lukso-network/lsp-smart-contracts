@@ -289,13 +289,11 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         bool force,
         bytes memory data
     ) internal virtual override {
-        address operator = msg.sender;
-
         if (
-            !isApprovedForAll(from, operator) &&
-            !_isOperatorOrOwner(operator, tokenId)
+            !isApprovedForAll(from, msg.sender) &&
+            !_isOperatorOrOwner(msg.sender, tokenId)
         ) {
-            revert LSP8NotTokenOperator(tokenId, operator);
+            revert LSP8NotTokenOperator(tokenId, msg.sender);
         }
 
         emit Transfer(from, to, uint256(tokenId));
