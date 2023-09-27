@@ -28,8 +28,8 @@ bytes32 constant _TYPEID_LSP8_TOKENOPERATOR = 0x8a1c15a8799f71b547e08e2bcb2e8525
 
 // --- Types of token IDs
 
-uint256 constant _LSP8_TOKENIDTYPE_NUMBER = 0;
-uint256 constant _LSP8_TOKENIDTYPE_STRING = 1;
-uint256 constant _LSP8_TOKENIDTYPE_UNIQUE_ID = 2;
-uint256 constant _LSP8_TOKENIDTYPE_HASH = 3;
-uint256 constant _LSP8_TOKENIDTYPE_ADDRESS = 4;
+uint256 constant _LSP8_TOKENID_TYPE_NUMBER = 0;
+uint256 constant _LSP8_TOKENID_TYPE_STRING = 1;
+uint256 constant _LSP8_TOKENID_TYPE_UNIQUE_ID = 2;
+uint256 constant _LSP8_TOKENID_TYPE_HASH = 3;
+uint256 constant _LSP8_TOKENID_TYPE_ADDRESS = 4;

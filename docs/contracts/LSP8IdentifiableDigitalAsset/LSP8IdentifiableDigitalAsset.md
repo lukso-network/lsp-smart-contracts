@@ -1343,7 +1343,7 @@ Reverts when trying to edit the data key `LSP4TokenSymbol` after the digital ass
 error LSP8CannotSendToAddressZero();
 ```
 
-Reverts when trying to send token to the zero address.Reverts when trying to send token to the zero address.
+Reverts when trying to send token to the zero address.
 
 <br/>
 
@@ -1362,7 +1362,7 @@ Reverts when trying to send token to the zero address.Reverts when trying to sen
 error LSP8CannotSendToSelf();
 ```
 
-Reverts when specifying the same address for `from` and `to` in a token transfer.Reverts when specifying the same address for `from` and `to` in a token transfer.
+Reverts when specifying the same address for `from` and `to` in a token transfer.
 
 <br/>
 
@@ -1381,7 +1381,7 @@ Reverts when specifying the same address for `from` and `to` in a token transfer
 error LSP8CannotUseAddressZeroAsOperator();
 ```
 
-Reverts when trying to set the zero address as an operator.Reverts when trying to set the zero address as an operator.
+Reverts when trying to set the zero address as an operator.
 
 <br/>
 
@@ -1400,7 +1400,7 @@ Reverts when trying to set the zero address as an operator.Reverts when trying t
 error LSP8InvalidTransferBatch();
 ```
 
-Reverts when the parameters used for `transferBatch` have different lengths.Reverts when the parameters used for `transferBatch` have different lengths.
+Reverts when the parameters used for `transferBatch` have different lengths.
 
 <br/>
 
@@ -1419,7 +1419,7 @@ Reverts when the parameters used for `transferBatch` have different lengths.Reve
 error LSP8NonExistentTokenId(bytes32 tokenId);
 ```
 
-Reverts when `tokenId` has not been minted.Reverts when `tokenId` has not been minted.
+Reverts when `tokenId` has not been minted.
 
 #### Parameters
 
@@ -1444,7 +1444,7 @@ Reverts when `tokenId` has not been minted.Reverts when `tokenId` has not been m
 error LSP8NonExistingOperator(address operator, bytes32 tokenId);
 ```
 
-Reverts when `operator` is not an operator for the `tokenId`.Reverts when `operator` is not an operator for the `tokenId`.
+Reverts when `operator` is not an operator for the `tokenId`.
 
 #### Parameters
 
@@ -1470,7 +1470,7 @@ Reverts when `operator` is not an operator for the `tokenId`.Reverts when `opera
 error LSP8NotTokenOperator(bytes32 tokenId, address caller);
 ```
 
-Reverts when `caller` is not an allowed operator for `tokenId`.Reverts when `caller` is not an allowed operator for `tokenId`.
+Reverts when `caller` is not an allowed operator for `tokenId`.
 
 #### Parameters
 
@@ -1496,7 +1496,7 @@ Reverts when `caller` is not an allowed operator for `tokenId`.Reverts when `cal
 error LSP8NotTokenOwner(address tokenOwner, bytes32 tokenId, address caller);
 ```
 
-Reverts when `caller` is not the `tokenOwner` of the `tokenId`.Reverts when `caller` is not the `tokenOwner` of the `tokenId`.
+Reverts when `caller` is not the `tokenOwner` of the `tokenId`.
 
 #### Parameters
 
@@ -1525,7 +1525,7 @@ error LSP8NotifyTokenReceiverContractMissingLSP1Interface(
 );
 ```
 
-Reverts if the `tokenReceiver` does not implement LSP1Reverts if the `tokenReceiver` does not implement LSP1 when minting or transferring tokens with `bool force` set as `false`.
+Reverts if the `tokenReceiver` does not implement LSP1 when minting or transferring tokens with `bool force` set as `false`.
 
 #### Parameters
 
@@ -1550,7 +1550,7 @@ Reverts if the `tokenReceiver` does not implement LSP1Reverts if the `tokenRecei
 error LSP8NotifyTokenReceiverIsEOA(address tokenReceiver);
 ```
 
-Reverts if the `tokenReceiver` is an EOAReverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool force` set as `false`.
+Reverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool force` set as `false`.
 
 #### Parameters
 
@@ -1575,7 +1575,7 @@ Reverts if the `tokenReceiver` is an EOAReverts if the `tokenReceiver` is an EOA
 error LSP8OperatorAlreadyAuthorized(address operator, bytes32 tokenId);
 ```
 
-Reverts when `operator` is already authorized for the `tokenId`.Reverts when `operator` is already authorized for the `tokenId`.
+Reverts when `operator` is already authorized for the `tokenId`.
 
 #### Parameters
 
@@ -1641,7 +1641,7 @@ Reverts when trying to edit the data key `LSP8TokenIdType` after the identifiabl
 error LSP8TokenOwnerCannotBeOperator();
 ```
 
-Reverts when trying to authorize or revoke the token's owner as an operator.Reverts when trying to authorize or revoke the token's owner as an operator.
+Reverts when trying to authorize or revoke the token's owner as an operator.
 
 <br/>
 

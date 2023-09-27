@@ -74,8 +74,8 @@ abstract contract LSP8CompatibleERC721 is
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        uint256 tokenIdType
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, tokenIdType) {}
+        uint256 tokenIdType_
+    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, tokenIdType_) {}
 
     /**
      * @inheritdoc LSP8IdentifiableDigitalAsset

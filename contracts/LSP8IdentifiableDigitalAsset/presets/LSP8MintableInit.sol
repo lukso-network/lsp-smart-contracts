@@ -28,13 +28,13 @@ contract LSP8MintableInit is LSP8MintableInitAbstract {
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        uint256 tokenIdType
+        uint256 tokenIdType_
     ) external virtual initializer {
         LSP8MintableInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
-            tokenIdType
+            tokenIdType_
         );
     }
 }
