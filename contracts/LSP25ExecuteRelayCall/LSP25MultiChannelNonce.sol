@@ -113,6 +113,10 @@ abstract contract LSP25MultiChannelNonce {
             revert RelayCallBeforeStartTime();
         }
 
+        // Allow `endingTimestamp` to be 0
+        // Allow execution anytime past `startingTimestamp`
+        if (endingTimestamp == 0) return;
+
         // solhint-disable-next-line not-rely-on-time
         if (block.timestamp > endingTimestamp) {
             revert RelayCallExpired();
