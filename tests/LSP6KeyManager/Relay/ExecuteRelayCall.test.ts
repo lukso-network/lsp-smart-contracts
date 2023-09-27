@@ -70,7 +70,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       const permissionsValues = [
         ALL_PERMISSIONS,
-        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+        combinePermissions(
+          PERMISSIONS.CALL,
+          PERMISSIONS.TRANSFERVALUE,
+          PERMISSIONS.EXECUTE_RELAY_CALL,
+        ),
         combineAllowedCalls(
           [
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
@@ -80,7 +84,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
-        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+        combinePermissions(
+          PERMISSIONS.CALL,
+          PERMISSIONS.TRANSFERVALUE,
+          PERMISSIONS.EXECUTE_RELAY_CALL,
+        ),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionsValues);
@@ -1160,7 +1168,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + minter.address.substring(2),
           ],
           [
-            PERMISSIONS.CALL,
+            combinePermissions(PERMISSIONS.CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
             combineAllowedCalls(
               [CALLTYPE.CALL],
               [tokenContract.address],
