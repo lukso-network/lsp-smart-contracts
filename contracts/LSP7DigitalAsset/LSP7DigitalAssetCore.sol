@@ -273,7 +273,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * It has been added in the LSP7 contract implementation so that it can be used as a prevention mechanism
      * against the double spending allowance vulnerability.
      *
-     * @notice Decrease the allowance of `operator` by -`substractedAmount`
+     * @notice Decrease the allowance of `operator` by -`subtractedAmount`
      *
      * @dev Atomically decreases the allowance granted to `operator` by the caller.
      * This is an alternative approach to {authorizeOperator} that can be used as a mitigation
@@ -281,29 +281,29 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      *
      * @custom:events
      *  - {AuthorizedOperator} event indicating the updated allowance after decreasing it.
-     *  - {RevokeOperator} event if `substractedAmount` is the full allowance,
+     *  - {RevokeOperator} event if `subtractedAmount` is the full allowance,
      *    indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
      *
      * @param operator the operator to decrease allowance for `msg.sender`
-     * @param substractedAmount the amount to decrease by in the operator's allowance.
+     * @param subtractedAmount the amount to decrease by in the operator's allowance.
      *
      * @custom:requirements
      *  - `operator` cannot be the zero address.
-     *  - `operator` must have allowance for the caller of at least `substractedAmount`.
+     *  - `operator` must have allowance for the caller of at least `subtractedAmount`.
      */
     function decreaseAllowance(
         address operator,
-        uint256 substractedAmount,
+        uint256 subtractedAmount,
         bytes memory operatorNotificationData
     ) public virtual {
         uint256 currentAllowance = authorizedAmountFor(operator, msg.sender);
-        if (currentAllowance < substractedAmount) {
+        if (currentAllowance < subtractedAmount) {
             revert LSP7DecreasedAllowanceBelowZero();
         }
 
         uint256 newAllowance;
         unchecked {
-            newAllowance = currentAllowance - substractedAmount;
+            newAllowance = currentAllowance - subtractedAmount;
             _updateOperator(
                 msg.sender,
                 operator,

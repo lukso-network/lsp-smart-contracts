@@ -235,12 +235,12 @@ This is a non-standard function, not part of the LSP7 standard interface. It has
 ```solidity
 function decreaseAllowance(
   address operator,
-  uint256 substractedAmount,
+  uint256 subtractedAmount,
   bytes operatorNotificationData
 ) external nonpayable;
 ```
 
-_Decrease the allowance of `operator` by -`substractedAmount`_
+_Decrease the allowance of `operator` by -`subtractedAmount`_
 
 Atomically decreases the allowance granted to `operator` by the caller. This is an alternative approach to [`authorizeOperator`](#authorizeoperator) that can be used as a mitigation for the double spending allowance problem.
 
@@ -249,7 +249,7 @@ Atomically decreases the allowance granted to `operator` by the caller. This is 
 **Requirements:**
 
 - `operator` cannot be the zero address.
-- `operator` must have allowance for the caller of at least `substractedAmount`.
+- `operator` must have allowance for the caller of at least `subtractedAmount`.
 
 </blockquote>
 
@@ -258,7 +258,7 @@ Atomically decreases the allowance granted to `operator` by the caller. This is 
 **Emitted events:**
 
 - [`AuthorizedOperator`](#authorizedoperator) event indicating the updated allowance after decreasing it.
-- [`RevokeOperator`](#revokeoperator) event if `substractedAmount` is the full allowance, indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
+- [`RevokeOperator`](#revokeoperator) event if `subtractedAmount` is the full allowance, indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
 
 </blockquote>
 
@@ -267,7 +267,7 @@ Atomically decreases the allowance granted to `operator` by the caller. This is 
 | Name                       |   Type    | Description                                            |
 | -------------------------- | :-------: | ------------------------------------------------------ |
 | `operator`                 | `address` | the operator to decrease allowance for `msg.sender`    |
-| `substractedAmount`        | `uint256` | the amount to decrease by in the operator's allowance. |
+| `subtractedAmount`         | `uint256` | the amount to decrease by in the operator's allowance. |
 | `operatorNotificationData` |  `bytes`  | -                                                      |
 
 <br/>
