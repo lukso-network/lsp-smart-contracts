@@ -374,6 +374,11 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         _beforeTokenTransfer(address(0), to, tokenId);
 
+        // Check that `tokenId` was not minted inside the `_beforeTokenTransfer` hook
+        if (_exists(tokenId)) {
+            revert LSP8TokenIdAlreadyMinted(tokenId);
+        }
+
         // token being minted
         ++_existingTokens;
 
@@ -410,6 +415,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address tokenOwner = tokenOwnerOf(tokenId);
 
         _beforeTokenTransfer(tokenOwner, address(0), tokenId);
+
+        // Re-fetch and update `tokenOwner` in case `tokenId`
+        // was transferred inside the `_beforeTokenTransfer` hook
+        tokenOwner = tokenOwnerOf(tokenId);
 
         // token being burned
         --_existingTokens;
@@ -474,6 +483,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         }
 
         _beforeTokenTransfer(from, to, tokenId);
+
+        // Re-fetch and update `tokenOwner` in case `tokenId`
+        // was transferred inside the `_beforeTokenTransfer` hook
+        tokenOwner = tokenOwnerOf(tokenId);
 
         _clearOperators(from, tokenId);
 
