@@ -254,8 +254,8 @@ Atomically decreases the allowance granted to `operator` by the caller. This is 
 
 | Name                       |   Type    | Description                                            |
 | -------------------------- | :-------: | ------------------------------------------------------ |
-| `operator`                 | `address` | the operator to decrease allowance for `msg.sender`    |
-| `subtractedAmount`         | `uint256` | the amount to decrease by in the operator's allowance. |
+| `operator`                 | `address` | The operator to decrease allowance for `msg.sender`    |
+| `subtractedAmount`         | `uint256` | The amount to decrease by in the operator's allowance. |
 | `operatorNotificationData` |  `bytes`  | -                                                      |
 
 <br/>
@@ -409,8 +409,8 @@ Atomically increases the allowance granted to `operator` by the caller. This is 
 
 | Name                       |   Type    | Description                                                             |
 | -------------------------- | :-------: | ----------------------------------------------------------------------- |
-| `operator`                 | `address` | the operator to increase the allowance for `msg.sender`                 |
-| `addedAmount`              | `uint256` | the additional amount to add on top of the current operator's allowance |
+| `operator`                 | `address` | The operator to increase the allowance for `msg.sender`                 |
+| `addedAmount`              | `uint256` | The additional amount to add on top of the current operator's allowance |
 | `operatorNotificationData` |  `bytes`  | -                                                                       |
 
 <br/>
@@ -836,7 +836,7 @@ Save gas by emitting the [`DataChanged`](#datachanged) event with only the first
 function _updateOperator(
   address tokenOwner,
   address operator,
-  uint256 amount,
+  uint256 allowance,
   bytes operatorNotificationData
 ) internal nonpayable;
 ```
@@ -844,6 +844,15 @@ function _updateOperator(
 Changes token `amount` the `operator` has access to from `tokenOwner` tokens.
 If the amount is zero the operator is removed from the list of operators, otherwise he is added to the list of operators.
 If the amount is zero then the operator is being revoked, otherwise the operator amount is being modified.
+
+#### Parameters
+
+| Name                       |   Type    | Description                                                                            |
+| -------------------------- | :-------: | -------------------------------------------------------------------------------------- |
+| `tokenOwner`               | `address` | The address that will give `operator` an allowance for on its balance.                 |
+| `operator`                 | `address` | The address to grant an allowance to spend.                                            |
+| `allowance`                | `uint256` | The maximum amount of token that `operator` can spend from the `tokenOwner`'s balance. |
+| `operatorNotificationData` |  `bytes`  | -                                                                                      |
 
 <br/>
 
@@ -896,6 +905,28 @@ Any logic in the [`_beforeTokenTransfer`](#_beforetokentransfer) function will r
 | `from`   | `address` | The address to burn tokens from its balance.                                                                              |
 | `amount` | `uint256` | The amount of tokens to burn.                                                                                             |
 | `data`   |  `bytes`  | Additional data the caller wants included in the emitted event, and sent in the LSP1 hook to the `from` and `to` address. |
+
+<br/>
+
+### \_spendAllowance
+
+```solidity
+function _spendAllowance(
+  address operator,
+  address tokenOwner,
+  uint256 amountToSpend
+) internal nonpayable;
+```
+
+Spend `amountToSpend` from the `operator`'s authorized on behalf of the `tokenOwner`.
+
+#### Parameters
+
+| Name            |   Type    | Description                                                         |
+| --------------- | :-------: | ------------------------------------------------------------------- |
+| `operator`      | `address` | The address of the operator to decrease the allowance of.           |
+| `tokenOwner`    | `address` | The address that granted an allowance on its balance to `operator`. |
+| `amountToSpend` | `uint256` | The amount of tokens to substract in allowance of `operator`.       |
 
 <br/>
 

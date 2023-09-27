@@ -19,6 +19,9 @@ abstract contract LSP7BurnableInitAbstract is LSP7DigitalAssetInitAbstract {
         uint256 amount,
         bytes memory data
     ) public virtual {
+        if (msg.sender != from) {
+            _spendAllowance(msg.sender, from, amount);
+        }
         _burn(from, amount, data);
     }
 }
