@@ -555,13 +555,16 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
                 _INTERFACEID_LSP1
             )
         ) {
-            operator.call(
-                abi.encodeWithSelector(
-                    ILSP1UniversalReceiver.universalReceiver.selector,
+            try
+                ILSP1UniversalReceiver(operator).universalReceiver(
                     _TYPEID_LSP7_TOKENOPERATOR,
                     lsp1Data
                 )
-            );
+            {
+                return;
+            } catch {
+                return;
+            }
         }
     }
 

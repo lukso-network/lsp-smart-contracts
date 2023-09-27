@@ -20,6 +20,7 @@ import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
 import {_INTERFACEID_LSP8} from "./LSP8Constants.sol";
+import {LSP8TokenContractCannotHoldValue} from "./LSP8Errors.sol";
 
 import {
     _LSP17_EXTENSION_PREFIX
@@ -90,6 +91,19 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
             revert InvalidFunctionSelector(callData);
         }
         return _fallbackLSP17Extendable(callData);
+    }
+
+    /**
+     * @dev Reverts whenever someone tries to send native tokens to a LSP8 contract.
+     * @notice LSP8 contract cannot receive native tokens.
+     */
+    receive() external payable virtual {
+        // revert on empty calls with no value
+        if (msg.value == 0) {
+            revert InvalidFunctionSelector(hex"00000000");
+        }
+
+        revert LSP8TokenContractCannotHoldValue();
     }
 
     /**

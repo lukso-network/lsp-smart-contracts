@@ -56,6 +56,25 @@ This function is executed when:
 
 <br/>
 
+### receive
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#receive)
+- Solidity implementation: [`LSP7CompatibleERC20.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol)
+
+:::
+
+```solidity
+receive() external payable;
+```
+
+_LSP7 contract cannot receive native tokens._
+
+Reverts whenever someone tries to send native tokens to a LSP7 contract.
+
+<br/>
+
 ### allowance
 
 :::note References
@@ -1727,6 +1746,27 @@ reverts if the `tokenReceiver` is an EOA when minting or transferring tokens wit
 | Name            |   Type    | Description |
 | --------------- | :-------: | ----------- |
 | `tokenReceiver` | `address` | -           |
+
+<br/>
+
+### LSP7TokenContractCannotHoldValue
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#lsp7tokencontractcannotholdvalue)
+- Solidity implementation: [`LSP7CompatibleERC20.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol)
+- Error signature: `LSP7TokenContractCannotHoldValue()`
+- Error hash: `0x388f5adc`
+
+:::
+
+```solidity
+error LSP7TokenContractCannotHoldValue();
+```
+
+_LSP7 contract cannot receive native tokens._
+
+Error occurs when sending native tokens to the LSP7 contract without sending any data. E.g. Sending value without passing a bytes4 function selector to call a LSP17 Extension.
 
 <br/>
 
