@@ -1124,7 +1124,7 @@ and conform to the signature format according to the LSP25 standard.
 
 ```solidity
 function _executePayload(
-  address target_,
+  address targetContract,
   uint256 msgValue,
   bytes payload
 ) internal nonpayable returns (bytes);
@@ -1134,11 +1134,11 @@ _Execute the `payload` passed to `execute(...)` or `executeRelayCall(...)`_
 
 #### Parameters
 
-| Name       |   Type    | Description                                                        |
-| ---------- | :-------: | ------------------------------------------------------------------ |
-| `target_`  | `address` | -                                                                  |
-| `msgValue` | `uint256` | -                                                                  |
-| `payload`  |  `bytes`  | The abi-encoded function call to execute on the {target} contract. |
+| Name             |   Type    | Description                                                        |
+| ---------------- | :-------: | ------------------------------------------------------------------ |
+| `targetContract` | `address` | -                                                                  |
+| `msgValue`       | `uint256` | -                                                                  |
+| `payload`        |  `bytes`  | The abi-encoded function call to execute on the {target} contract. |
 
 #### Returns
 
@@ -1152,7 +1152,7 @@ _Execute the `payload` passed to `execute(...)` or `executeRelayCall(...)`_
 
 ```solidity
 function _verifyPermissions(
-  address target_,
+  address targetContract,
   address from,
   uint256 msgValue,
   bytes payload
@@ -1163,12 +1163,12 @@ Verify if the `from` address is allowed to execute the `payload` on the [`target
 
 #### Parameters
 
-| Name       |   Type    | Description                                                         |
-| ---------- | :-------: | ------------------------------------------------------------------- |
-| `target_`  | `address` | -                                                                   |
-| `from`     | `address` | Either the caller of {execute} or the signer of {executeRelayCall}. |
-| `msgValue` | `uint256` | -                                                                   |
-| `payload`  |  `bytes`  | The abi-encoded function call to execute on the {target} contract.  |
+| Name             |   Type    | Description                                                         |
+| ---------------- | :-------: | ------------------------------------------------------------------- |
+| `targetContract` | `address` | -                                                                   |
+| `from`           | `address` | Either the caller of {execute} or the signer of {executeRelayCall}. |
+| `msgValue`       | `uint256` | -                                                                   |
+| `payload`        |  `bytes`  | The abi-encoded function call to execute on the {target} contract.  |
 
 <br/>
 
@@ -1186,7 +1186,7 @@ Initialise \_reentrancyStatus to \_NOT_ENTERED.
 
 ```solidity
 function _nonReentrantBefore(
-  address target_,
+  address targetContract,
   bool isSetData,
   address from
 ) internal nonpayable returns (uint8 reentrancyStatus);
