@@ -68,3 +68,12 @@ error LSP7TokenOwnerCannotBeOperator();
  * @dev Reverts when trying to decrease an operator's allowance to more than its current allowance.
  */
 error LSP7DecreasedAllowanceBelowZero();
+
+/**
+ * @dev Error occurs when sending native tokens to the LSP7 contract without sending any data.
+ *
+ * E.g. Sending value without passing a bytes4 function selector to call a LSP17 Extension.
+ *
+ * @notice LSP7 contract cannot receive native tokens.
+ */
+error LSP7TokenContractCannotHoldValue();

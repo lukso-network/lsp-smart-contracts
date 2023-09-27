@@ -213,7 +213,7 @@ library LSP6Utils {
         bytes32[] memory permissions
     ) internal pure returns (bytes32) {
         bytes32 result;
-        for (uint256 i = 0; i < permissions.length; i++) {
+        for (uint256 i; i < permissions.length; i++) {
             result |= permissions[i];
         }
         return result;

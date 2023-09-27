@@ -56,6 +56,25 @@ This function is executed when:
 
 <br/>
 
+### receive
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#receive)
+- Solidity implementation: [`LSP8CappedSupply.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol)
+
+:::
+
+```solidity
+receive() external payable;
+```
+
+_LSP8 contract cannot receive native tokens._
+
+Reverts whenever someone tries to send native tokens to a LSP8 contract.
+
+<br/>
+
 ### authorizeOperator
 
 :::note References
@@ -1334,7 +1353,7 @@ Reverts when trying to edit the data key `LSP4TokenSymbol` after the digital ass
 error LSP8CannotSendToAddressZero();
 ```
 
-Reverts when trying to send token to the zero address.
+Reverts when trying to send token to the zero address.Reverts when trying to send token to the zero address.
 
 <br/>
 
@@ -1353,7 +1372,7 @@ Reverts when trying to send token to the zero address.
 error LSP8CannotSendToSelf();
 ```
 
-Reverts when specifying the same address for `from` and `to` in a token transfer.
+Reverts when specifying the same address for `from` and `to` in a token transfer.Reverts when specifying the same address for `from` and `to` in a token transfer.
 
 <br/>
 
@@ -1372,7 +1391,7 @@ Reverts when specifying the same address for `from` and `to` in a token transfer
 error LSP8CannotUseAddressZeroAsOperator();
 ```
 
-Reverts when trying to set the zero address as an operator.
+Reverts when trying to set the zero address as an operator.Reverts when trying to set the zero address as an operator.
 
 <br/>
 
@@ -1433,7 +1452,7 @@ Reverts when setting `0` for the [`tokenSupplyCap`](#tokensupplycap). The max to
 error LSP8InvalidTransferBatch();
 ```
 
-Reverts when the parameters used for `transferBatch` have different lengths.
+Reverts when the parameters used for `transferBatch` have different lengths.Reverts when the parameters used for `transferBatch` have different lengths.
 
 <br/>
 
@@ -1452,7 +1471,7 @@ Reverts when the parameters used for `transferBatch` have different lengths.
 error LSP8NonExistentTokenId(bytes32 tokenId);
 ```
 
-Reverts when `tokenId` has not been minted.
+Reverts when `tokenId` has not been minted.Reverts when `tokenId` has not been minted.
 
 #### Parameters
 
@@ -1477,7 +1496,7 @@ Reverts when `tokenId` has not been minted.
 error LSP8NonExistingOperator(address operator, bytes32 tokenId);
 ```
 
-Reverts when `operator` is not an operator for the `tokenId`.
+Reverts when `operator` is not an operator for the `tokenId`.Reverts when `operator` is not an operator for the `tokenId`.
 
 #### Parameters
 
@@ -1503,7 +1522,7 @@ Reverts when `operator` is not an operator for the `tokenId`.
 error LSP8NotTokenOperator(bytes32 tokenId, address caller);
 ```
 
-Reverts when `caller` is not an allowed operator for `tokenId`.
+Reverts when `caller` is not an allowed operator for `tokenId`.Reverts when `caller` is not an allowed operator for `tokenId`.
 
 #### Parameters
 
@@ -1529,7 +1548,7 @@ Reverts when `caller` is not an allowed operator for `tokenId`.
 error LSP8NotTokenOwner(address tokenOwner, bytes32 tokenId, address caller);
 ```
 
-Reverts when `caller` is not the `tokenOwner` of the `tokenId`.
+Reverts when `caller` is not the `tokenOwner` of the `tokenId`.Reverts when `caller` is not the `tokenOwner` of the `tokenId`.
 
 #### Parameters
 
@@ -1558,7 +1577,7 @@ error LSP8NotifyTokenReceiverContractMissingLSP1Interface(
 );
 ```
 
-Reverts if the `tokenReceiver` does not implement LSP1 when minting or transferring tokens with `bool force` set as `false`.
+Reverts if the `tokenReceiver` does not implement LSP1Reverts if the `tokenReceiver` does not implement LSP1 when minting or transferring tokens with `bool force` set as `false`.
 
 #### Parameters
 
@@ -1583,7 +1602,7 @@ Reverts if the `tokenReceiver` does not implement LSP1 when minting or transferr
 error LSP8NotifyTokenReceiverIsEOA(address tokenReceiver);
 ```
 
-Reverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool force` set as `false`.
+Reverts if the `tokenReceiver` is an EOAReverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool force` set as `false`.
 
 #### Parameters
 
@@ -1608,7 +1627,7 @@ Reverts if the `tokenReceiver` is an EOA when minting or transferring tokens wit
 error LSP8OperatorAlreadyAuthorized(address operator, bytes32 tokenId);
 ```
 
-Reverts when `operator` is already authorized for the `tokenId`.
+Reverts when `operator` is already authorized for the `tokenId`.Reverts when `operator` is already authorized for the `tokenId`.
 
 #### Parameters
 
@@ -1616,6 +1635,27 @@ Reverts when `operator` is already authorized for the `tokenId`.
 | ---------- | :-------: | ----------- |
 | `operator` | `address` | -           |
 | `tokenId`  | `bytes32` | -           |
+
+<br/>
+
+### LSP8TokenContractCannotHoldValue
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokencontractcannotholdvalue)
+- Solidity implementation: [`LSP8CappedSupply.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol)
+- Error signature: `LSP8TokenContractCannotHoldValue()`
+- Error hash: `0x61f49442`
+
+:::
+
+```solidity
+error LSP8TokenContractCannotHoldValue();
+```
+
+_LSP8 contract cannot receive native tokens._
+
+Error occurs when sending native tokens to the LSP8 contract without sending any data. E.g. Sending value without passing a bytes4 function selector to call a LSP17 Extension.
 
 <br/>
 
@@ -1653,7 +1693,7 @@ Reverts when trying to edit the data key `LSP8TokenIdType` after the identifiabl
 error LSP8TokenOwnerCannotBeOperator();
 ```
 
-Reverts when trying to authorize or revoke the token's owner as an operator.
+Reverts when trying to authorize or revoke the token's owner as an operator.Reverts when trying to authorize or revoke the token's owner as an operator.
 
 <br/>
 

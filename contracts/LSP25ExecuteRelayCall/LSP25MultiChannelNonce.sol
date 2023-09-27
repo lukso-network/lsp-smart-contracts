@@ -56,8 +56,7 @@ abstract contract LSP25MultiChannelNonce {
         address from,
         uint128 channelId
     ) internal view virtual returns (uint256 idx) {
-        uint256 nonceInChannel = _nonceStore[from][channelId];
-        return (uint256(channelId) << 128) | nonceInChannel;
+        return (uint256(channelId) << 128) | _nonceStore[from][channelId];
     }
 
     /**

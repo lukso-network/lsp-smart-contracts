@@ -8,7 +8,8 @@ import {ILSP20CallVerifier as ILSP20} from "./ILSP20CallVerifier.sol";
 // errors
 import {
     LSP20InvalidMagicValue,
-    LSP20CallingVerifierFailed
+    LSP20CallingVerifierFailed,
+    LSP20EOACannotVerifyCall
 } from "./LSP20Errors.sol";
 
 /**
@@ -26,6 +27,9 @@ abstract contract LSP20CallVerification {
     function _verifyCall(
         address logicVerifier
     ) internal virtual returns (bool verifyAfter) {
+        if (logicVerifier.code.length == 0)
+            revert LSP20EOACannotVerifyCall(logicVerifier);
+
         (bool success, bytes memory returnedData) = logicVerifier.call(
             abi.encodeWithSelector(
                 ILSP20.lsp20VerifyCall.selector,
@@ -42,7 +46,7 @@ abstract contract LSP20CallVerification {
         if (bytes3(magicValue) != bytes3(ILSP20.lsp20VerifyCall.selector))
             revert LSP20InvalidMagicValue(false, returnedData);
 
-        return magicValue[3] == 0x01 ? true : false;
+        return bytes1(magicValue[3]) == 0x01;
     }
 
     /**
@@ -89,7 +93,7 @@ abstract contract LSP20CallVerification {
         bytes memory returnedData
     ) internal pure virtual {
         // Look for revert reason and bubble it up if present
-        if (returnedData.length > 0) {
+        if (returnedData.length != 0) {
             // The easiest way to bubble the revert reason is using memory via assembly
             // solhint-disable no-inline-assembly
             /// @solidity memory-safe-assembly

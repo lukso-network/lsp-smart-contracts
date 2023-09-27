@@ -2144,6 +2144,32 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
       });
     });
   });
+
+  describe('when calling the contract with empty calldata', () => {
+    describe('when making a call without any value', () => {
+      it('should revert', async () => {
+        await expect(
+          context.accounts.anyone.sendTransaction({
+            to: context.lsp7.address,
+          }),
+        )
+          .to.be.revertedWithCustomError(context.lsp7, 'InvalidFunctionSelector')
+          .withArgs('0x00000000');
+      });
+    });
+
+    describe('when making a call with sending value', () => {
+      it('should revert', async () => {
+        const amountSent = 200;
+        await expect(
+          context.accounts.anyone.sendTransaction({
+            to: context.lsp7.address,
+            value: amountSent,
+          }),
+        ).to.be.revertedWithCustomError(context.lsp7, 'LSP7TokenContractCannotHoldValue');
+      });
+    });
+  });
 };
 
 export type LSP7InitializeTestContext = {

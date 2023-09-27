@@ -56,6 +56,25 @@ This function is executed when:
 
 <br/>
 
+### receive
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#receive)
+- Solidity implementation: [`LSP7Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol)
+
+:::
+
+```solidity
+receive() external payable;
+```
+
+_LSP7 contract cannot receive native tokens._
+
+Reverts whenever someone tries to send native tokens to a LSP7 contract.
+
+<br/>
+
 ### authorizeOperator
 
 :::note References
@@ -231,12 +250,12 @@ This is a non-standard function, not part of the LSP7 standard interface. It has
 ```solidity
 function decreaseAllowance(
   address operator,
-  uint256 substractedAmount,
+  uint256 subtractedAmount,
   bytes operatorNotificationData
 ) external nonpayable;
 ```
 
-_Decrease the allowance of `operator` by -`substractedAmount`_
+_Decrease the allowance of `operator` by -`subtractedAmount`_
 
 Atomically decreases the allowance granted to `operator` by the caller. This is an alternative approach to [`authorizeOperator`](#authorizeoperator) that can be used as a mitigation for the double spending allowance problem.
 
@@ -245,7 +264,7 @@ Atomically decreases the allowance granted to `operator` by the caller. This is 
 **Requirements:**
 
 - `operator` cannot be the zero address.
-- `operator` must have allowance for the caller of at least `substractedAmount`.
+- `operator` must have allowance for the caller of at least `subtractedAmount`.
 
 </blockquote>
 
@@ -254,7 +273,7 @@ Atomically decreases the allowance granted to `operator` by the caller. This is 
 **Emitted events:**
 
 - [`AuthorizedOperator`](#authorizedoperator) event indicating the updated allowance after decreasing it.
-- [`RevokeOperator`](#revokeoperator) event if `substractedAmount` is the full allowance, indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
+- [`RevokeOperator`](#revokeoperator) event if `subtractedAmount` is the full allowance, indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
 
 </blockquote>
 
@@ -263,7 +282,7 @@ Atomically decreases the allowance granted to `operator` by the caller. This is 
 | Name                       |   Type    | Description                                            |
 | -------------------------- | :-------: | ------------------------------------------------------ |
 | `operator`                 | `address` | the operator to decrease allowance for `msg.sender`    |
-| `substractedAmount`        | `uint256` | the amount to decrease by in the operator's allowance. |
+| `subtractedAmount`         | `uint256` | the amount to decrease by in the operator's allowance. |
 | `operatorNotificationData` |  `bytes`  | -                                                      |
 
 <br/>
@@ -1582,6 +1601,27 @@ reverts if the `tokenReceiver` is an EOA when minting or transferring tokens wit
 | Name            |   Type    | Description |
 | --------------- | :-------: | ----------- |
 | `tokenReceiver` | `address` | -           |
+
+<br/>
+
+### LSP7TokenContractCannotHoldValue
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#lsp7tokencontractcannotholdvalue)
+- Solidity implementation: [`LSP7Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol)
+- Error signature: `LSP7TokenContractCannotHoldValue()`
+- Error hash: `0x388f5adc`
+
+:::
+
+```solidity
+error LSP7TokenContractCannotHoldValue();
+```
+
+_LSP7 contract cannot receive native tokens._
+
+Error occurs when sending native tokens to the LSP7 contract without sending any data. E.g. Sending value without passing a bytes4 function selector to call a LSP17 Extension.
 
 <br/>
 

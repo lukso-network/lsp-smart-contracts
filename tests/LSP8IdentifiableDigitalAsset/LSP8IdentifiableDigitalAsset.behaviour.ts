@@ -1784,6 +1784,32 @@ export const shouldBehaveLikeLSP8 = (
       });
     });
   });
+
+  describe('when calling the contract with empty calldata', () => {
+    describe('when making a call without any value', () => {
+      it('should revert', async () => {
+        await expect(
+          context.accounts.anyone.sendTransaction({
+            to: context.lsp8.address,
+          }),
+        )
+          .to.be.revertedWithCustomError(context.lsp8, 'InvalidFunctionSelector')
+          .withArgs('0x00000000');
+      });
+    });
+
+    describe('when making a call with sending value', () => {
+      it('should revert', async () => {
+        const amountSent = 200;
+        await expect(
+          context.accounts.anyone.sendTransaction({
+            to: context.lsp8.address,
+            value: amountSent,
+          }),
+        ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenContractCannotHoldValue');
+      });
+    });
+  });
 };
 
 export type LSP8InitializeTestContext = {

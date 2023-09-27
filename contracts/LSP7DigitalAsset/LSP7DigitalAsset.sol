@@ -17,6 +17,7 @@ import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
 import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";
+import {LSP7TokenContractCannotHoldValue} from "./LSP7Errors.sol";
 
 import {
     _LSP17_EXTENSION_PREFIX
@@ -89,6 +90,19 @@ abstract contract LSP7DigitalAsset is
             revert InvalidFunctionSelector(callData);
         }
         return _fallbackLSP17Extendable(callData);
+    }
+
+    /**
+     * @dev Reverts whenever someone tries to send native tokens to a LSP7 contract.
+     * @notice LSP7 contract cannot receive native tokens.
+     */
+    receive() external payable virtual {
+        // revert on empty calls with no value
+        if (msg.value == 0) {
+            revert InvalidFunctionSelector(hex"00000000");
+        }
+
+        revert LSP7TokenContractCannotHoldValue();
     }
 
     /**

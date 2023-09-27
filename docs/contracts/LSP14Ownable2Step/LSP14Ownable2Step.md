@@ -98,7 +98,7 @@ _`msg.sender` is accepting ownership of contract: `address(this)`._
 
 Transfer ownership of the contract from the current [`owner()`](#owner) to the [`pendingOwner()`](#pendingowner). Once this function is called:
 
-- The current [`owner()`](#owner) will loose access to the functions restricted to the [`owner()`](#owner) only.
+- The current [`owner()`](#owner) will lose access to the functions restricted to the [`owner()`](#owner) only.
 
 - The [`pendingOwner()`](#pendingowner) will gain access to the functions restricted to the [`owner()`](#owner) only.
 

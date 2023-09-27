@@ -92,7 +92,7 @@ contract LSP9VaultCore is
      * @custom:events {ValueReceived} when receiving native tokens.
      */
     receive() external payable virtual {
-        if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 
     /**
@@ -147,7 +147,7 @@ contract LSP9VaultCore is
 
             if (!success) {
                 // Look for revert reason and bubble it up if present
-                if (result.length > 0) {
+                if (result.length != 0) {
                     // The easiest way to bubble the revert reason is using memory via assembly
                     // solhint-disable no-inline-assembly
                     /// @solidity memory-safe-assembly
