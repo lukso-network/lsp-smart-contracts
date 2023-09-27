@@ -30,7 +30,13 @@ import {
 import { ARRAY_LENGTH, LSP1_HOOK_PLACEHOLDER, abiCoder } from '../utils/helpers';
 
 // constants
-import { ERC725YDataKeys, INTERFACE_IDS, OPERATION_TYPES, LSP1_TYPE_IDS } from '../../constants';
+import {
+  ERC725YDataKeys,
+  INTERFACE_IDS,
+  OPERATION_TYPES,
+  LSP1_TYPE_IDS,
+  LSP8_TOKEN_ID_TYPES,
+} from '../../constants';
 
 // fixtures
 import { callPayload, getLSP5MapAndArrayKeysValue, setupKeyManager } from '../utils/fixtures';
@@ -1743,18 +1749,21 @@ export const shouldBehaveLikeLSP1Delegate = (
         'TokenAlpha',
         'TA',
         context.accounts.random.address,
+        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
       );
 
       lsp8TokenB = await new LSP8Tester__factory(context.accounts.random).deploy(
         'TokenBeta',
         'TB',
         context.accounts.random.address,
+        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
       );
 
       lsp8TokenC = await new LSP8Tester__factory(context.accounts.random).deploy(
         'TokenGamma',
         'TA',
         context.accounts.random.address,
+        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
       );
     });
 
@@ -3069,6 +3078,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           'MyToken',
           'MTK',
           context.universalProfile1.address,
+          LSP8_TOKEN_ID_TYPES.NUMBER,
         );
         // Mint token for UP1
         await LSP8.mint(context.universalProfile1.address, '0x' + '0'.repeat(64), true, '0x');

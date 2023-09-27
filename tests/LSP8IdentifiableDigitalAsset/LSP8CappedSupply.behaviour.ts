@@ -22,6 +22,7 @@ export type LSP8CappedSupplyTestContext = {
     name: string;
     symbol: string;
     newOwner: string;
+    tokenIdType: number;
     tokenSupplyCap: BigNumber;
   };
 };

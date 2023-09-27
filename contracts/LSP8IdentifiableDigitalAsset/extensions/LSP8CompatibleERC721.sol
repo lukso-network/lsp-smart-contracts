@@ -23,7 +23,6 @@ import {
 } from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
 import {
     LSP8IdentifiableDigitalAsset,
-    LSP4DigitalAssetMetadata,
     ERC725YCore
 } from "../LSP8IdentifiableDigitalAsset.sol";
 import {
@@ -74,8 +73,9 @@ abstract contract LSP8CompatibleERC721 is
     constructor(
         string memory name_,
         string memory symbol_,
-        address newOwner_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {}
+        address newOwner_,
+        uint256 tokenIdType_
+    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, tokenIdType_) {}
 
     /**
      * @inheritdoc LSP8IdentifiableDigitalAsset
@@ -407,12 +407,12 @@ abstract contract LSP8CompatibleERC721 is
     }
 
     /**
-     * @inheritdoc LSP4DigitalAssetMetadata
+     * @inheritdoc LSP8IdentifiableDigitalAsset
      */
     function _setData(
         bytes32 key,
         bytes memory value
-    ) internal virtual override(LSP4DigitalAssetMetadata, ERC725YCore) {
+    ) internal virtual override(LSP8IdentifiableDigitalAsset, ERC725YCore) {
         super._setData(key, value);
     }
 }

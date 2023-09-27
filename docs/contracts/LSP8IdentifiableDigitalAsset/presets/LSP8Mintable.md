@@ -31,18 +31,24 @@ When marked as 'public', a method can be called both externally and internally, 
 :::
 
 ```solidity
-constructor(string name_, string symbol_, address newOwner_);
+constructor(
+  string name_,
+  string symbol_,
+  address newOwner_,
+  uint256 tokenIdType_
+);
 ```
 
 _Deploying a `LSP8Mintable` token contract with: token name = `name_`, token symbol = `symbol_`, and address `newOwner_` as the token contract owner._
 
 #### Parameters
 
-| Name        |   Type    | Description                      |
-| ----------- | :-------: | -------------------------------- |
-| `name_`     | `string`  | The name of the token.           |
-| `symbol_`   | `string`  | The symbol of the token.         |
-| `newOwner_` | `address` | The owner of the token contract. |
+| Name           |   Type    | Description                      |
+| -------------- | :-------: | -------------------------------- |
+| `name_`        | `string`  | The name of the token.           |
+| `symbol_`      | `string`  | The symbol of the token.         |
+| `newOwner_`    | `address` | The owner of the token contract. |
+| `tokenIdType_` | `uint256` | -                                |
 
 <br/>
 
@@ -779,7 +785,8 @@ mapping(bytes32 => bytes) _store
 function _setData(bytes32 dataKey, bytes dataValue) internal nonpayable;
 ```
 
-Save gas by emitting the [`DataChanged`](#datachanged) event with only the first 256 bytes of dataValue
+The ERC725Y data key `_LSP8_TOKENID_TYPE_KEY` cannot be changed
+once the identifiable digital asset contract has been deployed.
 
 <br/>
 
@@ -1686,6 +1693,25 @@ Reverts when `tokenId` has already been minted.
 | Name      |   Type    | Description |
 | --------- | :-------: | ----------- |
 | `tokenId` | `bytes32` | -           |
+
+<br/>
+
+### LSP8TokenIdTypeNotEditable
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidtypenoteditable)
+- Solidity implementation: [`LSP8Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol)
+- Error signature: `LSP8TokenIdTypeNotEditable()`
+- Error hash: `0x53bc1122`
+
+:::
+
+```solidity
+error LSP8TokenIdTypeNotEditable();
+```
+
+Reverts when trying to edit the data key `LSP8TokenIdType` after the identifiable digital asset contract has been deployed. The `LSP8TokenIdType` data key is located inside the ERC725Y Data key-value store of the identifiable digital asset contract. It can be set only once inside the constructor/initializer when the identifiable digital asset contract is being deployed.
 
 <br/>
 

@@ -226,6 +226,9 @@ export const ERC725YDataKeys = {
     // AddressPermissions:AllowedCalls:<address>  + bytes2(0)
     'AddressPermissions:AllowedCalls': '0x4b80742de2bf393a64c70000',
   },
+  LSP8: {
+    LSP8TokenIdType: '0x715f248956de7ce65e94d9d836bfead479f7e70d69b718d47bfe7b00e05b4fe4',
+  },
   LSP9: {
     SupportedStandards_LSP9: SupportedStandards.LSP9Vault.key,
   },
@@ -369,6 +372,21 @@ export const LSP1_TYPE_IDS = {
   // keccak256('LSP14OwnershipTransferred_RecipientNotification')
   LSP14OwnershipTransferred_RecipientNotification:
     '0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
+};
+
+// LSP8
+// ----------
+
+/**
+ * @dev list of LSP8 Token ID types that can be used to create different types of NFTs.
+ * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidtype
+ */
+export const LSP8_TOKEN_ID_TYPES = {
+  NUMBER: 0,
+  STRING: 1,
+  UNIQUE_ID: 2,
+  HASH: 3,
+  ADDRESS: 4,
 };
 
 // LSP25

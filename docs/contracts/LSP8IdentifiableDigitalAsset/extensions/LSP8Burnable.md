@@ -747,7 +747,8 @@ mapping(bytes32 => bytes) _store
 function _setData(bytes32 dataKey, bytes dataValue) internal nonpayable;
 ```
 
-Save gas by emitting the [`DataChanged`](#datachanged) event with only the first 256 bytes of dataValue
+The ERC725Y data key `_LSP8_TOKENID_TYPE_KEY` cannot be changed
+once the identifiable digital asset contract has been deployed.
 
 <br/>
 
@@ -1629,6 +1630,25 @@ error LSP8TokenContractCannotHoldValue();
 _LSP8 contract cannot receive native tokens._
 
 Error occurs when sending native tokens to the LSP8 contract without sending any data. E.g. Sending value without passing a bytes4 function selector to call a LSP17 Extension.
+
+<br/>
+
+### LSP8TokenIdTypeNotEditable
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidtypenoteditable)
+- Solidity implementation: [`LSP8Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol)
+- Error signature: `LSP8TokenIdTypeNotEditable()`
+- Error hash: `0x53bc1122`
+
+:::
+
+```solidity
+error LSP8TokenIdTypeNotEditable();
+```
+
+Reverts when trying to edit the data key `LSP8TokenIdType` after the identifiable digital asset contract has been deployed. The `LSP8TokenIdType` data key is located inside the ERC725Y Data key-value store of the identifiable digital asset contract. It can be set only once inside the constructor/initializer when the identifiable digital asset contract is being deployed.
 
 <br/>
 
