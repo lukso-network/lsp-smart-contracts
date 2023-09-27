@@ -147,7 +147,7 @@ abstract contract LSP0ERC725AccountCore is
 
             if (!success) {
                 // Look for revert reason and bubble it up if present
-                if (result.length > 0) {
+                if (result.length != 0) {
                     // The easiest way to bubble the revert reason is using memory via assembly
                     // solhint-disable no-inline-assembly
                     /// @solidity memory-safe-assembly
@@ -352,7 +352,7 @@ abstract contract LSP0ERC725AccountCore is
 
         // If the caller is the owner perform setData directly
         if (msg.sender == accountOwner) {
-            for (uint256 i = 0; i < dataKeys.length; ) {
+            for (uint256 i; i < dataKeys.length; ) {
                 _setData(dataKeys[i], dataValues[i]);
 
                 unchecked {
@@ -367,7 +367,7 @@ abstract contract LSP0ERC725AccountCore is
         // Depending on the magicValue returned, a second call is done after setting data
         bool verifyAfter = _verifyCall(accountOwner);
 
-        for (uint256 i = 0; i < dataKeys.length; ) {
+        for (uint256 i; i < dataKeys.length; ) {
             _setData(dataKeys[i], dataValues[i]);
 
             unchecked {
@@ -682,7 +682,7 @@ abstract contract LSP0ERC725AccountCore is
         address _owner = owner();
 
         // If owner is a contract
-        if (_owner.code.length > 0) {
+        if (_owner.code.length != 0) {
             (bool success, bytes memory result) = _owner.staticcall(
                 abi.encodeWithSelector(
                     IERC1271.isValidSignature.selector,

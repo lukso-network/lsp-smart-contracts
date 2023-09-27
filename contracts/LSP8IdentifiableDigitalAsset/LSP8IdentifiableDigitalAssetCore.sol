@@ -222,9 +222,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address caller,
         bytes32 tokenId
     ) internal view virtual returns (bool) {
-        address tokenOwner = tokenOwnerOf(tokenId);
-
-        return (caller == tokenOwner || _operators[tokenId].contains(caller));
+        return (caller == tokenOwnerOf(tokenId) ||
+            _operators[tokenId].contains(caller));
     }
 
     // --- Transfer functionality
@@ -239,10 +238,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool force,
         bytes memory data
     ) public virtual {
-        address operator = msg.sender;
-
-        if (!_isOperatorOrOwner(operator, tokenId)) {
-            revert LSP8NotTokenOperator(tokenId, operator);
+        if (!_isOperatorOrOwner(msg.sender, tokenId)) {
+            revert LSP8NotTokenOperator(tokenId, msg.sender);
         }
 
         _transfer(from, to, tokenId, force, data);
@@ -268,7 +265,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8InvalidTransferBatch();
         }
 
-        for (uint256 i = 0; i < fromLength; ) {
+        for (uint256 i; i < fromLength; ) {
             transfer(from[i], to[i], tokenId[i], force[i], data[i]);
 
             unchecked {
@@ -317,9 +314,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         ];
 
         uint256 operatorListLength = operatorsForTokenId.length();
-        for (uint256 i = 0; i < operatorListLength; ) {
+        address operator;
+        for (uint256 i; i < operatorListLength; ) {
             // we are emptying the list, always remove from index 0
-            address operator = operatorsForTokenId.at(0);
+            operator = operatorsForTokenId.at(0);
             _revokeOperator(operator, tokenOwner, tokenId, "");
 
             unchecked {
@@ -374,17 +372,15 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8TokenIdAlreadyMinted(tokenId);
         }
 
-        address operator = msg.sender;
-
         _beforeTokenTransfer(address(0), to, tokenId);
 
         // token being minted
-        _existingTokens += 1;
+        ++_existingTokens;
 
         _ownedTokens[to].add(tokenId);
         _tokenOwners[tokenId] = to;
 
-        emit Transfer(operator, address(0), to, tokenId, force, data);
+        emit Transfer(msg.sender, address(0), to, tokenId, force, data);
 
         bytes memory lsp1Data = abi.encode(address(0), to, tokenId, data);
         _notifyTokenReceiver(to, force, lsp1Data);
@@ -412,19 +408,18 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      */
     function _burn(bytes32 tokenId, bytes memory data) internal virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
-        address operator = msg.sender;
 
         _beforeTokenTransfer(tokenOwner, address(0), tokenId);
 
         // token being burned
-        _existingTokens -= 1;
+        --_existingTokens;
 
         _clearOperators(tokenOwner, tokenId);
 
         _ownedTokens[tokenOwner].remove(tokenId);
         delete _tokenOwners[tokenId];
 
-        emit Transfer(operator, tokenOwner, address(0), tokenId, false, data);
+        emit Transfer(msg.sender, tokenOwner, address(0), tokenId, false, data);
 
         bytes memory lsp1Data = abi.encode(
             tokenOwner,
@@ -478,8 +473,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8CannotSendToAddressZero();
         }
 
-        address operator = msg.sender;
-
         _beforeTokenTransfer(from, to, tokenId);
 
         _clearOperators(from, tokenId);
@@ -488,7 +481,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         _ownedTokens[to].add(tokenId);
         _tokenOwners[tokenId] = to;
 
-        emit Transfer(operator, from, to, tokenId, force, data);
+        emit Transfer(msg.sender, from, to, tokenId, force, data);
 
         bytes memory lsp1Data = abi.encode(from, to, tokenId, data);
 
@@ -581,7 +574,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 lsp1Data
             );
         } else if (!force) {
-            if (to.code.length > 0) {
+            if (to.code.length != 0) {
                 revert LSP8NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {
                 revert LSP8NotifyTokenReceiverIsEOA(to);

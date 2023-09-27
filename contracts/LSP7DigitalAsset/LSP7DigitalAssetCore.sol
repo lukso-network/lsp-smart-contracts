@@ -176,19 +176,21 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     ) public virtual {
         if (from == to) revert LSP7CannotSendToSelf();
 
-        address operator = msg.sender;
-        if (operator != from) {
-            uint256 operatorAmount = _operatorAuthorizedAmount[from][operator];
+        // if the caller is an operator
+        if (msg.sender != from) {
+            uint256 operatorAmount = _operatorAuthorizedAmount[from][
+                msg.sender
+            ];
             if (amount > operatorAmount) {
                 revert LSP7AmountExceedsAuthorizedAmount(
                     from,
                     operatorAmount,
-                    operator,
+                    msg.sender,
                     amount
                 );
             }
 
-            _updateOperator(from, operator, operatorAmount - amount, "");
+            _updateOperator(from, msg.sender, operatorAmount - amount, "");
         }
 
         _transfer(from, to, amount, force, data);
@@ -214,7 +216,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7InvalidTransferBatch();
         }
 
-        for (uint256 i = 0; i < fromLength; ) {
+        for (uint256 i; i < fromLength; ) {
             // using the public transfer function to handle updates to operator authorized amounts
             transfer(from[i], to[i], amount[i], force[i], data[i]);
 
@@ -388,8 +390,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7CannotSendWithAddressZero();
         }
 
-        address operator = msg.sender;
-
         _beforeTokenTransfer(address(0), to, amount);
 
         // tokens being minted
@@ -397,7 +397,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         _tokenOwnerBalances[to] += amount;
 
-        emit Transfer(operator, address(0), to, amount, force, data);
+        emit Transfer(msg.sender, address(0), to, amount, force, data);
 
         bytes memory lsp1Data = abi.encode(address(0), to, amount, data);
         _notifyTokenReceiver(to, force, lsp1Data);
@@ -440,20 +440,22 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
 
-        address operator = msg.sender;
-        if (operator != from) {
+        // if the caller is an operator
+        if (msg.sender != from) {
             uint256 authorizedAmount = _operatorAuthorizedAmount[from][
-                operator
+                msg.sender
             ];
             if (amount > authorizedAmount) {
                 revert LSP7AmountExceedsAuthorizedAmount(
                     from,
                     authorizedAmount,
-                    operator,
+                    msg.sender,
                     amount
                 );
             }
-            _operatorAuthorizedAmount[from][operator] -= amount;
+            _operatorAuthorizedAmount[from][msg.sender] =
+                authorizedAmount -
+                amount;
         }
 
         _beforeTokenTransfer(from, address(0), amount);
@@ -463,7 +465,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         _tokenOwnerBalances[from] -= amount;
 
-        emit Transfer(operator, from, address(0), amount, false, data);
+        emit Transfer(msg.sender, from, address(0), amount, false, data);
 
         bytes memory lsp1Data = abi.encode(from, address(0), amount, data);
         _notifyTokenSender(from, lsp1Data);
@@ -508,14 +510,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
 
-        address operator = msg.sender;
-
         _beforeTokenTransfer(from, to, amount);
 
         _tokenOwnerBalances[from] -= amount;
         _tokenOwnerBalances[to] += amount;
 
-        emit Transfer(operator, from, to, amount, force, data);
+        emit Transfer(msg.sender, from, to, amount, force, data);
 
         bytes memory lsp1Data = abi.encode(from, to, amount, data);
 
@@ -618,7 +618,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
                 lsp1Data
             );
         } else if (!force) {
-            if (to.code.length > 0) {
+            if (to.code.length != 0) {
                 revert LSP7NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {
                 revert LSP7NotifyTokenReceiverIsEOA(to);
