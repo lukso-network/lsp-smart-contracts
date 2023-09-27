@@ -27,7 +27,7 @@ import { LSP6TestContext } from '../../utils/context';
 import { setupKeyManager } from '../../utils/fixtures';
 
 // helpers
-import { LOCAL_PRIVATE_KEYS, combineAllowedCalls } from '../../utils/helpers';
+import { LOCAL_PRIVATE_KEYS, combineAllowedCalls, combinePermissions } from '../../utils/helpers';
 
 export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
@@ -55,8 +55,8 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
     ];
 
     const permissionsValues = [
-      PERMISSIONS.CALL,
-      PERMISSIONS.CALL,
+      combinePermissions(PERMISSIONS.CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
+      combinePermissions(PERMISSIONS.CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
       combineAllowedCalls(
         [CALLTYPE.CALL],
         ['0xffffffffffffffffffffffffffffffffffffffff'],
@@ -369,7 +369,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
       ];
 
       const permissionsValues = [
-        PERMISSIONS.CALL,
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
         // LSP8:ANY:transfer(…)
         combineAllowedCalls(
           [CALLTYPE.CALL],
@@ -377,7 +377,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
           [INTERFACE_IDS.LSP8IdentifiableDigitalAsset],
           [lsp8Contract.interface.getSighash('transfer')],
         ),
-        PERMISSIONS.CALL,
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
         // LSP7:ANY:ANY + LSP8:ANY: authorizeOperator(…)
         combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL],

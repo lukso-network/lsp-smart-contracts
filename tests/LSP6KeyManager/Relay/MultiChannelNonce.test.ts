@@ -18,7 +18,7 @@ import {
 // setup
 import { LSP6TestContext } from '../../utils/context';
 import { setupKeyManager } from '../../utils/fixtures';
-import { LOCAL_PRIVATE_KEYS, combineAllowedCalls } from '../../utils/helpers';
+import { LOCAL_PRIVATE_KEYS, combineAllowedCalls, combinePermissions } from '../../utils/helpers';
 
 export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
@@ -42,7 +42,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
 
     const permissionsValues = [
       ALL_PERMISSIONS,
-      PERMISSIONS.CALL,
+      combinePermissions(PERMISSIONS.CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
       combineAllowedCalls(
         [CALLTYPE.CALL],
         [targetContract.address],
