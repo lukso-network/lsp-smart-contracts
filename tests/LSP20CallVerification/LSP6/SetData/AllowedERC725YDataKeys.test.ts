@@ -38,7 +38,8 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
       controllerCanSetManyKeys = context.accounts[2];
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           controllerCanSetOneKey.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -653,7 +654,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           const key = ethers.utils.hexlify(ethers.utils.randomBytes(32));
           const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data'));
 
-          await context.universalProfile.connect(context.owner).setData(key, value);
+          await context.universalProfile.connect(context.mainController).setData(key, value);
 
           const result = await context.universalProfile.getData(key);
           expect(result).to.equal(value);
@@ -673,7 +674,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some data 3')),
           ];
 
-          await context.universalProfile.connect(context.owner).setDataBatch(keys, values);
+          await context.universalProfile.connect(context.mainController).setDataBatch(keys, values);
 
           const result = await context.universalProfile.getDataBatch(keys);
 
@@ -704,7 +705,8 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
       controllerCanSetMappingKeys = context.accounts[1];
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           controllerCanSetMappingKeys.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
@@ -897,7 +899,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           );
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(randomMappingKey, randomMappingValue);
 
           const result = await context.universalProfile.getData(randomMappingKey);
@@ -919,7 +921,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           ];
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(randomMappingKeys, randomMappingValues);
 
           const result = await context.universalProfile.getDataBatch(randomMappingKeys);
@@ -952,7 +954,8 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
       controllerCanSetArrayKeys = context.accounts[1];
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           controllerCanSetArrayKeys.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
@@ -1101,7 +1104,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
         const permissionKeys = [
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            context.owner.address.substring(2),
+            context.mainController.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
             controllerCanSetSomeKeys.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
@@ -1228,7 +1231,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
         const permissionKeys = [
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            context.owner.address.substring(2),
+            context.mainController.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
             controllerCanSetSomeKeys.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
@@ -1373,7 +1376,8 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
       controllerCanSetSomeKeys = context.accounts[1];
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           controllerCanSetSomeKeys.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +

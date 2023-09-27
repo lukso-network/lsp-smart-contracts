@@ -64,7 +64,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
       targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + signer.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + signer.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -1204,7 +1205,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
       );
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
       ];
 
       const permissionsValues = [ALL_PERMISSIONS];
@@ -1222,7 +1224,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       await expect(
         context.keyManager
-          .connect(context.owner)
+          .connect(context.mainController)
           .executeRelayCallBatch(signatures, nonces, validityTimestamps, values, payloads),
       ).to.be.revertedWithCustomError(
         context.keyManager,
@@ -1241,7 +1243,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         '0x',
       ]);
 
-      const ownerNonce = await context.keyManager.getNonce(context.owner.address, 0);
+      const ownerNonce = await context.keyManager.getNonce(context.mainController.address, 0);
 
       const validityTimestamps = 0;
 
@@ -1292,7 +1294,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
       // the incorrectly recovered address (as explained above)
       await expect(
         context.keyManager
-          .connect(context.owner)
+          .connect(context.mainController)
           .executeRelayCallBatch(
             [transferLyxSignature, transferLyxSignature],
             [ownerNonce, ownerNonce.add(1)],
@@ -1330,7 +1332,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         ],
       );
 
-      const ownerNonce = await context.keyManager.getNonce(context.owner.address, 0);
+      const ownerNonce = await context.keyManager.getNonce(context.mainController.address, 0);
 
       const ownerGivePermissionsSignature = await signLSP6ExecuteRelayCall(
         context.keyManager,
@@ -1389,7 +1391,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
       );
 
       await context.keyManager
-        .connect(context.owner)
+        .connect(context.mainController)
         .executeRelayCallBatch(
           [ownerGivePermissionsSignature, minterMintSignature, ownerRemovePermissionsSignature],
           [ownerNonce, minterNonce, newOwnerNonce],
@@ -1456,7 +1458,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             [OPERATION_TYPES.CALL, thirdRecipient, transferAmounts[2], '0x'],
           );
 
-          const ownerNonce = await context.keyManager.getNonce(context.owner.address, 0);
+          const ownerNonce = await context.keyManager.getNonce(context.mainController.address, 0);
 
           const validityTimestamps = 0;
 
@@ -1487,7 +1489,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           await expect(
             context.keyManager
-              .connect(context.owner)
+              .connect(context.mainController)
               .executeRelayCallBatch(
                 [firstTransferLyxSignature, secondTransferLyxSignature, thirdTransferLyxSignature],
                 [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
@@ -1542,7 +1544,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             [OPERATION_TYPES.CALL, thirdRecipient, transferAmounts[2], '0x'],
           );
 
-          const ownerNonce = await context.keyManager.getNonce(context.owner.address, 0);
+          const ownerNonce = await context.keyManager.getNonce(context.mainController.address, 0);
 
           const validityTimestamps = 0;
 
@@ -1573,7 +1575,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           await expect(
             context.keyManager
-              .connect(context.owner)
+              .connect(context.mainController)
               .executeRelayCallBatch(
                 [firstTransferLyxSignature, secondTransferLyxSignature, thirdTransferLyxSignature],
                 [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
@@ -1625,7 +1627,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             [OPERATION_TYPES.CALL, thirdRecipient, transferAmounts[2], '0x'],
           );
 
-          const ownerNonce = await context.keyManager.getNonce(context.owner.address, 0);
+          const ownerNonce = await context.keyManager.getNonce(context.mainController.address, 0);
 
           const validityTimestamps = 0;
 
@@ -1655,7 +1657,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           );
 
           const tx = await context.keyManager
-            .connect(context.owner)
+            .connect(context.mainController)
             .executeRelayCallBatch(
               [firstTransferLyxSignature, secondTransferLyxSignature, thirdTransferLyxSignature],
               [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
@@ -1700,7 +1702,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           [OPERATION_TYPES.CALL, randomRecipient, validAmount, '0x'],
         );
 
-        const ownerNonce = await context.keyManager.getNonce(context.owner.address, 0);
+        const ownerNonce = await context.keyManager.getNonce(context.mainController.address, 0);
 
         const nonces = [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)];
 
@@ -1738,7 +1740,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         await expect(
           context.keyManager
-            .connect(context.owner)
+            .connect(context.mainController)
             .executeRelayCallBatch(
               signatures,
               nonces,
@@ -1775,7 +1777,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           [OPERATION_TYPES.CALL, randomRecipient, validAmount, '0x'],
         );
 
-        const ownerNonce = await context.keyManager.getNonce(context.owner.address, 0);
+        const ownerNonce = await context.keyManager.getNonce(context.mainController.address, 0);
 
         const nonces = [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)];
         const values = [0, 0, 0];
@@ -1814,7 +1816,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         await expect(
           context.keyManager
-            .connect(context.owner)
+            .connect(context.mainController)
             .executeRelayCallBatch(
               signatures,
               nonces,

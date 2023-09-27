@@ -64,7 +64,8 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       cannotSetData = context.accounts[3];
 
       const permissionsKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           canSetDataWithAllowedERC725YDataKeys.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
@@ -101,7 +102,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
           const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My First Key'));
           const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Hello Lukso!'));
 
-          await context.universalProfile.connect(context.owner).setData(key, value);
+          await context.universalProfile.connect(context.mainController).setData(key, value);
 
           const fetchedResult = await context.universalProfile.callStatic['getData(bytes32)'](key);
           expect(fetchedResult).to.equal(value);
@@ -167,7 +168,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes('eeeeeeeeee')),
           ];
 
-          await context.universalProfile.connect(context.owner).setDataBatch(keys, values);
+          await context.universalProfile.connect(context.mainController).setDataBatch(keys, values);
 
           const fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
 
@@ -181,7 +182,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
 
           const { keys, values } = encodeData(data, BasicUPSetup_Schema);
 
-          await context.universalProfile.connect(context.owner).setDataBatch(keys, values);
+          await context.universalProfile.connect(context.mainController).setDataBatch(keys, values);
 
           const fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
@@ -212,7 +213,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
 
           const { keys, values } = encodeData(basicUPSetup, BasicUPSetup_Schema);
 
-          await context.universalProfile.connect(context.owner).setDataBatch(keys, values);
+          await context.universalProfile.connect(context.mainController).setDataBatch(keys, values);
 
           const fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
@@ -444,12 +445,13 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
     before(async () => {
       context = await buildContext();
 
-      contractCanSetData = await new ExecutorLSP20__factory(context.owner).deploy(
+      contractCanSetData = await new ExecutorLSP20__factory(context.mainController).deploy(
         context.universalProfile.address,
       );
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           contractCanSetData.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +

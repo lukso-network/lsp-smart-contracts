@@ -26,12 +26,16 @@ describe('Key Manager gas cost interactions', () => {
   describe('when using LSP6KeyManager with constructor', () => {
     const buildLSP6TestContext = async (): Promise<LSP6TestContext> => {
       const accounts = await ethers.getSigners();
-      const owner = accounts[0];
+      const mainController = accounts[0];
 
-      const universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
-      const keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
+      const universalProfile = await new UniversalProfile__factory(mainController).deploy(
+        mainController.address,
+      );
+      const keyManager = await new LSP6KeyManager__factory(mainController).deploy(
+        universalProfile.address,
+      );
 
-      return { accounts, owner, universalProfile, keyManager };
+      return { accounts, mainController, universalProfile, keyManager };
     };
 
     describe('after deploying the contract', () => {
@@ -54,7 +58,7 @@ describe('Key Manager gas cost interactions', () => {
 
         const permissionKeys = [
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            context.owner.address.substring(2),
+            context.mainController.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
             restrictedToOneAddress.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -85,7 +89,7 @@ describe('Key Manager gas cost interactions', () => {
 
         await setupKeyManager(context, permissionKeys, permissionValues);
 
-        await context.owner.sendTransaction({
+        await context.mainController.sendTransaction({
           to: context.universalProfile.address,
           value: ethers.utils.parseEther('10'),
         });
@@ -107,7 +111,9 @@ describe('Key Manager gas cost interactions', () => {
             ],
           );
 
-          const tx = await context.keyManager.connect(context.owner).execute(transferLyxPayload);
+          const tx = await context.keyManager
+            .connect(context.mainController)
+            .execute(transferLyxPayload);
 
           const receipt = await tx.wait();
 

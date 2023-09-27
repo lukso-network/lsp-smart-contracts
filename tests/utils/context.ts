@@ -4,7 +4,7 @@ import { KeyManagerInternalTester, LSP6KeyManager, UniversalProfile } from '../.
 
 export type LSP6TestContext = {
   accounts: SignerWithAddress[];
-  owner: SignerWithAddress;
+  mainController: SignerWithAddress;
   universalProfile: UniversalProfile;
   keyManager: LSP6KeyManager;
   initialFunding?: BigNumber;
@@ -12,7 +12,7 @@ export type LSP6TestContext = {
 
 export type LSP6InternalsTestContext = {
   accounts: SignerWithAddress[];
-  owner: SignerWithAddress;
+  mainController: SignerWithAddress;
   universalProfile: UniversalProfile;
   keyManagerInternalTester: KeyManagerInternalTester;
 };

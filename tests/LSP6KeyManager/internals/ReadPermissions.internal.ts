@@ -27,7 +27,8 @@ export const testReadingPermissionsInternals = (
       addressCanSetDataAndCall = context.accounts[2];
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           addressCanSetData.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -45,7 +46,7 @@ export const testReadingPermissionsInternals = (
 
     it('Should return ALL_PERMISSIONS for owner', async () => {
       expect(
-        await context.keyManagerInternalTester.getPermissionsFor(context.owner.address),
+        await context.keyManagerInternalTester.getPermissionsFor(context.mainController.address),
       ).to.equal(ALL_PERMISSIONS); // ALL_PERMISSIONS = "0xffff..."
     });
 
@@ -125,7 +126,8 @@ export const testReadingPermissionsInternals = (
       addressCanSetData = context.accounts[1];
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           addressCanSetData.address.substring(2),
       ];
@@ -164,7 +166,8 @@ export const testReadingPermissionsInternals = (
       fourthBeneficiary = context.accounts[4];
 
       let permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           firstBeneficiary.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -196,7 +199,7 @@ export const testReadingPermissionsInternals = (
       // set AddressPermissions array values
       permissionArrayValues = [
         '0x05',
-        context.owner.address,
+        context.mainController.address,
         firstBeneficiary.address,
         secondBeneficiary.address,
         thirdBeneficiary.address,

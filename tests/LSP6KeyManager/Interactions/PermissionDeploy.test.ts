@@ -41,7 +41,8 @@ export const shouldBehaveLikePermissionDeploy = (
     addressCannotDeploy = context.accounts[4];
 
     const permissionKeys = [
-      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
         addressCanDeploy.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -85,10 +86,10 @@ export const shouldBehaveLikePermissionDeploy = (
       // do first a callstatic to retrieve the address of the contract expected to be deployed
       // so we can check it against the address emitted in the ContractCreated event
       const expectedContractAddress = await context.keyManager
-        .connect(context.owner)
+        .connect(context.mainController)
         .callStatic.execute(payload);
 
-      await expect(context.keyManager.connect(context.owner).execute(payload))
+      await expect(context.keyManager.connect(context.mainController).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
@@ -100,7 +101,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it('should be allowed to deploy + fund a contract with CREATE', async () => {
       // deploy a UP from another UP and check that the new UP is funded + its owner was set
-      const initialUpOwner = context.owner.address;
+      const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
       const upDeploymentTx = new UniversalProfile__factory(
@@ -120,10 +121,10 @@ export const shouldBehaveLikePermissionDeploy = (
       // do first a callstatic to retrieve the address of the contract expected to be deployed
       // so we can check it against the address emitted in the ContractCreated event
       const expectedContractAddress = await context.keyManager
-        .connect(context.owner)
+        .connect(context.mainController)
         .callStatic.execute(payload);
 
-      await expect(context.keyManager.connect(context.owner).execute(payload))
+      await expect(context.keyManager.connect(context.mainController).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
@@ -159,14 +160,14 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy,
       ).toLowerCase();
 
-      await expect(context.keyManager.connect(context.owner).execute(payload))
+      await expect(context.keyManager.connect(context.mainController).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(OPERATION_TYPES.CREATE2, ethers.utils.getAddress(preComputedAddress), 0, salt);
     });
 
     it('should be allowed to deploy + fund a contract with CREATE2', async () => {
       // deploy a UP from another UP and check that the new UP is funded + its owner was set
-      const initialUpOwner = context.owner.address;
+      const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
       const upDeploymentTx = new UniversalProfile__factory(
@@ -191,7 +192,7 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy,
       ).toLowerCase();
 
-      await expect(context.keyManager.connect(context.owner).execute(payload))
+      await expect(context.keyManager.connect(context.mainController).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE2,
@@ -237,7 +238,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it('should revert with error `NotAuthorised(SUPER_TRANSFERVALUE)` when trying to deploy + fund a contract with CREATE', async () => {
       // deploy a UP from another UP and check that the new UP is funded + its owner was set
-      const initialUpOwner = context.owner.address;
+      const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
       const upDeploymentTx = new UniversalProfile__factory(
@@ -283,7 +284,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it('should revert with error `NotAuthorised(SUPER_TRANSFERVALUE)` when trying to deploy + fund a contract with CREATE2', async () => {
       // deploy a UP from another UP and check that the new UP is funded + its owner was set
-      const initialUpOwner = context.owner.address;
+      const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
       const upDeploymentTx = new UniversalProfile__factory(
@@ -337,7 +338,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it('should revert with error `NotAuthorised(SUPER_TRANSFERVALUE)` when trying to deploy + fund a contract with CREATE', async () => {
       // deploy a UP from another UP and check that the new UP is funded + its owner was set
-      const initialUpOwner = context.owner.address;
+      const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
       const upDeploymentTx = new UniversalProfile__factory(
@@ -383,7 +384,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it('should revert with error `NotAuthorised(SUPER_TRANSFERVALUE)` when trying to deploy + fund a contract with CREATE2', async () => {
       // deploy a UP from another UP and check that the new UP is funded + its owner was set
-      const initialUpOwner = context.owner.address;
+      const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
       const upDeploymentTx = new UniversalProfile__factory(
@@ -439,7 +440,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it('should be allowed to deploy + fund a contract with CREATE', async () => {
       // deploy a UP from another UP and check that the new UP is funded + its owner was set
-      const initialUpOwner = context.owner.address;
+      const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
       const upDeploymentTx = new UniversalProfile__factory(
@@ -509,7 +510,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it('should be allowed to deploy + fund a contract with CREATE2', async () => {
       // deploy a UP from another UP and check that the new UP is funded + its owner was set
-      const initialUpOwner = context.owner.address;
+      const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
       const upDeploymentTx = new UniversalProfile__factory(

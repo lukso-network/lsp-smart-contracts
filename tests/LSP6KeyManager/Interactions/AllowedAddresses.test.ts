@@ -53,7 +53,8 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
     notAllowedTargetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
     const permissionsKeys = [
-      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
         canCallOnlyTwoAddresses.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
@@ -84,7 +85,7 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
 
-    await context.owner.sendTransaction({
+    await context.mainController.sendTransaction({
       to: context.universalProfile.address,
       value: ethers.utils.parseEther('10'),
     });
@@ -108,7 +109,7 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
             EMPTY_PAYLOAD,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(transferPayload);
+          await context.keyManager.connect(context.mainController).execute(transferPayload);
 
           const newBalanceUP = await provider.getBalance(context.universalProfile.address);
           expect(newBalanceUP).to.be.lt(initialBalanceUP);

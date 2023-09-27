@@ -330,7 +330,8 @@ export const shouldBehaveLikePermissionCall = (
       targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           addressCanMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -365,7 +366,7 @@ export const shouldBehaveLikePermissionCall = (
           const targetPayload = targetContract.interface.encodeFunctionData('setName', [argument]);
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .execute(OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload);
 
           const result = await targetContract.callStatic.getName();
@@ -379,7 +380,7 @@ export const shouldBehaveLikePermissionCall = (
             const targetContractPayload = targetContract.interface.encodeFunctionData('getName');
 
             const result = await context.universalProfile
-              .connect(context.owner)
+              .connect(context.mainController)
               .callStatic.execute(
                 OPERATION_TYPES.CALL,
                 targetContract.address,
@@ -397,7 +398,7 @@ export const shouldBehaveLikePermissionCall = (
             const targetContractPayload = targetContract.interface.encodeFunctionData('getNumber');
 
             const result = await context.universalProfile
-              .connect(context.owner)
+              .connect(context.mainController)
               .callStatic.execute(
                 OPERATION_TYPES.CALL,
                 targetContract.address,
@@ -486,7 +487,8 @@ export const shouldBehaveLikePermissionCall = (
       context = await buildContext();
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
       ];
 
       const permissionValues = [ALL_PERMISSIONS];
