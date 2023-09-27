@@ -15,7 +15,7 @@ error LSP20CallingVerifierFailed(bool postCall);
 error LSP20InvalidMagicValue(bool postCall, bytes returnedData);
 
 /**
- * @dev reverts when the logicVerifier is an EOA that cannot return magicValue
+ * @dev Reverts when the logic verifier is an Externally Owned Account (EOA) that cannot return the LSP20 magic value.
  * @param logicVerifier The address of the logic verifier
  */
-error EOACannotVerifyCall(address logicVerifier);
+error LSP20EOACannotVerifyCall(address logicVerifier);

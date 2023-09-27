@@ -440,7 +440,7 @@ export const shouldBehaveLikeLSP3 = (
         await expect(
           context.universalProfile.connect(context.accounts[4]).batchCalls([setDataPayload]),
         )
-          .to.be.revertedWithCustomError(context.universalProfile, 'EOACannotVerifyCall')
+          .to.be.revertedWithCustomError(context.universalProfile, 'LSP20EOACannotVerifyCall')
           .withArgs(context.deployParams.owner.address);
       });
     });

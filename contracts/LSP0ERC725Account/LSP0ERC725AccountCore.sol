@@ -233,7 +233,7 @@ abstract contract LSP0ERC725AccountCore is
      * - If the operation type is `STATICCALL` (3) or `DELEGATECALL` (4), `value` transfer is disallowed and must be 0.
      *
      * @custom:warning
-     * - The `msg.value` should not be trusted for any method called with `operationType`: `DELEGATECALL` (4).
+     * - The `msg.value` should not be trusted for any method called within the batch with `operationType`: `DELEGATECALL` (4).
      *
      * @custom:events
      * - {Executed} event for each call that uses under `operationType`: `CALL` (0), `STATICCALL` (3) and `DELEGATECALL` (4). (each iteration)

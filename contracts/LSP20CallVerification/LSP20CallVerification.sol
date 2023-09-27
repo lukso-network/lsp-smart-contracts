@@ -9,7 +9,7 @@ import {ILSP20CallVerifier as ILSP20} from "./ILSP20CallVerifier.sol";
 import {
     LSP20InvalidMagicValue,
     LSP20CallingVerifierFailed,
-    EOACannotVerifyCall
+    LSP20EOACannotVerifyCall
 } from "./LSP20Errors.sol";
 
 /**
@@ -28,7 +28,7 @@ abstract contract LSP20CallVerification {
         address logicVerifier
     ) internal virtual returns (bool verifyAfter) {
         if (logicVerifier.code.length == 0)
-            revert EOACannotVerifyCall(logicVerifier);
+            revert LSP20EOACannotVerifyCall(logicVerifier);
 
         (bool success, bytes memory returnedData) = logicVerifier.call(
             abi.encodeWithSelector(

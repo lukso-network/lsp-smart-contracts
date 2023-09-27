@@ -352,7 +352,7 @@ Generic executor function to:
 
 :::caution Warning
 
-- The `msg.value` should not be trusted for any method called with `operationType`: `DELEGATECALL` (4).
+- The `msg.value` should not be trusted for any method called within the batch with `operationType`: `DELEGATECALL` (4).
 
 :::
 
@@ -1502,31 +1502,6 @@ Reverts when trying to transfer ownership to the `address(this)`.
 
 <br/>
 
-### EOACannotVerifyCall
-
-:::note References
-
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-0-ERC725Account.md#eoacannotverifycall)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP0ERC725Account/LSP0ERC725Account.sol)
-- Error signature: `EOACannotVerifyCall(address)`
-- Error hash: `0xc3911c1e`
-
-:::
-
-```solidity
-error EOACannotVerifyCall(address logicVerifier);
-```
-
-reverts when the logicVerifier is an EOA that cannot return magicValue
-
-#### Parameters
-
-| Name            |   Type    | Description                       |
-| --------------- | :-------: | --------------------------------- |
-| `logicVerifier` | `address` | The address of the logic verifier |
-
-<br/>
-
 ### ERC725X_ContractDeploymentFailed
 
 :::note References
@@ -1792,6 +1767,31 @@ reverts when the call to the owner fail with no revert reason
 | Name       |  Type  | Description                                          |
 | ---------- | :----: | ---------------------------------------------------- |
 | `postCall` | `bool` | True if the execution call was done, False otherwise |
+
+<br/>
+
+### LSP20EOACannotVerifyCall
+
+:::note References
+
+- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-0-ERC725Account.md#lsp20eoacannotverifycall)
+- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP0ERC725Account/LSP0ERC725Account.sol)
+- Error signature: `LSP20EOACannotVerifyCall(address)`
+- Error hash: `0x0c392301`
+
+:::
+
+```solidity
+error LSP20EOACannotVerifyCall(address logicVerifier);
+```
+
+Reverts when the logic verifier is an Externally Owned Account (EOA) that cannot return the LSP20 magic value.
+
+#### Parameters
+
+| Name            |   Type    | Description                       |
+| --------------- | :-------: | --------------------------------- |
+| `logicVerifier` | `address` | The address of the logic verifier |
 
 <br/>
 
