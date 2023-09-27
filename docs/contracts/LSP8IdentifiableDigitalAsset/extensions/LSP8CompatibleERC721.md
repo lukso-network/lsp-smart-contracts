@@ -1381,11 +1381,11 @@ Emitted when the allowance of a `spender` for an `owner` is set by a call to [`a
 
 #### Parameters
 
-| Name                     |   Type    | Description                                |
-| ------------------------ | :-------: | ------------------------------------------ |
-| `owner` **`indexed`**    | `address` | The address of the owner of the `tokenId`. |
-| `operator` **`indexed`** | `address` | The address set as operator.               |
-| `tokenId` **`indexed`**  | `uint256` | The approved tokenId.                      |
+| Name                     |   Type    | Description                  |
+| ------------------------ | :-------: | ---------------------------- |
+| `owner` **`indexed`**    | `address` | The account giving approval  |
+| `operator` **`indexed`** | `address` | The address set as operator. |
+| `tokenId` **`indexed`**  | `uint256` | The approved tokenId.        |
 
 <br/>
 
@@ -1549,8 +1549,8 @@ Emitted when `value` tokens are moved from one account (`from`) to another (`to`
 
 | Name                    |   Type    | Description              |
 | ----------------------- | :-------: | ------------------------ |
-| `from` **`indexed`**    | `address` | The sending address.     |
-| `to` **`indexed`**      | `address` | The receiving address.   |
+| `from` **`indexed`**    | `address` | The sending address      |
+| `to` **`indexed`**      | `address` | The receiving address    |
 | `tokenId` **`indexed`** | `uint256` | The tokenId to transfer. |
 
 <br/>
