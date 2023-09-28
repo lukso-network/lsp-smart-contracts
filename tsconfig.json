@@ -10,14 +10,6 @@
     "skipLibCheck": true,
     "lib": ["ES2019", "es2019.array"]
   },
-  "include": ["./src", "./test", "hardhat"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build",
-    "coverage",
-    "artifacts",
-    "cache"
-  ],
+  "include": ["./tests", "./deploy", "hardhat"],
   "files": ["./hardhat.config.ts"]
 }

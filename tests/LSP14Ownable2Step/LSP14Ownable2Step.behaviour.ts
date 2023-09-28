@@ -288,6 +288,7 @@ export const shouldBehaveLikeLSP14 = (
             await artifacts.getBuildInfo('contracts/LSP9Vault/LSP9Vault.sol:LSP9Vault')
           )?.output.contracts[
             'contracts/LSP9Vault/LSP9Vault.sol'
+            // @ts-ignore
           ].LSP9Vault.storageLayout.storage.filter((elem) => {
             if (elem.label === '_renounceOwnershipStartedAt') return elem;
           })[0].slot,
@@ -375,6 +376,7 @@ export const shouldBehaveLikeLSP14 = (
             await artifacts.getBuildInfo('contracts/LSP9Vault/LSP9Vault.sol:LSP9Vault')
           )?.output.contracts[
             'contracts/LSP9Vault/LSP9Vault.sol'
+            // @ts-ignore
           ].LSP9Vault.storageLayout.storage.filter((elem) => {
             if (elem.label === '_renounceOwnershipStartedAt') return elem;
           })[0].slot,
@@ -440,6 +442,7 @@ export const shouldBehaveLikeLSP14 = (
               await artifacts.getBuildInfo('contracts/LSP9Vault/LSP9Vault.sol:LSP9Vault')
             )?.output.contracts[
               'contracts/LSP9Vault/LSP9Vault.sol'
+              // @ts-ignore
             ].LSP9Vault.storageLayout.storage.filter((elem) => {
               if (elem.label === '_renounceOwnershipStartedAt') return elem;
             })[0].slot,
@@ -527,6 +530,7 @@ export const shouldBehaveLikeLSP14 = (
           await artifacts.getBuildInfo('contracts/LSP9Vault/LSP9Vault.sol:LSP9Vault')
         )?.output.contracts[
           'contracts/LSP9Vault/LSP9Vault.sol'
+          // @ts-ignore
         ].LSP9Vault.storageLayout.storage.filter((elem) => {
           if (elem.label === '_renounceOwnershipStartedAt') return elem;
         })[0].slot,

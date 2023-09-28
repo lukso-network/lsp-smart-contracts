@@ -21,6 +21,7 @@ import {
   OPERATION_TYPES,
   PERMISSIONS,
   CALLTYPE,
+  LSP8_TOKEN_ID_TYPES,
 } from '../constants';
 import { LSP6TestContext } from './utils/context';
 import { setupKeyManager, setupProfileWithKeyManagerWithURD } from './utils/fixtures';
@@ -525,11 +526,12 @@ describe('⛽📊 Gas Benchmark', () => {
           false,
         );
 
-        // deploy a LSP7 token
+        // deploy a LSP8 token
         lsp8Token = await new LSP8Mintable__factory(context.owner).deploy(
           'Token',
           'MTKN',
           context.owner.address,
+          LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
         );
 
         universalProfile1 = await new UniversalProfile__factory(context.owner).deploy(
@@ -696,6 +698,7 @@ describe('⛽📊 Gas Benchmark', () => {
             'MetaNFT',
             'MNF',
             context.owner.address,
+            LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
           );
 
           // mint some tokens to the UP
@@ -911,12 +914,14 @@ describe('⛽📊 Gas Benchmark', () => {
             'MetaNFT',
             'MNF',
             context.owner.address,
+            LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
           );
 
           lsp8LyxPunks = await new LSP8Mintable__factory(context.owner).deploy(
             'LyxPunks',
             'LPK',
             context.owner.address,
+            LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
           );
 
           [

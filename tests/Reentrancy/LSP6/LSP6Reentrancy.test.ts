@@ -355,10 +355,12 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
               const firstTargetSelector =
                 firstReentrant.interface.encodeFunctionData('firstTarget');
 
-              const payload = context.universalProfile.interface.encodeFunctionData(
-                'execute(uint256,address,uint256,bytes)',
-                [OPERATION_TYPES.CALL, firstReentrant.address, 0, firstTargetSelector],
-              );
+              const payload = context.universalProfile.interface.encodeFunctionData('execute', [
+                OPERATION_TYPES.CALL,
+                firstReentrant.address,
+                0,
+                firstTargetSelector,
+              ]);
 
               await expect(context.keyManager.connect(context.owner).execute(payload))
                 .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
@@ -384,10 +386,12 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
               const firstTargetSelector =
                 firstReentrant.interface.encodeFunctionData('firstTarget');
 
-              const payload = context.universalProfile.interface.encodeFunctionData(
-                'execute(uint256,address,uint256,bytes)',
-                [OPERATION_TYPES.CALL, firstReentrant.address, 0, firstTargetSelector],
-              );
+              const payload = context.universalProfile.interface.encodeFunctionData('execute', [
+                OPERATION_TYPES.CALL,
+                firstReentrant.address,
+                0,
+                firstTargetSelector,
+              ]);
 
               await context.keyManager.connect(context.owner).execute(payload);
 

@@ -2,10 +2,11 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
 import {
-  LSP23LinkedContractsFactory,
+  ILSP23LinkedContractsFactory,
+  KeyManagerWithExtraParams,
   LSP6KeyManager,
   UniversalProfile,
-} from '../../typechain-types';
+} from '../../types';
 import { ERC725YDataKeys } from '../../constants';
 import {
   calculateProxiesAddresses,
@@ -13,6 +14,7 @@ import {
   createDataKey,
   deployImplementationContracts,
 } from './helpers';
+import { BigNumber, BytesLike } from 'ethers';
 
 describe('UniversalProfileDeployer', function () {
   describe('for non-proxies deployment', async function () {
@@ -35,16 +37,16 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.utils.randomBytes(32);
 
-      const primaryContractDeployment: LSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
+      const primaryContractDeployment: ILSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
         {
           salt,
           fundingAmount: 0,
           creationBytecode: universalProfileCreationCode,
         };
 
-      const secondaryContractDeployment: LSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
+      const secondaryContractDeployment: ILSP23LinkedContractsFactory.SecondaryContractDeploymentStruct =
         {
-          fundingAmount: 0,
+          fundingAmount: ethers.BigNumber.from(0),
           creationBytecode: keyManagerBytecode,
           addPrimaryContractAddress: true,
           extraConstructorParams: '0x',
@@ -125,8 +127,10 @@ describe('UniversalProfileDeployer', function () {
       expect(upContract).to.equal(expectedUpAddress);
       expect(keyManagerContract).to.equal(expectedKeyManagerAddress);
 
-      const keyManagerInstance: LSP6KeyManager = KeyManagerFactory.attach(keyManagerContract);
-      const universalProfileInstance: UniversalProfile = UniversalProfileFactory.attach(upContract);
+      const keyManagerInstance = KeyManagerFactory.attach(keyManagerContract) as LSP6KeyManager;
+      const universalProfileInstance = UniversalProfileFactory.attach(
+        upContract,
+      ) as UniversalProfile;
 
       // CHECK that the UP is owned by the KeyManager contract
       expect(await universalProfileInstance.owner()).to.equal(keyManagerContract);
@@ -154,14 +158,14 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.utils.randomBytes(32);
 
-      const primaryContractDeployment: LSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
+      const primaryContractDeployment: ILSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
         {
           salt,
           fundingAmount: universalProfileFundAmount,
           creationBytecode: universalProfileCreationCode,
         };
 
-      const secondaryContractDeployment: LSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
+      const secondaryContractDeployment: ILSP23LinkedContractsFactory.SecondaryContractDeploymentStruct =
         {
           fundingAmount: 0,
           creationBytecode: keyManagerBytecode,
@@ -253,14 +257,14 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.utils.randomBytes(32);
 
-      const primaryContractDeployment: LSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
+      const primaryContractDeployment: ILSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
         {
           salt,
           fundingAmount: universalProfileFundAmount,
           creationBytecode: universalProfileCreationCode,
         };
 
-      const secondaryContractDeployment: LSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
+      const secondaryContractDeployment: ILSP23LinkedContractsFactory.SecondaryContractDeploymentStruct =
         {
           fundingAmount: 0,
           creationBytecode: keyManagerBytecode,
@@ -341,7 +345,7 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.utils.randomBytes(32);
 
-      const primaryContractDeployment: LSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
+      const primaryContractDeployment: ILSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
         {
           salt,
           fundingAmount: 0,
@@ -364,7 +368,7 @@ describe('UniversalProfileDeployer', function () {
 
       keyManagerBytecode = keyManagerBytecode + secondaryContractFirstParam.slice(2);
 
-      const secondaryContractDeployment: LSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
+      const secondaryContractDeployment: ILSP23LinkedContractsFactory.SecondaryContractDeploymentStruct =
         {
           fundingAmount: 0,
           creationBytecode: keyManagerBytecode,
@@ -447,8 +451,12 @@ describe('UniversalProfileDeployer', function () {
       expect(upContract).to.equal(expectedUpAddress);
       expect(keyManagerContract).to.equal(expectedKeyManagerAddress);
 
-      const keyManagerInstance: LSP6KeyManager = KeyManagerFactory.attach(keyManagerContract);
-      const universalProfileInstance: UniversalProfile = UniversalProfileFactory.attach(upContract);
+      const keyManagerInstance = KeyManagerFactory.attach(
+        keyManagerContract,
+      ) as KeyManagerWithExtraParams;
+      const universalProfileInstance = UniversalProfileFactory.attach(
+        upContract,
+      ) as UniversalProfile;
 
       // CHECK that the UP is owned by the KeyManager contract
       expect(await universalProfileInstance.owner()).to.equal(keyManagerContract);
@@ -475,7 +483,7 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.utils.randomBytes(32);
 
-      const primaryContractDeploymentInit: LSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
+      const primaryContractDeploymentInit: ILSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
         {
           salt,
           fundingAmount: 0,
@@ -485,7 +493,7 @@ describe('UniversalProfileDeployer', function () {
           ]),
         };
 
-      const secondaryContractDeploymentInit: LSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
+      const secondaryContractDeploymentInit: ILSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
         {
           fundingAmount: 0,
           implementationContract: keyManagerInit.address,
@@ -605,7 +613,7 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.utils.randomBytes(32);
 
-      const primaryContractDeploymentInit: LSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
+      const primaryContractDeploymentInit: ILSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
         {
           salt,
           fundingAmount: primaryFundingAmount,
@@ -615,7 +623,7 @@ describe('UniversalProfileDeployer', function () {
           ]),
         };
 
-      const secondaryContractDeploymentInit: LSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
+      const secondaryContractDeploymentInit: ILSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
         {
           fundingAmount: secondaryFundingAmount,
           implementationContract: keyManagerInit.address,
@@ -672,7 +680,7 @@ describe('UniversalProfileDeployer', function () {
       const primaryFundingAmount = ethers.utils.parseEther('1');
       const secondaryFundingAmount = ethers.utils.parseEther('0'); // key manager does not accept funds
 
-      const primaryContractDeploymentInit: LSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
+      const primaryContractDeploymentInit: ILSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
         {
           salt,
           fundingAmount: primaryFundingAmount,
@@ -682,7 +690,7 @@ describe('UniversalProfileDeployer', function () {
           ]),
         };
 
-      const secondaryContractDeploymentInit: LSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
+      const secondaryContractDeploymentInit: ILSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
         {
           fundingAmount: secondaryFundingAmount,
           implementationContract: keyManagerInit.address,

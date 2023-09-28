@@ -49,6 +49,7 @@ type LSP8CompatibleERC721DeployParams = {
   symbol: string;
   newOwner: string;
   lsp4MetadataValue: string;
+  tokenIdType: number;
 };
 
 export type LSP8CompatibleERC721TestContext = {

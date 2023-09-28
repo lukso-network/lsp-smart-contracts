@@ -74,28 +74,28 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
     context = await buildContext();
 
     callerHasAllPermissionsTestCase.addressWith16BytesHexPermissionsLength =
-      new ethers.Wallet.createRandom().address.toLowerCase();
+      ethers.Wallet.createRandom().address.toLowerCase();
 
     callerHasAllPermissionsTestCase.addressWith40BytesHexPermsissionsLength =
-      new ethers.Wallet.createRandom().address.toLowerCase();
+      ethers.Wallet.createRandom().address.toLowerCase();
 
     callerHasAddControllerTestCase.addressWith16BytesHexPermissionsLength =
-      new ethers.Wallet.createRandom().address.toLowerCase();
+      ethers.Wallet.createRandom().address.toLowerCase();
 
     callerHasAddControllerTestCase.addressWith40BytesHexPermsissionsLength =
-      new ethers.Wallet.createRandom().address.toLowerCase();
+      ethers.Wallet.createRandom().address.toLowerCase();
 
     callerHasEditPermissionsTestCase.addressWith16BytesHexPermissionsLength =
-      new ethers.Wallet.createRandom().address.toLowerCase();
+      ethers.Wallet.createRandom().address.toLowerCase();
 
     callerHasEditPermissionsTestCase.addressWith40BytesHexPermsissionsLength =
-      new ethers.Wallet.createRandom().address.toLowerCase();
+      ethers.Wallet.createRandom().address.toLowerCase();
 
     callerHasSetDataTestCase.addressWith16BytesHexPermissionsLength =
-      new ethers.Wallet.createRandom().address.toLowerCase();
+      ethers.Wallet.createRandom().address.toLowerCase();
 
     callerHasSetDataTestCase.addressWith40BytesHexPermsissionsLength =
-      new ethers.Wallet.createRandom().address.toLowerCase();
+      ethers.Wallet.createRandom().address.toLowerCase();
 
     const firstSetupPermissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +

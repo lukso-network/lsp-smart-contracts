@@ -304,6 +304,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
             )
           )?.output.contracts[
             'contracts/LSP6KeyManager/LSP6KeyManager.sol'
+            // @ts-ignore
           ].LSP6KeyManager.storageLayout.storage.filter((elem) => {
             if (elem.label === '_reentrancyStatus') return elem;
           })[0].slot,
