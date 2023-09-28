@@ -14,7 +14,6 @@ import {
   createDataKey,
   deployImplementationContracts,
 } from './helpers';
-import { BigNumber, BytesLike } from 'ethers';
 
 describe('UniversalProfileDeployer', function () {
   describe('for non-proxies deployment', async function () {

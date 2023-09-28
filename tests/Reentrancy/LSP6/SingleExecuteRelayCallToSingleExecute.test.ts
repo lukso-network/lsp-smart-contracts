@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
 //types
-import { BigNumber, BytesLike } from 'ethers';
+import { BigNumber } from 'ethers';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';
