@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { BigNumber } from 'ethers';
+import { ethers, network } from 'hardhat';
+import { BigNumber, ContractTransaction } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 // constants
@@ -335,46 +335,136 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
   describe('when calling `renounceOwnership(...)` via the KeyManager', () => {
     describe('when caller has ALL PERMISSIONS', () => {
-      it('should revert via `execute(...)`', async () => {
-        const payload = context.universalProfile.interface.getSighash('renounceOwnership');
+      describe('using `execute(...)`', () => {
+        let renounceOwnershipFirstTx: ContractTransaction;
+        let renounceOwnershipSecondTx: ContractTransaction;
 
-        await expect(context.keyManager.connect(context.owner).execute(payload))
-          .to.be.revertedWithCustomError(context.keyManager, 'InvalidERC725Function')
-          .withArgs(payload);
+        before(async () => {
+          const payload = context.universalProfile.interface.getSighash('renounceOwnership');
+
+          // 1st call
+          renounceOwnershipFirstTx = await newKeyManager.connect(context.owner).execute(payload);
+
+          // mine 200 blocks
+          await network.provider.send('hardhat_mine', [ethers.utils.hexValue(200)]);
+
+          // 2nd call
+          renounceOwnershipSecondTx = await newKeyManager.connect(context.owner).execute(payload);
+        });
+
+        it('should emit `RenounceOwnershipStarted` on first call', async () => {
+          await expect(renounceOwnershipFirstTx).to.emit(
+            context.universalProfile,
+            'RenounceOwnershipStarted',
+          );
+        });
+
+        it('should emit `OwnershipRenounced` on second call', async () => {
+          await expect(renounceOwnershipSecondTx).to.emit(
+            context.universalProfile,
+            'OwnershipRenounced',
+          );
+        });
+
+        it('should clear the `pendingOwner` and set it to `AddressZero`', async () => {
+          expect(await context.universalProfile.pendingOwner()).to.equal(
+            ethers.constants.AddressZero,
+          );
+        });
+
+        it('should update the owner to `AddressZero`', async () => {
+          expect(await context.universalProfile.owner()).to.equal(ethers.constants.AddressZero);
+        });
       });
 
-      it('should revert via `executeRelayCall()`', async () => {
-        const HARDHAT_CHAINID = 31337;
-        const valueToSend = 0;
+      describe('using `executeRelayCall()`', () => {
+        let renounceOwnershipFirstTx: ContractTransaction;
+        let renounceOwnershipSecondTx: ContractTransaction;
 
-        const nonce = await context.keyManager.getNonce(context.owner.address, 0);
+        before(async () => {
+          // Build new context as `renounceOwnership()` was used in the previous context
+          // ------ Build new context ------
+          context = await buildContext();
+          await setupKeyManager(context, [], []);
+          // -------------------------------
 
-        const validityTimestamps = 0;
+          // ------ General variables for relay call ------
+          const payload = context.universalProfile.interface.getSighash('renounceOwnership');
+          const eip191Signer = new EIP191Signer();
+          const HARDHAT_CHAINID = 31337;
+          const validityTimestamps = 0;
+          const valueToSend = 0;
+          // ----------------------------------------------
 
-        const payload = context.universalProfile.interface.getSighash('renounceOwnership');
+          // ------ 1st call ------
+          const firstNonce = await context.keyManager.getNonce(context.owner.address, 0);
 
-        const encodedMessage = ethers.utils.solidityPack(
-          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
-          [LSP25_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
-        );
+          const firstEncodedMessage = ethers.utils.solidityPack(
+            ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+            [LSP25_VERSION, HARDHAT_CHAINID, firstNonce, validityTimestamps, valueToSend, payload],
+          );
 
-        const eip191Signer = new EIP191Signer();
+          const firstSignature = await eip191Signer.signDataWithIntendedValidator(
+            context.keyManager.address,
+            firstEncodedMessage,
+            LOCAL_PRIVATE_KEYS.ACCOUNT0,
+          ).signature;
 
-        const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT0,
-        );
-
-        await expect(
-          context.keyManager
+          renounceOwnershipFirstTx = await context.keyManager
             .connect(context.owner)
-            .executeRelayCall(signature, nonce, validityTimestamps, payload, {
+            .executeRelayCall(firstSignature, firstNonce, validityTimestamps, payload, {
               value: valueToSend,
-            }),
-        )
-          .to.be.revertedWithCustomError(context.keyManager, 'InvalidERC725Function')
-          .withArgs(payload);
+            });
+          // ----------------------
+
+          // mine 200 blocks
+          await network.provider.send('hardhat_mine', [ethers.utils.hexValue(200)]);
+
+          // ------ 2nd call ------
+          const secondNonce = await context.keyManager.getNonce(context.owner.address, 0);
+
+          const secondEncodedMessage = ethers.utils.solidityPack(
+            ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+            [LSP25_VERSION, HARDHAT_CHAINID, secondNonce, validityTimestamps, valueToSend, payload],
+          );
+
+          const secondSignature = await eip191Signer.signDataWithIntendedValidator(
+            context.keyManager.address,
+            secondEncodedMessage,
+            LOCAL_PRIVATE_KEYS.ACCOUNT0,
+          ).signature;
+
+          renounceOwnershipSecondTx = await context.keyManager
+            .connect(context.owner)
+            .executeRelayCall(secondSignature, secondNonce, validityTimestamps, payload, {
+              value: valueToSend,
+            });
+          // ----------------------
+        });
+
+        it('should emit `RenounceOwnershipStarted` on first call', async () => {
+          await expect(renounceOwnershipFirstTx).to.emit(
+            context.universalProfile,
+            'RenounceOwnershipStarted',
+          );
+        });
+
+        it('should emit `OwnershipRenounced` on second call', async () => {
+          await expect(renounceOwnershipSecondTx).to.emit(
+            context.universalProfile,
+            'OwnershipRenounced',
+          );
+        });
+
+        it('should clear the `pendingOwner` and set it to `AddressZero`', async () => {
+          expect(await context.universalProfile.pendingOwner()).to.equal(
+            ethers.constants.AddressZero,
+          );
+        });
+
+        it('should update the owner to `AddressZero`', async () => {
+          expect(await context.universalProfile.owner()).to.equal(ethers.constants.AddressZero);
+        });
       });
     });
   });
