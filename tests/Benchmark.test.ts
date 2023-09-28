@@ -76,7 +76,7 @@ describe('⛽📊 Gas Benchmark', () => {
   });
 
   after(async () => {
-    fs.writeFileSync('gas_benchmark_result.json', JSON.stringify(gasBenchmark, null, 2));
+    fs.writeFileSync('./gas_benchmark_result.json', JSON.stringify(gasBenchmark, null, 2));
   });
 
   describe('UniversalProfile', () => {
