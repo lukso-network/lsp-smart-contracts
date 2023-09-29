@@ -18,7 +18,10 @@ import '@nomicfoundation/hardhat-toolbox';
 import 'hardhat-packager';
 import 'hardhat-contract-sizer';
 import 'hardhat-deploy';
+
+// custom built hardhat plugins for CI
 import './scripts/ci/docs-generate';
+import './scripts/ci/gas_benchmark';
 
 // Typescript types for web3.js
 import '@nomiclabs/hardhat-web3';
