@@ -15,6 +15,8 @@ task('gas-benchmark', 'Benchmark gas usage of the smart contracts based on prede
     const currentBenchmark = JSON.parse(fs.readFileSync(args.compare, 'utf8'));
     const baseBenchmark = JSON.parse(fs.readFileSync(args.against, 'utf8'));
 
+    const deploymentCosts: Row[] = [];
+
     const casesEOAExecute: Row[] = [];
     const casesEOASetData: Row[] = [];
     const casesEOATokens: Row[] = [];
@@ -27,7 +29,7 @@ task('gas-benchmark', 'Benchmark gas usage of the smart contracts based on prede
     };
 
     const displayGasDiff = (gasDiff: number) => {
-      let emoji: string = '';
+      let emoji = '';
 
       if (gasDiff > 0) {
         emoji = '📈❌';
@@ -39,6 +41,22 @@ task('gas-benchmark', 'Benchmark gas usage of the smart contracts based on prede
 
       return `${formatNumber(gasDiff)} ${emoji}`;
     };
+
+    // Deployment costs
+    for (const [key, value] of Object.entries(currentBenchmark['deployment_costs'])) {
+      const gasCost: any = value;
+      const gasDiff = gasCost - baseBenchmark['deployment_costs'][key];
+
+      deploymentCosts.push([key, value + ` (${displayGasDiff(gasDiff)})`]);
+    }
+
+    const generatedDeploymentCostsTable = getMarkdownTable({
+      table: {
+        head: ['Deployed contracts', '⛽ Deployment cost'],
+        body: deploymentCosts,
+      },
+      alignment: [Align.Left],
+    });
 
     // EOA - execute
     for (const [key, value] of Object.entries(
@@ -162,8 +180,16 @@ task('gas-benchmark', 'Benchmark gas usage of the smart contracts based on prede
 ⛽ I am the Gas Bot Reporter. I keep track of the gas costs of common interactions using Universal Profiles 🆙 !
 📊 Here is a summary of the gas cost with the code introduced by this PR.
 
+## ⛽📊 Gas Benchmark Report
+
+### Deployment Costs
+
+${generatedDeploymentCostsTable}
+
+### Runtime Costs
+
 <details>
-<summary>⛽📊 See Gas Benchmark report of Using UniversalProfile owned by an 🔑 EOA</summary>
+<summary>UniversalProfile owned by an 🔑 EOA</summary>
 
 ### 🔀 \`execute\` scenarios
 
@@ -180,7 +206,7 @@ ${generatedEOATokensTable}
 </details>
 
 <details>
-<summary>⛽📊 See Gas Benchmark report of Using UniversalProfile owned by an 🔒📄 LSP6KeyManager</summary>
+<summary>UniversalProfile owned by a 🔒📄 LSP6KeyManager</summary>
 
 ### 🔀 \`execute\` scenarios
 
@@ -194,7 +220,7 @@ ${generatedKeyManagerSetDataTable}
 
     `;
 
-    const file = 'new_gas_benchmark.md';
+    const file = 'gas_benchmark.md';
 
     fs.writeFileSync(file, markdownContent, 'utf8');
   });

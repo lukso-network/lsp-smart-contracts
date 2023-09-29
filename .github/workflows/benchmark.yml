@@ -79,4 +79,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
-          body-file: "./benchmark.md"
+          body-file: "./gas_benchmark.md"

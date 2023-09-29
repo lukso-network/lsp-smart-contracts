@@ -1,10 +1,10 @@
 {
   "deployment_costs": {
-    "Universal Profile": "",
-    "Key Manager": "",
-    "LSP1 Delegate UP": "",
-    "LSP7 Digital Asset": "",
-    "LSP8 Identifiable Digital Asset": ""
+    "UniversalProfile": "",
+    "KeyManager": "",
+    "LSP1DelegateUP": "",
+    "LSP7Mintable": "",
+    "LSP8Mintable": ""
   },
   "runtime_costs": {
     "EOA_owner": {

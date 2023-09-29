@@ -132,7 +132,7 @@ out/
 forge-cache/
 
 # generated gas benchmark
-benchmark.md
+gas_benchmark.md
 
 # Exclude build output folders
 /common

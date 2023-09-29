@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 import {
+  LSP1UniversalReceiverDelegateUP,
   LSP1UniversalReceiverDelegateUP__factory,
   LSP6KeyManager__factory,
   LSP7Mintable,
@@ -77,6 +78,69 @@ describe('⛽📊 Gas Benchmark', () => {
 
   after(async () => {
     fs.writeFileSync('./gas_benchmark_result.json', JSON.stringify(gasBenchmark, null, 2));
+  });
+
+  describe('Deployment costs', () => {
+    it('deploy contracts + save deployment costs', async () => {
+      const accounts = await ethers.getSigners();
+
+      // Universal Profile
+      const universalProfile = await new UniversalProfile__factory(accounts[0]).deploy(
+        accounts[0].address,
+      );
+
+      const universalProfileDeployTransaction = universalProfile.deployTransaction;
+      const universalProfileDeploymentReceipt = await universalProfileDeployTransaction.wait();
+
+      gasBenchmark['deployment_costs']['UniversalProfile'] =
+        universalProfileDeploymentReceipt.gasUsed.toNumber();
+
+      // Key Manager
+      const keyManager = await new LSP6KeyManager__factory(accounts[0]).deploy(
+        universalProfile.address,
+      );
+
+      const keyManagerDeployTransaction = keyManager.deployTransaction;
+      const keyManagerDeploymentReceipt = await keyManagerDeployTransaction?.wait();
+
+      gasBenchmark['deployment_costs']['KeyManager'] =
+        keyManagerDeploymentReceipt?.gasUsed.toNumber();
+
+      // LSP1 Delegate
+      const lsp1Delegate = await new LSP1UniversalReceiverDelegateUP__factory(accounts[0]).deploy();
+
+      const lsp1DelegateDeployTransaction = lsp1Delegate.deployTransaction;
+      const lsp1DelegateDeploymentReceipt = await lsp1DelegateDeployTransaction.wait();
+
+      gasBenchmark['deployment_costs']['LSP1DelegateUP'] =
+        lsp1DelegateDeploymentReceipt.gasUsed.toNumber();
+
+      // LSP7 Token (Mintable preset)
+      const lsp7Mintable = await new LSP7Mintable__factory(accounts[0]).deploy(
+        'Token',
+        'MTKN',
+        accounts[0].address,
+        false,
+      );
+
+      const lsp7DeployTransaction = lsp7Mintable.deployTransaction;
+      const lsp7DeploymentReceipt = await lsp7DeployTransaction.wait();
+
+      gasBenchmark['deployment_costs']['LSP7Mintable'] = lsp7DeploymentReceipt.gasUsed.toNumber();
+
+      // LSP8 NFT (Mintable preset)
+      const lsp8Mintable = await new LSP8Mintable__factory(accounts[0]).deploy(
+        'My NFT',
+        'MNFT',
+        accounts[0].address,
+        LSP8_TOKEN_ID_TYPES.NUMBER,
+      );
+
+      const lsp8DeployTransaction = lsp8Mintable.deployTransaction;
+      const lsp8DeploymentReceipt = await lsp8DeployTransaction.wait();
+
+      gasBenchmark['deployment_costs']['LSP8Mintable'] = lsp8DeploymentReceipt.gasUsed.toNumber();
+    });
   });
 
   describe('UniversalProfile', () => {
@@ -154,7 +218,7 @@ describe('⛽📊 Gas Benchmark', () => {
       });
 
       describe('execute Array', () => {
-        let universalProfile1, universalProfile2, universalProfile3;
+        let universalProfile1: UniversalProfile, universalProfile2, universalProfile3;
 
         before(async () => {
           context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
@@ -615,9 +679,8 @@ describe('⛽📊 Gas Benchmark', () => {
           const deployedContracts = await setupProfileWithKeyManagerWithURD(context.accounts[2]);
           aliceUP = deployedContracts[0] as UniversalProfile;
 
-          const lsp1Delegate = await new LSP1UniversalReceiverDelegateUP__factory(
-            context.accounts[0],
-          ).deploy();
+          const lsp1Delegate: LSP1UniversalReceiverDelegateUP =
+            await new LSP1UniversalReceiverDelegateUP__factory(context.accounts[0]).deploy();
 
           // the function `setupKeyManager` gives ALL PERMISSIONS to the owner as the first data key
           // We also setup the following:
