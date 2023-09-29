@@ -1,5 +1,7 @@
 # This workflow benchmark the gas usage of Universal Profile for common interactions
-
+# It compare the gas cost of the changes made between:
+# - a feature branch (where a PR is opened)
+# - a target branch (where the PR will be merged)
 name: 🆙 📊 Universal Profile Benchmark
 
 on:
@@ -22,7 +24,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout base branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
 
       - name: Use Node.js '16.15.0'
         uses: actions/setup-node@v2
@@ -37,11 +43,40 @@ jobs:
         run: npx hardhat compile
 
       - name: 🧪 Run Benchmark tests
-        run: npm run test:benchmark
+        # Rename the file to be able to generate benchmark JSON report
+        run: |
+          npm run test:benchmark
+          mv gas_benchmark_result.json gas_benchmark_before.json
+
+      - name: Checkout current branch
+        uses: actions/checkout@v3
+        # Do not run `git clean -ffdx && git reset --hard HEAD` to prevent removing `gas_benchmark_before.json`
+        with:
+          clean: false
+
+      - name: Use Node.js '16.15.0'
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.15.0"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🏗️ Build contract artifacts
+        run: npx hardhat compile
+
+      - name: 🧪 Run Benchmark tests
+        run: |
+          npm run test:benchmark
+          mv gas_benchmark_result.json gas_benchmark_after.json
 
       - name: 📊 Generate Benchmark Report
+        run: npx hardhat gas-benchmark --compare gas_benchmark_after.json --against gas_benchmark_before.json
+
+      - name: 💬 Add Gas Report as comment in PR
         uses: peter-evans/create-or-update-comment@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
-          body-file: "./benchmark.md"
+          body-file: "./gas_benchmark.md"
