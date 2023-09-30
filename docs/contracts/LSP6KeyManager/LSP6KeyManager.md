@@ -36,7 +36,7 @@ When marked as 'public', a method can be called both externally and internally, 
 constructor(address target_);
 ```
 
-_Deploying a LSP6KeyManager linked to the contract at address `target_`.\_
+_Deploying a LSP6KeyManager linked to the contract at address `target_`._
 
 Deploy a Key Manager and set the `target_` address in the contract storage, making this Key Manager linked to this `target_` contract.
 
@@ -943,6 +943,17 @@ function _isAllowedCallType(
 
 <br/>
 
+### \_verifyExecuteRelayCallPermission
+
+```solidity
+function _verifyExecuteRelayCallPermission(
+  address controllerAddress,
+  bytes32 controllerPermissions
+) internal pure;
+```
+
+<br/>
+
 ### \_verifyOwnershipPermissions
 
 ```solidity
@@ -1157,6 +1168,7 @@ function _verifyPermissions(
   address callee,
   address from,
   uint256 msgValue,
+  bool isRelayedCall,
   bytes payload
 ) internal view;
 ```
@@ -1165,12 +1177,13 @@ Verify if the `from` address is allowed to execute the `payload` on the [`target
 
 #### Parameters
 
-| Name       |   Type    | Description                                                         |
-| ---------- | :-------: | ------------------------------------------------------------------- |
-| `callee`   | `address` | -                                                                   |
-| `from`     | `address` | Either the caller of {execute} or the signer of {executeRelayCall}. |
-| `msgValue` | `uint256` | -                                                                   |
-| `payload`  |  `bytes`  | The abi-encoded function call to execute on the {target} contract.  |
+| Name            |   Type    | Description                                                         |
+| --------------- | :-------: | ------------------------------------------------------------------- |
+| `callee`        | `address` | -                                                                   |
+| `from`          | `address` | Either the caller of {execute} or the signer of {executeRelayCall}. |
+| `msgValue`      | `uint256` | -                                                                   |
+| `isRelayedCall` |  `bool`   | -                                                                   |
+| `payload`       |  `bytes`  | The abi-encoded function call to execute on the {target} contract.  |
 
 <br/>
 

@@ -41,7 +41,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 ) => {
   let context: LSP6TestContext;
 
-  describe.only('`executeRelayCall(..)`', () => {
+  describe('`executeRelayCall(..)`', () => {
     let signer: SignerWithAddress,
       relayer: SignerWithAddress,
       random: SignerWithAddress,
@@ -80,8 +80,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
         32,
       );
 
-      console.log(allPermissionsWithoutExecuteRelayCall);
-
       const permissionsValues = [
         ALL_PERMISSIONS,
         combinePermissions(
@@ -108,7 +106,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       await setupKeyManager(context, permissionKeys, permissionsValues);
     });
-    describe.only('When signer does not have EXECUTE_RELAY_CALL permission', () => {
+    describe('When signer does not have EXECUTE_RELAY_CALL permission', () => {
       it('should revert', async () => {
         const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
@@ -163,7 +161,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             ),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(signerWithoutExecuteRelayCall.address, 'EXECUTE_RELY_CALL');
+          .withArgs(signerWithoutExecuteRelayCall.address, 'EXECUTE_RELAY_CALL');
       });
     });
     describe('When testing signed message', () => {
