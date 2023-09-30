@@ -21,10 +21,7 @@ abstract contract LSP6ExecuteRelayCallModule {
                 _PERMISSION_EXECUTE_RELAY_CALL
             )
         ) {
-            string memory permissionErrorString = LSP6Utils.getPermissionName(
-                _PERMISSION_EXECUTE_RELAY_CALL
-            );
-            revert NotAuthorised(controllerAddress, permissionErrorString);
+            revert NotAuthorised(controllerAddress, "EXECUTE_RELAY_CALL");
         }
     }
 }
