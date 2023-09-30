@@ -10,6 +10,7 @@ import {
 } from '../LSP8Mintable.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
+import { LSP8_TOKEN_ID_TYPES } from '../../../constants';
 
 describe('LSP8MintableInit with proxy', () => {
   const buildTestContext = async () => {
@@ -18,6 +19,7 @@ describe('LSP8MintableInit with proxy', () => {
       name: 'LSP8 Mintable - deployed with proxy',
       symbol: 'MNTBL',
       newOwner: accounts.owner.address,
+      tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
     };
 
     const LSP8MintableInit: LSP8MintableInit = await new LSP8MintableInit__factory(
@@ -31,10 +33,11 @@ describe('LSP8MintableInit with proxy', () => {
   };
 
   const initializeProxy = async (context: LSP8MintableTestContext) => {
-    return context.lsp8Mintable['initialize(string,string,address)'](
+    return context.lsp8Mintable['initialize(string,string,address,uint256)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
+      context.deployParams.tokenIdType,
     );
   };
 
@@ -47,10 +50,11 @@ describe('LSP8MintableInit with proxy', () => {
       const randomCaller = accounts[1];
 
       await expect(
-        lsp8Mintable['initialize(string,string,address)'](
+        lsp8Mintable['initialize(string,string,address,uint256)'](
           'XXXXXXXXXXX',
           'XXX',
           randomCaller.address,
+          0,
         ),
       ).to.be.revertedWith('Initializable: contract is already initialized');
     });

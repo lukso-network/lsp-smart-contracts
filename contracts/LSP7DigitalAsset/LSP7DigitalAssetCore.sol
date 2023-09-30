@@ -176,19 +176,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     ) public virtual {
         if (from == to) revert LSP7CannotSendToSelf();
 
-        address operator = msg.sender;
-        if (operator != from) {
-            uint256 operatorAmount = _operatorAuthorizedAmount[from][operator];
-            if (amount > operatorAmount) {
-                revert LSP7AmountExceedsAuthorizedAmount(
-                    from,
-                    operatorAmount,
-                    operator,
-                    amount
-                );
-            }
-
-            _updateOperator(from, operator, operatorAmount - amount, "");
+        if (msg.sender != from) {
+            _spendAllowance({
+                operator: msg.sender,
+                tokenOwner: from,
+                amountToSpend: amount
+            });
         }
 
         _transfer(from, to, amount, force, data);
@@ -214,7 +207,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7InvalidTransferBatch();
         }
 
-        for (uint256 i = 0; i < fromLength; ) {
+        for (uint256 i; i < fromLength; ) {
             // using the public transfer function to handle updates to operator authorized amounts
             transfer(from[i], to[i], amount[i], force[i], data[i]);
 
@@ -235,8 +228,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * This is an alternative approach to {authorizeOperator} that can be used as a mitigation
      * for the double spending allowance problem.
      *
-     * @param operator the operator to increase the allowance for `msg.sender`
-     * @param addedAmount the additional amount to add on top of the current operator's allowance
+     * @param operator The operator to increase the allowance for `msg.sender`
+     * @param addedAmount The additional amount to add on top of the current operator's allowance
      *
      * @custom:requirements
      *  - `operator` cannot be the same address as `msg.sender`
@@ -251,6 +244,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     ) public virtual {
         uint256 newAllowance = authorizedAmountFor(operator, msg.sender) +
             addedAmount;
+
         _updateOperator(
             msg.sender,
             operator,
@@ -271,7 +265,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * It has been added in the LSP7 contract implementation so that it can be used as a prevention mechanism
      * against the double spending allowance vulnerability.
      *
-     * @notice Decrease the allowance of `operator` by -`substractedAmount`
+     * @notice Decrease the allowance of `operator` by -`subtractedAmount`
      *
      * @dev Atomically decreases the allowance granted to `operator` by the caller.
      * This is an alternative approach to {authorizeOperator} that can be used as a mitigation
@@ -279,29 +273,29 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      *
      * @custom:events
      *  - {AuthorizedOperator} event indicating the updated allowance after decreasing it.
-     *  - {RevokeOperator} event if `substractedAmount` is the full allowance,
+     *  - {RevokeOperator} event if `subtractedAmount` is the full allowance,
      *    indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
      *
-     * @param operator the operator to decrease allowance for `msg.sender`
-     * @param substractedAmount the amount to decrease by in the operator's allowance.
+     * @param operator The operator to decrease allowance for `msg.sender`
+     * @param subtractedAmount The amount to decrease by in the operator's allowance.
      *
      * @custom:requirements
      *  - `operator` cannot be the zero address.
-     *  - `operator` must have allowance for the caller of at least `substractedAmount`.
+     *  - `operator` must have allowance for the caller of at least `subtractedAmount`.
      */
     function decreaseAllowance(
         address operator,
-        uint256 substractedAmount,
+        uint256 subtractedAmount,
         bytes memory operatorNotificationData
     ) public virtual {
         uint256 currentAllowance = authorizedAmountFor(operator, msg.sender);
-        if (currentAllowance < substractedAmount) {
+        if (currentAllowance < subtractedAmount) {
             revert LSP7DecreasedAllowanceBelowZero();
         }
 
         uint256 newAllowance;
         unchecked {
-            newAllowance = currentAllowance - substractedAmount;
+            newAllowance = currentAllowance - subtractedAmount;
             _updateOperator(
                 msg.sender,
                 operator,
@@ -323,6 +317,10 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * If the amount is zero the operator is removed from the list of operators, otherwise he is added to the list of operators.
      * If the amount is zero then the operator is being revoked, otherwise the operator amount is being modified.
      *
+     * @param tokenOwner The address that will give `operator` an allowance for on its balance.
+     * @param operator The address to grant an allowance to spend.
+     * @param allowance The maximum amount of token that `operator` can spend from the `tokenOwner`'s balance.
+     *
      * @custom:events
      * - {RevokedOperator} event when operator's allowance is set to `0`.
      * - {AuthorizedOperator} event when operator's allowance is set to any other amount.
@@ -334,7 +332,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     function _updateOperator(
         address tokenOwner,
         address operator,
-        uint256 amount,
+        uint256 allowance,
         bytes memory operatorNotificationData
     ) internal virtual {
         if (operator == address(0)) {
@@ -345,14 +343,14 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7TokenOwnerCannotBeOperator();
         }
 
-        _operatorAuthorizedAmount[tokenOwner][operator] = amount;
+        _operatorAuthorizedAmount[tokenOwner][operator] = allowance;
 
-        if (amount != 0) {
+        if (allowance != 0) {
             _operators[tokenOwner].add(operator);
             emit AuthorizedOperator(
                 operator,
                 tokenOwner,
-                amount,
+                allowance,
                 operatorNotificationData
             );
         } else {
@@ -388,8 +386,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7CannotSendWithAddressZero();
         }
 
-        address operator = msg.sender;
-
         _beforeTokenTransfer(address(0), to, amount);
 
         // tokens being minted
@@ -397,7 +393,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         _tokenOwnerBalances[to] += amount;
 
-        emit Transfer(operator, address(0), to, amount, force, data);
+        emit Transfer(msg.sender, address(0), to, amount, force, data);
 
         bytes memory lsp1Data = abi.encode(address(0), to, amount, data);
         _notifyTokenReceiver(to, force, lsp1Data);
@@ -440,22 +436,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
 
-        address operator = msg.sender;
-        if (operator != from) {
-            uint256 authorizedAmount = _operatorAuthorizedAmount[from][
-                operator
-            ];
-            if (amount > authorizedAmount) {
-                revert LSP7AmountExceedsAuthorizedAmount(
-                    from,
-                    authorizedAmount,
-                    operator,
-                    amount
-                );
-            }
-            _operatorAuthorizedAmount[from][operator] -= amount;
-        }
-
         _beforeTokenTransfer(from, address(0), amount);
 
         // tokens being burnt
@@ -463,10 +443,60 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         _tokenOwnerBalances[from] -= amount;
 
-        emit Transfer(operator, from, address(0), amount, false, data);
+        emit Transfer(msg.sender, from, address(0), amount, false, data);
+        emit Transfer({
+            operator: msg.sender,
+            from: from,
+            to: address(0),
+            amount: amount,
+            force: false,
+            data: data
+        });
 
         bytes memory lsp1Data = abi.encode(from, address(0), amount, data);
         _notifyTokenSender(from, lsp1Data);
+    }
+
+    /**
+     * @dev Spend `amountToSpend` from the `operator`'s authorized on behalf of the `tokenOwner`.
+     *
+     * @param operator The address of the operator to decrease the allowance of.
+     * @param tokenOwner The address that granted an allowance on its balance to `operator`.
+     * @param amountToSpend The amount of tokens to substract in allowance of `operator`.
+     *
+     * @custom:events
+     * - {RevokedOperator} event when operator's allowance is set to `0`.
+     * - {AuthorizedOperator} event when operator's allowance is set to any other amount.
+     *
+     * @custom:requirements
+     * - The `amountToSpend` MUST be at least the allowance granted to `operator` (accessible via {`authorizedAmountFor}`)
+     * - `operator` cannot be the zero address.
+     * - `operator` cannot be the same address as `tokenOwner`.
+     */
+    function _spendAllowance(
+        address operator,
+        address tokenOwner,
+        uint256 amountToSpend
+    ) internal virtual {
+        uint256 authorizedAmount = _operatorAuthorizedAmount[tokenOwner][
+            operator
+        ];
+
+        if (amountToSpend > authorizedAmount) {
+            revert LSP7AmountExceedsAuthorizedAmount(
+                tokenOwner,
+                authorizedAmount,
+                operator,
+                amountToSpend
+            );
+        }
+
+        _updateOperator({
+            tokenOwner: tokenOwner,
+            operator: operator,
+            allowance: authorizedAmount - amountToSpend,
+            operatorNotificationData: ""
+        });
     }
 
     /**
@@ -508,14 +538,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
 
-        address operator = msg.sender;
-
         _beforeTokenTransfer(from, to, amount);
 
         _tokenOwnerBalances[from] -= amount;
         _tokenOwnerBalances[to] += amount;
 
-        emit Transfer(operator, from, to, amount, force, data);
+        emit Transfer(msg.sender, from, to, amount, force, data);
 
         bytes memory lsp1Data = abi.encode(from, to, amount, data);
 
@@ -555,13 +583,16 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
                 _INTERFACEID_LSP1
             )
         ) {
-            operator.call(
-                abi.encodeWithSelector(
-                    ILSP1UniversalReceiver.universalReceiver.selector,
+            try
+                ILSP1UniversalReceiver(operator).universalReceiver(
                     _TYPEID_LSP7_TOKENOPERATOR,
                     lsp1Data
                 )
-            );
+            {
+                return;
+            } catch {
+                return;
+            }
         }
     }
 
@@ -618,7 +649,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
                 lsp1Data
             );
         } else if (!force) {
-            if (to.code.length > 0) {
+            if (to.code.length != 0) {
                 revert LSP7NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {
                 revert LSP7NotifyTokenReceiverIsEOA(to);

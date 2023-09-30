@@ -17,6 +17,10 @@ abstract contract LSP7Burnable is LSP7DigitalAsset {
         uint256 amount,
         bytes memory data
     ) public virtual {
+        if (msg.sender != from) {
+            _spendAllowance(msg.sender, from, amount);
+        }
+
         _burn(from, amount, data);
     }
 }

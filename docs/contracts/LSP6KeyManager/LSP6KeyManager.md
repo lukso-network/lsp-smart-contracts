@@ -36,7 +36,7 @@ When marked as 'public', a method can be called both externally and internally, 
 constructor(address target_);
 ```
 
-_Deploying a LSP6KeyManager linked to the contract at address `target_`._
+_Deploying a LSP6KeyManager linked to the contract at address `target_`.\_
 
 Deploy a Key Manager and set the `target_` address in the contract storage, making this Key Manager linked to this `target_` contract.
 
@@ -1126,6 +1126,7 @@ and conform to the signature format according to the LSP25 standard.
 
 ```solidity
 function _executePayload(
+  address targetContract,
   uint256 msgValue,
   bytes payload
 ) internal nonpayable returns (bytes);
@@ -1135,10 +1136,11 @@ _Execute the `payload` passed to `execute(...)` or `executeRelayCall(...)`_
 
 #### Parameters
 
-| Name       |   Type    | Description                                                        |
-| ---------- | :-------: | ------------------------------------------------------------------ |
-| `msgValue` | `uint256` | -                                                                  |
-| `payload`  |  `bytes`  | The abi-encoded function call to execute on the {target} contract. |
+| Name             |   Type    | Description                                                        |
+| ---------------- | :-------: | ------------------------------------------------------------------ |
+| `targetContract` | `address` | -                                                                  |
+| `msgValue`       | `uint256` | -                                                                  |
+| `payload`        |  `bytes`  | The abi-encoded function call to execute on the {target} contract. |
 
 #### Returns
 
@@ -1186,9 +1188,10 @@ Initialise \_reentrancyStatus to \_NOT_ENTERED.
 
 ```solidity
 function _nonReentrantBefore(
+  address targetContract,
   bool isSetData,
   address from
-) internal nonpayable returns (bool isReentrantCall);
+) internal nonpayable returns (uint8 reentrancyStatus);
 ```
 
 Update the status from `_NON_ENTERED` to `_ENTERED` and checks if

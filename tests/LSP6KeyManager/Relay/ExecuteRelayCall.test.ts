@@ -807,11 +807,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 startingTimestamp,
                 endingTimestamp,
               );
+              const randomNumber = 12345;
               const calldata = context.universalProfile.interface.encodeFunctionData('execute', [
-                0,
+                OPERATION_TYPES.CALL,
                 targetContract.address,
                 0,
-                targetContract.interface.encodeFunctionData('setNumber', [nonce]),
+                targetContract.interface.encodeFunctionData('setNumber', [randomNumber]),
               ]);
               const value = 0;
               const signature = await signLSP6ExecuteRelayCall(
@@ -827,7 +828,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 .connect(relayer)
                 .executeRelayCall(signature, nonce, validityTimestamps, calldata);
 
-              expect(await targetContract.getNumber()).to.equal(nonce);
+              expect(await targetContract.getNumber()).to.equal(randomNumber);
             });
           });
 
@@ -905,11 +906,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 startingTimestamp,
                 endingTimestamp,
               );
+              const randomNumber = 12345;
               const calldata = context.universalProfile.interface.encodeFunctionData('execute', [
-                0,
+                OPERATION_TYPES.CALL,
                 targetContract.address,
                 0,
-                targetContract.interface.encodeFunctionData('setNumber', [nonce]),
+                targetContract.interface.encodeFunctionData('setNumber', [randomNumber]),
               ]);
               const value = 0;
               const signature = await signLSP6ExecuteRelayCall(
@@ -925,7 +927,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 .connect(relayer)
                 .executeRelayCall(signature, nonce, validityTimestamps, calldata);
 
-              expect(await targetContract.getNumber()).to.equal(nonce);
+              expect(await targetContract.getNumber()).to.equal(randomNumber);
             });
           });
 
@@ -942,11 +944,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 startingTimestamp,
                 endingTimestamp,
               );
+              const randomNumber = 12345;
               const calldata = context.universalProfile.interface.encodeFunctionData('execute', [
-                0,
+                OPERATION_TYPES.CALL,
                 targetContract.address,
                 0,
-                targetContract.interface.encodeFunctionData('setNumber', [nonce]),
+                targetContract.interface.encodeFunctionData('setNumber', [randomNumber]),
               ]);
               const value = 0;
               const signature = await signLSP6ExecuteRelayCall(
@@ -964,7 +967,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 .connect(relayer)
                 .executeRelayCall(signature, nonce, validityTimestamps, calldata);
 
-              expect(await targetContract.getNumber()).to.equal(nonce);
+              expect(await targetContract.getNumber()).to.equal(randomNumber);
             });
           });
         });
@@ -1044,11 +1047,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 startingTimestamp,
                 endingTimestamp,
               );
+              const randomNumber = 12345;
               const calldata = context.universalProfile.interface.encodeFunctionData('execute', [
-                0,
+                OPERATION_TYPES.CALL,
                 targetContract.address,
                 0,
-                targetContract.interface.encodeFunctionData('setNumber', [nonce]),
+                targetContract.interface.encodeFunctionData('setNumber', [randomNumber]),
               ]);
               const value = 0;
               const signature = await signLSP6ExecuteRelayCall(
@@ -1066,7 +1070,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 .connect(relayer)
                 .executeRelayCall(signature, nonce, validityTimestamps, calldata);
 
-              expect(await targetContract.getNumber()).to.equal(nonce);
+              expect(await targetContract.getNumber()).to.equal(randomNumber);
             });
           });
         });
@@ -1075,11 +1079,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
           it('passes', async () => {
             const nonce = await context.keyManager.callStatic.getNonce(signer.address, 14);
             const validityTimestamps = 0;
+            const randomNumber = 12345;
             const calldata = context.universalProfile.interface.encodeFunctionData('execute', [
-              0,
+              OPERATION_TYPES.CALL,
               targetContract.address,
               0,
-              targetContract.interface.encodeFunctionData('setNumber', [nonce]),
+              targetContract.interface.encodeFunctionData('setNumber', [randomNumber]),
             ]);
             const value = 0;
             const signature = await signLSP6ExecuteRelayCall(
@@ -1095,7 +1100,83 @@ export const shouldBehaveLikeExecuteRelayCall = (
               .connect(relayer)
               .executeRelayCall(signature, nonce, validityTimestamps, calldata);
 
-            expect(await targetContract.getNumber()).to.equal(nonce);
+            expect(await targetContract.getNumber()).to.equal(randomNumber);
+          });
+        });
+
+        describe('when `endingTimestamp == 0`', () => {
+          describe('`startingTimestamp` < now', () => {
+            it('passes', async () => {
+              const now = await time.latest();
+
+              const startingTimestamp = now - 100;
+              const endingTimestamp = 0;
+
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 14);
+              const validityTimestamps = createValidityTimestamps(
+                startingTimestamp,
+                endingTimestamp,
+              );
+              const randomNumber = 12345;
+              const calldata = context.universalProfile.interface.encodeFunctionData('execute', [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContract.interface.encodeFunctionData('setNumber', [randomNumber]),
+              ]);
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata,
+              );
+
+              await context.keyManager
+                .connect(relayer)
+                .executeRelayCall(signature, nonce, validityTimestamps, calldata);
+
+              expect(await targetContract.getNumber()).to.equal(randomNumber);
+            });
+          });
+
+          describe('`startingTimestamp` > now', () => {
+            it('reverts', async () => {
+              const now = await time.latest();
+
+              const startingTimestamp = now + 100;
+              const endingTimestamp = 0;
+
+              const nonce = await context.keyManager.callStatic.getNonce(signer.address, 14);
+              const validityTimestamps = createValidityTimestamps(
+                startingTimestamp,
+                endingTimestamp,
+              );
+              const randomNumber = 12345;
+              const calldata = context.universalProfile.interface.encodeFunctionData('execute', [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContract.interface.encodeFunctionData('setNumber', [randomNumber]),
+              ]);
+              const value = 0;
+              const signature = await signLSP6ExecuteRelayCall(
+                context.keyManager,
+                nonce.toString(),
+                validityTimestamps,
+                signerPrivateKey,
+                value,
+                calldata,
+              );
+
+              await expect(
+                context.keyManager
+                  .connect(relayer)
+                  .executeRelayCall(signature, nonce, validityTimestamps, calldata),
+              ).to.be.revertedWithCustomError(context.keyManager, 'RelayCallBeforeStartTime');
+            });
           });
         });
       });

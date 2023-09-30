@@ -27,8 +27,14 @@ contract LSP8MintableInit is LSP8MintableInitAbstract {
     function initialize(
         string memory name_,
         string memory symbol_,
-        address newOwner_
+        address newOwner_,
+        uint256 tokenIdType_
     ) external virtual initializer {
-        LSP8MintableInitAbstract._initialize(name_, symbol_, newOwner_);
+        LSP8MintableInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            tokenIdType_
+        );
     }
 }

@@ -55,7 +55,7 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is ERC725YInitAbstract {
 
     /**
      * @dev the ERC725Y data keys `LSP4TokenName` and `LSP4TokenSymbol` cannot be changed
-     *      via this function once the digital asset contract has been deployed.
+     * via this function once the digital asset contract has been deployed.
      *
      * @dev Save gas by emitting the {DataChanged} event with only the first 256 bytes of dataValue
      */

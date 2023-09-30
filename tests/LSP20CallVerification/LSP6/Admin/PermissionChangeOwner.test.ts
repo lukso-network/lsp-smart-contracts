@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { BigNumber } from 'ethers';
+import { ethers, network } from 'hardhat';
+import { BigNumber, ContractTransaction } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 // constants
@@ -318,12 +318,48 @@ export const shouldBehaveLikePermissionChangeOwner = (
   });
 
   describe('when calling `renounceOwnership(...)`', () => {
-    it('should revert even if caller has ALL PERMISSIONS`', async () => {
-      const payload = context.universalProfile.interface.getSighash('renounceOwnership');
+    describe('caller has ALL PERMISSIONS`', async () => {
+      let renounceOwnershipFirstTx: ContractTransaction;
+      let renounceOwnershipSecondTx: ContractTransaction;
 
-      await expect(context.universalProfile.connect(context.owner).renounceOwnership())
-        .to.be.revertedWithCustomError(context.keyManager, 'InvalidERC725Function')
-        .withArgs(payload);
+      before(async () => {
+        // 1st call
+        renounceOwnershipFirstTx = await context.universalProfile
+          .connect(context.owner)
+          .renounceOwnership();
+
+        // mine 200 blocks
+        await network.provider.send('hardhat_mine', [ethers.utils.hexValue(200)]);
+
+        // 2nd call
+        renounceOwnershipSecondTx = await context.universalProfile
+          .connect(context.owner)
+          .renounceOwnership();
+      });
+
+      it('should emit `RenounceOwnershipStarted` on first call', async () => {
+        await expect(renounceOwnershipFirstTx).to.emit(
+          context.universalProfile,
+          'RenounceOwnershipStarted',
+        );
+      });
+
+      it('should emit `OwnershipRenounced` on second call', async () => {
+        await expect(renounceOwnershipSecondTx).to.emit(
+          context.universalProfile,
+          'OwnershipRenounced',
+        );
+      });
+
+      it('should clear the `pendingOwner` and set it to `AddressZero`', async () => {
+        expect(await context.universalProfile.pendingOwner()).to.equal(
+          ethers.constants.AddressZero,
+        );
+      });
+
+      it('should update the owner to `AddressZero`', async () => {
+        expect(await context.universalProfile.owner()).to.equal(ethers.constants.AddressZero);
+      });
     });
   });
 };

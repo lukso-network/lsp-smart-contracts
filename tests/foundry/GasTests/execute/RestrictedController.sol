@@ -19,6 +19,9 @@ import {
     _PERMISSION_CALL,
     _PERMISSION_TRANSFERVALUE
 } from "../../../../contracts/LSP6KeyManager/LSP6Constants.sol";
+import {
+    _LSP8_TOKENID_TYPE_NUMBER
+} from "../../../../contracts/LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 import "../UniversalProfileTestsHelper.sol";
 
 contract ExecuteRestrictedController is UniversalProfileTestsHelper {
@@ -438,7 +441,8 @@ contract ExecuteRestrictedController is UniversalProfileTestsHelper {
         indentifiableDigitalAsset = new LSP8Tester(
             "TestLSP8",
             "TSTLSP8",
-            digitalAssetsOwner
+            digitalAssetsOwner,
+            _LSP8_TOKENID_TYPE_NUMBER
         );
 
         bytes32 tokenID = bytes32(uint256(1));

@@ -56,8 +56,7 @@ abstract contract LSP25MultiChannelNonce {
         address from,
         uint128 channelId
     ) internal view virtual returns (uint256 idx) {
-        uint256 nonceInChannel = _nonceStore[from][channelId];
-        return (uint256(channelId) << 128) | nonceInChannel;
+        return (uint256(channelId) << 128) | _nonceStore[from][channelId];
     }
 
     /**
@@ -113,6 +112,10 @@ abstract contract LSP25MultiChannelNonce {
         if (block.timestamp < startingTimestamp) {
             revert RelayCallBeforeStartTime();
         }
+
+        // Allow `endingTimestamp` to be 0
+        // Allow execution anytime past `startingTimestamp`
+        if (endingTimestamp == 0) return;
 
         // solhint-disable-next-line not-rely-on-time
         if (block.timestamp > endingTimestamp) {

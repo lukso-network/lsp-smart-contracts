@@ -24,6 +24,32 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
   });
 
   describe('when setting data on ERC725Y storage', () => {
+    describe('when sending value while setting data', () => {
+      it('should revert with `setData`', async () => {
+        const msgValue = ethers.utils.parseEther('2');
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+        const value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
+
+        await expect(
+          context.contract
+            .connect(context.deployParams.owner)
+            .setData(key, value, { value: msgValue }),
+        ).to.be.revertedWithCustomError(context.contract, 'ERC725Y_MsgValueDisallowed');
+      });
+
+      it('should revert with `setDataBatch`', async () => {
+        const msgValue = ethers.utils.parseEther('2');
+        const key = [ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'))];
+        const value = [ethers.utils.hexlify(ethers.utils.randomBytes(256))];
+
+        await expect(
+          context.contract
+            .connect(context.deployParams.owner)
+            .setDataBatch(key, value, { value: msgValue }),
+        ).to.be.revertedWithCustomError(context.contract, 'ERC725Y_MsgValueDisallowed');
+      });
+    });
+
     it('should revert when trying to edit Token Name', async () => {
       const key = ERC725YDataKeys.LSP4['LSP4TokenName'];
       const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Overriden Token Name'));

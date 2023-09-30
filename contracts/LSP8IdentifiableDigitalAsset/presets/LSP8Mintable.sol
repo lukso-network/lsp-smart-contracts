@@ -25,8 +25,9 @@ contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable {
     constructor(
         string memory name_,
         string memory symbol_,
-        address newOwner_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {}
+        address newOwner_,
+        uint256 tokenIdType_
+    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, tokenIdType_) {}
 
     /**
      * @notice Minting tokenId `tokenId` for address `to` with the additional data `data` (Note: allow non-LSP1 recipient is set to `force`).

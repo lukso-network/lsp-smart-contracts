@@ -23,7 +23,6 @@ import {
 } from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
 import {
     LSP8IdentifiableDigitalAssetInitAbstract,
-    LSP4DigitalAssetMetadataInitAbstract,
     ERC725YCore
 } from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
 import {
@@ -75,12 +74,14 @@ abstract contract LSP8CompatibleERC721InitAbstract is
     function _initialize(
         string memory name_,
         string memory symbol_,
-        address newOwner_
+        address newOwner_,
+        uint256 tokenIdType_
     ) internal virtual override onlyInitializing {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
-            newOwner_
+            newOwner_,
+            tokenIdType_
         );
     }
 
@@ -289,13 +290,11 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         bool force,
         bytes memory data
     ) internal virtual override {
-        address operator = msg.sender;
-
         if (
-            !isApprovedForAll(from, operator) &&
-            !_isOperatorOrOwner(operator, tokenId)
+            !isApprovedForAll(from, msg.sender) &&
+            !_isOperatorOrOwner(msg.sender, tokenId)
         ) {
-            revert LSP8NotTokenOperator(tokenId, operator);
+            revert LSP8NotTokenOperator(tokenId, msg.sender);
         }
 
         emit Transfer(from, to, uint256(tokenId));
@@ -417,7 +416,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
     }
 
     /**
-     * @inheritdoc LSP4DigitalAssetMetadataInitAbstract
+     * @inheritdoc LSP8IdentifiableDigitalAssetInitAbstract
      */
     function _setData(
         bytes32 key,
@@ -425,7 +424,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
     )
         internal
         virtual
-        override(LSP4DigitalAssetMetadataInitAbstract, ERC725YCore)
+        override(LSP8IdentifiableDigitalAssetInitAbstract, ERC725YCore)
     {
         super._setData(key, value);
     }

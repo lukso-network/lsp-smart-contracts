@@ -56,8 +56,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
           await expect(
             context.universalProfile.connect(context.accounts[1]).setData(dataKey, dataValue),
           )
-            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20InvalidMagicValue')
-            .withArgs(false, '0x');
+            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20EOACannotVerifyCall')
+            .withArgs(context.deployParams.owner.address);
         });
       });
 
@@ -79,8 +79,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
               .connect(context.accounts[1])
               .setDataBatch([dataKey], [dataValue]),
           )
-            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20InvalidMagicValue')
-            .withArgs(false, '0x');
+            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20EOACannotVerifyCall')
+            .withArgs(context.deployParams.owner.address);
         });
       });
 
@@ -125,8 +125,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
                 executeParams.data,
               ),
           )
-            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20InvalidMagicValue')
-            .withArgs(false, '0x');
+            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20EOACannotVerifyCall')
+            .withArgs(context.deployParams.owner.address);
         });
       });
 
@@ -157,8 +157,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
               .connect(context.accounts[3])
               .executeBatch(operationsType, recipients, values, datas),
           )
-            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20InvalidMagicValue')
-            .withArgs(false, '0x');
+            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20EOACannotVerifyCall')
+            .withArgs(context.deployParams.owner.address);
         });
       });
 
@@ -179,8 +179,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
           await expect(
             context.universalProfile.connect(context.accounts[3]).transferOwnership(newOwner),
           )
-            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20InvalidMagicValue')
-            .withArgs(false, '0x');
+            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20EOACannotVerifyCall')
+            .withArgs(context.deployParams.owner.address);
         });
       });
 
@@ -197,8 +197,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
           await network.provider.send('hardhat_mine', [ethers.utils.hexValue(100)]);
 
           await expect(context.universalProfile.connect(context.accounts[3]).renounceOwnership())
-            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20InvalidMagicValue')
-            .withArgs(false, '0x');
+            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20EOACannotVerifyCall')
+            .withArgs(context.deployParams.owner.address);
         });
       });
     });

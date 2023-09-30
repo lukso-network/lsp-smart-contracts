@@ -42,6 +42,7 @@ export type LSP8DeployParams = {
   name: string;
   symbol: string;
   newOwner: string;
+  tokenIdType: number;
 };
 
 export type LSP8TestContext = {
@@ -58,12 +59,30 @@ export type ExpectedError = {
 const mintedTokenId = tokenIdAsBytes32(10);
 const neverMintedTokenId = tokenIdAsBytes32(1010110);
 
-export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext>) => {
+export const shouldBehaveLikeLSP8 = (
+  buildContext: (nftType: number) => Promise<LSP8TestContext>,
+) => {
   let context: LSP8TestContext;
   let expectedTotalSupply = 0;
 
   before(async () => {
-    context = await buildContext();
+    context = await buildContext(0);
+  });
+
+  describe('when setting data', () => {
+    it('should not allow to update the `LSP8TokenIdType` after deployment', async () => {
+      await expect(
+        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdType, '0xdeadbeef'),
+      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdTypeNotEditable');
+    });
+  });
+
+  describe('when setting data', () => {
+    it('should not allow to update the `LSP8TokenIdType` after deployment', async () => {
+      await expect(
+        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdType, '0xdeadbeef'),
+      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdTypeNotEditable');
+    });
   });
 
   describe('when minting tokens', () => {
@@ -625,7 +644,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
     });
 
     beforeEach(async () => {
-      context = await buildContext();
+      context = await buildContext(0);
 
       // mint a tokenId
       await context.lsp8.mint(
@@ -1495,7 +1514,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
 
   describe('burn', () => {
     beforeEach(async () => {
-      context = await buildContext();
+      context = await buildContext(0);
 
       await context.lsp8.mint(
         context.accounts.owner.address,
@@ -1697,7 +1716,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
     let newOwner: SignerWithAddress;
 
     before(async () => {
-      context = await buildContext();
+      context = await buildContext(0);
       oldOwner = context.accounts.owner;
       newOwner = context.accounts.anyone;
     });
@@ -1716,7 +1735,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
 
     describe('after transferring ownership of the contract', () => {
       beforeEach(async () => {
-        context = await buildContext();
+        context = await buildContext(0);
 
         await context.lsp8.connect(oldOwner).transferOwnership(newOwner.address);
       });
@@ -1765,6 +1784,32 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
       });
     });
   });
+
+  describe('when calling the contract with empty calldata', () => {
+    describe('when making a call without any value', () => {
+      it('should revert', async () => {
+        await expect(
+          context.accounts.anyone.sendTransaction({
+            to: context.lsp8.address,
+          }),
+        )
+          .to.be.revertedWithCustomError(context.lsp8, 'InvalidFunctionSelector')
+          .withArgs('0x00000000');
+      });
+    });
+
+    describe('when making a call with sending value', () => {
+      it('should revert', async () => {
+        const amountSent = 200;
+        await expect(
+          context.accounts.anyone.sendTransaction({
+            to: context.lsp8.address,
+            value: amountSent,
+          }),
+        ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenContractCannotHoldValue');
+      });
+    });
+  });
 };
 
 export type LSP8InitializeTestContext = {
@@ -1779,7 +1824,7 @@ export const shouldInitializeLikeLSP8 = (
   let context: LSP8InitializeTestContext;
 
   before(async () => {
-    context = await buildContext();
+    context = await buildContext(0);
   });
 
   describe('when the contract was initialized', () => {
@@ -1827,6 +1872,16 @@ export const shouldInitializeLikeLSP8 = (
         .to.emit(context.lsp8, 'DataChanged')
         .withArgs(symbolKey, expectedSymbolValue);
       expect(await context.lsp8.getData(symbolKey)).to.equal(expectedSymbolValue);
+
+      const lsp8TokenIdTypeDataKey = ERC725YDataKeys.LSP8['LSP8TokenIdType'];
+      const expectedTokenIdDataValue = abiCoder.encode(
+        ['uint256'],
+        [context.deployParams.tokenIdType],
+      );
+      await expect(context.initializeTransaction)
+        .to.emit(context.lsp8, 'DataChanged')
+        .withArgs(lsp8TokenIdTypeDataKey, expectedTokenIdDataValue);
+      expect(await context.lsp8.getData(lsp8TokenIdTypeDataKey)).to.equal(expectedTokenIdDataValue);
     });
   });
 };
