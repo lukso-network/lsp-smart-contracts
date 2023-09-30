@@ -335,7 +335,11 @@ abstract contract LSP6KeyManagerCore is
 
         // If target is invoking the verification, emit the event and change the reentrancy guard
         if (msg.sender == callee) {
-            bool isReentrantCall = _nonReentrantBefore(isSetData, caller);
+            uint8 reentrancyStatus = _nonReentrantBefore(
+                targetContract,
+                isSetData,
+                caller
+            );
 
             _verifyPermissions(callee, caller, msgValue, false, data);
             emit PermissionsVerified(caller, msgValue, bytes4(data));
