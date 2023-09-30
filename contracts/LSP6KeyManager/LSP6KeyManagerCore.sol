@@ -517,13 +517,6 @@ abstract contract LSP6KeyManagerCore is
         bytes32 permissions = ERC725Y(callee).getPermissionsFor(from);
         if (permissions == bytes32(0)) revert NoPermissionsSet(from);
 
-        if (isRelayedCall) {
-            LSP6ExecuteRelayCallModule._verifyExecuteRelayCallPermission(
-                from,
-                permissions
-            );
-        }
-
         bytes4 erc725Function = bytes4(payload);
 
         // ERC725Y.setData(bytes32,bytes)
@@ -581,6 +574,13 @@ abstract contract LSP6KeyManagerCore is
             LSP6OwnershipModule._verifyOwnershipPermissions(from, permissions);
         } else {
             revert InvalidERC725Function(erc725Function);
+        }
+
+        if (isRelayedCall) {
+            LSP6ExecuteRelayCallModule._verifyExecuteRelayCallPermission(
+                from,
+                permissions
+            );
         }
     }
 
