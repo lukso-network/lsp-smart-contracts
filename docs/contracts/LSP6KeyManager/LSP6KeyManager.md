@@ -348,7 +348,7 @@ This function can call by any other address than the {`target`}. This allows to 
 
 ```solidity
 function lsp20VerifyCall(
-  address callee,
+  address targetContract,
   address caller,
   uint256 msgValue,
   bytes data
@@ -357,12 +357,12 @@ function lsp20VerifyCall(
 
 #### Parameters
 
-| Name       |   Type    | Description                                                     |
-| ---------- | :-------: | --------------------------------------------------------------- |
-| `callee`   | `address` | The address of the contract that implements the LSP20 interface |
-| `caller`   | `address` | The address who called the function on the msg.sender           |
-| `msgValue` | `uint256` | -                                                               |
-| `data`     |  `bytes`  | -                                                               |
+| Name             |   Type    | Description                                           |
+| ---------------- | :-------: | ----------------------------------------------------- |
+| `targetContract` | `address` | -                                                     |
+| `caller`         | `address` | The address who called the function on the msg.sender |
+| `msgValue`       | `uint256` | -                                                     |
+| `data`           |  `bytes`  | -                                                     |
 
 #### Returns
 
@@ -1165,7 +1165,7 @@ _Execute the `payload` passed to `execute(...)` or `executeRelayCall(...)`_
 
 ```solidity
 function _verifyPermissions(
-  address callee,
+  address targetContract,
   address from,
   uint256 msgValue,
   bool isRelayedCall,
@@ -1177,20 +1177,20 @@ Verify if the `from` address is allowed to execute the `payload` on the [`target
 
 #### Parameters
 
-| Name            |   Type    | Description                                                         |
-| --------------- | :-------: | ------------------------------------------------------------------- |
-| `callee`        | `address` | -                                                                   |
-| `from`          | `address` | Either the caller of {execute} or the signer of {executeRelayCall}. |
-| `msgValue`      | `uint256` | -                                                                   |
-| `isRelayedCall` |  `bool`   | -                                                                   |
-| `payload`       |  `bytes`  | The abi-encoded function call to execute on the {target} contract.  |
+| Name             |   Type    | Description                                                         |
+| ---------------- | :-------: | ------------------------------------------------------------------- |
+| `targetContract` | `address` | -                                                                   |
+| `from`           | `address` | Either the caller of {execute} or the signer of {executeRelayCall}. |
+| `msgValue`       | `uint256` | -                                                                   |
+| `isRelayedCall`  |  `bool`   | -                                                                   |
+| `payload`        |  `bytes`  | The abi-encoded function call to execute on the {target} contract.  |
 
 <br/>
 
 ### \_setupLSP6ReentrancyGuard
 
 ```solidity
-function _setupLSP6ReentrancyGuard() internal nonpayable;
+function _setupLSP6ReentrancyGuard(address targetContract) internal nonpayable;
 ```
 
 Initialise \_reentrancyStatus to \_NOT_ENTERED.
@@ -1216,7 +1216,7 @@ Used in the beginning of the `nonReentrant` modifier, before the method executio
 ### \_nonReentrantAfter
 
 ```solidity
-function _nonReentrantAfter() internal nonpayable;
+function _nonReentrantAfter(address targetContract) internal nonpayable;
 ```
 
 Resets the status to `_NOT_ENTERED`
