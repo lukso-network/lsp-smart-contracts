@@ -401,12 +401,13 @@ abstract contract LSP6KeyManagerCore is
 
         address targetContract = _target;
 
-        _verifyPermissions(_target, msg.sender, msgValue, false, payload);
         uint8 reentrancyStatus = _nonReentrantBefore(
             targetContract,
             isSetData,
             msg.sender
         );
+
+        _verifyPermissions(_target, msg.sender, msgValue, false, payload);
 
         emit PermissionsVerified(msg.sender, msgValue, bytes4(payload));
 
