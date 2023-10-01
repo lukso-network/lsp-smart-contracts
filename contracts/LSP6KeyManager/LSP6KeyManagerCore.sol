@@ -323,7 +323,7 @@ abstract contract LSP6KeyManagerCore is
      *  - `0x1a238001`: LSP20 magic value **with** post-verification (last byte is `0x01`).
      */
     function lsp20VerifyCall(
-        address callee,
+        address targetContract,
         address caller,
         uint256 msgValue,
         bytes calldata data
@@ -331,17 +331,15 @@ abstract contract LSP6KeyManagerCore is
         bool isSetData = bytes4(data) == IERC725Y.setData.selector ||
             bytes4(data) == IERC725Y.setDataBatch.selector;
 
-        address targetContract = _target;
-
         // If target is invoking the verification, emit the event and change the reentrancy guard
-        if (msg.sender == callee) {
+        if (msg.sender == targetContract) {
             uint8 reentrancyStatus = _nonReentrantBefore(
                 targetContract,
                 isSetData,
                 caller
             );
 
-            _verifyPermissions(callee, caller, msgValue, false, data);
+            _verifyPermissions(targetContract, caller, msgValue, false, data);
             emit PermissionsVerified(caller, msgValue, bytes4(data));
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
@@ -353,17 +351,17 @@ abstract contract LSP6KeyManagerCore is
         /// @dev If a different address is invoking the verification,
         /// do not change the state or emit the event to allow read-only verification
         else {
-            uint8 reentrancyStatus = _reentrancyStatus[callee];
+            uint8 reentrancyStatus = _reentrancyStatus[targetContract];
 
             if (reentrancyStatus == _ENTERED) {
                 _requirePermissions(
                     caller,
-                    ERC725Y(callee).getPermissionsFor(caller),
+                    ERC725Y(targetContract).getPermissionsFor(caller),
                     _PERMISSION_REENTRANCY
                 );
             }
 
-            _verifyPermissions(callee, caller, msgValue, false, data);
+            _verifyPermissions(targetContract, caller, msgValue, false, data);
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
@@ -484,7 +482,7 @@ abstract contract LSP6KeyManagerCore is
             signer
         );
 
-        _verifyPermissions(_target, signer, msgValue, true, payload);
+        _verifyPermissions(targetContract, signer, msgValue, true, payload);
         emit PermissionsVerified(signer, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(
@@ -529,13 +527,13 @@ abstract contract LSP6KeyManagerCore is
      * @param payload The abi-encoded function call to execute on the {target} contract.
      */
     function _verifyPermissions(
-        address callee,
+        address targetContract,
         address from,
         uint256 msgValue,
         bool isRelayedCall,
         bytes calldata payload
     ) internal view virtual {
-        bytes32 permissions = ERC725Y(callee).getPermissionsFor(from);
+        bytes32 permissions = ERC725Y(targetContract).getPermissionsFor(from);
         if (permissions == bytes32(0)) revert NoPermissionsSet(from);
 
         bytes4 erc725Function = bytes4(payload);
@@ -549,7 +547,7 @@ abstract contract LSP6KeyManagerCore is
             );
 
             LSP6SetDataModule._verifyCanSetData(
-                callee,
+                targetContract,
                 from,
                 permissions,
                 inputKey,
@@ -563,7 +561,7 @@ abstract contract LSP6KeyManagerCore is
                 .decode(payload[4:], (bytes32[], bytes[]));
 
             LSP6SetDataModule._verifyCanSetData(
-                callee,
+                targetContract,
                 from,
                 permissions,
                 inputKeys,
@@ -580,7 +578,7 @@ abstract contract LSP6KeyManagerCore is
             ) = abi.decode(payload[4:], (uint256, address, uint256, bytes));
 
             LSP6ExecuteModule._verifyCanExecute(
-                callee,
+                targetContract,
                 from,
                 permissions,
                 operationType,
