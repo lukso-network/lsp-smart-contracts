@@ -1,13 +1,14 @@
 import { ethers } from 'hardhat';
 import { BytesLike } from 'ethers';
+import { PromiseOrValue } from '../../types/common';
 
 export async function calculateProxiesAddresses(
-  salt: BytesLike,
-  primaryImplementationContractAddress: string,
-  secondaryImplementationContractAddress: string,
-  secondaryContractInitializationCalldata: BytesLike,
-  secondaryContractAddControlledContractAddress: boolean,
-  secondaryContractExtraInitializationParams: BytesLike,
+  salt: PromiseOrValue<BytesLike>,
+  primaryImplementationContractAddress: PromiseOrValue<string>,
+  secondaryImplementationContractAddress: PromiseOrValue<string>,
+  secondaryContractInitializationCalldata: PromiseOrValue<BytesLike>,
+  secondaryContractAddControlledContractAddress: PromiseOrValue<boolean>,
+  secondaryContractExtraInitializationParams: PromiseOrValue<BytesLike>,
   upPostDeploymentModuleAddress: string,
   postDeploymentCalldata: BytesLike,
   linkedContractsFactoryAddress: string,
@@ -32,7 +33,7 @@ export async function calculateProxiesAddresses(
     generatedSalt,
     ethers.utils.keccak256(
       '0x3d602d80600a3d3981f3363d3d373d3d3d363d73' +
-        primaryImplementationContractAddress.slice(2) +
+        (primaryImplementationContractAddress as string).slice(2) +
         '5af43d82803e903d91602b57fd5bf3',
     ),
   );
@@ -42,7 +43,7 @@ export async function calculateProxiesAddresses(
     ethers.utils.keccak256(expectedPrimaryContractAddress),
     ethers.utils.keccak256(
       '0x3d602d80600a3d3981f3363d3d373d3d3d363d73' +
-        secondaryImplementationContractAddress.slice(2) +
+        (secondaryImplementationContractAddress as string).slice(2) +
         '5af43d82803e903d91602b57fd5bf3',
     ),
   );

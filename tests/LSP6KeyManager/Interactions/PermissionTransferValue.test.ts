@@ -312,10 +312,12 @@ export const shouldBehaveLikePermissionTransferValue = (
             const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
             const initialBalanceRecipient = await provider.getBalance(recipient.address);
 
-            const transferPayload = universalProfileInterface.encodeFunctionData(
-              'execute(uint256,address,uint256,bytes)',
-              [OPERATION_TYPES.CALL, recipient.address, ethers.utils.parseEther('3'), data],
-            );
+            const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
+              OPERATION_TYPES.CALL,
+              recipient.address,
+              ethers.utils.parseEther('3'),
+              data,
+            ]);
 
             await expect(
               context.keyManager.connect(canTransferValue)['execute(bytes)'](transferPayload),
@@ -334,10 +336,12 @@ export const shouldBehaveLikePermissionTransferValue = (
           it('should pass when caller has permission TRANSFERVALUE + CALL', async () => {
             const amount = ethers.utils.parseEther('3');
 
-            const transferPayload = universalProfileInterface.encodeFunctionData(
-              'execute(uint256,address,uint256,bytes)',
-              [OPERATION_TYPES.CALL, recipient.address, amount, data],
-            );
+            const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
+              OPERATION_TYPES.CALL,
+              recipient.address,
+              amount,
+              data,
+            ]);
 
             await expect(() =>
               context.keyManager
@@ -450,10 +454,12 @@ export const shouldBehaveLikePermissionTransferValue = (
           const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
           const initialBalanceRecipient = await provider.getBalance(recipientUP.address);
 
-          const transferPayload = universalProfileInterface.encodeFunctionData(
-            'execute(uint256,address,uint256,bytes)',
-            [OPERATION_TYPES.CALL, recipientUP.address, ethers.utils.parseEther('3'), data],
-          );
+          const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
+            OPERATION_TYPES.CALL,
+            recipientUP.address,
+            ethers.utils.parseEther('3'),
+            data,
+          ]);
 
           await expect(
             context.keyManager.connect(canTransferValue)['execute(bytes)'](transferPayload),

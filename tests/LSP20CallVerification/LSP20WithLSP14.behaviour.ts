@@ -294,6 +294,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
             )
           )?.output.contracts[
             'contracts/LSP0ERC725Account/LSP0ERC725Account.sol'
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
           ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
             if (elem.label === '_renounceOwnershipStartedAt') return elem;
           })[0].slot,
@@ -383,6 +385,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
             )
           )?.output.contracts[
             'contracts/LSP0ERC725Account/LSP0ERC725Account.sol'
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
           ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
             if (elem.label === '_renounceOwnershipStartedAt') return elem;
           })[0].slot,
@@ -449,6 +453,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
               )
             )?.output.contracts[
               'contracts/LSP0ERC725Account/LSP0ERC725Account.sol'
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
             ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
               if (elem.label === '_renounceOwnershipStartedAt') return elem;
             })[0].slot,
@@ -540,6 +546,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
           )
         )?.output.contracts[
           'contracts/LSP0ERC725Account/LSP0ERC725Account.sol'
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
         ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
           if (elem.label === '_renounceOwnershipStartedAt') return elem;
         })[0].slot,

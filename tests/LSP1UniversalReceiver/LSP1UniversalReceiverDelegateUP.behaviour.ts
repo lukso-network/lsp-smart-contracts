@@ -1126,7 +1126,7 @@ export const shouldBehaveLikeLSP1Delegate = (
       before(async () => {
         const setDataPayload = context.universalProfile1.interface.encodeFunctionData('setData', [
           lsp5ArrayLengthDataKey,
-          lsp5ArrayLengthDataValue,
+          lsp5ArrayLengthDataValue.toHexString(),
         ]);
 
         await context.lsp6KeyManager1.connect(context.accounts.owner1).execute(setDataPayload);
@@ -1173,7 +1173,7 @@ export const shouldBehaveLikeLSP1Delegate = (
       before(async () => {
         const setDataPayload = context.universalProfile1.interface.encodeFunctionData('setData', [
           lsp5ArrayLengthDataKey,
-          lsp5ArrayLengthDataValue,
+          lsp5ArrayLengthDataValue.toHexString(),
         ]);
 
         await context.lsp6KeyManager1.connect(context.accounts.owner1).execute(setDataPayload);

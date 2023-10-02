@@ -546,12 +546,12 @@ describe('⛽📊 Gas Benchmark', () => {
           false,
         );
 
-        // deploy a LSP8 NFT
+        // deploy a LSP8 token
         lsp8Token = await new LSP8Mintable__factory(context.owner).deploy(
           'My NFT',
           'MNFT',
           context.owner.address,
-          LSP8_TOKEN_ID_TYPES.NUMBER,
+          LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
         );
 
         universalProfile1 = await new UniversalProfile__factory(context.owner).deploy(
@@ -654,8 +654,6 @@ describe('⛽📊 Gas Benchmark', () => {
   describe('KeyManager', () => {
     describe('`execute(...)` via Key Manager', () => {
       describe('main controller (this browser extension)', () => {
-        const casesExecuteMainController: Row[] = [];
-
         let context: LSP6TestContext;
 
         let recipientEOA: SignerWithAddress;
@@ -705,7 +703,7 @@ describe('⛽📊 Gas Benchmark', () => {
             'MetaNFT',
             'MNF',
             context.owner.address,
-            LSP8_TOKEN_ID_TYPES.NUMBER,
+            LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
           );
 
           // mint some tokens to the UP
@@ -724,11 +722,6 @@ describe('⛽📊 Gas Benchmark', () => {
           const tx = await context.universalProfile.connect(context.owner).execute(OPERATION_TYPES.CALL, recipientEOA.address, lyxAmount, "0x");
           const receipt = await tx.wait();
 
-          casesExecuteMainController.push([
-            'transfer LYX to an EOA',
-            receipt.gasUsed.toNumber().toString(),
-          ]);
-
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_1'][
             'main_controller'
           ] = receipt.gasUsed.toNumber();
@@ -740,11 +733,6 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const tx = await context.universalProfile.connect(context.owner).execute(OPERATION_TYPES.CALL, aliceUP.address, lyxAmount, "0x");
           const receipt = await tx.wait();
-
-          casesExecuteMainController.push([
-            'transfer LYX to a UP',
-            receipt.gasUsed.toNumber().toString(),
-          ]);
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_2'][
             'main_controller'
@@ -769,11 +757,6 @@ describe('⛽📊 Gas Benchmark', () => {
           );
           const receipt = await tx.wait();
 
-          casesExecuteMainController.push([
-            'transfer tokens (LSP7) to an EOA (no data)',
-            receipt.gasUsed.toNumber().toString(),
-          ]);
-
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_3'][
             'main_controller'
           ] = receipt.gasUsed.toNumber();
@@ -796,11 +779,6 @@ describe('⛽📊 Gas Benchmark', () => {
             ])
           );
           const receipt = await tx.wait();
-
-          casesExecuteMainController.push([
-            'transfer tokens (LSP7) to a UP (no data)',
-            receipt.gasUsed.toNumber().toString(),
-          ]);
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_4'][
             'main_controller'
@@ -825,11 +803,6 @@ describe('⛽📊 Gas Benchmark', () => {
           );
           const receipt = await tx.wait();
 
-          casesExecuteMainController.push([
-            'transfer a NFT (LSP8) to a EOA (no data)',
-            receipt.gasUsed.toNumber().toString(),
-          ]);
-
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_5'][
             'main_controller'
           ] = receipt.gasUsed.toNumber();
@@ -853,11 +826,6 @@ describe('⛽📊 Gas Benchmark', () => {
           );
           const receipt = await tx.wait();
 
-          casesExecuteMainController.push([
-            'transfer a NFT (LSP8) to a UP (no data)',
-            receipt.gasUsed.toNumber().toString(),
-          ]);
-
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_6'][
             'main_controller'
           ] = receipt.gasUsed.toNumber();
@@ -865,7 +833,6 @@ describe('⛽📊 Gas Benchmark', () => {
       });
 
       describe('controllers with some restrictions', () => {
-        const casesExecuteRestrictedController: Row[] = [];
         let context: LSP6TestContext;
 
         let recipientEOA: SignerWithAddress;
@@ -936,7 +903,7 @@ describe('⛽📊 Gas Benchmark', () => {
             'MetaNFT',
             'MNF',
             context.owner.address,
-            LSP8_TOKEN_ID_TYPES.NUMBER,
+            LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
           );
 
           lsp8LyxPunks = await new LSP8Mintable__factory(context.owner).deploy(
@@ -1002,11 +969,6 @@ describe('⛽📊 Gas Benchmark', () => {
             .execute(OPERATION_TYPES.CALL, allowedAddressToTransferValue, lyxAmount, '0x');
           const receipt = await tx.wait();
 
-          casesExecuteRestrictedController.push([
-            'transfer some LYXes to an EOA - restricted to 2 x allowed address only (an EOA + a UP) (TRANSFERVALUE + 2x AllowedCalls)',
-            receipt.gasUsed.toNumber().toString(),
-          ]);
-
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_1'][
             'restricted_controller'
           ] = receipt.gasUsed.toNumber();
@@ -1020,11 +982,6 @@ describe('⛽📊 Gas Benchmark', () => {
             .connect(canTransferValueToOneAddress)
             .execute(OPERATION_TYPES.CALL, aliceUP.address, lyxAmount, '0x');
           const receipt = await tx.wait();
-
-          casesExecuteRestrictedController.push([
-            'transfer some LYXes to a UP - restricted to 2 x allowed address only (an EOA + a UP) (TRANSFERVALUE + 2x AllowedCalls)',
-            receipt.gasUsed.toNumber().toString(),
-          ]);
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_2'][
             'restricted_controller'
@@ -1049,11 +1006,6 @@ describe('⛽📊 Gas Benchmark', () => {
           );
           const receipt = await tx.wait();
 
-          casesExecuteRestrictedController.push([
-            'transfers some tokens (LSP7) to an EOA - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)',
-            receipt.gasUsed.toNumber().toString(),
-          ]);
-
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_3'][
             'restricted_controller'
           ] = receipt.gasUsed.toNumber();
@@ -1076,11 +1028,6 @@ describe('⛽📊 Gas Benchmark', () => {
             ])
           );
           const receipt = await tx.wait();
-
-          casesExecuteRestrictedController.push([
-            'transfers some tokens (LSP7) to an other UP - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)',
-            receipt.gasUsed.toNumber().toString(),
-          ]);
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_4'][
             'restricted_controller'
@@ -1105,11 +1052,6 @@ describe('⛽📊 Gas Benchmark', () => {
           );
           const receipt = await tx.wait();
 
-          casesExecuteRestrictedController.push([
-            'transfers a NFT (LSP8) to an EOA - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)',
-            receipt.gasUsed.toNumber().toString(),
-          ]);
-
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_5'][
             'restricted_controller'
           ] = receipt.gasUsed.toNumber();
@@ -1132,11 +1074,6 @@ describe('⛽📊 Gas Benchmark', () => {
             ])
           );
           const receipt = await tx.wait();
-
-          casesExecuteRestrictedController.push([
-            'transfers a NFT (LSP8) to an other UP - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)',
-            receipt.gasUsed.toNumber().toString(),
-          ]);
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_6'][
             'restricted_controller'
@@ -1642,7 +1579,7 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const dataKeys = [
               ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-              ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.utils.hexZeroPad(ethers.BigNumber.from(AddressPermissionsArrayLength).sub(1), 16).substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.utils.hexZeroPad(ethers.BigNumber.from(AddressPermissionsArrayLength).sub(1).toHexString(), 16).substring(2),
               ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newController.address.substring(2),
               ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + newController.address.substring(2),
             ];

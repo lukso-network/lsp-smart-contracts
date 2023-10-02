@@ -1824,7 +1824,7 @@ export const shouldInitializeLikeLSP8 = (
   let context: LSP8InitializeTestContext;
 
   before(async () => {
-    context = await buildContext(0);
+    context = await buildContext();
   });
 
   describe('when the contract was initialized', () => {
