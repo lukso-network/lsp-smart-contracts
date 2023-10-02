@@ -3,7 +3,6 @@
   "compilerOptions": {
     "module": "esNext",
     "target": "esNext",
-    "outDir": "module",
     "declaration": true,
     "skipLibCheck": false
   },

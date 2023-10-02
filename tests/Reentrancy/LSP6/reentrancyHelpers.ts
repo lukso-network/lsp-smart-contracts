@@ -67,6 +67,13 @@ export type ReentrancyContext = {
   randomLSP1TypeId: string;
 };
 
+export type RelayCallParams = {
+  signature: BytesLike;
+  nonce: BigNumber;
+  validityTimestamps: number | BytesLike;
+  payload: BytesLike;
+};
+
 export const transferValueTestCases = {
   NotAuthorised: [
     {
@@ -414,12 +421,7 @@ export const generateRelayCall = async (
     payload.toString(),
   );
 
-  const relayCallContext: {
-    signature: BytesLike;
-    nonce: BigNumber;
-    validityTimestamps: BytesLike | number;
-    payload: BytesLike;
-  } = {
+  const relayCallContext: RelayCallParams = {
     signature,
     nonce,
     validityTimestamps,
