@@ -98,9 +98,7 @@ abstract contract LSP6KeyManagerCore is
 
     // Variables, methods and modifier used for ReentrancyGuard are taken from the link below and modified accordingly.
     // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/security/ReentrancyGuard.sol
-    mapping(address => uint256) internal _reentrancyStatus;
-    uint256 internal constant _NOT_ENTERED = 1;
-    uint256 internal constant _ENTERED = 2;
+    mapping(address => bool) internal _reentrancyStatus;
 
     /**
      * @inheritdoc ILSP6
@@ -333,7 +331,7 @@ abstract contract LSP6KeyManagerCore is
 
         // If target is invoking the verification, emit the event and change the reentrancy guard
         if (msg.sender == targetContract) {
-            uint256 reentrancyStatus = _nonReentrantBefore(
+            bool reentrancyStatus = _nonReentrantBefore(
                 targetContract,
                 isSetData,
                 caller
@@ -344,16 +342,16 @@ abstract contract LSP6KeyManagerCore is
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
-                isSetData || (reentrancyStatus == _ENTERED)
+                isSetData || reentrancyStatus
                     ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
                     : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
         }
         /// @dev If a different address is invoking the verification,
         /// do not change the state or emit the event to allow read-only verification
         else {
-            uint256 reentrancyStatus = _reentrancyStatus[targetContract];
+            bool reentrancyStatus = _reentrancyStatus[targetContract];
 
-            if (reentrancyStatus == _ENTERED) {
+            if (reentrancyStatus) {
                 _requirePermissions(
                     caller,
                     ERC725Y(targetContract).getPermissionsFor(caller),
@@ -365,7 +363,7 @@ abstract contract LSP6KeyManagerCore is
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
-                isSetData || (reentrancyStatus == _ENTERED)
+                isSetData || reentrancyStatus
                     ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
                     : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
         }
@@ -399,7 +397,7 @@ abstract contract LSP6KeyManagerCore is
 
         address targetContract = _target;
 
-        uint256 reentrancyStatus = _nonReentrantBefore(
+        bool reentrancyStatus = _nonReentrantBefore(
             targetContract,
             isSetData,
             msg.sender
@@ -421,7 +419,7 @@ abstract contract LSP6KeyManagerCore is
             payload
         );
 
-        if (reentrancyStatus == _NOT_ENTERED && !isSetData) {
+        if (reentrancyStatus && !isSetData) {
             _nonReentrantAfter(targetContract);
         }
 
@@ -476,7 +474,7 @@ abstract contract LSP6KeyManagerCore is
         bool isSetData = bytes4(payload) == IERC725Y.setData.selector ||
             bytes4(payload) == IERC725Y.setDataBatch.selector;
 
-        uint256 reentrancyStatus = _nonReentrantBefore(
+        bool reentrancyStatus = _nonReentrantBefore(
             targetContract,
             isSetData,
             signer
@@ -491,7 +489,7 @@ abstract contract LSP6KeyManagerCore is
             payload
         );
 
-        if (reentrancyStatus == _NOT_ENTERED && !isSetData) {
+        if (reentrancyStatus && !isSetData) {
             _nonReentrantAfter(targetContract);
         }
 
@@ -605,15 +603,6 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @dev Initialise _reentrancyStatus to _NOT_ENTERED.
-     */
-    function _setupLSP6ReentrancyGuard(
-        address targetContract
-    ) internal virtual {
-        _reentrancyStatus[targetContract] = 1;
-    }
-
-    /**
      * @dev Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
      * the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
      * Used in the beginning of the `nonReentrant` modifier, before the method execution starts.
@@ -622,9 +611,10 @@ abstract contract LSP6KeyManagerCore is
         address targetContract,
         bool isSetData,
         address from
-    ) internal virtual returns (uint256 reentrancyStatus) {
+    ) internal virtual returns (bool reentrancyStatus) {
         reentrancyStatus = _reentrancyStatus[targetContract];
-        if (reentrancyStatus == _ENTERED) {
+
+        if (reentrancyStatus) {
             // CHECK the caller has REENTRANCY permission
             _requirePermissions(
                 from,
@@ -633,19 +623,19 @@ abstract contract LSP6KeyManagerCore is
             );
         } else {
             if (!isSetData) {
-                _reentrancyStatus[targetContract] = _ENTERED;
+                _reentrancyStatus[targetContract] = true;
             }
         }
     }
 
     /**
-     * @dev Resets the status to `_NOT_ENTERED`
+     * @dev Resets the status to `false`
      * Used in the end of the `nonReentrant` modifier after the method execution is terminated
      */
     function _nonReentrantAfter(address targetContract) internal virtual {
         // By storing the original value once again, a refund is triggered (see
         // https://eips.ethereum.org/EIPS/eip-2200)
-        _reentrancyStatus[targetContract] = _NOT_ENTERED;
+        _reentrancyStatus[targetContract] = false;
     }
 
     /**

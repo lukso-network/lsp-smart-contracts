@@ -1187,16 +1187,6 @@ Verify if the `from` address is allowed to execute the `payload` on the [`target
 
 <br/>
 
-### \_setupLSP6ReentrancyGuard
-
-```solidity
-function _setupLSP6ReentrancyGuard(address targetContract) internal nonpayable;
-```
-
-Initialise \_reentrancyStatus to \_NOT_ENTERED.
-
-<br/>
-
 ### \_nonReentrantBefore
 
 ```solidity
@@ -1204,7 +1194,7 @@ function _nonReentrantBefore(
   address targetContract,
   bool isSetData,
   address from
-) internal nonpayable returns (uint256 reentrancyStatus);
+) internal nonpayable returns (bool reentrancyStatus);
 ```
 
 Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
@@ -1219,7 +1209,7 @@ Used in the beginning of the `nonReentrant` modifier, before the method executio
 function _nonReentrantAfter(address targetContract) internal nonpayable;
 ```
 
-Resets the status to `_NOT_ENTERED`
+Resets the status to `false`
 Used in the end of the `nonReentrant` modifier after the method execution is terminated
 
 <br/>
