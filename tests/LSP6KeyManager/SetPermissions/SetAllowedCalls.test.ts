@@ -20,9 +20,10 @@ export const shouldBehaveLikeSettingAllowedCalls = (
   describe('deleting AllowedCalls', () => {
     let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
 
-    let beneficiary: SignerWithAddress;
-    let invalidBytes: SignerWithAddress;
-    let noBytes: SignerWithAddress;
+    let beneficiaryWithPermissions: SignerWithAddress,
+      beneficiaryNoPermissions: SignerWithAddress,
+      invalidBytes: SignerWithAddress,
+      noBytes: SignerWithAddress;
 
     before(async () => {
       context = await buildContext();
@@ -30,18 +31,20 @@ export const shouldBehaveLikeSettingAllowedCalls = (
       canOnlyAddController = context.accounts[1];
       canOnlyEditPermissions = context.accounts[2];
 
-      beneficiary = context.accounts[3];
-      invalidBytes = context.accounts[4];
-      noBytes = context.accounts[5];
+      beneficiaryWithPermissions = context.accounts[3];
+      beneficiaryNoPermissions = context.accounts[4];
+      invalidBytes = context.accounts[5];
+      noBytes = context.accounts[6];
 
+      // prettier-ignore
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          canOnlyAddController.address.substring(2),
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          canOnlyEditPermissions.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + canOnlyAddController.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + canOnlyEditPermissions.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + beneficiaryWithPermissions.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + invalidBytes.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + noBytes.address.substring(2),
-        ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + beneficiary.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + beneficiaryWithPermissions.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + beneficiaryNoPermissions.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + invalidBytes.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + noBytes.address.substring(2),
       ];
@@ -51,6 +54,8 @@ export const shouldBehaveLikeSettingAllowedCalls = (
         PERMISSIONS.EDITPERMISSIONS,
         PERMISSIONS.CALL,
         PERMISSIONS.CALL,
+        PERMISSIONS.CALL,
+        // beneficiaryWithPermissions
         combineAllowedCalls(
           // allow the beneficiary to transfer value to addresses 0xcafe... and 0xbeef...
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
@@ -61,47 +66,99 @@ export const shouldBehaveLikeSettingAllowedCalls = (
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
+        // beneficiaryNoPermissions
+        combineAllowedCalls(
+          // allow the beneficiary to transfer value to addresses 0xcafe... and 0xbeef...
+          [CALLTYPE.VALUE, CALLTYPE.VALUE],
+          [
+            '0xcafecafecafecafecafecafecafecafecafecafe',
+            '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef',
+          ],
+          ['0xffffffff', '0xffffffff'],
+          ['0xffffffff', '0xffffffff'],
+        ),
+        // invalidBytes
         '0xbadbadbadbad',
+        // noBytes
         '0x',
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
     });
 
-    describe('when caller has ADD permission', () => {
-      it('should revert and not be allowed to clear the list of allowed calls for an address', async () => {
-        const dataKey =
-          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          beneficiary.address.substring(2);
-        const dataValue = '0x';
+    describe('when caller has ADD_CONTROLLER', () => {
+      describe('when controller in `AddressPermissions:AllowedCalls:<controller>` has some permissions', () => {
+        it('should revert and not be allowed to clear the list of allowed calls', async () => {
+          const dataKey =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            beneficiaryWithPermissions.address.substring(2);
+          const dataValue = '0x';
 
-        const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
-          dataKey,
-          dataValue,
-        ]);
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+            dataKey,
+            dataValue,
+          ]);
 
-        await expect(context.keyManager.connect(canOnlyAddController).execute(setDataPayload))
-          .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
+          await expect(context.keyManager.connect(canOnlyAddController).execute(setDataPayload))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
+        });
+      });
+
+      describe('when controller in `AddressPermissions:AllowedCalls:<controller>` has no permissions', () => {
+        it('should pass and clear the list of allowed calls', async () => {
+          const dataKey =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            beneficiaryNoPermissions.address.substring(2);
+          const dataValue = '0x';
+
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+            dataKey,
+            dataValue,
+          ]);
+
+          await context.keyManager.connect(canOnlyAddController).execute(setDataPayload);
+
+          expect(await context.universalProfile.getData(dataKey)).to.equal(dataValue);
+        });
       });
     });
 
-    describe('when caller has CHANGE permission', () => {
-      it('should allow to clear the list of allowed calls for an address', async () => {
-        const dataKey =
-          ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          beneficiary.address.substring(2);
-        const dataValue = '0x';
+    describe('when caller has EDIT_PERMISSIONS', () => {
+      describe('when controller in `AddressPermissions:AllowedCalls:<controller>` has some permissions', () => {
+        it('should allow to clear the list of allowed calls', async () => {
+          const dataKey =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            beneficiaryWithPermissions.address.substring(2);
+          const dataValue = '0x';
 
-        const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
-          dataKey,
-          dataValue,
-        ]);
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+            dataKey,
+            dataValue,
+          ]);
 
-        await context.keyManager.connect(canOnlyEditPermissions).execute(setDataPayload);
+          await context.keyManager.connect(canOnlyEditPermissions).execute(setDataPayload);
 
-        const result = await context.universalProfile.getData(dataKey);
-        expect(result).to.equal(dataValue);
+          expect(await context.universalProfile.getData(dataKey)).to.equal(dataValue);
+        });
+      });
+
+      describe('when controller in `AddressPermissions:AllowedCalls:<controller>` has no permissions', () => {
+        it('should revert and not allow to clear the list of allowed calls', async () => {
+          const dataKey =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
+            beneficiaryNoPermissions.address.substring(2);
+          const dataValue = '0x';
+
+          const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+            dataKey,
+            dataValue,
+          ]);
+
+          await expect(context.keyManager.connect(canOnlyEditPermissions).execute(setDataPayload))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canOnlyEditPermissions.address, 'ADDCONTROLLER');
+        });
       });
     });
   });
