@@ -47,7 +47,7 @@ abstract contract LSP20CallVerification {
         if (bytes3(magicValue) != bytes3(ILSP20.lsp20VerifyCall.selector))
             revert LSP20InvalidMagicValue(false, returnedData);
 
-        return bytes1(magicValue[3]) == 0x01;
+        return magicValue[3] == 0x01;
     }
 
     /**

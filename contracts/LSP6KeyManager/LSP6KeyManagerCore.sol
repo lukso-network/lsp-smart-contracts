@@ -96,8 +96,6 @@ abstract contract LSP6KeyManagerCore is
 
     address internal _target;
 
-    // Variables, methods and modifier used for ReentrancyGuard are taken from the link below and modified accordingly.
-    // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/security/ReentrancyGuard.sol
     mapping(address => bool) internal _reentrancyStatus;
 
     /**
@@ -419,7 +417,7 @@ abstract contract LSP6KeyManagerCore is
             payload
         );
 
-        if (reentrancyStatus && !isSetData) {
+        if (!reentrancyStatus && !isSetData) {
             _nonReentrantAfter(targetContract);
         }
 
@@ -489,7 +487,7 @@ abstract contract LSP6KeyManagerCore is
             payload
         );
 
-        if (reentrancyStatus && !isSetData) {
+        if (!reentrancyStatus && !isSetData) {
             _nonReentrantAfter(targetContract);
         }
 
