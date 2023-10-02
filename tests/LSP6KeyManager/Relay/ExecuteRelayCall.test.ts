@@ -45,7 +45,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
     let signer: SignerWithAddress,
       relayer: SignerWithAddress,
       random: SignerWithAddress,
-      signerNoAllowedCalls: SignerWithAddress;
+      signerNoAllowedCalls: SignerWithAddress,
+      signerWithoutExecuteRelayCall: SignerWithAddress;
+
     const signerPrivateKey = LOCAL_PRIVATE_KEYS.ACCOUNT1;
 
     let targetContract: TargetContract;
@@ -57,6 +59,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
       relayer = context.accounts[2];
       signerNoAllowedCalls = context.accounts[3];
       random = context.accounts[4];
+      signerWithoutExecuteRelayCall = context.accounts[5];
 
       targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
@@ -66,11 +69,24 @@ export const shouldBehaveLikeExecuteRelayCall = (
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + signer.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           signerNoAllowedCalls.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          signerWithoutExecuteRelayCall.address.substring(2),
       ];
+
+      const allPermissionsWithoutExecuteRelayCall = ethers.utils.hexZeroPad(
+        BigNumber.from(ALL_PERMISSIONS)
+          .sub(BigNumber.from(PERMISSIONS.EXECUTE_RELAY_CALL))
+          .toHexString(),
+        32,
+      );
 
       const permissionsValues = [
         ALL_PERMISSIONS,
-        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+        combinePermissions(
+          PERMISSIONS.CALL,
+          PERMISSIONS.TRANSFERVALUE,
+          PERMISSIONS.EXECUTE_RELAY_CALL,
+        ),
         combineAllowedCalls(
           [
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
@@ -80,12 +96,74 @@ export const shouldBehaveLikeExecuteRelayCall = (
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
-        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+        combinePermissions(
+          PERMISSIONS.CALL,
+          PERMISSIONS.TRANSFERVALUE,
+          PERMISSIONS.EXECUTE_RELAY_CALL,
+        ),
+        allPermissionsWithoutExecuteRelayCall,
       ];
 
       await setupKeyManager(context, permissionKeys, permissionsValues);
     });
+    describe('When signer does not have EXECUTE_RELAY_CALL permission', () => {
+      it('should revert', async () => {
+        const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
+          'execute',
+          [OPERATION_TYPES.CALL, random.address, 0, '0x'],
+        );
 
+        const latestNonce = await context.keyManager.callStatic.getNonce(
+          signerWithoutExecuteRelayCall.address,
+          0,
+        );
+
+        const validityTimestamps = 0;
+
+        const signedMessageParams = {
+          lsp25Version: LSP25_VERSION,
+          chainId: 31337, // HARDHAT_CHAINID
+          nonce: latestNonce,
+          validityTimestamps,
+          msgValue: 0,
+          payload: executeRelayCallPayload,
+        };
+
+        const encodedMessage = ethers.utils.solidityPack(
+          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+          [
+            signedMessageParams.lsp25Version,
+            signedMessageParams.chainId,
+            signedMessageParams.nonce,
+            signedMessageParams.validityTimestamps,
+            signedMessageParams.msgValue,
+            signedMessageParams.payload,
+          ],
+        );
+
+        const eip191Signer = new EIP191Signer();
+
+        const { signature } = await eip191Signer.signDataWithIntendedValidator(
+          context.keyManager.address,
+          encodedMessage,
+          LOCAL_PRIVATE_KEYS.ACCOUNT5,
+        );
+
+        await expect(
+          context.keyManager
+            .connect(relayer)
+            .executeRelayCall(
+              signature,
+              signedMessageParams.nonce,
+              signedMessageParams.validityTimestamps,
+              signedMessageParams.payload,
+              { value: 0 },
+            ),
+        )
+          .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+          .withArgs(signerWithoutExecuteRelayCall.address, 'EXECUTE_RELAY_CALL');
+      });
+    });
     describe('When testing signed message', () => {
       describe('When testing msg.value', () => {
         describe('When sending more than the signed msg.value', () => {
@@ -1241,7 +1319,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + minter.address.substring(2),
           ],
           [
-            PERMISSIONS.CALL,
+            combinePermissions(PERMISSIONS.CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
             combineAllowedCalls(
               [CALLTYPE.CALL],
               [tokenContract.address],

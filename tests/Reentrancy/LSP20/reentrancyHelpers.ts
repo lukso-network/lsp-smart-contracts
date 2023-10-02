@@ -71,7 +71,7 @@ export const transferValueTestCases = {
   NotAuthorised: [
     {
       permissionsText: 'NO Permissions',
-      permissions: '0x',
+      permissions: PERMISSIONS.EXECUTE_RELAY_CALL,
       allowedCalls: false,
       missingPermission: 'REENTRANCY',
     },
@@ -83,38 +83,46 @@ export const transferValueTestCases = {
     },
     {
       permissionsText: 'REENTRANCY',
-      permissions: PERMISSIONS.REENTRANCY,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.REENTRANCY),
       allowedCalls: false,
       missingPermission: 'TRANSFERVALUE',
     },
     {
       permissionsText: 'REENTRANCY',
-      permissions: PERMISSIONS.REENTRANCY,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.REENTRANCY),
       allowedCalls: true,
       missingPermission: 'TRANSFERVALUE',
     },
     {
       permissionsText: 'TRANSFERVALUE',
-      permissions: PERMISSIONS.TRANSFERVALUE,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.TRANSFERVALUE),
       allowedCalls: false,
       missingPermission: 'REENTRANCY',
     },
     {
       permissionsText: 'TRANSFERVALUE',
-      permissions: PERMISSIONS.TRANSFERVALUE,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.TRANSFERVALUE),
       allowedCalls: true,
       missingPermission: 'REENTRANCY',
     },
   ],
   NoCallsAllowed: {
     permissionsText: 'REENTRANCY, TRANSFERVALUE',
-    permissions: combinePermissions(PERMISSIONS.REENTRANCY, PERMISSIONS.TRANSFERVALUE),
+    permissions: combinePermissions(
+      PERMISSIONS.REENTRANCY,
+      PERMISSIONS.TRANSFERVALUE,
+      PERMISSIONS.EXECUTE_RELAY_CALL,
+    ),
     allowedCalls: false,
     missingPermission: '',
   },
   ValidCase: {
     permissionsText: 'REENTRANCY, TRANSFERVALUE',
-    permissions: combinePermissions(PERMISSIONS.REENTRANCY, PERMISSIONS.TRANSFERVALUE),
+    permissions: combinePermissions(
+      PERMISSIONS.REENTRANCY,
+      PERMISSIONS.TRANSFERVALUE,
+      PERMISSIONS.EXECUTE_RELAY_CALL,
+    ),
     allowedCalls: true,
     missingPermission: '',
   },
@@ -124,7 +132,7 @@ export const setDataTestCases = {
   NotAuthorised: [
     {
       permissionsText: 'NO Permissions',
-      permissions: '0x',
+      permissions: PERMISSIONS.EXECUTE_RELAY_CALL,
       allowedERC725YDataKeys: false,
       missingPermission: 'REENTRANCY',
     },
@@ -136,38 +144,46 @@ export const setDataTestCases = {
     },
     {
       permissionsText: 'REENTRANCY',
-      permissions: PERMISSIONS.REENTRANCY,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.REENTRANCY),
       allowedERC725YDataKeys: false,
       missingPermission: 'SETDATA',
     },
     {
       permissionsText: 'REENTRANCY',
-      permissions: PERMISSIONS.REENTRANCY,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.REENTRANCY),
       allowedERC725YDataKeys: true,
       missingPermission: 'SETDATA',
     },
     {
       permissionsText: 'SETDATA',
-      permissions: PERMISSIONS.SETDATA,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.SETDATA),
       allowedERC725YDataKeys: false,
       missingPermission: 'REENTRANCY',
     },
     {
       permissionsText: 'SETDATA',
-      permissions: PERMISSIONS.SETDATA,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.SETDATA),
       allowedERC725YDataKeys: true,
       missingPermission: 'REENTRANCY',
     },
   ],
   NoERC725YDataKeysAllowed: {
     permissionsText: 'REENTRANCY, SETDATA',
-    permissions: combinePermissions(PERMISSIONS.REENTRANCY, PERMISSIONS.SETDATA),
+    permissions: combinePermissions(
+      PERMISSIONS.REENTRANCY,
+      PERMISSIONS.SETDATA,
+      PERMISSIONS.EXECUTE_RELAY_CALL,
+    ),
     allowedERC725YDataKeys: false,
     missingPermission: '',
   },
   ValidCase: {
     permissionsText: 'REENTRANCY, SETDATA',
-    permissions: combinePermissions(PERMISSIONS.REENTRANCY, PERMISSIONS.SETDATA),
+    permissions: combinePermissions(
+      PERMISSIONS.REENTRANCY,
+      PERMISSIONS.SETDATA,
+      PERMISSIONS.EXECUTE_RELAY_CALL,
+    ),
     allowedERC725YDataKeys: true,
     missingPermission: '',
   },
@@ -177,7 +193,7 @@ export const addPermissionsTestCases = {
   NotAuthorised: [
     {
       permissionsText: 'NO Permissions',
-      permissions: '0x',
+      permissions: PERMISSIONS.EXECUTE_RELAY_CALL,
       missingPermission: 'REENTRANCY',
     },
     {
@@ -187,18 +203,22 @@ export const addPermissionsTestCases = {
     },
     {
       permissionsText: 'REENTRANCY',
-      permissions: PERMISSIONS.REENTRANCY,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.REENTRANCY),
       missingPermission: 'ADDCONTROLLER',
     },
     {
       permissionsText: 'ADDCONTROLLER',
-      permissions: PERMISSIONS.ADDCONTROLLER,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.ADDCONTROLLER),
       missingPermission: 'REENTRANCY',
     },
   ],
   ValidCase: {
     permissionsText: 'REENTRANCY, ADDCONTROLLER',
-    permissions: combinePermissions(PERMISSIONS.REENTRANCY, PERMISSIONS.ADDCONTROLLER),
+    permissions: combinePermissions(
+      PERMISSIONS.REENTRANCY,
+      PERMISSIONS.ADDCONTROLLER,
+      PERMISSIONS.EXECUTE_RELAY_CALL,
+    ),
     missingPermission: '',
   },
 };
@@ -207,7 +227,7 @@ export const editPermissionsTestCases = {
   NotAuthorised: [
     {
       permissionsText: 'NO Permissions',
-      permissions: '0x',
+      permissions: PERMISSIONS.EXECUTE_RELAY_CALL,
       missingPermission: 'REENTRANCY',
     },
     {
@@ -217,18 +237,22 @@ export const editPermissionsTestCases = {
     },
     {
       permissionsText: 'REENTRANCY',
-      permissions: PERMISSIONS.REENTRANCY,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.REENTRANCY),
       missingPermission: 'EDITPERMISSIONS',
     },
     {
       permissionsText: 'EDITPERMISSIONS',
-      permissions: PERMISSIONS.EDITPERMISSIONS,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.EDITPERMISSIONS),
       missingPermission: 'REENTRANCY',
     },
   ],
   ValidCase: {
     permissionsText: 'REENTRANCY, EDITPERMISSIONS',
-    permissions: combinePermissions(PERMISSIONS.REENTRANCY, PERMISSIONS.EDITPERMISSIONS),
+    permissions: combinePermissions(
+      PERMISSIONS.REENTRANCY,
+      PERMISSIONS.EDITPERMISSIONS,
+      PERMISSIONS.EXECUTE_RELAY_CALL,
+    ),
     missingPermission: '',
   },
 };
@@ -237,7 +261,7 @@ export const addUniversalReceiverDelegateTestCases = {
   NotAuthorised: [
     {
       permissionsText: 'NO Permissions',
-      permissions: '0x',
+      permissions: PERMISSIONS.EXECUTE_RELAY_CALL,
       missingPermission: 'REENTRANCY',
     },
     {
@@ -247,12 +271,15 @@ export const addUniversalReceiverDelegateTestCases = {
     },
     {
       permissionsText: 'REENTRANCY',
-      permissions: PERMISSIONS.REENTRANCY,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.REENTRANCY),
       missingPermission: 'ADDUNIVERSALRECEIVERDELEGATE',
     },
     {
       permissionsText: 'ADDUNIVERSALRECEIVERDELEGATE',
-      permissions: PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE,
+      permissions: combinePermissions(
+        PERMISSIONS.EXECUTE_RELAY_CALL,
+        PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE,
+      ),
       missingPermission: 'REENTRANCY',
     },
   ],
@@ -261,6 +288,7 @@ export const addUniversalReceiverDelegateTestCases = {
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
       PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE,
+      PERMISSIONS.EXECUTE_RELAY_CALL,
     ),
     missingPermission: '',
   },
@@ -270,7 +298,7 @@ export const changeUniversalReceiverDelegateTestCases = {
   NotAuthorised: [
     {
       permissionsText: 'NO Permissions',
-      permissions: '0x',
+      permissions: PERMISSIONS.EXECUTE_RELAY_CALL,
       missingPermission: 'REENTRANCY',
     },
     {
@@ -280,12 +308,15 @@ export const changeUniversalReceiverDelegateTestCases = {
     },
     {
       permissionsText: 'REENTRANCY',
-      permissions: PERMISSIONS.REENTRANCY,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.REENTRANCY),
       missingPermission: 'CHANGEUNIVERSALRECEIVERDELEGATE',
     },
     {
       permissionsText: 'CHANGEUNIVERSALRECEIVERDELEGATE',
-      permissions: PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE,
+      permissions: combinePermissions(
+        PERMISSIONS.EXECUTE_RELAY_CALL,
+        PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE,
+      ),
       missingPermission: 'REENTRANCY',
     },
   ],
@@ -294,6 +325,7 @@ export const changeUniversalReceiverDelegateTestCases = {
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
       PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE,
+      PERMISSIONS.EXECUTE_RELAY_CALL,
     ),
     missingPermission: '',
   },

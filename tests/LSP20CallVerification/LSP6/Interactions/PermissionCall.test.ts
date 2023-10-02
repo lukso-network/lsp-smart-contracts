@@ -99,11 +99,11 @@ export const shouldBehaveLikePermissionCall = (
       );
 
       const permissionsValues = [
-        PERMISSIONS.SIGN,
-        PERMISSIONS.SIGN,
-        PERMISSIONS.CALL,
-        PERMISSIONS.CALL,
-        PERMISSIONS.SUPER_CALL,
+        combinePermissions(PERMISSIONS.SIGN, PERMISSIONS.EXECUTE_RELAY_CALL),
+        combinePermissions(PERMISSIONS.SIGN, PERMISSIONS.EXECUTE_RELAY_CALL),
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
+        combinePermissions(PERMISSIONS.SUPER_CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
         allowedCallsValues,
         allowedCallsValues,
       ];
@@ -343,9 +343,9 @@ export const shouldBehaveLikePermissionCall = (
 
       const permissionsValues = [
         ALL_PERMISSIONS,
-        PERMISSIONS.CALL,
-        PERMISSIONS.CALL,
-        PERMISSIONS.SETDATA,
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
+        combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.EXECUTE_RELAY_CALL),
         combineAllowedCalls(
           [CALLTYPE.CALL],
           [targetContract.address],
@@ -497,7 +497,7 @@ export const shouldBehaveLikePermissionCall = (
     it('Should revert when caller calls the KeyManager through execute', async () => {
       const lsp20VerifyCallPayload = context.keyManager.interface.encodeFunctionData(
         'lsp20VerifyCall',
-        [context.accounts[2].address, 0, '0xaabbccdd'], // random arguments
+        [context.keyManager.address, context.accounts[2].address, 0, '0xaabbccdd'], // random arguments
       );
 
       await expect(

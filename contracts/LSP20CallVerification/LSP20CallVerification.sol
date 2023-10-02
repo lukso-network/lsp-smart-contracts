@@ -33,6 +33,7 @@ abstract contract LSP20CallVerification {
         (bool success, bytes memory returnedData) = logicVerifier.call(
             abi.encodeWithSelector(
                 ILSP20.lsp20VerifyCall.selector,
+                address(this),
                 msg.sender,
                 msg.value,
                 msg.data
@@ -46,7 +47,7 @@ abstract contract LSP20CallVerification {
         if (bytes3(magicValue) != bytes3(ILSP20.lsp20VerifyCall.selector))
             revert LSP20InvalidMagicValue(false, returnedData);
 
-        return bytes1(magicValue[3]) == 0x01;
+        return magicValue[3] == 0x01;
     }
 
     /**
@@ -60,7 +61,14 @@ abstract contract LSP20CallVerification {
         (bool success, bytes memory returnedData) = logicVerifier.call(
             abi.encodeWithSelector(
                 ILSP20.lsp20VerifyCallResult.selector,
-                keccak256(abi.encodePacked(msg.sender, msg.value, msg.data)),
+                keccak256(
+                    abi.encodePacked(
+                        address(this),
+                        msg.sender,
+                        msg.value,
+                        msg.data
+                    )
+                ),
                 callResult
             )
         );

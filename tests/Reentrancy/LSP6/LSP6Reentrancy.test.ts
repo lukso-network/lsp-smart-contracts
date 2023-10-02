@@ -75,7 +75,11 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
       const permissionValues = [
         ALL_PERMISSIONS,
-        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+        combinePermissions(
+          PERMISSIONS.CALL,
+          PERMISSIONS.TRANSFERVALUE,
+          PERMISSIONS.EXECUTE_RELAY_CALL,
+        ),
         combineAllowedCalls(
           // TODO: test reentrancy against the bits for the allowed calls
           [

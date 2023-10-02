@@ -54,10 +54,18 @@ export const shouldBehaveLikePermissionDeploy = (
 
     const permissionsValues = [
       ALL_PERMISSIONS,
-      PERMISSIONS.DEPLOY,
-      combinePermissions(PERMISSIONS.DEPLOY, PERMISSIONS.TRANSFERVALUE),
-      combinePermissions(PERMISSIONS.DEPLOY, PERMISSIONS.SUPER_TRANSFERVALUE),
-      PERMISSIONS.CALL,
+      combinePermissions(PERMISSIONS.DEPLOY, PERMISSIONS.EXECUTE_RELAY_CALL),
+      combinePermissions(
+        PERMISSIONS.DEPLOY,
+        PERMISSIONS.TRANSFERVALUE,
+        PERMISSIONS.EXECUTE_RELAY_CALL,
+      ),
+      combinePermissions(
+        PERMISSIONS.DEPLOY,
+        PERMISSIONS.SUPER_TRANSFERVALUE,
+        PERMISSIONS.EXECUTE_RELAY_CALL,
+      ),
+      combinePermissions(PERMISSIONS.CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
     ];
 
     await setupKeyManager(context, permissionKeys, permissionsValues);

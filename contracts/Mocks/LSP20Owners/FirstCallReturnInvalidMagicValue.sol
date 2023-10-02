@@ -14,6 +14,7 @@ contract FirstCallReturnInvalidMagicValue {
 
     function lsp20VerifyCall(
         address,
+        address,
         uint256,
         bytes memory
     ) external returns (bytes4) {

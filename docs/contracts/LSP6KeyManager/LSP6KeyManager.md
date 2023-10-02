@@ -332,8 +332,8 @@ Checks if a signature was signed by a controller that has the permission `SIGN`.
 
 - Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#lsp20verifycall)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
-- Function signature: `lsp20VerifyCall(address,uint256,bytes)`
-- Function selector: `0x9bf04b11`
+- Function signature: `lsp20VerifyCall(address,address,uint256,bytes)`
+- Function selector: `0x1a2380e1`
 
 :::
 
@@ -341,13 +341,14 @@ Checks if a signature was signed by a controller that has the permission `SIGN`.
 
 This function can call by any other address than the {`target`}. This allows to verify permissions in a _&quot;read-only&quot;_ manner. Anyone can call this function to verify if the `caller` has the right permissions to perform the abi-encoded function call `data` on the {`target`} contract (while sending `msgValue` alongside the call). If the permissions have been verified successfully and `caller` is authorized, one of the following two LSP20 magic value will be returned:
 
-- `0x9bf04b00`: LSP20 magic value **without** post verification (last byte is `0x00`).
-- `0x9bf04b01`: LSP20 magic value **with** post-verification (last byte is `0x01`).
+- `0x1a238000`: LSP20 magic value **without** post verification (last byte is `0x00`).
+- `0x1a238001`: LSP20 magic value **with** post-verification (last byte is `0x01`).
 
 :::
 
 ```solidity
 function lsp20VerifyCall(
+  address targetContract,
   address caller,
   uint256 msgValue,
   bytes data
@@ -356,11 +357,12 @@ function lsp20VerifyCall(
 
 #### Parameters
 
-| Name       |   Type    | Description                                           |
-| ---------- | :-------: | ----------------------------------------------------- |
-| `caller`   | `address` | The address who called the function on the msg.sender |
-| `msgValue` | `uint256` | -                                                     |
-| `data`     |  `bytes`  | -                                                     |
+| Name             |   Type    | Description                                           |
+| ---------------- | :-------: | ----------------------------------------------------- |
+| `targetContract` | `address` | -                                                     |
+| `caller`         | `address` | The address who called the function on the msg.sender |
+| `msgValue`       | `uint256` | -                                                     |
+| `data`           |  `bytes`  | -                                                     |
 
 #### Returns
 
@@ -941,6 +943,17 @@ function _isAllowedCallType(
 
 <br/>
 
+### \_verifyExecuteRelayCallPermission
+
+```solidity
+function _verifyExecuteRelayCallPermission(
+  address controllerAddress,
+  bytes32 controllerPermissions
+) internal pure;
+```
+
+<br/>
+
 ### \_verifyOwnershipPermissions
 
 ```solidity
@@ -1155,6 +1168,7 @@ function _verifyPermissions(
   address targetContract,
   address from,
   uint256 msgValue,
+  bool isRelayedCall,
   bytes payload
 ) internal view;
 ```
@@ -1168,17 +1182,8 @@ Verify if the `from` address is allowed to execute the `payload` on the [`target
 | `targetContract` | `address` | -                                                                   |
 | `from`           | `address` | Either the caller of {execute} or the signer of {executeRelayCall}. |
 | `msgValue`       | `uint256` | -                                                                   |
+| `isRelayedCall`  |  `bool`   | -                                                                   |
 | `payload`        |  `bytes`  | The abi-encoded function call to execute on the {target} contract.  |
-
-<br/>
-
-### \_setupLSP6ReentrancyGuard
-
-```solidity
-function _setupLSP6ReentrancyGuard() internal nonpayable;
-```
-
-Initialise \_reentrancyStatus to \_NOT_ENTERED.
 
 <br/>
 
@@ -1189,7 +1194,7 @@ function _nonReentrantBefore(
   address targetContract,
   bool isSetData,
   address from
-) internal nonpayable returns (uint8 reentrancyStatus);
+) internal nonpayable returns (bool reentrancyStatus);
 ```
 
 Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
@@ -1201,10 +1206,10 @@ Used in the beginning of the `nonReentrant` modifier, before the method executio
 ### \_nonReentrantAfter
 
 ```solidity
-function _nonReentrantAfter() internal nonpayable;
+function _nonReentrantAfter(address targetContract) internal nonpayable;
 ```
 
-Resets the status to `_NOT_ENTERED`
+Resets the status to `false`
 Used in the end of the `nonReentrant` modifier after the method execution is terminated
 
 <br/>
