@@ -98,9 +98,9 @@ abstract contract LSP6KeyManagerCore is
 
     // Variables, methods and modifier used for ReentrancyGuard are taken from the link below and modified accordingly.
     // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/security/ReentrancyGuard.sol
-    mapping(address => uint8) internal _reentrancyStatus;
-    uint8 internal constant _NOT_ENTERED = 1;
-    uint8 internal constant _ENTERED = 2;
+    mapping(address => uint256) internal _reentrancyStatus;
+    uint256 internal constant _NOT_ENTERED = 1;
+    uint256 internal constant _ENTERED = 2;
 
     /**
      * @inheritdoc ILSP6
@@ -333,7 +333,7 @@ abstract contract LSP6KeyManagerCore is
 
         // If target is invoking the verification, emit the event and change the reentrancy guard
         if (msg.sender == targetContract) {
-            uint8 reentrancyStatus = _nonReentrantBefore(
+            uint256 reentrancyStatus = _nonReentrantBefore(
                 targetContract,
                 isSetData,
                 caller
@@ -351,7 +351,7 @@ abstract contract LSP6KeyManagerCore is
         /// @dev If a different address is invoking the verification,
         /// do not change the state or emit the event to allow read-only verification
         else {
-            uint8 reentrancyStatus = _reentrancyStatus[targetContract];
+            uint256 reentrancyStatus = _reentrancyStatus[targetContract];
 
             if (reentrancyStatus == _ENTERED) {
                 _requirePermissions(
@@ -399,7 +399,7 @@ abstract contract LSP6KeyManagerCore is
 
         address targetContract = _target;
 
-        uint8 reentrancyStatus = _nonReentrantBefore(
+        uint256 reentrancyStatus = _nonReentrantBefore(
             targetContract,
             isSetData,
             msg.sender
@@ -476,7 +476,7 @@ abstract contract LSP6KeyManagerCore is
         bool isSetData = bytes4(payload) == IERC725Y.setData.selector ||
             bytes4(payload) == IERC725Y.setDataBatch.selector;
 
-        uint8 reentrancyStatus = _nonReentrantBefore(
+        uint256 reentrancyStatus = _nonReentrantBefore(
             targetContract,
             isSetData,
             signer
@@ -535,6 +535,13 @@ abstract contract LSP6KeyManagerCore is
     ) internal view virtual {
         bytes32 permissions = ERC725Y(targetContract).getPermissionsFor(from);
         if (permissions == bytes32(0)) revert NoPermissionsSet(from);
+
+        if (isRelayedCall) {
+            LSP6ExecuteRelayCallModule._verifyExecuteRelayCallPermission(
+                from,
+                permissions
+            );
+        }
 
         bytes4 erc725Function = bytes4(payload);
 
@@ -595,13 +602,6 @@ abstract contract LSP6KeyManagerCore is
         } else {
             revert InvalidERC725Function(erc725Function);
         }
-
-        if (isRelayedCall) {
-            LSP6ExecuteRelayCallModule._verifyExecuteRelayCallPermission(
-                from,
-                permissions
-            );
-        }
     }
 
     /**
@@ -622,7 +622,7 @@ abstract contract LSP6KeyManagerCore is
         address targetContract,
         bool isSetData,
         address from
-    ) internal virtual returns (uint8 reentrancyStatus) {
+    ) internal virtual returns (uint256 reentrancyStatus) {
         reentrancyStatus = _reentrancyStatus[targetContract];
         if (reentrancyStatus == _ENTERED) {
             // CHECK the caller has REENTRANCY permission

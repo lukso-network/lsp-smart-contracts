@@ -261,7 +261,7 @@ export const addUniversalReceiverDelegateTestCases = {
   NotAuthorised: [
     {
       permissionsText: 'NO Permissions',
-      permissions: '0x',
+      permissions: PERMISSIONS.EXECUTE_RELAY_CALL,
       missingPermission: 'REENTRANCY',
     },
     {
@@ -271,12 +271,15 @@ export const addUniversalReceiverDelegateTestCases = {
     },
     {
       permissionsText: 'REENTRANCY',
-      permissions: PERMISSIONS.REENTRANCY,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.REENTRANCY),
       missingPermission: 'ADDUNIVERSALRECEIVERDELEGATE',
     },
     {
       permissionsText: 'ADDUNIVERSALRECEIVERDELEGATE',
-      permissions: PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE,
+      permissions: combinePermissions(
+        PERMISSIONS.EXECUTE_RELAY_CALL,
+        PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE,
+      ),
       missingPermission: 'REENTRANCY',
     },
   ],
@@ -295,7 +298,7 @@ export const changeUniversalReceiverDelegateTestCases = {
   NotAuthorised: [
     {
       permissionsText: 'NO Permissions',
-      permissions: '0x',
+      permissions: PERMISSIONS.EXECUTE_RELAY_CALL,
       missingPermission: 'REENTRANCY',
     },
     {
@@ -305,12 +308,15 @@ export const changeUniversalReceiverDelegateTestCases = {
     },
     {
       permissionsText: 'REENTRANCY',
-      permissions: PERMISSIONS.REENTRANCY,
+      permissions: combinePermissions(PERMISSIONS.EXECUTE_RELAY_CALL, PERMISSIONS.REENTRANCY),
       missingPermission: 'CHANGEUNIVERSALRECEIVERDELEGATE',
     },
     {
       permissionsText: 'CHANGEUNIVERSALRECEIVERDELEGATE',
-      permissions: PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE,
+      permissions: combinePermissions(
+        PERMISSIONS.EXECUTE_RELAY_CALL,
+        PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE,
+      ),
       missingPermission: 'REENTRANCY',
     },
   ],

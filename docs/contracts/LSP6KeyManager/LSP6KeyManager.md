@@ -1204,7 +1204,7 @@ function _nonReentrantBefore(
   address targetContract,
   bool isSetData,
   address from
-) internal nonpayable returns (uint8 reentrancyStatus);
+) internal nonpayable returns (uint256 reentrancyStatus);
 ```
 
 Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
