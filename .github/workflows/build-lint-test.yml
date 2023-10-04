@@ -76,6 +76,7 @@ jobs:
             "lsp11",
             "lsp11init",
             "lsp17",
+            "lsp17extensions",
             "lsp20",
             "lsp20init",
             "lsp23",
