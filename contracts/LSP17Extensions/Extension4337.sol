@@ -3,7 +3,6 @@ pragma solidity ^0.8.9;
 
 import {_ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
 import {LSP6Utils} from "../LSP6KeyManager/LSP6Utils.sol";
-import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 import {LSP17Extension} from "../LSP17ContractExtension/LSP17Extension.sol";
 import {
@@ -15,9 +14,6 @@ import {
     UserOperation
 } from "@account-abstraction/contracts/interfaces/UserOperation.sol";
 import {
-    IEntryPoint
-} from "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
-import {
     IERC725X
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 import {
@@ -28,7 +24,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 contract Extension4337 is LSP17Extension, IAccount {
     using ECDSA for bytes32;
 
-    address public immutable entryPoint;
+    address public immutable ENTRY_POINT;
 
     // permission needed to be able to use this extension
     bytes32 internal constant _4337_PERMISSION =
@@ -38,7 +34,7 @@ contract Extension4337 is LSP17Extension, IAccount {
     uint256 internal constant _SIG_VALIDATION_FAILED = 1;
 
     constructor(address entryPoint_) {
-        entryPoint = entryPoint_;
+        ENTRY_POINT = entryPoint_;
     }
 
     function validateUserOp(
@@ -47,7 +43,7 @@ contract Extension4337 is LSP17Extension, IAccount {
         uint256 missingAccountFunds
     ) external returns (uint256) {
         require(
-            _extendableMsgSender() == entryPoint,
+            _extendableMsgSender() == ENTRY_POINT,
             "Only EntryPoint contract can call this"
         );
 
@@ -93,7 +89,7 @@ contract Extension4337 is LSP17Extension, IAccount {
             // send funds from Universal Profile to entryPoint
             IERC725X(msg.sender).execute(
                 0,
-                entryPoint,
+                ENTRY_POINT,
                 missingAccountFunds,
                 depositToBytes
             );
