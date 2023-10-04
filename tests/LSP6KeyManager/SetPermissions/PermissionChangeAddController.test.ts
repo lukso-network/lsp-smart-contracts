@@ -22,7 +22,7 @@ async function setupPermissions(
     permissionValues,
   ]);
 
-  await context.keyManager.connect(context.owner).execute(setupPayload);
+  await context.keyManager.connect(context.mainController).execute(setupPayload);
 }
 
 /**
@@ -34,7 +34,7 @@ async function resetPermissions(context: LSP6TestContext, permissionsKeys: strin
     Array(permissionsKeys.length).fill('0x'),
   ]);
 
-  await context.keyManager.connect(context.owner).execute(teardownPayload);
+  await context.keyManager.connect(context.mainController).execute(teardownPayload);
 }
 
 export const shouldBehaveLikePermissionChangeOrAddController = (
@@ -135,7 +135,8 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
     await setupKeyManager(
       context,
       [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ...firstSetupPermissionsKeys,
       ],
       [ALL_PERMISSIONS, ...firstSetupPermissionsValues],
@@ -200,7 +201,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
       permissionArrayValues = [
         ethers.utils.hexZeroPad(ethers.utils.hexlify(6), 16),
-        context.owner.address,
+        context.mainController.address,
         canOnlyAddController.address,
         canOnlyEditPermissions.address,
         canOnlySetData.address,
@@ -243,7 +244,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             PERMISSIONS.SETDATA,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -262,7 +263,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             value,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -280,7 +281,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             value,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
           expect(await context.universalProfile.getData(key)).to.equal(value);
         });
 
@@ -295,7 +296,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             value,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
           expect(await context.universalProfile.getData(key)).to.equal(value);
         });
 
@@ -314,7 +315,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               value,
             ]);
 
-            await context.keyManager.connect(context.owner).execute(payload);
+            await context.keyManager.connect(context.mainController).execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -335,7 +336,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               value,
             ]);
 
-            await context.keyManager.connect(context.owner).execute(payload);
+            await context.keyManager.connect(context.mainController).execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -353,7 +354,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               value,
             ]);
 
-            await context.keyManager.connect(context.owner).execute(payload);
+            await context.keyManager.connect(context.mainController).execute(payload);
 
             const result = await context.universalProfile.getData(key);
             expect(result).to.equal(value);
@@ -369,7 +370,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               randomValue,
             ]);
 
-            await expect(context.keyManager.connect(context.owner).execute(setupPayload))
+            await expect(context.keyManager.connect(context.mainController).execute(setupPayload))
               .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
@@ -384,7 +385,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               randomValue,
             ]);
 
-            await expect(context.keyManager.connect(context.owner).execute(setupPayload))
+            await expect(context.keyManager.connect(context.mainController).execute(setupPayload))
               .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
@@ -403,7 +404,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               value,
             ]);
 
-            await context.keyManager.connect(context.owner).execute(payload);
+            await context.keyManager.connect(context.mainController).execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -420,7 +421,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               randomValue,
             ]);
 
-            await expect(context.keyManager.connect(context.owner).execute(setupPayload))
+            await expect(context.keyManager.connect(context.mainController).execute(setupPayload))
               .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
@@ -435,7 +436,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               randomValue,
             ]);
 
-            await expect(context.keyManager.connect(context.owner).execute(setupPayload))
+            await expect(context.keyManager.connect(context.mainController).execute(setupPayload))
               .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
@@ -452,7 +453,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               value,
             ]);
 
-            await context.keyManager.connect(context.owner).execute(payload);
+            await context.keyManager.connect(context.mainController).execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -476,7 +477,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               value,
             ]);
 
-            await expect(context.keyManager.connect(context.owner).execute(payload))
+            await expect(context.keyManager.connect(context.mainController).execute(payload))
               .to.be.revertedWithCustomError(context.keyManager, 'NotRecognisedPermissionKey')
               .withArgs(key.toLowerCase());
           });
@@ -1285,7 +1286,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             values,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile.getDataBatch(keys);
@@ -1314,7 +1315,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             values,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile.getDataBatch(keys);
@@ -1345,7 +1346,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             values,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile.getDataBatch(keys);

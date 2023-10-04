@@ -12,21 +12,21 @@ import { shouldBehaveLikeLSP6 } from './LSP20WithLSP6.behaviour';
 describe('LSP20 Init + LSP6 Init with proxy', () => {
   const buildProxyTestContext = async (initialFunding?: BigNumber): Promise<LSP6TestContext> => {
     const accounts = await ethers.getSigners();
-    const owner = accounts[0];
+    const mainController = accounts[0];
 
-    const baseUP = await new UniversalProfileInit__factory(owner).deploy();
-    const upProxy = await deployProxy(baseUP.address, owner);
+    const baseUP = await new UniversalProfileInit__factory(mainController).deploy();
+    const upProxy = await deployProxy(baseUP.address, mainController);
     const universalProfile = await baseUP.attach(upProxy);
 
-    const baseKM = await new LSP6KeyManagerInit__factory(owner).deploy();
-    const kmProxy = await deployProxy(baseKM.address, owner);
+    const baseKM = await new LSP6KeyManagerInit__factory(mainController).deploy();
+    const kmProxy = await deployProxy(baseKM.address, mainController);
     const keyManager = await baseKM.attach(kmProxy);
 
-    return { accounts, owner, universalProfile, keyManager, initialFunding };
+    return { accounts, mainController, universalProfile, keyManager, initialFunding };
   };
 
   const initializeProxy = async (context: LSP6TestContext) => {
-    await context.universalProfile['initialize(address)'](context.owner.address, {
+    await context.universalProfile['initialize(address)'](context.mainController.address, {
       value: context.initialFunding,
     });
 

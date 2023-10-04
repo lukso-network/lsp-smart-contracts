@@ -24,7 +24,8 @@ export const testInvalidExecutePayloads = (buildContext: () => Promise<LSP6TestC
     targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
     const permissionsKeys = [
-      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
         addressCanMakeCall.address.substring(2),
     ];
@@ -77,7 +78,7 @@ export const testInvalidExecutePayloads = (buildContext: () => Promise<LSP6TestC
       ]);
 
       await expect(
-        context.keyManager.connect(context.owner).execute(payload),
+        context.keyManager.connect(context.mainController).execute(payload),
       ).to.be.revertedWithCustomError(context.universalProfile, 'ERC725X_UnknownOperationType');
     });
 

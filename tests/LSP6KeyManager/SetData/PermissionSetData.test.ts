@@ -59,7 +59,8 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       cannotSetData = context.accounts[3];
 
       const permissionsKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           canSetDataWithAllowedERC725YDataKeys.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
@@ -101,7 +102,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
             value,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
           const fetchedResult = await context.universalProfile.callStatic['getData(bytes32)'](key);
           expect(fetchedResult).to.equal(value);
         });
@@ -200,7 +201,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
             values,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           const fetchedResult = await context.universalProfile.getDataBatch(keys);
 
@@ -219,7 +220,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
             values,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           const fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
@@ -255,7 +256,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
             values,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           const fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
@@ -527,7 +528,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
           ]);
 
           await expect(
-            context.keyManager.connect(context.owner).execute(payload, { value: 12 }),
+            context.keyManager.connect(context.mainController).execute(payload, { value: 12 }),
           ).to.be.revertedWithCustomError(context.keyManager, 'CannotSendValueToSetData');
         });
       });
@@ -550,13 +551,14 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
     before(async () => {
       context = await buildContext();
 
-      contractCanSetData = await new Executor__factory(context.owner).deploy(
+      contractCanSetData = await new Executor__factory(context.mainController).deploy(
         context.universalProfile.address,
         context.keyManager.address,
       );
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           contractCanSetData.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +

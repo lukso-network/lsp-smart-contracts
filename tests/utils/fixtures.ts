@@ -49,24 +49,25 @@ export async function setupKeyManager(
   _dataKeys: string[],
   _dataValues: string[],
 ) {
-  await _context.universalProfile.connect(_context.owner).setDataBatch(
+  await _context.universalProfile.connect(_context.mainController).setDataBatch(
     [
-      // required to set owner permission so that it can acceptOwnership(...) via the KeyManager
-      // otherwise, the KeyManager will flag the calling owner as not having the permission CHANGEOWNER
+      // required to set main controller permission so that it can acceptOwnership(...) via the KeyManager
+      // otherwise, the KeyManager will flag the calling main controller as not having the permission CHANGEOWNER
       // when trying to setup the KeyManager
-      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + _context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        _context.mainController.address.substring(2),
       ..._dataKeys,
     ],
     [ALL_PERMISSIONS, ..._dataValues],
   );
 
   await _context.universalProfile
-    .connect(_context.owner)
+    .connect(_context.mainController)
     .transferOwnership(_context.keyManager.address);
 
   const payload = _context.universalProfile.interface.getSighash('acceptOwnership');
 
-  await _context.keyManager.connect(_context.owner).execute(payload);
+  await _context.keyManager.connect(_context.mainController).execute(payload);
 }
 
 export async function setupKeyManagerHelper(
@@ -75,23 +76,23 @@ export async function setupKeyManagerHelper(
   _permissionsValues: string[],
 ) {
   await _context.universalProfile
-    .connect(_context.owner)
+    .connect(_context.mainController)
     .setDataBatch(
       [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          _context.owner.address.substring(2),
+          _context.mainController.address.substring(2),
         ..._permissionsKeys,
       ],
       [ALL_PERMISSIONS, ..._permissionsValues],
     );
 
   await _context.universalProfile
-    .connect(_context.owner)
+    .connect(_context.mainController)
     .transferOwnership(_context.keyManagerInternalTester.address);
 
   const payload = _context.universalProfile.interface.getSighash('acceptOwnership');
 
-  await _context.keyManagerInternalTester.connect(_context.owner).execute(payload);
+  await _context.keyManagerInternalTester.connect(_context.mainController).execute(payload);
 }
 
 /**

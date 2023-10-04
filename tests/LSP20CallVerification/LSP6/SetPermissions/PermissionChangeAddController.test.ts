@@ -18,7 +18,7 @@ async function setupPermissions(
   permissionValues: string[],
 ) {
   await context.universalProfile
-    .connect(context.owner)
+    .connect(context.mainController)
     .setDataBatch(permissionsKeys, permissionValues);
 }
 
@@ -27,7 +27,7 @@ async function setupPermissions(
  */
 async function resetPermissions(context: LSP6TestContext, permissionsKeys: string[]) {
   await context.universalProfile
-    .connect(context.owner)
+    .connect(context.mainController)
     .setDataBatch(permissionsKeys, Array(permissionsKeys.length).fill('0x'));
 }
 
@@ -47,7 +47,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
     await setupKeyManager(
       context,
-      [ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2)],
+      [
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
+      ],
       [ALL_PERMISSIONS],
     );
   });
@@ -106,7 +109,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
       permissionArrayValues = [
         ethers.utils.hexZeroPad(ethers.utils.hexlify(6), 16),
-        context.owner.address,
+        context.mainController.address,
         canOnlyAddController.address,
         canOnlyEditPermissions.address,
         canOnlySetData.address,
@@ -143,7 +146,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
             newController.address.substr(2);
 
-          await context.universalProfile.connect(context.owner).setData(key, PERMISSIONS.SETDATA);
+          await context.universalProfile
+            .connect(context.mainController)
+            .setData(key, PERMISSIONS.SETDATA);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -157,7 +162,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           const value = PERMISSIONS.SETDATA;
 
-          await context.universalProfile.connect(context.owner).setData(key, value);
+          await context.universalProfile.connect(context.mainController).setData(key, value);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -174,7 +179,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             const value = ethers.utils.hexZeroPad(ethers.utils.hexlify(newLength), 16);
 
-            await context.universalProfile.connect(context.owner).setData(key, value);
+            await context.universalProfile.connect(context.mainController).setData(key, value);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -190,7 +195,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             const value = ethers.utils.hexZeroPad(ethers.utils.hexlify(newLength), 16);
 
-            await context.universalProfile.connect(context.owner).setData(key, value);
+            await context.universalProfile.connect(context.mainController).setData(key, value);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -205,7 +210,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               '00000000000000000000000000000006';
             const value = ethers.Wallet.createRandom().address.toLowerCase();
 
-            await context.universalProfile.connect(context.owner).setData(key, value);
+            await context.universalProfile.connect(context.mainController).setData(key, value);
 
             const result = await context.universalProfile.getData(key);
             expect(result).to.equal(value);
@@ -219,7 +224,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             // set some random bytes under AddressPermissions[7]
 
-            await expect(context.universalProfile.connect(context.owner).setData(key, randomValue))
+            await expect(
+              context.universalProfile.connect(context.mainController).setData(key, randomValue),
+            )
               .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
@@ -232,7 +239,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             // set some random bytes under AddressPermissions[7]
 
-            await expect(context.universalProfile.connect(context.owner).setData(key, randomValue))
+            await expect(
+              context.universalProfile.connect(context.mainController).setData(key, randomValue),
+            )
               .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
@@ -248,7 +257,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             const value = randomWallet.address;
 
-            await context.universalProfile.connect(context.owner).setData(key, value);
+            await context.universalProfile.connect(context.mainController).setData(key, value);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -263,7 +272,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             // set some random bytes under AddressPermissions[7]
 
-            await expect(context.universalProfile.connect(context.owner).setData(key, randomValue))
+            await expect(
+              context.universalProfile.connect(context.mainController).setData(key, randomValue),
+            )
               .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
@@ -276,7 +287,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             // set some random bytes under AddressPermissions[7]
 
-            await expect(context.universalProfile.connect(context.owner).setData(key, randomValue))
+            await expect(
+              context.universalProfile.connect(context.mainController).setData(key, randomValue),
+            )
               .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
@@ -290,7 +303,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
             const value = '0x';
 
-            await context.universalProfile.connect(context.owner).setData(key, value);
+            await context.universalProfile.connect(context.mainController).setData(key, value);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -309,7 +322,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             // the value does not matter in the case of the test here
             const value = '0x0000000000000000000000000000000000000000000000000000000000000008';
 
-            await expect(context.universalProfile.connect(context.owner).setData(key, value))
+            await expect(
+              context.universalProfile.connect(context.mainController).setData(key, value),
+            )
               .to.be.revertedWithCustomError(context.keyManager, 'NotRecognisedPermissionKey')
               .withArgs(key.toLowerCase());
           });
@@ -906,7 +921,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             PERMISSIONS.SETDATA,
           ];
 
-          await context.universalProfile.connect(context.owner).setDataBatch(keys, values);
+          await context.universalProfile.connect(context.mainController).setDataBatch(keys, values);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile.getDataBatch(keys);
@@ -930,7 +945,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
           ];
 
-          await context.universalProfile.connect(context.owner).setDataBatch(keys, values);
+          await context.universalProfile.connect(context.mainController).setDataBatch(keys, values);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile.getDataBatch(keys);
@@ -956,7 +971,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
           ];
 
-          await context.universalProfile.connect(context.owner).setDataBatch(keys, values);
+          await context.universalProfile.connect(context.mainController).setDataBatch(keys, values);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile.getDataBatch(keys);

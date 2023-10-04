@@ -664,5 +664,5 @@ export const loadTestCase = async (
     'setDataBatch',
     [permissionKeys, permissionValues],
   );
-  await context.keyManager.connect(context.owner).execute(permissionsPayload);
+  await context.keyManager.connect(context.mainController).execute(permissionsPayload);
 };

@@ -86,7 +86,8 @@ export const shouldBehaveLikePermissionTransferValue = (
       ).to.equal(graffitiExtension.address);
 
       const permissionsKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           canTransferValue.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
@@ -138,7 +139,7 @@ export const shouldBehaveLikePermissionTransferValue = (
              */
             await expect(() =>
               context.universalProfile
-                .connect(context.owner)
+                .connect(context.mainController)
                 .execute(OPERATION_TYPES.CALL, recipient.address, amount, data),
             ).to.changeEtherBalances(
               [context.universalProfile.address, recipient.address],
@@ -207,7 +208,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             const initialBalanceRecipient = await provider.getBalance(recipient.address);
 
             await context.universalProfile
-              .connect(context.owner)
+              .connect(context.mainController)
               .execute(OPERATION_TYPES.CALL, recipient.address, ethers.utils.parseEther('3'), data);
 
             const newBalanceUP = await provider.getBalance(context.universalProfile.address);
@@ -396,7 +397,8 @@ export const shouldBehaveLikePermissionTransferValue = (
       );
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           contractCanTransferValue.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
