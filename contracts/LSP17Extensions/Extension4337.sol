@@ -46,10 +46,9 @@ contract Extension4337 is LSP17Extension, IAccount {
         bytes32 userOpHash,
         uint256 missingAccountFunds
     ) external returns (uint256) {
-        // only entryPoint can call this function
         require(
             _extendableMsgSender() == entryPoint,
-            "Extension4337: only entryPoint can call validateUserOp"
+            "Only EntryPoint contract can call this"
         );
 
         // recover initiator of the tx from the signature
