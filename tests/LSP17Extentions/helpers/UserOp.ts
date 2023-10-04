@@ -1,5 +1,5 @@
 import { arrayify, defaultAbiCoder, hexDataSlice, keccak256 } from 'ethers/lib/utils';
-import { BigNumber, Contract, Signer, Wallet } from 'ethers';
+import { BigNumber, Wallet } from 'ethers';
 import { AddressZero, callDataCost, rethrow } from './utils';
 import { ecsign, toRpcSig, keccak256 as keccak256_buffer } from 'ethereumjs-util';
 import { UserOperation } from './UserOperation';
@@ -7,7 +7,6 @@ import { Create2Factory } from './Create2Factory';
 import { EntryPoint } from '@account-abstraction/contracts';
 import { ethers } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { UniversalProfile } from '../../../types';
 
 export function packUserOp(op: UserOperation, forSignature = true): string {
   if (forSignature) {
@@ -38,7 +37,6 @@ export function packUserOp(op: UserOperation, forSignature = true): string {
       ],
     );
   } else {
-    // for the purpose of calculating gas cost encode also signature (and no keccak of bytes)
     return defaultAbiCoder.encode(
       [
         'address',
@@ -114,8 +112,8 @@ export const DefaultsForUserOp: UserOperation = {
   initCode: '0x',
   callData: '0x',
   callGasLimit: 0,
-  verificationGasLimit: 250000, // default verification gas
-  preVerificationGas: 21000, // should also cover calldata cost.
+  verificationGasLimit: 250000,
+  preVerificationGas: 21000,
   maxFeePerGas: 0,
   maxPriorityFeePerGas: 1e9,
   paymasterAndData: '0x',
@@ -149,11 +147,9 @@ export function fillUserOpDefaults(
   defaults = DefaultsForUserOp,
 ): UserOperation {
   const partial: any = { ...op };
-  // we want "item:undefined" to be used from defaults, and not override defaults, so we must explicitly
-  // remove those so "merge" will succeed.
+
   for (const key in partial) {
     if (partial[key] == null) {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete partial[key];
     }
   }
@@ -181,20 +177,18 @@ export async function fillUserOp(
   const op1 = { ...op };
   const provider = entryPoint?.provider;
   if (op.initCode != null) {
-    const initAddr = hexDataSlice(op1.initCode!, 0, 20);
-    const initCallData = hexDataSlice(op1.initCode!, 20);
+    const initAddr = hexDataSlice(op1.initCode, 0, 20);
+    const initCallData = hexDataSlice(op1.initCode, 20);
     if (op1.nonce == null) op1.nonce = 0;
     if (op1.sender == null) {
-      // hack: if the init contract is our known deployer, then we know what the address would be, without a view call
       if (initAddr.toLowerCase() === Create2Factory.contractAddress.toLowerCase()) {
         const ctr = hexDataSlice(initCallData, 32);
         const salt = hexDataSlice(initCallData, 0, 32);
         op1.sender = Create2Factory.getDeployedAddress(ctr, salt);
       } else {
-        // console.log('\t== not our deployer. our=', Create2Factory.contractAddress, 'got', initAddr)
         if (provider == null) throw new Error('no entrypoint/provider');
-        op1.sender = await entryPoint!.callStatic
-          .getSenderAddress(op1.initCode!)
+        op1.sender = await entryPoint.callStatic
+          .getSenderAddress(op1.initCode)
           .catch((e) => e.errorArgs.sender);
       }
     }
@@ -230,13 +224,12 @@ export async function fillUserOp(
       data: op1.callData,
     });
 
-    // estimateGas assumes direct call from entryPoint. add wrapper cost.
-    op1.callGasLimit = gasEtimated; // .add(55000)
+    op1.callGasLimit = gasEtimated;
   }
   if (op1.maxFeePerGas == null) {
     if (provider == null) throw new Error('must have entryPoint to autofill maxFeePerGas');
     const block = await provider.getBlock('latest');
-    op1.maxFeePerGas = block.baseFeePerGas!.add(
+    op1.maxFeePerGas = block.baseFeePerGas.add(
       op1.maxPriorityFeePerGas ?? DefaultsForUserOp.maxPriorityFeePerGas,
     );
   }
@@ -245,9 +238,8 @@ export async function fillUserOp(
     op1.maxPriorityFeePerGas = DefaultsForUserOp.maxPriorityFeePerGas;
   }
   const op2 = fillUserOpDefaults(op1);
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string
+
   if (op2.preVerificationGas.toString() === '0') {
-    // TODO: we don't add overhead, which is ~21000 for a single TX, but much lower in a batch.
     op2.preVerificationGas = callDataCost(packUserOp(op2, false));
   }
   return op2;
@@ -261,8 +253,8 @@ export async function fillAndSign(
   const provider = entryPoint?.provider;
   const op2 = await fillUserOp(op, signer, entryPoint);
 
-  const chainId = await provider!.getNetwork().then((net) => net.chainId);
-  const message = arrayify(getUserOpHash(op2, entryPoint!.address, chainId));
+  const chainId = await provider.getNetwork().then((net) => net.chainId);
+  const message = arrayify(getUserOpHash(op2, entryPoint.address, chainId));
 
   return {
     ...op2,

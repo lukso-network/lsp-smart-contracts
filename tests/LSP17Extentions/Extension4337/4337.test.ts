@@ -6,7 +6,6 @@ import { EntryPoint__factory, EntryPoint } from '@account-abstraction/contracts'
 import { parseEther } from 'ethers/lib/utils';
 import { expect } from 'chai';
 import {
-  Extension4337,
   Extension4337__factory,
   LSP6KeyManager,
   LSP6KeyManager__factory,
@@ -22,7 +21,6 @@ describe('4337', function () {
   let bundler: SignerWithAddress;
   let deployer: Signer;
   let universalProfile: UniversalProfile;
-  let universalProfileWithExtension: Extension4337;
   let universalProfileAddress: string;
   let keyManager: LSP6KeyManager;
   let entryPoint: EntryPoint;
@@ -36,6 +34,7 @@ describe('4337', function () {
   before('before', async function () {
     const provider = ethers.provider;
     deployer = provider.getSigner();
+    const deployerAddress = await deployer.getAddress();
 
     [
       bundler,
@@ -53,16 +52,13 @@ describe('4337', function () {
 
     // transfer ownership to keyManager
     await universalProfile.transferOwnership(keyManager.address);
+
     const dataKey =
-      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      (await deployer.getAddress()).slice(2);
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + deployerAddress.slice(2);
 
     await universalProfile.setData(dataKey, ALL_PERMISSIONS);
 
-    const acceptOwnershipBytes = universalProfile.interface.encodeFunctionData(
-      'acceptOwnership',
-      [],
-    );
+    const acceptOwnershipBytes = universalProfile.interface.encodeFunctionData('acceptOwnership');
     await keyManager.execute(acceptOwnershipBytes);
     expect(await universalProfile.owner()).to.eq(keyManager.address);
 
@@ -85,10 +81,6 @@ describe('4337', function () {
       '00000000000000000000000000000000';
 
     await universalProfile.setData(extensionDataKey, extension4337.address);
-    universalProfileWithExtension = Extension4337__factory.connect(
-      universalProfile.address,
-      deployer,
-    );
 
     // give permissions to controllers
     const dataKeyWithPermission4337 =
@@ -162,7 +154,7 @@ describe('4337', function () {
 
     await expect(anotherEntryPoint.handleOps([op], bundler.address))
       .to.be.revertedWithCustomError(entryPoint, 'FailedOp')
-      .withArgs(0, 'AA23 reverted: Only EntryPoint can call this');
+      .withArgs(0, 'AA23 reverted: Only EntryPoint contract can call this');
   });
 
   it('should fail when controller does not have 4337 permission', async function () {

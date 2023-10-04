@@ -38,8 +38,7 @@ export class Create2Factory {
   ): Promise<string> {
     await this.deployFactory();
     if (typeof initCode !== 'string') {
-      // eslint-disable-next-line @typescript-eslint/no-base-to-string
-      initCode = (initCode as TransactionRequest).data!.toString();
+      initCode = (initCode as TransactionRequest).data.toString();
     }
 
     const addr = Create2Factory.getDeployedAddress(initCode, salt);

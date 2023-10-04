@@ -49,17 +49,18 @@ const panicCodes: { [key: number]: string } = {
 // - attempt to parse revert data (needed for geth)
 // use with ".catch(rethrow())", so that current source file/line is meaningful.
 export function rethrow(): (e: Error) => void {
-  const callerStack = new Error()
-    .stack!.replace(/Error.*\n.*at.*\n/, '')
+  const callerStack = new Error().stack
+    .replace(/Error.*\n.*at.*\n/, '')
     .replace(/.*at.* \(internal[\s\S]*/, '');
 
+  // eslint-disable-next-line
   if (arguments[0] != null) {
     throw new Error('must use .catch(rethrow()), and NOT .catch(rethrow)');
   }
   return function (e: Error) {
-    const solstack = e.stack!.match(/((?:.* at .*\.sol.*\n)+)/);
+    const solstack = e.stack.match(/((?:.* at .*\.sol.*\n)+)/);
     const stack = (solstack != null ? solstack[1] : '') + callerStack;
-    // const regex = new RegExp('error=.*"data":"(.*?)"').compile()
+
     const found = /error=.*?"data":"(.*?)"/.exec(e.message);
     let message: string;
     if (found != null) {
@@ -80,14 +81,12 @@ export function decodeRevertReason(data: string, nullIfNoMatch = true): string |
 
   if (methodSig === '0x08c379a0') {
     const [err] = ethers.utils.defaultAbiCoder.decode(['string'], dataParams);
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     return `Error(${err})`;
   } else if (methodSig === '0x00fa072b') {
     const [opindex, paymaster, msg] = ethers.utils.defaultAbiCoder.decode(
       ['uint256', 'address', 'string'],
       dataParams,
     );
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     return `FailedOp(${opindex}, ${paymaster !== AddressZero ? paymaster : 'none'}, ${msg})`;
   } else if (methodSig === '0x4e487b71') {
     const [code] = ethers.utils.defaultAbiCoder.decode(['uint256'], dataParams);
