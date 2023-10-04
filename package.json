@@ -102,6 +102,7 @@
   },
   "homepage": "https://github.com/lukso-network/lsp-smart-contracts#readme",
   "dependencies": {
+    "@account-abstraction/contracts": "^0.6.0",
     "@erc725/smart-contracts": "^5.2.0",
     "@openzeppelin/contracts": "^4.9.2",
     "@openzeppelin/contracts-upgradeable": "^4.9.2",
