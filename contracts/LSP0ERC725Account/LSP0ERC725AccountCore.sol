@@ -63,6 +63,8 @@ import {
     NoExtensionFoundForFunctionSelector
 } from "../LSP17ContractExtension/LSP17Errors.sol";
 
+import "hardhat/console.sol";
+
 /**
  * @title The Core Implementation of [LSP-0-ERC725Account] Standard.
  *
@@ -82,6 +84,8 @@ abstract contract LSP0ERC725AccountCore is
     using LSP1Utils for address;
     using Address for address;
 
+    bytes4 private constant _RECEIVE_SELECTOR = bytes4(keccak256("receive()"));
+
     /**
      * @dev Executed:
      * - When receiving some native tokens without any additional data.
@@ -92,6 +96,35 @@ abstract contract LSP0ERC725AccountCore is
     receive() external payable virtual {
         if (msg.value != 0) {
             emit ValueReceived(msg.sender, msg.value);
+        }
+
+        // Get the address of the extension set for when receiving plain native tokens
+        address extension = _getExtension(_RECEIVE_SELECTOR);
+
+        // if no extension was found return don't revert
+        if (extension == address(0)) return;
+
+        console.log("receive() function called");
+
+        (bool success, bytes memory result) = extension.call(
+            abi.encodePacked(_RECEIVE_SELECTOR, msg.sender, msg.value)
+        );
+
+        console.log("extension called in receive() function");
+
+        assembly {
+            // `mload(result)` -> offset in memory where `result.length` is located
+            // `add(result, 32)` -> offset in memory where `result` data starts
+            let resultdataSize := mload(result)
+            let resultdataOffset := add(result, 32)
+
+            // if call failed, revert
+            if eq(success, 0) {
+                revert(resultdataOffset, resultdataSize)
+            }
+
+            // otherwise return the data returned by the extension
+            return(resultdataOffset, resultdataSize)
         }
     }
 

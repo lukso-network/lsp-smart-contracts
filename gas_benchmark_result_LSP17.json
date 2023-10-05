@@ -1,0 +1,204 @@
+{
+  "deployment_costs": {
+    "UniversalProfile": 3119884,
+    "KeyManager": 3491003,
+    "LSP1DelegateUP": 1623804,
+    "LSP7Mintable": 2354082,
+    "LSP8Mintable": 2476554
+  },
+  "runtime_costs": {
+    "EOA_owner": {
+      "execute": {
+        "case_1": {
+          "description": "Transfer 1 LYX to an EOA without data",
+          "gas_cost": 37537
+        },
+        "case_2": {
+          "description": "Transfer 1 LYX to a UP without data",
+          "gas_cost": 50373
+        },
+        "case_3": {
+          "description": "Transfer 1 LYX to an EOA with 256 bytes of data",
+          "gas_cost": 42210
+        },
+        "case_4": {
+          "description": "Transfer 1 LYX to a UP with 256 bytes of data",
+          "gas_cost": 44807
+        },
+        "case_5": {
+          "description": "Transfer 0.1 LYX to 3x EOA without data",
+          "gas_cost": ""
+        },
+        "case_6": {
+          "description": "Transfer 0.1 LYX to 3x UP without data",
+          "gas_cost": 85349
+        },
+        "case_7": {
+          "description": "Transfer 0.1 LYX to 3x EOA with 256 bytes of data",
+          "gas_cost": 84838
+        },
+        "case_8": {
+          "description": "Transfer 0.1 LYX to 3x UPs with 256 bytes of data",
+          "gas_cost": 100321
+        }
+      },
+      "setData": {
+        "case_1": {
+          "description": "Set a 20 bytes long value",
+          "gas_cost": 49971
+        },
+        "case_2": {
+          "description": "Set a 60 bytes long value",
+          "gas_cost": 95293
+        },
+        "case_3": {
+          "description": "Set a 160 bytes long value",
+          "gas_cost": 164441
+        },
+        "case_4": {
+          "description": "Set a 300 bytes long value",
+          "gas_cost": 279688
+        },
+        "case_5": {
+          "description": "Set a 600 bytes long value",
+          "gas_cost": 484136
+        },
+        "case_6": {
+          "description": "Change the value of a data key already set",
+          "gas_cost": 32859
+        },
+        "case_7": {
+          "description": "Remove the value of a data key already set",
+          "gas_cost": 27333
+        },
+        "case_8": {
+          "description": "Set 2 data keys of 20 bytes long value",
+          "gas_cost": 78454
+        },
+        "case_9": {
+          "description": "Set 2 data keys of 100 bytes long value",
+          "gas_cost": 260618
+        },
+        "case_10": {
+          "description": "Set 3 data keys of 20 bytes long value",
+          "gas_cost": 105159
+        },
+        "case_11": {
+          "description": "Change the value of three data keys already set of 20 bytes long value",
+          "gas_cost": 45471
+        },
+        "case_12": {
+          "description": "Remove the value of three data keys already set",
+          "gas_cost": 41360
+        }
+      },
+      "tokens": {
+        "case_1": {
+          "description": "Minting a LSP7Token to a UP (No Delegate) from an EOA",
+          "gas_cost": 91982
+        },
+        "case_2": {
+          "description": "Minting a LSP7Token to an EOA from an EOA",
+          "gas_cost": 59289
+        },
+        "case_3": {
+          "description": "Transferring an LSP7Token from a UP to another UP (No Delegate)",
+          "gas_cost": 100092
+        },
+        "case_4": {
+          "description": "Minting a LSP8Token to a UP (No Delegate) from an EOA          ",
+          "gas_cost": 159126
+        },
+        "case_5": {
+          "description": "Minting a LSP8Token to an EOA from an EOA                      ",
+          "gas_cost": 126433
+        },
+        "case_6": {
+          "description": "Transferring an LSP8Token from a UP to another UP (No Delegate)",
+          "gas_cost": 148899
+        }
+      }
+    },
+    "KeyManager_owner": {
+      "execute": {
+        "case_1": {
+          "description": "LYX transfer --> to an EOA",
+          "main_controller": 66106,
+          "restricted_controller": 76899
+        },
+        "case_2": {
+          "description": "LYX transfer --> to a UP",
+          "main_controller": 69966,
+          "restricted_controller": 82535
+        },
+        "case_3": {
+          "description": "LSP7 token transfer --> to an EOA",
+          "main_controller": 120168,
+          "restricted_controller": 134847
+        },
+        "case_4": {
+          "description": "LSP7 token transfer --> to a UP",
+          "main_controller": 256723,
+          "restricted_controller": 271402
+        },
+        "case_5": {
+          "description": "LSP8 NFT transfer --> to an EOA",
+          "main_controller": 184411,
+          "restricted_controller": 199067
+        },
+        "case_6": {
+          "description": "LSP8 NFT transfer --> to a UP",
+          "main_controller": 304213,
+          "restricted_controller": 318869
+        }
+      },
+      "setData": {
+        "case_1": {
+          "description": "Update Profile details (LSP3Profile Metadata)",
+          "main_controller": 68714,
+          "restricted_controller": 78713
+        },
+        "case_2": {
+          "description": "Add a new controller with permission to `SET_DATA` + 3x allowed data keys: <br/> `AddressPermissions[]` <br/> + `AddressPermissions[index]` <br/> + `AddressPermissions:Permissions:<controller>` <br/> + `AddressPermissions:AllowedERC725YDataKeys:<controller`)",
+          "main_controller": 212112,
+          "restricted_controller": 222177
+        },
+        "case_3": {
+          "description": "Update permissions of previous controller. Allow it now to `SUPER_SETDATA`",
+          "main_controller": 53601,
+          "restricted_controller": 56584
+        },
+        "case_4": {
+          "description": "Remove a controller: <br/> 1. decrease `AddressPermissions[]` Array length <br/> 2. remove the controller address at `AddressPermissions[index]` <br/> 3. set \"0x\" for the controller permissions under AddressPermissions:Permissions:<controller-address>",
+          "main_controller": 80562,
+          "restricted_controller": 91787
+        },
+        "case_5": {
+          "description": "Write 5x new LSP12 Issued Assets",
+          "main_controller": 68267,
+          "restricted_controller": 102871
+        },
+        "case_6": {
+          "description": "Update 3x data keys (first 3)",
+          "main_controller": 127555,
+          "restricted_controller": 161636
+        },
+        "case_7": {
+          "description": "Update 3x data keys (middle 3)",
+          "main_controller": 107643,
+          "restricted_controller": 145790
+        },
+        "case_8": {
+          "description": "Update 3x data keys (last 3)",
+          "main_controller": 127555,
+          "restricted_controller": 171123
+        },
+        "case_9": {
+          "description": "Set 2 x new data keys + add 3x new controllers",
+          "main_controller": 816000,
+          "restricted_controller": 877547
+        }
+      }
+    }
+  }
+}

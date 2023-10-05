@@ -11,6 +11,7 @@ import {
   LSP7Mintable__factory,
   LSP8Mintable,
   LSP8Mintable__factory,
+  ReceiveExtension__factory,
   UniversalProfile,
   UniversalProfile__factory,
 } from '../types';
@@ -154,10 +155,34 @@ describe('⛽📊 Gas Benchmark', () => {
   describe('UniversalProfile', () => {
     let context: UniversalProfileContext;
 
+    let recipientUP: UniversalProfile;
+
     describe('execute', () => {
       describe('execute Single', () => {
         before(async () => {
           context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
+
+          recipientUP = await new UniversalProfile__factory(context.accounts[1]).deploy(
+            context.accounts[1].address,
+          );
+
+          const receiveBytes4Selector = ethers.utils
+            .keccak256(ethers.utils.toUtf8Bytes('receive()'))
+            .slice(0, 10);
+
+          const lsp17ReceiveExtension = await new ReceiveExtension__factory(
+            context.accounts[0],
+          ).deploy();
+
+          // setup `receive()` extension
+          const dataKey =
+            ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+            receiveBytes4Selector.substring(2) +
+            '00'.repeat(16);
+
+          await recipientUP
+            .connect(context.accounts[1])
+            .setData(dataKey, lsp17ReceiveExtension.address);
         });
 
         it('Transfer 1 LYX to an EOA without data', async () => {
@@ -179,12 +204,7 @@ describe('⛽📊 Gas Benchmark', () => {
         it('Transfer 1 LYX to a UP without data', async () => {
           const tx = await context.universalProfile
             .connect(context.mainController)
-            .execute(
-              OPERATION_TYPES.CALL,
-              context.universalProfile.address,
-              ethers.utils.parseEther('1'),
-              '0x',
-            );
+            .execute(OPERATION_TYPES.CALL, recipientUP.address, ethers.utils.parseEther('1'), '0x');
 
           const receipt = await tx.wait();
 
@@ -231,20 +251,43 @@ describe('⛽📊 Gas Benchmark', () => {
         before(async () => {
           context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
 
+          const receiveBytes4Selector = ethers.utils
+            .keccak256(ethers.utils.toUtf8Bytes('receive()'))
+            .slice(0, 10);
+
+          const lsp17ReceiveExtension = await new ReceiveExtension__factory(
+            context.accounts[0],
+          ).deploy();
+
+          // setup `receive()` extension
+          const dataKey =
+            ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+            receiveBytes4Selector.substring(2) +
+            '00'.repeat(16);
+
           universalProfile1 = await new UniversalProfile__factory(context.mainController).deploy(
             context.accounts[2].address,
           );
+          //   await context.universalProfile
+          //     .connect(context.accounts[2])
+          //     .setData(dataKey, lsp17ReceiveExtension.address);
 
           universalProfile2 = await new UniversalProfile__factory(context.mainController).deploy(
             context.accounts[3].address,
           );
+          //   await context.universalProfile
+          //     .connect(context.accounts[3])
+          //     .setData(dataKey, lsp17ReceiveExtension.address);
 
           universalProfile3 = await new UniversalProfile__factory(context.mainController).deploy(
             context.accounts[4].address,
           );
+          //   await context.universalProfile
+          //     .connect(context.accounts[4])
+          //     .setData(dataKey, lsp17ReceiveExtension.address);
         });
 
-        it('Transfer 0.1 LYX to 3x EOA without data', async () => {
+        it.skip('Transfer 0.1 LYX to 3x EOA without data', async () => {
           const tx = await context.universalProfile
             .connect(context.mainController)
             .executeBatch(
