@@ -446,11 +446,11 @@ abstract contract LSP6SetDataModule {
     }
 
     /**
-     * @dev retrieve the permission required to set some AllowedCalls for a controller.
-     * @param controlledContract the address of the ERC725Y contract where the data key is verified.
-     * @param dataKey `AddressPermissions:AllowedCalls:<controller-address>`.
-     * @param dataValue the updated value for the `dataKey`. MUST be a bytes28[CompactBytesArray] of Allowed Calls.
-     * @return either ADD or CHANGE PERMISSIONS.
+     * @dev Retrieve the permission required to set some AllowedCalls for a controller.
+     * @param controlledContract The address of the ERC725Y contract from which to fetch the value of `dataKey`.
+     * @param dataKey A data key ion the format `AddressPermissions:AllowedCalls:<controller-address>`.
+     * @param dataValue The updated value for the `dataKey`. MUST be a bytes32[CompactBytesArray] of Allowed Calls.
+     * @return Either ADD or EDIT PERMISSIONS.
      */
     function _getPermissionToSetAllowedCalls(
         address controlledContract,
@@ -466,23 +466,24 @@ abstract contract LSP6SetDataModule {
         // No permission required as CHECK is already done. We don't need to read `target` storage.
         if (hasBothAddControllerAndEditPermissions) return bytes32(0);
 
-        // if nothing is stored under the controller's Allowed Calls of the controller,
-        // we are trying to ADD a list of restricted calls (standards + address + function selector)
-        //
-        // if some data is already set under the Allowed Calls of the controller,
-        // we are trying to CHANGE (= edit) these restrictions.
+        // extract the address of the controller from the data key `AddressPermissions:AllowedCalls:<controller>`
+        address controller = address(bytes20(dataKey << 96));
+
+        // if the controller exists and has some permissions set, this is considered as EDIT a "sub-set" of its permissions.
+        // (even if the controller does not have any allowed calls set).
         return
-            ERC725Y(controlledContract).getData(dataKey).length == 0
+            ERC725Y(controlledContract).getPermissionsFor(controller) ==
+                bytes32(0)
                 ? _PERMISSION_ADDCONTROLLER
                 : _PERMISSION_EDITPERMISSIONS;
     }
 
     /**
-     * @dev retrieve the permission required to set some Allowed ERC725Y Data Keys for a controller.
-     * @param controlledContract the address of the ERC725Y contract where the data key is verified.
-     * @param dataKey  or `AddressPermissions:AllowedERC725YDataKeys:<controller-address>`.
-     * @param dataValue the updated value for the `dataKey`. MUST be a bytes[CompactBytesArray] of Allowed ERC725Y Data Keys.
-     * @return either ADD or CHANGE PERMISSIONS.
+     * @dev Retrieve the permission required to set some Allowed ERC725Y Data Keys for a controller.
+     * @param controlledContract the address of the ERC725Y contract from which to fetch the value of `dataKey`.
+     * @param dataKey A data key in the format `AddressPermissions:AllowedERC725YDataKeys:<controller-address>`.
+     * @param dataValue The updated value for the `dataKey`. MUST be a bytes[CompactBytesArray] of Allowed ERC725Y Data Keys.
+     * @return Either ADD or EDIT PERMISSIONS.
      */
     function _getPermissionToSetAllowedERC725YDataKeys(
         address controlledContract,
@@ -501,13 +502,14 @@ abstract contract LSP6SetDataModule {
         // CHECK is already done. We don't need to read `target` storage.
         if (hasBothAddControllerAndEditPermissions) return bytes32(0);
 
-        // if there is nothing stored under the Allowed ERC725Y Data Keys of the controller,
-        // we are trying to ADD a list of restricted ERC725Y Data Keys.
-        //
-        // if there are already some data set under the Allowed ERC725Y Data Keys of the controller,
-        // we are trying to CHANGE (= edit) these restricted ERC725Y data keys.
+        // extract the address of the controller from the data key `AddressPermissions:AllowedERC725YDataKeys:<controller>`
+        address controller = address(bytes20(dataKey << 96));
+
+        // if the controller exists and has some permissions set, this is considered as EDIT a "sub-set" of its permissions.
+        // (even if the controller does not have any allowed ERC725Y data keys set).
         return
-            ERC725Y(controlledContract).getData(dataKey).length == 0
+            ERC725Y(controlledContract).getPermissionsFor(controller) ==
+                bytes32(0)
                 ? _PERMISSION_ADDCONTROLLER
                 : _PERMISSION_EDITPERMISSIONS;
     }
