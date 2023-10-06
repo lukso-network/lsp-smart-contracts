@@ -1,30 +1,37 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
-import {_ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
-import {LSP6Utils} from "../LSP6KeyManager/LSP6Utils.sol";
-import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
-import {LSP17Extension} from "../LSP17ContractExtension/LSP17Extension.sol";
-import {
-    ILSP20CallVerifier
-} from "../LSP20CallVerification/ILSP20CallVerifier.sol";
-
+// interfaces
 import {IAccount} from "@account-abstraction/contracts/interfaces/IAccount.sol";
-import {
-    UserOperation
-} from "@account-abstraction/contracts/interfaces/UserOperation.sol";
 import {
     IERC725X
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {
+    ILSP20CallVerifier
+} from "../LSP20CallVerification/ILSP20CallVerifier.sol";
+
+// modules
+import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
+import {LSP17Extension} from "../LSP17ContractExtension/LSP17Extension.sol";
+
+// librairies
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {LSP6Utils} from "../LSP6KeyManager/LSP6Utils.sol";
+
+// constants
+import {
+    UserOperation
+} from "@account-abstraction/contracts/interfaces/UserOperation.sol";
+import {_ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
 
 contract Extension4337 is LSP17Extension, IAccount {
     using ECDSA for bytes32;
+    using LSP6Utils for *;
 
-    address public immutable ENTRY_POINT;
+    address internal immutable _ENTRY_POINT;
 
     // permission needed to be able to use this extension
     bytes32 internal constant _4337_PERMISSION =
@@ -34,16 +41,19 @@ contract Extension4337 is LSP17Extension, IAccount {
     uint256 internal constant _SIG_VALIDATION_FAILED = 1;
 
     constructor(address entryPoint_) {
-        ENTRY_POINT = entryPoint_;
+        _ENTRY_POINT = entryPoint_;
     }
 
+    /**
+     * @inheritdoc IAccount
+     */
     function validateUserOp(
         UserOperation calldata userOp,
         bytes32 userOpHash,
         uint256 missingAccountFunds
     ) external returns (uint256) {
         require(
-            _extendableMsgSender() == ENTRY_POINT,
+            _extendableMsgSender() == _ENTRY_POINT,
             "Only EntryPoint contract can call this"
         );
 
@@ -51,14 +61,13 @@ contract Extension4337 is LSP17Extension, IAccount {
         bytes32 hash = userOpHash.toEthSignedMessageHash();
         address recovered = hash.recover(userOp.signature);
 
-        // fetch address permissions
-        bytes32 permissionsRetrieved = LSP6Utils.getPermissionsFor(
-            IERC725Y(msg.sender),
-            recovered
-        );
-
         // verify that the recovered address has the _4337_PERMISSION
-        if (!LSP6Utils.hasPermission(permissionsRetrieved, _4337_PERMISSION)) {
+        if (
+            !LSP6Utils.hasPermission(
+                IERC725Y(msg.sender).getPermissionsFor(recovered),
+                _4337_PERMISSION
+            )
+        ) {
             return _SIG_VALIDATION_FAILED;
         }
 
@@ -66,12 +75,12 @@ contract Extension4337 is LSP17Extension, IAccount {
         address owner = LSP14Ownable2Step(msg.sender).owner();
 
         // verify that the recovered address can execute the userOp.callData
-        bytes4 magicValue = ILSP20CallVerifier(owner).lsp20VerifyCall(
-            msg.sender,
-            recovered,
-            0,
-            userOp.callData
-        );
+        bytes4 magicValue = ILSP20CallVerifier(owner).lsp20VerifyCall({
+            callee: msg.sender,
+            caller: recovered,
+            value: 0,
+            receivedCalldata: userOp.callData
+        });
 
         // if the call verifier returns _ERC1271_FAILVALUE, the caller is not authorized to make this call
         if (_ERC1271_FAILVALUE == magicValue) {
@@ -89,7 +98,7 @@ contract Extension4337 is LSP17Extension, IAccount {
             // send funds from Universal Profile to entryPoint
             IERC725X(msg.sender).execute(
                 0,
-                ENTRY_POINT,
+                _ENTRY_POINT,
                 missingAccountFunds,
                 depositToBytes
             );
@@ -97,5 +106,13 @@ contract Extension4337 is LSP17Extension, IAccount {
 
         // if sig validation passed, return 0
         return 0;
+    }
+
+    /**
+     * @dev Get The address of the EntryPoint contract.
+     * @return The address of the EntryPoint contract
+     */
+    function entryPoint() public view returns (address) {
+        return _ENTRY_POINT;
     }
 }
