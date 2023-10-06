@@ -15,6 +15,8 @@ export const dodocConfig = {
     'contracts/LSP16UniversalFactory/LSP16UniversalFactory.sol',
     'contracts/LSP17ContractExtension/LSP17Extendable.sol',
     'contracts/LSP17ContractExtension/LSP17Extension.sol',
+    'contracts/LSP17Extensions/Extension4337.sol',
+    'contracts/LSP17Extensions/OnERC721ReceivedExtension.sol',
     'contracts/LSP20CallVerification/LSP20CallVerification.sol',
     'contracts/LSP23LinkedContractsFactory/LSP23LinkedContractsFactory.sol',
     'contracts/LSP23LinkedContractsFactory/IPostDeploymentModule.sol',
