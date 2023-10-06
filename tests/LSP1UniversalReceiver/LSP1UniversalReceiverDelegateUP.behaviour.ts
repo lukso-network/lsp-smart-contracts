@@ -2785,7 +2785,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
       testContext = {
         accounts: signerAddresses,
-        owner: profileOwner,
+        mainController: profileOwner,
         universalProfile: deployedUniversalProfile,
         keyManager: deployedKeyManager,
       };
@@ -2803,7 +2803,9 @@ export const shouldBehaveLikeLSP1Delegate = (
         [ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate, lsp1Delegate.address],
       );
 
-      await testContext.keyManager.connect(testContext.owner).execute(setLSP1DelegatePayload);
+      await testContext.keyManager
+        .connect(testContext.mainController)
+        .execute(setLSP1DelegatePayload);
     });
 
     it('check that the LSP9Vault address is not set under LSP10', async () => {
@@ -2848,7 +2850,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           [OPERATION_TYPES.CALL, vault.address, 0, transferOwnershipPayload],
         );
 
-        await testContext.keyManager.connect(testContext.owner).execute(executePayload);
+        await testContext.keyManager.connect(testContext.mainController).execute(executePayload);
 
         // check that the new vault owner is the pending owner
         expect(await vault.pendingOwner()).to.equal(newVaultOwner.address);

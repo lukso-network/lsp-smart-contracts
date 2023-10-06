@@ -616,22 +616,22 @@ function _getPermissionToSetAllowedCalls(
 ) internal view returns (bytes32);
 ```
 
-retrieve the permission required to set some AllowedCalls for a controller.
+Retrieve the permission required to set some AllowedCalls for a controller.
 
 #### Parameters
 
 | Name                                     |   Type    | Description                                                                                 |
 | ---------------------------------------- | :-------: | ------------------------------------------------------------------------------------------- |
-| `controlledContract`                     | `address` | the address of the ERC725Y contract where the data key is verified.                         |
-| `dataKey`                                | `bytes32` | `AddressPermissions:AllowedCalls:<controller-address>`.                                     |
-| `dataValue`                              |  `bytes`  | the updated value for the `dataKey`. MUST be a bytes28[CompactBytesArray] of Allowed Calls. |
+| `controlledContract`                     | `address` | The address of the ERC725Y contract from which to fetch the value of `dataKey`.             |
+| `dataKey`                                | `bytes32` | A data key ion the format `AddressPermissions:AllowedCalls:<controller-address>`.           |
+| `dataValue`                              |  `bytes`  | The updated value for the `dataKey`. MUST be a bytes32[CompactBytesArray] of Allowed Calls. |
 | `hasBothAddControllerAndEditPermissions` |  `bool`   | -                                                                                           |
 
 #### Returns
 
-| Name |   Type    | Description                       |
-| ---- | :-------: | --------------------------------- |
-| `0`  | `bytes32` | either ADD or CHANGE PERMISSIONS. |
+| Name |   Type    | Description                     |
+| ---- | :-------: | ------------------------------- |
+| `0`  | `bytes32` | Either ADD or EDIT PERMISSIONS. |
 
 <br/>
 
@@ -646,22 +646,22 @@ function _getPermissionToSetAllowedERC725YDataKeys(
 ) internal view returns (bytes32);
 ```
 
-retrieve the permission required to set some Allowed ERC725Y Data Keys for a controller.
+Retrieve the permission required to set some Allowed ERC725Y Data Keys for a controller.
 
 #### Parameters
 
 | Name                                     |   Type    | Description                                                                                           |
 | ---------------------------------------- | :-------: | ----------------------------------------------------------------------------------------------------- |
-| `controlledContract`                     | `address` | the address of the ERC725Y contract where the data key is verified.                                   |
-| `dataKey`                                | `bytes32` | or `AddressPermissions:AllowedERC725YDataKeys:<controller-address>`.                                  |
-| `dataValue`                              |  `bytes`  | the updated value for the `dataKey`. MUST be a bytes[CompactBytesArray] of Allowed ERC725Y Data Keys. |
+| `controlledContract`                     | `address` | the address of the ERC725Y contract from which to fetch the value of `dataKey`.                       |
+| `dataKey`                                | `bytes32` | A data key in the format `AddressPermissions:AllowedERC725YDataKeys:<controller-address>`.            |
+| `dataValue`                              |  `bytes`  | The updated value for the `dataKey`. MUST be a bytes[CompactBytesArray] of Allowed ERC725Y Data Keys. |
 | `hasBothAddControllerAndEditPermissions` |  `bool`   | -                                                                                                     |
 
 #### Returns
 
-| Name |   Type    | Description                       |
-| ---- | :-------: | --------------------------------- |
-| `0`  | `bytes32` | either ADD or CHANGE PERMISSIONS. |
+| Name |   Type    | Description                     |
+| ---- | :-------: | ------------------------------- |
+| `0`  | `bytes32` | Either ADD or EDIT PERMISSIONS. |
 
 <br/>
 

@@ -35,12 +35,13 @@ export const shouldBehaveLikePermissionDelegateCall = (
       addressCanDelegateCall = context.accounts[1];
       addressCannotDelegateCall = context.accounts[2];
 
-      erc725YDelegateCallContract = await new ERC725YDelegateCall__factory(context.owner).deploy(
-        context.universalProfile.address,
-      );
+      erc725YDelegateCallContract = await new ERC725YDelegateCall__factory(
+        context.mainController,
+      ).deploy(context.universalProfile.address);
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           addressCanDelegateCall.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -70,7 +71,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       await expect(
         context.universalProfile
-          .connect(context.owner)
+          .connect(context.mainController)
           .execute(
             OPERATION_TYPES.DELEGATECALL,
             erc725YDelegateCallContract.address,

@@ -78,7 +78,8 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
       canOnlyCall = context.accounts[6];
 
       let permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           canAddAndChangeUniversalReceiverDelegate.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -128,7 +129,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
 
       permissionArrayValues = [
         ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
-        context.owner.address,
+        context.mainController.address,
         canAddAndChangeUniversalReceiverDelegate.address,
         canOnlyAddUniversalReceiverDelegate.address,
         canOnlyChangeUniversalReceiverDelegate.address,
@@ -152,7 +153,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
           const result = await context.universalProfile.getData(payloadParam.dataKey);
@@ -166,7 +167,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
           const result = await context.universalProfile.getData(payloadParam.dataKey);
@@ -180,7 +181,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
           const result = await context.universalProfile.getData(payloadParam.dataKey);
@@ -362,7 +363,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
         });
         it('should NOT be allowed to ADD another UniversalReceiverDelegate key', async () => {
@@ -421,7 +422,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
         });
 
@@ -481,7 +482,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
         });
 
@@ -549,7 +550,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
 
           const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
@@ -572,7 +573,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
 
           const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
@@ -591,7 +592,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
 
           const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
@@ -678,7 +679,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
         });
         describe('when adding multiple UniversalReceiverDelegate keys', () => {
@@ -981,7 +982,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             };
 
             await context.universalProfile
-              .connect(context.owner)
+              .connect(context.mainController)
               .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
           });
           describe('When adding UniversalReceiverDelegate key and one of his allowedERC725Y Data Key', () => {

@@ -29,7 +29,7 @@ async function teardownKeyManagerHelper(
     Array(permissionsKeys.length).fill('0x'),
   ]);
 
-  await context.keyManagerInternalTester.connect(context.owner).execute(teardownPayload);
+  await context.keyManagerInternalTester.connect(context.mainController).execute(teardownPayload);
 }
 
 export const testAllowedCallsInternals = (
@@ -157,7 +157,8 @@ export const testAllowedCallsInternals = (
       );
 
       const permissionsKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           canCallOnlyTwoAddresses.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
@@ -184,13 +185,13 @@ export const testAllowedCallsInternals = (
 
       it('should return no bytes when no allowed calls were set', async () => {
         const bytesResult = await context.keyManagerInternalTester.getAllowedCallsFor(
-          context.owner.address,
+          context.mainController.address,
         );
         expect(bytesResult).to.equal('0x');
 
         const resultFromAccount = await context.universalProfile['getData(bytes32)'](
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-            context.owner.address.substring(2),
+            context.mainController.address.substring(2),
         );
         expect(resultFromAccount).to.equal('0x');
       });
@@ -333,7 +334,7 @@ export const testAllowedCallsInternals = (
           permissionValues,
         ]);
 
-        await context.keyManagerInternalTester.connect(context.owner).execute(setup);
+        await context.keyManagerInternalTester.connect(context.mainController).execute(setup);
       });
 
       after('reset permissions', async () => {
@@ -444,7 +445,7 @@ export const testAllowedCallsInternals = (
           permissionValues,
         ]);
 
-        await context.keyManagerInternalTester.connect(context.owner).execute(setup);
+        await context.keyManagerInternalTester.connect(context.mainController).execute(setup);
       });
 
       after('reset permissions', async () => {
@@ -555,7 +556,7 @@ export const testAllowedCallsInternals = (
           permissionValues,
         ]);
 
-        await context.keyManagerInternalTester.connect(context.owner).execute(setup);
+        await context.keyManagerInternalTester.connect(context.mainController).execute(setup);
       });
 
       after('reset permissions', async () => {
@@ -674,7 +675,8 @@ export const testAllowedCallsInternals = (
       ];
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ...Object.values(controllers).map(
           (controller) =>
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -775,7 +777,8 @@ export const testAllowedCallsInternals = (
       context = await buildContext();
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           context.accounts[1].address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -837,7 +840,8 @@ export const testAllowedCallsInternals = (
       anyAllowedCalls = context.accounts[1];
 
       const permissionsKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           anyAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +

@@ -91,7 +91,8 @@ export const shouldBehaveLikePermissionTransferValue = (
       ).to.equal(graffitiExtension.address);
 
       const permissionsKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           canTransferValue.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
@@ -149,7 +150,7 @@ export const shouldBehaveLikePermissionTransferValue = (
              * @see https://hardhat.org/hardhat-chai-matchers/docs/reference#.changeetherbalances
              */
             await expect(
-              context.keyManager.connect(context.owner).execute(transferPayload),
+              context.keyManager.connect(context.mainController).execute(transferPayload),
             ).to.changeEtherBalances(
               [context.universalProfile.address, recipient.address],
               [`-${amount}`, amount],
@@ -231,7 +232,7 @@ export const shouldBehaveLikePermissionTransferValue = (
               data,
             ]);
 
-            await context.keyManager.connect(context.owner).execute(transferPayload);
+            await context.keyManager.connect(context.mainController).execute(transferPayload);
 
             const newBalanceUP = await provider.getBalance(context.universalProfile.address);
             expect(newBalanceUP).to.be.lt(initialBalanceUP);
@@ -384,7 +385,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           );
 
           // ethereum signed message prefix
-          const signature = await context.owner.signMessage(encodedMessage);
+          const signature = await context.mainController.signMessage(encodedMessage);
 
           await expect(
             context.keyManager.executeRelayCall(
@@ -434,7 +435,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
           await expect(
             context.keyManager
-              .connect(context.owner)
+              .connect(context.mainController)
               .executeRelayCall(signature, 0, validityTimestamps, executeRelayCallPayload, {
                 value: valueToSend,
               }),
@@ -525,7 +526,8 @@ export const shouldBehaveLikePermissionTransferValue = (
       );
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           contractCanTransferValue.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +

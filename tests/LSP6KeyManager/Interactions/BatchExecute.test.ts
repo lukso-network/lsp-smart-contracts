@@ -28,7 +28,8 @@ export const shouldBehaveLikeBatchExecute = (
     context = await buildContext(ethers.utils.parseEther('50'));
 
     const permissionKeys = [
-      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        context.mainController.address.substring(2),
     ];
 
     const permissionsValues = [ALL_PERMISSIONS];
@@ -88,7 +89,7 @@ export const shouldBehaveLikeBatchExecute = (
       });
 
       const tx = await context.keyManager
-        .connect(context.owner)
+        .connect(context.mainController)
         .executeBatch([0, 0, 0], batchExecutePayloads);
 
       await expect(tx).to.changeEtherBalance(
@@ -128,7 +129,9 @@ export const shouldBehaveLikeBatchExecute = (
         ]),
       ];
 
-      const tx = await context.keyManager.connect(context.owner).executeBatch([0, 0], payloads);
+      const tx = await context.keyManager
+        .connect(context.mainController)
+        .executeBatch([0, 0], payloads);
 
       await expect(tx).to.changeEtherBalance(recipient, lyxAmount);
       expect(await lyxDaiToken.balanceOf(recipient)).to.equal(lyxDaiAmount);
@@ -184,7 +187,7 @@ export const shouldBehaveLikeBatchExecute = (
         ]),
       ];
 
-      await context.keyManager.connect(context.owner).executeBatch([0, 0, 0], payloads);
+      await context.keyManager.connect(context.mainController).executeBatch([0, 0, 0], payloads);
 
       expect(await lyxDaiToken.balanceOf(recipient)).to.equal(
         recipientLyxDaiBalanceBefore.add(lyxDaiAmount),
@@ -210,7 +213,7 @@ export const shouldBehaveLikeBatchExecute = (
       );
 
       const futureTokenAddress = await context.keyManager
-        .connect(context.owner)
+        .connect(context.mainController)
         .callStatic.execute(lsp7ProxyDeploymentPayload);
       const futureTokenInstance = await new LSP7MintableInit__factory(context.accounts[0]).attach(
         futureTokenAddress,
@@ -243,7 +246,7 @@ export const shouldBehaveLikeBatchExecute = (
         [OPERATION_TYPES.CALL, futureTokenAddress, 0, lsp7SetDataPayload],
       );
 
-      const tx = await context.keyManager.connect(context.owner).executeBatch(
+      const tx = await context.keyManager.connect(context.mainController).executeBatch(
         [0, 0, 0],
         [
           // Step 1 - deploy Token contract as proxy
@@ -302,7 +305,7 @@ export const shouldBehaveLikeBatchExecute = (
       // so that we can then pass the token address to the `to` parameter of ERC725X.execute(...)
       // in the 2nd and 3rd payloads of the LSP6 batch `execute(bytes[])`
       const futureTokenAddress = await context.keyManager
-        .connect(context.owner)
+        .connect(context.mainController)
         .callStatic.execute(lsp7DeploymentPayload);
 
       // step 2 - mint some tokens
@@ -350,7 +353,9 @@ export const shouldBehaveLikeBatchExecute = (
         ]),
       ];
 
-      const tx = await context.keyManager.connect(context.owner).executeBatch([0, 0, 0], payloads);
+      const tx = await context.keyManager
+        .connect(context.mainController)
+        .executeBatch([0, 0, 0], payloads);
 
       // CHECK for `ContractCreated` event
       await expect(tx)
@@ -404,7 +409,7 @@ export const shouldBehaveLikeBatchExecute = (
           // since these functions on ERC725Y are not payable
           await expect(
             context.keyManager
-              .connect(context.owner)
+              .connect(context.mainController)
               .executeBatch([0, 0], [firstSetDataPayload, secondSetDataPayload], {
                 value: amountToFund,
               }),
@@ -452,7 +457,7 @@ export const shouldBehaveLikeBatchExecute = (
           // since these functions on ERC725Y are not payable
           await expect(
             context.keyManager
-              .connect(context.owner)
+              .connect(context.mainController)
               .executeBatch([1, 1], [firstSetDataPayload, secondSetDataPayload], {
                 value: amountToFund,
               }),
@@ -496,7 +501,7 @@ export const shouldBehaveLikeBatchExecute = (
           );
 
           await expect(
-            context.keyManager.connect(context.owner).executeBatch(msgValues, payloads, {
+            context.keyManager.connect(context.mainController).executeBatch(msgValues, payloads, {
               value: totalValues,
             }),
           ).to.changeEtherBalances(
@@ -531,7 +536,7 @@ export const shouldBehaveLikeBatchExecute = (
           );
 
           await expect(
-            context.keyManager.connect(context.owner).executeBatch(msgValues, payloads, {
+            context.keyManager.connect(context.mainController).executeBatch(msgValues, payloads, {
               value: totalValues,
             }),
           ).to.be.revertedWithCustomError(context.keyManager, 'CannotSendValueToSetData');
@@ -587,7 +592,7 @@ export const shouldBehaveLikeBatchExecute = (
           ];
 
           await expect(
-            context.keyManager.connect(context.owner).executeBatch(values, payloads, {
+            context.keyManager.connect(context.mainController).executeBatch(values, payloads, {
               value: msgValue,
             }),
           )
@@ -643,7 +648,7 @@ export const shouldBehaveLikeBatchExecute = (
           ];
 
           await expect(
-            context.keyManager.connect(context.owner).executeBatch(values, payloads, {
+            context.keyManager.connect(context.mainController).executeBatch(values, payloads, {
               value: msgValue,
             }),
           )
@@ -696,7 +701,7 @@ export const shouldBehaveLikeBatchExecute = (
           ];
 
           const tx = await context.keyManager
-            .connect(context.owner)
+            .connect(context.mainController)
             .executeBatch(values, payloads, {
               value: totalValues,
             });
@@ -739,7 +744,7 @@ export const shouldBehaveLikeBatchExecute = (
 
       await expect(
         context.keyManager
-          .connect(context.owner)
+          .connect(context.mainController)
           .executeBatch(
             [0, 0, 0],
             [failingTransferPayload, firstTransferPayload, secondTransferPayload],
@@ -775,7 +780,7 @@ export const shouldBehaveLikeBatchExecute = (
 
       await expect(
         context.keyManager
-          .connect(context.owner)
+          .connect(context.mainController)
           .executeBatch(
             [0, 0, 0],
             [firstTransferPayload, secondTransferPayload, failingTransferPayload],

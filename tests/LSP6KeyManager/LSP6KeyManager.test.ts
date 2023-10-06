@@ -18,15 +18,20 @@ import {
 describe('LSP6KeyManager with constructor', () => {
   const buildTestContext = async (initialFunding?: BigNumber): Promise<LSP6TestContext> => {
     const accounts = await ethers.getSigners();
-    const owner = accounts[0];
+    const mainController = accounts[0];
 
-    const universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address, {
-      value: initialFunding,
-    });
+    const universalProfile = await new UniversalProfile__factory(mainController).deploy(
+      mainController.address,
+      {
+        value: initialFunding,
+      },
+    );
 
-    const keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
+    const keyManager = await new LSP6KeyManager__factory(mainController).deploy(
+      universalProfile.address,
+    );
 
-    return { accounts, owner, universalProfile, keyManager, initialFunding };
+    return { accounts, mainController, universalProfile, keyManager, initialFunding };
   };
 
   describe('when deploying the contract', () => {
@@ -42,14 +47,16 @@ describe('LSP6KeyManager with constructor', () => {
   describe('testing internal functions', () => {
     testLSP6InternalFunctions(async () => {
       const accounts = await ethers.getSigners();
-      const owner = accounts[0];
+      const mainController = accounts[0];
 
-      const universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
-      const keyManagerInternalTester = await new KeyManagerInternalTester__factory(owner).deploy(
-        universalProfile.address,
+      const universalProfile = await new UniversalProfile__factory(mainController).deploy(
+        mainController.address,
       );
+      const keyManagerInternalTester = await new KeyManagerInternalTester__factory(
+        mainController,
+      ).deploy(universalProfile.address);
 
-      return { owner, accounts, universalProfile, keyManagerInternalTester };
+      return { mainController, accounts, universalProfile, keyManagerInternalTester };
     });
   });
 });

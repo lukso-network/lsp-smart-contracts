@@ -13,7 +13,8 @@ export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTe
     context = await buildContext();
 
     const permissionKeys = [
-      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        context.mainController.address.substring(2),
     ];
 
     const permissionValues = [ALL_PERMISSIONS];
@@ -38,7 +39,7 @@ export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTe
 
           await expect(
             context.keyManagerInternalTester.verifyCanSetData(
-              context.owner.address,
+              context.mainController.address,
               ALL_PERMISSIONS,
               dataKeys,
               dataValues,
@@ -63,7 +64,7 @@ export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTe
 
           await expect(
             context.keyManagerInternalTester.verifyCanSetData(
-              context.owner.address,
+              context.mainController.address,
               ALL_PERMISSIONS,
               dataKeys,
               dataValues,
@@ -91,7 +92,7 @@ export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTe
 
           await expect(
             context.keyManagerInternalTester.verifyCanSetData(
-              context.owner.address,
+              context.mainController.address,
               ALL_PERMISSIONS,
               dataKeys,
               dataValues,

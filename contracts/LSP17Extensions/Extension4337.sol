@@ -95,7 +95,7 @@ contract Extension4337 is LSP17Extension, IAccount {
                 missingAccountFunds
             );
 
-            // send funds from Universal Profile to entryPoint
+            // send funds from Universal Profile to ENTRY_POINT
             IERC725X(msg.sender).execute(
                 0,
                 _ENTRY_POINT,

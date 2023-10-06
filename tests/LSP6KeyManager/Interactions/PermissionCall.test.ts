@@ -390,7 +390,8 @@ export const shouldBehaveLikePermissionCall = (
       targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           addressCanMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -431,7 +432,7 @@ export const shouldBehaveLikePermissionCall = (
             targetPayload,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           const result = await targetContract.callStatic.getName();
           expect(result).to.equal(argument);
@@ -449,7 +450,7 @@ export const shouldBehaveLikePermissionCall = (
             );
 
             const result = await context.keyManager
-              .connect(context.owner)
+              .connect(context.mainController)
               .callStatic.execute(executePayload);
 
             const [decodedResult] = abiCoder.decode(['string'], result);
@@ -467,7 +468,7 @@ export const shouldBehaveLikePermissionCall = (
             );
 
             const result = await context.keyManager
-              .connect(context.owner)
+              .connect(context.mainController)
               .callStatic.execute(executePayload);
 
             const [decodedResult] = abiCoder.decode(['uint256'], result);
@@ -573,7 +574,7 @@ export const shouldBehaveLikePermissionCall = (
               newName,
             ]);
             const nonce = await context.keyManager.callStatic.getNonce(
-              context.owner.address,
+              context.mainController.address,
               channelId,
             );
 
@@ -628,7 +629,7 @@ export const shouldBehaveLikePermissionCall = (
               newName,
             ]);
             const nonce = await context.keyManager.callStatic.getNonce(
-              context.owner.address,
+              context.mainController.address,
               channelId,
             );
 
@@ -656,7 +657,7 @@ export const shouldBehaveLikePermissionCall = (
               ],
             );
 
-            const signature = await context.owner.signMessage(encodedMessage);
+            const signature = await context.mainController.signMessage(encodedMessage);
 
             const incorrectSignerAddress = eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
@@ -995,7 +996,8 @@ export const shouldBehaveLikePermissionCall = (
       targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
       ];
 
       const permissionValues = [ALL_PERMISSIONS];
@@ -1034,7 +1036,7 @@ export const shouldBehaveLikePermissionCall = (
       ]);
 
       await expect(
-        context.keyManager.connect(context.owner).execute(executePayload),
+        context.keyManager.connect(context.mainController).execute(executePayload),
       ).to.be.revertedWithCustomError(context.keyManager, 'CallingKeyManagerNotAllowed');
     });
 

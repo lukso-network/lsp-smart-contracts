@@ -3,7 +3,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { Signer } from 'ethers';
 import { EntryPoint__factory, EntryPoint } from '@account-abstraction/contracts';
 
-import { parseEther } from 'ethers/lib/utils';
+import { BytesLike, parseEther } from 'ethers/lib/utils';
 import { expect } from 'chai';
 import {
   Extension4337__factory,
@@ -28,10 +28,11 @@ describe('4337', function () {
   let controllerWithout4337Permission: SignerWithAddress;
   let controllerWithOnly4337Permission: SignerWithAddress;
   let transferCallData: string;
-  const Permission4337 = '0x0000000000000000000000000000000000000000000000000000000000800000';
+  const Permission4337: BytesLike =
+    '0x0000000000000000000000000000000000000000000000000000000000800000';
   const amountToTransfer = 1;
 
-  before('before', async function () {
+  before('setup', async function () {
     const provider = ethers.provider;
     deployer = provider.getSigner();
     const deployerAddress = await deployer.getAddress();

@@ -35,7 +35,7 @@ import { BigNumber } from 'ethers';
 
 export type UniversalProfileContext = {
   accounts: SignerWithAddress[];
-  owner: SignerWithAddress;
+  mainController: SignerWithAddress;
   universalProfile: UniversalProfile;
   initialFunding?: BigNumber;
 };
@@ -46,27 +46,35 @@ function generateRandomData(length) {
 
 const buildLSP6TestContext = async (initialFunding?: BigNumber): Promise<LSP6TestContext> => {
   const accounts = await ethers.getSigners();
-  const owner = accounts[0];
+  const mainController = accounts[0];
 
-  const universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address, {
-    value: initialFunding,
-  });
-  const keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
+  const universalProfile = await new UniversalProfile__factory(mainController).deploy(
+    mainController.address,
+    {
+      value: initialFunding,
+    },
+  );
+  const keyManager = await new LSP6KeyManager__factory(mainController).deploy(
+    universalProfile.address,
+  );
 
-  return { accounts, owner, universalProfile, keyManager };
+  return { accounts, mainController, universalProfile, keyManager };
 };
 
 const buildUniversalProfileContext = async (
   initialFunding?: BigNumber,
 ): Promise<UniversalProfileContext> => {
   const accounts = await ethers.getSigners();
-  const owner = accounts[0];
+  const mainController = accounts[0];
 
-  const universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address, {
-    value: initialFunding,
-  });
+  const universalProfile = await new UniversalProfile__factory(mainController).deploy(
+    mainController.address,
+    {
+      value: initialFunding,
+    },
+  );
 
-  return { accounts, owner, universalProfile };
+  return { accounts, mainController, universalProfile };
 };
 
 describe('⛽📊 Gas Benchmark', () => {
@@ -154,7 +162,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
         it('Transfer 1 LYX to an EOA without data', async () => {
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .execute(
               OPERATION_TYPES.CALL,
               context.accounts[1].address,
@@ -170,7 +178,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
         it('Transfer 1 LYX to a UP without data', async () => {
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .execute(
               OPERATION_TYPES.CALL,
               context.universalProfile.address,
@@ -186,7 +194,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
         it('Transfer 1 LYX to an EOA with 256 bytes of data', async () => {
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .execute(
               OPERATION_TYPES.CALL,
               context.accounts[1].address,
@@ -202,7 +210,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
         it('Transfer 1 LYX to a UP with 256 bytes of data', async () => {
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .execute(
               OPERATION_TYPES.CALL,
               context.universalProfile.address,
@@ -223,22 +231,22 @@ describe('⛽📊 Gas Benchmark', () => {
         before(async () => {
           context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
 
-          universalProfile1 = await new UniversalProfile__factory(context.owner).deploy(
+          universalProfile1 = await new UniversalProfile__factory(context.mainController).deploy(
             context.accounts[2].address,
           );
 
-          universalProfile2 = await new UniversalProfile__factory(context.owner).deploy(
+          universalProfile2 = await new UniversalProfile__factory(context.mainController).deploy(
             context.accounts[3].address,
           );
 
-          universalProfile3 = await new UniversalProfile__factory(context.owner).deploy(
+          universalProfile3 = await new UniversalProfile__factory(context.mainController).deploy(
             context.accounts[4].address,
           );
         });
 
         it('Transfer 0.1 LYX to 3x EOA without data', async () => {
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .executeBatch(
               [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
               [
@@ -262,7 +270,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
         it('Transfer 0.1 LYX to 3x UP without data', async () => {
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .executeBatch(
               [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
               [universalProfile1.address, universalProfile2.address, universalProfile3.address],
@@ -282,7 +290,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
         it('Transfer 0.1 LYX to 3x EOA with 256 bytes of data', async () => {
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .executeBatch(
               [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
               [
@@ -311,7 +319,7 @@ describe('⛽📊 Gas Benchmark', () => {
           ]);
 
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .executeBatch(
               [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
               [universalProfile1.address, universalProfile2.address, universalProfile3.address],
@@ -539,22 +547,22 @@ describe('⛽📊 Gas Benchmark', () => {
       before(async () => {
         context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
         // deploy a LSP7 token
-        lsp7Token = await new LSP7Mintable__factory(context.owner).deploy(
+        lsp7Token = await new LSP7Mintable__factory(context.mainController).deploy(
           'Token',
           'MTKN',
-          context.owner.address,
+          context.mainController.address,
           false,
         );
 
         // deploy a LSP8 token
-        lsp8Token = await new LSP8Mintable__factory(context.owner).deploy(
+        lsp8Token = await new LSP8Mintable__factory(context.mainController).deploy(
           'My NFT',
           'MNFT',
-          context.owner.address,
+          context.mainController.address,
           LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
         );
 
-        universalProfile1 = await new UniversalProfile__factory(context.owner).deploy(
+        universalProfile1 = await new UniversalProfile__factory(context.mainController).deploy(
           context.accounts[2].address,
         );
       });
@@ -588,7 +596,7 @@ describe('⛽📊 Gas Benchmark', () => {
           ]);
 
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .execute(OPERATION_TYPES.CALL, lsp7Token.address, 0, lsp7TransferPayload);
 
           const receipt = await tx.wait();
@@ -639,7 +647,7 @@ describe('⛽📊 Gas Benchmark', () => {
           ]);
 
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .execute(OPERATION_TYPES.CALL, lsp8Token.address, 0, lsp8TransferPayload);
 
           const receipt = await tx.wait();
@@ -691,18 +699,18 @@ describe('⛽📊 Gas Benchmark', () => {
           );
 
           // deploy a LSP7 token
-          lsp7MetaCoin = await new LSP7Mintable__factory(context.owner).deploy(
+          lsp7MetaCoin = await new LSP7Mintable__factory(context.mainController).deploy(
             'MetaCoin',
             'MTC',
-            context.owner.address,
+            context.mainController.address,
             false,
           );
 
           // deploy a LSP8 NFT
-          lsp8MetaNFT = await new LSP8Mintable__factory(context.owner).deploy(
+          lsp8MetaNFT = await new LSP8Mintable__factory(context.mainController).deploy(
             'MetaNFT',
             'MNF',
-            context.owner.address,
+            context.mainController.address,
             LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
           );
 
@@ -719,7 +727,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const lyxAmount = ethers.utils.parseEther('3');
 
           // prettier-ignore
-          const tx = await context.universalProfile.connect(context.owner).execute(OPERATION_TYPES.CALL, recipientEOA.address, lyxAmount, "0x");
+          const tx = await context.universalProfile.connect(context.mainController).execute(OPERATION_TYPES.CALL, recipientEOA.address, lyxAmount, "0x");
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_1'][
@@ -731,7 +739,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const lyxAmount = ethers.utils.parseEther('3');
 
           // prettier-ignore
-          const tx = await context.universalProfile.connect(context.owner).execute(OPERATION_TYPES.CALL, aliceUP.address, lyxAmount, "0x");
+          const tx = await context.universalProfile.connect(context.mainController).execute(OPERATION_TYPES.CALL, aliceUP.address, lyxAmount, "0x");
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_2'][
@@ -743,7 +751,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const tokenAmount = 100;
 
           // prettier-ignore
-          const tx = await context.universalProfile.connect(context.owner).execute(
+          const tx = await context.universalProfile.connect(context.mainController).execute(
             OPERATION_TYPES.CALL,
             lsp7MetaCoin.address,
             0,
@@ -766,7 +774,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const tokenAmount = 100;
 
           // prettier-ignore
-          const tx = await context.universalProfile.connect(context.owner).execute(
+          const tx = await context.universalProfile.connect(context.mainController).execute(
             OPERATION_TYPES.CALL,
             lsp7MetaCoin.address,
             0,
@@ -789,7 +797,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const nftId = nftList[0];
 
           // prettier-ignore
-          const tx = await context.universalProfile.connect(context.owner).execute(
+          const tx = await context.universalProfile.connect(context.mainController).execute(
             OPERATION_TYPES.CALL,
             lsp8MetaNFT.address,
             0,
@@ -812,7 +820,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const nftId = nftList[1];
 
           // prettier-ignore
-          const tx = await context.universalProfile.connect(context.owner).execute(
+          const tx = await context.universalProfile.connect(context.mainController).execute(
             OPERATION_TYPES.CALL,
             lsp8MetaNFT.address,
             0,
@@ -878,17 +886,17 @@ describe('⛽📊 Gas Benchmark', () => {
           // LSP7 token transfer scenarios
           canTransferTwoTokens = context.accounts[3];
 
-          lsp7MetaCoin = await new LSP7Mintable__factory(context.owner).deploy(
+          lsp7MetaCoin = await new LSP7Mintable__factory(context.mainController).deploy(
             'MetaCoin',
             'MTC',
-            context.owner.address,
+            context.mainController.address,
             false,
           );
 
-          lsp7LyxDai = await new LSP7Mintable__factory(context.owner).deploy(
+          lsp7LyxDai = await new LSP7Mintable__factory(context.mainController).deploy(
             'LyxDai',
             'LDAI',
-            context.owner.address,
+            context.mainController.address,
             false,
           );
 
@@ -899,17 +907,17 @@ describe('⛽📊 Gas Benchmark', () => {
           // LSP8 NFT transfer scenarios
           canTransferTwoNFTs = context.accounts[4];
 
-          lsp8MetaNFT = await new LSP8Mintable__factory(context.owner).deploy(
+          lsp8MetaNFT = await new LSP8Mintable__factory(context.mainController).deploy(
             'MetaNFT',
             'MNF',
-            context.owner.address,
+            context.mainController.address,
             LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
           );
 
-          lsp8LyxPunks = await new LSP8Mintable__factory(context.owner).deploy(
+          lsp8LyxPunks = await new LSP8Mintable__factory(context.mainController).deploy(
             'LyxPunks',
             'LPK',
-            context.owner.address,
+            context.mainController.address,
             LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
           );
 
@@ -1123,10 +1131,10 @@ describe('⛽📊 Gas Benchmark', () => {
           // Set some JSONURL for LSP3Profile metadata to test gas cost of updating your profile details
           '0x6f357c6a70546a2accab18748420b63c63b5af4cf710848ae83afc0c51dd8ad17fb5e8b3697066733a2f2f516d65637247656a555156587057347a53393438704e76636e51724a314b69416f4d36626466725663575a736e35',
           ethers.utils.hexZeroPad(ethers.BigNumber.from(3).toHexString(), 16),
-          context.owner.address,
+          context.mainController.address,
         ];
 
-        // The `context.owner` is given `ALL_PERMISSIONS` as the first data key through `setupKeyManager` method.
+        // The `context.mainController` is given `ALL_PERMISSIONS` as the first data key through `setupKeyManager` method.
         await setupKeyManager(context, permissionKeys, permissionValues);
       });
 
@@ -1137,7 +1145,7 @@ describe('⛽📊 Gas Benchmark', () => {
             '0x6f357c6a820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361696670733a2f2f516d597231564a4c776572673670456f73636468564775676f3339706136727963455a4c6a7452504466573834554178';
 
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(dataKey, dataValue);
 
           const receipt = await tx.wait();
@@ -1180,7 +1188,7 @@ describe('⛽📊 Gas Benchmark', () => {
           ];
 
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(dataKeys, dataValues);
 
           const receipt = await tx.wait();
@@ -1202,7 +1210,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const dataValue = combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.SUPER_SETDATA);
 
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(dataKey, dataValue);
 
           const receipt = await tx.wait();
@@ -1243,7 +1251,7 @@ describe('⛽📊 Gas Benchmark', () => {
           ];
 
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(dataKeys, dataValues);
 
           const receipt = await tx.wait();
@@ -1276,7 +1284,7 @@ describe('⛽📊 Gas Benchmark', () => {
           ];
 
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(issuedAssetsDataKeys, issuedAssetsDataValues);
 
           const receipt = await tx.wait();
@@ -1295,7 +1303,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const dataValue = '0xaabbccdd';
 
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(dataKey, dataValue);
 
           const receipt = await tx.wait();
@@ -1310,7 +1318,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const dataValues = ['0xaabbccdd', '0xaabbccdd', '0xaabbccdd'];
 
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(dataKeys, dataValues);
 
           const receipt = await tx.wait();
@@ -1325,7 +1333,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const dataValues = ['0xaabbccdd', '0xaabbccdd', '0xaabbccdd'];
 
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(dataKeys, dataValues);
 
           const receipt = await tx.wait();
@@ -1340,7 +1348,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const dataValues = ['0xaabbccdd', '0xaabbccdd', '0xaabbccdd'];
 
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(dataKeys, dataValues);
 
           const receipt = await tx.wait();
@@ -1411,7 +1419,7 @@ describe('⛽📊 Gas Benchmark', () => {
           ];
 
           const tx = await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(dataKeys, dataValues);
 
           const receipt = await tx.wait();
@@ -1459,7 +1467,7 @@ describe('⛽📊 Gas Benchmark', () => {
             // Set some JSONURL for LSP3Profile metadata to test gas cost of updating your profile details
             '0x6f357c6a70546a2accab18748420b63c63b5af4cf710848ae83afc0c51dd8ad17fb5e8b3697066733a2f2f516d65637247656a555156587057347a53393438704e76636e51724a314b69416f4d36626466725663575a736e35',
             ethers.utils.hexZeroPad(ethers.BigNumber.from(6).toHexString(), 16),
-            context.owner.address,
+            context.mainController.address,
             PERMISSIONS.SETDATA,
             encodeCompactBytesArray([
               ERC725YDataKeys.LSP3.LSP3Profile,
@@ -1477,7 +1485,7 @@ describe('⛽📊 Gas Benchmark', () => {
             ]),
           ];
 
-          // The `context.owner` is given `ALL_PERMISSIONS` as the first data key through `setupKeyManager` method.
+          // The `context.mainController` is given `ALL_PERMISSIONS` as the first data key through `setupKeyManager` method.
           await setupKeyManager(context, permissionKeys, permissionValues);
         });
 
