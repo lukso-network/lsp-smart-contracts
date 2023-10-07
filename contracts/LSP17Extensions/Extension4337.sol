@@ -4,6 +4,9 @@ pragma solidity ^0.8.9;
 // interfaces
 import {IAccount} from "@account-abstraction/contracts/interfaces/IAccount.sol";
 import {
+    IStakeManager
+} from "@account-abstraction/contracts/interfaces/IStakeManager.sol";
+import {
     IERC725X
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 import {
@@ -90,9 +93,9 @@ contract Extension4337 is LSP17Extension, IAccount {
         // if entryPoint is missing funds to pay for the tx, deposit funds
         if (missingAccountFunds > 0) {
             // deposit bytes to entryPoint
-            bytes memory depositToBytes = abi.encodeWithSignature(
-                "depositTo(uint256)",
-                missingAccountFunds
+            bytes memory depositToBytes = abi.encodeWithSelector(
+                IStakeManager.depositTo.selector,
+                msg.sender
             );
 
             // send funds from Universal Profile to ENTRY_POINT
