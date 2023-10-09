@@ -285,6 +285,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     ) internal virtual {
         bool isRemoved = _operators[tokenId].remove(operator);
         if (!isRemoved) revert LSP8NonExistingOperator(operator, tokenId);
+
         emit RevokedOperator(
             operator,
             tokenOwner,
@@ -366,10 +367,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     ) internal virtual {
         if (to == address(0)) {
             revert LSP8CannotSendToAddressZero();
-        }
-
-        if (_exists(tokenId)) {
-            revert LSP8TokenIdAlreadyMinted(tokenId);
         }
 
         _beforeTokenTransfer(address(0), to, tokenId);
