@@ -55,7 +55,7 @@ constructor(address entryPoint_);
 function entryPoint() external view returns (address);
 ```
 
-Get The address of the EntryPoint contract.
+Get the address of the Entry Point contract that will execute the user operation.
 
 #### Returns
 
