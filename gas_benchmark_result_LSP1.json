@@ -1,8 +1,8 @@
 {
   "deployment_costs": {
-    "UniversalProfile": 3064670,
+    "UniversalProfile": 3064814,
     "KeyManager": 3491003,
-    "LSP1DelegateUP": 1623804,
+    "LSP1DelegateUP": 1645641,
     "LSP7Mintable": 2354082,
     "LSP8Mintable": 2476554
   },
@@ -15,15 +15,15 @@
         },
         "case_2": {
           "description": "Transfer 1 LYX to a UP without data",
-          "gas_cost": 46453
+          "gas_cost": 41857
         },
         "case_3": {
           "description": "Transfer 1 LYX to an EOA with 256 bytes of data",
-          "gas_cost": 42198
+          "gas_cost": 42186
         },
         "case_4": {
           "description": "Transfer 1 LYX to a UP with 256 bytes of data",
-          "gas_cost": 44855
+          "gas_cost": 44867
         },
         "case_5": {
           "description": "Transfer 0.1 LYX to 3x EOA without data",
@@ -31,15 +31,15 @@
         },
         "case_6": {
           "description": "Transfer 0.1 LYX to 3x UP without data",
-          "gas_cost": 85349
+          "gas_cost": 83834
         },
         "case_7": {
           "description": "Transfer 0.1 LYX to 3x EOA with 256 bytes of data",
-          "gas_cost": 84838
+          "gas_cost": 84826
         },
         "case_8": {
           "description": "Transfer 0.1 LYX to 3x UPs with 256 bytes of data",
-          "gas_cost": 100177
+          "gas_cost": 100321
         }
       },
       "setData": {
@@ -57,11 +57,11 @@
         },
         "case_4": {
           "description": "Set a 300 bytes long value",
-          "gas_cost": 279688
+          "gas_cost": 279700
         },
         "case_5": {
           "description": "Set a 600 bytes long value",
-          "gas_cost": 484076
+          "gas_cost": 484124
         },
         "case_6": {
           "description": "Change the value of a data key already set",
@@ -77,7 +77,7 @@
         },
         "case_9": {
           "description": "Set 2 data keys of 100 bytes long value",
-          "gas_cost": 260606
+          "gas_cost": 260618
         },
         "case_10": {
           "description": "Set 3 data keys of 20 bytes long value",
@@ -85,7 +85,7 @@
         },
         "case_11": {
           "description": "Change the value of three data keys already set of 20 bytes long value",
-          "gas_cost": 45471
+          "gas_cost": 45459
         },
         "case_12": {
           "description": "Remove the value of three data keys already set",
@@ -128,28 +128,28 @@
         },
         "case_2": {
           "description": "LYX transfer --> to a UP",
-          "main_controller": 69966,
-          "restricted_controller": 82535
+          "main_controller": 75942,
+          "restricted_controller": 90005
         },
         "case_3": {
           "description": "LSP7 token transfer --> to an EOA",
-          "main_controller": 120168,
-          "restricted_controller": 134847
+          "main_controller": 120731,
+          "restricted_controller": 135410
         },
         "case_4": {
           "description": "LSP7 token transfer --> to a UP",
-          "main_controller": 256723,
-          "restricted_controller": 271402
+          "main_controller": 257849,
+          "restricted_controller": 272528
         },
         "case_5": {
           "description": "LSP8 NFT transfer --> to an EOA",
-          "main_controller": 184411,
-          "restricted_controller": 199067
+          "main_controller": 184974,
+          "restricted_controller": 199630
         },
         "case_6": {
           "description": "LSP8 NFT transfer --> to a UP",
-          "main_controller": 304213,
-          "restricted_controller": 318869
+          "main_controller": 305339,
+          "restricted_controller": 319995
         }
       },
       "setData": {

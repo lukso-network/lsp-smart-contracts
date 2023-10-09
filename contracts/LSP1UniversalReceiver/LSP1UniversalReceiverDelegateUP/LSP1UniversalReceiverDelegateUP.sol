@@ -56,6 +56,10 @@ import {
 contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
     using ERC165Checker for address;
 
+    event ReceiveLSP1Called();
+
+    bytes32 private constant _RECEIVE_TYPE_ID = keccak256("Receive TypeId");
+
     /**
      * @dev
      * 1. Writes the data keys of the received [LSP-7-DigitalAsset], [LSP-8-IdentifiableDigitalAsset] and [LSP-9-Vault] contract addresses into the account storage according to the [LSP-5-ReceivedAssets] and [LSP-10-ReceivedVaults] Standard.
@@ -83,6 +87,11 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         // CHECK that we did not send any native tokens to the LSP1 Delegate, as it cannot transfer them back.
         if (msg.value != 0) {
             revert NativeTokensNotAccepted();
+        }
+
+        if (typeId == _RECEIVE_TYPE_ID) {
+            emit ReceiveLSP1Called();
+            return "";
         }
 
         address notifier = address(bytes20(msg.data[msg.data.length - 52:]));

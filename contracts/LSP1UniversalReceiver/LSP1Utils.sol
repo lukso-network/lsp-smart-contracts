@@ -64,7 +64,7 @@ library LSP1Utils {
     function callUniversalReceiverWithCallerInfos(
         address universalReceiverDelegate,
         bytes32 typeId,
-        bytes calldata receivedData,
+        bytes memory receivedData,
         address msgSender,
         uint256 msgValue
     ) internal returns (bytes memory) {

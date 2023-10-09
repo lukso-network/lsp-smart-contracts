@@ -63,8 +63,6 @@ import {
     NoExtensionFoundForFunctionSelector
 } from "../LSP17ContractExtension/LSP17Errors.sol";
 
-import "hardhat/console.sol";
-
 /**
  * @title The Core Implementation of [LSP-0-ERC725Account] Standard.
  *
@@ -86,6 +84,8 @@ abstract contract LSP0ERC725AccountCore is
 
     bytes4 private constant _RECEIVE_SELECTOR = bytes4(keccak256("receive()"));
 
+    bytes32 private constant _RECEIVE_TYPE_ID = keccak256("Receive TypeId");
+
     /**
      * @dev Executed:
      * - When receiving some native tokens without any additional data.
@@ -98,33 +98,42 @@ abstract contract LSP0ERC725AccountCore is
             emit ValueReceived(msg.sender, msg.value);
         }
 
-        // Get the address of the extension set for when receiving plain native tokens
-        address extension = _getExtension(_RECEIVE_SELECTOR);
-
-        // if no extension was found return don't revert
-        if (extension == address(0)) return;
-
-        console.log("receive() function called");
-
-        (bool success, bytes memory result) = extension.call(
-            abi.encodePacked(_RECEIVE_SELECTOR, msg.sender, msg.value)
+        // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY}
+        bytes memory lsp1DelegateValue = _getData(
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
         );
+        bytes memory resultDefaultDelegate;
 
-        console.log("extension called in receive() function");
+        if (lsp1DelegateValue.length >= 20) {
+            address universalReceiverDelegate = address(
+                bytes20(lsp1DelegateValue)
+            );
 
-        assembly {
-            // `mload(result)` -> offset in memory where `result.length` is located
-            // `add(result, 32)` -> offset in memory where `result` data starts
-            let resultdataSize := mload(result)
-            let resultdataOffset := add(result, 32)
+            // Checking LSP1 InterfaceId support
+            if (
+                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
+                    _INTERFACEID_LSP1
+                )
+            ) {
+                // calling {universalReceiver} function on URD appending the caller and the value sent
+                resultDefaultDelegate = universalReceiverDelegate
+                    .callUniversalReceiverWithCallerInfos(
+                        _RECEIVE_TYPE_ID,
+                        "",
+                        msg.sender,
+                        msg.value
+                    );
 
-            // if call failed, revert
-            if eq(success, 0) {
-                revert(resultdataOffset, resultdataSize)
+                assembly {
+                    // `mload(resultDefaultDelegate)` -> offset in memory where `resultDefaultDelegate.length` is located
+                    // `add(resultDefaultDelegate, 32)` -> offset in memory where `resultDefaultDelegate` data starts
+                    let resultdataSize := mload(resultDefaultDelegate)
+                    let resultdataOffset := add(resultDefaultDelegate, 32)
+
+                    // otherwise return the data returned by the extension
+                    return(resultdataOffset, resultdataSize)
+                }
             }
-
-            // otherwise return the data returned by the extension
-            return(resultdataOffset, resultdataSize)
         }
     }
 
