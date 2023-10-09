@@ -1,15 +1,30 @@
 import { arrayify, defaultAbiCoder, hexDataSlice, keccak256 } from 'ethers/lib/utils';
 import { BigNumber, Wallet } from 'ethers';
-import { AddressZero, callDataCost, rethrow } from './utils';
+import { AddressZero, callDataCost } from './utils';
 import { ecsign, toRpcSig, keccak256 as keccak256_buffer } from 'ethereumjs-util';
-import { UserOperation } from './UserOperation';
 import { Create2Factory } from './Create2Factory';
 import { EntryPoint } from '@account-abstraction/contracts';
 import { ethers } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import * as typ from './solidityTypes';
+
+export interface UserOperation {
+  sender: typ.address;
+  nonce: typ.uint256;
+  initCode: typ.bytes;
+  callData: typ.bytes;
+  callGasLimit: typ.uint256;
+  verificationGasLimit: typ.uint256;
+  preVerificationGas: typ.uint256;
+  maxFeePerGas: typ.uint256;
+  maxPriorityFeePerGas: typ.uint256;
+  paymasterAndData: typ.bytes;
+  signature: typ.bytes;
+}
 
 export function packUserOp(op: UserOperation, forSignature = true): string {
   if (forSignature) {
+    // Encoding the UserOperation object fields into a single string for signature
     return defaultAbiCoder.encode(
       [
         'address',
@@ -37,6 +52,7 @@ export function packUserOp(op: UserOperation, forSignature = true): string {
       ],
     );
   } else {
+    // Encoding the UserOperation object fields into a single string including the signature
     return defaultAbiCoder.encode(
       [
         'address',
@@ -68,37 +84,9 @@ export function packUserOp(op: UserOperation, forSignature = true): string {
   }
 }
 
-export function packUserOp1(op: UserOperation): string {
-  return defaultAbiCoder.encode(
-    [
-      'address', // sender
-      'uint256', // nonce
-      'bytes32', // initCode
-      'bytes32', // callData
-      'uint256', // callGasLimit
-      'uint256', // verificationGasLimit
-      'uint256', // preVerificationGas
-      'uint256', // maxFeePerGas
-      'uint256', // maxPriorityFeePerGas
-      'bytes32', // paymasterAndData
-    ],
-    [
-      op.sender,
-      op.nonce,
-      keccak256(op.initCode),
-      keccak256(op.callData),
-      op.callGasLimit,
-      op.verificationGasLimit,
-      op.preVerificationGas,
-      op.maxFeePerGas,
-      op.maxPriorityFeePerGas,
-      keccak256(op.paymasterAndData),
-    ],
-  );
-}
-
 export function getUserOpHash(op: UserOperation, entryPoint: string, chainId: number): string {
   const userOpHash = keccak256(packUserOp(op, true));
+  // Encoding the UserOperation hash, entryPoint address, and chainId for final hash computation
   const enc = defaultAbiCoder.encode(
     ['bytes32', 'address', 'uint256'],
     [userOpHash, entryPoint, chainId],
@@ -213,7 +201,7 @@ export async function fillUserOp(
     try {
       op1.nonce = await entryPoint.getNonce(op1.sender, signerKeyAsUint192);
     } catch {
-      rethrow();
+      op1.nonce = 0;
     }
   }
   if (op1.callGasLimit == null && op.callData != null) {

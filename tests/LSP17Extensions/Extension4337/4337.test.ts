@@ -13,7 +13,7 @@ import {
   UniversalProfile__factory,
 } from '../../../types';
 import { deployEntryPoint, getBalance, isDeployed } from '../helpers/utils';
-import { ALL_PERMISSIONS, ERC725YDataKeys } from '../../../constants';
+import { ALL_PERMISSIONS, ERC725YDataKeys, OPERATION_TYPES } from '../../../constants';
 import { combinePermissions } from '../../utils/helpers';
 import { fillAndSign } from '../helpers/UserOp';
 
@@ -46,6 +46,7 @@ describe('4337', function () {
 
     universalProfile = await new UniversalProfile__factory(deployer).deploy(
       await deployer.getAddress(),
+      { value: parseEther('1') },
     );
     universalProfileAddress = universalProfile.address;
 
@@ -103,19 +104,13 @@ describe('4337', function () {
 
     await universalProfile.setData(dataKeyWithOnlyPermission4337, Permission4337);
 
-    // execute call data
+    // execute calldata
     transferCallData = universalProfile.interface.encodeFunctionData('execute', [
-      0,
+      OPERATION_TYPES.CALL,
       ethers.constants.AddressZero,
       amountToTransfer,
       '0x1234',
     ]);
-
-    // send 1 ethers to universalProfile
-    await deployer.sendTransaction({
-      to: universalProfile.address,
-      value: parseEther('1'),
-    });
 
     // stake on entrypoint
     const stakeAmount = parseEther('1');
@@ -123,9 +118,9 @@ describe('4337', function () {
   });
 
   it('should pass', async function () {
-    const address0BalanceBefore = await getBalance(ethers.constants.AddressZero);
+    const addressZeroBalanceBefore = await getBalance(ethers.constants.AddressZero);
 
-    const op = await fillAndSign(
+    const userOperation = await fillAndSign(
       {
         sender: universalProfileAddress,
         callData: transferCallData,
@@ -134,17 +129,17 @@ describe('4337', function () {
       entryPoint,
     );
 
-    await entryPoint.handleOps([op], bundler.address);
+    await entryPoint.handleOps([userOperation], bundler.address);
 
-    const address0BalanceAfter = await getBalance(ethers.constants.AddressZero);
+    const addressZeroBalanceAfter = await getBalance(ethers.constants.AddressZero);
 
-    expect(address0BalanceAfter - address0BalanceBefore).to.eq(amountToTransfer);
+    expect(addressZeroBalanceAfter - addressZeroBalanceBefore).to.eq(amountToTransfer);
   });
 
   it('should fail when calling from wrong entrypoint', async function () {
     const anotherEntryPoint = await new EntryPoint__factory(deployer).deploy();
 
-    const op = await fillAndSign(
+    const userOperation = await fillAndSign(
       {
         sender: universalProfileAddress,
         callData: transferCallData,
@@ -153,15 +148,17 @@ describe('4337', function () {
       entryPoint,
     );
 
-    await expect(anotherEntryPoint.handleOps([op], bundler.address))
+    const opIndex = 0; //index into the array of ops to the failed one (in simulateValidation, this is always zero).
+
+    await expect(anotherEntryPoint.handleOps([userOperation], bundler.address))
       .to.be.revertedWithCustomError(entryPoint, 'FailedOp')
-      .withArgs(0, 'AA23 reverted: Only EntryPoint contract can call this');
+      .withArgs(opIndex, 'AA23 reverted: Only EntryPoint contract can call this');
   });
 
   it('should fail when controller does not have 4337 permission', async function () {
     const anotherEntryPoint = await new EntryPoint__factory(deployer).deploy();
 
-    const op = await fillAndSign(
+    const userOperation = await fillAndSign(
       {
         sender: universalProfileAddress,
         callData: transferCallData,
@@ -170,14 +167,13 @@ describe('4337', function () {
       entryPoint,
     );
 
-    await expect(anotherEntryPoint.handleOps([op], bundler.address)).to.be.revertedWithCustomError(
-      entryPoint,
-      'FailedOp',
-    );
+    await expect(
+      anotherEntryPoint.handleOps([userOperation], bundler.address),
+    ).to.be.revertedWithCustomError(entryPoint, 'FailedOp');
   });
 
   it('should fail when controller only has 4337 permission', async function () {
-    const op = await fillAndSign(
+    const userOperation = await fillAndSign(
       {
         sender: universalProfileAddress,
         callData: transferCallData,
@@ -185,10 +181,9 @@ describe('4337', function () {
       controllerWithOnly4337Permission,
       entryPoint,
     );
-    await expect(entryPoint.handleOps([op], bundler.address)).to.be.revertedWithCustomError(
-      entryPoint,
-      'FailedOp',
-    );
+    await expect(
+      entryPoint.handleOps([userOperation], bundler.address),
+    ).to.be.revertedWithCustomError(entryPoint, 'FailedOp');
   });
 
   it('should fail on invalid userop', async function () {

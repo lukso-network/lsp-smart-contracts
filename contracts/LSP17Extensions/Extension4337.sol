@@ -112,7 +112,7 @@ contract Extension4337 is LSP17Extension, IAccount {
     }
 
     /**
-     * @dev Get The address of the EntryPoint contract.
+     * @dev Get the address of the Entry Point contract that will execute the user operation.
      * @return The address of the EntryPoint contract
      */
     function entryPoint() public view returns (address) {
