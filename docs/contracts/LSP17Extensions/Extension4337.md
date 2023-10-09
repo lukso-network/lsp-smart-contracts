@@ -102,8 +102,8 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 - Specification details: [**LSP-17-Extensions**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-17-Extensions.md#validateuserop)
 - Solidity implementation: [`Extension4337.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP17Extensions/Extension4337.sol)
-- Function signature: `validateUserOp(UserOperation,bytes32,uint256)`
-- Function selector: `0xe86fc51e`
+- Function signature: `validateUserOp(UserOperation,bytes32,)`
+- Function selector: `0x68159319`
 
 :::
 
@@ -111,7 +111,7 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 function validateUserOp(
   UserOperation userOp,
   bytes32 userOpHash,
-  uint256 missingAccountFunds
+  uint256
 ) external nonpayable returns (uint256);
 ```
 
@@ -121,11 +121,11 @@ Must validate caller is the entryPoint. Must validate the signature and nonce
 
 #### Parameters
 
-| Name                  |      Type       | Description                                                                                                                                                                                                                                                                                                                                                                                         |
-| --------------------- | :-------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `userOp`              | `UserOperation` | the operation that is about to be executed.                                                                                                                                                                                                                                                                                                                                                         |
-| `userOpHash`          |    `bytes32`    | hash of the user's request data. can be used as the basis for signature.                                                                                                                                                                                                                                                                                                                            |
-| `missingAccountFunds` |    `uint256`    | missing funds on the account's deposit in the entrypoint. This is the minimum amount to transfer to the sender(entryPoint) to be able to make the call. The excess is left as a deposit in the entrypoint, for future calls. can be withdrawn anytime using "entryPoint.withdrawTo()" In case there is a paymaster in the request (or the current deposit is high enough), this value will be zero. |
+| Name         |      Type       | Description                                                              |
+| ------------ | :-------------: | ------------------------------------------------------------------------ |
+| `userOp`     | `UserOperation` | the operation that is about to be executed.                              |
+| `userOpHash` |    `bytes32`    | hash of the user's request data. can be used as the basis for signature. |
+| `_2`         |    `uint256`    | -                                                                        |
 
 #### Returns
 
