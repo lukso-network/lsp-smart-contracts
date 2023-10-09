@@ -28,9 +28,6 @@ import {LSP6Utils} from "../LSP6KeyManager/LSP6Utils.sol";
 import {
     UserOperation
 } from "@account-abstraction/contracts/interfaces/UserOperation.sol";
-import {
-    _LSP20_VERIFY_CALL_RESULT_MAGIC_VALUE
-} from "../LSP20CallVerification/LSP20Constants.sol";
 
 contract Extension4337 is LSP17Extension, IAccount {
     using ECDSA for bytes32;
@@ -87,8 +84,11 @@ contract Extension4337 is LSP17Extension, IAccount {
             receivedCalldata: userOp.callData
         });
 
-        // if the call verifier returns a different magic value than _LSP20_VERIFY_CALL_RESULT_MAGIC_VALUE, return signature validation failed
-        if (_LSP20_VERIFY_CALL_RESULT_MAGIC_VALUE != magicValue) {
+        // if the call verifier returns a different magic value, return signature validation failed
+        if (
+            bytes3(magicValue) !=
+            bytes3(ILSP20CallVerifier.lsp20VerifyCall.selector)
+        ) {
             return _SIG_VALIDATION_FAILED;
         }
 
