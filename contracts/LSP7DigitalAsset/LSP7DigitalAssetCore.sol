@@ -71,14 +71,14 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function decimals() public view virtual returns (uint8) {
+    function decimals() public view virtual override returns (uint8) {
         return _isNonDivisible ? 0 : 18;
     }
 
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function totalSupply() public view virtual returns (uint256) {
+    function totalSupply() public view virtual override returns (uint256) {
         return _existingTokens;
     }
 
@@ -89,7 +89,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      */
     function balanceOf(
         address tokenOwner
-    ) public view virtual returns (uint256) {
+    ) public view virtual override returns (uint256) {
         return _tokenOwnerBalances[tokenOwner];
     }
 
@@ -111,7 +111,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address operator,
         uint256 amount,
         bytes memory operatorNotificationData
-    ) public virtual {
+    ) public virtual override {
         _updateOperator(msg.sender, operator, amount, operatorNotificationData);
 
         bytes memory lsp1Data = abi.encode(
@@ -128,7 +128,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     function revokeOperator(
         address operator,
         bytes memory operatorNotificationData
-    ) public virtual {
+    ) public virtual override {
         _updateOperator(msg.sender, operator, 0, operatorNotificationData);
 
         bytes memory lsp1Data = abi.encode(
@@ -145,7 +145,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     function authorizedAmountFor(
         address operator,
         address tokenOwner
-    ) public view virtual returns (uint256) {
+    ) public view virtual override returns (uint256) {
         if (tokenOwner == operator) {
             return _tokenOwnerBalances[tokenOwner];
         } else {
@@ -158,7 +158,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      */
     function getOperatorsOf(
         address tokenOwner
-    ) public view virtual returns (address[] memory) {
+    ) public view virtual override returns (address[] memory) {
         return _operators[tokenOwner].values();
     }
 
@@ -173,7 +173,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         uint256 amount,
         bool force,
         bytes memory data
-    ) public virtual {
+    ) public virtual override {
         if (from == to) revert LSP7CannotSendToSelf();
 
         if (msg.sender != from) {
@@ -196,7 +196,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         uint256[] memory amount,
         bool[] memory force,
         bytes[] memory data
-    ) public virtual {
+    ) public virtual override {
         uint256 fromLength = from.length;
         if (
             fromLength != to.length ||

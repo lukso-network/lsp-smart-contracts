@@ -76,7 +76,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
      *
      * @custom:info If no ownership transfer is in progress, the pendingOwner will be `address(0).`.
      */
-    function pendingOwner() public view virtual returns (address) {
+    function pendingOwner() public view virtual override returns (address) {
         return _pendingOwner;
     }
 
@@ -110,7 +110,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
      *
      * @custom:requirements This function can only be called by the {pendingOwner()}.
      */
-    function acceptOwnership() public virtual NotInTransferOwnership {
+    function acceptOwnership() public virtual override NotInTransferOwnership {
         address previousOwner = owner();
 
         _acceptOwnership();

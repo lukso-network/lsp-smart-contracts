@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.12;
 
 // interfaces
 import {IAccount} from "@account-abstraction/contracts/interfaces/IAccount.sol";

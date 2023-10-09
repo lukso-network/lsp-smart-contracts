@@ -44,7 +44,7 @@ contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable {
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) public virtual onlyOwner {
+    ) public virtual override onlyOwner {
         _mint(to, tokenId, force, data);
     }
 }

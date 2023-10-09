@@ -73,7 +73,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function totalSupply() public view virtual returns (uint256) {
+    function totalSupply() public view virtual override returns (uint256) {
         return _existingTokens;
     }
 
@@ -84,7 +84,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      */
     function balanceOf(
         address tokenOwner
-    ) public view virtual returns (uint256) {
+    ) public view virtual override returns (uint256) {
         return _ownedTokens[tokenOwner].length();
     }
 
@@ -93,7 +93,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      */
     function tokenOwnerOf(
         bytes32 tokenId
-    ) public view virtual returns (address) {
+    ) public view virtual override returns (address) {
         address tokenOwner = _tokenOwners[tokenId];
 
         if (tokenOwner == address(0)) {
@@ -108,7 +108,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      */
     function tokenIdsOf(
         address tokenOwner
-    ) public view virtual returns (bytes32[] memory) {
+    ) public view virtual override returns (bytes32[] memory) {
         return _ownedTokens[tokenOwner].values();
     }
 
@@ -121,7 +121,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address operator,
         bytes32 tokenId,
         bytes memory operatorNotificationData
-    ) public virtual {
+    ) public virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
 
         if (tokenOwner != msg.sender) {
@@ -161,7 +161,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address operator,
         bytes32 tokenId,
         bytes memory operatorNotificationData
-    ) public virtual {
+    ) public virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
 
         if (tokenOwner != msg.sender) {
@@ -197,7 +197,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function isOperatorFor(
         address operator,
         bytes32 tokenId
-    ) public view virtual returns (bool) {
+    ) public view virtual override returns (bool) {
         _existsOrError(tokenId);
 
         return _isOperatorOrOwner(operator, tokenId);
@@ -208,7 +208,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      */
     function getOperatorsOf(
         bytes32 tokenId
-    ) public view virtual returns (address[] memory) {
+    ) public view virtual override returns (address[] memory) {
         _existsOrError(tokenId);
 
         return _operators[tokenId].values();
@@ -237,7 +237,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) public virtual {
+    ) public virtual override {
         if (!_isOperatorOrOwner(msg.sender, tokenId)) {
             revert LSP8NotTokenOperator(tokenId, msg.sender);
         }
@@ -254,7 +254,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bytes32[] memory tokenId,
         bool[] memory force,
         bytes[] memory data
-    ) public virtual {
+    ) public virtual override {
         uint256 fromLength = from.length;
         if (
             fromLength != to.length ||

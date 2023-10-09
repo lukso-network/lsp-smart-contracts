@@ -23,6 +23,7 @@ contract LSP23LinkedContractsFactory is ILSP23LinkedContractsFactory {
     )
         public
         payable
+        override
         returns (
             address primaryContractAddress,
             address secondaryContractAddress
@@ -81,6 +82,7 @@ contract LSP23LinkedContractsFactory is ILSP23LinkedContractsFactory {
     )
         public
         payable
+        override
         returns (
             address primaryContractAddress,
             address secondaryContractAddress
@@ -140,6 +142,7 @@ contract LSP23LinkedContractsFactory is ILSP23LinkedContractsFactory {
     )
         public
         view
+        override
         returns (
             address primaryContractAddress,
             address secondaryContractAddress
@@ -187,6 +190,7 @@ contract LSP23LinkedContractsFactory is ILSP23LinkedContractsFactory {
     )
         public
         view
+        override
         returns (
             address primaryContractAddress,
             address secondaryContractAddress
