@@ -1090,6 +1090,29 @@ Allows to run custom logic before updating balances and notifiying sender/recipi
 
 <br/>
 
+### \_afterTokenTransfer
+
+```solidity
+function _afterTokenTransfer(
+  address from,
+  address to,
+  uint256 amount
+) internal nonpayable;
+```
+
+Hook that is called after any token transfer, including minting and burning.
+Allows to run custom logic after updating balances, but **before notifiying sender/recipient** by overriding this function.
+
+#### Parameters
+
+| Name     |   Type    | Description                     |
+| -------- | :-------: | ------------------------------- |
+| `from`   | `address` | The sender address              |
+| `to`     | `address` | The recipient address           |
+| `amount` | `uint256` | The amount of token to transfer |
+
+<br/>
+
 ### \_notifyTokenOperator
 
 ```solidity

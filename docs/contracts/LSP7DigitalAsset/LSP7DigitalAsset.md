@@ -833,6 +833,16 @@ If the amount is zero then the operator is being revoked, otherwise the operator
 
 ### \_mint
 
+:::info
+
+Any logic in the:
+
+- {\_beforeTokenTransfer} function will run before updating the balances.
+
+- {\_afterTokenTransfer} function will run after updating the balances, **but before notifying the recipient via LSP1**.
+
+:::
+
 ```solidity
 function _mint(
   address to,
@@ -865,6 +875,16 @@ Mints `amount` of tokens and transfers it to `to`.
 
 ### \_burn
 
+:::info
+
+Any logic in the:
+
+- {\_beforeTokenTransfer} function will run before updating the balances.
+
+- {\_afterTokenTransfer} function will run after updating the balances, **but before notifying the sender via LSP1**.
+
+:::
+
 :::tip Hint
 
 In dApps, you can know which address is burning tokens by listening for the `Transfer` event and filter with the zero address as `to`.
@@ -879,7 +899,6 @@ Burns (= destroys) `amount` of tokens, decrease the `from` balance. This is done
 Both the sender and recipient will be notified of the token transfer through the LSP1 [`universalReceiver`](#universalreceiver)
 function, if they are contracts that support the LSP1 interface. Their `universalReceiver` function will receive
 all the parameters in the calldata packed encoded.
-Any logic in the [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances.
 
 <blockquote>
 
@@ -923,6 +942,16 @@ Spend `amountToSpend` from the `operator`'s authorized on behalf of the `tokenOw
 
 ### \_transfer
 
+:::info
+
+Any logic in the:
+
+- {\_beforeTokenTransfer} function will run before updating the balances.
+
+- {\_afterTokenTransfer} function will run after updating the balances, **but before notifying the sender/recipient via LSP1**.
+
+:::
+
 ```solidity
 function _transfer(
   address from,
@@ -938,7 +967,6 @@ of `to` by `+amount`.
 Both the sender and recipient will be notified of the token transfer through the LSP1 [`universalReceiver`](#universalreceiver)
 function, if they are contracts that support the LSP1 interface. Their `universalReceiver` function will receive
 all the parameters in the calldata packed encoded.
-Any logic in the [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances.
 
 <blockquote>
 
@@ -972,6 +1000,29 @@ function _beforeTokenTransfer(
 
 Hook that is called before any token transfer, including minting and burning.
 Allows to run custom logic before updating balances and notifiying sender/recipient by overriding this function.
+
+#### Parameters
+
+| Name     |   Type    | Description                     |
+| -------- | :-------: | ------------------------------- |
+| `from`   | `address` | The sender address              |
+| `to`     | `address` | The recipient address           |
+| `amount` | `uint256` | The amount of token to transfer |
+
+<br/>
+
+### \_afterTokenTransfer
+
+```solidity
+function _afterTokenTransfer(
+  address from,
+  address to,
+  uint256 amount
+) internal nonpayable;
+```
+
+Hook that is called after any token transfer, including minting and burning.
+Allows to run custom logic after updating balances, but **before notifiying sender/recipient** by overriding this function.
 
 #### Parameters
 
