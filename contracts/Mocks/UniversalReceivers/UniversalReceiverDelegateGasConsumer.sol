@@ -23,7 +23,7 @@ contract UniversalReceiverDelegateGasConsumer is
     function universalReceiver(
         bytes32 /* typeId */,
         bytes memory /* data */
-    ) public payable virtual returns (bytes memory) {
+    ) public payable override returns (bytes memory) {
         // solhint-disable no-empty-blocks
         for (uint256 i = 0; ; i++) {
             // nothing

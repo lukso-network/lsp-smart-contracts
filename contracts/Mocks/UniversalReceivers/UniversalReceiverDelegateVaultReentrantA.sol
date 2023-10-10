@@ -34,7 +34,7 @@ contract UniversalReceiverDelegateVaultReentrantA is
     function universalReceiver(
         bytes32 /* typeId */,
         bytes memory data
-    ) external payable returns (bytes memory) {
+    ) external payable override returns (bytes memory) {
         if (msg.value != 0) {
             revert NativeTokensNotAccepted();
         }

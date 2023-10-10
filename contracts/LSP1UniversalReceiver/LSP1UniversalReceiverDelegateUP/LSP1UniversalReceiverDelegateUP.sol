@@ -79,7 +79,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
     function universalReceiver(
         bytes32 typeId,
         bytes memory /* data */
-    ) public payable virtual returns (bytes memory) {
+    ) public payable virtual override returns (bytes memory) {
         // CHECK that we did not send any native tokens to the LSP1 Delegate, as it cannot transfer them back.
         if (msg.value != 0) {
             revert NativeTokensNotAccepted();

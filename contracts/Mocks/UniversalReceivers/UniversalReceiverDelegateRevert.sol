@@ -20,7 +20,7 @@ contract UniversalReceiverDelegateRevert is ERC165, ILSP1UniversalReceiver {
     function universalReceiver(
         bytes32 /* typeId */,
         bytes memory /* data */
-    ) public payable virtual returns (bytes memory) {
+    ) public payable override returns (bytes memory) {
         revert("I Revert");
     }
 

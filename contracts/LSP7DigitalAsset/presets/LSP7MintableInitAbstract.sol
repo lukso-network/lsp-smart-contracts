@@ -47,7 +47,7 @@ abstract contract LSP7MintableInitAbstract is
         uint256 amount,
         bool force,
         bytes memory data
-    ) public virtual onlyOwner {
+    ) public virtual override onlyOwner {
         _mint(to, amount, force, data);
     }
 }

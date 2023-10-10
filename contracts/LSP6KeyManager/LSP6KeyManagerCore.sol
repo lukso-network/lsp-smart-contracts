@@ -101,7 +101,7 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP6
      */
-    function target() public view returns (address) {
+    function target() public view override returns (address) {
         return _target;
     }
 
@@ -136,7 +136,7 @@ abstract contract LSP6KeyManagerCore is
     function getNonce(
         address from,
         uint128 channelId
-    ) public view virtual returns (uint256) {
+    ) public view virtual override returns (uint256) {
         return LSP25MultiChannelNonce._getNonce(from, channelId);
     }
 
@@ -151,7 +151,7 @@ abstract contract LSP6KeyManagerCore is
     function isValidSignature(
         bytes32 dataHash,
         bytes memory signature
-    ) public view virtual returns (bytes4 magicValue) {
+    ) public view virtual override returns (bytes4 magicValue) {
         // if isValidSignature fail, the error is catched in returnedError
         (address recoveredAddress, ECDSA.RecoverError returnedError) = ECDSA
             .tryRecover(dataHash, signature);
@@ -177,7 +177,7 @@ abstract contract LSP6KeyManagerCore is
      */
     function execute(
         bytes calldata payload
-    ) public payable virtual returns (bytes memory) {
+    ) public payable virtual override returns (bytes memory) {
         return _execute(msg.value, payload);
     }
 
@@ -189,7 +189,7 @@ abstract contract LSP6KeyManagerCore is
     function executeBatch(
         uint256[] calldata values,
         bytes[] calldata payloads
-    ) public payable virtual returns (bytes[] memory) {
+    ) public payable virtual override returns (bytes[] memory) {
         if (values.length != payloads.length) {
             revert BatchExecuteParamsLengthMismatch();
         }
@@ -237,7 +237,7 @@ abstract contract LSP6KeyManagerCore is
         uint256 nonce,
         uint256 validityTimestamps,
         bytes calldata payload
-    ) public payable virtual returns (bytes memory) {
+    ) public payable virtual override returns (bytes memory) {
         return
             _executeRelayCall(
                 signature,
@@ -267,7 +267,7 @@ abstract contract LSP6KeyManagerCore is
         uint256[] calldata validityTimestamps,
         uint256[] calldata values,
         bytes[] calldata payloads
-    ) public payable virtual returns (bytes[] memory) {
+    ) public payable virtual override returns (bytes[] memory) {
         if (
             signatures.length != nonces.length ||
             nonces.length != validityTimestamps.length ||
@@ -323,7 +323,7 @@ abstract contract LSP6KeyManagerCore is
         address caller,
         uint256 msgValue,
         bytes calldata data
-    ) external virtual returns (bytes4) {
+    ) external virtual override returns (bytes4) {
         bool isSetData = bytes4(data) == IERC725Y.setData.selector ||
             bytes4(data) == IERC725Y.setDataBatch.selector;
 
@@ -373,7 +373,7 @@ abstract contract LSP6KeyManagerCore is
     function lsp20VerifyCallResult(
         bytes32 /*callHash*/,
         bytes memory /*result*/
-    ) external virtual returns (bytes4) {
+    ) external virtual override returns (bytes4) {
         // If it's the target calling, set back the reentrancy guard
         // to false, if not return the magic value
         if (msg.sender == _target) {

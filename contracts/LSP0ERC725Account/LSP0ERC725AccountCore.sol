@@ -138,7 +138,7 @@ abstract contract LSP0ERC725AccountCore is
      */
     function batchCalls(
         bytes[] calldata data
-    ) public virtual returns (bytes[] memory results) {
+    ) public virtual override returns (bytes[] memory results) {
         results = new bytes[](data.length);
         for (uint256 i; i < data.length; ) {
             (bool success, bytes memory result) = address(this).delegatecall(
@@ -415,7 +415,7 @@ abstract contract LSP0ERC725AccountCore is
     function universalReceiver(
         bytes32 typeId,
         bytes calldata receivedData
-    ) public payable virtual returns (bytes memory returnedValues) {
+    ) public payable virtual override returns (bytes memory returnedValues) {
         if (msg.value != 0) {
             emit ValueReceived(msg.sender, msg.value);
         }
@@ -678,7 +678,7 @@ abstract contract LSP0ERC725AccountCore is
     function isValidSignature(
         bytes32 dataHash,
         bytes memory signature
-    ) public view virtual returns (bytes4 magicValue) {
+    ) public view virtual override returns (bytes4 magicValue) {
         address _owner = owner();
 
         // If owner is a contract

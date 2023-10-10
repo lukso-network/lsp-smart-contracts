@@ -138,7 +138,7 @@ contract LSP9VaultCore is
      */
     function batchCalls(
         bytes[] calldata data
-    ) public virtual returns (bytes[] memory results) {
+    ) public virtual override returns (bytes[] memory results) {
         results = new bytes[](data.length);
         for (uint256 i; i < data.length; ) {
             (bool success, bytes memory result) = address(this).delegatecall(
@@ -321,7 +321,7 @@ contract LSP9VaultCore is
     function universalReceiver(
         bytes32 typeId,
         bytes calldata receivedData
-    ) public payable virtual returns (bytes memory returnedValues) {
+    ) public payable virtual override returns (bytes memory returnedValues) {
         if (msg.value != 0) {
             emit ValueReceived(msg.sender, msg.value);
         }
