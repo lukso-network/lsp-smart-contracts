@@ -22,21 +22,24 @@ import {
     _TYPEID_LSP8_TOKENSRECIPIENT
 } from "../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 
-import {_INTERFACEID_LSP1} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+import {
+    _INTERFACEID_LSP1_DELEGATE
+} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
 /**
  * @dev This contract is used only for testing purposes
  */
 contract UniversalReceiverDelegateTokenReentrant is ERC165Storage {
     constructor() {
-        _registerInterface(_INTERFACEID_LSP1);
+        _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }
 
-    function universalReceiver(
+    function universalReceiverDelegate(
+        address sender,
+        uint256 /*value*/,
         bytes32 typeId,
         bytes memory data
-    ) public payable virtual returns (bytes memory result) {
-        address sender = address(bytes20(msg.data[msg.data.length - 52:]));
+    ) public virtual returns (bytes memory result) {
         if (
             typeId == _TYPEID_LSP7_TOKENSRECIPIENT ||
             typeId == _TYPEID_LSP8_TOKENSRECIPIENT

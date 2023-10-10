@@ -18,6 +18,7 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 // constants
 import {
     _INTERFACEID_LSP1,
+    _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
 } from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 import {
@@ -33,10 +34,12 @@ import {
  */
 contract UniversalReceiverDelegateVaultMalicious is ERC165Storage {
     constructor() {
-        _registerInterface(_INTERFACEID_LSP1);
+        _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }
 
-    function universalReceiver(
+    function universalReceiverDelegate(
+        address /*sender*/,
+        uint256 /*value*/,
         bytes32 typeId,
         bytes memory data
     ) public virtual returns (bytes memory) {

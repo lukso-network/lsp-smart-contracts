@@ -15,14 +15,18 @@ import {
     _TYPEID_LSP7_TOKENSSENDER
 } from "../../LSP7DigitalAsset/LSP7Constants.sol";
 
-import {_INTERFACEID_LSP1} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+import {
+    _INTERFACEID_LSP1_DELEGATE
+} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
 contract UniversalReceiverDelegateDataUpdater is ERC165Storage {
     constructor() {
-        _registerInterface(_INTERFACEID_LSP1);
+        _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }
 
-    function universalReceiver(
+    function universalReceiverDelegate(
+        address /*sender*/,
+        uint256 /*value*/,
         bytes32 typeId,
         bytes memory /* data */
     ) public virtual returns (bytes memory) {
