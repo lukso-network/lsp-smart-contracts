@@ -3,6 +3,8 @@
 name: Solidity Compiler Versions
 
 on:
+  workflow_dispatch:
+
   # Used to check pragma settings for `.sol` files are correct before releasing
   push:
     branches:

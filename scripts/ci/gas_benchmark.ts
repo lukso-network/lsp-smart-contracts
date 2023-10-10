@@ -180,7 +180,7 @@ task('gas-benchmark', 'Benchmark gas usage of the smart contracts based on prede
 ⛽ I am the Gas Bot Reporter. I keep track of the gas costs of common interactions using Universal Profiles 🆙 !
 📊 Here is a summary of the gas cost with the code introduced by this PR.
 
-## ⛽📊 Gas Benchmark Report
+## ⛽📊 Gas Benchmark Report
 
 ### Deployment Costs
 
