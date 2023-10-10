@@ -17,10 +17,7 @@ import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {LSP5Utils} from "../../LSP5ReceivedAssets/LSP5Utils.sol";
 
 // constants
-import {
-    _INTERFACEID_LSP1,
-    _INTERFACEID_LSP1_DELEGATE
-} from "../LSP1Constants.sol";
+import {_INTERFACEID_LSP1_DELEGATE} from "../LSP1Constants.sol";
 import {
     _TYPEID_LSP7_TOKENSSENDER,
     _TYPEID_LSP7_TOKENSRECIPIENT,

@@ -17,7 +17,6 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 // constants
 import {
-    _INTERFACEID_LSP1,
     _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
 } from "../../LSP1UniversalReceiver/LSP1Constants.sol";

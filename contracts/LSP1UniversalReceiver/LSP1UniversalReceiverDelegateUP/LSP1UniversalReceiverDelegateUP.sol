@@ -21,10 +21,7 @@ import {LSP5Utils} from "../../LSP5ReceivedAssets/LSP5Utils.sol";
 import {LSP10Utils} from "../../LSP10ReceivedVaults/LSP10Utils.sol";
 
 // constants
-import {
-    _INTERFACEID_LSP1,
-    _INTERFACEID_LSP1_DELEGATE
-} from "../LSP1Constants.sol";
+import {_INTERFACEID_LSP1_DELEGATE} from "../LSP1Constants.sol";
 import {
     _TYPEID_LSP7_TOKENSSENDER,
     _TYPEID_LSP7_TOKENSRECIPIENT,
