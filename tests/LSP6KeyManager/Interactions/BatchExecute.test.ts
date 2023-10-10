@@ -430,18 +430,17 @@ export const shouldBehaveLikeBatchExecute = (
       });
 
       describe('if specifying some value for each values[index]', () => {
-        it('should revert with Key Manager error `CannotSendValueToSetData` when sending value while setting data', async () => {
-          const amountToFund = ethers.utils.parseEther('2');
+        it('should pass when sending value while setting data', async () => {
+          const msgValues = [ethers.utils.parseEther('2'), ethers.utils.parseEther('2')];
+          const totalMsgValue = msgValues.reduce((accumulator, currentValue) =>
+            accumulator.add(currentValue),
+          );
 
           const dataKeys = [
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key1')),
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key2')),
           ];
           const dataValues = ['0xaaaaaaaa', '0xbbbbbbbb'];
-
-          const keyManagerBalanceBefore = await ethers.provider.getBalance(
-            context.keyManager.address,
-          );
 
           const firstSetDataPayload = context.universalProfile.interface.encodeFunctionData(
             'setData',
@@ -453,25 +452,15 @@ export const shouldBehaveLikeBatchExecute = (
             [dataKeys[1], dataValues[1]],
           );
 
-          // this error occurs when calling `setData(...)` with msg.value,
-          // since these functions on ERC725Y are not payable
           await expect(
             context.keyManager
               .connect(context.mainController)
-              .executeBatch([1, 1], [firstSetDataPayload, secondSetDataPayload], {
-                value: amountToFund,
+              .executeBatch(msgValues, [firstSetDataPayload, secondSetDataPayload], {
+                value: totalMsgValue,
               }),
-          ).to.be.revertedWithCustomError(context.keyManager, 'CannotSendValueToSetData');
+          ).to.changeEtherBalances([context.universalProfile.address], [totalMsgValue]);
 
-          const keyManagerBalanceAfter = await ethers.provider.getBalance(
-            context.keyManager.address,
-          );
-
-          expect(keyManagerBalanceAfter).to.equal(keyManagerBalanceBefore);
-
-          // the Key Manager must not hold any funds and must always forward any funds sent to it.
-          // it's balance must always be 0 after any execution
-          expect(await provider.getBalance(context.keyManager.address)).to.equal(0);
+          expect(await context.universalProfile.getDataBatch(dataKeys)).to.deep.equal(dataValues);
         });
       });
     });
@@ -504,10 +493,8 @@ export const shouldBehaveLikeBatchExecute = (
             context.keyManager.connect(context.mainController).executeBatch(msgValues, payloads, {
               value: totalValues,
             }),
-          ).to.changeEtherBalances(
-            [context.universalProfile.address, recipient],
-            [0, msgValues[1]],
-          );
+          ).to.changeEtherBalances([context.universalProfile.address, recipient], msgValues);
+
           expect(await context.universalProfile.getData(dataKey)).to.equal(dataValue);
         });
       });
@@ -535,11 +522,19 @@ export const shouldBehaveLikeBatchExecute = (
             accumulator.add(currentValue),
           );
 
+          await context.keyManager
+            .connect(context.mainController)
+            .executeBatch(msgValues, payloads, {
+              value: totalValues,
+            });
+
           await expect(
             context.keyManager.connect(context.mainController).executeBatch(msgValues, payloads, {
               value: totalValues,
             }),
-          ).to.be.revertedWithCustomError(context.keyManager, 'CannotSendValueToSetData');
+          ).to.changeEtherBalances([context.universalProfile.address, recipient], msgValues);
+
+          expect(await context.universalProfile.getData(dataKey)).to.equal(dataValue);
         });
       });
     });

@@ -46,8 +46,7 @@ import {
     InvalidPayload,
     InvalidRelayNonce,
     NoPermissionsSet,
-    InvalidERC725Function,
-    CannotSendValueToSetData
+    InvalidERC725Function
 } from "./LSP6Errors.sol";
 
 import {
@@ -335,7 +334,8 @@ abstract contract LSP6KeyManagerCore is
                 caller
             );
 
-            _verifyPermissions(targetContract, caller, msgValue, false, data);
+            _verifyPermissions(targetContract, caller, false, data);
+
             emit PermissionsVerified(caller, msgValue, bytes4(data));
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
@@ -357,7 +357,7 @@ abstract contract LSP6KeyManagerCore is
                 );
             }
 
-            _verifyPermissions(targetContract, caller, msgValue, false, data);
+            _verifyPermissions(targetContract, caller, false, data);
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
@@ -401,13 +401,7 @@ abstract contract LSP6KeyManagerCore is
             msg.sender
         );
 
-        _verifyPermissions(
-            targetContract,
-            msg.sender,
-            msgValue,
-            false,
-            payload
-        );
+        _verifyPermissions(targetContract, msg.sender, false, payload);
 
         emit PermissionsVerified(msg.sender, msgValue, bytes4(payload));
 
@@ -478,7 +472,8 @@ abstract contract LSP6KeyManagerCore is
             signer
         );
 
-        _verifyPermissions(targetContract, signer, msgValue, true, payload);
+        _verifyPermissions(targetContract, signer, true, payload);
+
         emit PermissionsVerified(signer, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(
@@ -519,13 +514,13 @@ abstract contract LSP6KeyManagerCore is
 
     /**
      * @dev Verify if the `from` address is allowed to execute the `payload` on the {target} contract linked to this Key Manager.
+     * @param targetContract The contract that is owned by the Key Manager
      * @param from Either the caller of {execute} or the signer of {executeRelayCall}.
      * @param payload The abi-encoded function call to execute on the {target} contract.
      */
     function _verifyPermissions(
         address targetContract,
         address from,
-        uint256 msgValue,
         bool isRelayedCall,
         bytes calldata payload
     ) internal view virtual {
@@ -543,7 +538,6 @@ abstract contract LSP6KeyManagerCore is
 
         // ERC725Y.setData(bytes32,bytes)
         if (erc725Function == IERC725Y.setData.selector) {
-            if (msgValue != 0) revert CannotSendValueToSetData();
             (bytes32 inputKey, bytes memory inputValue) = abi.decode(
                 payload[4:],
                 (bytes32, bytes)
@@ -559,7 +553,6 @@ abstract contract LSP6KeyManagerCore is
 
             // ERC725Y.setDataBatch(bytes32[],bytes[])
         } else if (erc725Function == IERC725Y.setDataBatch.selector) {
-            if (msgValue != 0) revert CannotSendValueToSetData();
             (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi
                 .decode(payload[4:], (bytes32[], bytes[]));
 

@@ -44,8 +44,9 @@ abstract contract LSP20CallVerification {
 
         bytes4 magicValue = abi.decode(returnedData, (bytes4));
 
-        if (bytes3(magicValue) != bytes3(ILSP20.lsp20VerifyCall.selector))
+        if (bytes3(magicValue) != bytes3(ILSP20.lsp20VerifyCall.selector)) {
             revert LSP20InvalidMagicValue(false, returnedData);
+        }
 
         return magicValue[3] == 0x01;
     }

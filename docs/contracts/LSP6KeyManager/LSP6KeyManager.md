@@ -1167,7 +1167,6 @@ _Execute the `payload` passed to `execute(...)` or `executeRelayCall(...)`_
 function _verifyPermissions(
   address targetContract,
   address from,
-  uint256 msgValue,
   bool isRelayedCall,
   bytes payload
 ) internal view;
@@ -1179,9 +1178,8 @@ Verify if the `from` address is allowed to execute the `payload` on the [`target
 
 | Name             |   Type    | Description                                                         |
 | ---------------- | :-------: | ------------------------------------------------------------------- |
-| `targetContract` | `address` | -                                                                   |
+| `targetContract` | `address` | The contract that is owned by the Key Manager                       |
 | `from`           | `address` | Either the caller of {execute} or the signer of {executeRelayCall}. |
-| `msgValue`       | `uint256` | -                                                                   |
 | `isRelayedCall`  |  `bool`   | -                                                                   |
 | `payload`        |  `bytes`  | The abi-encoded function call to execute on the {target} contract.  |
 
@@ -1307,27 +1305,6 @@ error CallingKeyManagerNotAllowed();
 _Calling the Key Manager address for this transaction is disallowed._
 
 Reverts when calling the KeyManager through `execute(uint256,address,uint256,bytes)`.
-
-<br/>
-
-### CannotSendValueToSetData
-
-:::note References
-
-- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#cannotsendvaluetosetdata)
-- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
-- Error signature: `CannotSendValueToSetData()`
-- Error hash: `0x59a529fc`
-
-:::
-
-```solidity
-error CannotSendValueToSetData();
-```
-
-_Cannot sent native tokens while setting data._
-
-Reverts when calling the `setData(byte32,bytes)` or `setData(bytes32[],bytes[]) functions on the linked [`target`](#target) while sending value.
 
 <br/>
 
