@@ -60,9 +60,8 @@ abstract contract LSP20CallVerification {
         address logicVerifier,
         bytes memory callResult
     ) internal virtual {
-        (bool success, bytes memory returnedData) = logicVerifier.call(
-            abi.encodeWithSelector(
-                ILSP20.lsp20VerifyCallResult.selector,
+        try
+            ILSP20(logicVerifier).lsp20VerifyCallResult(
                 keccak256(
                     abi.encodePacked(
                         msg.sender,
@@ -74,37 +73,18 @@ abstract contract LSP20CallVerification {
                 ),
                 callResult
             )
-        );
+        returns (bytes4 magicValue) {
+            if (magicValue != ILSP20.lsp20VerifyCallResult.selector) {
+                revert LSP20CallVerificationFailed({
+                    postCall: true,
+                    returnedData: abi.encode(magicValue)
+                });
+            }
 
-        _validateCall(true, success, returnedData);
-
-        if (
-            abi.decode(returnedData, (bytes4)) !=
-            ILSP20.lsp20VerifyCallResult.selector
-        )
-            revert LSP20CallVerificationFailed({
-                postCall: true,
-                returnedData: returnedData
-            });
-    }
-
-    function _validateCall(
-        bool postCall,
-        bool success,
-        bytes memory returnedData
-    ) internal pure virtual {
-        if (!success) _revertWithLSP20DefaultError(postCall, returnedData);
-
-        // check if the returned data contains at least 32 bytes, potentially an abi encoded bytes4 value
-        // check if the returned data has in the first 32 bytes an abi encoded bytes4 value
-        if (
-            returnedData.length < 32 ||
-            bytes28(bytes32(returnedData) << 32) != bytes28(0)
-        )
-            revert LSP20CallVerificationFailed({
-                postCall: postCall,
-                returnedData: returnedData
-            });
+            return;
+        } catch (bytes memory errorData) {
+            _revertWithLSP20DefaultError(true, errorData);
+        }
     }
 
     function _revertWithLSP20DefaultError(
