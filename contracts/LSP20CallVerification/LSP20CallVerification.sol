@@ -26,29 +26,30 @@ abstract contract LSP20CallVerification {
     function _verifyCall(
         address logicVerifier
     ) internal virtual returns (bool verifyAfter) {
-        if (logicVerifier.code.length == 0)
+        if (logicVerifier.code.length == 0) {
             revert LSP20EOACannotVerifyCall(logicVerifier);
+        }
 
-        (bool success, bytes memory returnedData) = logicVerifier.call(
-            abi.encodeWithSelector(
-                ILSP20.lsp20VerifyCall.selector,
+        try
+            ILSP20(logicVerifier).lsp20VerifyCall(
                 msg.sender,
                 address(this),
                 msg.sender,
                 msg.value,
                 msg.data
             )
-        );
+        returns (bytes4 magicValue) {
+            if (bytes3(magicValue) != bytes3(ILSP20.lsp20VerifyCall.selector)) {
+                revert LSP20CallVerificationFailed(
+                    false,
+                    abi.encode(magicValue)
+                );
+            }
 
-        _validateCall(false, success, returnedData);
-
-        bytes4 returnedStatus = abi.decode(returnedData, (bytes4));
-
-        if (bytes3(returnedStatus) != bytes3(ILSP20.lsp20VerifyCall.selector)) {
-            revert LSP20CallVerificationFailed(false, returnedData);
+            return magicValue[3] == 0x01;
+        } catch (bytes memory errorData) {
+            _revertWithLSP20DefaultError(false, errorData);
         }
-
-        return returnedStatus[3] == 0x01;
     }
 
     /**
