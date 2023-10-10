@@ -62,9 +62,16 @@ jobs:
           solc-select install ${{ matrix.solc }}
           solc-select use ${{ matrix.solc }}
 
+      - name: Compare versions to filter contracts to compile
+        uses: madhead/semver-utils@latest
+        id: comparison
+        with:
+          version: ${{ matrix.solc }}
+          compare-to: 0.8.12
+
       - name: Compile Smart Contracts
         run: |
-          if [[ ${{ matrix.solc }} < 0.8.12 ]]
+          if [[ "<" == "${{ steps.comparison.outputs.comparison-result }}" ]]
           then 
             solc $(ls contracts/**/*.sol | grep -v "Compatible" | grep -v "Extension4337") --allow-paths $(pwd)/node_modules/ \
               @=node_modules/@ \
