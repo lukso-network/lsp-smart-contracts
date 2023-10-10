@@ -50,46 +50,6 @@ library LSP1Utils {
     }
 
     /**
-     * @dev Call a LSP1UniversalReceiverDelegate contract at `universalReceiverDelegate` address and append `msgSender` and `msgValue`
-     * as additional informations in the calldata.
-     *
-     * @param universalReceiverDelegate The address of the LSP1UniversalReceiverDelegate to delegate the `universalReceiver` function to.
-     * @param typeId A `bytes32` typeId.
-     * @param receivedData The data sent initially to the `universalReceiver` function.
-     * @param msgSender The address that initially called the `universalReceiver` function.
-     * @param msgValue The amount of native token received initially by the `universalReceiver` function.
-     *
-     * @return The data returned by the LSP1UniversalReceiverDelegate contract.
-     */
-    function callUniversalReceiverWithCallerInfos(
-        address universalReceiverDelegate,
-        bytes32 typeId,
-        bytes calldata receivedData,
-        address msgSender,
-        uint256 msgValue
-    ) internal returns (bytes memory) {
-        bytes memory callData = abi.encodePacked(
-            abi.encodeWithSelector(
-                ILSP1.universalReceiver.selector,
-                typeId,
-                receivedData
-            ),
-            msgSender,
-            msgValue
-        );
-
-        (bool success, bytes memory result) = universalReceiverDelegate.call(
-            callData
-        );
-        Address.verifyCallResult(
-            success,
-            result,
-            "Call to universalReceiver failed"
-        );
-        return result.length != 0 ? abi.decode(result, (bytes)) : result;
-    }
-
-    /**
      * @notice Retrieving the value stored under the ERC725Y data key `LSP1UniversalReceiverDelegate`.
      *
      * @dev Query internally the ERC725Y storage of a `ERC725Y` smart contract to retrieve
