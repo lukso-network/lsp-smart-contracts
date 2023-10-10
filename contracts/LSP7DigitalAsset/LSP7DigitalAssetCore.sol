@@ -50,21 +50,22 @@ import {
  */
 abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     using EnumerableSet for EnumerableSet.AddressSet;
+
     // --- Storage
+
+    bool internal _isNonDivisible;
+
+    uint256 internal _existingTokens;
 
     // Mapping from `tokenOwner` to an `amount` of tokens
     mapping(address => uint256) internal _tokenOwnerBalances;
 
-    // Mapping a `tokenOwner` to an `operator` to `amount` of tokens.
-    mapping(address => mapping(address => uint256))
-        internal _operatorAuthorizedAmount;
-
     // Mapping an `address` to its authorized operator addresses.
     mapping(address => EnumerableSet.AddressSet) internal _operators;
 
-    uint256 internal _existingTokens;
-
-    bool internal _isNonDivisible;
+    // Mapping a `tokenOwner` to an `operator` to `amount` of tokens.
+    mapping(address => mapping(address => uint256))
+        internal _operatorAuthorizedAmount;
 
     // --- Token queries
 
