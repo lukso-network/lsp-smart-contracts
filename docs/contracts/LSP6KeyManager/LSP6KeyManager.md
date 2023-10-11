@@ -1087,6 +1087,21 @@ The "idx" is a 256bits (unsigned) integer, where:
 
 <br/>
 
+### \_lsp20VerifyPermissions
+
+```solidity
+function _lsp20VerifyPermissions(
+  address targetContract,
+  address caller,
+  bytes32 permissions,
+  bytes4 erc725Function,
+  bytes data,
+  bool reentrancyStatus
+) internal view returns (bytes4);
+```
+
+<br/>
+
 ### \_execute
 
 ```solidity
@@ -1195,8 +1210,8 @@ function _nonReentrantBefore(
 ) internal nonpayable returns (bool reentrancyStatus);
 ```
 
-Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
-the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
+Update the status from `true` to `false` and checks if
+the status is `true` in order to revert the call unless the caller has the REENTRANCY permission
 Used in the beginning of the `nonReentrant` modifier, before the method execution starts.
 
 <br/>

@@ -1211,18 +1211,6 @@ Reverts in case the value returned does not match the magic value (lsp20VerifyCa
 
 <br/>
 
-### \_validateCall
-
-```solidity
-function _validateCall(
-  bool postCall,
-  bool success,
-  bytes returnedData
-) internal pure;
-```
-
-<br/>
-
 ### \_revertWithLSP20DefaultError
 
 ```solidity
