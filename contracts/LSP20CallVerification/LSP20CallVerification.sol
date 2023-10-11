@@ -7,7 +7,7 @@ import {ILSP20CallVerifier as ILSP20} from "./ILSP20CallVerifier.sol";
 
 // errors
 import {
-    LSP20InvalidMagicValue,
+    LSP20CallVerificationFailed,
     LSP20CallingVerifierFailed,
     LSP20EOACannotVerifyCall
 } from "./LSP20Errors.sol";
@@ -16,13 +16,13 @@ import {
  * @title Implementation of a contract calling the verification functions according to LSP20 - Call Verification standard.
  *
  * @dev Module to be inherited used to verify the execution of functions according to a verifier address.
- * Verification can happen before or after execution based on a magicValue.
+ * Verification can happen before or after execution based on a returnedStatus.
  */
 abstract contract LSP20CallVerification {
     /**
      * @dev Calls {lsp20VerifyCall} function on the logicVerifier.
-     * Reverts in case the value returned does not match the magic value (lsp20VerifyCall selector)
-     * Returns whether a verification after the execution should happen based on the last byte of the magicValue
+     * Reverts in case the value returned does not match the success value (lsp20VerifyCall selector)
+     * Returns whether a verification after the execution should happen based on the last byte of the returnedStatus
      */
     function _verifyCall(
         address logicVerifier
@@ -42,18 +42,18 @@ abstract contract LSP20CallVerification {
 
         _validateCall(false, success, returnedData);
 
-        bytes4 magicValue = abi.decode(returnedData, (bytes4));
+        bytes4 returnedStatus = abi.decode(returnedData, (bytes4));
 
-        if (bytes3(magicValue) != bytes3(ILSP20.lsp20VerifyCall.selector)) {
-            revert LSP20InvalidMagicValue(false, returnedData);
+        if (bytes3(returnedStatus) != bytes3(ILSP20.lsp20VerifyCall.selector)) {
+            revert LSP20CallVerificationFailed(false, returnedData);
         }
 
-        return magicValue[3] == 0x01;
+        return returnedStatus[3] == 0x01;
     }
 
     /**
      * @dev Calls {lsp20VerifyCallResult} function on the logicVerifier.
-     * Reverts in case the value returned does not match the magic value (lsp20VerifyCallResult selector)
+     * Reverts in case the value returned does not match the success value (lsp20VerifyCallResult selector)
      */
     function _verifyCallResult(
         address logicVerifier,
@@ -79,7 +79,7 @@ abstract contract LSP20CallVerification {
         if (
             abi.decode(returnedData, (bytes4)) !=
             ILSP20.lsp20VerifyCallResult.selector
-        ) revert LSP20InvalidMagicValue(true, returnedData);
+        ) revert LSP20CallVerificationFailed(true, returnedData);
     }
 
     function _validateCall(
@@ -94,7 +94,7 @@ abstract contract LSP20CallVerification {
         if (
             returnedData.length < 32 ||
             bytes28(bytes32(returnedData) << 32) != bytes28(0)
-        ) revert LSP20InvalidMagicValue(postCall, returnedData);
+        ) revert LSP20CallVerificationFailed(postCall, returnedData);
     }
 
     function _revertWithLSP20DefaultError(

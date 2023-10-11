@@ -491,7 +491,7 @@ Get in the ERC725Y storage the bytes data stored at multiple data keys `dataKeys
 function isValidSignature(
   bytes32 dataHash,
   bytes signature
-) external view returns (bytes4 magicValue);
+) external view returns (bytes4 returnedStatus);
 ```
 
 _Achieves the goal of [EIP-1271] by validating signatures of smart contracts according to their own logic._
@@ -500,15 +500,15 @@ Handles two cases:
 
 1. If the owner is an EOA, recovers an address from the hash and the signature provided:
 
-- Returns the `magicValue` if the address recovered is the same as the owner, indicating that it was a valid signature.
+- Returns the `_ERC1271_SUCCESSVALUE` if the address recovered is the same as the owner, indicating that it was a valid signature.
 
-- If the address is different, it returns the fail value indicating that the signature is not valid.
+- If the address is different, it returns the `_ERC1271_FAILVALUE` indicating that the signature is not valid.
 
 2. If the owner is a smart contract, it forwards the call of [`isValidSignature()`](#isvalidsignature) to the owner contract:
 
-- If the contract fails or returns the fail value, the [`isValidSignature()`](#isvalidsignature) on the account returns the fail value, indicating that the signature is not valid.
+- If the contract fails or returns the `_ERC1271_FAILVALUE`, the [`isValidSignature()`](#isvalidsignature) on the account returns the `_ERC1271_FAILVALUE`, indicating that the signature is not valid.
 
-- If the [`isValidSignature()`](#isvalidsignature) on the owner returned the `magicValue`, the [`isValidSignature()`](#isvalidsignature) on the account returns the `magicValue`, indicating that it's a valid signature.
+- If the [`isValidSignature()`](#isvalidsignature) on the owner returned the `_ERC1271_SUCCESSVALUE`, the [`isValidSignature()`](#isvalidsignature) on the account returns the `_ERC1271_SUCCESSVALUE`, indicating that it's a valid signature.
 
 #### Parameters
 
@@ -519,9 +519,9 @@ Handles two cases:
 
 #### Returns
 
-| Name         |   Type   | Description                                                       |
-| ------------ | :------: | ----------------------------------------------------------------- |
-| `magicValue` | `bytes4` | A `bytes4` value that indicates if the signature is valid or not. |
+| Name             |   Type   | Description                                                       |
+| ---------------- | :------: | ----------------------------------------------------------------- |
+| `returnedStatus` | `bytes4` | A `bytes4` value that indicates if the signature is valid or not. |
 
 <br/>
 
@@ -1192,8 +1192,8 @@ function _verifyCall(
 ```
 
 Calls [`lsp20VerifyCall`](#lsp20verifycall) function on the logicVerifier.
-Reverts in case the value returned does not match the magic value (lsp20VerifyCall selector)
-Returns whether a verification after the execution should happen based on the last byte of the magicValue
+Reverts in case the value returned does not match the success value (lsp20VerifyCall selector)
+Returns whether a verification after the execution should happen based on the last byte of the returnedStatus
 
 <br/>
 
@@ -1207,7 +1207,7 @@ function _verifyCallResult(
 ```
 
 Calls [`lsp20VerifyCallResult`](#lsp20verifycallresult) function on the logicVerifier.
-Reverts in case the value returned does not match the magic value (lsp20VerifyCallResult selector)
+Reverts in case the value returned does not match the success value (lsp20VerifyCallResult selector)
 
 <br/>
 
@@ -1745,6 +1745,32 @@ Reverts when pending owner accept ownership in the same transaction of transferr
 
 <br/>
 
+### LSP20CallVerificationFailed
+
+:::note References
+
+- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-0-ERC725Account.md#lsp20callverificationfailed)
+- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP0ERC725Account/LSP0ERC725Account.sol)
+- Error signature: `LSP20CallVerificationFailed(bool,bytes)`
+- Error hash: `0x00c28d0f`
+
+:::
+
+```solidity
+error LSP20CallVerificationFailed(bool postCall, bytes returnedData);
+```
+
+reverts when the call to the owner does not return the LSP20 success value
+
+#### Parameters
+
+| Name           |  Type   | Description                                          |
+| -------------- | :-----: | ---------------------------------------------------- |
+| `postCall`     | `bool`  | True if the execution call was done, False otherwise |
+| `returnedData` | `bytes` | The data returned by the call to the logic verifier  |
+
+<br/>
+
 ### LSP20CallingVerifierFailed
 
 :::note References
@@ -1785,39 +1811,13 @@ reverts when the call to the owner fail with no revert reason
 error LSP20EOACannotVerifyCall(address logicVerifier);
 ```
 
-Reverts when the logic verifier is an Externally Owned Account (EOA) that cannot return the LSP20 magic value.
+Reverts when the logic verifier is an Externally Owned Account (EOA) that cannot return the LSP20 success value.
 
 #### Parameters
 
 | Name            |   Type    | Description                       |
 | --------------- | :-------: | --------------------------------- |
 | `logicVerifier` | `address` | The address of the logic verifier |
-
-<br/>
-
-### LSP20InvalidMagicValue
-
-:::note References
-
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-0-ERC725Account.md#lsp20invalidmagicvalue)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP0ERC725Account/LSP0ERC725Account.sol)
-- Error signature: `LSP20InvalidMagicValue(bool,bytes)`
-- Error hash: `0xd088ec40`
-
-:::
-
-```solidity
-error LSP20InvalidMagicValue(bool postCall, bytes returnedData);
-```
-
-reverts when the call to the owner does not return the magic value
-
-#### Parameters
-
-| Name           |  Type   | Description                                          |
-| -------------- | :-----: | ---------------------------------------------------- |
-| `postCall`     | `bool`  | True if the execution call was done, False otherwise |
-| `returnedData` | `bytes` | The data returned by the call to the logic verifier  |
 
 <br/>
 

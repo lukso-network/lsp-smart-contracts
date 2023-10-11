@@ -7,7 +7,7 @@ import {
 /**
  * @title sample contract used for testing
  */
-contract FirstCallReturnInvalidMagicValue {
+contract FirstCallReturnFailValue {
     event CallVerified();
 
     address public target;

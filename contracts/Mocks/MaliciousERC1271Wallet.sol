@@ -8,7 +8,7 @@ import {GenericExecutor} from "./GenericExecutor.sol";
  */
 contract ERC1271MaliciousMock is GenericExecutor {
     /**
-     * @dev Returns a malicious 4-byte magic value.
+     * @dev Returns a malicious 4-byte value.
      * @return bytes4 The malicious 4-byte magic value.
      */
     function isValidSignature(

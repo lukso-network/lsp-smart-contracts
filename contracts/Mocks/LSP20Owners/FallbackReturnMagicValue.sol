@@ -11,7 +11,7 @@ import {
 /**
  * @title sample contract used for testing
  */
-contract FallbackReturnMagicValue {
+contract FallbackReturnSuccessValue {
     event FallbackCalled(bytes data);
 
     address public target;
