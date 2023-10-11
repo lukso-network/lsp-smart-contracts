@@ -188,15 +188,23 @@ abstract contract LSP6ExecuteModule {
         bytes memory data
     ) internal view virtual {
         bool isValueTransfer = value != 0;
+        bool isEmptyCall = data.length == 0;
 
         bool hasSuperTransferValue = permissions.hasPermission(
             _PERMISSION_SUPER_TRANSFERVALUE
         );
-
-        bool isEmptyCall = data.length == 0;
-
         bool hasSuperCall = permissions.hasPermission(_PERMISSION_SUPER_CALL);
 
+        // Skip if both SUPER permissions are present
+        if (hasSuperCall && hasSuperTransferValue) return;
+
+        // Skip if caller has SUPER permissions for external calls, with or without calldata (empty calls)
+        if (!isValueTransfer && hasSuperCall) return;
+
+        // Skip if caller has SUPER permission for value transfers
+        if (isEmptyCall && isValueTransfer && hasSuperTransferValue) return;
+
+        // CHECK if we are doing a value transfer
         if (isValueTransfer && !hasSuperTransferValue) {
             _requirePermissions(
                 controller,
@@ -211,18 +219,10 @@ abstract contract LSP6ExecuteModule {
             _requirePermissions(controller, permissions, _PERMISSION_CALL);
         }
 
+        // CHECK if we are doing an external call with some calldata
         if (!isEmptyCall && !hasSuperCall) {
             _requirePermissions(controller, permissions, _PERMISSION_CALL);
         }
-
-        // Skip if caller has SUPER permissions for external calls, with or without calldata (empty calls)
-        if (!isValueTransfer && hasSuperCall) return;
-
-        // Skip if caller has SUPER permission for value transfers
-        if (isEmptyCall && isValueTransfer && hasSuperTransferValue) return;
-
-        // Skip if both SUPER permissions are present
-        if (hasSuperCall && hasSuperTransferValue) return;
 
         _verifyAllowedCall(
             controlledContract,
