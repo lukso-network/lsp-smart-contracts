@@ -67,6 +67,7 @@ jobs:
             "lsp4",
             "lsp6",
             "lsp6init",
+            "lsp6Singleton",
             "lsp7",
             "lsp7init",
             "lsp8",

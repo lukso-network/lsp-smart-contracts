@@ -13,6 +13,6 @@ export const shouldBehaveLikeLSP6 = (
 ) => {
   describe('Single + Batch Meta Transactions', () => {
     shouldBehaveLikeExecuteRelayCall(buildContext);
-    // shouldBehaveLikeMultiChannelNonce(buildContext);
+    shouldBehaveLikeMultiChannelNonce(buildContext);
   });
 };

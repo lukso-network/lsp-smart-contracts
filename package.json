@@ -54,6 +54,7 @@
     "test:lsp4": "hardhat test --no-compile tests/LSP4DigitalAssetMetadata/LSP4Compatibility.test.ts",
     "test:lsp6": "hardhat test --no-compile tests/LSP6KeyManager/LSP6KeyManager.test.ts",
     "test:lsp6init": "hardhat test --no-compile tests/LSP6KeyManager/LSP6KeyManagerInit.test.ts",
+    "test:lsp6Singleton": "hardhat test --no-compile tests/LSP6KeyManagerSingleton/LSP6KeyManagerSingleton.test.ts",
     "test:lsp7": "hardhat test --no-compile tests/LSP7DigitalAsset/standard/*.test.ts",
     "test:lsp7init": "hardhat test --no-compile tests/LSP7DigitalAsset/proxy/*.test.ts",
     "test:lsp8": "hardhat test --no-compile tests/LSP8IdentifiableDigitalAsset/standard/*.test.ts",
