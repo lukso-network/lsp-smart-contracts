@@ -104,10 +104,11 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const valueToSend = 0;
 
         const encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+          ["uint256", "uint256", 'address', "uint256", "uint256", "uint256", "bytes"],
           [
             LSP25_VERSION,
             HARDHAT_CHAINID,
+            context.universalProfile.address,
             latestNonce,
             validityTimestamps,
             valueToSend,
@@ -118,7 +119,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.universalProfile.address,
+          context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
         );
@@ -175,10 +176,11 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const valueToSend = 0;
 
         const encodedMessage = ethers.utils.solidityPack(
-          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+          ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
             HARDHAT_CHAINID,
+            context.universalProfile.address,
             nonceBefore,
             validityTimestamps,
             valueToSend,
@@ -189,7 +191,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.universalProfile.address,
+          context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
@@ -241,10 +243,11 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const valueToSend = 0;
 
         const encodedMessage = ethers.utils.solidityPack(
-          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+          ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
             HARDHAT_CHAINID,
+            context.universalProfile.address,
             nonceBefore,
             validityTimestamps,
             valueToSend,
@@ -255,7 +258,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.universalProfile.address,
+          context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
@@ -312,10 +315,11 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const valueToSend = 0;
 
         const encodedMessage = ethers.utils.solidityPack(
-          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+          ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
             HARDHAT_CHAINID,
+            context.universalProfile.address,
             nonceBefore,
             validityTimestamps,
             valueToSend,
@@ -326,7 +330,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.universalProfile.address,
+          context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
@@ -378,10 +382,11 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const valueToSend = 0;
 
         const encodedMessage = ethers.utils.solidityPack(
-          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+          ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
             HARDHAT_CHAINID,
+            context.universalProfile.address,
             nonceBefore,
             validityTimestamps,
             valueToSend,
@@ -392,7 +397,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.universalProfile.address,
+          context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
@@ -449,10 +454,11 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const valueToSend = 0;
 
         const encodedMessage = ethers.utils.solidityPack(
-          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+          ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
             HARDHAT_CHAINID,
+            context.universalProfile.address,
             nonceBefore,
             validityTimestamps,
             valueToSend,
@@ -463,7 +469,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.universalProfile.address,
+          context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
@@ -515,10 +521,11 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const valueToSend = 0;
 
         const encodedMessage = ethers.utils.solidityPack(
-          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+          ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
             HARDHAT_CHAINID,
+            context.universalProfile.address,
             nonceBefore,
             validityTimestamps,
             valueToSend,
@@ -529,7 +536,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.universalProfile.address,
+          context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
@@ -585,10 +592,11 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const valueToSend = 0;
 
         const encodedMessage = ethers.utils.solidityPack(
-          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+          ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
             HARDHAT_CHAINID,
+            context.universalProfile.address,
             nonceBefore,
             validityTimestamps,
             valueToSend,
@@ -599,7 +607,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.universalProfile.address,
+          context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );

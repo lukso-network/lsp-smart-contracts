@@ -87,13 +87,14 @@ abstract contract LSP25MultiChannelNonceSingleton {
         bytes memory lsp25EncodedMessage = abi.encodePacked(
             LSP25_VERSION,
             block.chainid,
+            target,
             nonce,
             validityTimestamps,
             msgValue,
             callData
         );
 
-        bytes32 eip191Hash = target.toDataWithIntendedValidatorHash(
+        bytes32 eip191Hash = address(this).toDataWithIntendedValidatorHash(
             lsp25EncodedMessage
         );
 

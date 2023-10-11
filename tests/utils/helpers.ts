@@ -186,6 +186,7 @@ export async function signLSP6ExecuteRelayCall(
 
 export async function signLSP6ExecuteRelayCallSingleton(
   _universalProfileAddress: string,
+  _keyManagerSingletonAddress: string,
   _signerNonce: string,
   _signerValidityTimestamps: BytesLike | number,
   _signerPrivateKey: string,
@@ -195,6 +196,7 @@ export async function signLSP6ExecuteRelayCallSingleton(
   const signedMessageParams = {
     lsp25Version: LSP25_VERSION,
     chainId: 31337, // HARDHAT_CHAINID
+    account: _universalProfileAddress,
     nonce: _signerNonce,
     validityTimestamps: _signerValidityTimestamps,
     msgValue: _msgValue,
@@ -202,10 +204,11 @@ export async function signLSP6ExecuteRelayCallSingleton(
   };
 
   const encodedMessage = ethers.utils.solidityPack(
-    ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+    ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
     [
       signedMessageParams.lsp25Version,
       signedMessageParams.chainId,
+      signedMessageParams.account,
       signedMessageParams.nonce,
       signedMessageParams.validityTimestamps,
       signedMessageParams.msgValue,
@@ -216,7 +219,7 @@ export async function signLSP6ExecuteRelayCallSingleton(
   const eip191Signer = new EIP191Signer();
 
   const { signature } = await eip191Signer.signDataWithIntendedValidator(
-    _universalProfileAddress,
+    _keyManagerSingletonAddress,
     encodedMessage,
     _signerPrivateKey,
   );

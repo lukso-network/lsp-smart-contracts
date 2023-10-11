@@ -132,10 +132,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
         };
 
         const encodedMessage = ethers.utils.solidityPack(
-          ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+          ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             signedMessageParams.lsp25Version,
             signedMessageParams.chainId,
+            context.universalProfile.address,
             signedMessageParams.nonce,
             signedMessageParams.validityTimestamps,
             signedMessageParams.msgValue,
@@ -146,7 +147,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.universalProfile.address,
+          context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT5,
         );
@@ -198,10 +199,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const valueToSendFromRelayer = 10;
 
             const encodedMessage = ethers.utils.solidityPack(
-              ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+              ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 signedMessageParams.lsp25Version,
                 signedMessageParams.chainId,
+                context.universalProfile.address,
                 signedMessageParams.nonce,
                 signedMessageParams.validityTimestamps,
                 signedMessageParams.msgValue,
@@ -212,7 +214,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              context.universalProfile.address,
+              context.keyManager.address,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT1,
             );
@@ -261,10 +263,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const valueToSendFromRelayer = 0;
 
             const encodedMessage = ethers.utils.solidityPack(
-              ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+              ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 signedMessageParams.lsp25Version,
                 signedMessageParams.chainId,
+                context.universalProfile.address,
                 signedMessageParams.nonce,
                 signedMessageParams.validityTimestamps,
                 signedMessageParams.msgValue,
@@ -275,7 +278,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              context.universalProfile.address,
+              context.keyManager.address,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT1,
             );
@@ -322,10 +325,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
             };
 
             const encodedMessage = ethers.utils.solidityPack(
-              ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+              ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 signedMessageParams.lsp25Version,
                 signedMessageParams.chainId,
+                context.universalProfile.address,
                 signedMessageParams.nonce,
                 signedMessageParams.validityTimestamps,
                 signedMessageParams.msgValue,
@@ -338,7 +342,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              context.universalProfile.address,
+              context.keyManager.address,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT1,
             );
@@ -393,10 +397,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
             };
 
             const encodedMessage = ethers.utils.solidityPack(
-              ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+              ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 signedMessageParams.lsp25Version,
                 signedMessageParams.chainId,
+                context.universalProfile.address,
                 signedMessageParams.nonce,
                 signedMessageParams.validityTimestamps,
                 signedMessageParams.msgValue,
@@ -407,7 +412,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              context.universalProfile.address,
+              context.keyManager.address,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT3,
             );
@@ -470,10 +475,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
               };
 
               const encodedMessage = ethers.utils.solidityPack(
-                ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+                ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
                   signedMessageParams.lsp25Version,
                   signedMessageParams.chainId,
+                  context.universalProfile.address,
                   signedMessageParams.nonce,
                   signedMessageParams.validityTimestamps,
                   signedMessageParams.msgValue,
@@ -484,7 +490,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const eip191Signer = new EIP191Signer();
 
               const { signature } = await eip191Signer.signDataWithIntendedValidator(
-                context.universalProfile.address,
+                context.keyManager.address,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT1,
               );
@@ -552,10 +558,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
               };
 
               const encodedMessage = ethers.utils.solidityPack(
-                ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+                ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
                   signedMessageParams.lsp25Version,
                   signedMessageParams.chainId,
+                  context.universalProfile.address,
                   signedMessageParams.nonce,
                   signedMessageParams.validityTimestamps,
                   signedMessageParams.msgValue,
@@ -566,7 +573,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const eip191Signer = new EIP191Signer();
 
               const { signature } = await eip191Signer.signDataWithIntendedValidator(
-                context.universalProfile.address,
+                context.keyManager.address,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT1,
               );
@@ -625,10 +632,11 @@ export const shouldBehaveLikeExecuteRelayCall = (
               };
 
               const encodedMessage = ethers.utils.solidityPack(
-                ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+                ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
                   signedMessageParams.lsp25Version,
                   signedMessageParams.chainId,
+                  context.universalProfile.address,
                   signedMessageParams.nonce,
                   signedMessageParams.validityTimestamps,
                   signedMessageParams.msgValue,
@@ -639,7 +647,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const eip191Signer = new EIP191Signer();
 
               const { signature } = await eip191Signer.signDataWithIntendedValidator(
-                context.universalProfile.address,
+                context.keyManager.address,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT3,
               );
@@ -686,6 +694,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -727,6 +736,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -770,6 +780,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -811,6 +822,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -852,6 +864,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -901,6 +914,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -942,6 +956,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -983,6 +998,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -1030,6 +1046,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -1078,6 +1095,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -1123,6 +1141,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -1164,6 +1183,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -1211,6 +1231,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -1253,6 +1274,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const value = 0;
             const signature = await signLSP6ExecuteRelayCallSingleton(
               context.universalProfile.address,
+              context.keyManager.address,
               nonce.toString(),
               validityTimestamps,
               signerPrivateKey,
@@ -1301,6 +1323,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -1348,6 +1371,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const value = 0;
               const signature = await signLSP6ExecuteRelayCallSingleton(
                 context.universalProfile.address,
+                context.keyManager.address,
                 nonce.toString(),
                 validityTimestamps,
                 signerPrivateKey,
@@ -1451,6 +1475,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       const transferLyxSignature = await signLSP6ExecuteRelayCallSingleton(
         context.universalProfile.address,
+        context.keyManager.address,
         ownerNonce.toHexString(),
         validityTimestamps,
         LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -1478,12 +1503,20 @@ export const shouldBehaveLikeExecuteRelayCall = (
       const eip191 = new EIP191Signer();
 
       const encodedMessage = ethers.utils.solidityPack(
-        ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
-        [LSP25_VERSION, 31337, ownerNonce.add(1), validityTimestamps, 0, transferLyxPayload],
+        ['uint256', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
+        [
+          LSP25_VERSION,
+          31337,
+          context.universalProfile.address,
+          ownerNonce.add(1),
+          validityTimestamps,
+          0,
+          transferLyxPayload,
+        ],
       );
 
       const hashedDataWithIntendedValidator = eip191.hashDataWithIntendedValidator(
-        context.universalProfile.address,
+        context.keyManager.address,
         encodedMessage,
       );
 
@@ -1543,6 +1576,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       const ownerGivePermissionsSignature = await signLSP6ExecuteRelayCallSingleton(
         context.universalProfile.address,
+        context.keyManager.address,
         ownerNonce.toHexString(),
         validityTimestamps,
         LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -1572,6 +1606,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       const minterMintSignature = await signLSP6ExecuteRelayCallSingleton(
         context.universalProfile.address,
+        context.keyManager.address,
         minterNonce.toHexString(),
         validityTimestamps,
         LOCAL_PRIVATE_KEYS.ACCOUNT1,
@@ -1594,6 +1629,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       const ownerRemovePermissionsSignature = await signLSP6ExecuteRelayCallSingleton(
         context.universalProfile.address,
+        context.keyManager.address,
         newOwnerNonce.toHexString(),
         validityTimestamps,
         LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -1684,6 +1720,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           const firstTransferLyxSignature = await signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             ownerNonce.toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -1692,6 +1729,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           );
           const secondTransferLyxSignature = await signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             ownerNonce.add(1).toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -1700,6 +1738,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           );
           const thirdTransferLyxSignature = await signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             ownerNonce.add(2).toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -1775,6 +1814,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           const firstTransferLyxSignature = await signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             ownerNonce.toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -1783,6 +1823,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           );
           const secondTransferLyxSignature = await signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             ownerNonce.add(1).toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -1791,6 +1832,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           );
           const thirdTransferLyxSignature = await signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             ownerNonce.add(2).toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -1863,6 +1905,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           const firstTransferLyxSignature = await signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             ownerNonce.toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -1871,6 +1914,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           );
           const secondTransferLyxSignature = await signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             ownerNonce.add(1).toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -1879,6 +1923,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           );
           const thirdTransferLyxSignature = await signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             ownerNonce.add(2).toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -1946,6 +1991,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         const signatures = [
           signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             nonces[0].toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -1954,6 +2000,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           ),
           signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             nonces[1].toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -1962,6 +2009,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           ),
           signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             nonces[2].toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -2027,6 +2075,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         const signatures = [
           signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             nonces[0].toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -2035,6 +2084,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           ),
           signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             nonces[1].toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
@@ -2043,6 +2093,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           ),
           signLSP6ExecuteRelayCallSingleton(
             context.universalProfile.address,
+            context.keyManager.address,
             nonces[2].toHexString(),
             validityTimestamps,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
