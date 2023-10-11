@@ -11,7 +11,7 @@ import { PERMISSIONS, ERC725YDataKeys, ALL_PERMISSIONS } from '../../constants';
 
 // helpers
 import { combinePermissions } from '../utils/helpers';
-import { LSP6TestContext, LSP6InternalsTestContext } from './context';
+import { LSP6TestContext, LSP6InternalsTestContext, LSP6SingletonTestContext } from './context';
 
 /**
  * Deploy a proxy contract, referencing to baseContractAddress via delegateCall
@@ -68,6 +68,34 @@ export async function setupKeyManager(
   const payload = _context.universalProfile.interface.getSighash('acceptOwnership');
 
   await _context.keyManager.connect(_context.mainController).execute(payload);
+}
+
+export async function setupKeyManagerSingleton(
+  _context: LSP6SingletonTestContext,
+  _dataKeys: string[],
+  _dataValues: string[],
+) {
+  await _context.universalProfile.connect(_context.mainController).setDataBatch(
+    [
+      // required to set main controller permission so that it can acceptOwnership(...) via the KeyManager
+      // otherwise, the KeyManager will flag the calling main controller as not having the permission CHANGEOWNER
+      // when trying to setup the KeyManager
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        _context.mainController.address.substring(2),
+      ..._dataKeys,
+    ],
+    [ALL_PERMISSIONS, ..._dataValues],
+  );
+
+  await _context.universalProfile
+    .connect(_context.mainController)
+    .transferOwnership(_context.keyManager.address);
+
+  const payload = _context.universalProfile.interface.getSighash('acceptOwnership');
+
+  await _context.keyManager
+    .connect(_context.mainController)
+    .execute(_context.universalProfile.address, payload);
 }
 
 export async function setupKeyManagerHelper(

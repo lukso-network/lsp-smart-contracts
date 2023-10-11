@@ -1,6 +1,6 @@
 import { BigNumber, BytesLike } from 'ethers';
 import { ethers } from 'hardhat';
-import { LSP6KeyManager } from '../../types';
+import { LSP6KeyManager, LSP6KeyManagerSingleton } from '../../types';
 
 // constants
 import { LSP25_VERSION } from '../../constants';
@@ -177,6 +177,46 @@ export async function signLSP6ExecuteRelayCall(
 
   const { signature } = await eip191Signer.signDataWithIntendedValidator(
     _keyManager.address,
+    encodedMessage,
+    _signerPrivateKey,
+  );
+
+  return signature;
+}
+
+export async function signLSP6ExecuteRelayCallSingleton(
+  _universalProfileAddress: string,
+  _signerNonce: string,
+  _signerValidityTimestamps: BytesLike | number,
+  _signerPrivateKey: string,
+  _msgValue: number | BigNumber | string,
+  _payload: string,
+) {
+  const signedMessageParams = {
+    lsp25Version: LSP25_VERSION,
+    chainId: 31337, // HARDHAT_CHAINID
+    nonce: _signerNonce,
+    validityTimestamps: _signerValidityTimestamps,
+    msgValue: _msgValue,
+    payload: _payload,
+  };
+
+  const encodedMessage = ethers.utils.solidityPack(
+    ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
+    [
+      signedMessageParams.lsp25Version,
+      signedMessageParams.chainId,
+      signedMessageParams.nonce,
+      signedMessageParams.validityTimestamps,
+      signedMessageParams.msgValue,
+      signedMessageParams.payload,
+    ],
+  );
+
+  const eip191Signer = new EIP191Signer();
+
+  const { signature } = await eip191Signer.signDataWithIntendedValidator(
+    _universalProfileAddress,
     encodedMessage,
     _signerPrivateKey,
   );
