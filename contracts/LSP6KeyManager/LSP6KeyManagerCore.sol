@@ -376,9 +376,8 @@ abstract contract LSP6KeyManagerCore is
     ) external virtual override returns (bytes4) {
         // If it's the target calling, set back the reentrancy guard
         // to false, if not return the magic value
-        if (msg.sender == _target) {
-            _nonReentrantAfter(msg.sender);
-        }
+        _nonReentrantAfter(msg.sender);
+
         return _LSP20_VERIFY_CALL_RESULT_MAGIC_VALUE;
     }
 
@@ -594,8 +593,8 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @dev Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
-     * the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
+     * @dev Update the status from `true` to `false` and checks if
+     * the status is `true` in order to revert the call unless the caller has the REENTRANCY permission
      * Used in the beginning of the `nonReentrant` modifier, before the method execution starts.
      */
     function _nonReentrantBefore(
@@ -624,8 +623,6 @@ abstract contract LSP6KeyManagerCore is
      * Used in the end of the `nonReentrant` modifier after the method execution is terminated
      */
     function _nonReentrantAfter(address targetContract) internal virtual {
-        // By storing the original value once again, a refund is triggered (see
-        // https://eips.ethereum.org/EIPS/eip-2200)
         _reentrancyStatus[targetContract] = false;
     }
 

@@ -261,6 +261,8 @@ abstract contract LSP6ExecuteModule {
             isEmptyCall
         );
 
+        bytes memory allowedCall;
+
         for (uint256 ii; ii < allowedCalls.length; ii += 34) {
             /// @dev structure of an AllowedCall
             //
@@ -278,7 +280,7 @@ abstract contract LSP6ExecuteModule {
             }
 
             // extract one AllowedCall at a time
-            bytes memory allowedCall = BytesLib.slice(allowedCalls, ii + 2, 32);
+            allowedCall = BytesLib.slice(allowedCalls, ii + 2, 32);
 
             // 0xxxxxxxxxffffffffffffffffffffffffffffffffffffffffffffffffffffffff
             // (excluding the callTypes) not allowed
