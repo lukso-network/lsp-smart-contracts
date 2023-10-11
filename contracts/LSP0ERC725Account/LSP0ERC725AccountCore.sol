@@ -420,6 +420,8 @@ abstract contract LSP0ERC725AccountCore is
             emit ValueReceived(msg.sender, msg.value);
         }
 
+        address universalReceiverDelegate;
+
         // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY}
         bytes memory lsp1DelegateValue = _getData(
             _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
@@ -427,9 +429,7 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory resultDefaultDelegate;
 
         if (lsp1DelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(
-                bytes20(lsp1DelegateValue)
-            );
+            universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
             // Checking LSP1 InterfaceId support
             if (
@@ -455,13 +455,11 @@ abstract contract LSP0ERC725AccountCore is
         );
 
         // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX + <bytes32 typeId>}
-        bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
+        lsp1DelegateValue = _getData(lsp1typeIdDelegateKey);
         bytes memory resultTypeIdDelegate;
 
-        if (lsp1TypeIdDelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(
-                bytes20(lsp1TypeIdDelegateValue)
-            );
+        if (lsp1DelegateValue.length >= 20) {
+            universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
             // Checking LSP1 InterfaceId support
             if (
