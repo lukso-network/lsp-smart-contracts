@@ -11,6 +11,9 @@ import {
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {ILSP6KeyManager as ILSP6} from "./ILSP6KeyManager.sol";
 import {
+    ILSP14Ownable2Step as ILSP14
+} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
+import {
     ILSP20CallVerifier as ILSP20
 } from "../LSP20CallVerification/ILSP20CallVerifier.sol";
 import {
@@ -18,7 +21,6 @@ import {
 } from "../LSP25ExecuteRelayCall/ILSP25ExecuteRelayCall.sol";
 
 // modules
-import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {LSP6SetDataModule} from "./LSP6Modules/LSP6SetDataModule.sol";
@@ -323,48 +325,117 @@ abstract contract LSP6KeyManagerCore is
         uint256 msgValue,
         bytes calldata data
     ) external virtual override returns (bytes4) {
-        bool isSetData = bytes4(data) == IERC725Y.setData.selector ||
-            bytes4(data) == IERC725Y.setDataBatch.selector;
+        bytes32 permissions = ERC725Y(targetContract).getPermissionsFor(caller);
+        if (permissions == bytes32(0)) revert NoPermissionsSet(caller);
+
+        bool reentrancyStatus = _reentrancyStatus[targetContract];
+        if (reentrancyStatus) {
+            _requirePermissions(caller, permissions, _PERMISSION_REENTRANCY);
+        }
+
+        bytes4 erc725Function = bytes4(data);
+
+        bytes4 lsp20MagicValue = _lsp20VerifyPermissions(
+            targetContract,
+            caller,
+            permissions,
+            erc725Function,
+            data,
+            reentrancyStatus
+        );
 
         // If target is invoking the verification, emit the event and change the reentrancy guard
         if (msg.sender == targetContract) {
-            bool reentrancyStatus = _nonReentrantBefore(
-                targetContract,
-                isSetData,
-                caller
-            );
-
-            _verifyPermissions(targetContract, caller, false, data);
-
-            emit PermissionsVerified(caller, msgValue, bytes4(data));
-
-            // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
-            return
-                isSetData || reentrancyStatus
-                    ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
-                    : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
-        }
-        /// @dev If a different address is invoking the verification,
-        /// do not change the state or emit the event to allow read-only verification
-        else {
-            bool reentrancyStatus = _reentrancyStatus[targetContract];
-
-            if (reentrancyStatus) {
-                _requirePermissions(
-                    caller,
-                    ERC725Y(targetContract).getPermissionsFor(caller),
-                    _PERMISSION_REENTRANCY
-                );
+            if (!reentrancyStatus) {
+                if (
+                    bytes4(data) != IERC725Y.setData.selector &&
+                    bytes4(data) != IERC725Y.setDataBatch.selector
+                ) {
+                    _reentrancyStatus[targetContract] = true;
+                }
             }
 
-            _verifyPermissions(targetContract, caller, false, data);
+            emit PermissionsVerified(caller, msgValue, erc725Function);
+        }
 
-            // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
+        return lsp20MagicValue;
+    }
+
+    function _lsp20VerifyPermissions(
+        address targetContract,
+        address caller,
+        bytes32 permissions,
+        bytes4 erc725Function,
+        bytes calldata data,
+        bool reentrancyStatus
+    ) internal view returns (bytes4) {
+        if (erc725Function == IERC725Y.setData.selector) {
+            (bytes32 inputKey, bytes memory inputValue) = abi.decode(
+                data[4:],
+                (bytes32, bytes)
+            );
+
+            LSP6SetDataModule._verifyCanSetData(
+                targetContract,
+                caller,
+                permissions,
+                inputKey,
+                inputValue
+            );
+
+            return _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION;
+        } else if (erc725Function == IERC725Y.setDataBatch.selector) {
+            (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi
+                .decode(data[4:], (bytes32[], bytes[]));
+
+            LSP6SetDataModule._verifyCanSetData(
+                targetContract,
+                caller,
+                permissions,
+                inputKeys,
+                inputValues
+            );
+
+            return _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION;
+        } else if (erc725Function == IERC725X.execute.selector) {
+            (
+                uint256 operationType,
+                address to,
+                uint256 value,
+                bytes memory payload
+            ) = abi.decode(data[4:], (uint256, address, uint256, bytes));
+
+            LSP6ExecuteModule._verifyCanExecute(
+                targetContract,
+                caller,
+                permissions,
+                operationType,
+                to,
+                value,
+                payload
+            );
+
             return
-                isSetData || reentrancyStatus
+                reentrancyStatus
+                    ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
+                    : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
+        } else if (
+            erc725Function == ILSP14.transferOwnership.selector ||
+            erc725Function == ILSP14.acceptOwnership.selector ||
+            erc725Function == ILSP14.renounceOwnership.selector
+        ) {
+            LSP6OwnershipModule._verifyOwnershipPermissions(
+                caller,
+                permissions
+            );
+
+            return
+                reentrancyStatus
                     ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
                     : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
         }
+
+        revert InvalidERC725Function(erc725Function);
     }
 
     /**
@@ -582,9 +653,9 @@ abstract contract LSP6KeyManagerCore is
                 data
             );
         } else if (
-            erc725Function == ILSP14Ownable2Step.transferOwnership.selector ||
-            erc725Function == ILSP14Ownable2Step.acceptOwnership.selector ||
-            erc725Function == ILSP14Ownable2Step.renounceOwnership.selector
+            erc725Function == ILSP14.transferOwnership.selector ||
+            erc725Function == ILSP14.acceptOwnership.selector ||
+            erc725Function == ILSP14.renounceOwnership.selector
         ) {
             LSP6OwnershipModule._verifyOwnershipPermissions(from, permissions);
         } else {
