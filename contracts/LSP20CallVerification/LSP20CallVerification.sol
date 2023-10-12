@@ -2,7 +2,6 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-
 import {ILSP20CallVerifier as ILSP20} from "./ILSP20CallVerifier.sol";
 
 // errors
@@ -21,8 +20,12 @@ import {
 abstract contract LSP20CallVerification {
     /**
      * @dev Calls {lsp20VerifyCall} function on the logicVerifier.
-     * Reverts in case the value returned does not match the magic value (lsp20VerifyCall selector)
-     * Returns whether a verification after the execution should happen based on the last byte of the magicValue
+     *
+     * @custom:info
+     * - Reverts in case the value returned does not match the magic value (lsp20VerifyCall selector).
+     * - Returns whether a verification after the execution should happen based on the last byte of the magicValue.
+     * - Reverts with no reason if the  data returned by `ILSP20(logicVerifier).lsp20VerifyCall(...)` cannot be decoded (_e.g:_ any other data type besides `bytes4`).
+     * See this link for more info: https://forum.soliditylang.org/t/call-for-feedback-the-future-of-try-catch-in-solidity/1497.
      */
     function _verifyCall(
         address logicVerifier
@@ -31,6 +34,7 @@ abstract contract LSP20CallVerification {
             revert LSP20EOACannotVerifyCall(logicVerifier);
         }
 
+        // Reverts with no reason if the returned data type is not a `bytes4` value
         try
             ILSP20(logicVerifier).lsp20VerifyCall(
                 address(this),
@@ -51,12 +55,17 @@ abstract contract LSP20CallVerification {
 
     /**
      * @dev Calls {lsp20VerifyCallResult} function on the logicVerifier.
-     * Reverts in case the value returned does not match the magic value (lsp20VerifyCallResult selector)
+     *
+     * @custom:info
+     * - Reverts in case the value returned does not match the magic value (lsp20VerifyCallResult selector).
+     * - Reverts with no reason if the  data returned by `ILSP20(logicVerifier).lsp20VerifyCallResult(...)` cannot be decoded (_e.g:_ any other data type besides `bytes4`).
+     * See this link for more info: https://forum.soliditylang.org/t/call-for-feedback-the-future-of-try-catch-in-solidity/1497.
      */
     function _verifyCallResult(
         address logicVerifier,
         bytes memory callResult
     ) internal virtual {
+        // Reverts with no reason if the returned data type is not a `bytes4` value
         try
             ILSP20(logicVerifier).lsp20VerifyCallResult(
                 keccak256(

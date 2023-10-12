@@ -266,9 +266,9 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
           const dataKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('RandomKey1'));
           const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
 
-          await expect(context.universalProfile.setData(dataKey, dataValue))
-            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20InvalidMagicValue')
-            .withArgs(false, '0x');
+          await expect(
+            context.universalProfile.setData(dataKey, dataValue),
+          ).to.be.revertedWithoutReason();
         });
       });
 
@@ -335,7 +335,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
 
           await expect(
             context.universalProfile.setData(dataKey, dataValue),
-          ).to.be.revertedWithCustomError(context.universalProfile, 'LSP20InvalidMagicValue');
+          ).to.be.revertedWithoutReason();
         });
       });
 
