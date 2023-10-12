@@ -49,12 +49,12 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     /**
      * @dev The block number saved when initiating the process of renouncing ownerhsip.
      */
-    uint256 private _renounceOwnershipStartedAt;
+    uint256 internal _renounceOwnershipStartedAt;
 
     /**
      * @dev see {pendingOwner()}
      */
-    address private _pendingOwner;
+    address internal _pendingOwner;
 
     /**
      * @dev The boolean that indicates whether the contract is in an active ownership transfer phase
