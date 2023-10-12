@@ -7,8 +7,6 @@ import "../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP
 import "../../../contracts/LSP6KeyManager/LSP6KeyManager.sol";
 import "../../../contracts/LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {
     LSP2Utils
 } from "../../../contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol";
@@ -19,8 +17,6 @@ import "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 import "../../../contracts/LSP17ContractExtension/LSP17Constants.sol";
 
 contract LSP6SetDataTest is Test {
-    using BytesLib for bytes;
-
     UniversalProfile universalProfile;
     LSP1UniversalReceiverDelegateUP LSP1Delegate;
     LSP6KeyManager keyManager;

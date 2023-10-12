@@ -34,7 +34,6 @@ import {
 } from "../LSP25ExecuteRelayCall/LSP25MultiChannelNonce.sol";
 
 // libraries
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP6Utils} from "./LSP6Utils.sol";
@@ -93,7 +92,6 @@ abstract contract LSP6KeyManagerCore is
 {
     using LSP6Utils for *;
     using ECDSA for *;
-    using BytesLib for bytes;
 
     address internal _target;
 
