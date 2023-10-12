@@ -262,7 +262,9 @@ abstract contract LSP6ExecuteModule {
 
         bytes32 allowedCall;
 
-        for (uint256 ii; ii < allowedCallsCompacted.length; ) {
+        uint256 ii;
+
+        do {
             /// @dev structure of an AllowedCall
             //
             /// AllowedCall = 0x00200000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
@@ -303,7 +305,7 @@ abstract contract LSP6ExecuteModule {
             unchecked {
                 ii += 34;
             }
-        }
+        } while (ii < allowedCallsCompacted.length);
 
         revert NotAllowedCall(controllerAddress, to, selector);
     }
@@ -343,7 +345,7 @@ abstract contract LSP6ExecuteModule {
         //
         // <offset>v----------------address---------------v
         // 0000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
-        address allowedAddress = address(bytes20(bytes32(allowedCall) << 32));
+        address allowedAddress = address(bytes20(allowedCall << 32));
 
         // ANY address = 0xffffffffffffffffffffffffffffffffffffffff
         return
@@ -360,7 +362,7 @@ abstract contract LSP6ExecuteModule {
         //                                                 standard
         // <----------------<offset>---------------------->v------v
         // 0000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
-        bytes4 allowedStandard = bytes4(bytes32(allowedCall) << 192);
+        bytes4 allowedStandard = bytes4(allowedCall << 192);
 
         // ANY Standard = 0xffffffff
         return
@@ -377,7 +379,7 @@ abstract contract LSP6ExecuteModule {
         //                                                         function
         // <------------------------<offset>---------------------->v------v
         // 0000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
-        bytes4 allowedFunction = bytes4(bytes32(allowedCall) << 224);
+        bytes4 allowedFunction = bytes4(allowedCall << 224);
 
         bool isFunctionCall = requiredFunction != bytes4(0);
 
