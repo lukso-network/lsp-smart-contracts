@@ -33,6 +33,7 @@ async function main() {
 
       // adjust the source path for LSP1Delegate, LSP20 and LSP17 contracts
       const folders = {
+        LSP1UniversalReceiverDelegate: 'LSP1UniversalReceiver',
         LSP20CallVerifier: 'LSP20CallVerification',
         LSP17Extendable: 'LSP17ContractExtension',
         LSP17Extension: 'LSP17ContractExtension',
@@ -40,7 +41,11 @@ async function main() {
 
       let folder;
 
-      if (contract === 'LSP20CallVerifier' || contract.startsWith('LSP17')) {
+      if (
+        contract === 'LSP1UniversalReceiverDelegate' ||
+        contract.startsWith('LSP17') ||
+        contract === 'LSP20CallVerifier'
+      ) {
         folder = folders[contract];
       } else {
         folder = contract;

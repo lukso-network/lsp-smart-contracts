@@ -8,7 +8,6 @@ pragma solidity ^0.8.4;
 interface ILSP1UniversalReceiver {
     /**
      * @dev Emitted when the {universalReceiver} function was called with a specific `typeId` and some `receivedData`
-s
      * @notice Address `from` called the `universalReceiver(...)` function while sending `value` LYX. Notification type (typeId): `typeId` - Data received: `receivedData`.
      *
      * @param from The address of the EOA or smart contract that called the {universalReceiver(...)} function.
