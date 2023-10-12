@@ -27,7 +27,7 @@ contract UniversalReceiverDelegateGasConsumer is
         uint256 /*value*/,
         bytes32 /*typeId*/,
         bytes memory /* data */
-    ) public virtual returns (bytes memory) {
+    ) public virtual override returns (bytes memory) {
         // solhint-disable no-empty-blocks
         for (uint256 i = 0; ; i++) {
             // nothing

@@ -7,6 +7,10 @@ import {
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 
+import {
+    ILSP1UniversalReceiverDelegate
+} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {
@@ -29,7 +33,10 @@ import {
 /**
  * @dev This contract is used only for testing purposes
  */
-contract UniversalReceiverDelegateTokenReentrant is ERC165Storage {
+contract UniversalReceiverDelegateTokenReentrant is
+    ERC165Storage,
+    ILSP1UniversalReceiverDelegate
+{
     constructor() {
         _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }
@@ -39,7 +46,7 @@ contract UniversalReceiverDelegateTokenReentrant is ERC165Storage {
         uint256 /*value*/,
         bytes32 typeId,
         bytes memory data
-    ) public virtual returns (bytes memory result) {
+    ) public virtual override returns (bytes memory result) {
         if (
             typeId == _TYPEID_LSP7_TOKENSRECIPIENT ||
             typeId == _TYPEID_LSP8_TOKENSRECIPIENT

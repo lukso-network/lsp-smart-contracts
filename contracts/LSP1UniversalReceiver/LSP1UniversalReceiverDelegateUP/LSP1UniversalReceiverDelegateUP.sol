@@ -83,7 +83,7 @@ contract LSP1UniversalReceiverDelegateUP is
         uint256 /*value*/,
         bytes32 typeId,
         bytes memory /* data */
-    ) public virtual returns (bytes memory) {
+    ) public virtual override returns (bytes memory) {
         // The notifier is supposed to be either the LSP7 or LSP8 or LSP9 contract
         // If it's EOA we revert to avoid registering the EOA as asset or vault (spam protection)
         // solhint-disable-next-line avoid-tx-origin

@@ -31,7 +31,7 @@ async function main() {
     } else {
       const lspInterface = `I${contract}`;
 
-      // adjust the source path for LSP20 and LSP17 contracts
+      // adjust the source path for LSP1Delegate, LSP20 and LSP17 contracts
       const folders = {
         LSP20CallVerifier: 'LSP20CallVerification',
         LSP17Extendable: 'LSP17ContractExtension',
