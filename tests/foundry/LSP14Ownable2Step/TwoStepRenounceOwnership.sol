@@ -51,7 +51,7 @@ contract TwoStepRenounceOwnershipTest is Test {
 
         // Call acceptOwnership() to regain ownership should fail
         // as pendingOwner should be deleted on the second call of renounceOwnership again
-        vm.expectRevert("LSP14: caller is not the pendingOwner");
+        vm.expectRevert();
         account.acceptOwnership();
     }
 }

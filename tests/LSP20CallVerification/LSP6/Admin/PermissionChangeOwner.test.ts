@@ -199,11 +199,13 @@ export const shouldBehaveLikePermissionChangeOwner = (
         context.universalProfile.address,
       );
 
+      const pendignOwner = await context.universalProfile.pendingOwner();
+
       const payload = context.universalProfile.interface.getSighash('acceptOwnership');
 
-      await expect(
-        notPendingKeyManager.connect(context.mainController).execute(payload),
-      ).to.be.revertedWith('LSP14: caller is not the pendingOwner');
+      await expect(notPendingKeyManager.connect(context.mainController).execute(payload))
+        .to.be.revertedWithCustomError(context.universalProfile, 'LSP20EOACannotVerifyCall')
+        .withArgs(pendignOwner);
     });
   });
 
