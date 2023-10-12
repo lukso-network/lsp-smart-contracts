@@ -821,7 +821,7 @@ abstract contract LSP6SetDataModule {
             }
 
             unchecked {
-                jj++;
+                ++jj;
             }
         }
     }

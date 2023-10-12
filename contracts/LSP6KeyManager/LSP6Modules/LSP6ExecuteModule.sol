@@ -6,7 +6,6 @@ import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // libraries
 import {LSP6Utils} from "../LSP6Utils.sol";
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
@@ -243,10 +242,10 @@ abstract contract LSP6ExecuteModule {
         bytes memory data
     ) internal view virtual {
         // CHECK for ALLOWED CALLS
-        bytes memory allowedCalls = ERC725Y(controlledContract)
+        bytes memory allowedCallsCompacted = ERC725Y(controlledContract)
             .getAllowedCallsFor(controllerAddress);
 
-        if (allowedCalls.length == 0) {
+        if (allowedCallsCompacted.length == 0) {
             revert NoCallsAllowed(controllerAddress);
         }
 
@@ -261,9 +260,9 @@ abstract contract LSP6ExecuteModule {
             isEmptyCall
         );
 
-        bytes memory allowedCall;
+        bytes32 allowedCall;
 
-        for (uint256 ii; ii < allowedCalls.length; ii += 34) {
+        for (uint256 ii; ii < allowedCallsCompacted.length; ) {
             /// @dev structure of an AllowedCall
             //
             /// AllowedCall = 0x00200000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
@@ -275,20 +274,22 @@ abstract contract LSP6ExecuteModule {
             ///                                 f1f1f1f1 = function
 
             // CHECK that we can extract an AllowedCall
-            if (ii + 34 > allowedCalls.length) {
-                revert InvalidEncodedAllowedCalls(allowedCalls);
+            if (ii + 34 > allowedCallsCompacted.length) {
+                revert InvalidEncodedAllowedCalls(allowedCallsCompacted);
             }
 
             // extract one AllowedCall at a time
-            allowedCall = BytesLib.slice(allowedCalls, ii + 2, 32);
+            assembly {
+                // the first 32 bytes word in memory (where `allowedCallsCompacted` is stored)
+                // correspond to the total number of bytes in `allowedCallsCompacted`
+                let offset := add(add(ii, 2), 32)
+                allowedCall := mload(add(allowedCallsCompacted, offset))
+            }
 
             // 0xxxxxxxxxffffffffffffffffffffffffffffffffffffffffffffffffffffffff
             // (excluding the callTypes) not allowed
             // as equivalent to whitelisting any call (= SUPER permission)
-            if (
-                bytes28(bytes32(allowedCall) << 32) ==
-                bytes28(type(uint224).max)
-            ) {
+            if (bytes28(allowedCall << 32) == bytes28(type(uint224).max)) {
                 revert InvalidWhitelistedCall(controllerAddress);
             }
 
@@ -298,6 +299,10 @@ abstract contract LSP6ExecuteModule {
                 _isAllowedStandard(allowedCall, to) &&
                 _isAllowedFunction(allowedCall, selector)
             ) return;
+
+            unchecked {
+                ii += 34;
+            }
         }
 
         revert NotAllowedCall(controllerAddress, to, selector);
@@ -331,7 +336,7 @@ abstract contract LSP6ExecuteModule {
     }
 
     function _isAllowedAddress(
-        bytes memory allowedCall,
+        bytes32 allowedCall,
         address to
     ) internal pure virtual returns (bool) {
         // <offset> = 4 bytes x 8 bits = 32 bits
@@ -347,7 +352,7 @@ abstract contract LSP6ExecuteModule {
     }
 
     function _isAllowedStandard(
-        bytes memory allowedCall,
+        bytes32 allowedCall,
         address to
     ) internal view virtual returns (bool) {
         // <offset> = 24 bytes x 8 bits = 192 bits
@@ -364,7 +369,7 @@ abstract contract LSP6ExecuteModule {
     }
 
     function _isAllowedFunction(
-        bytes memory allowedCall,
+        bytes32 allowedCall,
         bytes4 requiredFunction
     ) internal pure virtual returns (bool) {
         // <offset> = 28 bytes x 8 bits = 224 bits
@@ -383,7 +388,7 @@ abstract contract LSP6ExecuteModule {
     }
 
     function _isAllowedCallType(
-        bytes memory allowedCall,
+        bytes32 allowedCall,
         bytes4 requiredCallTypes
     ) internal pure virtual returns (bool) {
         // extract callType
