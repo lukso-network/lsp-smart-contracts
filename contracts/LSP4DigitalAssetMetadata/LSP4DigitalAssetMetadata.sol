@@ -4,9 +4,6 @@ pragma solidity ^0.8.4;
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
-// libraries
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-
 // constants
 import {
     _LSP4_SUPPORTED_STANDARDS_KEY,
@@ -65,12 +62,27 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
             revert LSP4TokenSymbolNotEditable();
         } else {
             _store[dataKey] = dataValue;
-            emit DataChanged(
-                dataKey,
-                dataValue.length <= 256
-                    ? dataValue
-                    : BytesLib.slice(dataValue, 0, 256)
-            );
+
+            // If the `dataValue` is more than 256 bytes long
+            if (dataValue.length > 256) {
+                uint256 dataValueLength = dataValue.length;
+
+                // update the 32 bytes word for `dataValue.length` to states it is only 256 bytes long
+                // so that the `DataChanged` event only emits the first 256 bytes of the `dataValue`.
+                assembly {
+                    mstore(dataValue, 256)
+                }
+
+                emit DataChanged(dataKey, dataValue);
+
+                // re-update the `dataValue.length` to its initial value
+                // in case the function is overriden and `dataValue` is re-used afterwards.
+                assembly {
+                    mstore(dataValue, dataValueLength)
+                }
+            } else {
+                emit DataChanged(dataKey, dataValue);
+            }
         }
     }
 }
