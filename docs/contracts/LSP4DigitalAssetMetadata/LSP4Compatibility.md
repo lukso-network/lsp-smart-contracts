@@ -537,3 +537,47 @@ error ERC725Y_MsgValueDisallowed();
 Reverts when sending value to the [`setData`](#setdata) or [`setDataBatch`](#setdatabatch) function.
 
 <br/>
+
+### OwnableCallerNotTheOwner
+
+:::note References
+
+- Specification details: [**LSP-4-DigitalAssetMetadata**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-4-DigitalAssetMetadata.md#ownablecallernottheowner)
+- Solidity implementation: [`LSP4Compatibility.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP4DigitalAssetMetadata/LSP4Compatibility.sol)
+- Error signature: `OwnableCallerNotTheOwner(address)`
+- Error hash: `0xbf1169c5`
+
+:::
+
+```solidity
+error OwnableCallerNotTheOwner(address callerAddress);
+```
+
+Reverts when only the owner is allowed to call the function.
+
+#### Parameters
+
+| Name            |   Type    | Description                              |
+| --------------- | :-------: | ---------------------------------------- |
+| `callerAddress` | `address` | The address that tried to make the call. |
+
+<br/>
+
+### OwnableCannotSetZeroAddressAsOwner
+
+:::note References
+
+- Specification details: [**LSP-4-DigitalAssetMetadata**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-4-DigitalAssetMetadata.md#ownablecannotsetzeroaddressasowner)
+- Solidity implementation: [`LSP4Compatibility.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP4DigitalAssetMetadata/LSP4Compatibility.sol)
+- Error signature: `OwnableCannotSetZeroAddressAsOwner()`
+- Error hash: `0x1ad8836c`
+
+:::
+
+```solidity
+error OwnableCannotSetZeroAddressAsOwner();
+```
+
+Reverts when trying to set `address(0)` as the contract owner when deploying the contract, initializing it or transferring ownership of the contract.
+
+<br/>

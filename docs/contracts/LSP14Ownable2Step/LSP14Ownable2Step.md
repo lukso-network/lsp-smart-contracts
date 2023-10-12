@@ -500,3 +500,28 @@ Reverts when trying to renounce ownership before the initial confirmation delay.
 | `renounceOwnershipEnd`   | `uint256` | The end timestamp when one can confirm the renouncement of ownership.   |
 
 <br/>
+
+### OwnableCallerNotTheOwner
+
+:::note References
+
+- Specification details: [**LSP-14-Ownable2Step**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-14-Ownable2Step.md#ownablecallernottheowner)
+- Solidity implementation: [`LSP14Ownable2Step.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP14Ownable2Step/LSP14Ownable2Step.sol)
+- Error signature: `OwnableCallerNotTheOwner(address)`
+- Error hash: `0xbf1169c5`
+
+:::
+
+```solidity
+error OwnableCallerNotTheOwner(address callerAddress);
+```
+
+Reverts when only the owner is allowed to call the function.
+
+#### Parameters
+
+| Name            |   Type    | Description                              |
+| --------------- | :-------: | ---------------------------------------- |
+| `callerAddress` | `address` | The address that tried to make the call. |
+
+<br/>
