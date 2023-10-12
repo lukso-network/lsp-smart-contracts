@@ -591,16 +591,15 @@ abstract contract LSP6SetDataModule {
          *    length  |   length   |  length
          */
         do {
-            // 0x 0003 a00000 0003 fff83a 0020 aa00...00cafe
-            //    ↑↑
-            bytes1 length1stByte = allowedERC725YDataKeysCompacted[pointer];
-            // 0x 0003 a00000 0003 fff83a 0020 aa00...00cafe
-            //      ↑↑
-            bytes1 length2ndByte = allowedERC725YDataKeysCompacted[pointer + 1];
-
             // save the length of the allowed data key to calculate the `mask`.
-            // we use left bitshift + Bitwise OR | here for optimisation to operate on the stack and avoid using memory
-            length = uint16(bytes2(length1stByte) << 8) | uint8(length2ndByte);
+            length = uint16(
+                bytes2(
+                    abi.encodePacked(
+                        allowedERC725YDataKeysCompacted[pointer],
+                        allowedERC725YDataKeysCompacted[pointer + 1]
+                    )
+                )
+            );
 
             /**
              * The length of a data key is 32 bytes.
@@ -726,16 +725,15 @@ abstract contract LSP6SetDataModule {
          *    length  |   length   |  length
          */
         do {
-            // 0x 0003 a00000 0003 fff83a 0020 aa00...00cafe
-            //    ↑↑
-            bytes1 length1stByte = allowedERC725YDataKeysCompacted[pointer];
-            // 0x 0003 a00000 0003 fff83a 0020 aa00...00cafe
-            //      ↑↑
-            bytes1 length2ndByte = allowedERC725YDataKeysCompacted[pointer + 1];
-
             // save the length of the allowed data key to calculate the `mask`.
-            // we use left bitshift + Bitwise OR | here for optimisation to operate on the stack and avoid using memory
-            length = uint16(bytes2(length1stByte) << 8) | uint8(length2ndByte);
+            length = uint16(
+                bytes2(
+                    abi.encodePacked(
+                        allowedERC725YDataKeysCompacted[pointer],
+                        allowedERC725YDataKeysCompacted[pointer + 1]
+                    )
+                )
+            );
 
             /**
              * The length of a data key is 32 bytes.
