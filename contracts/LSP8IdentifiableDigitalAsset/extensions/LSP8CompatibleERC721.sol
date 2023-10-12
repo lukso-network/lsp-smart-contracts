@@ -5,7 +5,11 @@ pragma solidity ^0.8.12;
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {
     IERC721Receiver
-} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+} from "@openzeppelin/contracts/interfaces/IERC721Receiver.sol";
+import {
+    IERC721Metadata,
+    IERC721
+} from "@openzeppelin/contracts/interfaces/IERC721Metadata.sol";
 import {ILSP8CompatibleERC721} from "./ILSP8CompatibleERC721.sol";
 import {
     ILSP8IdentifiableDigitalAsset
@@ -19,15 +23,10 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
 // modules
 import {
-    LSP4Compatibility
-} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
-import {
-    LSP8IdentifiableDigitalAsset,
-    ERC725YCore
+    ERC725YCore,
+    LSP8IdentifiableDigitalAssetCore,
+    LSP8IdentifiableDigitalAsset
 } from "../LSP8IdentifiableDigitalAsset.sol";
-import {
-    LSP8IdentifiableDigitalAssetCore
-} from "../LSP8IdentifiableDigitalAssetCore.sol";
 
 // errors
 import {
@@ -40,7 +39,9 @@ import {
 
 // constants
 import {
-    _LSP4_METADATA_KEY
+    _LSP4_METADATA_KEY,
+    _LSP4_TOKEN_NAME_KEY,
+    _LSP4_TOKEN_SYMBOL_KEY
 } from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 import {
     _INTERFACEID_ERC721,
@@ -51,8 +52,7 @@ import {
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
  */
 abstract contract LSP8CompatibleERC721 is
-    ILSP8CompatibleERC721,
-    LSP4Compatibility,
+    IERC721Metadata,
     LSP8IdentifiableDigitalAsset
 {
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -78,6 +78,40 @@ abstract contract LSP8CompatibleERC721 is
     ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, tokenIdType_) {}
 
     /**
+     * @dev Returns the name of the token.
+     * @return The name of the token
+     */
+    function name() public view virtual override returns (string memory) {
+        bytes memory data = _getData(_LSP4_TOKEN_NAME_KEY);
+        return string(data);
+    }
+
+    /**
+     * @dev Returns the symbol of the token, usually a shorter version of the name.
+     * @return The symbol of the token
+     */
+    function symbol() public view virtual override returns (string memory) {
+        bytes memory data = _getData(_LSP4_TOKEN_SYMBOL_KEY);
+        return string(data);
+    }
+
+    function balanceOf(
+        address tokenOwner
+    )
+        public
+        view
+        virtual
+        override(IERC721, LSP8IdentifiableDigitalAssetCore)
+        returns (uint256)
+    {
+        return super.balanceOf(tokenOwner);
+    }
+
+    function totalSupply() public view virtual override returns (uint256) {
+        return super.totalSupply();
+    }
+
+    /**
      * @inheritdoc LSP8IdentifiableDigitalAsset
      */
     function supportsInterface(
@@ -86,7 +120,7 @@ abstract contract LSP8CompatibleERC721 is
         public
         view
         virtual
-        override(IERC165, ERC725YCore, LSP8IdentifiableDigitalAsset)
+        override(IERC165, LSP8IdentifiableDigitalAsset)
         returns (bool)
     {
         return
@@ -115,14 +149,14 @@ abstract contract LSP8CompatibleERC721 is
     }
 
     /**
-     * @inheritdoc ILSP8CompatibleERC721
+     * @inheritdoc IERC721
      */
     function ownerOf(uint256 tokenId) public view virtual returns (address) {
         return tokenOwnerOf(bytes32(tokenId));
     }
 
     /**
-     * @inheritdoc ILSP8CompatibleERC721
+     * @inheritdoc IERC721
      */
     function getApproved(
         uint256 tokenId
@@ -157,7 +191,7 @@ abstract contract LSP8CompatibleERC721 is
     }
 
     /**
-     * @inheritdoc ILSP8CompatibleERC721
+     * @inheritdoc IERC721
      */
     function approve(address operator, uint256 tokenId) public virtual {
         authorizeOperator(operator, bytes32(tokenId), "");
@@ -171,7 +205,7 @@ abstract contract LSP8CompatibleERC721 is
     }
 
     /**
-     * @inheritdoc ILSP8CompatibleERC721
+     * @inheritdoc IERC721
      *
      * @custom:info This function sets the `force` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */
@@ -184,7 +218,7 @@ abstract contract LSP8CompatibleERC721 is
     }
 
     /**
-     * @inheritdoc ILSP8CompatibleERC721
+     * @inheritdoc IERC721
      *
      * @custom:info This function sets the `force` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */
@@ -197,7 +231,7 @@ abstract contract LSP8CompatibleERC721 is
     }
 
     /**
-     * @inheritdoc ILSP8CompatibleERC721
+     * @inheritdoc IERC721
      *
      * @custom:info This function sets the `force` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */
@@ -223,14 +257,7 @@ abstract contract LSP8CompatibleERC721 is
         address operator,
         bytes32 tokenId,
         bytes memory operatorNotificationData
-    )
-        public
-        virtual
-        override(
-            ILSP8IdentifiableDigitalAsset,
-            LSP8IdentifiableDigitalAssetCore
-        )
-    {
+    ) public virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
 
         if (
@@ -412,7 +439,7 @@ abstract contract LSP8CompatibleERC721 is
     function _setData(
         bytes32 key,
         bytes memory value
-    ) internal virtual override(LSP8IdentifiableDigitalAsset, ERC725YCore) {
+    ) internal virtual override {
         super._setData(key, value);
     }
 }

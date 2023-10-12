@@ -1,28 +1,31 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.12;
-
+pragma solidity ^0.8.7;
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {
+    IERC20Metadata,
+    IERC20
+} from "@openzeppelin/contracts/interfaces/IERC20Metadata.sol";
 import {ILSP7CompatibleERC20} from "./ILSP7CompatibleERC20.sol";
 
 // modules
 import {
-    LSP4Compatibility
-} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
-import {
-    LSP7DigitalAsset,
+    ERC725YCore,
     LSP4DigitalAssetMetadata,
-    ERC725YCore
+    LSP7DigitalAssetCore,
+    LSP7DigitalAsset
 } from "../LSP7DigitalAsset.sol";
+
+// constants
+import {
+    _LSP4_TOKEN_NAME_KEY,
+    _LSP4_TOKEN_SYMBOL_KEY
+} from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 
 /**
  * @dev LSP7 extension, for compatibility for clients / tools that expect ERC20.
  */
-abstract contract LSP7CompatibleERC20 is
-    ILSP7CompatibleERC20,
-    LSP4Compatibility,
-    LSP7DigitalAsset
-{
+abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
     /**
      * @notice Deploying a `LSP7CompatibleERC20` token contract with: token name = `name_`, token symbol = `symbol_`, and
      * address `newOwner_` as the token contract owner.
@@ -38,22 +41,67 @@ abstract contract LSP7CompatibleERC20 is
     ) LSP7DigitalAsset(name_, symbol_, newOwner_, false) {}
 
     /**
-     * @inheritdoc LSP7DigitalAsset
+     * @dev Returns the name of the token.
+     * @return The name of the token
      */
-    function supportsInterface(
-        bytes4 interfaceId
+    function name() public view virtual override returns (string memory) {
+        bytes memory data = _getData(_LSP4_TOKEN_NAME_KEY);
+        return string(data);
+    }
+
+    /**
+     * @dev Returns the symbol of the token, usually a shorter version of the name.
+     * @return The symbol of the token
+     */
+    function symbol() public view virtual override returns (string memory) {
+        bytes memory data = _getData(_LSP4_TOKEN_SYMBOL_KEY);
+        return string(data);
+    }
+
+    function decimals()
+        public
+        view
+        virtual
+        override(IERC20Metadata, LSP7DigitalAssetCore)
+        returns (uint8)
+    {
+        return super.decimals();
+    }
+
+    function totalSupply()
+        public
+        view
+        virtual
+        override(IERC20, LSP7DigitalAssetCore)
+        returns (uint256)
+    {
+        return super.totalSupply();
+    }
+
+    function balanceOf(
+        address tokenOwner
     )
         public
         view
         virtual
-        override(IERC165, ERC725YCore, LSP7DigitalAsset)
-        returns (bool)
+        override(IERC20, LSP7DigitalAssetCore)
+        returns (uint256)
     {
+        return super.balanceOf(tokenOwner);
+    }
+
+    /**
+     * @inheritdoc LSP7DigitalAsset
+     */
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override returns (bool) {
+        // TODO: add support interface for ERC20
         return super.supportsInterface(interfaceId);
     }
 
     /**
-     * @inheritdoc ILSP7CompatibleERC20
+     * @inheritdoc IERC20
      */
     function allowance(
         address tokenOwner,
@@ -63,7 +111,7 @@ abstract contract LSP7CompatibleERC20 is
     }
 
     /**
-     * @inheritdoc ILSP7CompatibleERC20
+     * @inheritdoc IERC20
      */
     function approve(
         address operator,
@@ -74,7 +122,7 @@ abstract contract LSP7CompatibleERC20 is
     }
 
     /**
-     * @inheritdoc ILSP7CompatibleERC20
+     * @inheritdoc IERC20
      *
      * @custom:info This function uses the `force` parameter as `true` so that EOA and any contract can receive tokens.
      */
@@ -90,7 +138,7 @@ abstract contract LSP7CompatibleERC20 is
     // --- Overrides
 
     /**
-     * @inheritdoc ILSP7CompatibleERC20
+     * @inheritdoc IERC20
      *
      * @custom:info This function uses the `force` parameter as `true` so that EOA and any contract can receive tokens.
      */
@@ -168,7 +216,7 @@ abstract contract LSP7CompatibleERC20 is
     function _setData(
         bytes32 key,
         bytes memory value
-    ) internal virtual override(LSP4DigitalAssetMetadata, ERC725YCore) {
+    ) internal virtual override {
         super._setData(key, value);
     }
 }
