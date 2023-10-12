@@ -583,23 +583,24 @@ abstract contract LSP6SetDataModule {
         bytes32 mask;
 
         /**
-         * iterate over each data key and update the `pointer` variable with the index where to find the length of each data key.
+         * Iterate over each data key and update the `pointer` variable with the index where to find the length of each data key.
          *
          * 0x 0003 a00000 0003 fff83a 0020 aa00...00cafe
          *    ↑↑↑↑        ↑↑↑↑        ↑↑↑↑
          *    first   |   second   |  third
          *    length  |   length   |  length
          */
-        while (pointer < allowedERC725YDataKeysCompacted.length) {
+        do {
+            // 0x 0003 a00000 0003 fff83a 0020 aa00...00cafe
+            //    ↑↑
+            bytes1 length1stByte = allowedERC725YDataKeysCompacted[pointer];
+            // 0x 0003 a00000 0003 fff83a 0020 aa00...00cafe
+            //      ↑↑
+            bytes1 length2ndByte = allowedERC725YDataKeysCompacted[pointer + 1];
+
             // save the length of the allowed data key to calculate the `mask`.
-            length = uint16(
-                bytes2(
-                    abi.encodePacked(
-                        allowedERC725YDataKeysCompacted[pointer],
-                        allowedERC725YDataKeysCompacted[pointer + 1]
-                    )
-                )
-            );
+            // we use left bitshift + Bitwise OR | here for optimisation to operate on the stack and avoid using memory
+            length = uint16(bytes2(length1stByte) << 8) | uint8(length2ndByte);
 
             /**
              * The length of a data key is 32 bytes.
@@ -614,34 +615,47 @@ abstract contract LSP6SetDataModule {
                 );
             }
 
-            /**
-             * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &
-             * It is used to compare only the relevant parts of each input data key against dynamic allowed data keys.
-             *
-             * E.g.:
-             *
-             * allowed data key = 0xa00000
-             *
-             *                compare this part
-             *                    vvvvvv
-             * input data key = 0xa00000cafecafecafecafecafecafecafe000000000000000000000011223344
-             *
-             *             &                              discard this part
-             *                       vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-             *           mask = 0xffffff0000000000000000000000000000000000000000000000000000000000
-             */
-            mask =
-                bytes32(
-                    0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-                ) <<
-                (8 * (32 - length));
-
             /*
              * transform the allowed data key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value.
              * E.g. 0xfff83a -> 0xfff83a0000000000000000000000000000000000000000000000000000000000
              */
             // solhint-disable-next-line no-inline-assembly
             assembly {
+                /**
+                 * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &
+                 * It is used to compare only the relevant parts of each input data key against dynamic allowed data keys.
+                 *
+                 * E.g.:
+                 *
+                 * length = 3
+                 * type(uint256).max = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+                 *
+                 * 8 * (32 - 3) = 8 * 29 = 232 bits to shift on the left to obtain the following:
+                 * mask = 0xffffff0000000000000000000000000000000000000000000000000000000000
+                 *
+                 *
+                 * allowed data key = 0xa00000
+                 *
+                 *                compare this part
+                 *                    vvvvvv
+                 * input data key = 0xa00000cafecafecafecafecafecafecafe000000000000000000000011223344
+                 *
+                 *             &                              discard this part
+                 *                          vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+                 *           mask = 0xffffff0000000000000000000000000000000000000000000000000000000000
+                 *
+                 *
+                 * @dev This line is equivalent to the following in Solidity:
+                 *
+                 * ```solidity
+                 * mask = bytes32(type(uint256).max) << (8 * (32 - length));
+                 * ```
+                 */
+                mask := shl(
+                    mul(sub(32, length), 8),
+                    0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+                )
+
                 // the first 32 bytes word in memory (where allowedERC725YDataKeysCompacted is stored)
                 // correspond to the total number of bytes in `allowedERC725YDataKeysCompacted`
                 let offset := add(add(pointer, 2), 32)
@@ -658,7 +672,7 @@ abstract contract LSP6SetDataModule {
             unchecked {
                 pointer = pointer + (length + 2);
             }
-        }
+        } while (pointer < allowedERC725YDataKeysCompacted.length);
 
         revert NotAllowedERC725YDataKey(controllerAddress, inputDataKey);
     }
@@ -711,16 +725,17 @@ abstract contract LSP6SetDataModule {
          *    first   |   second   |  third
          *    length  |   length   |  length
          */
-        while (pointer < allowedERC725YDataKeysCompacted.length) {
+        do {
+            // 0x 0003 a00000 0003 fff83a 0020 aa00...00cafe
+            //    ↑↑
+            bytes1 length1stByte = allowedERC725YDataKeysCompacted[pointer];
+            // 0x 0003 a00000 0003 fff83a 0020 aa00...00cafe
+            //      ↑↑
+            bytes1 length2ndByte = allowedERC725YDataKeysCompacted[pointer + 1];
+
             // save the length of the allowed data key to calculate the `mask`.
-            length = uint16(
-                bytes2(
-                    abi.encodePacked(
-                        allowedERC725YDataKeysCompacted[pointer],
-                        allowedERC725YDataKeysCompacted[pointer + 1]
-                    )
-                )
-            );
+            // we use left bitshift + Bitwise OR | here for optimisation to operate on the stack and avoid using memory
+            length = uint16(bytes2(length1stByte) << 8) | uint8(length2ndByte);
 
             /**
              * The length of a data key is 32 bytes.
@@ -735,34 +750,47 @@ abstract contract LSP6SetDataModule {
                 );
             }
 
-            /**
-             * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &
-             * It is used to compare only the relevant parts of each input data key against dynamic allowed data keys.
-             *
-             * E.g.:
-             *
-             * allowed data key = 0xa00000
-             *
-             *                compare this part
-             *                    vvvvvv
-             * input data key = 0xa00000cafecafecafecafecafecafecafe000000000000000000000011223344
-             *
-             *             &                              discard this part
-             *                       vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-             *           mask = 0xffffff0000000000000000000000000000000000000000000000000000000000
-             */
-            mask =
-                bytes32(
-                    0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-                ) <<
-                (8 * (32 - length));
-
             /*
              * transform the allowed data key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value.
              * E.g. 0xfff83a -> 0xfff83a0000000000000000000000000000000000000000000000000000000000
              */
             // solhint-disable-next-line no-inline-assembly
             assembly {
+                /**
+                 * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &
+                 * It is used to compare only the relevant parts of each input data key against dynamic allowed data keys.
+                 *
+                 * E.g.:
+                 *
+                 * length = 3
+                 * type(uint256).max = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+                 *
+                 * 8 * (32 - 3) = 8 * 29 = 232 bits to shift on the left to obtain the following:
+                 * mask = 0xffffff0000000000000000000000000000000000000000000000000000000000
+                 *
+                 *
+                 * allowed data key = 0xa00000
+                 *
+                 *                compare this part
+                 *                    vvvvvv
+                 * input data key = 0xa00000cafecafecafecafecafecafecafe000000000000000000000011223344
+                 *
+                 *             &                              discard this part
+                 *                          vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+                 *           mask = 0xffffff0000000000000000000000000000000000000000000000000000000000
+                 *
+                 *
+                 * @dev This line is equivalent to the following in Solidity:
+                 *
+                 * ```solidity
+                 * mask = bytes32(type(uint256).max) << (8 * (32 - length));
+                 * ```
+                 */
+                mask := shl(
+                    mul(sub(32, length), 8),
+                    0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+                )
+
                 // the first 32 bytes word in memory (where allowedERC725YDataKeysCompacted is stored)
                 // correspond to the length of allowedERC725YDataKeysCompacted (= total number of bytes)
                 let offset := add(add(pointer, 2), 32)
@@ -809,7 +837,7 @@ abstract contract LSP6SetDataModule {
             unchecked {
                 pointer = pointer + (length + 2);
             }
-        }
+        } while (pointer < allowedERC725YDataKeysCompacted.length);
 
         // if we did not find all the input data keys, search for the first not allowed data key to revert.
         for (uint256 jj; jj < inputKeysLength; ) {
