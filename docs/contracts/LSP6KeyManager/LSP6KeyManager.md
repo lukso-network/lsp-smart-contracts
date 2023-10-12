@@ -903,7 +903,7 @@ extract the bytes4 representation of a single bit for the type of call according
 
 ```solidity
 function _isAllowedAddress(
-  bytes allowedCall,
+  bytes32 allowedCall,
   address to
 ) internal pure returns (bool);
 ```
@@ -914,7 +914,7 @@ function _isAllowedAddress(
 
 ```solidity
 function _isAllowedStandard(
-  bytes allowedCall,
+  bytes32 allowedCall,
   address to
 ) internal view returns (bool);
 ```
@@ -925,7 +925,7 @@ function _isAllowedStandard(
 
 ```solidity
 function _isAllowedFunction(
-  bytes allowedCall,
+  bytes32 allowedCall,
   bytes4 requiredFunction
 ) internal pure returns (bool);
 ```
@@ -936,7 +936,7 @@ function _isAllowedFunction(
 
 ```solidity
 function _isAllowedCallType(
-  bytes allowedCall,
+  bytes32 allowedCall,
   bytes4 requiredCallTypes
 ) internal pure returns (bool);
 ```

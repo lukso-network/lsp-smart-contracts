@@ -33,8 +33,6 @@ function _verifyCall(
 ```
 
 Calls [`lsp20VerifyCall`](#lsp20verifycall) function on the logicVerifier.
-Reverts in case the value returned does not match the magic value (lsp20VerifyCall selector)
-Returns whether a verification after the execution should happen based on the last byte of the magicValue
 
 <br/>
 
@@ -48,7 +46,6 @@ function _verifyCallResult(
 ```
 
 Calls [`lsp20VerifyCallResult`](#lsp20verifycallresult) function on the logicVerifier.
-Reverts in case the value returned does not match the magic value (lsp20VerifyCallResult selector)
 
 <br/>
 
