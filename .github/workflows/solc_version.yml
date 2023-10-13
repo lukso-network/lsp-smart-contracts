@@ -77,7 +77,8 @@ jobs:
           then 
             solc $(ls contracts/**/*.sol | grep -v "Compatible" | grep -v "Extension4337") --allow-paths $(pwd)/node_modules/ \
               @=node_modules/@ \
-              solidity-bytes-utils/=node_modules/solidity-bytes-utils/
+              solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
+              ../=$(pwd)/contracts/
           else
             solc contracts/**/*.sol \
               @=node_modules/@ \

@@ -159,8 +159,8 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       });
 
       describe('when sending value while setting data', async () => {
-        it('should revert with Key Manager error `CannotSendValueToSetData`', async () => {
-          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+        it('should pass', async () => {
+          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My First Key'));
           const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Hello Lukso!!!'));
 
           const payload = context.universalProfile.interface.encodeFunctionData('setData', [
@@ -172,7 +172,9 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
             context.keyManager
               .connect(canSetDataWithAllowedERC725YDataKeys)
               .execute(payload, { value: 12 }),
-          ).to.be.revertedWithCustomError(context.keyManager, 'CannotSendValueToSetData');
+          ).to.changeEtherBalances([context.universalProfile.address], [12]);
+
+          expect(await context.universalProfile.getData(key)).to.equal(value);
         });
       });
     });
@@ -505,7 +507,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       });
 
       describe('when sending value while setting data', async () => {
-        it('should revert with Key Manager error `CannotSendValueToSetData`', async () => {
+        it('should pass', async () => {
           const keys = [
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My First Key')),
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Second Key')),
@@ -529,7 +531,9 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
 
           await expect(
             context.keyManager.connect(context.mainController).execute(payload, { value: 12 }),
-          ).to.be.revertedWithCustomError(context.keyManager, 'CannotSendValueToSetData');
+          ).to.changeEtherBalances([context.universalProfile.address], [12]);
+
+          expect(await context.universalProfile.getDataBatch(keys)).to.deep.equal(values);
         });
       });
     });

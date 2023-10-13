@@ -200,14 +200,6 @@ error DelegateCallDisallowedViaKeyManager();
 error InvalidPayload(bytes payload);
 
 /**
- * @notice Cannot sent native tokens while setting data.
- *
- * @dev Reverts when calling the `setData(byte32,bytes)` or `setData(bytes32[],bytes[]) functions
- * on the linked {target} while sending value.
- */
-error CannotSendValueToSetData();
-
-/**
  * @notice Calling the Key Manager address for this transaction is disallowed.
  *
  * @dev Reverts when calling the KeyManager through `execute(uint256,address,uint256,bytes)`.
