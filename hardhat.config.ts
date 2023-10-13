@@ -140,7 +140,6 @@ const config: HardhatUserConfig = {
       'LSP11BasicSocialRecoveryInit',
       // ERC Compatible tokens
       // ------------------
-      'LSP4Compatibility',
       'LSP7CompatibleERC20',
       'LSP7CompatibleERC20InitAbstract',
       'LSP7CompatibleERC20Mintable',

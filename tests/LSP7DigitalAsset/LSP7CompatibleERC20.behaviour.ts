@@ -1318,5 +1318,33 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
         .withArgs(symbolKey, expectedSymbolValue);
       expect(await context.lsp7CompatibleERC20.getData(symbolKey)).to.equal(expectedSymbolValue);
     });
+
+    describe('when using the functions from IERC20Metadata', () => {
+      it('should allow reading `name()`', async () => {
+        // using compatibility getter -> returns(string)
+        const nameAsString = await context.lsp7CompatibleERC20.name();
+        expect(nameAsString).to.equal(context.deployParams.name);
+
+        // using getData -> returns(bytes)
+        const nameAsBytes = await context.lsp7CompatibleERC20.getData(
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('LSP4TokenName')),
+        );
+
+        expect(ethers.utils.toUtf8String(nameAsBytes)).to.equal(context.deployParams.name);
+      });
+
+      it('should allow reading `symbol()`', async () => {
+        // using compatibility getter -> returns(string)
+        const symbolAsString = await context.lsp7CompatibleERC20.symbol();
+        expect(symbolAsString).to.equal(context.deployParams.symbol);
+
+        // using getData -> returns(bytes)
+        const symbolAsBytes = await context.lsp7CompatibleERC20.getData(
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('LSP4TokenSymbol')),
+        );
+
+        expect(ethers.utils.toUtf8String(symbolAsBytes)).to.equal(context.deployParams.symbol);
+      });
+    });
   });
 };

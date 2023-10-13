@@ -79,6 +79,8 @@ abstract contract LSP8CompatibleERC721 is
 
     /**
      * @dev Returns the name of the token.
+     * For compatibility with clients & tools that expect ERC721.
+     *
      * @return The name of the token
      */
     function name() public view virtual override returns (string memory) {
@@ -88,6 +90,8 @@ abstract contract LSP8CompatibleERC721 is
 
     /**
      * @dev Returns the symbol of the token, usually a shorter version of the name.
+     * For compatibility with clients & tools that expect ERC721.
+     *
      * @return The symbol of the token
      */
     function symbol() public view virtual override returns (string memory) {
@@ -192,6 +196,12 @@ abstract contract LSP8CompatibleERC721 is
 
     /**
      * @inheritdoc IERC721
+     * @notice Calling `approve` function to approve operator at address `operator` to transfer tokenId `tokenId` on behalf of its owner.
+     *
+     * @dev Approval function compatible with ERC721 `approve(address,uint256)`.
+     *
+     * @param operator The address to approve for `tokenId`.
+     * @param tokenId The tokenId to approve.
      */
     function approve(address operator, uint256 tokenId) public virtual {
         authorizeOperator(operator, bytes32(tokenId), "");
@@ -206,6 +216,13 @@ abstract contract LSP8CompatibleERC721 is
 
     /**
      * @inheritdoc IERC721
+     * @notice Calling `transferFrom` function to transfer tokenId `tokenId` from address `from` to address `to`.
+     *
+     * @dev Transfer functions from the ERC721 standard interface.
+     *
+     * @param from The sending address.
+     * @param to The receiving address.
+     * @param tokenId The tokenId to transfer.
      *
      * @custom:info This function sets the `force` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */
@@ -219,6 +236,13 @@ abstract contract LSP8CompatibleERC721 is
 
     /**
      * @inheritdoc IERC721
+     * @notice Calling `safeTransferFrom` function to transfer tokenId `tokenId` from address `from` to address `to`.
+     *
+     * @dev Safe Transfer function without optional data from the ERC721 standard interface.
+     *
+     * @param from The sending address.
+     * @param to The receiving address.
+     * @param tokenId The tokenId to transfer.
      *
      * @custom:info This function sets the `force` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */
@@ -232,6 +256,14 @@ abstract contract LSP8CompatibleERC721 is
 
     /**
      * @inheritdoc IERC721
+     * @notice Calling `safeTransferFrom` function to transfer tokenId `tokenId` from address `from` to address `to`.
+     *
+     * @dev Safe Transfer function with optional data from the ERC721 standard interface.
+     *
+     * @param from The sending address.
+     * @param to The receiving address.
+     * @param tokenId The tokenId to transfer.
+     * @param data The data to be sent with the transfer.
      *
      * @custom:info This function sets the `force` parameter to `true` so that EOAs and any contract can receive the `tokenId`.
      */

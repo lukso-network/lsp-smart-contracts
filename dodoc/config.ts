@@ -23,7 +23,6 @@ export const dodocConfig = {
     'contracts/LSP25ExecuteRelayCall/LSP25MultiChannelNonce.sol',
 
     // tokens
-    'contracts/LSP4DigitalAssetMetadata/LSP4Compatibility.sol',
     'contracts/LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol',
     'contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol',
     'contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol',

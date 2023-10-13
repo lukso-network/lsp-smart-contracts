@@ -42,6 +42,8 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
 
     /**
      * @dev Returns the name of the token.
+     * For compatibility with clients & tools that expect ERC20.
+     *
      * @return The name of the token
      */
     function name() public view virtual override returns (string memory) {
@@ -51,6 +53,8 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
 
     /**
      * @dev Returns the symbol of the token, usually a shorter version of the name.
+     * For compatibility with clients & tools that expect ERC20.
+     *
      * @return The symbol of the token
      */
     function symbol() public view virtual override returns (string memory) {
