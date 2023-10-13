@@ -40,8 +40,8 @@ import {
 
 import {ILSP9Vault as ILSP9} from "../LSP9Vault/ILSP9Vault.sol";
 import {
-    ILSP11BasicSocialRecovery as ILSP11
-} from "../LSP11BasicSocialRecovery/ILSP11BasicSocialRecovery.sol";
+    ILSP11UniversalSocialRecovery as ILSP11
+} from "../LSP11UniversalSocialRecovery/ILSP11UniversalSocialRecovery.sol";
 import {
     ILSP14Ownable2Step as ILSP14
 } from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
@@ -63,7 +63,7 @@ import {
 import {_INTERFACEID_LSP9} from "../LSP9Vault/LSP9Constants.sol";
 import {
     _INTERFACEID_LSP11
-} from "../LSP11BasicSocialRecovery/LSP11Constants.sol";
+} from "../LSP11UniversalSocialRecovery/LSP11Constants.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 import {
     _INTERFACEID_LSP17_EXTENDABLE,

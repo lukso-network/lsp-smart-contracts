@@ -2,36 +2,11 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { FakeContract, smock } from '@defi-wonderland/smock';
 
-import {
-  LSP1UniversalReceiverDelegateUP__factory,
-  LSP16UniversalFactory,
-  LSP16UniversalFactory__factory,
-  UniversalProfileInit,
-  UniversalProfileInit__factory,
-  LSP1UniversalReceiverDelegateUP,
-  UniversalProfile,
-  UniversalProfile__factory,
-  PayableContract,
-  PayableContract__factory,
-  ImplementationTester,
-  ImplementationTester__factory,
-  FallbackInitializer,
-  FallbackInitializer__factory,
-  LSP6KeyManager__factory,
-} from '../../types';
-
-import web3 from 'web3';
+import { LSP11UniversalSocialRecovery__factory, LSP11UniversalSocialRecovery } from '../../types';
 
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-import { provider, AddressOffset } from '../utils/helpers';
-
-const UniversalProfileBytecode = UniversalProfile__factory.bytecode;
-const LSP6KeyManagerBytecode = LSP6KeyManager__factory.bytecode;
-const ImplementationTesterBytecode = ImplementationTester__factory.bytecode;
-const FallbackInitializerBytecode = FallbackInitializer__factory.bytecode;
-
-type UniversalFactoryTestAccounts = {
+type UniversalSocialRecoveryTestAccounts = {
   random: SignerWithAddress;
   deployer1: SignerWithAddress;
   deployer2: SignerWithAddress;
@@ -45,61 +20,24 @@ const getNamedAccounts = async () => {
 };
 
 type UniversalFactoryTestContext = {
-  accounts: UniversalFactoryTestAccounts;
-  universalFactory: LSP16UniversalFactory;
+  accounts: UniversalSocialRecoveryTestAccounts;
+  lsp11Contract: LSP11UniversalSocialRecovery;
 };
 
 describe('UniversalFactory contract', () => {
   const buildTestContext = async (): Promise<UniversalFactoryTestContext> => {
     const accounts = await getNamedAccounts();
 
-    const universalFactory = await new LSP16UniversalFactory__factory(accounts.random).deploy();
+    const lsp11Contract = await new LSP11UniversalSocialRecovery__factory(accounts.random).deploy();
 
-    return { accounts, universalFactory };
+    return { accounts, lsp11Contract };
   };
 
   describe('When using LSP16UniversalFactory', () => {
     let context: UniversalFactoryTestContext;
-    let universalProfileConstructor: UniversalProfile;
-    let universalProfileBaseContract: UniversalProfileInit;
-    let universalReceiverDelegate: LSP1UniversalReceiverDelegateUP;
-    let payableContract: PayableContract;
-    let fallbackContract: FakeContract;
-    let implementationTester: ImplementationTester;
-    let fallbackInitializer: FallbackInitializer;
 
     before(async () => {
       context = await buildTestContext();
-
-      universalProfileConstructor = await new UniversalProfile__factory(
-        context.accounts.random,
-      ).deploy(ethers.constants.AddressZero);
-
-      universalProfileBaseContract = await new UniversalProfileInit__factory(
-        context.accounts.random,
-      ).deploy();
-
-      universalReceiverDelegate = await new LSP1UniversalReceiverDelegateUP__factory(
-        context.accounts.random,
-      ).deploy();
-
-      payableContract = await new PayableContract__factory(context.accounts.random).deploy();
-
-      fallbackContract = await smock.fake([
-        {
-          stateMutability: 'payable',
-          type: 'fallback',
-        },
-      ]);
-      fallbackContract.fallback.returns();
-
-      implementationTester = await new ImplementationTester__factory(
-        context.accounts.random,
-      ).deploy();
-
-      fallbackInitializer = await new FallbackInitializer__factory(
-        context.accounts.random,
-      ).deploy();
     });
 
     describe('when using deployCreate2', () => {

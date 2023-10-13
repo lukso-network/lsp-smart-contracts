@@ -163,10 +163,7 @@ export async function grantLSP11PermissionViaKeyManager(
     16,
   );
 
-  // if the main controller lost access to its UP and don't have any new permission
-  // the social recovery contract only needs the permission ADDCONTROLLER
-  // to add a new controller key with some new permissions
-  const lsp11SocialRecoveryPermissions = PERMISSIONS.ADDCONTROLLER;
+  const lsp11SocialRecoveryPermissions = ALL_PERMISSIONS;
 
   const payload = universalProfile.interface.encodeFunctionData('setDataBatch', [
     [
