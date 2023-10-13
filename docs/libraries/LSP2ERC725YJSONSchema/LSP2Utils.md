@@ -339,28 +339,6 @@ Generate a ASSETURL value content.
 
 <br/>
 
-### isEncodedArray
-
-```solidity
-function isEncodedArray(bytes data) internal pure returns (bool);
-```
-
-Verify if `data` is an abi-encoded array.
-
-#### Parameters
-
-| Name   |  Type   | Description                |
-| ------ | :-----: | -------------------------- |
-| `data` | `bytes` | The bytes value to verify. |
-
-#### Returns
-
-| Name |  Type  | Description                                                              |
-| ---- | :----: | ------------------------------------------------------------------------ |
-| `0`  | `bool` | `true` if the `data` represents an abi-encoded array, `false` otherwise. |
-
-<br/>
-
 ### isCompactBytesArray
 
 ```solidity
