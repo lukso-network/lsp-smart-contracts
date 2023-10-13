@@ -56,14 +56,14 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 <br/>
 
-### universalReceiver
+### universalReceiverDelegate
 
 :::note References
 
-- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#universalreceiver)
+- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#universalreceiverdelegate)
 - Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol)
-- Function signature: `universalReceiver(bytes32,)`
-- Function selector: `0x534e72c8`
+- Function signature: `universalReceiverDelegate(address,,bytes32,)`
+- Function selector: `0xba924425`
 
 :::
 
@@ -75,10 +75,12 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 :::
 
 ```solidity
-function universalReceiver(
+function universalReceiverDelegate(
+  address notifier,
+  uint256,
   bytes32 typeId,
   bytes
-) external payable returns (bytes);
+) external nonpayable returns (bytes);
 ```
 
 _Reacted on received notification with `typeId`._
@@ -95,10 +97,12 @@ Handles two cases: Writes the received [LSP-7-DigitalAsset] or [LSP-8-Identifiab
 
 #### Parameters
 
-| Name     |   Type    | Description                                    |
-| -------- | :-------: | ---------------------------------------------- |
-| `typeId` | `bytes32` | Unique identifier for a specific notification. |
-| `_1`     |  `bytes`  | -                                              |
+| Name       |   Type    | Description                                    |
+| ---------- | :-------: | ---------------------------------------------- |
+| `notifier` | `address` | -                                              |
+| `_1`       | `uint256` | -                                              |
+| `typeId`   | `bytes32` | Unique identifier for a specific notification. |
+| `_3`       |  `bytes`  | -                                              |
 
 #### Returns
 
@@ -176,41 +180,6 @@ Calls `bytes4(keccak256(setDataBatch(bytes32[],bytes[])))` without checking for 
 
 <br/>
 
-## Events
-
-### UniversalReceiver
-
-:::note References
-
-- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#universalreceiver)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol)
-- Event signature: `UniversalReceiver(address,uint256,bytes32,bytes,bytes)`
-- Event topic hash: `0x9c3ba68eb5742b8e3961aea0afc7371a71bf433c8a67a831803b64c064a178c2`
-
-:::
-
-```solidity
-event UniversalReceiver(address indexed from, uint256 indexed value, bytes32 indexed typeId, bytes receivedData, bytes returnedValue);
-```
-
-\*Address `from` called the `universalReceiver(...)` function while sending `value` LYX. Notification type (typeId): `typeId`
-
-- Data received: `receivedData`.\*
-
-Emitted when the [`universalReceiver`](#universalreceiver) function was called with a specific `typeId` and some `receivedData` s
-
-#### Parameters
-
-| Name                   |   Type    | Description                                                                                                                                                                             |
-| ---------------------- | :-------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `from` **`indexed`**   | `address` | The address of the EOA or smart contract that called the {universalReceiver(...)} function.                                                                                             |
-| `value` **`indexed`**  | `uint256` | The amount sent to the {universalReceiver(...)} function.                                                                                                                               |
-| `typeId` **`indexed`** | `bytes32` | A `bytes32` unique identifier (= _"hook"_)that describe the type of notification, information or transaction received by the contract. Can be related to a specific standard or a hook. |
-| `receivedData`         |  `bytes`  | Any arbitrary data that was sent to the {universalReceiver(...)} function.                                                                                                              |
-| `returnedValue`        |  `bytes`  | The value returned by the {universalReceiver(...)} function.                                                                                                                            |
-
-<br/>
-
 ## Errors
 
 ### CannotRegisterEOAsAsAssets
@@ -237,26 +206,5 @@ Reverts when EOA calls the [`universalReceiver(..)`](#universalreceiver) functio
 | Name     |   Type    | Description            |
 | -------- | :-------: | ---------------------- |
 | `caller` | `address` | The address of the EOA |
-
-<br/>
-
-### NativeTokensNotAccepted
-
-:::note References
-
-- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#nativetokensnotaccepted)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol)
-- Error signature: `NativeTokensNotAccepted()`
-- Error hash: `0x114b721a`
-
-:::
-
-```solidity
-error NativeTokensNotAccepted();
-```
-
-_Cannot send native tokens to [`universalReceiver(...)`](#universalreceiver) function of the delegated contract._
-
-Reverts when the [`universalReceiver`](#universalreceiver) function in the LSP1 Universal Receiver Delegate contract is called while sending some native tokens along the call (`msg.value` different than `0`)
 
 <br/>

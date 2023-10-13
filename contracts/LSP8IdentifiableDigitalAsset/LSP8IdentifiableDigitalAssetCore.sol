@@ -348,15 +348,19 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     /**
      * @dev Create `tokenId` by minting it and transfers it to `to`.
      *
-     * @custom:requirements
-     * - `tokenId` must not exist and not have been already minted.
-     * - `to` cannot be the zero address.
+     * @custom:info Any logic in the:
+     * - {_beforeTokenTransfer} function will run before updating the balances and ownership of `tokenId`s.
+     * - {_afterTokenTransfer} function will run after updating the balances and ownership of `tokenId`s, **but before notifying the recipient via LSP1**.
      *
      * @param to The address that will receive the minted `tokenId`.
      * @param tokenId The token ID to create (= mint).
      * @param force When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard.
      * @param data Any additional data the caller wants included in the emitted event, and sent in the hook of the `to` address.
      *
+     * @custom:requirements
+     * - `tokenId` must not exist and not have been already minted.
+     * - `to` cannot be the zero address.
+
      * @custom:events {Transfer} event with `address(0)` as `from` address.
      */
     function _mint(
@@ -369,7 +373,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8CannotSendToAddressZero();
         }
 
-        _beforeTokenTransfer(address(0), to, tokenId);
+        _beforeTokenTransfer(address(0), to, tokenId, data);
 
         // Check that `tokenId` was not minted inside the `_beforeTokenTransfer` hook
         if (_exists(tokenId)) {
@@ -384,6 +388,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         emit Transfer(msg.sender, address(0), to, tokenId, force, data);
 
+        _afterTokenTransfer(address(0), to, tokenId, data);
+
         bytes memory lsp1Data = abi.encode(address(0), to, tokenId, data);
         _notifyTokenReceiver(to, force, lsp1Data);
     }
@@ -396,7 +402,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      * function, if it is a contract that supports the LSP1 interface. Its {universalReceiver} function will receive
      * all the parameters in the calldata packed encoded.
      *
-     * Any logic in the {_beforeTokenTransfer} function will run before burning `tokenId` and updating the balances.
+     * @custom:info Any logic in the:
+     * - {_beforeTokenTransfer} function will run before updating the balances and ownership of `tokenId`s.
+     * - {_afterTokenTransfer} function will run after updating the balances and ownership of `tokenId`s, **but before notifying the sender via LSP1**.
      *
      * @param tokenId The token to burn.
      * @param data Any additional data the caller wants included in the emitted event, and sent in the LSP1 hook on the token owner's address.
@@ -411,7 +419,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function _burn(bytes32 tokenId, bytes memory data) internal virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
 
-        _beforeTokenTransfer(tokenOwner, address(0), tokenId);
+        _beforeTokenTransfer(tokenOwner, address(0), tokenId, data);
 
         // Re-fetch and update `tokenOwner` in case `tokenId`
         // was transferred inside the `_beforeTokenTransfer` hook
@@ -426,6 +434,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         delete _tokenOwners[tokenId];
 
         emit Transfer(msg.sender, tokenOwner, address(0), tokenId, false, data);
+
+        _afterTokenTransfer(tokenOwner, address(0), tokenId, data);
 
         bytes memory lsp1Data = abi.encode(
             tokenOwner,
@@ -443,7 +453,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      * function, if they are contracts that support the LSP1 interface. Their `universalReceiver` function will receive
      * all the parameters in the calldata packed encoded.
      *
-     * Any logic in the {_beforeTokenTransfer} function will run before changing the owner of `tokenId`.
+     * @custom:info Any logic in the:
+     * - {_beforeTokenTransfer} function will run before updating the balances and ownership of `tokenId`s.
+     * - {_afterTokenTransfer} function will run after updating the balances and ownership of `tokenId`s, **but before notifying the sender/recipient via LSP1**.
      *
      * @param from The sender address.
      * @param to The recipient address.
@@ -479,7 +491,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8CannotSendToAddressZero();
         }
 
-        _beforeTokenTransfer(from, to, tokenId);
+        _beforeTokenTransfer(from, to, tokenId, data);
 
         // Re-fetch and update `tokenOwner` in case `tokenId`
         // was transferred inside the `_beforeTokenTransfer` hook
@@ -493,6 +505,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         emit Transfer(msg.sender, from, to, tokenId, force, data);
 
+        _afterTokenTransfer(from, to, tokenId, data);
+
         bytes memory lsp1Data = abi.encode(from, to, tokenId, data);
 
         _notifyTokenSender(from, lsp1Data);
@@ -501,16 +515,34 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
     /**
      * @dev Hook that is called before any token transfer, including minting and burning.
-     * * Allows to run custom logic before updating balances and notifiying sender/recipient by overriding this function.
+     * Allows to run custom logic before updating balances and notifiying sender/recipient by overriding this function.
      *
      * @param from The sender address
      * @param to The recipient address
      * @param tokenId The tokenId to transfer
+     * @param data The data sent alongside the transfer
      */
     function _beforeTokenTransfer(
         address from,
         address to,
-        bytes32 tokenId // solhint-disable-next-line no-empty-blocks
+        bytes32 tokenId,
+        bytes memory data // solhint-disable-next-line no-empty-blocks
+    ) internal virtual {}
+
+    /**
+     * @dev Hook that is called after any token transfer, including minting and burning.
+     * Allows to run custom logic after updating balances, but **before notifiying sender/recipient via LSP1** by overriding this function.
+     *
+     * @param from The sender address
+     * @param to The recipient address
+     * @param tokenId The tokenId to transfer
+     * @param data The data sent alongside the transfer
+     */
+    function _afterTokenTransfer(
+        address from,
+        address to,
+        bytes32 tokenId,
+        bytes memory data // solhint-disable-next-line no-empty-blocks
     ) internal virtual {}
 
     /**

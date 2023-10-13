@@ -3167,22 +3167,4 @@ export const shouldInitializeLikeLSP1Delegate = (
       );
     });
   });
-  describe('edge cases', () => {
-    describe('when sending value to universalReceiver(...)', () => {
-      it('should revert with custom error', async () => {
-        // value of 1 ethers
-        const value = ethers.utils.parseEther('1');
-        await expect(
-          context.lsp1universalReceiverDelegateUP.universalReceiver(
-            LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification,
-            '0x',
-            { value },
-          ),
-        ).to.be.revertedWithCustomError(
-          context.lsp1universalReceiverDelegateUP,
-          'NativeTokensNotAccepted',
-        );
-      });
-    });
-  });
 };

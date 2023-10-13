@@ -1437,7 +1437,7 @@ event UniversalReceiver(address indexed from, uint256 indexed value, bytes32 ind
 
 - Data received: `receivedData`.\*
 
-Emitted when the [`universalReceiver`](#universalreceiver) function was called with a specific `typeId` and some `receivedData` s
+Emitted when the [`universalReceiver`](#universalreceiver) function was called with a specific `typeId` and some `receivedData`
 
 #### Parameters
 

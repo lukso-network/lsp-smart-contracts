@@ -8,6 +8,10 @@ import {
     ILSP1UniversalReceiver
 } from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
+import {
+    ILSP1UniversalReceiverDelegate as ILSP1Delegate
+} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -42,6 +46,7 @@ import {
 } from "./LSP0Constants.sol";
 import {
     _INTERFACEID_LSP1,
+    _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -427,23 +432,20 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory resultDefaultDelegate;
 
         if (lsp1DelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(
-                bytes20(lsp1DelegateValue)
-            );
+            address lsp1Delegate = address(bytes20(lsp1DelegateValue));
 
             // Checking LSP1 InterfaceId support
             if (
-                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
-                    _INTERFACEID_LSP1
+                lsp1Delegate.supportsERC165InterfaceUnchecked(
+                    _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
-                // calling {universalReceiver} function on URD appending the caller and the value sent
-                resultDefaultDelegate = universalReceiverDelegate
-                    .callUniversalReceiverWithCallerInfos(
-                        typeId,
-                        receivedData,
+                resultDefaultDelegate = ILSP1Delegate(lsp1Delegate)
+                    .universalReceiverDelegate(
                         msg.sender,
-                        msg.value
+                        msg.value,
+                        typeId,
+                        receivedData
                     );
             }
         }
@@ -459,23 +461,20 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory resultTypeIdDelegate;
 
         if (lsp1TypeIdDelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(
-                bytes20(lsp1TypeIdDelegateValue)
-            );
+            address lsp1Delegate = address(bytes20(lsp1TypeIdDelegateValue));
 
             // Checking LSP1 InterfaceId support
             if (
-                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
-                    _INTERFACEID_LSP1
+                lsp1Delegate.supportsERC165InterfaceUnchecked(
+                    _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
-                // calling {universalReceiver} function on URD appending the caller and the value sent
-                resultTypeIdDelegate = universalReceiverDelegate
-                    .callUniversalReceiverWithCallerInfos(
-                        typeId,
-                        receivedData,
+                resultTypeIdDelegate = ILSP1Delegate(lsp1Delegate)
+                    .universalReceiverDelegate(
                         msg.sender,
-                        msg.value
+                        msg.value,
+                        typeId,
+                        receivedData
                     );
             }
         }
