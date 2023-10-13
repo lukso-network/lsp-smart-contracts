@@ -64,8 +64,8 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 - Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#universalreceiverdelegate)
 - Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol)
-- Function signature: `universalReceiverDelegate(address,,bytes32,)`
-- Function selector: `0xba924425`
+- Function signature: `universalReceiverDelegate(address,uint256,bytes32,bytes)`
+- Function selector: `0xa245bbda`
 
 :::
 

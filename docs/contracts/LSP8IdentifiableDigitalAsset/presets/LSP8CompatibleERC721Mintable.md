@@ -877,10 +877,10 @@ Returns the list of `tokenIds` for the `tokenOwner` address.
 
 :::note References
 
-- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#))
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#tokenuri)
 - Solidity implementation: [`LSP8CompatibleERC721Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol)
-- Function signature: `)`
-- Function selector: `0x59d76dc3`
+- Function signature: `tokenURI(uint256)`
+- Function selector: `0xc87b56dd`
 
 :::
 
