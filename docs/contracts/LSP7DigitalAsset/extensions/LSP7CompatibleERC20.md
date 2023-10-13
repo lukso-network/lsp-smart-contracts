@@ -93,18 +93,20 @@ function allowance(
 ) external view returns (uint256);
 ```
 
+Function to get operator allowance allowed to spend on behalf of `tokenOwner` from the ERC20 standard interface.
+
 #### Parameters
 
-| Name         |   Type    | Description |
-| ------------ | :-------: | ----------- |
-| `tokenOwner` | `address` | -           |
-| `operator`   | `address` | -           |
+| Name         |   Type    | Description                              |
+| ------------ | :-------: | ---------------------------------------- |
+| `tokenOwner` | `address` | The address of the token owner           |
+| `operator`   | `address` | The address approved by the `tokenOwner` |
 
 #### Returns
 
-| Name |   Type    | Description |
-| ---- | :-------: | ----------- |
-| `0`  | `uint256` | -           |
+| Name |   Type    | Description                                       |
+| ---- | :-------: | ------------------------------------------------- |
+| `0`  | `uint256` | The amount `operator` is approved by `tokenOwner` |
 
 <br/>
 
@@ -126,18 +128,20 @@ function approve(
 ) external nonpayable returns (bool);
 ```
 
+Approval function from th ERC20 standard interface.
+
 #### Parameters
 
-| Name       |   Type    | Description |
-| ---------- | :-------: | ----------- |
-| `operator` | `address` | -           |
-| `amount`   | `uint256` | -           |
+| Name       |   Type    | Description                         |
+| ---------- | :-------: | ----------------------------------- |
+| `operator` | `address` | The address to approve for `amount` |
+| `amount`   | `uint256` | The amount to approve.              |
 
 #### Returns
 
-| Name |  Type  | Description |
-| ---- | :----: | ----------- |
-| `0`  | `bool` | -           |
+| Name |  Type  | Description                    |
+| ---- | :----: | ------------------------------ |
+| `0`  | `bool` | `true` on successful approval. |
 
 <br/>
 
@@ -496,7 +500,7 @@ Atomically increases the allowance granted to `operator` by the caller. This is 
 function name() external view returns (string);
 ```
 
-Returns the name of the token.
+Returns the name of the token. For compatibility with clients & tools that expect ERC20.
 
 #### Returns
 
@@ -725,7 +729,7 @@ Returns true if this contract implements the interface defined by `interfaceId`.
 function symbol() external view returns (string);
 ```
 
-Returns the symbol of the token, usually a shorter version of the name.
+Returns the symbol of the token, usually a shorter version of the name. For compatibility with clients & tools that expect ERC20.
 
 #### Returns
 
@@ -819,18 +823,20 @@ function transfer(
 ) external nonpayable returns (bool);
 ```
 
+Transfer function from the ERC20 standard interface.
+
 #### Parameters
 
-| Name     |   Type    | Description |
-| -------- | :-------: | ----------- |
-| `to`     | `address` | -           |
-| `amount` | `uint256` | -           |
+| Name     |   Type    | Description                       |
+| -------- | :-------: | --------------------------------- |
+| `to`     | `address` | The address receiving tokens.     |
+| `amount` | `uint256` | The amount of tokens to transfer. |
 
 #### Returns
 
-| Name |  Type  | Description |
-| ---- | :----: | ----------- |
-| `0`  | `bool` | -           |
+| Name |  Type  | Description                    |
+| ---- | :----: | ------------------------------ |
+| `0`  | `bool` | `true` on successful transfer. |
 
 <br/>
 
@@ -894,19 +900,21 @@ function transferFrom(
 ) external nonpayable returns (bool);
 ```
 
+Transfer functions for operators from the ERC20 standard interface.
+
 #### Parameters
 
-| Name     |   Type    | Description |
-| -------- | :-------: | ----------- |
-| `from`   | `address` | -           |
-| `to`     | `address` | -           |
-| `amount` | `uint256` | -           |
+| Name     |   Type    | Description                       |
+| -------- | :-------: | --------------------------------- |
+| `from`   | `address` | The address sending tokens.       |
+| `to`     | `address` | The address receiving tokens.     |
+| `amount` | `uint256` | The amount of tokens to transfer. |
 
 #### Returns
 
-| Name |  Type  | Description |
-| ---- | :----: | ----------- |
-| `0`  | `bool` | -           |
+| Name |  Type  | Description                    |
+| ---- | :----: | ------------------------------ |
+| `0`  | `bool` | `true` on successful transfer. |
 
 <br/>
 
@@ -1262,11 +1270,11 @@ Emitted when the allowance of a `spender` for an `owner` is set by a call to [`a
 
 #### Parameters
 
-| Name                    |   Type    | Description                                               |
-| ----------------------- | :-------: | --------------------------------------------------------- |
-| `owner` **`indexed`**   | `address` | The account giving approval                               |
-| `spender` **`indexed`** | `address` | The account receiving approval                            |
-| `value`                 | `uint256` | The amount of tokens `spender` has access to from `owner` |
+| Name                    |   Type    | Description |
+| ----------------------- | :-------: | ----------- |
+| `owner` **`indexed`**   | `address` | -           |
+| `spender` **`indexed`** | `address` | -           |
+| `value`                 | `uint256` | -           |
 
 <br/>
 
@@ -1383,33 +1391,6 @@ Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`
 
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#transfer)
 - Solidity implementation: [`LSP7CompatibleERC20.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol)
-- Event signature: `Transfer(address,address,uint256)`
-- Event topic hash: `0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef`
-
-:::
-
-```solidity
-event Transfer(address indexed from, address indexed to, uint256 value);
-```
-
-Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.
-
-#### Parameters
-
-| Name                 |   Type    | Description                      |
-| -------------------- | :-------: | -------------------------------- |
-| `from` **`indexed`** | `address` | The sending address              |
-| `to` **`indexed`**   | `address` | The receiving address            |
-| `value`              | `uint256` | The amount of tokens transfered. |
-
-<br/>
-
-### Transfer
-
-:::note References
-
-- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#transfer)
-- Solidity implementation: [`LSP7CompatibleERC20.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol)
 - Event signature: `Transfer(address,address,address,uint256,bool,bytes)`
 - Event topic hash: `0x3997e418d2cef0b3b0e907b1e39605c3f7d32dbd061e82ea5b4a770d46a160a6`
 
@@ -1431,6 +1412,33 @@ Emitted when the `from` transferred successfully `amount` of tokens to `to`.
 | `amount`                 | `uint256` | The amount of tokens transferred.                                                                                            |
 | `force`                  |  `bool`   | if the transferred enforced the `to` recipient address to be a contract that implements the LSP1 standard or not.            |
 | `data`                   |  `bytes`  | Any additional data included by the caller during the transfer, and sent in the LSP1 hooks to the `from` and `to` addresses. |
+
+<br/>
+
+### Transfer
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#transfer)
+- Solidity implementation: [`LSP7CompatibleERC20.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol)
+- Event signature: `Transfer(address,address,uint256)`
+- Event topic hash: `0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef`
+
+:::
+
+```solidity
+event Transfer(address indexed from, address indexed to, uint256 value);
+```
+
+Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.
+
+#### Parameters
+
+| Name                 |   Type    | Description |
+| -------------------- | :-------: | ----------- |
+| `from` **`indexed`** | `address` | -           |
+| `to` **`indexed`**   | `address` | -           |
+| `value`              | `uint256` | -           |
 
 <br/>
 

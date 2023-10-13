@@ -6,7 +6,6 @@ import {
     IERC20Metadata,
     IERC20
 } from "@openzeppelin/contracts/interfaces/IERC20Metadata.sol";
-import {ILSP7CompatibleERC20} from "./ILSP7CompatibleERC20.sol";
 
 // modules
 import {
@@ -41,6 +40,7 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
     ) LSP7DigitalAsset(name_, symbol_, newOwner_, false) {}
 
     /**
+     * @inheritdoc IERC20Metadata
      * @dev Returns the name of the token.
      * For compatibility with clients & tools that expect ERC20.
      *
@@ -52,6 +52,7 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
     }
 
     /**
+     * @inheritdoc IERC20Metadata
      * @dev Returns the symbol of the token, usually a shorter version of the name.
      * For compatibility with clients & tools that expect ERC20.
      *
@@ -62,6 +63,9 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
         return string(data);
     }
 
+    /**
+     * @inheritdoc LSP7DigitalAssetCore
+     */
     function decimals()
         public
         view
@@ -72,6 +76,9 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
         return super.decimals();
     }
 
+    /**
+     * @inheritdoc LSP7DigitalAssetCore
+     */
     function totalSupply()
         public
         view
@@ -82,6 +89,9 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
         return super.totalSupply();
     }
 
+    /**
+     * @inheritdoc LSP7DigitalAssetCore
+     */
     function balanceOf(
         address tokenOwner
     )
@@ -106,6 +116,12 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
 
     /**
      * @inheritdoc IERC20
+     * @dev Function to get operator allowance allowed to spend on behalf of `tokenOwner` from the ERC20 standard interface.
+     *
+     * @param tokenOwner The address of the token owner
+     * @param operator The address approved by the `tokenOwner`
+     *
+     * @return The amount `operator` is approved by `tokenOwner`
      */
     function allowance(
         address tokenOwner,
@@ -116,6 +132,12 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
 
     /**
      * @inheritdoc IERC20
+     * @dev Approval function from th ERC20 standard interface.
+     *
+     * @param operator The address to approve for `amount`
+     * @param amount The amount to approve.
+     *
+     * @return `true` on successful approval.
      */
     function approve(
         address operator,
@@ -127,6 +149,13 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
 
     /**
      * @inheritdoc IERC20
+     * @dev Transfer functions for operators from the ERC20 standard interface.
+     *
+     * @param from The address sending tokens.
+     * @param to The address receiving tokens.
+     * @param amount The amount of tokens to transfer.
+     *
+     * @return `true` on successful transfer.
      *
      * @custom:info This function uses the `force` parameter as `true` so that EOA and any contract can receive tokens.
      */
@@ -143,6 +172,12 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
 
     /**
      * @inheritdoc IERC20
+     * @dev Transfer function from the ERC20 standard interface.
+
+     * @param to The address receiving tokens.
+     * @param amount The amount of tokens to transfer.
+     * 
+     * @return `true` on successful transfer.
      *
      * @custom:info This function uses the `force` parameter as `true` so that EOA and any contract can receive tokens.
      */
@@ -154,6 +189,9 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
         return true;
     }
 
+    /**
+     * @inheritdoc LSP7DigitalAssetCore
+     */
     function _updateOperator(
         address tokenOwner,
         address operator,
@@ -166,7 +204,7 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
             amount,
             operatorNotificationData
         );
-        emit Approval(tokenOwner, operator, amount);
+        emit IERC20.Approval(tokenOwner, operator, amount);
     }
 
     /**
@@ -181,7 +219,7 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
         bool force,
         bytes memory data
     ) internal virtual override {
-        emit Transfer(from, to, amount);
+        emit IERC20.Transfer(from, to, amount);
         super._transfer(from, to, amount, force, data);
     }
 
@@ -196,7 +234,7 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
         bool force,
         bytes memory data
     ) internal virtual override {
-        emit Transfer(address(0), to, amount);
+        emit IERC20.Transfer(address(0), to, amount);
         super._mint(to, amount, force, data);
     }
 
@@ -210,7 +248,7 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
         uint256 amount,
         bytes memory data
     ) internal virtual override {
-        emit Transfer(from, address(0), amount);
+        emit IERC20.Transfer(from, address(0), amount);
         super._burn(from, amount, data);
     }
 

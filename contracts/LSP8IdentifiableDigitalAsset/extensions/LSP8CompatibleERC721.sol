@@ -10,10 +10,6 @@ import {
     IERC721Metadata,
     IERC721
 } from "@openzeppelin/contracts/interfaces/IERC721Metadata.sol";
-import {ILSP8CompatibleERC721} from "./ILSP8CompatibleERC721.sol";
-import {
-    ILSP8IdentifiableDigitalAsset
-} from "../ILSP8IdentifiableDigitalAsset.sol";
 
 // libraries
 import {
@@ -43,10 +39,6 @@ import {
     _LSP4_TOKEN_NAME_KEY,
     _LSP4_TOKEN_SYMBOL_KEY
 } from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
-import {
-    _INTERFACEID_ERC721,
-    _INTERFACEID_ERC721METADATA
-} from "././ILSP8CompatibleERC721.sol";
 
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
@@ -78,6 +70,7 @@ abstract contract LSP8CompatibleERC721 is
     ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, tokenIdType_) {}
 
     /**
+     * @inheritdoc IERC721Metadata
      * @dev Returns the name of the token.
      * For compatibility with clients & tools that expect ERC721.
      *
@@ -89,6 +82,7 @@ abstract contract LSP8CompatibleERC721 is
     }
 
     /**
+     * @inheritdoc IERC721Metadata
      * @dev Returns the symbol of the token, usually a shorter version of the name.
      * For compatibility with clients & tools that expect ERC721.
      *
@@ -99,6 +93,9 @@ abstract contract LSP8CompatibleERC721 is
         return string(data);
     }
 
+    /**
+     * @inheritdoc LSP8IdentifiableDigitalAssetCore
+     */
     function balanceOf(
         address tokenOwner
     )
@@ -109,10 +106,6 @@ abstract contract LSP8CompatibleERC721 is
         returns (uint256)
     {
         return super.balanceOf(tokenOwner);
-    }
-
-    function totalSupply() public view virtual override returns (uint256) {
-        return super.totalSupply();
     }
 
     /**
@@ -128,13 +121,18 @@ abstract contract LSP8CompatibleERC721 is
         returns (bool)
     {
         return
-            interfaceId == _INTERFACEID_ERC721 ||
-            interfaceId == _INTERFACEID_ERC721METADATA ||
+            interfaceId == type(IERC721).interfaceId ||
+            interfaceId == type(IERC721Metadata).interfaceId ||
             super.supportsInterface(interfaceId);
     }
 
-    /*
-     * @inheritdoc ILSP8CompatibleERC721
+    /**
+     * @inheritdoc IERC721Metadata
+     * @notice Retrieving the token URI of tokenId `tokenId`.
+     *
+     * @dev Compatible with ERC721Metadata tokenURI. Retrieve the tokenURI for a specific `tokenId`.
+     *
+     * @return The token URI.
      */
     function tokenURI(
         uint256 /* tokenId */
@@ -154,17 +152,31 @@ abstract contract LSP8CompatibleERC721 is
 
     /**
      * @inheritdoc IERC721
+     * @notice Retrieving the address that own tokenId `tokenId`.
+     *
+     * @dev Compatible with ERC721 ownerOf.
+     *
+     * @param tokenId The tokenId to query.
+     * @return The owner of the tokenId.
      */
-    function ownerOf(uint256 tokenId) public view virtual returns (address) {
+    function ownerOf(
+        uint256 tokenId
+    ) public view virtual override returns (address) {
         return tokenOwnerOf(bytes32(tokenId));
     }
 
     /**
      * @inheritdoc IERC721
+     * @notice Retrieving the address other than the token owner that is approved to transfer tokenId `tokenId` on behalf of its owner.
+     *
+     * @dev Compatible with ERC721 getApproved.
+     *
+     * @param tokenId The tokenId to query.
+     * @return The address of the operator for `tokenId`.
      */
     function getApproved(
         uint256 tokenId
-    ) public view virtual returns (address) {
+    ) public view virtual override returns (address) {
         bytes32 tokenIdAsBytes32 = bytes32(tokenId);
         _existsOrError(tokenIdAsBytes32);
 
@@ -184,13 +196,21 @@ abstract contract LSP8CompatibleERC721 is
         }
     }
 
-    /*
-     * @inheritdoc ILSP8CompatibleERC721
+    /**
+     * @inheritdoc IERC721
+     * @notice Checking if address `operator` is approved to transfer any tokenId owned by address `owner`.
+     *
+     * @dev Compatible with ERC721 isApprovedForAll.
+     *
+     * @param tokenOwner The tokenOwner address to query.
+     * @param operator The operator address to query.
+     *
+     * @return Returns if the `operator` is allowed to manage all of the assets of `owner`
      */
     function isApprovedForAll(
         address tokenOwner,
         address operator
-    ) public view virtual returns (bool) {
+    ) public view virtual override returns (bool) {
         return _operatorApprovals[tokenOwner][operator];
     }
 
@@ -203,14 +223,29 @@ abstract contract LSP8CompatibleERC721 is
      * @param operator The address to approve for `tokenId`.
      * @param tokenId The tokenId to approve.
      */
-    function approve(address operator, uint256 tokenId) public virtual {
+    function approve(
+        address operator,
+        uint256 tokenId
+    ) public virtual override {
         authorizeOperator(operator, bytes32(tokenId), "");
     }
 
     /**
-     * @dev See {_setApprovalForAll}
+     * @inheritdoc IERC721
+     * @notice Setting the "approval for all" status of operator `_operator` to `_approved` to allow it to transfer any tokenIds on behalf of `msg.sender`.
+     *
+     * @dev Enable or disable approval for a third party ("operator") to manage all of `msg.sender`'s assets. The contract MUST allow multiple operators per owner.
+     * See {_setApprovalForAll}
+     *
+     * @param operator Address to add to the set of authorized operators.
+     * @param approved True if the operator is approved, false to revoke approval.
+     *
+     * @custom:events {ApprovalForAll} event
      */
-    function setApprovalForAll(address operator, bool approved) public virtual {
+    function setApprovalForAll(
+        address operator,
+        bool approved
+    ) public virtual override {
         _setApprovalForAll(msg.sender, operator, approved);
     }
 
@@ -230,7 +265,7 @@ abstract contract LSP8CompatibleERC721 is
         address from,
         address to,
         uint256 tokenId
-    ) public virtual {
+    ) public virtual override {
         _transfer(from, to, bytes32(tokenId), true, "");
     }
 
@@ -250,7 +285,7 @@ abstract contract LSP8CompatibleERC721 is
         address from,
         address to,
         uint256 tokenId
-    ) public virtual {
+    ) public virtual override {
         _safeTransfer(from, to, tokenId, "");
     }
 
@@ -272,14 +307,14 @@ abstract contract LSP8CompatibleERC721 is
         address to,
         uint256 tokenId,
         bytes memory data
-    ) public virtual {
+    ) public virtual override {
         _safeTransfer(from, to, tokenId, data);
     }
 
     // --- Overrides
 
     /**
-     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     * @inheritdoc LSP8IdentifiableDigitalAssetCore
      *
      * @custom:events
      * - LSP7 {AuthorizedOperator} event.
@@ -404,7 +439,7 @@ abstract contract LSP8CompatibleERC721 is
     }
 
     /**
-     * @dev Approve `operator` to operate on all tokens of `tokensOwner`
+     * @dev Approve `operator` to operate on all tokens of `tokensOwner`.
      *
      * @custom:events {ApprovalForAll} event.
      */

@@ -279,12 +279,10 @@ contract CalculateERCInterfaces {
     }
 
     function calculateInterfaceERC721() public pure returns (bytes4) {
-        // TODO: ensure the constant for IERC721Metadata is correct in ILSP8CompatibleERC721.sol
         return type(IERC721).interfaceId;
     }
 
     function calculateInterfaceERC721Metadata() public pure returns (bytes4) {
-        // TODO: ensure the constant for IERC721Metadata is correct in ILSP8CompatibleERC721.sol
         return type(IERC721Metadata).interfaceId;
     }
 
