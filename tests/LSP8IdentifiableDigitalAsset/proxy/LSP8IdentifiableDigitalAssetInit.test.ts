@@ -74,7 +74,7 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
           ethers.constants.AddressZero,
           0,
         ),
-      ).to.be.revertedWith('Ownable: new owner is the zero address');
+      ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCannotSetZeroAddressAsOwner');
     });
 
     describe('when initializing the contract', () => {

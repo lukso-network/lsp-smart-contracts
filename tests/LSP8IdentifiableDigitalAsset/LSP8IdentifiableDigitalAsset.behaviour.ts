@@ -1725,7 +1725,7 @@ export const shouldBehaveLikeLSP8 = (
       const newOwner = context.accounts.anyone;
       await expect(
         context.lsp8.connect(newOwner).transferOwnership(newOwner.address),
-      ).to.be.revertedWith('Ownable: caller is not the owner');
+      ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCallerNotTheOwner');
     });
 
     it('should transfer ownership of the contract', async () => {
@@ -1744,21 +1744,21 @@ export const shouldBehaveLikeLSP8 = (
         const randomAddress = context.accounts.anyone.address;
         await expect(
           context.lsp8.connect(oldOwner).transferOwnership(randomAddress),
-        ).to.be.revertedWith('Ownable: caller is not the owner');
+        ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCallerNotTheOwner');
       });
 
       it('old owner should not be allowed to use `renounceOwnership(..)`', async () => {
-        await expect(context.lsp8.connect(oldOwner).renounceOwnership()).to.be.revertedWith(
-          'Ownable: caller is not the owner',
-        );
+        await expect(
+          context.lsp8.connect(oldOwner).renounceOwnership(),
+        ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCallerNotTheOwner');
       });
 
       it('old owner should not be allowed to use `setData(..)`', async () => {
         const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key'));
         const value = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('value'));
-        await expect(context.lsp8.connect(oldOwner).setData(key, value)).to.be.revertedWith(
-          'Ownable: caller is not the owner',
-        );
+        await expect(
+          context.lsp8.connect(oldOwner).setData(key, value),
+        ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCallerNotTheOwner');
       });
 
       it('new owner should be allowed to use `transferOwnership(..)`', async () => {

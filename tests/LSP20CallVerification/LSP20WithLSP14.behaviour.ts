@@ -21,7 +21,7 @@ export type LSP14CombinedWithLSP20TestContext = {
   accounts: SignerWithAddress[];
   contract: LSP0ERC725Account;
   deployParams: { owner: SignerWithAddress };
-  onlyOwnerRevertString: string;
+  onlyOwnerCustomError: string;
 };
 
 export const shouldBehaveLikeLSP14WithLSP20 = (

@@ -86,13 +86,11 @@ describe('LSP7DigitalAsset with constructor', () => {
         newOwner: ethers.constants.AddressZero,
       };
 
+      const contractToDeploy = new LSP7Tester__factory(accounts[0]);
+
       await expect(
-        new LSP7Tester__factory(accounts[0]).deploy(
-          deployParams.name,
-          deployParams.symbol,
-          deployParams.newOwner,
-        ),
-      ).to.be.revertedWith('Ownable: new owner is the zero address');
+        contractToDeploy.deploy(deployParams.name, deployParams.symbol, deployParams.newOwner),
+      ).to.be.revertedWithCustomError(contractToDeploy, 'OwnableCannotSetZeroAddressAsOwner');
     });
 
     describe('once the contract was deployed', () => {

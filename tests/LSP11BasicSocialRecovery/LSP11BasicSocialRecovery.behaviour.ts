@@ -79,7 +79,10 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
           context.lsp11BasicSocialRecovery
             .connect(context.accounts.any)
             .setRecoverySecretHash(txParams.hash),
-        ).to.be.revertedWith('Ownable: caller is not the owner');
+        ).to.be.revertedWithCustomError(
+          context.lsp11BasicSocialRecovery,
+          'OwnableCallerNotTheOwner',
+        );
       });
 
       it('Should revert when owner calls `setRecoverySecretHash(..)` with bytes32(0) as secret', async () => {
@@ -280,7 +283,10 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
           context.lsp11BasicSocialRecovery
             .connect(context.accounts.any)
             .addGuardian(txParams.guardianAddress),
-        ).to.be.revertedWith('Ownable: caller is not the owner');
+        ).to.be.revertedWithCustomError(
+          context.lsp11BasicSocialRecovery,
+          'OwnableCallerNotTheOwner',
+        );
       });
 
       it('Should pass and emit GuardianAdded event when owner calls addGuardian function', async () => {
@@ -322,7 +328,10 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
           context.lsp11BasicSocialRecovery
             .connect(context.accounts.any)
             .removeGuardian(txParams.guardianAddress),
-        ).to.be.revertedWith('Ownable: caller is not the owner');
+        ).to.be.revertedWithCustomError(
+          context.lsp11BasicSocialRecovery,
+          'OwnableCallerNotTheOwner',
+        );
       });
 
       it('Should pass and emit GuardianRemoved event when owner calls removeGuardian function', async () => {
@@ -365,7 +374,10 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
           context.lsp11BasicSocialRecovery
             .connect(context.accounts.any)
             .setGuardiansThreshold(txParams.newThreshold),
-        ).to.be.revertedWith('Ownable: caller is not the owner');
+        ).to.be.revertedWithCustomError(
+          context.lsp11BasicSocialRecovery,
+          'OwnableCallerNotTheOwner',
+        );
       });
 
       it('Should pass and emit GuardiansThresholdChanged event when owner `setGuardiansThreshold(..)`', async () => {
@@ -408,7 +420,10 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
           context.lsp11BasicSocialRecovery
             .connect(context.accounts.any)
             .setRecoverySecretHash(txParams.hash),
-        ).to.be.revertedWith('Ownable: caller is not the owner');
+        ).to.be.revertedWithCustomError(
+          context.lsp11BasicSocialRecovery,
+          'OwnableCallerNotTheOwner',
+        );
       });
 
       it('Should pass and emit SecretHashChanged event when owner calls `setRecoverySecretHash(..)`', async () => {

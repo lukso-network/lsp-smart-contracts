@@ -126,13 +126,13 @@ describe('LSP9VaultInit with proxy', () => {
       const accounts = await ethers.getSigners();
       await initializeProxy(context);
 
-      const onlyOwnerRevertString = 'Only Owner or reentered Universal Receiver Delegate allowed';
+      const onlyOwnerCustomError = 'Only Owner or reentered Universal Receiver Delegate allowed';
 
       return {
         accounts: accounts,
         contract: context.lsp9Vault,
         deployParams: { owner: context.accounts.owner },
-        onlyOwnerRevertString,
+        onlyOwnerCustomError,
       };
     });
 
