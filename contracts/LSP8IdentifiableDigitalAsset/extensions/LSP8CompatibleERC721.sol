@@ -15,7 +15,6 @@ import {
 import {
     EnumerableSet
 } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
 // modules
 import {
@@ -103,15 +102,25 @@ abstract contract LSP8CompatibleERC721 is
     ) public view virtual returns (string memory) {
         bytes memory data = _getData(_LSP4_METADATA_KEY);
 
-        // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36
-        uint256 offset = 36;
+        if (data.length <= 36) return "";
 
-        bytes memory uriBytes = BytesLib.slice(
-            data,
-            offset,
-            data.length - offset
-        );
-        return string(uriBytes);
+        uint256 requiredLength = data.length - 36;
+
+        string memory result = new string(requiredLength);
+
+        // solhint-disable-next-line no-inline-assembly
+        assembly {
+            // set the actual value that will be returned
+            for {
+                let i := 0
+            } lt(i, requiredLength) {
+                i := add(i, 32)
+            } {
+                mstore(add(result, add(i, 32)), mload(add(data, add(i, 68))))
+            }
+        }
+
+        return result;
     }
 
     /**
