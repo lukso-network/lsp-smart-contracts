@@ -1270,14 +1270,21 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
   });
 
   describe('when the contract was initialized', () => {
-    it('should have registered its ERC165 interface', async () => {
+    it('should support ERC721 interface', async () => {
+      expect(await context.lsp8CompatibleERC721.supportsInterface(INTERFACE_IDS.ERC721)).to.be.true;
+    });
+
+    it('should support ERC721Metadata interface', async () => {
+      expect(await context.lsp8CompatibleERC721.supportsInterface(INTERFACE_IDS.ERC721Metadata)).to
+        .be.true;
+    });
+
+    it('should support LSP8 interface', async () => {
       expect(
         await context.lsp8CompatibleERC721.supportsInterface(
           INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
         ),
-      );
-      expect(await context.lsp8CompatibleERC721.supportsInterface(INTERFACE_IDS.ERC721));
-      expect(await context.lsp8CompatibleERC721.supportsInterface(INTERFACE_IDS.ERC721Metadata));
+      ).to.be.true;
     });
 
     it('should have set expected entries with ERC725Y.setData', async () => {

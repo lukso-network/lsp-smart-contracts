@@ -121,8 +121,10 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     function supportsInterface(
         bytes4 interfaceId
     ) public view virtual override returns (bool) {
-        // TODO: add support interface for ERC20
-        return super.supportsInterface(interfaceId);
+        return
+            interfaceId == type(IERC20).interfaceId ||
+            interfaceId == type(IERC20Metadata).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
     /**
