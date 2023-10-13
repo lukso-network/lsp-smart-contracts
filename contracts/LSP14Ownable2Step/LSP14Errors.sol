@@ -24,3 +24,9 @@ error CannotTransferOwnershipToSelf();
  * @notice Cannot accept ownership in the same transaction with {transferOwnership(...)}.
  */
 error LSP14MustAcceptOwnershipInSeparateTransaction();
+
+/**
+ * @dev Reverts when the `caller` that is trying to accept ownership of the contract is not the pending owner.
+ * @param caller The address that tried to accept ownership.
+ */
+error LSP14CallerNotPendingOwner(address caller);
