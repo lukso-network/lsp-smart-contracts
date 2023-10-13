@@ -54,7 +54,10 @@ export const shouldBehaveLikePermissionChangeOwner = (
         context.universalProfile
           .connect(canChangeOwner)
           .transferOwnership(context.universalProfile.address),
-      ).to.be.revertedWithCustomError(context.universalProfile, 'CannotTransferOwnershipToSelf');
+      ).to.be.revertedWithCustomError(
+        context.universalProfile,
+        'LSP14CannotTransferOwnershipToSelf',
+      );
     });
   });
 

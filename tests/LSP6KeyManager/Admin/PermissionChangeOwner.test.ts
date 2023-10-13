@@ -69,7 +69,10 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       await expect(
         context.keyManager.connect(canChangeOwner).execute(transferOwnershipPayload),
-      ).to.be.revertedWithCustomError(context.universalProfile, 'CannotTransferOwnershipToSelf');
+      ).to.be.revertedWithCustomError(
+        context.universalProfile,
+        'LSP14CannotTransferOwnershipToSelf',
+      );
     });
   });
 

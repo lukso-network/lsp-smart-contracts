@@ -75,7 +75,7 @@ export const shouldBehaveLikeLSP14 = (
         context.contract
           .connect(context.deployParams.owner)
           .transferOwnership(context.contract.address),
-      ).to.be.revertedWithCustomError(context.contract, 'CannotTransferOwnershipToSelf');
+      ).to.be.revertedWithCustomError(context.contract, 'LSP14CannotTransferOwnershipToSelf');
     });
 
     describe('it should still be allowed to call onlyOwner functions', () => {
@@ -359,7 +359,7 @@ export const shouldBehaveLikeLSP14 = (
         await network.provider.send('hardhat_mine', [ethers.utils.hexValue(98)]);
 
         await expect(context.contract.connect(context.deployParams.owner).renounceOwnership())
-          .to.be.revertedWithCustomError(context.contract, 'NotInRenounceOwnershipInterval')
+          .to.be.revertedWithCustomError(context.contract, 'LSP14NotInRenounceOwnershipInterval')
           .withArgs(
             renounceOwnershipOnceReceipt.blockNumber + 200,
             renounceOwnershipOnceReceipt.blockNumber + 400,

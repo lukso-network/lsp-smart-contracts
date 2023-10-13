@@ -8,7 +8,7 @@ pragma solidity ^0.8.4;
  * @param renounceOwnershipStart The start timestamp when one can confirm the renouncement of ownership.
  * @param renounceOwnershipEnd The end timestamp when one can confirm the renouncement of ownership.
  */
-error NotInRenounceOwnershipInterval(
+error LSP14NotInRenounceOwnershipInterval(
     uint256 renounceOwnershipStart,
     uint256 renounceOwnershipEnd
 );
@@ -17,7 +17,7 @@ error NotInRenounceOwnershipInterval(
  * @dev Reverts when trying to transfer ownership to the `address(this)`.
  * @notice Cannot transfer ownership to the address of the contract itself.
  */
-error CannotTransferOwnershipToSelf();
+error LSP14CannotTransferOwnershipToSelf();
 
 /**
  * @dev Reverts when pending owner accept ownership in the same transaction of transferring ownership.
