@@ -978,7 +978,8 @@ all the parameters in the calldata packed encoded.
 function _beforeTokenTransfer(
   address from,
   address to,
-  bytes32 tokenId
+  bytes32 tokenId,
+  bytes data
 ) internal nonpayable;
 ```
 
@@ -989,6 +990,7 @@ function _beforeTokenTransfer(
 | `from`    | `address` | The address sending the `tokenId` (`address(0)` when `tokenId` is being minted). |
 | `to`      | `address` | @param tokenId The bytes32 identifier of the token being transferred.            |
 | `tokenId` | `bytes32` | The bytes32 identifier of the token being transferred.                           |
+| `data`    |  `bytes`  | The data sent alongside the the token transfer.                                  |
 
 <br/>
 
@@ -998,7 +1000,8 @@ function _beforeTokenTransfer(
 function _afterTokenTransfer(
   address from,
   address to,
-  bytes32 tokenId
+  bytes32 tokenId,
+  bytes data
 ) internal nonpayable;
 ```
 
@@ -1012,6 +1015,7 @@ Allows to run custom logic after updating balances, but **before notifiying send
 | `from`    | `address` | The sender address                     |
 | `to`      | `address` | @param tokenId The tokenId to transfer |
 | `tokenId` | `bytes32` | The tokenId to transfer                |
+| `data`    |  `bytes`  | The data sent alongside the transfer   |
 
 <br/>
 

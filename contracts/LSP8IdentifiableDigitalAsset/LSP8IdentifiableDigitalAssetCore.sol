@@ -373,7 +373,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8CannotSendToAddressZero();
         }
 
-        _beforeTokenTransfer(address(0), to, tokenId);
+        _beforeTokenTransfer(address(0), to, tokenId, data);
 
         // Check that `tokenId` was not minted inside the `_beforeTokenTransfer` hook
         if (_exists(tokenId)) {
@@ -388,7 +388,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         emit Transfer(msg.sender, address(0), to, tokenId, force, data);
 
-        _afterTokenTransfer(address(0), to, tokenId);
+        _afterTokenTransfer(address(0), to, tokenId, data);
 
         bytes memory lsp1Data = abi.encode(address(0), to, tokenId, data);
         _notifyTokenReceiver(to, force, lsp1Data);
@@ -419,7 +419,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function _burn(bytes32 tokenId, bytes memory data) internal virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
 
-        _beforeTokenTransfer(tokenOwner, address(0), tokenId);
+        _beforeTokenTransfer(tokenOwner, address(0), tokenId, data);
 
         // Re-fetch and update `tokenOwner` in case `tokenId`
         // was transferred inside the `_beforeTokenTransfer` hook
@@ -435,7 +435,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         emit Transfer(msg.sender, tokenOwner, address(0), tokenId, false, data);
 
-        _afterTokenTransfer(tokenOwner, address(0), tokenId);
+        _afterTokenTransfer(tokenOwner, address(0), tokenId, data);
 
         bytes memory lsp1Data = abi.encode(
             tokenOwner,
@@ -491,7 +491,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8CannotSendToAddressZero();
         }
 
-        _beforeTokenTransfer(from, to, tokenId);
+        _beforeTokenTransfer(from, to, tokenId, data);
 
         // Re-fetch and update `tokenOwner` in case `tokenId`
         // was transferred inside the `_beforeTokenTransfer` hook
@@ -505,7 +505,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         emit Transfer(msg.sender, from, to, tokenId, force, data);
 
-        _afterTokenTransfer(from, to, tokenId);
+        _afterTokenTransfer(from, to, tokenId, data);
 
         bytes memory lsp1Data = abi.encode(from, to, tokenId, data);
 
@@ -520,11 +520,13 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      * @param from The sender address
      * @param to The recipient address
      * @param tokenId The tokenId to transfer
+     * @param data The data sent alongside the transfer
      */
     function _beforeTokenTransfer(
         address from,
         address to,
-        bytes32 tokenId // solhint-disable-next-line no-empty-blocks
+        bytes32 tokenId,
+        bytes memory data // solhint-disable-next-line no-empty-blocks
     ) internal virtual {}
 
     /**
@@ -534,11 +536,13 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      * @param from The sender address
      * @param to The recipient address
      * @param tokenId The tokenId to transfer
+     * @param data The data sent alongside the transfer
      */
     function _afterTokenTransfer(
         address from,
         address to,
-        bytes32 tokenId // solhint-disable-next-line no-empty-blocks
+        bytes32 tokenId,
+        bytes memory data // solhint-disable-next-line no-empty-blocks
     ) internal virtual {}
 
     /**

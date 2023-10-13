@@ -391,7 +391,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7CannotSendWithAddressZero();
         }
 
-        _beforeTokenTransfer(address(0), to, amount);
+        _beforeTokenTransfer(address(0), to, amount, data);
 
         // tokens being minted
         _existingTokens += amount;
@@ -400,7 +400,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         emit Transfer(msg.sender, address(0), to, amount, force, data);
 
-        _afterTokenTransfer(address(0), to, amount);
+        _afterTokenTransfer(address(0), to, amount, data);
 
         bytes memory lsp1Data = abi.encode(address(0), to, amount, data);
         _notifyTokenReceiver(to, force, lsp1Data);
@@ -445,7 +445,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
 
-        _beforeTokenTransfer(from, address(0), amount);
+        _beforeTokenTransfer(from, address(0), amount, data);
 
         // tokens being burnt
         _existingTokens -= amount;
@@ -462,7 +462,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             data: data
         });
 
-        _afterTokenTransfer(from, address(0), amount);
+        _afterTokenTransfer(from, address(0), amount, data);
 
         bytes memory lsp1Data = abi.encode(from, address(0), amount, data);
         _notifyTokenSender(from, lsp1Data);
@@ -551,14 +551,14 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
 
-        _beforeTokenTransfer(from, to, amount);
+        _beforeTokenTransfer(from, to, amount, data);
 
         _tokenOwnerBalances[from] -= amount;
         _tokenOwnerBalances[to] += amount;
 
         emit Transfer(msg.sender, from, to, amount, force, data);
 
-        _afterTokenTransfer(from, to, amount);
+        _afterTokenTransfer(from, to, amount, data);
 
         bytes memory lsp1Data = abi.encode(from, to, amount, data);
 
@@ -573,11 +573,13 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @param from The sender address
      * @param to The recipient address
      * @param amount The amount of token to transfer
+     * @param data The data sent alongside the transfer
      */
     function _beforeTokenTransfer(
         address from,
         address to,
-        uint256 amount // solhint-disable-next-line no-empty-blocks
+        uint256 amount,
+        bytes memory data // solhint-disable-next-line no-empty-blocks
     ) internal virtual {}
 
     /**
@@ -587,11 +589,13 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @param from The sender address
      * @param to The recipient address
      * @param amount The amount of token to transfer
+     * @param data The data sent alongside the transfer
      */
     function _afterTokenTransfer(
         address from,
         address to,
-        uint256 amount // solhint-disable-next-line no-empty-blocks
+        uint256 amount,
+        bytes memory data // solhint-disable-next-line no-empty-blocks
     ) internal virtual {}
 
     /**

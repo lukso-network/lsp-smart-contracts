@@ -1197,7 +1197,8 @@ function _transfer(
 function _beforeTokenTransfer(
   address from,
   address to,
-  bytes32 tokenId
+  bytes32 tokenId,
+  bytes data
 ) internal nonpayable;
 ```
 
@@ -1211,6 +1212,7 @@ Allows to run custom logic before updating balances and notifiying sender/recipi
 | `from`    | `address` | The sender address                     |
 | `to`      | `address` | @param tokenId The tokenId to transfer |
 | `tokenId` | `bytes32` | The tokenId to transfer                |
+| `data`    |  `bytes`  | The data sent alongside the transfer   |
 
 <br/>
 
@@ -1220,7 +1222,8 @@ Allows to run custom logic before updating balances and notifiying sender/recipi
 function _afterTokenTransfer(
   address from,
   address to,
-  bytes32 tokenId
+  bytes32 tokenId,
+  bytes data
 ) internal nonpayable;
 ```
 
@@ -1234,6 +1237,7 @@ Allows to run custom logic after updating balances, but **before notifiying send
 | `from`    | `address` | The sender address                     |
 | `to`      | `address` | @param tokenId The tokenId to transfer |
 | `tokenId` | `bytes32` | The tokenId to transfer                |
+| `data`    |  `bytes`  | The data sent alongside the transfer   |
 
 <br/>
 
