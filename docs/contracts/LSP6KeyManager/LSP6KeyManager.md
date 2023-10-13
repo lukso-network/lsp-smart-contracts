@@ -376,10 +376,10 @@ function lsp20VerifyCall(
 
 :::note References
 
-- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#,))
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#lsp20verifycallresult)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
-- Function signature: `,)`
-- Function selector: `0x9f47dbd3`
+- Function signature: `lsp20VerifyCallResult(bytes32,bytes)`
+- Function selector: `0xd3fc45d3`
 
 :::
 
