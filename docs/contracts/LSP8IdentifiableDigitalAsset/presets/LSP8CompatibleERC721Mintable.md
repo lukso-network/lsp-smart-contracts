@@ -97,7 +97,7 @@ receive() external payable;
 function approve(address operator, uint256 tokenId) external nonpayable;
 ```
 
-_Calling `approve` function on `ILSP8CompatibleERC721` contract. Approving operator at address `operator` to transfer tokenId `tokenId` on behalf of its owner._
+_Calling `approve` function to approve operator at address `operator` to transfer tokenId `tokenId` on behalf of its owner._
 
 Approval function compatible with ERC721 `approve(address,uint256)`.
 
@@ -578,7 +578,7 @@ function safeTransferFrom(
 ) external nonpayable;
 ```
 
-_Calling `safeTransferFrom` function on `ILSP8CompatibleERC721` contract. Transferring tokenId `tokenId` from address `from` to address `to`._
+_Calling `safeTransferFrom` function to transfer tokenId `tokenId` from address `from` to address `to`._
 
 Safe Transfer function without optional data from the ERC721 standard interface.
 
@@ -618,7 +618,7 @@ function safeTransferFrom(
 ) external nonpayable;
 ```
 
-_Calling `safeTransferFrom` function with `data` on `ILSP8CompatibleERC721` contract. Transferring tokenId `tokenId` from address `from` to address `to`._
+_Calling `safeTransferFrom` function to transfer tokenId `tokenId` from address `from` to address `to`._
 
 Safe Transfer function with optional data from the ERC721 standard interface.
 
@@ -1040,7 +1040,7 @@ function transferFrom(
 ) external nonpayable;
 ```
 
-_Calling `transferFrom` function on `ILSP8CompatibleERC721` contract. Transferring tokenId `tokenId` from address `from` to address `to`._
+_Calling `transferFrom` function to transfer tokenId `tokenId` from address `from` to address `to`._
 
 Transfer functions from the ERC721 standard interface.
 
@@ -1136,8 +1136,11 @@ mapping(bytes32 => bytes) _store
 ### \_setData
 
 ```solidity
-function _setData(bytes32 key, bytes value) internal nonpayable;
+function _setData(bytes32 dataKey, bytes dataValue) internal nonpayable;
 ```
+
+The ERC725Y data key `_LSP8_TOKENID_TYPE_KEY` cannot be changed
+once the identifiable digital asset contract has been deployed.
 
 <br/>
 

@@ -1034,8 +1034,10 @@ mapping(bytes32 => bytes) _store
 ### \_setData
 
 ```solidity
-function _setData(bytes32 key, bytes value) internal nonpayable;
+function _setData(bytes32 dataKey, bytes dataValue) internal nonpayable;
 ```
+
+Save gas by emitting the [`DataChanged`](#datachanged) event with only the first 256 bytes of dataValue
 
 <br/>
 
