@@ -2,7 +2,6 @@
 pragma solidity ^0.8.7;
 
 // interfaces
-import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {
     IERC20Metadata,
     IERC20
@@ -10,8 +9,6 @@ import {
 
 // modules
 import {
-    ERC725YCore,
-    LSP4DigitalAssetMetadataInitAbstract,
     LSP7DigitalAssetCore,
     LSP7DigitalAssetInitAbstract
 } from "../LSP7DigitalAssetInitAbstract.sol";
@@ -263,15 +260,5 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     ) internal virtual override {
         emit IERC20.Transfer(from, address(0), amount);
         super._burn(from, amount, data);
-    }
-
-    /**
-     * @inheritdoc LSP4DigitalAssetMetadataInitAbstract
-     */
-    function _setData(
-        bytes32 key,
-        bytes memory value
-    ) internal virtual override {
-        super._setData(key, value);
     }
 }

@@ -19,7 +19,6 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
 // modules
 import {
-    ERC725YCore,
     LSP8IdentifiableDigitalAssetCore,
     LSP8IdentifiableDigitalAsset
 } from "../LSP8IdentifiableDigitalAsset.sol";
@@ -498,15 +497,5 @@ abstract contract LSP8CompatibleERC721 is
                 }
             }
         }
-    }
-
-    /**
-     * @inheritdoc LSP8IdentifiableDigitalAsset
-     */
-    function _setData(
-        bytes32 key,
-        bytes memory value
-    ) internal virtual override {
-        super._setData(key, value);
     }
 }

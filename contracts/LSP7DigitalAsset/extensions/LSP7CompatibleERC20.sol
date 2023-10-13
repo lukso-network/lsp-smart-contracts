@@ -1,19 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.7;
+
 // interfaces
-import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {
     IERC20Metadata,
     IERC20
 } from "@openzeppelin/contracts/interfaces/IERC20Metadata.sol";
 
 // modules
-import {
-    ERC725YCore,
-    LSP4DigitalAssetMetadata,
-    LSP7DigitalAssetCore,
-    LSP7DigitalAsset
-} from "../LSP7DigitalAsset.sol";
+import {LSP7DigitalAssetCore, LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
 
 // constants
 import {
@@ -252,15 +247,5 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
     ) internal virtual override {
         emit IERC20.Transfer(from, address(0), amount);
         super._burn(from, amount, data);
-    }
-
-    /**
-     * @inheritdoc LSP4DigitalAssetMetadata
-     */
-    function _setData(
-        bytes32 key,
-        bytes memory value
-    ) internal virtual override {
-        super._setData(key, value);
     }
 }
