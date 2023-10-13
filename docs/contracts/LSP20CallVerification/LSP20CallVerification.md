@@ -16,7 +16,7 @@
 
 > Implementation of a contract calling the verification functions according to LSP20 - Call Verification standard.
 
-Module to be inherited used to verify the execution of functions according to a verifier address. Verification can happen before or after execution based on a magicValue.
+Module to be inherited used to verify the execution of functions according to a verifier address. Verification can happen before or after execution based on a returnedStatus.
 
 ## Internal Methods
 
@@ -33,8 +33,8 @@ function _verifyCall(
 ```
 
 Calls [`lsp20VerifyCall`](#lsp20verifycall) function on the logicVerifier.
-Reverts in case the value returned does not match the magic value (lsp20VerifyCall selector)
-Returns whether a verification after the execution should happen based on the last byte of the magicValue
+Reverts in case the value returned does not match the success value (lsp20VerifyCall selector)
+Returns whether a verification after the execution should happen based on the last byte of the returnedStatus
 
 <br/>
 
@@ -48,7 +48,7 @@ function _verifyCallResult(
 ```
 
 Calls [`lsp20VerifyCallResult`](#lsp20verifycallresult) function on the logicVerifier.
-Reverts in case the value returned does not match the magic value (lsp20VerifyCallResult selector)
+Reverts in case the value returned does not match the success value (lsp20VerifyCallResult selector)
 
 <br/>
 

@@ -8,10 +8,10 @@ bytes4 constant _INTERFACEID_LSP20_CALL_VERIFICATION = 0x1a0eb6a5;
 bytes4 constant _INTERFACEID_LSP20_CALL_VERIFIER = 0xc9dfc532;
 
 // bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"01"))
-bytes4 constant _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION = 0x1a238001;
+bytes4 constant _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITH_POST_VERIFICATION = 0x1a238001;
 
 // bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"00"))
-bytes4 constant _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION = 0x1a238000;
+bytes4 constant _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITHOUT_POST_VERIFICATION = 0x1a238000;
 
 // bytes4(ILSP20.lsp20VerifyCallResult.selector)
-bytes4 constant _LSP20_VERIFY_CALL_RESULT_MAGIC_VALUE = 0xd3fc45d3;
+bytes4 constant _LSP20_VERIFY_CALL_RESULT_SUCCESS_VALUE = 0xd3fc45d3;

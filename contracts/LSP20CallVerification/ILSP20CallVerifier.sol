@@ -8,7 +8,7 @@ pragma solidity ^0.8.4;
  */
 interface ILSP20CallVerifier {
     /**
-     * @return magicValue MUST return the first 3 bytes of `lsp20VerifyCall(address,uint256,bytes)` function selector if the call to
+     * @return returnedStatus MUST return the first 3 bytes of `lsp20VerifyCall(address,uint256,bytes)` function selector if the call to
      * the function is allowed, concatened with a byte that determines if the lsp20VerifyCallResult function should
      * be called after the original function call. The byte that invoke the lsp20VerifyCallResult function is strictly `0x01`.
      *
@@ -22,7 +22,7 @@ interface ILSP20CallVerifier {
         address caller,
         uint256 value,
         bytes memory receivedCalldata
-    ) external returns (bytes4 magicValue);
+    ) external returns (bytes4 returnedStatus);
 
     /**
      * @return MUST return the lsp20VerifyCallResult function selector if the call to the function is allowed

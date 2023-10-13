@@ -130,7 +130,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           .callStatic.execute(OPERATION_TYPES.CALL, signatureValidatorContract.address, 0, payload);
 
         const [result] = abiCoder.decode(['bytes4'], data);
-        expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+        expect(result).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
 
       it('LSP0 (ERC725Account)', async () => {
@@ -163,7 +163,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           .callStatic.execute(OPERATION_TYPES.CALL, signatureValidatorContract.address, 0, payload);
 
         const [result] = abiCoder.decode(['bytes4'], data);
-        expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+        expect(result).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
     });
 

@@ -183,7 +183,7 @@ export const shouldBehaveLikePermissionStaticCall = (
             .callStatic.execute(executePayload);
 
           const [decodedResult] = abiCoder.decode(['bytes4'], result);
-          expect(decodedResult).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+          expect(decodedResult).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
         });
 
         it('should revert with error `ERC725X_MsgValueDisallowedInStaticCall` if `value` param is not 0', async () => {
