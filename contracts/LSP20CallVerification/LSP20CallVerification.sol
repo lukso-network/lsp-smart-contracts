@@ -79,7 +79,11 @@ abstract contract LSP20CallVerification {
         if (
             abi.decode(returnedData, (bytes4)) !=
             ILSP20.lsp20VerifyCallResult.selector
-        ) revert LSP20CallVerificationFailed(true, returnedData);
+        )
+            revert LSP20CallVerificationFailed({
+                postCall: true,
+                returnedData: returnedData
+            });
     }
 
     function _validateCall(
@@ -94,7 +98,11 @@ abstract contract LSP20CallVerification {
         if (
             returnedData.length < 32 ||
             bytes28(bytes32(returnedData) << 32) != bytes28(0)
-        ) revert LSP20CallVerificationFailed(postCall, returnedData);
+        )
+            revert LSP20CallVerificationFailed({
+                postCall: postCall,
+                returnedData: returnedData
+            });
     }
 
     function _revertWithLSP20DefaultError(
