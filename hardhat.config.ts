@@ -37,8 +37,10 @@ dotenvConfig({ path: resolve(__dirname, './.env') });
 function getTestnetChainConfig(): NetworkUserConfig {
   const config: NetworkUserConfig = {
     live: true,
+    // url: 'https://rpc.devnet.lukso.dev',
     url: 'https://rpc.testnet.lukso.network',
-    chainId: 4201,
+    // chainId: 4201,
+    accounts: ['52447ba5741cab649bbd2c61b098eaf392bc016ab7c4a726758843dcdb4f491f'],
   };
 
   if (process.env.CONTRACT_VERIFICATION_TESTNET_PK !== undefined) {
@@ -93,7 +95,7 @@ const config: HardhatUserConfig = {
          * values will optimize more for high-frequency usage.
          * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
          */
-        runs: 1000,
+        runs: 100,
       },
       outputSelection: {
         '*': {

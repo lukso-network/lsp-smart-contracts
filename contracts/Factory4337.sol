@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/utils/Create2.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {
     LSP0ERC725AccountInit
@@ -9,6 +8,7 @@ import {
 import {
     _PERMISSION_CHANGEOWNER,
     ALL_REGULAR_PERMISSIONS,
+    _PERMISSION_CHANGEOWNER,
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX
 } from "./LSP6KeyManager/LSP6Constants.sol";
 import {
@@ -19,12 +19,14 @@ import {
     _LSP17_EXTENSION_PREFIX
 } from "./LSP17ContractExtension/LSP17Constants.sol";
 import {IAccount} from "@account-abstraction/contracts/interfaces/IAccount.sol";
+import {ILSP14Ownable2Step} from "./LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 
 /**
- * A wrapper factory contract to deploy GnosisSafe as an ERC-4337 account contract.
+ * A wrapper factory contract to deploy Universal Profile as an ERC-4337 account contract.
  */
 contract UniversalProfile4337Factory {
-    bytes32 private constant _4337_PERMISSION;
+    bytes32 private constant _4337_PERMISSION =
+        0x0000000000000000000000000000000000000000000000000000000000800000;
 
     function createAccount(
         address implementationContract,
@@ -39,71 +41,96 @@ contract UniversalProfile4337Factory {
         );
 
         // put this contract as the owner of the new account
-        LSP0ERC725AccountInit(universalProfileAddress).initialize(
+        LSP0ERC725AccountInit(payable(universalProfileAddress)).initialize(
             address(this)
         );
 
+        bytes32[2] memory regularAnd4337Permission = [
+            ALL_REGULAR_PERMISSIONS,
+            _4337_PERMISSION
+        ];
+
+        bytes32[] memory dynamicRegularAnd4337Permission = new bytes32[](2);
+        dynamicRegularAnd4337Permission[0] = regularAnd4337Permission[0];
+        dynamicRegularAnd4337Permission[1] = regularAnd4337Permission[1];
+
+        bytes32 mainControllerPermission = LSP6Utils.combinePermissions(
+            dynamicRegularAnd4337Permission
+        );
+
         // set data to give accept ownership to this controller and all permission to main controller
-        LSP0ERC725AccountInit(universalProfileAddress).setDataBatch(
-            [
-                abi.encodePacked(
-                    _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
-                    bytes2(0),
-                    mainController
-                ),
-                abi.encodePacked(
-                    _LSP17_EXTENSION_PREFIX,
-                    bytes2(0),
-                    IAccount.validateUserOp.selector,
-                    bytes16(0)
-                )
-            ],
-            [
-                LSP6Utils.combinePermissions(
-                    [ALL_REGULAR_PERMISSIONS, _4337_PERMISSION]
-                ),
-                extension4337
-            ]
+        bytes32[] memory keys = new bytes32[](3);
+        bytes[] memory values = new bytes[](3);
+
+        keys[0] = bytes32(
+            abi.encodePacked(
+                _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
+                bytes2(0),
+                mainController
+            )
+        );
+        keys[1] = bytes32(
+            abi.encodePacked(
+                _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
+                bytes2(0),
+                address(this)
+            )
+        );
+        keys[2] = bytes32(
+            abi.encodePacked(
+                _LSP17_EXTENSION_PREFIX,
+                bytes2(0),
+                IAccount.validateUserOp.selector,
+                bytes16(0)
+            )
+        );
+
+        values[0] = abi.encodePacked(mainControllerPermission);
+        values[1] = abi.encodePacked(extension4337);
+        values[2] = abi.encodePacked(_PERMISSION_CHANGEOWNER);
+
+        LSP0ERC725AccountInit(payable(universalProfileAddress)).setDataBatch(
+            keys,
+            values
         );
 
         // transfer ownership to key manager
-        LSP0ERC725AccountInit(universalProfileAddress).transferOwnership(
-            keyManagerSingleton
-        );
+        LSP0ERC725AccountInit(payable(universalProfileAddress))
+            .transferOwnership(keyManagerSingleton);
 
         // accept ownership from key manager
         LSP6KeyManagerSingleton(keyManagerSingleton).execute(
-            target_,
-            LSP0ERC725AccountInit.acceptOwnership.selector
+            universalProfileAddress,
+            abi.encodePacked(ILSP14Ownable2Step.acceptOwnership.selector)
         );
 
         // remove address(this) as controller
+        LSP0ERC725AccountInit(payable(universalProfileAddress)).setData(
+            bytes32(
+                abi.encodePacked(
+                    _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
+                    bytes2(0),
+                    address(this)
+                )
+            ),
+            ""
+        );
 
         return universalProfileAddress;
     }
 
     /**
      * calculate the counterfactual address of this account as it would be returned by createAccount()
-     * (uses the same "create2 signature" used by GnosisSafeProxyFactory.createProxyWithNonce)
      */
     function getAddress(
-        address owner,
+        address implementationContract,
+        address mainController,
         uint256 salt
     ) public view returns (address) {
-        bytes memory initializer = getInitializer(owner);
-        //copied from deployProxyWithNonce
-        bytes32 salt2 = keccak256(
-            abi.encodePacked(keccak256(initializer), salt)
-        );
-        bytes memory deploymentData = abi.encodePacked(
-            proxyFactory.proxyCreationCode(),
-            uint256(uint160(safeSingleton))
-        );
         return
-            Create2.computeAddress(
-                bytes32(salt2),
-                keccak256(deploymentData),
-                address(proxyFactory)
+            Clones.predictDeterministicAddress(
+                implementationContract,
+                keccak256(abi.encodePacked(mainController, salt))
             );
     }
 }
