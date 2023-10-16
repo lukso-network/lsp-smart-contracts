@@ -1445,7 +1445,7 @@ event Approval(address indexed owner, address indexed operator, uint256 indexed 
 
 _ERC721 `Approval` compatible event emitted. Successfully approved operator `operator` to operate on tokenId `tokenId` on behalf of token owner `owner`._
 
-ERC20 `Approval` event emitted when `owner` enables `spender` for `value` tokens. To provide compatibility with indexing ERC20 events.
+Emitted when the allowance of a `spender` for an `owner` is set by a call to [`approve`](#approve). `value` is the new allowance.
 
 #### Parameters
 
@@ -1474,7 +1474,7 @@ event ApprovalForAll(address indexed owner, address indexed operator, bool appro
 
 _ERC721 `ApprovalForAll` compatible event emitted. Successfully set "approved for all" status to `approved` for operator `operator` for token owner `owner`._
 
-ERC721 `ApprovalForAll` event emitted when an `operator` is enabled or disabled for an owner to transfer any of its tokenIds. The operator can manage all NFTs of the owner.
+Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to `approved`.
 
 #### Parameters
 
@@ -1611,7 +1611,7 @@ event Transfer(address indexed from, address indexed to, uint256 indexed tokenId
 
 _ERC721 `Transfer` compatible event emitted. Successfully transferred tokenId `tokenId` from `from` to `to`._
 
-ERC20 `Transfer` event emitted when `amount` tokens is transferred from `from` to `to`. To provide compatibility with indexing ERC20 events.
+Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.
 
 #### Parameters
 

@@ -1292,7 +1292,7 @@ CALL opcode, passing the [`msg.data`](#msg.data) appended with the 20 bytes of t
 event Approval(address indexed owner, address indexed spender, uint256 value);
 ```
 
-ERC20 `Approval` event emitted when `owner` enables `spender` for `value` tokens. To provide compatibility with indexing ERC20 events.
+Emitted when the allowance of a `spender` for an `owner` is set by a call to [`approve`](#approve). `value` is the new allowance.
 
 #### Parameters
 
@@ -1426,7 +1426,7 @@ Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`
 event Transfer(address indexed from, address indexed to, uint256 value);
 ```
 
-ERC20 `Transfer` event emitted when `amount` tokens is transferred from `from` to `to`. To provide compatibility with indexing ERC20 events.
+Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.
 
 #### Parameters
 

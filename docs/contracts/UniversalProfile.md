@@ -1744,6 +1744,32 @@ Reverts when trying to renounce ownership before the initial confirmation delay.
 
 <br/>
 
+### LSP20CallVerificationFailed
+
+:::note References
+
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp20callverificationfailed)
+- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
+- Error signature: `LSP20CallVerificationFailed(bool,bytes)`
+- Error hash: `0x00c28d0f`
+
+:::
+
+```solidity
+error LSP20CallVerificationFailed(bool postCall, bytes returnedData);
+```
+
+reverts when the call to the owner does not return the LSP20 success value
+
+#### Parameters
+
+| Name           |  Type   | Description                                          |
+| -------------- | :-----: | ---------------------------------------------------- |
+| `postCall`     | `bool`  | True if the execution call was done, False otherwise |
+| `returnedData` | `bytes` | The data returned by the call to the logic verifier  |
+
+<br/>
+
 ### LSP20CallingVerifierFailed
 
 :::note References

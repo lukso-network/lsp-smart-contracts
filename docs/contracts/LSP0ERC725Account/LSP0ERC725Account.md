@@ -1777,17 +1777,7 @@ Reverts when pending owner accept ownership in the same transaction of transferr
 - Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-0-ERC725Account.md#lsp14notinrenounceownershipinterval)
 - Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP0ERC725Account/LSP0ERC725Account.sol)
 - Error signature: `LSP14NotInRenounceOwnershipInterval(uint256,uint256)`
-- # Error hash: `0x1b080942`
-
-### LSP20CallVerificationFailed
-
-:::note References
-
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-0-ERC725Account.md#lsp20callverificationfailed)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP0ERC725Account/LSP0ERC725Account.sol)
-- Error signature: `LSP20CallVerificationFailed(bool,bytes)`
-- Error hash: `0x00c28d0f`
-  > > > > > > > e3034e12b2c1d78347145580dbcfe3e553d40716
+- Error hash: `0x1b080942`
 
 :::
 
@@ -1808,6 +1798,32 @@ Reverts when trying to renounce ownership before the initial confirmation delay.
 | ------------------------ | :-------: | ----------------------------------------------------------------------- |
 | `renounceOwnershipStart` | `uint256` | The start timestamp when one can confirm the renouncement of ownership. |
 | `renounceOwnershipEnd`   | `uint256` | The end timestamp when one can confirm the renouncement of ownership.   |
+
+<br/>
+
+### LSP20CallVerificationFailed
+
+:::note References
+
+- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-0-ERC725Account.md#lsp20callverificationfailed)
+- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP0ERC725Account/LSP0ERC725Account.sol)
+- Error signature: `LSP20CallVerificationFailed(bool,bytes)`
+- Error hash: `0x00c28d0f`
+
+:::
+
+```solidity
+error LSP20CallVerificationFailed(bool postCall, bytes returnedData);
+```
+
+reverts when the call to the owner does not return the LSP20 success value
+
+#### Parameters
+
+| Name           |  Type   | Description                                          |
+| -------------- | :-----: | ---------------------------------------------------- |
+| `postCall`     | `bool`  | True if the execution call was done, False otherwise |
+| `returnedData` | `bytes` | The data returned by the call to the logic verifier  |
 
 <br/>
 
