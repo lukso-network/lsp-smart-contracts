@@ -184,10 +184,15 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
       await context.keyManager.connect(context.mainController).execute(setDataPayload);
 
       const universalReceiverDelegatePayload =
-        universalReceiverDelegateDataUpdater.interface.encodeFunctionData('universalReceiver', [
-          LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
-          '0xcafecafecafecafe',
-        ]);
+        universalReceiverDelegateDataUpdater.interface.encodeFunctionData(
+          'universalReceiverDelegate',
+          [
+            ethers.constants.AddressZero,
+            0,
+            LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
+            '0xcafecafecafecafe',
+          ],
+        );
 
       const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,

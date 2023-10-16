@@ -102,8 +102,8 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 - Specification details: [**LSP-17-Extensions**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-17-Extensions.md#validateuserop)
 - Solidity implementation: [`Extension4337.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP17Extensions/Extension4337.sol)
-- Function signature: `validateUserOp(UserOperation,bytes32,)`
-- Function selector: `0x68159319`
+- Function signature: `validateUserOp(UserOperation,bytes32,uint256)`
+- Function selector: `0xe86fc51e`
 
 :::
 

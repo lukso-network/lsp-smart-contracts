@@ -677,7 +677,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
         const signature = await addressCanSign.signMessage('Some random message');
         const validityOfTheSig = await context.keyManager.isValidSignature(dataHash, signature);
 
-        expect(validityOfTheSig).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+        expect(validityOfTheSig).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
 
       it('should not be allowed to sign messages for the token contract', async () => {

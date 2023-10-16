@@ -877,10 +877,10 @@ Returns the list of `tokenIds` for the `tokenOwner` address.
 
 :::note References
 
-- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#))
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#tokenuri)
 - Solidity implementation: [`LSP8CompatibleERC721Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol)
-- Function signature: `)`
-- Function selector: `0x59d76dc3`
+- Function signature: `tokenURI(uint256)`
+- Function selector: `0xc87b56dd`
 
 :::
 
@@ -1239,13 +1239,13 @@ function _transfer(
 function _beforeTokenTransfer(
   address from,
   address to,
-  bytes32 tokenId
+  bytes32 tokenId,
+  bytes data
 ) internal nonpayable;
 ```
 
 Hook that is called before any token transfer, including minting and burning.
-
-- Allows to run custom logic before updating balances and notifiying sender/recipient by overriding this function.
+Allows to run custom logic before updating balances and notifiying sender/recipient by overriding this function.
 
 #### Parameters
 
@@ -1254,6 +1254,32 @@ Hook that is called before any token transfer, including minting and burning.
 | `from`    | `address` | The sender address                     |
 | `to`      | `address` | @param tokenId The tokenId to transfer |
 | `tokenId` | `bytes32` | The tokenId to transfer                |
+| `data`    |  `bytes`  | The data sent alongside the transfer   |
+
+<br/>
+
+### \_afterTokenTransfer
+
+```solidity
+function _afterTokenTransfer(
+  address from,
+  address to,
+  bytes32 tokenId,
+  bytes data
+) internal nonpayable;
+```
+
+Hook that is called after any token transfer, including minting and burning.
+Allows to run custom logic after updating balances, but **before notifiying sender/recipient via LSP1** by overriding this function.
+
+#### Parameters
+
+| Name      |   Type    | Description                            |
+| --------- | :-------: | -------------------------------------- |
+| `from`    | `address` | The sender address                     |
+| `to`      | `address` | @param tokenId The tokenId to transfer |
+| `tokenId` | `bytes32` | The tokenId to transfer                |
+| `data`    |  `bytes`  | The data sent alongside the transfer   |
 
 <br/>
 

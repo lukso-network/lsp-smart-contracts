@@ -26,6 +26,7 @@ export const INTERFACE_IDS = {
   ERC725Y: '0x629aa694',
   LSP0ERC725Account: '0x24871b3d',
   LSP1UniversalReceiver: '0x6bb56a14',
+  LSP1UniversalReceiverDelegate: '0xa245bbda',
   LSP6KeyManager: '0xe7424397',
   LSP7DigitalAsset: '0x05519512',
   LSP8IdentifiableDigitalAsset: '0x1ae9ba1f',
@@ -47,7 +48,7 @@ export const INTERFACE_IDS = {
  * Can be used to check if a signature is valid or not.
  */
 export const ERC1271_VALUES = {
-  MAGIC_VALUE: '0x1626ba7e',
+  SUCCESS_VALUE: '0x1626ba7e',
   FAIL_VALUE: '0xffffffff',
 };
 
@@ -58,7 +59,7 @@ export const ERC1271_VALUES = {
  * @dev values returned by the `lsp20VerifyCall` and `lsp20VerifyCallResult` functions of the LSP20 standard.
  * Can be used to check if a calldata payload was check and verified.
  */
-export const LSP20_MAGIC_VALUES = {
+export const LSP20_SUCCESS_VALUES = {
   VERIFY_CALL: {
     // bytes3(keccak256("lsp20VerifyCall(address,address,uint256,bytes)")) + "0x00"
     NO_POST_VERIFICATION: '0x1a238000',

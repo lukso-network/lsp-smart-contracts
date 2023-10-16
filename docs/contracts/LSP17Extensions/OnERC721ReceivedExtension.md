@@ -25,10 +25,10 @@ When marked as 'public', a method can be called both externally and internally, 
 
 :::note References
 
-- Specification details: [**LSP-17-Extensions**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-17-Extensions.md#,,,))
+- Specification details: [**LSP-17-Extensions**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-17-Extensions.md#onerc721received)
 - Solidity implementation: [`OnERC721ReceivedExtension.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP17Extensions/OnERC721ReceivedExtension.sol)
-- Function signature: `,,,)`
-- Function selector: `0x940e0af1`
+- Function signature: `onERC721Received(address,address,uint256,bytes)`
+- Function selector: `0x150b7a02`
 
 :::
 

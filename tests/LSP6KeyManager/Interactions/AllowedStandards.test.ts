@@ -141,7 +141,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           .connect(context.mainController)
           .callStatic.execute(upPayload);
         const [result] = abiCoder.decode(['bytes4'], data);
-        expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+        expect(result).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
 
       it('LSP0 (ERC725Account)', async () => {
@@ -185,7 +185,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           .connect(addressCanInteractOnlyWithERC1271)
           .callStatic.execute(upPayload);
         const [result] = abiCoder.decode(['bytes4'], data);
-        expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+        expect(result).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
     });
 
