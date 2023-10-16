@@ -33,6 +33,7 @@ abstract contract LSP20CallVerification {
         (bool success, bytes memory returnedData) = logicVerifier.call(
             abi.encodeWithSelector(
                 ILSP20.lsp20VerifyCall.selector,
+                msg.sender,
                 address(this),
                 msg.sender,
                 msg.value,
@@ -64,6 +65,7 @@ abstract contract LSP20CallVerification {
                 ILSP20.lsp20VerifyCallResult.selector,
                 keccak256(
                     abi.encodePacked(
+                        msg.sender,
                         address(this),
                         msg.sender,
                         msg.value,
