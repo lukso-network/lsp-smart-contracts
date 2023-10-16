@@ -564,19 +564,15 @@ abstract contract LSP0ERC725AccountCore is
         address previousOwner = owner();
         address pendingOwnerAddress = pendingOwner();
 
+        bool verifyAfter;
+
         if (msg.sender != pendingOwnerAddress) {
             // If the caller is not the owner, call {lsp20VerifyCall} on the pending owner
             // Depending on the magicValue returned, a second call is done after transferring ownership
-            bool verifyAfter = _verifyCall(pendingOwnerAddress);
+            verifyAfter = _verifyCall(pendingOwnerAddress);
 
             _setOwner(pendingOwnerAddress);
             delete _pendingOwner;
-
-            // If verifyAfter is true, Call {lsp20VerifyCallResult} on the new owner
-            // The transferOwnership function does not return, second parameter of {_verifyCallResult} will be empty
-            if (verifyAfter) {
-                _verifyCallResult(pendingOwnerAddress, "");
-            }
         } else {
             _acceptOwnership();
         }
@@ -592,6 +588,12 @@ abstract contract LSP0ERC725AccountCore is
             _TYPEID_LSP0_OwnershipTransferred_RecipientNotification,
             ""
         );
+
+        // If msg.sender != pendingOwnerAddress & verifyAfter is true, Call {lsp20VerifyCallResult} on the new owner
+        // The transferOwnership function does not return, second parameter of {_verifyCallResult} will be empty
+        if (verifyAfter) {
+            _verifyCallResult(pendingOwnerAddress, "");
+        }
     }
 
     /**
