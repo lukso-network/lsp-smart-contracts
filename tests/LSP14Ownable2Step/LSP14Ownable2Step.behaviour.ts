@@ -75,7 +75,7 @@ export const shouldBehaveLikeLSP14 = (
         context.contract
           .connect(context.deployParams.owner)
           .transferOwnership(context.contract.address),
-      ).to.be.revertedWithCustomError(context.contract, 'CannotTransferOwnershipToSelf');
+      ).to.be.revertedWithCustomError(context.contract, 'LSP14CannotTransferOwnershipToSelf');
     });
 
     describe('it should still be allowed to call onlyOwner functions', () => {
@@ -153,7 +153,7 @@ export const shouldBehaveLikeLSP14 = (
     it('should revert when caller is not the pending owner', async () => {
       await expect(
         context.contract.connect(context.accounts[2]).acceptOwnership(),
-      ).to.be.revertedWith('LSP14: caller is not the pendingOwner');
+      ).to.be.revertedWithCustomError(context.contract, 'LSP14CallerNotPendingOwner');
     });
 
     describe('when caller is the pending owner', () => {
@@ -359,7 +359,7 @@ export const shouldBehaveLikeLSP14 = (
         await network.provider.send('hardhat_mine', [ethers.utils.hexValue(98)]);
 
         await expect(context.contract.connect(context.deployParams.owner).renounceOwnership())
-          .to.be.revertedWithCustomError(context.contract, 'NotInRenounceOwnershipInterval')
+          .to.be.revertedWithCustomError(context.contract, 'LSP14NotInRenounceOwnershipInterval')
           .withArgs(
             renounceOwnershipOnceReceipt.blockNumber + 200,
             renounceOwnershipOnceReceipt.blockNumber + 400,
@@ -510,9 +510,9 @@ export const shouldBehaveLikeLSP14 = (
         });
 
         it('previous pendingOwner should not be able to call acceptOwnership(...) anymore', async () => {
-          await expect(context.contract.connect(newOwner).acceptOwnership()).to.be.revertedWith(
-            'LSP14: caller is not the pendingOwner',
-          );
+          await expect(
+            context.contract.connect(newOwner).acceptOwnership(),
+          ).to.be.revertedWithCustomError(context.contract, 'LSP14CallerNotPendingOwner');
         });
       });
     });

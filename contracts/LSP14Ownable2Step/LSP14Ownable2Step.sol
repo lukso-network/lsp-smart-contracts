@@ -14,9 +14,10 @@ import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 
 // errors
 import {
+    LSP14CallerNotPendingOwner,
     LSP14MustAcceptOwnershipInSeparateTransaction,
-    CannotTransferOwnershipToSelf,
-    NotInRenounceOwnershipInterval
+    LSP14CannotTransferOwnershipToSelf,
+    LSP14NotInRenounceOwnershipInterval
 } from "./LSP14Errors.sol";
 
 // constants
@@ -158,7 +159,8 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
      * @custom:requirements `newOwner` cannot be the address of the contract itself.
      */
     function _transferOwnership(address newOwner) internal virtual {
-        if (newOwner == address(this)) revert CannotTransferOwnershipToSelf();
+        if (newOwner == address(this))
+            revert LSP14CannotTransferOwnershipToSelf();
 
         _pendingOwner = newOwner;
         delete _renounceOwnershipStartedAt;
@@ -168,10 +170,8 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
      * @dev Set the pending owner of the contract as the new owner.
      */
     function _acceptOwnership() internal virtual {
-        require(
-            msg.sender == pendingOwner(),
-            "LSP14: caller is not the pendingOwner"
-        );
+        if (msg.sender != pendingOwner())
+            revert LSP14CallerNotPendingOwner(msg.sender);
 
         _setOwner(msg.sender);
         delete _pendingOwner;
@@ -200,7 +200,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         }
 
         if (currentBlock < confirmationPeriodStart) {
-            revert NotInRenounceOwnershipInterval(
+            revert LSP14NotInRenounceOwnershipInterval(
                 confirmationPeriodStart,
                 confirmationPeriodEnd
             );

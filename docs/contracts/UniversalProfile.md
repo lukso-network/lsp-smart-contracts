@@ -1424,27 +1424,6 @@ Emitted when receiving native tokens.
 
 ## Errors
 
-### CannotTransferOwnershipToSelf
-
-:::note References
-
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#cannottransferownershiptoself)
-- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
-- Error signature: `CannotTransferOwnershipToSelf()`
-- Error hash: `0x43b248cd`
-
-:::
-
-```solidity
-error CannotTransferOwnershipToSelf();
-```
-
-_Cannot transfer ownership to the address of the contract itself._
-
-Reverts when trying to transfer ownership to the `address(this)`.
-
-<br/>
-
 ### ERC725X_ContractDeploymentFailed
 
 :::note References
@@ -1667,6 +1646,52 @@ Reverts when there is not the same number of elements in the `datakeys` and `dat
 
 <br/>
 
+### LSP14CallerNotPendingOwner
+
+:::note References
+
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp14callernotpendingowner)
+- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
+- Error signature: `LSP14CallerNotPendingOwner(address)`
+- Error hash: `0x451e4528`
+
+:::
+
+```solidity
+error LSP14CallerNotPendingOwner(address caller);
+```
+
+Reverts when the `caller` that is trying to accept ownership of the contract is not the pending owner.
+
+#### Parameters
+
+| Name     |   Type    | Description                                 |
+| -------- | :-------: | ------------------------------------------- |
+| `caller` | `address` | The address that tried to accept ownership. |
+
+<br/>
+
+### LSP14CannotTransferOwnershipToSelf
+
+:::note References
+
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp14cannottransferownershiptoself)
+- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
+- Error signature: `LSP14CannotTransferOwnershipToSelf()`
+- Error hash: `0xe052a6f8`
+
+:::
+
+```solidity
+error LSP14CannotTransferOwnershipToSelf();
+```
+
+_Cannot transfer ownership to the address of the contract itself._
+
+Reverts when trying to transfer ownership to the `address(this)`.
+
+<br/>
+
 ### LSP14MustAcceptOwnershipInSeparateTransaction
 
 :::note References
@@ -1685,6 +1710,37 @@ error LSP14MustAcceptOwnershipInSeparateTransaction();
 _Cannot accept ownership in the same transaction with [`transferOwnership(...)`](#transferownership)._
 
 Reverts when pending owner accept ownership in the same transaction of transferring ownership.
+
+<br/>
+
+### LSP14NotInRenounceOwnershipInterval
+
+:::note References
+
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp14notinrenounceownershipinterval)
+- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
+- Error signature: `LSP14NotInRenounceOwnershipInterval(uint256,uint256)`
+- Error hash: `0x1b080942`
+
+:::
+
+```solidity
+error LSP14NotInRenounceOwnershipInterval(
+  uint256 renounceOwnershipStart,
+  uint256 renounceOwnershipEnd
+);
+```
+
+_Cannot confirm ownership renouncement yet. The ownership renouncement is allowed from: `renounceOwnershipStart` until: `renounceOwnershipEnd`._
+
+Reverts when trying to renounce ownership before the initial confirmation delay.
+
+#### Parameters
+
+| Name                     |   Type    | Description                                                             |
+| ------------------------ | :-------: | ----------------------------------------------------------------------- |
+| `renounceOwnershipStart` | `uint256` | The start timestamp when one can confirm the renouncement of ownership. |
+| `renounceOwnershipEnd`   | `uint256` | The end timestamp when one can confirm the renouncement of ownership.   |
 
 <br/>
 
@@ -1786,36 +1842,5 @@ reverts when there is no extension for the function selector being called with
 | Name               |   Type   | Description |
 | ------------------ | :------: | ----------- |
 | `functionSelector` | `bytes4` | -           |
-
-<br/>
-
-### NotInRenounceOwnershipInterval
-
-:::note References
-
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#notinrenounceownershipinterval)
-- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
-- Error signature: `NotInRenounceOwnershipInterval(uint256,uint256)`
-- Error hash: `0x8b9bf507`
-
-:::
-
-```solidity
-error NotInRenounceOwnershipInterval(
-  uint256 renounceOwnershipStart,
-  uint256 renounceOwnershipEnd
-);
-```
-
-_Cannot confirm ownership renouncement yet. The ownership renouncement is allowed from: `renounceOwnershipStart` until: `renounceOwnershipEnd`._
-
-Reverts when trying to renounce ownership before the initial confirmation delay.
-
-#### Parameters
-
-| Name                     |   Type    | Description                                                             |
-| ------------------------ | :-------: | ----------------------------------------------------------------------- |
-| `renounceOwnershipStart` | `uint256` | The start timestamp when one can confirm the renouncement of ownership. |
-| `renounceOwnershipEnd`   | `uint256` | The end timestamp when one can confirm the renouncement of ownership.   |
 
 <br/>

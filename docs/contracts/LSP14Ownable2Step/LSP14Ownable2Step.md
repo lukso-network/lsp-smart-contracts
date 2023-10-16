@@ -403,19 +403,44 @@ Emitted when starting the [`renounceOwnership(..)`](#renounceownership) 2-step p
 
 ## Errors
 
-### CannotTransferOwnershipToSelf
+### LSP14CallerNotPendingOwner
 
 :::note References
 
-- Specification details: [**LSP-14-Ownable2Step**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-14-Ownable2Step.md#cannottransferownershiptoself)
+- Specification details: [**LSP-14-Ownable2Step**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-14-Ownable2Step.md#lsp14callernotpendingowner)
 - Solidity implementation: [`LSP14Ownable2Step.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP14Ownable2Step/LSP14Ownable2Step.sol)
-- Error signature: `CannotTransferOwnershipToSelf()`
-- Error hash: `0x43b248cd`
+- Error signature: `LSP14CallerNotPendingOwner(address)`
+- Error hash: `0x451e4528`
 
 :::
 
 ```solidity
-error CannotTransferOwnershipToSelf();
+error LSP14CallerNotPendingOwner(address caller);
+```
+
+Reverts when the `caller` that is trying to accept ownership of the contract is not the pending owner.
+
+#### Parameters
+
+| Name     |   Type    | Description                                 |
+| -------- | :-------: | ------------------------------------------- |
+| `caller` | `address` | The address that tried to accept ownership. |
+
+<br/>
+
+### LSP14CannotTransferOwnershipToSelf
+
+:::note References
+
+- Specification details: [**LSP-14-Ownable2Step**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-14-Ownable2Step.md#lsp14cannottransferownershiptoself)
+- Solidity implementation: [`LSP14Ownable2Step.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP14Ownable2Step/LSP14Ownable2Step.sol)
+- Error signature: `LSP14CannotTransferOwnershipToSelf()`
+- Error hash: `0xe052a6f8`
+
+:::
+
+```solidity
+error LSP14CannotTransferOwnershipToSelf();
 ```
 
 _Cannot transfer ownership to the address of the contract itself._
@@ -445,19 +470,19 @@ Reverts when pending owner accept ownership in the same transaction of transferr
 
 <br/>
 
-### NotInRenounceOwnershipInterval
+### LSP14NotInRenounceOwnershipInterval
 
 :::note References
 
-- Specification details: [**LSP-14-Ownable2Step**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-14-Ownable2Step.md#notinrenounceownershipinterval)
+- Specification details: [**LSP-14-Ownable2Step**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-14-Ownable2Step.md#lsp14notinrenounceownershipinterval)
 - Solidity implementation: [`LSP14Ownable2Step.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP14Ownable2Step/LSP14Ownable2Step.sol)
-- Error signature: `NotInRenounceOwnershipInterval(uint256,uint256)`
-- Error hash: `0x8b9bf507`
+- Error signature: `LSP14NotInRenounceOwnershipInterval(uint256,uint256)`
+- Error hash: `0x1b080942`
 
 :::
 
 ```solidity
-error NotInRenounceOwnershipInterval(
+error LSP14NotInRenounceOwnershipInterval(
   uint256 renounceOwnershipStart,
   uint256 renounceOwnershipEnd
 );
