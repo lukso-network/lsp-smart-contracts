@@ -56,7 +56,7 @@ abstract contract LSP8IdentifiableDigitalAsset is
     LSP17Extendable
 {
     /**
-     * @notice Deploying a LSP8IdentifiableDigitalAsset with name `name_`, symbol `symbol_`, owned by address `newOwner_`
+     * @notice Deploying a LSP8IdentifiableDigitalAsset with name `name_`, symbol `symbol_`, owned by address `contractOwner_`
      * with tokenId type `tokenIdType_`.
      *
      * @dev Deploy a `LSP8IdentifiableDigitalAsset` contract and set the tokenId type inside the ERC725Y storage of the contract.
@@ -64,7 +64,7 @@ abstract contract LSP8IdentifiableDigitalAsset is
      *
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the the token-Metadata
+     * @param contractOwner_ The address that can set metadata via {`setData`} and {`setDataBatch`} on the token contract and transfer or renounce ownership of the token contract.
      * @param tokenIdType_ The type of tokenIds (= NFTs) that this contract will create.
      * Available options are: NUMBER = `0`; STRING = `1`; UNIQUE_ID = `2`; HASH = `3`; ADDRESS = `4`.
      *
@@ -74,9 +74,9 @@ abstract contract LSP8IdentifiableDigitalAsset is
     constructor(
         string memory name_,
         string memory symbol_,
-        address newOwner_,
+        address contractOwner_,
         uint256 tokenIdType_
-    ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {
+    ) LSP4DigitalAssetMetadata(name_, symbol_, contractOwner_) {
         LSP4DigitalAssetMetadata._setData(
             _LSP8_TOKENID_TYPE_KEY,
             abi.encode(tokenIdType_)

@@ -45,14 +45,15 @@ abstract contract LSP7DigitalAssetInitAbstract is
     function _initialize(
         string memory name_,
         string memory symbol_,
-        address newOwner_,
+        address contractOwner_,
         bool isNonDivisible_
     ) internal virtual onlyInitializing {
         _isNonDivisible = isNonDivisible_;
+
         LSP4DigitalAssetMetadataInitAbstract._initialize(
             name_,
             symbol_,
-            newOwner_
+            contractOwner_
         );
     }
 

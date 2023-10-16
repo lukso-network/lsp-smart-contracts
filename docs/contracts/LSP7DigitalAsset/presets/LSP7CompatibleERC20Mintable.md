@@ -31,18 +31,18 @@ When marked as 'public', a method can be called both externally and internally, 
 :::
 
 ```solidity
-constructor(string name_, string symbol_, address newOwner_);
+constructor(string name_, string symbol_, address contractOwner_);
 ```
 
-_Deploying a `LSP7CompatibleERC20Mintable` token contract with: token name = `name_`, token symbol = `symbol_`, and address `newOwner_` as the token contract owner._
+_Deploying a `LSP7CompatibleERC20Mintable` token contract with: token name = `name_`, token symbol = `symbol_`, and address `contractOwner_` as the token contract owner._
 
 #### Parameters
 
-| Name        |   Type    | Description                      |
-| ----------- | :-------: | -------------------------------- |
-| `name_`     | `string`  | The name of the token.           |
-| `symbol_`   | `string`  | The symbol of the token.         |
-| `newOwner_` | `address` | The owner of the token contract. |
+| Name             |   Type    | Description                                                                                                                                                                |
+| ---------------- | :-------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name_`          | `string`  | The name of the token.                                                                                                                                                     |
+| `symbol_`        | `string`  | The symbol of the token.                                                                                                                                                   |
+| `contractOwner_` | `address` | The address that can mint new tokens and set metadata via {`setData`} and {`setDataBatch`} on the token contract and transfer or renounce ownership of the token contract. |
 
 <br/>
 
@@ -1904,49 +1904,5 @@ reverts when there is no extension for the function selector being called with
 | Name               |   Type   | Description |
 | ------------------ | :------: | ----------- |
 | `functionSelector` | `bytes4` | -           |
-
-<br/>
-
-### OwnableCallerNotTheOwner
-
-:::note References
-
-- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#ownablecallernottheowner)
-- Solidity implementation: [`LSP7CompatibleERC20Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol)
-- Error signature: `OwnableCallerNotTheOwner(address)`
-- Error hash: `0xbf1169c5`
-
-:::
-
-```solidity
-error OwnableCallerNotTheOwner(address callerAddress);
-```
-
-Reverts when only the owner is allowed to call the function.
-
-#### Parameters
-
-| Name            |   Type    | Description                              |
-| --------------- | :-------: | ---------------------------------------- |
-| `callerAddress` | `address` | The address that tried to make the call. |
-
-<br/>
-
-### OwnableCannotSetZeroAddressAsOwner
-
-:::note References
-
-- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#ownablecannotsetzeroaddressasowner)
-- Solidity implementation: [`LSP7CompatibleERC20Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol)
-- Error signature: `OwnableCannotSetZeroAddressAsOwner()`
-- Error hash: `0x1ad8836c`
-
-:::
-
-```solidity
-error OwnableCannotSetZeroAddressAsOwner();
-```
-
-Reverts when trying to set `address(0)` as the contract owner when deploying the contract, initializing it or transferring ownership of the contract.
 
 <br/>

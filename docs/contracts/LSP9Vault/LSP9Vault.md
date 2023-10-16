@@ -909,12 +909,6 @@ Perform low-level staticcall (operation type = 3)
 
 ### \_executeDelegateCall
 
-:::caution Warning
-
-The `msg.value` should not be trusted for any method called with `operationType`: `DELEGATECALL` (4).
-
-:::
-
 ```solidity
 function _executeDelegateCall(
   address target,
@@ -1754,30 +1748,5 @@ reverts when there is no extension for the function selector being called with
 | Name               |   Type   | Description |
 | ------------------ | :------: | ----------- |
 | `functionSelector` | `bytes4` | -           |
-
-<br/>
-
-### OwnableCallerNotTheOwner
-
-:::note References
-
-- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-9-Vault.md#ownablecallernottheowner)
-- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP9Vault/LSP9Vault.sol)
-- Error signature: `OwnableCallerNotTheOwner(address)`
-- Error hash: `0xbf1169c5`
-
-:::
-
-```solidity
-error OwnableCallerNotTheOwner(address callerAddress);
-```
-
-Reverts when only the owner is allowed to call the function.
-
-#### Parameters
-
-| Name            |   Type    | Description                              |
-| --------------- | :-------: | ---------------------------------------- |
-| `callerAddress` | `address` | The address that tried to make the call. |
 
 <br/>

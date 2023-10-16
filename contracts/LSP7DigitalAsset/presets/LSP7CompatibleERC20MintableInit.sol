@@ -21,21 +21,21 @@ contract LSP7CompatibleERC20MintableInit is
 
     /**
      * @notice Initializing a `LSP7CompatibleERC20MintableInit` token contract with: token name = `name_`, token symbol = `symbol_`, and
-     * address `newOwner_` as the token contract owner.
+     * address `contractOwner_` as the token contract owner.
      *
      * @param name_ The name of the token.
      * @param symbol_ The symbol of the token.
-     * @param newOwner_ The owner of the token contract.
+     * @param contractOwner_ The address that can mint new tokens and set metadata via {`setData`} and {`setDataBatch`} on the token contract and transfer or renounce ownership of the token contract..
      */
     function initialize(
         string memory name_,
         string memory symbol_,
-        address newOwner_
+        address contractOwner_
     ) external virtual initializer {
         LSP7CompatibleERC20MintableInitAbstract._initialize(
             name_,
             symbol_,
-            newOwner_
+            contractOwner_
         );
     }
 }

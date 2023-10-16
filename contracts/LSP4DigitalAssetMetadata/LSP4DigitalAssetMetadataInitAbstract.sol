@@ -34,14 +34,14 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is ERC725YInitAbstract {
      *
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
-     * @param initialOwner_ The owner of the token contract
+     * @param contractOwner_ The address that can set metadata via {`setData`} and {`setDataBatch`} on the token contract and transfer or renounce ownership of the token contract.
      */
     function _initialize(
         string memory name_,
         string memory symbol_,
-        address initialOwner_
+        address contractOwner_
     ) internal virtual onlyInitializing {
-        ERC725YInitAbstract._initialize(initialOwner_);
+        ERC725YInitAbstract._initialize(contractOwner_);
 
         // set data key SupportedStandards:LSP4DigitalAsset
         super._setData(

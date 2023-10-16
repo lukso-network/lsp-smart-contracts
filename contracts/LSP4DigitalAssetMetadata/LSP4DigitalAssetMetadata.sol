@@ -32,13 +32,13 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
      *
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
-     * @param initialOwner_ The owner of the token contract
+     * @param contractOwner_ The address that can set metadata via {`setData`} and {`setDataBatch`} on the token contract and transfer or renounce ownership of the token contract.
      */
     constructor(
         string memory name_,
         string memory symbol_,
-        address initialOwner_
-    ) ERC725Y(initialOwner_) {
+        address contractOwner_
+    ) ERC725Y(contractOwner_) {
         // set data key SupportedStandards:LSP4DigitalAsset
         super._setData(
             _LSP4_SUPPORTED_STANDARDS_KEY,

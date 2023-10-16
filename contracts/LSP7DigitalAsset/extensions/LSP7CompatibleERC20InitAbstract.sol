@@ -28,21 +28,21 @@ abstract contract LSP7CompatibleERC20InitAbstract is
 {
     /**
      * @notice Initializing a `LSP7CompatibleERC20` token contract with: token name = `name_`, token symbol = `symbol_`, and
-     * address `newOwner_` as the token contract owner.
+     * address `contractOwner_` as the token contract owner.
      *
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the token
+     * @param name_ The name of the token.
+     * @param symbol_ The symbol of the token.
+     * @param contractOwner_ The address that can set metadata via {`setData`} and {`setDataBatch`} on the token contract and transfer or renounce ownership of the token contract..
      */
     function _initialize(
         string memory name_,
         string memory symbol_,
-        address newOwner_
+        address contractOwner_
     ) internal virtual override onlyInitializing {
         LSP7DigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
-            newOwner_,
+            contractOwner_,
             false
         );
     }

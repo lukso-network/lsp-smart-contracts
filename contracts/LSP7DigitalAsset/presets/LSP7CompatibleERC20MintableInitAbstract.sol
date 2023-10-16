@@ -18,9 +18,13 @@ abstract contract LSP7CompatibleERC20MintableInitAbstract is
     function _initialize(
         string memory name_,
         string memory symbol_,
-        address newOwner_
+        address contractOwner_
     ) internal virtual override onlyInitializing {
-        LSP7CompatibleERC20InitAbstract._initialize(name_, symbol_, newOwner_);
+        LSP7CompatibleERC20InitAbstract._initialize(
+            name_,
+            symbol_,
+            contractOwner_
+        );
     }
 
     /**

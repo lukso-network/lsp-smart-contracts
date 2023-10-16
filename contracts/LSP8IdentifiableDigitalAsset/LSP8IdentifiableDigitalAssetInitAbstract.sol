@@ -61,7 +61,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
      *
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the the token-Metadata
+     * @param contractOwner_ The address that can set metadata via {`setData`} and {`setDataBatch`} on the token contract and transfer or renounce ownership of the token contract.
      * @param tokenIdType_ The type of tokenIds (= NFTs) that this contract will create.
      * Available options are: NUMBER = `0`; STRING = `1`; UNIQUE_ID = `2`; HASH = `3`; ADDRESS = `4`.
      *
@@ -71,13 +71,13 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
     function _initialize(
         string memory name_,
         string memory symbol_,
-        address newOwner_,
+        address contractOwner_,
         uint256 tokenIdType_
     ) internal virtual onlyInitializing {
         LSP4DigitalAssetMetadataInitAbstract._initialize(
             name_,
             symbol_,
-            newOwner_
+            contractOwner_
         );
 
         LSP4DigitalAssetMetadataInitAbstract._setData(
