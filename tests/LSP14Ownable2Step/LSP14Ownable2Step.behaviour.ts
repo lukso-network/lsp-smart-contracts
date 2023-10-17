@@ -19,7 +19,7 @@ export type LSP14TestContext = {
   accounts: SignerWithAddress[];
   contract: LSP9Vault;
   deployParams: { owner: SignerWithAddress };
-  onlyOwnerRevertString: string;
+  onlyOwnerCustomError: string;
 };
 
 export const shouldBehaveLikeLSP14 = (
@@ -145,7 +145,7 @@ export const shouldBehaveLikeLSP14 = (
 
       await expect(
         context.contract.connect(randomAddress).transferOwnership(randomAddress.address),
-      ).to.be.revertedWith('Ownable: caller is not the owner');
+      ).to.be.revertedWithCustomError(context.contract, 'OwnableCallerNotTheOwner');
     });
   });
 
@@ -197,7 +197,7 @@ export const shouldBehaveLikeLSP14 = (
 
           await expect(
             context.contract.connect(previousOwner).setData(key, value),
-          ).to.be.revertedWith(context.onlyOwnerRevertString);
+          ).to.be.revertedWith(context.onlyOwnerCustomError);
         });
 
         it('should revert when calling `execute(...)`', async () => {
@@ -208,13 +208,13 @@ export const shouldBehaveLikeLSP14 = (
             context.contract
               .connect(previousOwner)
               .execute(OPERATION_TYPES.CALL, recipient.address, amount, '0x'),
-          ).to.be.revertedWith('Ownable: caller is not the owner');
+          ).to.be.revertedWithCustomError(context.contract, 'OwnableCallerNotTheOwner');
         });
 
         it('should revert when calling `renounceOwnership(...)`', async () => {
           await expect(
             context.contract.connect(previousOwner).renounceOwnership(),
-          ).to.be.revertedWith('Ownable: caller is not the owner');
+          ).to.be.revertedWithCustomError(context.contract, 'OwnableCallerNotTheOwner');
         });
       });
 
@@ -254,7 +254,10 @@ export const shouldBehaveLikeLSP14 = (
       it('should revert with custom message', async () => {
         const tx = context.contract.connect(context.accounts[5]).renounceOwnership();
 
-        await expect(tx).to.be.revertedWith('Ownable: caller is not the owner');
+        await expect(tx).to.be.revertedWithCustomError(
+          context.contract,
+          'OwnableCallerNotTheOwner',
+        );
       });
     });
 
@@ -477,7 +480,7 @@ export const shouldBehaveLikeLSP14 = (
               context.contract
                 .connect(context.deployParams.owner)
                 .execute(OPERATION_TYPES.CALL, recipient, amount, '0x'),
-            ).to.be.revertedWith('Ownable: caller is not the owner');
+            ).to.be.revertedWithCustomError(context.contract, 'OwnableCallerNotTheOwner');
           });
         });
       });

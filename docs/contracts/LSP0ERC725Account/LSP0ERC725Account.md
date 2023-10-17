@@ -951,6 +951,12 @@ Perform low-level staticcall (operation type = 3)
 
 ### \_executeDelegateCall
 
+:::caution Warning
+
+The `msg.value` should not be trusted for any method called with `operationType`: `DELEGATECALL` (4).
+
+:::
+
 ```solidity
 function _executeDelegateCall(
   address target,
