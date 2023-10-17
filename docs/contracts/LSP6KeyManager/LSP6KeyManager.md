@@ -332,8 +332,8 @@ Checks if a signature was signed by a controller that has the permission `SIGN`.
 
 - Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#lsp20verifycall)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
-- Function signature: `lsp20VerifyCall(address,address,uint256,bytes)`
-- Function selector: `0x1a2380e1`
+- Function signature: `lsp20VerifyCall(address,address,address,uint256,bytes)`
+- Function selector: `0xde928f14`
 
 :::
 
@@ -348,21 +348,23 @@ This function can call by any other address than the {`target`}. This allows to 
 
 ```solidity
 function lsp20VerifyCall(
+  address,
   address targetContract,
   address caller,
   uint256 msgValue,
-  bytes data
+  bytes callData
 ) external nonpayable returns (bytes4);
 ```
 
 #### Parameters
 
-| Name             |   Type    | Description                                           |
-| ---------------- | :-------: | ----------------------------------------------------- |
-| `targetContract` | `address` | -                                                     |
-| `caller`         | `address` | The address who called the function on the msg.sender |
-| `msgValue`       | `uint256` | -                                                     |
-| `data`           |  `bytes`  | -                                                     |
+| Name             |   Type    | Description                                                   |
+| ---------------- | :-------: | ------------------------------------------------------------- |
+| `_0`             | `address` | -                                                             |
+| `targetContract` | `address` | -                                                             |
+| `caller`         | `address` | The address who called the function on the `target` contract. |
+| `msgValue`       | `uint256` | -                                                             |
+| `callData`       |  `bytes`  | The calldata sent by the caller to the msg.sender             |
 
 #### Returns
 
