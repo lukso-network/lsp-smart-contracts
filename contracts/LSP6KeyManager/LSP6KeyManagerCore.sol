@@ -372,8 +372,8 @@ abstract contract LSP6KeyManagerCore is
      * @inheritdoc ILSP20
      */
     function lsp20VerifyCallResult(
-        bytes32 /*callHash*/,
-        bytes memory /*result*/
+        bytes32 /* callHash */,
+        bytes memory /* callResult */
     ) external virtual override returns (bytes4) {
         // If it's the target calling, set back the reentrancy guard
         // to false, if not return the success value

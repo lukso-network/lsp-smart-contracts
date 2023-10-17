@@ -30,10 +30,10 @@ interface ILSP20CallVerifier {
      * @return MUST return the lsp20VerifyCallResult function selector if the call to the function is allowed
      *
      * @param callHash The keccak256 hash of the parameters of {lsp20VerifyCall} concatenated
-     * @param result The value result of the function called on the msg.sender
+     * @param callResult The value result of the function called on the msg.sender
      */
     function lsp20VerifyCallResult(
         bytes32 callHash,
-        bytes memory result
+        bytes memory callResult
     ) external returns (bytes4);
 }
