@@ -318,13 +318,14 @@ abstract contract LSP6KeyManagerCore is
      *  - `0x1a238001`: LSP20 success value **with** post-verification (last byte is `0x01`).
      */
     function lsp20VerifyCall(
+        address /* requestor */,
         address targetContract,
         address caller,
         uint256 msgValue,
-        bytes calldata data
+        bytes calldata callData
     ) external virtual override returns (bytes4) {
-        bool isSetData = bytes4(data) == IERC725Y.setData.selector ||
-            bytes4(data) == IERC725Y.setDataBatch.selector;
+        bool isSetData = bytes4(callData) == IERC725Y.setData.selector ||
+            bytes4(callData) == IERC725Y.setDataBatch.selector;
 
         // If target is invoking the verification, emit the event and change the reentrancy guard
         if (msg.sender == targetContract) {
@@ -334,9 +335,9 @@ abstract contract LSP6KeyManagerCore is
                 caller
             );
 
-            _verifyPermissions(targetContract, caller, false, data);
+            _verifyPermissions(targetContract, caller, false, callData);
 
-            emit PermissionsVerified(caller, msgValue, bytes4(data));
+            emit PermissionsVerified(caller, msgValue, bytes4(callData));
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
@@ -357,7 +358,7 @@ abstract contract LSP6KeyManagerCore is
                 );
             }
 
-            _verifyPermissions(targetContract, caller, false, data);
+            _verifyPermissions(targetContract, caller, false, callData);
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
@@ -371,8 +372,8 @@ abstract contract LSP6KeyManagerCore is
      * @inheritdoc ILSP20
      */
     function lsp20VerifyCallResult(
-        bytes32 /*callHash*/,
-        bytes memory /*result*/
+        bytes32 /* callHash */,
+        bytes memory /* callResult */
     ) external virtual override returns (bytes4) {
         // If it's the target calling, set back the reentrancy guard
         // to false, if not return the success value
