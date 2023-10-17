@@ -11,7 +11,15 @@ const ercInterfaceDescriptions = {
   ERC725Y: 'General Data key-value store.',
 };
 
-const excludedInterfaces = ['ERC20', 'ERC223', 'ERC721', 'ERC721Metadata', 'ERC777', 'ERC1155'];
+const excludedInterfaces = [
+  'ERC20',
+  'ERC20Metadata',
+  'ERC223',
+  'ERC721',
+  'ERC721Metadata',
+  'ERC777',
+  'ERC1155',
+];
 
 async function main() {
   const interfaces = Object.entries(INTERFACE_IDS);
