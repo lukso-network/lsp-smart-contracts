@@ -6,12 +6,10 @@ import {
   LSP0ERC725Account,
   UPWithInstantAcceptOwnership__factory,
   UPWithInstantAcceptOwnership,
-  LSP6KeyManager__factory,
-  LSP6KeyManager,
 } from '../../types';
 
 // constants
-import { ERC725YDataKeys, OPERATION_TYPES, PERMISSIONS } from '../../constants';
+import { OPERATION_TYPES } from '../../constants';
 
 // helpers
 import { provider } from '../utils/helpers';
