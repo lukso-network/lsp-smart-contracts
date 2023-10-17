@@ -567,7 +567,7 @@ abstract contract LSP0ERC725AccountCore is
 
         if (msg.sender != pendingOwnerAddress) {
             // If the caller is not the owner, call {lsp20VerifyCall} on the pending owner
-            // Depending on the magicValue returned, a second call is done after transferring ownership
+            // Depending on the successStatus returned, a second call is done after transferring ownership
             verifyAfter = _verifyCall(pendingOwnerAddress);
 
             _setOwner(pendingOwnerAddress);

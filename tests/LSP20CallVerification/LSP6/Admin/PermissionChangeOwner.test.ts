@@ -212,30 +212,39 @@ export const shouldBehaveLikePermissionChangeOwner = (
     });
   });
 
-  describe('when calling acceptOwnership(...) via the pending new KeyManager', () => {
+  describe('when calling acceptOwnership(...) directly on the contract', () => {
     let pendingOwner: string;
 
-    before(async () => {
-      await context.universalProfile
-        .connect(context.mainController)
-        .transferOwnership(newKeyManager.address);
+    describe('when pending owner is a new Key Manager', () => {
+      before(async () => {
+        await context.universalProfile
+          .connect(context.mainController)
+          .transferOwnership(newKeyManager.address);
 
-      pendingOwner = await context.universalProfile.pendingOwner();
+        pendingOwner = await context.universalProfile.pendingOwner();
+      });
 
-      const acceptOwnershipPayload =
-        context.universalProfile.interface.getSighash('acceptOwnership');
+      it('should not let you accept ownership if controller does not have permission', async () => {
+        await expect(context.universalProfile.connect(cannotChangeOwner).acceptOwnership())
+          .to.be.revertedWithCustomError(newKeyManager, 'NoPermissionsSet')
+          .withArgs(cannotChangeOwner.address);
+      });
 
-      await newKeyManager.connect(context.mainController).execute(acceptOwnershipPayload);
-    });
+      it('should let you accept ownership if controller has permission', async () => {
+        await context.universalProfile.connect(canChangeOwner).acceptOwnership();
 
-    it("should have change the account's owner to the pendingOwner (= pending KeyManager)", async () => {
-      const updatedOwner = await context.universalProfile.owner();
-      expect(updatedOwner).to.equal(pendingOwner);
-    });
+        expect(await context.universalProfile.owner()).to.equal(newKeyManager.address);
+      });
 
-    it('should have cleared the pendingOwner after transfering ownership', async () => {
-      const newPendingOwner = await context.universalProfile.pendingOwner();
-      expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
+      it("should have change the account's owner to the pendingOwner (= pending KeyManager)", async () => {
+        const updatedOwner = await context.universalProfile.owner();
+        expect(updatedOwner).to.equal(pendingOwner);
+      });
+
+      it('should have cleared the pendingOwner after transfering ownership', async () => {
+        const newPendingOwner = await context.universalProfile.pendingOwner();
+        expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
+      });
     });
   });
 

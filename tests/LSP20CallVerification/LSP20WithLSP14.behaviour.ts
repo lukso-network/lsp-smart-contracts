@@ -36,45 +36,6 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
   });
 
   describe('when owner call transferOwnership(...)', () => {
-    describe('when caller is not the pending owner but pending owner is a key manager', () => {
-      let newKeyManager: LSP6KeyManager;
-      let controllerWithPermission: SignerWithAddress;
-      let controllerWithoutPermission: SignerWithAddress;
-      beforeEach(async () => {
-        context = await buildContext(ethers.utils.parseEther('50'));
-        newOwner = context.accounts[1];
-
-        [controllerWithPermission, controllerWithoutPermission] = await ethers.getSigners();
-        newKeyManager = await new LSP6KeyManager__factory(context.accounts[0]).deploy(
-          context.contract.address,
-        );
-
-        await context.contract
-          .connect(context.deployParams.owner)
-          .setData(
-            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              controllerWithPermission.address.slice(2),
-            PERMISSIONS.CHANGEOWNER,
-          );
-
-        await context.contract
-          .connect(context.deployParams.owner)
-          .transferOwnership(newKeyManager.address);
-      });
-
-      it('should let you accept ownership if controller has permission', async () => {
-        await context.contract.connect(controllerWithPermission).acceptOwnership();
-
-        expect(await context.contract.owner()).to.equal(newKeyManager.address);
-      });
-
-      it('should not let you accept ownership if controller does not have permission', async () => {
-        await expect(context.contract.connect(controllerWithoutPermission).acceptOwnership())
-          .to.be.revertedWithCustomError(newKeyManager, 'NoPermissionsSet')
-          .withArgs(controllerWithoutPermission.address);
-      });
-    });
-
     before(async () => {
       await context.contract
         .connect(context.deployParams.owner)
