@@ -27,7 +27,7 @@ export const INTERFACE_IDS = {
   LSP0ERC725Account: '0x24871b3d',
   LSP1UniversalReceiver: '0x6bb56a14',
   LSP1UniversalReceiverDelegate: '0xa245bbda',
-  LSP6KeyManager: '0xe7424397',
+  LSP6KeyManager: '0x23f34c62',
   LSP7DigitalAsset: '0x05519512',
   LSP8IdentifiableDigitalAsset: '0x1ae9ba1f',
   LSP9Vault: '0x28af17e6',
@@ -36,7 +36,7 @@ export const INTERFACE_IDS = {
   LSP17Extendable: '0xa918fa6b',
   LSP17Extension: '0xcee78b40',
   LSP20CallVerification: '0x1a0eb6a5',
-  LSP20CallVerifier: '0xc9dfc532',
+  LSP20CallVerifier: '0x0d6ecac7',
   LSP25ExecuteRelayCall: '0x5ac79908',
 };
 
