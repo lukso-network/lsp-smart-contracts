@@ -2,7 +2,6 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-
 import {ILSP20CallVerifier as ILSP20} from "./ILSP20CallVerifier.sol";
 
 // errors

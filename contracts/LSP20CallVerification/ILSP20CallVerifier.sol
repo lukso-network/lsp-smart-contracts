@@ -29,7 +29,7 @@ interface ILSP20CallVerifier {
     /**
      * @return MUST return the lsp20VerifyCallResult function selector if the call to the function is allowed
      *
-     * @param callHash The keccak256 of the parameters of {lsp20VerifyCall} concatenated
+     * @param callHash The keccak256 hash of the parameters of {lsp20VerifyCall} concatenated
      * @param result The value result of the function called on the msg.sender
      */
     function lsp20VerifyCallResult(

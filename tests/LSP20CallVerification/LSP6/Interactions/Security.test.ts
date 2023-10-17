@@ -107,7 +107,13 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
   it('Should revert when caller calls the KeyManager through `ERC725X.execute`', async () => {
     const lsp20VerifyCallPayload = context.keyManager.interface.encodeFunctionData(
       'lsp20VerifyCall',
-      [context.keyManager.address, context.accounts[2].address, 0, '0xaabbccdd'], // random arguments
+      [
+        context.accounts[2].address,
+        context.keyManager.address,
+        context.accounts[2].address,
+        0,
+        '0xaabbccdd',
+      ], // random arguments
     );
 
     await expect(
@@ -297,6 +303,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
         ]);
 
         const tx = await context.keyManager.lsp20VerifyCall(
+          context.mainController.address,
           context.universalProfile.address,
           context.mainController.address,
           0,
