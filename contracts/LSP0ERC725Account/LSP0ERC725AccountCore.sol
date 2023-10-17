@@ -561,8 +561,20 @@ abstract contract LSP0ERC725AccountCore is
      */
     function acceptOwnership() public virtual override NotInTransferOwnership {
         address previousOwner = owner();
+        address pendingOwnerAddress = pendingOwner();
 
-        _acceptOwnership();
+        bool verifyAfter;
+
+        if (msg.sender != pendingOwnerAddress) {
+            // If the caller is not the owner, call {lsp20VerifyCall} on the pending owner
+            // Depending on the successStatus returned, a second call is done after transferring ownership
+            verifyAfter = _verifyCall(pendingOwnerAddress);
+
+            _setOwner(pendingOwnerAddress);
+            delete _pendingOwner;
+        } else {
+            _acceptOwnership();
+        }
 
         // notify the previous owner if supports LSP1
         previousOwner.tryNotifyUniversalReceiver(
@@ -571,10 +583,16 @@ abstract contract LSP0ERC725AccountCore is
         );
 
         // notify the pending owner if supports LSP1
-        msg.sender.tryNotifyUniversalReceiver(
+        pendingOwnerAddress.tryNotifyUniversalReceiver(
             _TYPEID_LSP0_OwnershipTransferred_RecipientNotification,
             ""
         );
+
+        // If msg.sender != pendingOwnerAddress & verifyAfter is true, Call {lsp20VerifyCallResult} on the new owner
+        // The transferOwnership function does not return, second parameter of {_verifyCallResult} will be empty
+        if (verifyAfter) {
+            _verifyCallResult(pendingOwnerAddress, "");
+        }
     }
 
     /**

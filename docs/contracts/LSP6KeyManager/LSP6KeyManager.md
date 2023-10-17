@@ -1401,9 +1401,11 @@ Reverts when trying to call a function on the linked [`target`](#target), that i
 
 - `execute(uint256,address,uint256,bytes)` (ERC725X)
 
-- `transferOwnership(address)`
+- `transferOwnership(address)` (LSP14)
 
 - `acceptOwnership()` (LSP14)
+
+- `renounceOwnership()` (LSP14)
 
 #### Parameters
 

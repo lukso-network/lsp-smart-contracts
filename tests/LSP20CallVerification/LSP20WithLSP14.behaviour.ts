@@ -6,10 +6,12 @@ import {
   LSP0ERC725Account,
   UPWithInstantAcceptOwnership__factory,
   UPWithInstantAcceptOwnership,
+  LSP6KeyManager__factory,
+  LSP6KeyManager,
 } from '../../types';
 
 // constants
-import { OPERATION_TYPES } from '../../constants';
+import { ERC725YDataKeys, OPERATION_TYPES, PERMISSIONS } from '../../constants';
 
 // helpers
 import { provider } from '../utils/helpers';
@@ -75,7 +77,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         context.contract
           .connect(context.deployParams.owner)
           .transferOwnership(context.contract.address),
-      ).to.be.revertedWithCustomError(context.contract, 'CannotTransferOwnershipToSelf');
+      ).to.be.revertedWithCustomError(context.contract, 'LSP14CannotTransferOwnershipToSelf');
     });
 
     describe('it should still be allowed to call onlyOwner functions', () => {
@@ -151,9 +153,10 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
 
   describe('when calling acceptOwnership(...)', () => {
     it('should revert when caller is not the pending owner', async () => {
-      await expect(
-        context.contract.connect(context.accounts[2]).acceptOwnership(),
-      ).to.be.revertedWith('LSP14: caller is not the pendingOwner');
+      const pendingOwner = await context.contract.pendingOwner();
+      await expect(context.contract.connect(context.accounts[2]).acceptOwnership())
+        .to.be.revertedWithCustomError(context.contract, 'LSP20EOACannotVerifyCall')
+        .withArgs(pendingOwner);
     });
 
     describe('when caller is the pending owner', () => {
@@ -365,7 +368,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         await network.provider.send('hardhat_mine', [ethers.utils.hexValue(98)]);
 
         await expect(context.contract.connect(context.deployParams.owner).renounceOwnership())
-          .to.be.revertedWithCustomError(context.contract, 'NotInRenounceOwnershipInterval')
+          .to.be.revertedWithCustomError(context.contract, 'LSP14NotInRenounceOwnershipInterval')
           .withArgs(
             renounceOwnershipOnceReceipt.blockNumber + 200,
             renounceOwnershipOnceReceipt.blockNumber + 400,
@@ -521,9 +524,10 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         });
 
         it('previous pendingOwner should not be able to call acceptOwnership(...) anymore', async () => {
-          await expect(context.contract.connect(newOwner).acceptOwnership()).to.be.revertedWith(
-            'LSP14: caller is not the pendingOwner',
-          );
+          const pendingOwner = await context.contract.pendingOwner();
+          await expect(context.contract.connect(newOwner).acceptOwnership())
+            .to.be.revertedWithCustomError(context.contract, 'LSP20EOACannotVerifyCall')
+            .withArgs(pendingOwner);
         });
       });
     });
