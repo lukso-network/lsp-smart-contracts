@@ -224,10 +224,10 @@ export const shouldBehaveLikePermissionChangeOwner = (
         pendingOwner = await context.universalProfile.pendingOwner();
       });
 
-      it('should not let you accept ownership if controller does not have permission', async () => {
+      it('should not let you accept ownership if controller does not have permission `CHANGEOWNER`', async () => {
         await expect(context.universalProfile.connect(cannotChangeOwner).acceptOwnership())
-          .to.be.revertedWithCustomError(newKeyManager, 'NoPermissionsSet')
-          .withArgs(cannotChangeOwner.address);
+          .to.be.revertedWithCustomError(newKeyManager, 'NotAuthorised')
+          .withArgs(cannotChangeOwner.address, 'CHANGEOWNER');
       });
 
       it('should let you accept ownership if controller has permission', async () => {
