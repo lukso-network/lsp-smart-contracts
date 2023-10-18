@@ -79,6 +79,7 @@ jobs:
             "lsp17",
             "lsp17extensions",
             "lsp20",
+            "lsp20Singleton",
             "lsp20init",
             "lsp23",
             "universalfactory",

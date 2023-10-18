@@ -2,13 +2,12 @@
 pragma solidity ^0.8.12;
 
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {
     LSP0ERC725AccountInit
 } from "./LSP0ERC725Account/LSP0ERC725AccountInit.sol";
 import {
-    _PERMISSION_CHANGEOWNER,
     ALL_REGULAR_PERMISSIONS,
-    _PERMISSION_CHANGEOWNER,
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX
 } from "./LSP6KeyManager/LSP6Constants.sol";
 import {
@@ -21,12 +20,20 @@ import {
 import {IAccount} from "@account-abstraction/contracts/interfaces/IAccount.sol";
 import {ILSP14Ownable2Step} from "./LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 
+import {
+    IStakeManager
+} from "@account-abstraction/contracts/interfaces/IStakeManager.sol";
+
 /**
  * A wrapper factory contract to deploy Universal Profile as an ERC-4337 account contract.
  */
-contract UniversalProfile4337Factory {
+contract UniversalProfile4337Factory is Ownable {
     bytes32 private constant _4337_PERMISSION =
         0x0000000000000000000000000000000000000000000000000000000000800000;
+
+    constructor(address owner_) {
+        transferOwnership(owner_);
+    }
 
     function createAccount(
         address implementationContract,
@@ -45,20 +52,15 @@ contract UniversalProfile4337Factory {
             address(this)
         );
 
-        bytes32[2] memory regularAnd4337Permission = [
-            ALL_REGULAR_PERMISSIONS,
-            _4337_PERMISSION
-        ];
-
+        // combine all permissions & _4337_PERMISSION
         bytes32[] memory dynamicRegularAnd4337Permission = new bytes32[](2);
-        dynamicRegularAnd4337Permission[0] = regularAnd4337Permission[0];
-        dynamicRegularAnd4337Permission[1] = regularAnd4337Permission[1];
-
+        dynamicRegularAnd4337Permission[0] = ALL_REGULAR_PERMISSIONS;
+        dynamicRegularAnd4337Permission[1] = _4337_PERMISSION;
         bytes32 mainControllerPermission = LSP6Utils.combinePermissions(
             dynamicRegularAnd4337Permission
         );
 
-        // set data to give accept ownership to this controller and all permission to main controller
+        // set data to give all permissions to this contract, set 4337 extension to UP and give all permission to main controller
         bytes32[] memory keys = new bytes32[](3);
         bytes[] memory values = new bytes[](3);
 
@@ -86,8 +88,8 @@ contract UniversalProfile4337Factory {
         );
 
         values[0] = abi.encodePacked(mainControllerPermission);
-        values[1] = abi.encodePacked(extension4337);
-        values[2] = abi.encodePacked(_PERMISSION_CHANGEOWNER);
+        values[1] = abi.encodePacked(ALL_REGULAR_PERMISSIONS);
+        values[2] = abi.encodePacked(extension4337);
 
         LSP0ERC725AccountInit(payable(universalProfileAddress)).setDataBatch(
             keys,
@@ -117,6 +119,24 @@ contract UniversalProfile4337Factory {
         );
 
         return universalProfileAddress;
+    }
+
+    function addStake(
+        address entryPoint,
+        uint32 delay
+    ) public payable onlyOwner {
+        IStakeManager(entryPoint).addStake{value: msg.value}(delay);
+    }
+
+    function unlockStake() public onlyOwner {
+        IStakeManager(msg.sender).unlockStake();
+    }
+
+    function withdrawStake(
+        address entryPoint,
+        address stakeReceiver
+    ) public onlyOwner {
+        IStakeManager(entryPoint).withdrawStake(payable(stakeReceiver));
     }
 
     /**

@@ -477,8 +477,7 @@ contract LSP6KeyManagerSingleton is
         bytes calldata payload
     ) internal virtual returns (bytes memory) {
         (bool success, bytes memory returnData) = targetContract.call{
-            value: msgValue,
-            gas: gasleft()
+            value: msgValue
         }(payload);
         bytes memory result = Address.verifyCallResult(
             success,
