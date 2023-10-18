@@ -17,6 +17,7 @@ export const INTERFACE_IDS = {
   ERC165: '0x01ffc9a7',
   ERC1271: '0x1626ba7e',
   ERC20: '0x36372b07',
+  ERC20Metadata: '0xa219a025',
   ERC223: '0x87d43052',
   ERC721: '0x80ac58cd',
   ERC721Metadata: '0x5b5e139f',
@@ -26,7 +27,8 @@ export const INTERFACE_IDS = {
   ERC725Y: '0x629aa694',
   LSP0ERC725Account: '0x24871b3d',
   LSP1UniversalReceiver: '0x6bb56a14',
-  LSP6KeyManager: '0xe7424397',
+  LSP1UniversalReceiverDelegate: '0xa245bbda',
+  LSP6KeyManager: '0x23f34c62',
   LSP7DigitalAsset: '0x05519512',
   LSP8IdentifiableDigitalAsset: '0x1ae9ba1f',
   LSP9Vault: '0x28af17e6',
@@ -35,7 +37,7 @@ export const INTERFACE_IDS = {
   LSP17Extendable: '0xa918fa6b',
   LSP17Extension: '0xcee78b40',
   LSP20CallVerification: '0x1a0eb6a5',
-  LSP20CallVerifier: '0xc9dfc532',
+  LSP20CallVerifier: '0x0d6ecac7',
   LSP25ExecuteRelayCall: '0x5ac79908',
 };
 
@@ -47,7 +49,7 @@ export const INTERFACE_IDS = {
  * Can be used to check if a signature is valid or not.
  */
 export const ERC1271_VALUES = {
-  MAGIC_VALUE: '0x1626ba7e',
+  SUCCESS_VALUE: '0x1626ba7e',
   FAIL_VALUE: '0xffffffff',
 };
 
@@ -58,12 +60,12 @@ export const ERC1271_VALUES = {
  * @dev values returned by the `lsp20VerifyCall` and `lsp20VerifyCallResult` functions of the LSP20 standard.
  * Can be used to check if a calldata payload was check and verified.
  */
-export const LSP20_MAGIC_VALUES = {
+export const LSP20_SUCCESS_VALUES = {
   VERIFY_CALL: {
-    // bytes3(keccak256("lsp20VerifyCall(address,address,uint256,bytes)")) + "0x00"
-    NO_POST_VERIFICATION: '0x1a238000',
-    // bytes3(keccak256("lsp20VerifyCall(address,address,uint256,bytes)")) + "0x01"
-    WITH_POST_VERIFICATION: '0x1a238001',
+    // bytes3(keccak256("lsp20VerifyCall(address,address,address,uint256,bytes)")) + "0x00"
+    NO_POST_VERIFICATION: '0xde928f00',
+    // bytes3(keccak256("lsp20VerifyCall(address,address,address,uint256,bytes)")) + "0x01"
+    WITH_POST_VERIFICATION: '0xde928f01',
   },
   // bytes4(keccak256("lsp20VerifyCallResult(bytes32,bytes)"))
   VERIFY_CALL_RESULT: '0xd3fc45d3',

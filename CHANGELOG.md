@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.12.0-rc.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.11.1...v0.12.0-rc.0) (2023-10-18)
+
+### ⚠ BREAKING CHANGES
+
+- remove `LSP4Compatibility` contract + ERC20 Compatible token interfaces `ILSP7CompatibleERC20` / `ILSP8CompatibleERC721` (#749)
+- add extra parameter `requestor` to `lsp20VerifyCall` (#753)
+- Roll back to old `LSP1UniversalReceiverDelegate` Interface and functions (#741)
+- remove `isEncodedArray(...)` from `LSP2utils.sol` (#746)
+- add callee params to lsp20 & EXECUTE_RELAY_CALL permission & mapping reentrancyStatus (#729)
+- set LSP8 TokenId Type on deployment / initialization (#712)
+- re-change param name from `allowNonLSP1Recipient` to `force`
+
+### Deprecation
+
+- re-change param name from `allowNonLSP1Recipient` to `force` ([d59a2ff](https://github.com/lukso-network/lsp-smart-contracts/commit/d59a2ff4712a5373ce72ba1ccd63b2d796f60cd9))
+- remove `isEncodedArray(...)` from `LSP2utils.sol` ([#746](https://github.com/lukso-network/lsp-smart-contracts/issues/746)) ([1ff7cd4](https://github.com/lukso-network/lsp-smart-contracts/commit/1ff7cd4e34a91c53ce72f19fb8d469d2ae0c9a09))
+- remove `LSP4Compatibility` contract + ERC20 Compatible token interfaces `ILSP7CompatibleERC20` / `ILSP8CompatibleERC721` ([#749](https://github.com/lukso-network/lsp-smart-contracts/issues/749)) ([b038412](https://github.com/lukso-network/lsp-smart-contracts/commit/b038412c99d5149f25a83156322539e817e1575b))
+- Roll back to old `LSP1UniversalReceiverDelegate` Interface and functions ([#741](https://github.com/lukso-network/lsp-smart-contracts/issues/741)) ([dab41a1](https://github.com/lukso-network/lsp-smart-contracts/commit/dab41a1baf61876865191424a5e19548845f1630))
+- set LSP8 TokenId Type on deployment / initialization ([#712](https://github.com/lukso-network/lsp-smart-contracts/issues/712)) ([67cb333](https://github.com/lukso-network/lsp-smart-contracts/commit/67cb3333256e31a0c432a9bcd62f08e83e969222))
+
+### Features
+
+- add `_afterTokenTransfer` hook in LSP7 + LSP8 ([4e3adc2](https://github.com/lukso-network/lsp-smart-contracts/commit/4e3adc24e233138b8f1471320e3b1bb3307ef524))
+- add `data` param in `_before` and `_after` token transfer hooks ([0cd0976](https://github.com/lukso-network/lsp-smart-contracts/commit/0cd097604193957aeb2d6bf181d9193719621eac))
+- add `callee` params to lsp20 & `EXECUTE_RELAY_CALL` permission & `mapping reentrancyStatus` ([#729](https://github.com/lukso-network/lsp-smart-contracts/issues/729)) ([0ae4c83](https://github.com/lukso-network/lsp-smart-contracts/commit/0ae4c83d80227e53c614d46dce96f8b727822839))
+- add lsp20 to `acceptOwnership` in LSP0 ([#747](https://github.com/lukso-network/lsp-smart-contracts/issues/747)) ([804779a](https://github.com/lukso-network/lsp-smart-contracts/commit/804779a5f7ac76b21695a00c622a7c0e5801192a))
+- allow `endingTimestamp` to be 0 ([a8c730f](https://github.com/lukso-network/lsp-smart-contracts/commit/a8c730f608fdd585c94b69704272bdaec938a565))
+- allow `renounceOwnership()` through LSP6 ([dd74b56](https://github.com/lukso-network/lsp-smart-contracts/commit/dd74b56af54cc01a5e28b50feac2ce6659403cda))
+- allow sending value when using `setData(..)` through the LSP6 ([#725](https://github.com/lukso-network/lsp-smart-contracts/issues/725)) ([624c4a6](https://github.com/lukso-network/lsp-smart-contracts/commit/624c4a6dfa0c5c83c94f0b5e952adc783098d12c))
+- create Extension4337 ([#735](https://github.com/lukso-network/lsp-smart-contracts/issues/735)) ([d1df1d0](https://github.com/lukso-network/lsp-smart-contracts/commit/d1df1d0c106f47bd24427f1c20c3423a00bb993c))
+- add extra parameter `requestor` to `lsp20VerifyCall` ([#753](https://github.com/lukso-network/lsp-smart-contracts/pull/753)) ([f82626d](https://github.com/lukso-network/lsp-smart-contracts/commit/f82626d5f64efd396a40690687dfb5a2dc9c036e))
+
+### Bug Fixes
+
+- add `receive()` function in LSP7 & LSP8 to silent compiler warning ([#711](https://github.com/lukso-network/lsp-smart-contracts/pull/711)) ([e6fb55d](https://github.com/lukso-network/lsp-smart-contracts/commit/e6fb55d9acc7bd63b9d66920f2f346ecf812c289))
+- bug in dodoc config, incorrect signature ([06b1f04](https://github.com/lukso-network/lsp-smart-contracts/commit/06b1f04f83158f27efb19670ed81f566d7b151ba))
+- return `bytes32(0)` when permission value retrieved is not exactly 32 bytes long ([7422ab0](https://github.com/lukso-network/lsp-smart-contracts/commit/7422ab053b27f1139dc8b917218bebd2407009b9))
+- ts configs and tests ([#733](https://github.com/lukso-network/lsp-smart-contracts/issues/733)) ([a977312](https://github.com/lukso-network/lsp-smart-contracts/commit/a977312f99a3f957e581f5b502ef818f033f3846))
+- update logic to check against controller permissions when setting its Allowed Calls or ERC725Y Data Keys ([#734](https://github.com/lukso-network/lsp-smart-contracts/issues/734)) ([0d43077](https://github.com/lukso-network/lsp-smart-contracts/commit/0d43077a96b542f645d50cf9389f26c292c8b39e))
+
 ## [0.11.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.11.0-rc.1...v0.11.0) (2023-09-07)
 
 ### ⚠ BREAKING CHANGES

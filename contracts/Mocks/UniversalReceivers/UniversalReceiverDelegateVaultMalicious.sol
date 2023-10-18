@@ -9,6 +9,10 @@ import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
+import {
+    ILSP1UniversalReceiverDelegate
+} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+
 // modules
 import {
     ERC165Storage
@@ -17,7 +21,7 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 // constants
 import {
-    _INTERFACEID_LSP1,
+    _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
 } from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 import {
@@ -31,15 +35,20 @@ import {
 /**
  * @dev This contract is used only for testing
  */
-contract UniversalReceiverDelegateVaultMalicious is ERC165Storage {
+contract UniversalReceiverDelegateVaultMalicious is
+    ERC165Storage,
+    ILSP1UniversalReceiverDelegate
+{
     constructor() {
-        _registerInterface(_INTERFACEID_LSP1);
+        _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }
 
-    function universalReceiver(
+    function universalReceiverDelegate(
+        address /*sender*/,
+        uint256 /*value*/,
         bytes32 typeId,
         bytes memory data
-    ) public virtual returns (bytes memory) {
+    ) public virtual override returns (bytes memory) {
         if (typeId == keccak256(abi.encodePacked("setData"))) {
             if (data[0] == 0x00) {
                 IERC725Y(msg.sender).setData(

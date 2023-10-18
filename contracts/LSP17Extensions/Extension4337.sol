@@ -71,16 +71,17 @@ contract Extension4337 is LSP17Extension, IAccount {
         address owner = LSP14Ownable2Step(msg.sender).owner();
 
         // verify that the recovered address can execute the userOp.callData
-        bytes4 magicValue = ILSP20CallVerifier(owner).lsp20VerifyCall({
-            callee: msg.sender,
+        bytes4 returnedStatus = ILSP20CallVerifier(owner).lsp20VerifyCall({
+            requestor: _ENTRY_POINT,
+            target: msg.sender,
             caller: recovered,
             value: 0,
-            receivedCalldata: userOp.callData
+            callData: userOp.callData
         });
 
-        // if the call verifier returns a different magic value, return signature validation failed
+        // if the returnedStatus is a value different than the success value, return signature validation failed
         if (
-            bytes3(magicValue) !=
+            bytes3(returnedStatus) !=
             bytes3(ILSP20CallVerifier.lsp20VerifyCall.selector)
         ) {
             return _SIG_VALIDATION_FAILED;

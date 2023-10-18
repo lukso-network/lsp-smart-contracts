@@ -44,7 +44,7 @@ export const shouldBehaveLikePermissionSign = (buildContext: () => Promise<LSP6T
         const signature = await signer.signMessage(dataToSign);
 
         const result = await context.keyManager.callStatic.isValidSignature(messageHash, signature);
-        expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+        expect(result).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
 
       it("e.g: with EIP191Signer '\\x19\\x00'", async () => {
@@ -60,7 +60,7 @@ export const shouldBehaveLikePermissionSign = (buildContext: () => Promise<LSP6T
           signedMessage.messageHash,
           signedMessage.signature,
         );
-        expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+        expect(result).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
     });
   });
@@ -72,7 +72,7 @@ export const shouldBehaveLikePermissionSign = (buildContext: () => Promise<LSP6T
         const signature = await signer.signMessage(dataToSign);
 
         const result = await context.keyManager.callStatic.isValidSignature(messageHash, signature);
-        expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+        expect(result).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
 
       it("e.g: with EIP191Signer '\\x19\\x00'", async () => {
@@ -87,7 +87,7 @@ export const shouldBehaveLikePermissionSign = (buildContext: () => Promise<LSP6T
           signedMessage.messageHash,
           signedMessage.signature,
         );
-        expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+        expect(result).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
     });
   });

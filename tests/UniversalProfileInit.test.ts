@@ -86,13 +86,13 @@ describe('UniversalProfileInit with proxy', () => {
 
     const universalProfile = universalProfileInit.attach(universalProfileProxy);
 
-    const onlyOwnerRevertString = 'Ownable: caller is not the owner';
+    const onlyOwnerCustomError = 'OwnableCallerNotTheOwner';
 
     return {
       accounts,
       contract: universalProfile,
       deployParams,
-      onlyOwnerRevertString,
+      onlyOwnerCustomError,
     };
   };
 

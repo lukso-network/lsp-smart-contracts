@@ -6,9 +6,6 @@ import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
-// libraries
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-
 /**
  * @title LSP2 Utility library.
  * @author Jean Cavallera <CJ42>, Yamen Merhi <YamenMerhi>, Daniel Afteni <B00ste>
@@ -17,8 +14,6 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
  * Based on LSP2 ERC725Y JSON Schema standard.
  */
 library LSP2Utils {
-    using BytesLib for bytes;
-
     /**
      * @dev Generates a data key of keyType Singleton by hashing the string `keyName`. As:
      *
@@ -283,29 +278,6 @@ library LSP2Utils {
         bytes32 jsonDigest = keccak256(bytes(assetBytes));
 
         return abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
-    }
-
-    /**
-     * @dev Verify if `data` is an abi-encoded array.
-     *
-     * @param data The bytes value to verify.
-     *
-     * @return `true` if the `data` represents an abi-encoded array, `false` otherwise.
-     */
-    function isEncodedArray(bytes memory data) internal pure returns (bool) {
-        uint256 nbOfBytes = data.length;
-
-        // there must be at least 32 x length bytes after offset
-        uint256 offset = uint256(bytes32(data));
-        if (nbOfBytes < offset + 32) return false;
-        uint256 arrayLength = data.toUint256(offset);
-
-        //   32 bytes word (= offset)
-        // + 32 bytes word (= array length)
-        // + remaining bytes that make each element of the array
-        if (nbOfBytes < (offset + 32 + (arrayLength * 32))) return false;
-
-        return true;
     }
 
     /**

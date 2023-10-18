@@ -11,19 +11,19 @@ import {
   NotImplementingVerifyCall__factory,
   ImplementingFallback,
   ImplementingFallback__factory,
-  FallbackReturnMagicValue,
-  FallbackReturnMagicValue__factory,
-  FirstCallReturnExpandedInvalidValue,
-  FirstCallReturnExpandedInvalidValue__factory,
-  FirstCallReturnInvalidMagicValue,
-  FirstCallReturnInvalidMagicValue__factory,
+  FallbackReturnSuccessValue,
+  FallbackReturnSuccessValue__factory,
+  FirstCallReturnExpandedFailValue,
+  FirstCallReturnExpandedFailValue__factory,
+  FirstCallReturnFailValue,
+  FirstCallReturnFailValue__factory,
   LSP0ERC725Account,
   ILSP20CallVerifier,
   ILSP20CallVerifier__factory,
 } from '../../types';
 
 // constants
-import { LSP20_MAGIC_VALUES, OPERATION_TYPES } from '../../constants';
+import { LSP20_SUCCESS_VALUES, OPERATION_TYPES } from '../../constants';
 
 export type LSP20TestContext = {
   accounts: SignerWithAddress[];
@@ -272,11 +272,11 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
       });
 
-      describe('that implement the fallback that return the magicValue', () => {
-        let ownerContract: FallbackReturnMagicValue;
+      describe('that implement the fallback that return the success value', () => {
+        let ownerContract: FallbackReturnSuccessValue;
 
         before('deploying a new owner', async () => {
-          ownerContract = await new FallbackReturnMagicValue__factory(
+          ownerContract = await new FallbackReturnSuccessValue__factory(
             context.deployParams.owner,
           ).deploy();
 
@@ -307,10 +307,10 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe('that implements verifyCall but return an expanded bytes32 value', () => {
-        let ownerContract: FirstCallReturnExpandedInvalidValue;
+        let ownerContract: FirstCallReturnExpandedFailValue;
 
         before('deploying a new owner', async () => {
-          ownerContract = await new FirstCallReturnExpandedInvalidValue__factory(
+          ownerContract = await new FirstCallReturnExpandedFailValue__factory(
             context.deployParams.owner,
           ).deploy();
 
@@ -339,11 +339,11 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
       });
 
-      describe("that implements verifyCall but doesn't return magic value", () => {
-        let ownerContract: FirstCallReturnInvalidMagicValue;
+      describe("that implements verifyCall but doesn't return success value", () => {
+        let ownerContract: FirstCallReturnFailValue;
 
         before('deploying a new owner', async () => {
-          ownerContract = await new FirstCallReturnInvalidMagicValue__factory(
+          ownerContract = await new FirstCallReturnFailValue__factory(
             context.deployParams.owner,
           ).deploy();
 
@@ -367,23 +367,23 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
           const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
 
           await expect(context.universalProfile.setData(dataKey, dataValue))
-            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20InvalidMagicValue')
+            .to.be.revertedWithCustomError(context.universalProfile, 'LSP20CallVerificationFailed')
             .withArgs(false, '0xaabbccdd' + '0'.repeat(56));
         });
       });
 
-      describe("that implements verifyCall that returns a valid magicValue but doesn't invoke verifyCallResult", () => {
-        let firstCallReturnMagicValueContract: FakeContract;
+      describe("that implements verifyCall that returns a valid success value but doesn't invoke verifyCallResult", () => {
+        let firstCallReturnSuccessValueContract: FakeContract;
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {
-          firstCallReturnMagicValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
-          firstCallReturnMagicValueContract.lsp20VerifyCall.returns(
-            LSP20_MAGIC_VALUES.VERIFY_CALL.NO_POST_VERIFICATION,
+          firstCallReturnSuccessValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
+          firstCallReturnSuccessValueContract.lsp20VerifyCall.returns(
+            LSP20_SUCCESS_VALUES.VERIFY_CALL.NO_POST_VERIFICATION,
           );
 
           newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
-            firstCallReturnMagicValueContract.address,
+            firstCallReturnSuccessValueContract.address,
           );
         });
 
@@ -400,21 +400,21 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
       });
 
-      describe('that implements verifyCall that returns a valid magicValue with additional data after the first 32 bytes', () => {
-        let firstCallReturnMagicValueContract: FakeContract;
+      describe('that implements verifyCall that returns a valid success value with additional data after the first 32 bytes', () => {
+        let firstCallReturnSuccessValueContract: FakeContract;
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {
-          firstCallReturnMagicValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
-          firstCallReturnMagicValueContract.lsp20VerifyCall.returns(
-            LSP20_MAGIC_VALUES.VERIFY_CALL.NO_POST_VERIFICATION +
+          firstCallReturnSuccessValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
+          firstCallReturnSuccessValueContract.lsp20VerifyCall.returns(
+            LSP20_SUCCESS_VALUES.VERIFY_CALL.NO_POST_VERIFICATION +
               '0'.repeat(56) +
               '0xcafecafecafecafecafecafecafecafecafecafe' +
               '0'.repeat(24),
           );
 
           newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
-            firstCallReturnMagicValueContract.address,
+            firstCallReturnSuccessValueContract.address,
           );
         });
 
@@ -433,21 +433,21 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
       });
 
-      describe('that implements verifyCall and verifyCallResult and both return magic value', () => {
-        let bothCallReturnMagicValueContract: FakeContract<ILSP20CallVerifier>;
+      describe('that implements verifyCall and verifyCallResult and both return success value', () => {
+        let bothCallReturnSuccessValueContract: FakeContract<ILSP20CallVerifier>;
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {
-          bothCallReturnMagicValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
-          bothCallReturnMagicValueContract.lsp20VerifyCall.returns(
-            LSP20_MAGIC_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION,
+          bothCallReturnSuccessValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
+          bothCallReturnSuccessValueContract.lsp20VerifyCall.returns(
+            LSP20_SUCCESS_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION,
           );
-          bothCallReturnMagicValueContract.lsp20VerifyCallResult.returns(
-            LSP20_MAGIC_VALUES.VERIFY_CALL_RESULT,
+          bothCallReturnSuccessValueContract.lsp20VerifyCallResult.returns(
+            LSP20_SUCCESS_VALUES.VERIFY_CALL_RESULT,
           );
 
           newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
-            bothCallReturnMagicValueContract.address,
+            bothCallReturnSuccessValueContract.address,
           );
         });
 
@@ -464,27 +464,27 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
       });
 
-      describe('that implements verifyCall and verifyCallResult and both return magic value plus additional data', () => {
-        let bothCallReturnMagicValueContract: FakeContract<ILSP20CallVerifier>;
+      describe('that implements verifyCall and verifyCallResult and both return success value plus additional data', () => {
+        let bothCallReturnSuccessValueContract: FakeContract<ILSP20CallVerifier>;
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {
-          bothCallReturnMagicValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
-          bothCallReturnMagicValueContract.lsp20VerifyCall.returns(
-            LSP20_MAGIC_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION +
+          bothCallReturnSuccessValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
+          bothCallReturnSuccessValueContract.lsp20VerifyCall.returns(
+            LSP20_SUCCESS_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION +
               '0'.repeat(56) +
               '0xcafecafecafecafecafecafecafecafecafecafe' +
               '0'.repeat(24),
           );
-          bothCallReturnMagicValueContract.lsp20VerifyCallResult.returns(
-            LSP20_MAGIC_VALUES.VERIFY_CALL_RESULT +
+          bothCallReturnSuccessValueContract.lsp20VerifyCallResult.returns(
+            LSP20_SUCCESS_VALUES.VERIFY_CALL_RESULT +
               '0'.repeat(56) +
               '0xcafecafecafecafecafecafecafecafecafecafe' +
               '0'.repeat(24),
           );
 
           newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
-            bothCallReturnMagicValueContract.address,
+            bothCallReturnSuccessValueContract.address,
           );
         });
 
@@ -503,14 +503,14 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
       });
 
-      describe('that implements verifyCallResult but return invalid magicValue', () => {
+      describe('that implements verifyCallResult but return fail value', () => {
         let secondCallReturnFailureContract: FakeContract<ILSP20CallVerifier>;
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {
           secondCallReturnFailureContract = await smock.fake(ILSP20CallVerifier__factory.abi);
           secondCallReturnFailureContract.lsp20VerifyCall.returns(
-            LSP20_MAGIC_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION,
+            LSP20_SUCCESS_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION,
           );
           secondCallReturnFailureContract.lsp20VerifyCallResult.returns('0x00000000');
 
@@ -525,23 +525,23 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
 
           await expect(
             newUniversalProfile.connect(context.accounts[3]).setData(key, value),
-          ).to.be.revertedWithCustomError(newUniversalProfile, 'LSP20InvalidMagicValue');
+          ).to.be.revertedWithCustomError(newUniversalProfile, 'LSP20CallVerificationFailed');
         });
       });
 
-      describe('that implements verifyCallResult but return an expanded magic value', () => {
+      describe('that implements verifyCallResult but return an expanded success value', () => {
         let secondCallReturnExpandedValueContract: FakeContract<ILSP20CallVerifier>;
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {
           secondCallReturnExpandedValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
           secondCallReturnExpandedValueContract.lsp20VerifyCall.returns(
-            LSP20_MAGIC_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION,
+            LSP20_SUCCESS_VALUES.VERIFY_CALL.WITH_POST_VERIFICATION,
           );
           secondCallReturnExpandedValueContract.lsp20VerifyCallResult.returns(
             ethers.utils.solidityPack(
               ['bytes4', 'bytes28'],
-              [LSP20_MAGIC_VALUES.VERIFY_CALL_RESULT, '0x' + '0'.repeat(56)],
+              [LSP20_SUCCESS_VALUES.VERIFY_CALL_RESULT, '0x' + '0'.repeat(56)],
             ),
           );
 

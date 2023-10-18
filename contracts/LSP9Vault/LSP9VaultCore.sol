@@ -5,6 +5,10 @@ pragma solidity ^0.8.4;
 import {
     ILSP1UniversalReceiver
 } from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+
+import {
+    ILSP1UniversalReceiverDelegate
+} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 import {ILSP9Vault} from "./ILSP9Vault.sol";
 
 // libraries
@@ -40,6 +44,7 @@ import {
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_LSP1,
+    _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -337,16 +342,17 @@ contract LSP9VaultCore is
 
             if (
                 universalReceiverDelegate.supportsERC165InterfaceUnchecked(
-                    _INTERFACEID_LSP1
+                    _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
                 _reentrantDelegate = universalReceiverDelegate;
-                resultDefaultDelegate = universalReceiverDelegate
-                    .callUniversalReceiverWithCallerInfos(
-                        typeId,
-                        receivedData,
+                resultDefaultDelegate = ILSP1UniversalReceiverDelegate(
+                    universalReceiverDelegate
+                ).universalReceiverDelegate(
                         msg.sender,
-                        msg.value
+                        msg.value,
+                        typeId,
+                        receivedData
                     );
             }
         }
@@ -366,16 +372,17 @@ contract LSP9VaultCore is
 
             if (
                 universalReceiverDelegate.supportsERC165InterfaceUnchecked(
-                    _INTERFACEID_LSP1
+                    _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
                 _reentrantDelegate = universalReceiverDelegate;
-                resultTypeIdDelegate = universalReceiverDelegate
-                    .callUniversalReceiverWithCallerInfos(
-                        typeId,
-                        receivedData,
+                resultTypeIdDelegate = ILSP1UniversalReceiverDelegate(
+                    universalReceiverDelegate
+                ).universalReceiverDelegate(
                         msg.sender,
-                        msg.value
+                        msg.value,
+                        typeId,
+                        receivedData
                     );
             }
         }

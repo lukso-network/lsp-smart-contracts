@@ -6,7 +6,7 @@ import {ILSP20CallVerifier as ILSP20} from "./ILSP20CallVerifier.sol";
 
 // errors
 import {
-    LSP20InvalidMagicValue,
+    LSP20CallVerificationFailed,
     LSP20CallingVerifierFailed,
     LSP20EOACannotVerifyCall
 } from "./LSP20Errors.sol";
@@ -15,7 +15,7 @@ import {
  * @title Implementation of a contract calling the verification functions according to LSP20 - Call Verification standard.
  *
  * @dev Module to be inherited used to verify the execution of functions according to a verifier address.
- * Verification can happen before or after execution based on a magicValue.
+ * Verification can happen before or after execution based on a returnedStatus.
  */
 abstract contract LSP20CallVerification {
     /**
@@ -37,6 +37,7 @@ abstract contract LSP20CallVerification {
         // Reverts with no reason if the returned data type is not a `bytes4` value
         try
             ILSP20(logicVerifier).lsp20VerifyCall(
+                msg.sender,
                 address(this),
                 msg.sender,
                 msg.value,
@@ -44,7 +45,10 @@ abstract contract LSP20CallVerification {
             )
         returns (bytes4 magicValue) {
             if (bytes3(magicValue) != bytes3(ILSP20.lsp20VerifyCall.selector)) {
-                revert LSP20InvalidMagicValue(false, abi.encode(magicValue));
+                revert LSP20CallVerificationFailed(
+                    false,
+                    abi.encode(magicValue)
+                );
             }
 
             return magicValue[3] == 0x01;
@@ -70,6 +74,7 @@ abstract contract LSP20CallVerification {
             ILSP20(logicVerifier).lsp20VerifyCallResult(
                 keccak256(
                     abi.encodePacked(
+                        msg.sender,
                         address(this),
                         msg.sender,
                         msg.value,
@@ -80,7 +85,10 @@ abstract contract LSP20CallVerification {
             )
         returns (bytes4 magicValue) {
             if (magicValue != ILSP20.lsp20VerifyCallResult.selector) {
-                revert LSP20InvalidMagicValue(true, abi.encode(magicValue));
+                revert LSP20CallVerificationFailed(
+                    true,
+                    abi.encode(magicValue)
+                );
             }
 
             return;

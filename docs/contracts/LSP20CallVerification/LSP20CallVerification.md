@@ -16,7 +16,7 @@
 
 > Implementation of a contract calling the verification functions according to LSP20 - Call Verification standard.
 
-Module to be inherited used to verify the execution of functions according to a verifier address. Verification can happen before or after execution based on a magicValue.
+Module to be inherited used to verify the execution of functions according to a verifier address. Verification can happen before or after execution based on a returnedStatus.
 
 ## Internal Methods
 

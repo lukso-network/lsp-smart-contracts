@@ -99,6 +99,7 @@ contract LSP6SetDataTest is Test {
 
         // CHECK the LSP20 verification function reverts as well
         keyManager.lsp20VerifyCall(
+            malicious,
             address(universalProfile),
             malicious,
             0,
@@ -224,6 +225,7 @@ contract LSP6SetDataTest is Test {
 
         // CHECK the LSP20 verification function reverts as well
         keyManager.lsp20VerifyCall(
+            malicious,
             address(universalProfile),
             malicious,
             0,

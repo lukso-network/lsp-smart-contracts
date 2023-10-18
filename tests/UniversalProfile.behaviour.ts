@@ -48,7 +48,7 @@ export const shouldBehaveLikeLSP3 = (
       const signature = await signer.signMessage(dataToSign);
 
       const result = await context.universalProfile.isValidSignature(messageHash, signature);
-      expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+      expect(result).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
     });
 
     it('should return fail value when verifying signature from non-owner', async () => {

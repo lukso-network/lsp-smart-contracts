@@ -69,7 +69,10 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       await expect(
         context.keyManager.connect(canChangeOwner).execute(transferOwnershipPayload),
-      ).to.be.revertedWithCustomError(context.universalProfile, 'CannotTransferOwnershipToSelf');
+      ).to.be.revertedWithCustomError(
+        context.universalProfile,
+        'LSP14CannotTransferOwnershipToSelf',
+      );
     });
   });
 
@@ -225,9 +228,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       const payload = context.universalProfile.interface.getSighash('acceptOwnership');
 
-      await expect(
-        notPendingKeyManager.connect(context.mainController).execute(payload),
-      ).to.be.revertedWith('LSP14: caller is not the pendingOwner');
+      await expect(notPendingKeyManager.connect(context.mainController).execute(payload))
+        .to.be.revertedWithCustomError(context.keyManager, 'NoPermissionsSet')
+        .withArgs(notPendingKeyManager.address);
     });
   });
 

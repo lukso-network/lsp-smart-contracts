@@ -1270,14 +1270,21 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
   });
 
   describe('when the contract was initialized', () => {
-    it('should have registered its ERC165 interface', async () => {
+    it('should support ERC721 interface', async () => {
+      expect(await context.lsp8CompatibleERC721.supportsInterface(INTERFACE_IDS.ERC721)).to.be.true;
+    });
+
+    it('should support ERC721Metadata interface', async () => {
+      expect(await context.lsp8CompatibleERC721.supportsInterface(INTERFACE_IDS.ERC721Metadata)).to
+        .be.true;
+    });
+
+    it('should support LSP8 interface', async () => {
       expect(
         await context.lsp8CompatibleERC721.supportsInterface(
           INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
         ),
-      );
-      expect(await context.lsp8CompatibleERC721.supportsInterface(INTERFACE_IDS.ERC721));
-      expect(await context.lsp8CompatibleERC721.supportsInterface(INTERFACE_IDS.ERC721Metadata));
+      ).to.be.true;
     });
 
     it('should have set expected entries with ERC725Y.setData', async () => {
@@ -1308,6 +1315,34 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
         .to.emit(context.lsp8CompatibleERC721, 'DataChanged')
         .withArgs(symbolKey, expectedSymbolValue);
       expect(await context.lsp8CompatibleERC721.getData(symbolKey)).to.equal(expectedSymbolValue);
+    });
+
+    describe('when using the functions from IERC721Metadata', () => {
+      it('should allow reading `name()`', async () => {
+        // using compatibility getter -> returns(string)
+        const nameAsString = await context.lsp8CompatibleERC721.name();
+        expect(nameAsString).to.equal(context.deployParams.name);
+
+        // using getData -> returns(bytes)
+        const nameAsBytes = await context.lsp8CompatibleERC721.getData(
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('LSP4TokenName')),
+        );
+
+        expect(ethers.utils.toUtf8String(nameAsBytes)).to.equal(context.deployParams.name);
+      });
+
+      it('should allow reading `symbol()`', async () => {
+        // using compatibility getter -> returns(string)
+        const symbolAsString = await context.lsp8CompatibleERC721.symbol();
+        expect(symbolAsString).to.equal(context.deployParams.symbol);
+
+        // using getData -> returns(bytes)
+        const symbolAsBytes = await context.lsp8CompatibleERC721.getData(
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('LSP4TokenSymbol')),
+        );
+
+        expect(ethers.utils.toUtf8String(symbolAsBytes)).to.equal(context.deployParams.symbol);
+      });
     });
   });
 };

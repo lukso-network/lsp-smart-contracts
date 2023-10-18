@@ -47,39 +47,6 @@ supports the LSP1 interface.
 
 <br/>
 
-### callUniversalReceiverWithCallerInfos
-
-```solidity
-function callUniversalReceiverWithCallerInfos(
-  address universalReceiverDelegate,
-  bytes32 typeId,
-  bytes receivedData,
-  address msgSender,
-  uint256 msgValue
-) internal nonpayable returns (bytes);
-```
-
-Call a LSP1UniversalReceiverDelegate contract at `universalReceiverDelegate` address and append `msgSender` and `msgValue`
-as additional informations in the calldata.
-
-#### Parameters
-
-| Name                        |   Type    | Description                                                                                       |
-| --------------------------- | :-------: | ------------------------------------------------------------------------------------------------- |
-| `universalReceiverDelegate` | `address` | The address of the LSP1UniversalReceiverDelegate to delegate the `universalReceiver` function to. |
-| `typeId`                    | `bytes32` | A `bytes32` typeId.                                                                               |
-| `receivedData`              |  `bytes`  | The data sent initially to the `universalReceiver` function.                                      |
-| `msgSender`                 | `address` | The address that initially called the `universalReceiver` function.                               |
-| `msgValue`                  | `uint256` | The amount of native token received initially by the `universalReceiver` function.                |
-
-#### Returns
-
-| Name |  Type   | Description                                                      |
-| ---- | :-----: | ---------------------------------------------------------------- |
-| `0`  | `bytes` | The data returned by the LSP1UniversalReceiverDelegate contract. |
-
-<br/>
-
 ### getLSP1DelegateValue
 
 ```solidity

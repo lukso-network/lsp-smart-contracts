@@ -79,7 +79,7 @@ describe('LSP7DigitalAssetInit with proxy', () => {
           ethers.constants.AddressZero,
           false,
         ),
-      ).to.be.revertedWith('Ownable: new owner is the zero address');
+      ).to.be.revertedWithCustomError(context.lsp7, 'OwnableCannotSetZeroAddressAsOwner');
     });
 
     describe('when initializing the contract', () => {
