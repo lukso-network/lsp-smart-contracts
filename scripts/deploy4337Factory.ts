@@ -1,10 +1,10 @@
 import { ethers } from 'hardhat';
 
 async function main() {
-  const gasPrice = await ethers.provider.getGasPrice();
   const gasLimit = 30_000_000;
+  const [deployer] = await ethers.getSigners();
   const FactoryFactory = await ethers.getContractFactory('UniversalProfile4337Factory');
-  const factory = await FactoryFactory.deploy({ gasPrice, gasLimit });
+  const factory = await FactoryFactory.deploy(deployer.address);
   console.log(factory);
   await factory.deployed();
 
