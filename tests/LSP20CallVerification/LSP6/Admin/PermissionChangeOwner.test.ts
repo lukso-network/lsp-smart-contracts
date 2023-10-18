@@ -54,7 +54,10 @@ export const shouldBehaveLikePermissionChangeOwner = (
         context.universalProfile
           .connect(canChangeOwner)
           .transferOwnership(context.universalProfile.address),
-      ).to.be.revertedWithCustomError(context.universalProfile, 'CannotTransferOwnershipToSelf');
+      ).to.be.revertedWithCustomError(
+        context.universalProfile,
+        'LSP14CannotTransferOwnershipToSelf',
+      );
     });
   });
 
@@ -199,38 +202,49 @@ export const shouldBehaveLikePermissionChangeOwner = (
         context.universalProfile.address,
       );
 
+      const pendignOwner = await context.universalProfile.pendingOwner();
+
       const payload = context.universalProfile.interface.getSighash('acceptOwnership');
 
-      await expect(
-        notPendingKeyManager.connect(context.mainController).execute(payload),
-      ).to.be.revertedWith('LSP14: caller is not the pendingOwner');
+      await expect(notPendingKeyManager.connect(context.mainController).execute(payload))
+        .to.be.revertedWithCustomError(context.universalProfile, 'LSP20EOACannotVerifyCall')
+        .withArgs(pendignOwner);
     });
   });
 
-  describe('when calling acceptOwnership(...) via the pending new KeyManager', () => {
+  describe('when calling acceptOwnership(...) directly on the contract', () => {
     let pendingOwner: string;
 
-    before(async () => {
-      await context.universalProfile
-        .connect(context.mainController)
-        .transferOwnership(newKeyManager.address);
+    describe('when pending owner is a new Key Manager', () => {
+      before(async () => {
+        await context.universalProfile
+          .connect(context.mainController)
+          .transferOwnership(newKeyManager.address);
 
-      pendingOwner = await context.universalProfile.pendingOwner();
+        pendingOwner = await context.universalProfile.pendingOwner();
+      });
 
-      const acceptOwnershipPayload =
-        context.universalProfile.interface.getSighash('acceptOwnership');
+      it('should not let you accept ownership if controller does not have permission `CHANGEOWNER`', async () => {
+        await expect(context.universalProfile.connect(cannotChangeOwner).acceptOwnership())
+          .to.be.revertedWithCustomError(newKeyManager, 'NotAuthorised')
+          .withArgs(cannotChangeOwner.address, 'TRANSFEROWNERSHIP');
+      });
 
-      await newKeyManager.connect(context.mainController).execute(acceptOwnershipPayload);
-    });
+      it('should let you accept ownership if controller has permission', async () => {
+        await context.universalProfile.connect(canChangeOwner).acceptOwnership();
 
-    it("should have change the account's owner to the pendingOwner (= pending KeyManager)", async () => {
-      const updatedOwner = await context.universalProfile.owner();
-      expect(updatedOwner).to.equal(pendingOwner);
-    });
+        expect(await context.universalProfile.owner()).to.equal(newKeyManager.address);
+      });
 
-    it('should have cleared the pendingOwner after transfering ownership', async () => {
-      const newPendingOwner = await context.universalProfile.pendingOwner();
-      expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
+      it("should have change the account's owner to the pendingOwner (= pending KeyManager)", async () => {
+        const updatedOwner = await context.universalProfile.owner();
+        expect(updatedOwner).to.equal(pendingOwner);
+      });
+
+      it('should have cleared the pendingOwner after transfering ownership', async () => {
+        const newPendingOwner = await context.universalProfile.pendingOwner();
+        expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
+      });
     });
   });
 

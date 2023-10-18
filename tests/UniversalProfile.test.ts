@@ -72,9 +72,9 @@ describe('UniversalProfile with constructor', () => {
       { value: initialFunding },
     );
 
-    const onlyOwnerRevertString = 'Ownable: caller is not the owner';
+    const onlyOwnerCustomError = 'OwnableCallerNotTheOwner';
 
-    return { accounts, contract, deployParams, onlyOwnerRevertString };
+    return { accounts, contract, deployParams, onlyOwnerCustomError };
   };
 
   const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {

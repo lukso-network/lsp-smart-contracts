@@ -166,7 +166,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
 
       await expect(
         context.keyManager.connect(context.mainController).execute(payload),
-      ).to.be.revertedWith('Ownable: caller is not the owner');
+      ).to.be.revertedWithCustomError(context.token, 'OwnableCallerNotTheOwner');
     });
 
     it('should allow the new owner to call setData(..)', async () => {
@@ -208,7 +208,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
 
       await expect(
         context.keyManager.connect(context.mainController).execute(transferOwnershipPayload),
-      ).to.be.revertedWith('Ownable: caller is not the owner');
+      ).to.be.revertedWithCustomError(context.token, 'OwnableCallerNotTheOwner');
     });
 
     it('should allow the new owner to call transferOwnership(..)', async () => {
@@ -223,7 +223,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
 
       await expect(
         context.keyManager.connect(context.mainController).execute(renounceOwnershipPayload),
-      ).to.be.revertedWith('Ownable: caller is not the owner');
+      ).to.be.revertedWithCustomError(context.token, 'OwnableCallerNotTheOwner');
     });
 
     it('should allow the new owner to call renounceOwnership(..)', async () => {
@@ -677,7 +677,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
         const signature = await addressCanSign.signMessage('Some random message');
         const validityOfTheSig = await context.keyManager.isValidSignature(dataHash, signature);
 
-        expect(validityOfTheSig).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+        expect(validityOfTheSig).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
 
       it('should not be allowed to sign messages for the token contract', async () => {

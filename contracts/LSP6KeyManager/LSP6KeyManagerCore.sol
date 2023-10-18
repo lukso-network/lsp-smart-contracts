@@ -51,7 +51,7 @@ import {
 
 import {
     _INTERFACEID_ERC1271,
-    _ERC1271_MAGICVALUE,
+    _ERC1271_SUCCESSVALUE,
     _ERC1271_FAILVALUE
 } from "../LSP0ERC725Account/LSP0Constants.sol";
 import {
@@ -61,9 +61,9 @@ import {
 } from "./LSP6Constants.sol";
 import {
     _INTERFACEID_LSP20_CALL_VERIFIER,
-    _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION,
-    _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION,
-    _LSP20_VERIFY_CALL_RESULT_MAGIC_VALUE
+    _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITHOUT_POST_VERIFICATION,
+    _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITH_POST_VERIFICATION,
+    _LSP20_VERIFY_CALL_RESULT_SUCCESS_VALUE
 } from "../LSP20CallVerification/LSP20Constants.sol";
 import {_INTERFACEID_LSP25} from "../LSP25ExecuteRelayCall/LSP25Constants.sol";
 
@@ -143,14 +143,14 @@ abstract contract LSP6KeyManagerCore is
      * @inheritdoc IERC1271
      *
      * @dev Checks if a signature was signed by a controller that has the permission `SIGN`.
-     * If the signer is a controller with the permission `SIGN`, it will return the ERC1271 magic value.
+     * If the signer is a controller with the permission `SIGN`, it will return the ERC1271 success value.
      *
-     * @return magicValue `0x1626ba7e` on success, or `0xffffffff` on failure.
+     * @return returnedStatus `0x1626ba7e` on success, or `0xffffffff` on failure.
      */
     function isValidSignature(
         bytes32 dataHash,
         bytes memory signature
-    ) public view virtual override returns (bytes4 magicValue) {
+    ) public view virtual override returns (bytes4 returnedStatus) {
         // if isValidSignature fail, the error is catched in returnedError
         (address recoveredAddress, ECDSA.RecoverError returnedError) = ECDSA
             .tryRecover(dataHash, signature);
@@ -159,12 +159,12 @@ abstract contract LSP6KeyManagerCore is
         if (returnedError != ECDSA.RecoverError.NoError)
             return _ERC1271_FAILVALUE;
 
-        // if the address recovered has SIGN permission return the ERC1271 magic value, otherwise the fail value
+        // if the address recovered has SIGN permission return the ERC1271 success value, otherwise the fail value
         return (
             ERC725Y(_target).getPermissionsFor(recoveredAddress).hasPermission(
                 _PERMISSION_SIGN
             )
-                ? _ERC1271_MAGICVALUE
+                ? _ERC1271_SUCCESSVALUE
                 : _ERC1271_FAILVALUE
         );
     }
@@ -313,18 +313,19 @@ abstract contract LSP6KeyManagerCore is
      * Anyone can call this function to verify if the `caller` has the right permissions to perform the abi-encoded function call `data`
      * on the {`target`} contract (while sending `msgValue` alongside the call).
      *
-     * If the permissions have been verified successfully and `caller` is authorized, one of the following two LSP20 magic value will be returned:
-     *  - `0x1a238000`: LSP20 magic value **without** post verification (last byte is `0x00`).
-     *  - `0x1a238001`: LSP20 magic value **with** post-verification (last byte is `0x01`).
+     * If the permissions have been verified successfully and `caller` is authorized, one of the following two LSP20 success value will be returned:
+     *  - `0x1a238000`: LSP20 success value **without** post verification (last byte is `0x00`).
+     *  - `0x1a238001`: LSP20 success value **with** post-verification (last byte is `0x01`).
      */
     function lsp20VerifyCall(
+        address /* requestor */,
         address targetContract,
         address caller,
         uint256 msgValue,
-        bytes calldata data
+        bytes calldata callData
     ) external virtual override returns (bytes4) {
-        bool isSetData = bytes4(data) == IERC725Y.setData.selector ||
-            bytes4(data) == IERC725Y.setDataBatch.selector;
+        bool isSetData = bytes4(callData) == IERC725Y.setData.selector ||
+            bytes4(callData) == IERC725Y.setDataBatch.selector;
 
         // If target is invoking the verification, emit the event and change the reentrancy guard
         if (msg.sender == targetContract) {
@@ -334,15 +335,15 @@ abstract contract LSP6KeyManagerCore is
                 caller
             );
 
-            _verifyPermissions(targetContract, caller, false, data);
+            _verifyPermissions(targetContract, caller, false, callData);
 
-            emit PermissionsVerified(caller, msgValue, bytes4(data));
+            emit PermissionsVerified(caller, msgValue, bytes4(callData));
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
                 isSetData || reentrancyStatus
-                    ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
-                    : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
+                    ? _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITHOUT_POST_VERIFICATION
+                    : _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITH_POST_VERIFICATION;
         }
         /// @dev If a different address is invoking the verification,
         /// do not change the state or emit the event to allow read-only verification
@@ -357,13 +358,13 @@ abstract contract LSP6KeyManagerCore is
                 );
             }
 
-            _verifyPermissions(targetContract, caller, false, data);
+            _verifyPermissions(targetContract, caller, false, callData);
 
             // if it's a setData call, do not invoke the `lsp20VerifyCallResult(..)` function
             return
                 isSetData || reentrancyStatus
-                    ? _LSP20_VERIFY_CALL_MAGIC_VALUE_WITHOUT_POST_VERIFICATION
-                    : _LSP20_VERIFY_CALL_MAGIC_VALUE_WITH_POST_VERIFICATION;
+                    ? _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITHOUT_POST_VERIFICATION
+                    : _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITH_POST_VERIFICATION;
         }
     }
 
@@ -371,15 +372,15 @@ abstract contract LSP6KeyManagerCore is
      * @inheritdoc ILSP20
      */
     function lsp20VerifyCallResult(
-        bytes32 /*callHash*/,
-        bytes memory /*result*/
+        bytes32 /* callHash */,
+        bytes memory /* callResult */
     ) external virtual override returns (bytes4) {
         // If it's the target calling, set back the reentrancy guard
-        // to false, if not return the magic value
+        // to false, if not return the success value
         if (msg.sender == _target) {
             _nonReentrantAfter(msg.sender);
         }
-        return _LSP20_VERIFY_CALL_RESULT_MAGIC_VALUE;
+        return _LSP20_VERIFY_CALL_RESULT_SUCCESS_VALUE;
     }
 
     function _execute(

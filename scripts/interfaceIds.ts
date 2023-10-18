@@ -11,7 +11,15 @@ const ercInterfaceDescriptions = {
   ERC725Y: 'General Data key-value store.',
 };
 
-const excludedInterfaces = ['ERC20', 'ERC223', 'ERC721', 'ERC721Metadata', 'ERC777', 'ERC1155'];
+const excludedInterfaces = [
+  'ERC20',
+  'ERC20Metadata',
+  'ERC223',
+  'ERC721',
+  'ERC721Metadata',
+  'ERC777',
+  'ERC1155',
+];
 
 async function main() {
   const interfaces = Object.entries(INTERFACE_IDS);
@@ -31,8 +39,9 @@ async function main() {
     } else {
       const lspInterface = `I${contract}`;
 
-      // adjust the source path for LSP20 and LSP17 contracts
+      // adjust the source path for LSP1Delegate, LSP20 and LSP17 contracts
       const folders = {
+        LSP1UniversalReceiverDelegate: 'LSP1UniversalReceiver',
         LSP20CallVerifier: 'LSP20CallVerification',
         LSP17Extendable: 'LSP17ContractExtension',
         LSP17Extension: 'LSP17ContractExtension',
@@ -40,7 +49,11 @@ async function main() {
 
       let folder;
 
-      if (contract === 'LSP20CallVerifier' || contract.startsWith('LSP17')) {
+      if (
+        contract === 'LSP1UniversalReceiverDelegate' ||
+        contract.startsWith('LSP17') ||
+        contract === 'LSP20CallVerifier'
+      ) {
         folder = folders[contract];
       } else {
         folder = contract;

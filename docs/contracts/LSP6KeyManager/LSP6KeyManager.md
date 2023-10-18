@@ -306,10 +306,10 @@ Get the nonce for a specific `from` address that can be used for signing relay t
 function isValidSignature(
   bytes32 dataHash,
   bytes signature
-) external view returns (bytes4 magicValue);
+) external view returns (bytes4 returnedStatus);
 ```
 
-Checks if a signature was signed by a controller that has the permission `SIGN`. If the signer is a controller with the permission `SIGN`, it will return the ERC1271 magic value.
+Checks if a signature was signed by a controller that has the permission `SIGN`. If the signer is a controller with the permission `SIGN`, it will return the ERC1271 success value.
 
 #### Parameters
 
@@ -320,9 +320,9 @@ Checks if a signature was signed by a controller that has the permission `SIGN`.
 
 #### Returns
 
-| Name         |   Type   | Description                                          |
-| ------------ | :------: | ---------------------------------------------------- |
-| `magicValue` | `bytes4` | `0x1626ba7e` on success, or `0xffffffff` on failure. |
+| Name             |   Type   | Description                                          |
+| ---------------- | :------: | ---------------------------------------------------- |
+| `returnedStatus` | `bytes4` | `0x1626ba7e` on success, or `0xffffffff` on failure. |
 
 <br/>
 
@@ -332,37 +332,39 @@ Checks if a signature was signed by a controller that has the permission `SIGN`.
 
 - Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#lsp20verifycall)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
-- Function signature: `lsp20VerifyCall(address,address,uint256,bytes)`
-- Function selector: `0x1a2380e1`
+- Function signature: `lsp20VerifyCall(address,address,address,uint256,bytes)`
+- Function selector: `0xde928f14`
 
 :::
 
 :::tip Hint
 
-This function can call by any other address than the {`target`}. This allows to verify permissions in a _&quot;read-only&quot;_ manner. Anyone can call this function to verify if the `caller` has the right permissions to perform the abi-encoded function call `data` on the {`target`} contract (while sending `msgValue` alongside the call). If the permissions have been verified successfully and `caller` is authorized, one of the following two LSP20 magic value will be returned:
+This function can call by any other address than the {`target`}. This allows to verify permissions in a _&quot;read-only&quot;_ manner. Anyone can call this function to verify if the `caller` has the right permissions to perform the abi-encoded function call `data` on the {`target`} contract (while sending `msgValue` alongside the call). If the permissions have been verified successfully and `caller` is authorized, one of the following two LSP20 success value will be returned:
 
-- `0x1a238000`: LSP20 magic value **without** post verification (last byte is `0x00`).
-- `0x1a238001`: LSP20 magic value **with** post-verification (last byte is `0x01`).
+- `0x1a238000`: LSP20 success value **without** post verification (last byte is `0x00`).
+- `0x1a238001`: LSP20 success value **with** post-verification (last byte is `0x01`).
 
 :::
 
 ```solidity
 function lsp20VerifyCall(
+  address,
   address targetContract,
   address caller,
   uint256 msgValue,
-  bytes data
+  bytes callData
 ) external nonpayable returns (bytes4);
 ```
 
 #### Parameters
 
-| Name             |   Type    | Description                                           |
-| ---------------- | :-------: | ----------------------------------------------------- |
-| `targetContract` | `address` | -                                                     |
-| `caller`         | `address` | The address who called the function on the msg.sender |
-| `msgValue`       | `uint256` | -                                                     |
-| `data`           |  `bytes`  | -                                                     |
+| Name             |   Type    | Description                                                   |
+| ---------------- | :-------: | ------------------------------------------------------------- |
+| `_0`             | `address` | -                                                             |
+| `targetContract` | `address` | -                                                             |
+| `caller`         | `address` | The address who called the function on the `target` contract. |
+| `msgValue`       | `uint256` | -                                                             |
+| `callData`       |  `bytes`  | The calldata sent by the caller to the msg.sender             |
 
 #### Returns
 
@@ -376,10 +378,10 @@ function lsp20VerifyCall(
 
 :::note References
 
-- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#,))
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#lsp20verifycallresult)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
-- Function signature: `,)`
-- Function selector: `0x9f47dbd3`
+- Function signature: `lsp20VerifyCallResult(bytes32,bytes)`
+- Function selector: `0xd3fc45d3`
 
 :::
 
@@ -1401,9 +1403,11 @@ Reverts when trying to call a function on the linked [`target`](#target), that i
 
 - `execute(uint256,address,uint256,bytes)` (ERC725X)
 
-- `transferOwnership(address)`
+- `transferOwnership(address)` (LSP14)
 
 - `acceptOwnership()` (LSP14)
+
+- `renounceOwnership()` (LSP14)
 
 #### Parameters
 

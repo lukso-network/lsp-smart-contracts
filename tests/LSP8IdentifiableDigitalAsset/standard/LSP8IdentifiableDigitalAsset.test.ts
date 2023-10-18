@@ -85,14 +85,16 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
         newOwner: ethers.constants.AddressZero,
       };
 
+      const contractToDeploy = new LSP8Tester__factory(accounts[0]);
+
       await expect(
-        new LSP8Tester__factory(accounts[0]).deploy(
+        contractToDeploy.deploy(
           deployParams.name,
           deployParams.symbol,
           ethers.constants.AddressZero,
           LSP8_TOKEN_ID_TYPES.NUMBER,
         ),
-      ).to.be.revertedWith('Ownable: new owner is the zero address');
+      ).to.be.revertedWithCustomError(contractToDeploy, 'OwnableCannotSetZeroAddressAsOwner');
     });
 
     describe('once the contract was deployed', () => {

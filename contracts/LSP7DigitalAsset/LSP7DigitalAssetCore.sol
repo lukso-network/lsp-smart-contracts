@@ -50,21 +50,22 @@ import {
  */
 abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     using EnumerableSet for EnumerableSet.AddressSet;
+
     // --- Storage
+
+    bool internal _isNonDivisible;
+
+    uint256 internal _existingTokens;
 
     // Mapping from `tokenOwner` to an `amount` of tokens
     mapping(address => uint256) internal _tokenOwnerBalances;
 
-    // Mapping a `tokenOwner` to an `operator` to `amount` of tokens.
-    mapping(address => mapping(address => uint256))
-        internal _operatorAuthorizedAmount;
-
     // Mapping an `address` to its authorized operator addresses.
     mapping(address => EnumerableSet.AddressSet) internal _operators;
 
-    uint256 internal _existingTokens;
-
-    bool internal _isNonDivisible;
+    // Mapping a `tokenOwner` to an `operator` to `amount` of tokens.
+    mapping(address => mapping(address => uint256))
+        internal _operatorAuthorizedAmount;
 
     // --- Token queries
 
@@ -366,6 +367,10 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     /**
      * @dev Mints `amount` of tokens and transfers it to `to`.
      *
+     * @custom:info Any logic in the:
+     * - {_beforeTokenTransfer} function will run before updating the balances.
+     * - {_afterTokenTransfer} function will run after updating the balances, **but before notifying the recipient via LSP1**.
+     *
      * @param to The address to mint tokens for.
      * @param amount The amount of tokens to mint.
      * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
@@ -386,7 +391,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7CannotSendWithAddressZero();
         }
 
-        _beforeTokenTransfer(address(0), to, amount);
+        _beforeTokenTransfer(address(0), to, amount, data);
 
         // tokens being minted
         _existingTokens += amount;
@@ -394,6 +399,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         _tokenOwnerBalances[to] += amount;
 
         emit Transfer(msg.sender, address(0), to, amount, force, data);
+
+        _afterTokenTransfer(address(0), to, amount, data);
 
         bytes memory lsp1Data = abi.encode(address(0), to, amount, data);
         _notifyTokenReceiver(to, force, lsp1Data);
@@ -406,7 +413,9 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * function, if they are contracts that support the LSP1 interface. Their `universalReceiver` function will receive
      * all the parameters in the calldata packed encoded.
      *
-     * Any logic in the {_beforeTokenTransfer} function will run before updating the balances.
+     * @custom:info Any logic in the:
+     * - {_beforeTokenTransfer} function will run before updating the balances.
+     * - {_afterTokenTransfer} function will run after updating the balances, **but before notifying the sender via LSP1**.
      *
      * @param from The address to burn tokens from its balance.
      * @param amount The amount of tokens to burn.
@@ -436,7 +445,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
 
-        _beforeTokenTransfer(from, address(0), amount);
+        _beforeTokenTransfer(from, address(0), amount, data);
 
         // tokens being burnt
         _existingTokens -= amount;
@@ -452,6 +461,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             force: false,
             data: data
         });
+
+        _afterTokenTransfer(from, address(0), amount, data);
 
         bytes memory lsp1Data = abi.encode(from, address(0), amount, data);
         _notifyTokenSender(from, lsp1Data);
@@ -507,7 +518,9 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * function, if they are contracts that support the LSP1 interface. Their `universalReceiver` function will receive
      * all the parameters in the calldata packed encoded.
      *
-     * Any logic in the {_beforeTokenTransfer} function will run before updating the balances.
+     * @custom:info Any logic in the:
+     * - {_beforeTokenTransfer} function will run before updating the balances.
+     * - {_afterTokenTransfer} function will run after updating the balances, **but before notifying the sender/recipient via LSP1**.
      *
      * @param from The address to decrease the balance.
      * @param to The address to increase the balance.
@@ -538,12 +551,14 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
 
-        _beforeTokenTransfer(from, to, amount);
+        _beforeTokenTransfer(from, to, amount, data);
 
         _tokenOwnerBalances[from] -= amount;
         _tokenOwnerBalances[to] += amount;
 
         emit Transfer(msg.sender, from, to, amount, force, data);
+
+        _afterTokenTransfer(from, to, amount, data);
 
         bytes memory lsp1Data = abi.encode(from, to, amount, data);
 
@@ -558,11 +573,29 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @param from The sender address
      * @param to The recipient address
      * @param amount The amount of token to transfer
+     * @param data The data sent alongside the transfer
      */
     function _beforeTokenTransfer(
         address from,
         address to,
-        uint256 amount // solhint-disable-next-line no-empty-blocks
+        uint256 amount,
+        bytes memory data // solhint-disable-next-line no-empty-blocks
+    ) internal virtual {}
+
+    /**
+     * @dev Hook that is called after any token transfer, including minting and burning.
+     * Allows to run custom logic after updating balances, but **before notifiying sender/recipient** by overriding this function.
+     *
+     * @param from The sender address
+     * @param to The recipient address
+     * @param amount The amount of token to transfer
+     * @param data The data sent alongside the transfer
+     */
+    function _afterTokenTransfer(
+        address from,
+        address to,
+        uint256 amount,
+        bytes memory data // solhint-disable-next-line no-empty-blocks
     ) internal virtual {}
 
     /**

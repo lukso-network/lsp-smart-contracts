@@ -13,13 +13,16 @@ import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
+import {
+    IERC20Metadata
+} from "@openzeppelin/contracts/interfaces/IERC20Metadata.sol";
+import {IERC721} from "@openzeppelin/contracts/interfaces/IERC721.sol";
 import {
     IERC721Metadata
-} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
-import {IERC777} from "@openzeppelin/contracts/token/ERC777/IERC777.sol";
-import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+} from "@openzeppelin/contracts/interfaces/IERC721Metadata.sol";
+import {IERC777} from "@openzeppelin/contracts/interfaces/IERC777.sol";
+import {IERC1155} from "@openzeppelin/contracts/interfaces/IERC1155.sol";
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {IERC223} from "./Tokens/IERC223.sol";
 
@@ -121,6 +124,7 @@ contract CalculateLSPInterfaces {
             type(IERC1271).interfaceId ^
             calculateInterfaceLSP20CallVerifier() ^
             calculateInterfaceLSP25ExecuteRelayCall();
+
         require(
             interfaceId == _INTERFACEID_LSP6,
             "hardcoded _INTERFACEID_LSP6 does not match type(ILSP6).interfaceId"
@@ -133,6 +137,7 @@ contract CalculateLSPInterfaces {
         bytes4 interfaceId = type(ILSP7).interfaceId ^
             type(IERC725Y).interfaceId ^
             calculateInterfaceLSP17Extendable();
+
         require(
             interfaceId == _INTERFACEID_LSP7,
             "hardcoded _INTERFACEID_LSP7 does not match type(ILSP7).interfaceId"
@@ -145,6 +150,7 @@ contract CalculateLSPInterfaces {
         bytes4 interfaceId = type(ILSP8).interfaceId ^
             type(IERC725Y).interfaceId ^
             calculateInterfaceLSP17Extendable();
+
         require(
             interfaceId == _INTERFACEID_LSP8,
             "hardcoded _INTERFACEID_LSP8 does not match type(ILSP8).interfaceId"
@@ -273,6 +279,10 @@ contract CalculateERCInterfaces {
 
     function calculateInterfaceERC20() public pure returns (bytes4) {
         return type(IERC20).interfaceId;
+    }
+
+    function calculateInterfaceERC20Metadata() public pure returns (bytes4) {
+        return type(IERC20Metadata).interfaceId;
     }
 
     function calculateInterfaceERC721() public pure returns (bytes4) {

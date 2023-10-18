@@ -7,12 +7,13 @@ import {
 /**
  * @title sample contract used for testing
  */
-contract FirstCallReturnInvalidMagicValue {
+contract FirstCallReturnFailValue {
     event CallVerified();
 
     address public target;
 
     function lsp20VerifyCall(
+        address,
         address,
         address,
         uint256,

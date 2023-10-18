@@ -8,20 +8,24 @@ import {
 /**
  * @title sample contract used for testing
  */
-contract FirstCallReturnExpandedInvalidValue {
+contract FirstCallReturnExpandedFailValue {
     event CallVerified();
 
     address public target;
 
     function lsp20VerifyCall(
-        address callee,
+        address requestor,
+        address targetContract,
         address caller,
         uint256 value,
         bytes memory data
     ) external returns (bytes32) {
         emit CallVerified();
 
-        return keccak256(abi.encode(callee, caller, value, data));
+        return
+            keccak256(
+                abi.encode(requestor, targetContract, caller, value, data)
+            );
     }
 
     function acceptOwnership(address newTarget) external {

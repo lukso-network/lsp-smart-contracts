@@ -104,7 +104,7 @@ export const shouldBehaveLikeLSP9 = (
       await expect(
         lsp1UniversalReceiverDelegateVaultSetter
           .connect(context.accounts.anyone)
-          .universalReceiver(context.lsp9Vault.address, dataKey, dataValue),
+          .universalReceiverDelegate(context.lsp9Vault.address, dataKey, dataValue),
       ).to.be.revertedWith('Only Owner or reentered Universal Receiver Delegate allowed');
     });
 
