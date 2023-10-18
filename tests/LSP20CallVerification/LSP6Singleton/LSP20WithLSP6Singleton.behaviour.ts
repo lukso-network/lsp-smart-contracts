@@ -8,9 +8,9 @@ import {
   // shouldBehaveLikePermissionChangeOrAddURD,
 
   // // Set Permissions
-  // shouldBehaveLikePermissionChangeOrAddController,
-  // shouldBehaveLikeSetAllowedCalls,
-  // shouldBehaveLikeSetAllowedERC725YDataKeys,
+  shouldBehaveLikePermissionChangeOrAddController,
+  shouldBehaveLikeSetAllowedCalls,
+  shouldBehaveLikeSetAllowedERC725YDataKeys,
 
   // // Interactions
   // shouldBehaveLikePermissionCall,
@@ -38,11 +38,11 @@ export const shouldBehaveLikeLSP6 = (
   //   shouldBehaveLikePermissionChangeOwner(buildContext);
   // });
 
-  // describe('Set Permissions', () => {
-  //   shouldBehaveLikePermissionChangeOrAddController(buildContext);
-  //   shouldBehaveLikeSetAllowedCalls(buildContext);
-  //   shouldBehaveLikeSetAllowedERC725YDataKeys(buildContext);
-  // });
+  describe('Set Permissions', () => {
+    shouldBehaveLikePermissionChangeOrAddController(buildContext);
+    shouldBehaveLikeSetAllowedCalls(buildContext);
+    shouldBehaveLikeSetAllowedERC725YDataKeys(buildContext);
+  });
 
   // describe('CHANGE / ADD extensions', () => {
   //   shouldBehaveLikePermissionChangeOrAddExtensions(buildContext);
@@ -52,11 +52,11 @@ export const shouldBehaveLikeLSP6 = (
   //   shouldBehaveLikePermissionChangeOrAddURD(buildContext);
   // });
 
-  describe.only('SETDATA', () => {
+  describe('SETDATA', () => {
     shouldBehaveLikePermissionSetData(buildContext);
   });
 
-  describe.only('AllowedERC725YDataKeys', () => {
+  describe('AllowedERC725YDataKeys', () => {
     shouldBehaveLikeAllowedERC725YDataKeys(buildContext);
   });
 

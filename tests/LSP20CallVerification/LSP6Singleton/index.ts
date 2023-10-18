@@ -4,9 +4,9 @@
 // export * from './Admin/PermissionChangeAddURD.test';
 
 // // Set Permissions
-// export * from './SetPermissions/PermissionChangeAddController.test';
-// export * from './SetPermissions/SetAllowedCalls.test';
-// export * from './SetPermissions/SetAllowedERC725YDataKeys.test';
+export * from './SetPermissions/PermissionChangeAddController.test';
+export * from './SetPermissions/SetAllowedCalls.test';
+export * from './SetPermissions/SetAllowedERC725YDataKeys.test';
 
 // // Interactions
 // export * from './Interactions/PermissionCall.test';
