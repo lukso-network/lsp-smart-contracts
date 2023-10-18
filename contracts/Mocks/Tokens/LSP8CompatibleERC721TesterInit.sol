@@ -1,11 +1,8 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
 // modules
-import {
-    LSP8IdentifiableDigitalAsset
-} from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol";
 import {
     LSP8CompatibleERC721InitAbstract
 } from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721InitAbstract.sol";
@@ -27,15 +24,21 @@ contract LSP8CompatibleERC721InitTester is LSP8CompatibleERC721InitAbstract {
         string memory name_,
         string memory symbol_,
         address newOwner_,
+        uint256 tokenIdType_,
         bytes memory tokenURIValue_
     ) public virtual initializer {
-        LSP8CompatibleERC721InitAbstract._initialize(name_, symbol_, newOwner_);
+        LSP8CompatibleERC721InitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            tokenIdType_
+        );
 
         _setData(_LSP4_METADATA_KEY, tokenURIValue_);
     }
 
     function mint(address to, uint256 tokenId, bytes calldata data) public {
-        // using allowNonLSP1Recipient=true so we can send to EOA in test
+        // using force=true so we can send to EOA in test
         _mint(to, bytes32(tokenId), true, data);
     }
 

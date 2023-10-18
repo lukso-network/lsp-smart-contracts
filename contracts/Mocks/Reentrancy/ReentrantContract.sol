@@ -1,12 +1,17 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // interfaces
 import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 
 // constants
-import "../../LSP1UniversalReceiver/LSP1Constants.sol";
-import "../../LSP6KeyManager/LSP6Constants.sol";
+import {
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
+} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+
+import {
+    _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX
+} from "../../LSP6KeyManager/LSP6Constants.sol";
 
 contract ReentrantContract {
     event ValueReceived(uint256);

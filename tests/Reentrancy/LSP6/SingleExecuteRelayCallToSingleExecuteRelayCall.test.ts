@@ -26,6 +26,7 @@ import {
   generateRelayCall,
   generateSingleRelayPayload,
   loadTestCase,
+  RelayCallParams,
 } from './reentrancyHelpers';
 
 export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
@@ -53,12 +54,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
   });
 
   describe('when reentering and transferring value', () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      validityTimestamps: BytesLike;
-      payload: BytesLike;
-    };
+    let relayCallParams: RelayCallParams;
     before(async () => {
       relayCallParams = await generateRelayCall(
         context.keyManager,
@@ -162,12 +158,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
   });
 
   describe('when reentering and setting data', () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      validityTimestamps: BytesLike;
-      payload: BytesLike;
-    };
+    let relayCallParams: RelayCallParams;
     before(async () => {
       relayCallParams = await generateRelayCall(
         context.keyManager,
@@ -262,12 +253,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
   });
 
   describe('when reentering and adding permissions', () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      validityTimestamps: BytesLike;
-      payload: BytesLike;
-    };
+    let relayCallParams: RelayCallParams;
     before(async () => {
       relayCallParams = await generateRelayCall(
         context.keyManager,
@@ -342,12 +328,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
   });
 
   describe('when reentering and changing permissions', () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      validityTimestamps: BytesLike;
-      payload: BytesLike;
-    };
+    let relayCallParams: RelayCallParams;
     before(async () => {
       relayCallParams = await generateRelayCall(
         context.keyManager,
@@ -421,12 +402,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
   });
 
   describe('when reentering and adding URD', () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      validityTimestamps: BytesLike;
-      payload: BytesLike;
-    };
+    let relayCallParams: RelayCallParams;
     before(async () => {
       relayCallParams = await generateRelayCall(
         context.keyManager,
@@ -501,12 +477,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
   });
 
   describe('when reentering and changing URD', () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      validityTimestamps: BytesLike;
-      payload: BytesLike;
-    };
+    let relayCallParams: RelayCallParams;
     before(async () => {
       relayCallParams = await generateRelayCall(
         context.keyManager,

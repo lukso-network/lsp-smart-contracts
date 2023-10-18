@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // modules
@@ -15,9 +15,9 @@ contract LSP7Tester is LSP7DigitalAsset, LSP7Burnable {
     function mint(
         address to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) public {
-        _mint(to, amount, allowNonLSP1Recipient, data);
+        _mint(to, amount, force, data);
     }
 }

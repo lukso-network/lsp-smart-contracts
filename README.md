@@ -70,6 +70,7 @@ import {
   ERC725YDataKeys,
   PERMISSIONS,
   ALL_PERMISSIONS,
+  LSP8_TOKEN_ID_TYPES,
   LSP25_VERSION,
   ErrorSelectors,
   EventSigHashes,
@@ -106,14 +107,20 @@ See the [issue related to Hardhat Typescript + ES Modules](https://hardhat.org/h
 
 ### Typescript types
 
-The following additional typescript types are also available.
+The following additional typescript types are also available, including types for the JSON format of the LSP3 Profile and LSP4 Digital Asset metadata.
 
 ```ts
 import {
   LSP2ArrayKey,
   LSPSupportedStandard,
   LSP6PermissionName,
-  LSPErrorInfo,
+  LSP3ProfileMetadataJSON,
+  LSP3ProfileMetadata,
+  LSP4DigitalAssetMetadataJSON,
+  LSP4DigitalAssetMetadata,
+  ImageMetadata,
+  LinkMetadata,
+  AssetMetadata,
 } from "@lukso/lsp-smart-contracts/constants";
 ```
 
@@ -130,6 +137,7 @@ The following audits and formal verification were conducted. All high-level issu
 - Runtime Verification - Formal Verification, 2023-02-20, Final Result: [RuntimeVerification_formalVerification_2023_02_20.pdf](./audits/RuntimeVerification_formalVerification_2023_02_20.pdf)
 - Trust Audit, 2023-04-13, Final Result: [Trust_audit_2023_04_13.pdf](./audits/Trust_audit_2023_04_13.pdf)
 - Watchpug Audit, 2023-04-21, Final Result: [Watchpug_audit_2023_04_21.pdf](./audits/Watchpug_audit_2023_04_21.pdf)
+- Code4Rena Audit Contest, 2023-06-30 to 2023-07-14, Final Result: [See Code4Rena audit report on Code4rena.com website](https://code4rena.com/reports/2023-06-lukso)
 
 ## Contributors ✨
 

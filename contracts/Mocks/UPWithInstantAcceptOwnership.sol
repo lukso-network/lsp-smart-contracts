@@ -11,9 +11,15 @@ import {
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 
 // constants
-import "../LSP0ERC725Account/LSP0Constants.sol";
-import "../LSP9Vault/LSP9Constants.sol";
-import "../LSP14Ownable2Step/LSP14Constants.sol";
+import {
+    _TYPEID_LSP0_OwnershipTransferStarted
+} from "../LSP0ERC725Account/LSP0Constants.sol";
+import {
+    _TYPEID_LSP9_OwnershipTransferStarted
+} from "../LSP9Vault/LSP9Constants.sol";
+import {
+    _TYPEID_LSP14_OwnershipTransferStarted
+} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 /**
  * @dev This contract is used only for testing purposes

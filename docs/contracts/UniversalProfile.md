@@ -159,7 +159,7 @@ _`msg.sender` is accepting ownership of contract: `address(this)`._
 
 Transfer ownership of the contract from the current [`owner()`](#owner) to the [`pendingOwner()`](#pendingowner). Once this function is called:
 
-- The current [`owner()`](#owner) will loose access to the functions restricted to the [`owner()`](#owner) only.
+- The current [`owner()`](#owner) will lose access to the functions restricted to the [`owner()`](#owner) only.
 
 - The [`pendingOwner()`](#pendingowner) will gain access to the functions restricted to the [`owner()`](#owner) only.
 
@@ -290,6 +290,12 @@ Generic executor function to:
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `executeBatch(uint256[],address[],uint256[],bytes[])`
 - Function selector: `0x31858452`
+
+:::
+
+:::caution Warning
+
+- The `msg.value` should not be trusted for any method called within the batch with `operationType`: `DELEGATECALL` (4).
 
 :::
 
@@ -428,7 +434,7 @@ Get in the ERC725Y storage the bytes data stored at multiple data keys `dataKeys
 function isValidSignature(
   bytes32 dataHash,
   bytes signature
-) external view returns (bytes4 magicValue);
+) external view returns (bytes4 returnedStatus);
 ```
 
 _Achieves the goal of [EIP-1271] by validating signatures of smart contracts according to their own logic._
@@ -437,15 +443,15 @@ Handles two cases:
 
 1. If the owner is an EOA, recovers an address from the hash and the signature provided:
 
-- Returns the `magicValue` if the address recovered is the same as the owner, indicating that it was a valid signature.
+- Returns the `_ERC1271_SUCCESSVALUE` if the address recovered is the same as the owner, indicating that it was a valid signature.
 
-- If the address is different, it returns the fail value indicating that the signature is not valid.
+- If the address is different, it returns the `_ERC1271_FAILVALUE` indicating that the signature is not valid.
 
 2. If the owner is a smart contract, it forwards the call of [`isValidSignature()`](#isvalidsignature) to the owner contract:
 
-- If the contract fails or returns the fail value, the [`isValidSignature()`](#isvalidsignature) on the account returns the fail value, indicating that the signature is not valid.
+- If the contract fails or returns the `_ERC1271_FAILVALUE`, the [`isValidSignature()`](#isvalidsignature) on the account returns the `_ERC1271_FAILVALUE`, indicating that the signature is not valid.
 
-- If the [`isValidSignature()`](#isvalidsignature) on the owner returned the `magicValue`, the [`isValidSignature()`](#isvalidsignature) on the account returns the `magicValue`, indicating that it's a valid signature.
+- If the [`isValidSignature()`](#isvalidsignature) on the owner returned the `_ERC1271_SUCCESSVALUE`, the [`isValidSignature()`](#isvalidsignature) on the account returns the `_ERC1271_SUCCESSVALUE`, indicating that it's a valid signature.
 
 #### Parameters
 
@@ -456,9 +462,9 @@ Handles two cases:
 
 #### Returns
 
-| Name         |   Type   | Description                                                       |
-| ------------ | :------: | ----------------------------------------------------------------- |
-| `magicValue` | `bytes4` | A `bytes4` value that indicates if the signature is valid or not. |
+| Name             |   Type   | Description                                                       |
+| ---------------- | :------: | ----------------------------------------------------------------- |
+| `returnedStatus` | `bytes4` | A `bytes4` value that indicates if the signature is valid or not. |
 
 <br/>
 
@@ -531,7 +537,7 @@ The address that ownership of the contract is transferred to. This address may u
 
 :::danger
 
-Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
+Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner or an address allowed by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
 
 :::
 
@@ -888,6 +894,12 @@ Perform low-level staticcall (operation type = 3)
 
 ### \_executeDelegateCall
 
+:::caution Warning
+
+The `msg.value` should not be trusted for any method called with `operationType`: `DELEGATECALL` (4).
+
+:::
+
 ```solidity
 function _executeDelegateCall(
   address target,
@@ -1092,6 +1104,19 @@ Returns the extension address stored under the following data key:
 
 ### \_fallbackLSP17Extendable
 
+:::tip Hint
+
+This function does not forward to the extension contract the `msg.value` received by the contract that inherits `LSP17Extendable`.
+If you would like to forward the `msg.value` to the extension contract, you can override the code of this internal function as follow:
+
+```solidity
+(bool success, bytes memory result) = extension.call{value: msg.value}(
+    abi.encodePacked(callData, msg.sender, msg.value)
+);
+```
+
+:::
+
 ```solidity
 function _fallbackLSP17Extendable(
   bytes callData
@@ -1099,9 +1124,11 @@ function _fallbackLSP17Extendable(
 ```
 
 Forwards the call to an extension mapped to a function selector.
-Calls [`_getExtension`](#_getextension) to get the address of the extension mapped to the function selector being called on the account. If there is no extension, the `address(0)` will be returned.
-Reverts if there is no extension for the function being called, except for the bytes4(0) function selector, which passes even if there is no extension for it.
-If there is an extension for the function selector being called, it calls the extension with the CALL opcode, passing the `msg.data` appended with the 20 bytes of the `msg.sender` and 32 bytes of the `msg.value`
+Calls [`_getExtension`](#_getextension) to get the address of the extension mapped to the function selector being
+called on the account. If there is no extension, the `address(0)` will be returned.
+Reverts if there is no extension for the function being called, except for the `bytes4(0)` function selector, which passes even if there is no extension for it.
+If there is an extension for the function selector being called, it calls the extension with the
+`CALL` opcode, passing the `msg.data` appended with the 20 bytes of the [`msg.sender`](#msg.sender) and 32 bytes of the `msg.value`.
 
 <br/>
 
@@ -1114,8 +1141,8 @@ function _verifyCall(
 ```
 
 Calls [`lsp20VerifyCall`](#lsp20verifycall) function on the logicVerifier.
-Reverts in case the value returned does not match the magic value (lsp20VerifyCall selector)
-Returns whether a verification after the execution should happen based on the last byte of the magicValue
+Reverts in case the value returned does not match the success value (lsp20VerifyCall selector)
+Returns whether a verification after the execution should happen based on the last byte of the returnedStatus
 
 <br/>
 
@@ -1129,7 +1156,7 @@ function _verifyCallResult(
 ```
 
 Calls [`lsp20VerifyCallResult`](#lsp20verifycallresult) function on the logicVerifier.
-Reverts in case the value returned does not match the magic value (lsp20VerifyCallResult selector)
+Reverts in case the value returned does not match the success value (lsp20VerifyCallResult selector)
 
 <br/>
 
@@ -1359,7 +1386,7 @@ event UniversalReceiver(address indexed from, uint256 indexed value, bytes32 ind
 
 - Data received: `receivedData`.\*
 
-Emitted when the [`universalReceiver`](#universalreceiver) function was called with a specific `typeId` and some `receivedData` s
+Emitted when the [`universalReceiver`](#universalreceiver) function was called with a specific `typeId` and some `receivedData`
 
 #### Parameters
 
@@ -1402,27 +1429,6 @@ Emitted when receiving native tokens.
 <br/>
 
 ## Errors
-
-### CannotTransferOwnershipToSelf
-
-:::note References
-
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#cannottransferownershiptoself)
-- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
-- Error signature: `CannotTransferOwnershipToSelf()`
-- Error hash: `0x43b248cd`
-
-:::
-
-```solidity
-error CannotTransferOwnershipToSelf();
-```
-
-_Cannot transfer ownership to the address of the contract itself._
-
-Reverts when trying to transfer ownership to the `address(this)`.
-
-<br/>
 
 ### ERC725X_ContractDeploymentFailed
 
@@ -1608,6 +1614,25 @@ Reverts when the `operationTypeProvided` is none of the default operation types 
 
 <br/>
 
+### ERC725Y_DataKeysValuesEmptyArray
+
+:::note References
+
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725y_datakeysvaluesemptyarray)
+- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
+- Error signature: `ERC725Y_DataKeysValuesEmptyArray()`
+- Error hash: `0x97da5f95`
+
+:::
+
+```solidity
+error ERC725Y_DataKeysValuesEmptyArray();
+```
+
+Reverts when one of the array parameter provided to [`setDataBatch`](#setdatabatch) function is an empty array.
+
+<br/>
+
 ### ERC725Y_DataKeysValuesLengthMismatch
 
 :::note References
@@ -1624,6 +1649,52 @@ error ERC725Y_DataKeysValuesLengthMismatch();
 ```
 
 Reverts when there is not the same number of elements in the `datakeys` and `dataValues` array parameters provided when calling the [`setDataBatch`](#setdatabatch) function.
+
+<br/>
+
+### LSP14CallerNotPendingOwner
+
+:::note References
+
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp14callernotpendingowner)
+- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
+- Error signature: `LSP14CallerNotPendingOwner(address)`
+- Error hash: `0x451e4528`
+
+:::
+
+```solidity
+error LSP14CallerNotPendingOwner(address caller);
+```
+
+Reverts when the `caller` that is trying to accept ownership of the contract is not the pending owner.
+
+#### Parameters
+
+| Name     |   Type    | Description                                 |
+| -------- | :-------: | ------------------------------------------- |
+| `caller` | `address` | The address that tried to accept ownership. |
+
+<br/>
+
+### LSP14CannotTransferOwnershipToSelf
+
+:::note References
+
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp14cannottransferownershiptoself)
+- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
+- Error signature: `LSP14CannotTransferOwnershipToSelf()`
+- Error hash: `0xe052a6f8`
+
+:::
+
+```solidity
+error LSP14CannotTransferOwnershipToSelf();
+```
+
+_Cannot transfer ownership to the address of the contract itself._
+
+Reverts when trying to transfer ownership to the `address(this)`.
 
 <br/>
 
@@ -1645,6 +1716,63 @@ error LSP14MustAcceptOwnershipInSeparateTransaction();
 _Cannot accept ownership in the same transaction with [`transferOwnership(...)`](#transferownership)._
 
 Reverts when pending owner accept ownership in the same transaction of transferring ownership.
+
+<br/>
+
+### LSP14NotInRenounceOwnershipInterval
+
+:::note References
+
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp14notinrenounceownershipinterval)
+- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
+- Error signature: `LSP14NotInRenounceOwnershipInterval(uint256,uint256)`
+- Error hash: `0x1b080942`
+
+:::
+
+```solidity
+error LSP14NotInRenounceOwnershipInterval(
+  uint256 renounceOwnershipStart,
+  uint256 renounceOwnershipEnd
+);
+```
+
+_Cannot confirm ownership renouncement yet. The ownership renouncement is allowed from: `renounceOwnershipStart` until: `renounceOwnershipEnd`._
+
+Reverts when trying to renounce ownership before the initial confirmation delay.
+
+#### Parameters
+
+| Name                     |   Type    | Description                                                             |
+| ------------------------ | :-------: | ----------------------------------------------------------------------- |
+| `renounceOwnershipStart` | `uint256` | The start timestamp when one can confirm the renouncement of ownership. |
+| `renounceOwnershipEnd`   | `uint256` | The end timestamp when one can confirm the renouncement of ownership.   |
+
+<br/>
+
+### LSP20CallVerificationFailed
+
+:::note References
+
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp20callverificationfailed)
+- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
+- Error signature: `LSP20CallVerificationFailed(bool,bytes)`
+- Error hash: `0x00c28d0f`
+
+:::
+
+```solidity
+error LSP20CallVerificationFailed(bool postCall, bytes returnedData);
+```
+
+reverts when the call to the owner does not return the LSP20 success value
+
+#### Parameters
+
+| Name           |  Type   | Description                                          |
+| -------------- | :-----: | ---------------------------------------------------- |
+| `postCall`     | `bool`  | True if the execution call was done, False otherwise |
+| `returnedData` | `bytes` | The data returned by the call to the logic verifier  |
 
 <br/>
 
@@ -1673,29 +1801,28 @@ reverts when the call to the owner fail with no revert reason
 
 <br/>
 
-### LSP20InvalidMagicValue
+### LSP20EOACannotVerifyCall
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp20invalidmagicvalue)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp20eoacannotverifycall)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
-- Error signature: `LSP20InvalidMagicValue(bool,bytes)`
-- Error hash: `0xd088ec40`
+- Error signature: `LSP20EOACannotVerifyCall(address)`
+- Error hash: `0x0c392301`
 
 :::
 
 ```solidity
-error LSP20InvalidMagicValue(bool postCall, bytes returnedData);
+error LSP20EOACannotVerifyCall(address logicVerifier);
 ```
 
-reverts when the call to the owner does not return the magic value
+Reverts when the logic verifier is an Externally Owned Account (EOA) that cannot return the LSP20 success value.
 
 #### Parameters
 
-| Name           |  Type   | Description                                          |
-| -------------- | :-----: | ---------------------------------------------------- |
-| `postCall`     | `bool`  | True if the execution call was done, False otherwise |
-| `returnedData` | `bytes` | The data returned by the call to the logic verifier  |
+| Name            |   Type    | Description                       |
+| --------------- | :-------: | --------------------------------- |
+| `logicVerifier` | `address` | The address of the logic verifier |
 
 <br/>
 
@@ -1721,36 +1848,5 @@ reverts when there is no extension for the function selector being called with
 | Name               |   Type   | Description |
 | ------------------ | :------: | ----------- |
 | `functionSelector` | `bytes4` | -           |
-
-<br/>
-
-### NotInRenounceOwnershipInterval
-
-:::note References
-
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#notinrenounceownershipinterval)
-- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
-- Error signature: `NotInRenounceOwnershipInterval(uint256,uint256)`
-- Error hash: `0x8b9bf507`
-
-:::
-
-```solidity
-error NotInRenounceOwnershipInterval(
-  uint256 renounceOwnershipStart,
-  uint256 renounceOwnershipEnd
-);
-```
-
-_Cannot confirm ownership renouncement yet. The ownership renouncement is allowed from: `renounceOwnershipStart` until: `renounceOwnershipEnd`._
-
-Reverts when trying to renounce ownership before the initial confirmation delay.
-
-#### Parameters
-
-| Name                     |   Type    | Description                                                             |
-| ------------------------ | :-------: | ----------------------------------------------------------------------- |
-| `renounceOwnershipStart` | `uint256` | The start timestamp when one can confirm the renouncement of ownership. |
-| `renounceOwnershipEnd`   | `uint256` | The end timestamp when one can confirm the renouncement of ownership.   |
 
 <br/>

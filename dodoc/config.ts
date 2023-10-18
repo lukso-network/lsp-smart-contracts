@@ -15,13 +15,14 @@ export const dodocConfig = {
     'contracts/LSP16UniversalFactory/LSP16UniversalFactory.sol',
     'contracts/LSP17ContractExtension/LSP17Extendable.sol',
     'contracts/LSP17ContractExtension/LSP17Extension.sol',
+    'contracts/LSP17Extensions/Extension4337.sol',
+    'contracts/LSP17Extensions/OnERC721ReceivedExtension.sol',
     'contracts/LSP20CallVerification/LSP20CallVerification.sol',
-    'contracts/LSP23LinkedContractsDeployment/LSP23LinkedContractsFactory.sol',
-    'contracts/LSP23LinkedContractsDeployment/IPostDeploymentModule.sol',
+    'contracts/LSP23LinkedContractsFactory/LSP23LinkedContractsFactory.sol',
+    'contracts/LSP23LinkedContractsFactory/IPostDeploymentModule.sol',
     'contracts/LSP25ExecuteRelayCall/LSP25MultiChannelNonce.sol',
 
     // tokens
-    'contracts/LSP4DigitalAssetMetadata/LSP4Compatibility.sol',
     'contracts/LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol',
     'contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol',
     'contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol',
@@ -192,21 +193,36 @@ const formatTextWithLists = (textToFormat: string) => {
   return formatedText;
 };
 
+const removeParameterNames = (content: string) => {
+  return content
+    .split(',')
+    .map((elem) => {
+      const trimmedElem = elem.trim();
+
+      if (trimmedElem.includes(' ')) {
+        return trimmedElem.substring(0, elem.trim().indexOf(' '));
+      } else {
+        return trimmedElem;
+      }
+    })
+    .toString();
+};
+
 const formatCode = (code: string, type: string) => {
-  let formatedCode = code
+  let formattedCode = code
     .substring(0, code.indexOf(')') + 1)
     .replace(`${type.toLowerCase()}`, '')
     .trim();
 
-  if (!formatedCode.endsWith('()')) {
-    formatedCode =
-      formatedCode
-        .split(',')
-        .map((elem) => elem.trim().substring(0, elem.trim().indexOf(' ')))
-        .toString() + ')';
+  if (!formattedCode.endsWith('()')) {
+    const start = `${formattedCode.split('(')[0]}(`;
+    const end = ')';
+    const middle = formattedCode.replace(start, '').replace(end, '');
+
+    formattedCode = start + removeParameterNames(middle) + end;
   }
 
-  return formatedCode;
+  return formattedCode;
 };
 
 const formatBulletPointsWithTitle = (textToFormat: string, title: string) => {

@@ -18,6 +18,7 @@ import {
   PERMISSIONS,
   INTERFACE_IDS,
   CALLTYPE,
+  LSP8_TOKEN_ID_TYPES,
 } from '../../../../constants';
 
 // setup
@@ -195,6 +196,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
         'LSP8 NFT',
         'NFT',
         context.accounts[0].address,
+        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
       );
 
       await lsp7Contract

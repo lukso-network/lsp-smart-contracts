@@ -2,21 +2,18 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
-import {
-    IERC725X
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {LSP14Ownable2Step} from "../../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
+import {
+    ILSP1UniversalReceiverDelegate
+} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+
 // modules
-import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {
     ERC165Storage
 } from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
@@ -24,24 +21,34 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 // constants
 import {
-    _TYPEID_LSP7_TOKENSSENDER
-} from "../../LSP7DigitalAsset/LSP7Constants.sol";
-import "../../LSP1UniversalReceiver/LSP1Constants.sol";
-import "../../LSP6KeyManager/LSP6Constants.sol";
-import "../../LSP17ContractExtension/LSP17Constants.sol";
+    _INTERFACEID_LSP1_DELEGATE,
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
+} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+import {
+    _LSP6KEY_ADDRESSPERMISSIONS_PREFIX
+} from "../../LSP6KeyManager/LSP6Constants.sol";
+
+import {
+    _LSP17_EXTENSION_PREFIX
+} from "../../LSP17ContractExtension/LSP17Constants.sol";
 
 /**
  * @dev This contract is used only for testing
  */
-contract UniversalReceiverDelegateVaultMalicious is ERC165Storage {
+contract UniversalReceiverDelegateVaultMalicious is
+    ERC165Storage,
+    ILSP1UniversalReceiverDelegate
+{
     constructor() {
-        _registerInterface(_INTERFACEID_LSP1);
+        _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }
 
-    function universalReceiver(
+    function universalReceiverDelegate(
+        address /*sender*/,
+        uint256 /*value*/,
         bytes32 typeId,
         bytes memory data
-    ) public virtual returns (bytes memory) {
+    ) public virtual override returns (bytes memory) {
         if (typeId == keccak256(abi.encodePacked("setData"))) {
             if (data[0] == 0x00) {
                 IERC725Y(msg.sender).setData(

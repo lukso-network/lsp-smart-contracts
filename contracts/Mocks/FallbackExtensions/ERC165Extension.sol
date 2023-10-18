@@ -11,7 +11,7 @@ contract ERC165Extension is IERC165 {
 
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual returns (bool) {
+    ) public pure override returns (bool) {
         return interfaceId == _RANDOM_INTERFACE_ID;
     }
 }

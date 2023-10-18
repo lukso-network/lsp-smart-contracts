@@ -59,13 +59,13 @@ describe('LSP9Vault with constructor', () => {
       value: initialFunding,
     });
 
-    const onlyOwnerRevertString = 'Only Owner or reentered Universal Receiver Delegate allowed';
+    const onlyOwnerCustomError = 'Only Owner or reentered Universal Receiver Delegate allowed';
 
     return {
       accounts,
       contract: lsp9Vault,
       deployParams,
-      onlyOwnerRevertString,
+      onlyOwnerCustomError,
     };
   };
 

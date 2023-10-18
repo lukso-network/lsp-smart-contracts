@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
@@ -14,12 +14,14 @@ contract LSP8BurnableInitTester is LSP8BurnableInitAbstract {
     function initialize(
         string memory name_,
         string memory symbol_,
-        address newOwner_
+        address newOwner_,
+        uint256 tokenIdType_
     ) public virtual initializer {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
-            newOwner_
+            newOwner_,
+            tokenIdType_
         );
     }
 }

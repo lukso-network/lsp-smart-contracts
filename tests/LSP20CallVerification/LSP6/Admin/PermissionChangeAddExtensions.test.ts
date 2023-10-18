@@ -80,7 +80,8 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
       canOnlyCall = context.accounts[6];
 
       let permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           canAddAndChangeExtensions.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -126,7 +127,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
       permissionArrayValues = [
         ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
-        context.owner.address,
+        context.mainController.address,
         canAddAndChangeExtensions.address,
         canOnlyAddExtensions.address,
         canOnlyChangeExtensions.address,
@@ -150,7 +151,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
           const result = await context.universalProfile.getData(payloadParam.dataKey);
@@ -164,7 +165,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
           const result = await context.universalProfile.getData(payloadParam.dataKey);
@@ -178,7 +179,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
 
           const result = await context.universalProfile.getData(payloadParam.dataKey);
@@ -348,7 +349,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
         });
         it('should NOT be allowed to ADD another ExtensionHandler key', async () => {
@@ -407,7 +408,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
         });
 
@@ -467,7 +468,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setData(payloadParam.dataKey, payloadParam.dataValue);
         });
 
@@ -535,7 +536,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
 
           const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
@@ -558,7 +559,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
 
           const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
@@ -577,7 +578,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
 
           const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
@@ -661,7 +662,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           };
 
           await context.universalProfile
-            .connect(context.owner)
+            .connect(context.mainController)
             .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
         });
         describe('when adding multiple ExtensionHandler keys', () => {
@@ -936,7 +937,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             };
 
             await context.universalProfile
-              .connect(context.owner)
+              .connect(context.mainController)
               .setDataBatch(payloadParam.dataKeys, payloadParam.dataValues);
           });
           describe('When adding ExtensionHandler key and one of his allowedERC725Y Data Key', () => {

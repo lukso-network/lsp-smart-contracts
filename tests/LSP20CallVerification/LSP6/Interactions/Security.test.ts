@@ -60,7 +60,8 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
     maliciousContract = await new Reentrancy__factory(attacker).deploy(context.keyManager.address);
 
     const permissionKeys = [
-      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + signer.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + signer.address.substring(2),
     ];
@@ -83,7 +84,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
     await setupKeyManager(context, permissionKeys, permissionValues);
 
     // Fund Universal Profile with some LYXe
-    await context.owner.sendTransaction({
+    await context.mainController.sendTransaction({
       to: context.universalProfile.address,
       value: ethers.utils.parseEther('10'),
     });
@@ -106,12 +107,18 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
   it('Should revert when caller calls the KeyManager through `ERC725X.execute`', async () => {
     const lsp20VerifyCallPayload = context.keyManager.interface.encodeFunctionData(
       'lsp20VerifyCall',
-      [context.accounts[2].address, 0, '0xaabbccdd'], // random arguments
+      [
+        context.accounts[2].address,
+        context.keyManager.address,
+        context.accounts[2].address,
+        0,
+        '0xaabbccdd',
+      ], // random arguments
     );
 
     await expect(
       context.universalProfile
-        .connect(context.owner)
+        .connect(context.mainController)
         .execute(OPERATION_TYPES.CALL, context.keyManager.address, 0, lsp20VerifyCallPayload),
     ).to.be.revertedWithCustomError(context.keyManager, 'CallingKeyManagerNotAllowed');
   });
@@ -141,7 +148,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
       // send LYX to malicious contract
       // at this point, the malicious contract receive function try to drain funds by re-entering the KeyManager
       // this should not be possible since it does not have the permission `REENTRANCY`
-      await expect(context.keyManager.connect(context.owner).execute(transferPayload))
+      await expect(context.keyManager.connect(context.mainController).execute(transferPayload))
         .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
         .withArgs(maliciousContract.address, 'REENTRANCY');
 
@@ -156,7 +163,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
   describe('when reentering execute function', () => {
     it('should allow the URD to use `setData(..)` through the LSP6', async () => {
       const universalReceiverDelegateDataUpdater =
-        await new UniversalReceiverDelegateDataUpdater__factory(context.owner).deploy();
+        await new UniversalReceiverDelegateDataUpdater__factory(context.mainController).deploy();
 
       const randomHardcodedKey = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes('some random data key'),
@@ -180,13 +187,18 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
         ],
       ]);
 
-      await context.keyManager.connect(context.owner).execute(setDataPayload);
+      await context.keyManager.connect(context.mainController).execute(setDataPayload);
 
       const universalReceiverDelegatePayload =
-        universalReceiverDelegateDataUpdater.interface.encodeFunctionData('universalReceiver', [
-          LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
-          '0xcafecafecafecafe',
-        ]);
+        universalReceiverDelegateDataUpdater.interface.encodeFunctionData(
+          'universalReceiverDelegate',
+          [
+            ethers.constants.AddressZero,
+            0,
+            LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
+            '0xcafecafecafecafe',
+          ],
+        );
 
       const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
@@ -195,7 +207,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
         universalReceiverDelegatePayload,
       ]);
 
-      await context.keyManager.connect(context.owner).execute(executePayload);
+      await context.keyManager.connect(context.mainController).execute(executePayload);
 
       expect(await context.universalProfile.getData(randomHardcodedKey)).to.equal(
         randomHardcodedValue,
@@ -217,7 +229,8 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
       );
 
       const permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           firstReentrant.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -241,7 +254,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
 
             await expect(
               context.universalProfile
-                .connect(context.owner)
+                .connect(context.mainController)
                 .execute(OPERATION_TYPES.CALL, firstReentrant.address, 0, firstTargetSelector),
             )
               .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
@@ -267,7 +280,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
             const firstTargetSelector = firstReentrant.interface.encodeFunctionData('firstTarget');
 
             await context.universalProfile
-              .connect(context.owner)
+              .connect(context.mainController)
               .execute(OPERATION_TYPES.CALL, firstReentrant.address, 0, firstTargetSelector);
 
             const result = await context.universalProfile['getData(bytes32)'](
@@ -290,7 +303,9 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
         ]);
 
         const tx = await context.keyManager.lsp20VerifyCall(
-          context.owner.address,
+          context.mainController.address,
+          context.universalProfile.address,
+          context.mainController.address,
           0,
           emptyCallPayload,
         );
@@ -304,6 +319,8 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
             )
           )?.output.contracts[
             'contracts/LSP6KeyManager/LSP6KeyManager.sol'
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
           ].LSP6KeyManager.storageLayout.storage.filter((elem) => {
             if (elem.label === '_reentrancyStatus') return elem;
           })[0].slot,

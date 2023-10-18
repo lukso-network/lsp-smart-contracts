@@ -73,8 +73,9 @@ error InvalidRelayNonce(address signer, uint256 invalidNonce, bytes signature);
  * - `setData(bytes32,bytes)` (ERC725Y)
  * - `setDataBatch(bytes32[],bytes[])` (ERC725Y)
  * - `execute(uint256,address,uint256,bytes)` (ERC725X)
- * - `transferOwnership(address)`
+ * - `transferOwnership(address)` (LSP14)
  * - `acceptOwnership()` (LSP14)
+ * - `renounceOwnership()` (LSP14)
  *
  * @param invalidFunction The `bytes4` selector of the function that was attempted
  * to be called on the linked {target} but not recognised.
@@ -200,33 +201,11 @@ error DelegateCallDisallowedViaKeyManager();
 error InvalidPayload(bytes payload);
 
 /**
- * @notice Cannot sent native tokens while setting data.
- *
- * @dev Reverts when calling the `setData(byte32,bytes)` or `setData(bytes32[],bytes[]) functions
- * on the linked {target} while sending value.
- */
-error CannotSendValueToSetData();
-
-/**
  * @notice Calling the Key Manager address for this transaction is disallowed.
  *
  * @dev Reverts when calling the KeyManager through `execute(uint256,address,uint256,bytes)`.
  */
 error CallingKeyManagerNotAllowed();
-
-/**
- * @notice Relay call not valid yet.
- *
- * @dev Reverts when the start timestamp provided to {executeRelayCall} function is bigger than the current timestamp.
- */
-error RelayCallBeforeStartTime();
-
-/**
- * @notice The date of the relay call expired.
- *
- * @dev Reverts when the period to execute the relay call has expired.
- */
-error RelayCallExpired();
 
 /**
  * @notice Key Manager cannot be used as an LSP17 extension for LSP20 functions.

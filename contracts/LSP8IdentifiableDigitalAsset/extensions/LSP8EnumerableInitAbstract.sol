@@ -1,14 +1,12 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
 // modules
 import {
-    LSP8IdentifiableDigitalAssetInitAbstract
-} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
-import {
+    LSP8IdentifiableDigitalAssetInitAbstract,
     LSP8IdentifiableDigitalAssetCore
-} from "../LSP8IdentifiableDigitalAssetCore.sol";
+} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
 
 /**
  * @dev LSP8 extension.
@@ -39,11 +37,13 @@ abstract contract LSP8EnumerableInitAbstract is
      * @param from The address sending the `tokenId` (`address(0)` when `tokenId` is being minted).
      * @param to The address receiving the `tokenId` (`address(0)` when `tokenId` is being burnt).
      * @param tokenId The bytes32 identifier of the token being transferred.
+     * @param data The data sent alongside the the token transfer.
      */
     function _beforeTokenTransfer(
         address from,
         address to,
-        bytes32 tokenId
+        bytes32 tokenId,
+        bytes memory data
     ) internal virtual override(LSP8IdentifiableDigitalAssetCore) {
         if (from == address(0)) {
             uint256 index = totalSupply();
@@ -60,6 +60,6 @@ abstract contract LSP8EnumerableInitAbstract is
             delete _indexToken[lastIndex];
             delete _tokenIndex[tokenId];
         }
-        super._beforeTokenTransfer(from, to, tokenId);
+        super._beforeTokenTransfer(from, to, tokenId, data);
     }
 }

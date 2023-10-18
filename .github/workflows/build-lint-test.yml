@@ -44,6 +44,17 @@ jobs:
       - name: 🧪 run import/requires tests
         run: npm run test:importRequire
 
+      - name: 📚 generate ABI docs
+        run: npm run build:docs
+
+      - name: 🔍 check if ABI auto-generated docs need to be updated
+        run: |-
+          if [[ $(git diff --name-only) != "" ]];
+          then
+            echo "Error: Please generate ABI docs after making changes to Solidity code and Natspec comments!"
+            exit 1
+          fi
+
   test-suites:
     strategy:
       matrix:
@@ -53,7 +64,6 @@ jobs:
             "upinit",
             "lsp1",
             "lsp2",
-            "lsp4",
             "lsp6",
             "lsp6init",
             "lsp7",
@@ -65,6 +75,7 @@ jobs:
             "lsp11",
             "lsp11init",
             "lsp17",
+            "lsp17extensions",
             "lsp20",
             "lsp20init",
             "lsp23",

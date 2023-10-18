@@ -22,7 +22,7 @@ async function setupPermissions(
     permissionValues,
   ]);
 
-  await context.keyManager.connect(context.owner).execute(setupPayload);
+  await context.keyManager.connect(context.mainController).execute(setupPayload);
 }
 
 /**
@@ -34,7 +34,7 @@ async function resetPermissions(context: LSP6TestContext, permissionsKeys: strin
     Array(permissionsKeys.length).fill('0x'),
   ]);
 
-  await context.keyManager.connect(context.owner).execute(teardownPayload);
+  await context.keyManager.connect(context.mainController).execute(teardownPayload);
 }
 
 export const shouldBehaveLikePermissionChangeOrAddController = (
@@ -48,13 +48,98 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
   let permissionArrayKeys: string[] = [];
   let permissionArrayValues: string[] = [];
 
+  // addresses with not 32 bytes long permissions value set
+  // used to check that the caller editing the permissions value for these controllers requires the permission ADDCONTROLLER,
+  const callerHasAllPermissionsTestCase = {
+    addressWith16BytesHexPermissionsLength: '',
+    addressWith40BytesHexPermsissionsLength: '',
+  };
+
+  const callerHasAddControllerTestCase = {
+    addressWith16BytesHexPermissionsLength: '',
+    addressWith40BytesHexPermsissionsLength: '',
+  };
+
+  const callerHasEditPermissionsTestCase = {
+    addressWith16BytesHexPermissionsLength: '',
+    addressWith40BytesHexPermsissionsLength: '',
+  };
+
+  const callerHasSetDataTestCase = {
+    addressWith16BytesHexPermissionsLength: '',
+    addressWith40BytesHexPermsissionsLength: '',
+  };
+
   before('setup', async () => {
     context = await buildContext();
 
+    callerHasAllPermissionsTestCase.addressWith16BytesHexPermissionsLength =
+      ethers.Wallet.createRandom().address.toLowerCase();
+
+    callerHasAllPermissionsTestCase.addressWith40BytesHexPermsissionsLength =
+      ethers.Wallet.createRandom().address.toLowerCase();
+
+    callerHasAddControllerTestCase.addressWith16BytesHexPermissionsLength =
+      ethers.Wallet.createRandom().address.toLowerCase();
+
+    callerHasAddControllerTestCase.addressWith40BytesHexPermsissionsLength =
+      ethers.Wallet.createRandom().address.toLowerCase();
+
+    callerHasEditPermissionsTestCase.addressWith16BytesHexPermissionsLength =
+      ethers.Wallet.createRandom().address.toLowerCase();
+
+    callerHasEditPermissionsTestCase.addressWith40BytesHexPermsissionsLength =
+      ethers.Wallet.createRandom().address.toLowerCase();
+
+    callerHasSetDataTestCase.addressWith16BytesHexPermissionsLength =
+      ethers.Wallet.createRandom().address.toLowerCase();
+
+    callerHasSetDataTestCase.addressWith40BytesHexPermsissionsLength =
+      ethers.Wallet.createRandom().address.toLowerCase();
+
+    const firstSetupPermissionsKeys = [
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        callerHasAllPermissionsTestCase.addressWith16BytesHexPermissionsLength.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        callerHasAllPermissionsTestCase.addressWith40BytesHexPermsissionsLength.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        callerHasAddControllerTestCase.addressWith16BytesHexPermissionsLength.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        callerHasAddControllerTestCase.addressWith40BytesHexPermsissionsLength.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        callerHasEditPermissionsTestCase.addressWith16BytesHexPermissionsLength.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        callerHasEditPermissionsTestCase.addressWith40BytesHexPermsissionsLength.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        callerHasSetDataTestCase.addressWith16BytesHexPermissionsLength.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        callerHasSetDataTestCase.addressWith40BytesHexPermsissionsLength.substring(2),
+    ];
+
+    // We need to setup these first from the start, as the setup and teardown in the tests reset the permissions via the Key Manager,
+    // as the Key Manager will revert with custom error `InvalidDataValuesForDataKeys(AddressPermissions:Permissions:<controller>, invalidPermissionValue)`
+    const firstSetupPermissionsValues = [
+      // 16 bytes long hex string = not 32 bytes long = equivalent to No Permissions Set
+      '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      // 40 bytes long hex string = not 32 bytes long = equivalent to No Permissions Set
+      '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      // same for other controllers (just repeated)
+      '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    ];
+
     await setupKeyManager(
       context,
-      [ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2)],
-      [ALL_PERMISSIONS],
+      [
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
+        ...firstSetupPermissionsKeys,
+      ],
+      [ALL_PERMISSIONS, ...firstSetupPermissionsValues],
     );
   });
 
@@ -100,7 +185,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
         PERMISSIONS.SETDATA,
         // placeholder permission
         PERMISSIONS.TRANSFERVALUE,
-        // 0x0000... = similar to empty, or 'no permissions set'
+        // `bytes32(0)` = similar to empty, or 'no permissions set'
         '0x0000000000000000000000000000000000000000000000000000000000000000',
       ];
 
@@ -116,7 +201,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
       permissionArrayValues = [
         ethers.utils.hexZeroPad(ethers.utils.hexlify(6), 16),
-        context.owner.address,
+        context.mainController.address,
         canOnlyAddController.address,
         canOnlyEditPermissions.address,
         canOnlySetData.address,
@@ -159,7 +244,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             PERMISSIONS.SETDATA,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
@@ -178,11 +263,41 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             value,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile.getData(key);
           expect(result).to.equal(value);
+        });
+
+        it('should be allowed to ADD a new controller if this address has a 16 bytes long bytes value already set under its permission', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+            callerHasAllPermissionsTestCase.addressWith16BytesHexPermissionsLength.substring(2);
+          const value = PERMISSIONS.SETDATA;
+
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
+            key,
+            value,
+          ]);
+
+          await context.keyManager.connect(context.mainController).execute(payload);
+          expect(await context.universalProfile.getData(key)).to.equal(value);
+        });
+
+        it('should be allowed to ADD a new controller if this address has a 40 bytes long bytes value already set under its permission', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+            callerHasAllPermissionsTestCase.addressWith40BytesHexPermsissionsLength.substring(2);
+          const value = PERMISSIONS.SETDATA;
+
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
+            key,
+            value,
+          ]);
+
+          await context.keyManager.connect(context.mainController).execute(payload);
+          expect(await context.universalProfile.getData(key)).to.equal(value);
         });
 
         describe('when editing `AddressPermissions[]` array length', () => {
@@ -200,7 +315,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               value,
             ]);
 
-            await context.keyManager.connect(context.owner).execute(payload);
+            await context.keyManager.connect(context.mainController).execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -221,7 +336,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               value,
             ]);
 
-            await context.keyManager.connect(context.owner).execute(payload);
+            await context.keyManager.connect(context.mainController).execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -239,7 +354,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               value,
             ]);
 
-            await context.keyManager.connect(context.owner).execute(payload);
+            await context.keyManager.connect(context.mainController).execute(payload);
 
             const result = await context.universalProfile.getData(key);
             expect(result).to.equal(value);
@@ -255,7 +370,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               randomValue,
             ]);
 
-            await expect(context.keyManager.connect(context.owner).execute(setupPayload))
+            await expect(context.keyManager.connect(context.mainController).execute(setupPayload))
               .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
@@ -270,7 +385,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               randomValue,
             ]);
 
-            await expect(context.keyManager.connect(context.owner).execute(setupPayload))
+            await expect(context.keyManager.connect(context.mainController).execute(setupPayload))
               .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
@@ -289,7 +404,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               value,
             ]);
 
-            await context.keyManager.connect(context.owner).execute(payload);
+            await context.keyManager.connect(context.mainController).execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -306,7 +421,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               randomValue,
             ]);
 
-            await expect(context.keyManager.connect(context.owner).execute(setupPayload))
+            await expect(context.keyManager.connect(context.mainController).execute(setupPayload))
               .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
@@ -321,7 +436,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               randomValue,
             ]);
 
-            await expect(context.keyManager.connect(context.owner).execute(setupPayload))
+            await expect(context.keyManager.connect(context.mainController).execute(setupPayload))
               .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
               .withArgs(key, randomValue);
           });
@@ -338,7 +453,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               value,
             ]);
 
-            await context.keyManager.connect(context.owner).execute(payload);
+            await context.keyManager.connect(context.mainController).execute(payload);
 
             // prettier-ignore
             const result = await context.universalProfile.getData(key);
@@ -362,7 +477,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
               value,
             ]);
 
-            await expect(context.keyManager.connect(context.owner).execute(payload))
+            await expect(context.keyManager.connect(context.mainController).execute(payload))
               .to.be.revertedWithCustomError(context.keyManager, 'NotRecognisedPermissionKey')
               .withArgs(key.toLowerCase());
           });
@@ -427,6 +542,36 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           await expect(context.keyManager.connect(canOnlyAddController).execute(payload))
             .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
             .withArgs(canOnlyAddController.address, 'EDITPERMISSIONS');
+        });
+
+        it('should be allowed to ADD a new controller if this address has a 16 bytes long bytes value already set under its permission', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+            callerHasAddControllerTestCase.addressWith16BytesHexPermissionsLength.substring(2);
+          const value = PERMISSIONS.SETDATA;
+
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
+            key,
+            value,
+          ]);
+
+          await context.keyManager.connect(canOnlyAddController).execute(payload);
+          expect(await context.universalProfile.getData(key)).to.equal(value);
+        });
+
+        it('should be allowed to ADD a new controller if this address has a 40 bytes long bytes value already set under its permission', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+            callerHasAddControllerTestCase.addressWith40BytesHexPermsissionsLength.substring(2);
+          const value = PERMISSIONS.SETDATA;
+
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
+            key,
+            value,
+          ]);
+
+          await context.keyManager.connect(canOnlyAddController).execute(payload);
+          expect(await context.universalProfile.getData(key)).to.equal(value);
         });
 
         describe('when editing `AddressPermissions[]` array length', () => {
@@ -599,7 +744,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           ]);
         });
 
-        it('should not be allowed to ADD a permission', async () => {
+        it('should not be allowed to ADD a new controller', async () => {
           const newController = ethers.Wallet.createRandom();
 
           const key =
@@ -618,7 +763,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             .withArgs(canOnlyEditPermissions.address, 'ADDCONTROLLER');
         });
 
-        it('should not be allowed to set (= ADD) a permission for an address that has 32 x 0 bytes (0x0000...0000) as permission value', async () => {
+        it('should not be allowed to ADD a new controller if this address had 32 x 0 bytes (0x0000...0000) already as permission value', async () => {
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
             addressWithZeroHexPermissions.address.substring(2);
@@ -634,7 +779,40 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             .withArgs(canOnlyEditPermissions.address, 'ADDCONTROLLER');
         });
 
-        it('should be allowed to CHANGE a permission', async () => {
+        it('should not be allowed to ADD a new controller if this address has a 16 bytes long bytes value already set under its permission', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+            callerHasEditPermissionsTestCase.addressWith16BytesHexPermissionsLength.substring(2);
+
+          const value = PERMISSIONS.SETDATA;
+
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
+            key,
+            value,
+          ]);
+
+          await expect(context.keyManager.connect(canOnlyEditPermissions).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canOnlyEditPermissions.address, 'ADDCONTROLLER');
+        });
+
+        it('should not be allowed to ADD a new controller if this address has a 40 bytes long bytes value already set under its permission', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+            callerHasEditPermissionsTestCase.addressWith40BytesHexPermsissionsLength.substring(2);
+          const value = PERMISSIONS.SETDATA;
+
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
+            key,
+            value,
+          ]);
+
+          await expect(context.keyManager.connect(canOnlyEditPermissions).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canOnlyEditPermissions.address, 'ADDCONTROLLER');
+        });
+
+        it('should be allowed to EDIT the existing permissions of a controller', async () => {
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
             addressToEditPermissions.address.substring(2);
@@ -848,6 +1026,39 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
             addressWithZeroHexPermissions.address.substring(2);
+          const value = PERMISSIONS.SETDATA;
+
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
+            key,
+            value,
+          ]);
+
+          await expect(context.keyManager.connect(canOnlySetData).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canOnlySetData.address, 'ADDCONTROLLER');
+        });
+
+        it('should not be allowed to ADD a new controller if this address has a 16 bytes long bytes value already set under its permission', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+            callerHasSetDataTestCase.addressWith16BytesHexPermissionsLength.substring(2);
+
+          const value = PERMISSIONS.SETDATA;
+
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
+            key,
+            value,
+          ]);
+
+          await expect(context.keyManager.connect(canOnlySetData).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canOnlySetData.address, 'ADDCONTROLLER');
+        });
+
+        it('should not be allowed to ADD a new controller if this address has a 40 bytes long bytes value already set under its permission', async () => {
+          const key =
+            ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+            callerHasSetDataTestCase.addressWith40BytesHexPermsissionsLength.substring(2);
           const value = PERMISSIONS.SETDATA;
 
           const payload = context.universalProfile.interface.encodeFunctionData('setData', [
@@ -1075,7 +1286,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             values,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile.getDataBatch(keys);
@@ -1104,7 +1315,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             values,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile.getDataBatch(keys);
@@ -1135,7 +1346,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             values,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile.getDataBatch(keys);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 import "forge-std/Test.sol";
@@ -102,7 +102,13 @@ contract LSP6SetDataTest is Test {
         keyManager.execute(callData);
 
         // CHECK the LSP20 verification function reverts as well
-        keyManager.lsp20VerifyCall(malicious, 0, functionArgs);
+        keyManager.lsp20VerifyCall(
+            malicious,
+            address(universalProfile),
+            malicious,
+            0,
+            functionArgs
+        );
 
         // CHECK it reverts when calling directly the Universal Profile
         universalProfile.setData(dataKey, dataValue);
@@ -222,7 +228,13 @@ contract LSP6SetDataTest is Test {
         keyManager.execute(callData);
 
         // CHECK the LSP20 verification function reverts as well
-        keyManager.lsp20VerifyCall(malicious, 0, functionArgs);
+        keyManager.lsp20VerifyCall(
+            malicious,
+            address(universalProfile),
+            malicious,
+            0,
+            functionArgs
+        );
 
         // CHECK it reverts when calling directly the Universal Profile
         universalProfile.setData(dataKey, dataValue);

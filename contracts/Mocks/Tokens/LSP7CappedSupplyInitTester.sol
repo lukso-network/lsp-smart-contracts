@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
@@ -22,7 +22,7 @@ contract LSP7CappedSupplyInitTester is LSP7CappedSupplyInitAbstract {
     }
 
     function mint(address to, uint256 amount) public {
-        // using allowNonLSP1Recipient=true so we can send to EOA in test
+        // using force=true so we can send to EOA in test
         _mint(to, amount, true, "token printer go brrr");
     }
 

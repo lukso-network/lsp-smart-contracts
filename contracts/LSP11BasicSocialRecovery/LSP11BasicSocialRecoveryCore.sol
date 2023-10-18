@@ -20,7 +20,17 @@ import {
 // constants
 import {ALL_REGULAR_PERMISSIONS} from "../LSP6KeyManager/LSP6Constants.sol";
 import {_INTERFACEID_LSP11} from "./LSP11Constants.sol";
-import "./LSP11Errors.sol";
+import {
+    CallerIsNotGuardian,
+    GuardianAlreadyExist,
+    GuardianDoNotExist,
+    GuardiansNumberCannotGoBelowThreshold,
+    ThresholdCannotBeHigherThanGuardiansNumber,
+    SecretHashCannotBeZero,
+    AddressZeroNotAllowed,
+    ThresholdNotReachedForRecoverer,
+    WrongPlainSecret
+} from "./LSP11Errors.sol";
 
 /**
  * @title Core Implementation of LSP11-BasicSocialRecovery standard
@@ -75,42 +85,68 @@ abstract contract LSP11BasicSocialRecoveryCore is
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function target() public view virtual returns (address) {
+    function target() public view virtual override returns (address) {
         return _target;
     }
 
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function getRecoveryCounter() public view virtual returns (uint256) {
+    function getRecoveryCounter()
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return _recoveryCounter;
     }
 
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function getGuardians() public view virtual returns (address[] memory) {
+    function getGuardians()
+        public
+        view
+        virtual
+        override
+        returns (address[] memory)
+    {
         return _guardians.values();
     }
 
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function isGuardian(address _address) public view virtual returns (bool) {
+    function isGuardian(
+        address _address
+    ) public view virtual override returns (bool) {
         return _guardians.contains(_address);
     }
 
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function getGuardiansThreshold() public view virtual returns (uint256) {
+    function getGuardiansThreshold()
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return _guardiansThreshold;
     }
 
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function getRecoverySecretHash() public view virtual returns (bytes32) {
+    function getRecoverySecretHash()
+        public
+        view
+        virtual
+        override
+        returns (bytes32)
+    {
         return _recoverySecretHash;
     }
 
@@ -119,14 +155,16 @@ abstract contract LSP11BasicSocialRecoveryCore is
      */
     function getGuardianChoice(
         address guardian
-    ) public view virtual returns (address) {
+    ) public view virtual override returns (address) {
         return _guardiansChoice[_recoveryCounter][guardian];
     }
 
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function addGuardian(address newGuardian) public virtual onlyOwner {
+    function addGuardian(
+        address newGuardian
+    ) public virtual override onlyOwner {
         if (_guardians.contains(newGuardian))
             revert GuardianAlreadyExist(newGuardian);
 
@@ -137,7 +175,9 @@ abstract contract LSP11BasicSocialRecoveryCore is
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function removeGuardian(address existingGuardian) public virtual onlyOwner {
+    function removeGuardian(
+        address existingGuardian
+    ) public virtual override onlyOwner {
         if (!_guardians.contains(existingGuardian))
             revert GuardianDoNotExist(existingGuardian);
         if (_guardians.length() == _guardiansThreshold)
@@ -152,7 +192,7 @@ abstract contract LSP11BasicSocialRecoveryCore is
      */
     function setGuardiansThreshold(
         uint256 newThreshold
-    ) public virtual onlyOwner {
+    ) public virtual override onlyOwner {
         if (newThreshold > _guardians.length())
             revert ThresholdCannotBeHigherThanGuardiansNumber(
                 newThreshold,
@@ -169,7 +209,7 @@ abstract contract LSP11BasicSocialRecoveryCore is
      */
     function setRecoverySecretHash(
         bytes32 newRecoverSecretHash
-    ) public virtual onlyOwner {
+    ) public virtual override onlyOwner {
         if (newRecoverSecretHash == bytes32(0)) revert SecretHashCannotBeZero();
 
         _recoverySecretHash = newRecoverSecretHash;
@@ -181,7 +221,7 @@ abstract contract LSP11BasicSocialRecoveryCore is
      */
     function selectNewController(
         address addressSelected
-    ) public virtual onlyGuardians {
+    ) public virtual override onlyGuardians {
         uint256 currentRecoveryCounter = _recoveryCounter;
 
         _guardiansChoice[currentRecoveryCounter][msg.sender] = addressSelected;
@@ -199,7 +239,7 @@ abstract contract LSP11BasicSocialRecoveryCore is
         address recoverer,
         string memory plainSecret,
         bytes32 newSecretHash
-    ) public virtual {
+    ) public virtual override {
         // caching storage variables
         uint256 currentRecoveryCounter = _recoveryCounter;
         address[] memory guardians = _guardians.values();

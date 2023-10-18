@@ -1,8 +1,10 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
-import "../FallbackExtensions/OnERC721ReceivedExtension.sol";
+import {
+    OnERC721ReceivedExtension
+} from "../../LSP17Extensions/OnERC721ReceivedExtension.sol";
 
 /**
  * @dev This contract is used only for testing purposes

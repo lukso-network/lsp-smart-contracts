@@ -18,7 +18,10 @@ import '@nomicfoundation/hardhat-toolbox';
 import 'hardhat-packager';
 import 'hardhat-contract-sizer';
 import 'hardhat-deploy';
+
+// custom built hardhat plugins for CI
 import './scripts/ci/docs-generate';
+import './scripts/ci/gas_benchmark';
 
 // Typescript types for web3.js
 import '@nomiclabs/hardhat-web3';
@@ -137,7 +140,6 @@ const config: HardhatUserConfig = {
       'LSP11BasicSocialRecoveryInit',
       // ERC Compatible tokens
       // ------------------
-      'LSP4Compatibility',
       'LSP7CompatibleERC20',
       'LSP7CompatibleERC20InitAbstract',
       'LSP7CompatibleERC20Mintable',

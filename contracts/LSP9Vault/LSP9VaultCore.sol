@@ -5,12 +5,14 @@ pragma solidity ^0.8.4;
 import {
     ILSP1UniversalReceiver
 } from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+
+import {
+    ILSP1UniversalReceiverDelegate
+} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 import {ILSP9Vault} from "./ILSP9Vault.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
@@ -18,14 +20,8 @@ import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // modules
-import {
-    ERC725XCore,
-    IERC725X
-} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
-import {
-    ERC725YCore,
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
+import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
+import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
@@ -33,7 +29,14 @@ import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 
 // constants
-import "@erc725/smart-contracts/contracts/errors.sol";
+import {
+    ERC725Y_MsgValueDisallowed,
+    ERC725Y_DataKeysValuesLengthMismatch,
+    ERC725X_CreateOperationsRequireEmptyRecipientAddress,
+    ERC725X_CreateOperationsRequireEmptyRecipientAddress,
+    ERC725X_MsgValueDisallowedInStaticCall,
+    ERC725X_UnknownOperationType
+} from "@erc725/smart-contracts/contracts/errors.sol";
 import {
     OPERATION_0_CALL,
     OPERATION_1_CREATE,
@@ -42,6 +45,7 @@ import {
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_LSP1,
+    _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -61,12 +65,11 @@ import {
 } from "../LSP17ContractExtension/LSP17Constants.sol";
 
 // errors
-import "./LSP9Errors.sol";
-import "../LSP17ContractExtension/LSP17Errors.sol";
+import {LSP1DelegateNotAllowedToSetDataKey} from "./LSP9Errors.sol";
 
 import {
-    LSP14MustAcceptOwnershipInSeparateTransaction
-} from "../LSP14Ownable2Step/LSP14Errors.sol";
+    NoExtensionFoundForFunctionSelector
+} from "../LSP17ContractExtension/LSP17Errors.sol";
 
 /**
  * @title Core Implementation of LSP9Vault built on top of [ERC725], [LSP1UniversalReceiver]
@@ -94,10 +97,8 @@ contract LSP9VaultCore is
      * @custom:events {ValueReceived} when receiving native tokens.
      */
     receive() external payable virtual {
-        if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
-
-    // solhint-disable no-complex-fallback
 
     /**
      * @notice The `fallback` function was called with the following amount of native tokens: `msg.value`; and the following calldata: `callData`.
@@ -120,6 +121,7 @@ contract LSP9VaultCore is
      *
      * @custom:events {ValueReceived} event when receiving native tokens.
      */
+    // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
@@ -141,7 +143,7 @@ contract LSP9VaultCore is
      */
     function batchCalls(
         bytes[] calldata data
-    ) public virtual returns (bytes[] memory results) {
+    ) public virtual override returns (bytes[] memory results) {
         results = new bytes[](data.length);
         for (uint256 i; i < data.length; ) {
             (bool success, bytes memory result) = address(this).delegatecall(
@@ -150,7 +152,7 @@ contract LSP9VaultCore is
 
             if (!success) {
                 // Look for revert reason and bubble it up if present
-                if (result.length > 0) {
+                if (result.length != 0) {
                     // The easiest way to bubble the revert reason is using memory via assembly
                     // solhint-disable no-inline-assembly
                     /// @solidity memory-safe-assembly
@@ -172,7 +174,7 @@ contract LSP9VaultCore is
     }
 
     /**
-     * @inheritdoc IERC725X
+     * @inheritdoc ERC725XCore
      *
      * @custom:requirements
      * - Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
@@ -225,7 +227,7 @@ contract LSP9VaultCore is
     }
 
     /**
-     * @inheritdoc IERC725Y
+     * @inheritdoc ERC725YCore
      *
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
@@ -253,7 +255,7 @@ contract LSP9VaultCore is
     }
 
     /**
-     * @inheritdoc IERC725Y
+     * @inheritdoc ERC725YCore
      *
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
@@ -324,7 +326,7 @@ contract LSP9VaultCore is
     function universalReceiver(
         bytes32 typeId,
         bytes calldata receivedData
-    ) public payable virtual returns (bytes memory returnedValues) {
+    ) public payable virtual override returns (bytes memory returnedValues) {
         if (msg.value != 0) {
             emit ValueReceived(msg.sender, msg.value);
         }
@@ -341,16 +343,17 @@ contract LSP9VaultCore is
 
             if (
                 universalReceiverDelegate.supportsERC165InterfaceUnchecked(
-                    _INTERFACEID_LSP1
+                    _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
                 _reentrantDelegate = universalReceiverDelegate;
-                resultDefaultDelegate = universalReceiverDelegate
-                    .callUniversalReceiverWithCallerInfos(
-                        typeId,
-                        receivedData,
+                resultDefaultDelegate = ILSP1UniversalReceiverDelegate(
+                    universalReceiverDelegate
+                ).universalReceiverDelegate(
                         msg.sender,
-                        msg.value
+                        msg.value,
+                        typeId,
+                        receivedData
                     );
             }
         }
@@ -370,16 +373,17 @@ contract LSP9VaultCore is
 
             if (
                 universalReceiverDelegate.supportsERC165InterfaceUnchecked(
-                    _INTERFACEID_LSP1
+                    _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
                 _reentrantDelegate = universalReceiverDelegate;
-                resultTypeIdDelegate = universalReceiverDelegate
-                    .callUniversalReceiverWithCallerInfos(
-                        typeId,
-                        receivedData,
+                resultTypeIdDelegate = ILSP1UniversalReceiverDelegate(
+                    universalReceiverDelegate
+                ).universalReceiverDelegate(
                         msg.sender,
-                        msg.value
+                        msg.value,
+                        typeId,
+                        receivedData
                     );
             }
         }
@@ -508,11 +512,22 @@ contract LSP9VaultCore is
     /**
      * @dev Forwards the call to an extension mapped to a function selector.
      *
-     * Calls {_getExtension} to get the address of the extension mapped to the function selector being called on the account. If there is no extension, the `address(0)` will be returned.
+     * Calls {_getExtension} to get the address of the extension mapped to the function selector being
+     * called on the account. If there is no extension, the `address(0)` will be returned.
      *
-     * Reverts if there is no extension for the function being called, except for the bytes4(0) function selector, which passes even if there is no extension for it.
+     * Reverts if there is no extension for the function being called, except for the `bytes4(0)` function selector, which passes even if there is no extension for it.
      *
-     * If there is an extension for the function selector being called, it calls the extension with the CALL opcode, passing the `msg.data` appended with the 20 bytes of the `msg.sender` and 32 bytes of the `msg.value`
+     * If there is an extension for the function selector being called, it calls the extension with the
+     * `CALL` opcode, passing the `msg.data` appended with the 20 bytes of the {msg.sender} and 32 bytes of the `msg.value`.
+     *
+     * @custom:hint This function does not forward to the extension contract the `msg.value` received by the contract that inherits `LSP17Extendable`.
+     * If you would like to forward the `msg.value` to the extension contract, you can override the code of this internal function as follow:
+     *
+     * ```solidity
+     * (bool success, bytes memory result) = extension.call{value: msg.value}(
+     *     abi.encodePacked(callData, msg.sender, msg.value)
+     * );
+     * ```
      */
     function _fallbackLSP17Extendable(
         bytes calldata callData
@@ -626,15 +641,17 @@ contract LSP9VaultCore is
 
         // Deploy with CREATE
         if (operationType == uint256(OPERATION_1_CREATE)) {
-            if (target != address(0))
+            if (target != address(0)) {
                 revert ERC725X_CreateOperationsRequireEmptyRecipientAddress();
+            }
             return _deployCreate(value, data);
         }
 
         // Deploy with CREATE2
         if (operationType == uint256(OPERATION_2_CREATE2)) {
-            if (target != address(0))
+            if (target != address(0)) {
                 revert ERC725X_CreateOperationsRequireEmptyRecipientAddress();
+            }
             return _deployCreate2(value, data);
         }
 

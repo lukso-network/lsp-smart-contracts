@@ -8,6 +8,10 @@ import {
     ILSP1UniversalReceiver
 } from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
+import {
+    ILSP1UniversalReceiverDelegate as ILSP1Delegate
+} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -19,14 +23,8 @@ import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // modules
-import {
-    ERC725YCore,
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
-import {
-    ERC725XCore,
-    IERC725X
-} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
+import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
+import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
@@ -37,18 +35,18 @@ import {
 } from "../LSP20CallVerification/LSP20CallVerification.sol";
 
 // constants
-import "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_LSP0,
     _INTERFACEID_ERC1271,
-    _ERC1271_MAGICVALUE,
+    _ERC1271_SUCCESSVALUE,
     _ERC1271_FAILVALUE,
     _TYPEID_LSP0_OwnershipTransferStarted,
     _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP0_OwnershipTransferred_RecipientNotification
-} from "../LSP0ERC725Account/LSP0Constants.sol";
+} from "./LSP0Constants.sol";
 import {
     _INTERFACEID_LSP1,
+    _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -63,15 +61,12 @@ import {
 
 // errors
 import {
-    ERC725Y_DataKeysValuesLengthMismatch
+    ERC725Y_DataKeysValuesLengthMismatch,
+    ERC725Y_DataKeysValuesEmptyArray
 } from "@erc725/smart-contracts/contracts/errors.sol";
 import {
     NoExtensionFoundForFunctionSelector
 } from "../LSP17ContractExtension/LSP17Errors.sol";
-
-import {
-    LSP14MustAcceptOwnershipInSeparateTransaction
-} from "../LSP14Ownable2Step/LSP14Errors.sol";
 
 /**
  * @title The Core Implementation of [LSP-0-ERC725Account] Standard.
@@ -105,8 +100,6 @@ abstract contract LSP0ERC725AccountCore is
         }
     }
 
-    // solhint-disable no-complex-fallback
-
     /**
      * @notice The `fallback` function was called with the following amount of native tokens: `msg.value`; and the following calldata: `callData`.
      *
@@ -128,6 +121,7 @@ abstract contract LSP0ERC725AccountCore is
      *
      * @custom:events {ValueReceived} event when receiving native tokens.
      */
+    // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
@@ -149,7 +143,7 @@ abstract contract LSP0ERC725AccountCore is
      */
     function batchCalls(
         bytes[] calldata data
-    ) public virtual returns (bytes[] memory results) {
+    ) public virtual override returns (bytes[] memory results) {
         results = new bytes[](data.length);
         for (uint256 i; i < data.length; ) {
             (bool success, bytes memory result) = address(this).delegatecall(
@@ -158,7 +152,7 @@ abstract contract LSP0ERC725AccountCore is
 
             if (!success) {
                 // Look for revert reason and bubble it up if present
-                if (result.length > 0) {
+                if (result.length != 0) {
                     // The easiest way to bubble the revert reason is using memory via assembly
                     // solhint-disable no-inline-assembly
                     /// @solidity memory-safe-assembly
@@ -180,7 +174,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @inheritdoc IERC725X
+     * @inheritdoc ERC725XCore
      *
      * @custom:requirements
      * - Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
@@ -203,16 +197,16 @@ abstract contract LSP0ERC725AccountCore is
             emit ValueReceived(msg.sender, msg.value);
         }
 
-        address _owner = owner();
+        address accountOwner = owner();
 
         // If the caller is the owner perform execute directly
-        if (msg.sender == _owner) {
+        if (msg.sender == accountOwner) {
             return ERC725XCore._execute(operationType, target, value, data);
         }
 
         // If the caller is not the owner, call {lsp20VerifyCall} on the owner
-        // Depending on the magicValue returned, a second call is done after execution
-        bool verifyAfter = LSP20CallVerification._verifyCall(_owner);
+        // Depending on the returnedStatus, a second call is done after execution
+        bool verifyAfter = LSP20CallVerification._verifyCall(accountOwner);
 
         // Perform the execution
         bytes memory result = ERC725XCore._execute(
@@ -224,14 +218,17 @@ abstract contract LSP0ERC725AccountCore is
 
         // if verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         if (verifyAfter) {
-            LSP20CallVerification._verifyCallResult(_owner, abi.encode(result));
+            LSP20CallVerification._verifyCallResult(
+                accountOwner,
+                abi.encode(result)
+            );
         }
 
         return result;
     }
 
     /**
-     * @inheritdoc IERC725X
+     * @inheritdoc ERC725XCore
      *
      * @custom:requirements
      * - The length of the parameters provided must be equal.
@@ -239,6 +236,9 @@ abstract contract LSP0ERC725AccountCore is
      * - If a `value` is provided, the contract must have at least this amount in its balance to execute successfully.
      * - If the operation type is `CREATE` (1) or `CREATE2` (2), `target` must be `address(0)`.
      * - If the operation type is `STATICCALL` (3) or `DELEGATECALL` (4), `value` transfer is disallowed and must be 0.
+     *
+     * @custom:warning
+     * - The `msg.value` should not be trusted for any method called within the batch with `operationType`: `DELEGATECALL` (4).
      *
      * @custom:events
      * - {Executed} event for each call that uses under `operationType`: `CALL` (0), `STATICCALL` (3) and `DELEGATECALL` (4). (each iteration)
@@ -255,10 +255,10 @@ abstract contract LSP0ERC725AccountCore is
             emit ValueReceived(msg.sender, msg.value);
         }
 
-        address _owner = owner();
+        address accountOwner = owner();
 
         // If the caller is the owner perform execute directly
-        if (msg.sender == _owner) {
+        if (msg.sender == accountOwner) {
             return
                 ERC725XCore._executeBatch(
                     operationsType,
@@ -269,8 +269,8 @@ abstract contract LSP0ERC725AccountCore is
         }
 
         // If the caller is not the owner, call {lsp20VerifyCall} on the owner
-        // Depending on the magicValue returned, a second call is done after execution
-        bool verifyAfter = LSP20CallVerification._verifyCall(_owner);
+        // Depending on the returnedStatus, a second call is done after execution
+        bool verifyAfter = LSP20CallVerification._verifyCall(accountOwner);
 
         // Perform the execution
         bytes[] memory results = ERC725XCore._executeBatch(
@@ -283,7 +283,7 @@ abstract contract LSP0ERC725AccountCore is
         // if verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         if (verifyAfter) {
             LSP20CallVerification._verifyCallResult(
-                _owner,
+                accountOwner,
                 abi.encode(results)
             );
         }
@@ -292,7 +292,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @inheritdoc IERC725Y
+     * @inheritdoc ERC725YCore
      *
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
@@ -308,28 +308,28 @@ abstract contract LSP0ERC725AccountCore is
             emit ValueReceived(msg.sender, msg.value);
         }
 
-        address _owner = owner();
+        address accountOwner = owner();
 
         // If the caller is the owner perform setData directly
-        if (msg.sender == _owner) {
+        if (msg.sender == accountOwner) {
             return _setData(dataKey, dataValue);
         }
 
         // If the caller is not the owner, call {lsp20VerifyCall} on the owner
-        // Depending on the magicValue returned, a second call is done after setting data
-        bool verifyAfter = _verifyCall(_owner);
+        // Depending on the returnedStatus, a second call is done after setting data
+        bool verifyAfter = _verifyCall(accountOwner);
 
         _setData(dataKey, dataValue);
 
         // If verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         // The setData function does not return, second parameter of {_verifyCallResult} will be empty
         if (verifyAfter) {
-            _verifyCallResult(_owner, "");
+            _verifyCallResult(accountOwner, "");
         }
     }
 
     /**
-     * @inheritdoc IERC725Y
+     * @inheritdoc ERC725YCore
      *
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
@@ -349,11 +349,15 @@ abstract contract LSP0ERC725AccountCore is
             revert ERC725Y_DataKeysValuesLengthMismatch();
         }
 
-        address _owner = owner();
+        if (dataKeys.length == 0) {
+            revert ERC725Y_DataKeysValuesEmptyArray();
+        }
+
+        address accountOwner = owner();
 
         // If the caller is the owner perform setData directly
-        if (msg.sender == _owner) {
-            for (uint256 i = 0; i < dataKeys.length; ) {
+        if (msg.sender == accountOwner) {
+            for (uint256 i; i < dataKeys.length; ) {
                 _setData(dataKeys[i], dataValues[i]);
 
                 unchecked {
@@ -365,10 +369,10 @@ abstract contract LSP0ERC725AccountCore is
         }
 
         // If the caller is not the owner, call {lsp20VerifyCall} on the owner
-        // Depending on the magicValue returned, a second call is done after setting data
-        bool verifyAfter = _verifyCall(_owner);
+        // Depending on the returnedStatus, a second call is done after setting data
+        bool verifyAfter = _verifyCall(accountOwner);
 
-        for (uint256 i = 0; i < dataKeys.length; ) {
+        for (uint256 i; i < dataKeys.length; ) {
             _setData(dataKeys[i], dataValues[i]);
 
             unchecked {
@@ -379,7 +383,7 @@ abstract contract LSP0ERC725AccountCore is
         // If verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         // The setData function does not return, second parameter of {_verifyCallResult} will be empty
         if (verifyAfter) {
-            _verifyCallResult(_owner, "");
+            _verifyCallResult(accountOwner, "");
         }
     }
 
@@ -416,7 +420,7 @@ abstract contract LSP0ERC725AccountCore is
     function universalReceiver(
         bytes32 typeId,
         bytes calldata receivedData
-    ) public payable virtual returns (bytes memory returnedValues) {
+    ) public payable virtual override returns (bytes memory returnedValues) {
         if (msg.value != 0) {
             emit ValueReceived(msg.sender, msg.value);
         }
@@ -428,55 +432,49 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory resultDefaultDelegate;
 
         if (lsp1DelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(
-                bytes20(lsp1DelegateValue)
-            );
+            address lsp1Delegate = address(bytes20(lsp1DelegateValue));
 
             // Checking LSP1 InterfaceId support
             if (
-                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
-                    _INTERFACEID_LSP1
+                lsp1Delegate.supportsERC165InterfaceUnchecked(
+                    _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
-                // calling {universalReceiver} function on URD appending the caller and the value sent
-                resultDefaultDelegate = universalReceiverDelegate
-                    .callUniversalReceiverWithCallerInfos(
-                        typeId,
-                        receivedData,
+                resultDefaultDelegate = ILSP1Delegate(lsp1Delegate)
+                    .universalReceiverDelegate(
                         msg.sender,
-                        msg.value
+                        msg.value,
+                        typeId,
+                        receivedData
                     );
             }
         }
 
-        // Generate the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY + <bytes32 typeId>}
+        // Generate the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX + <bytes32 typeId>}
         bytes32 lsp1typeIdDelegateKey = LSP2Utils.generateMappingKey(
             _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
             bytes20(typeId)
         );
 
-        // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY + <bytes32 typeId>}
+        // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX + <bytes32 typeId>}
         bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
         bytes memory resultTypeIdDelegate;
 
         if (lsp1TypeIdDelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(
-                bytes20(lsp1TypeIdDelegateValue)
-            );
+            address lsp1Delegate = address(bytes20(lsp1TypeIdDelegateValue));
 
             // Checking LSP1 InterfaceId support
             if (
-                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
-                    _INTERFACEID_LSP1
+                lsp1Delegate.supportsERC165InterfaceUnchecked(
+                    _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
-                // calling {universalReceiver} function on URD appending the caller and the value sent
-                resultTypeIdDelegate = universalReceiverDelegate
-                    .callUniversalReceiverWithCallerInfos(
-                        typeId,
-                        receivedData,
+                resultTypeIdDelegate = ILSP1Delegate(lsp1Delegate)
+                    .universalReceiverDelegate(
                         msg.sender,
-                        msg.value
+                        msg.value,
+                        typeId,
+                        receivedData
                     );
             }
         }
@@ -526,7 +524,7 @@ abstract contract LSP0ERC725AccountCore is
             _inTransferOwnership = false;
         } else {
             // If the caller is not the owner, call {lsp20VerifyCall} on the owner
-            // Depending on the magicValue returned, a second call is done after transferring ownership
+            // Depending on the returnedStatus, a second call is done after transferring ownership
             bool verifyAfter = _verifyCall(currentOwner);
 
             // set the transfer ownership lock
@@ -563,8 +561,20 @@ abstract contract LSP0ERC725AccountCore is
      */
     function acceptOwnership() public virtual override NotInTransferOwnership {
         address previousOwner = owner();
+        address pendingOwnerAddress = pendingOwner();
 
-        _acceptOwnership();
+        bool verifyAfter;
+
+        if (msg.sender != pendingOwnerAddress) {
+            // If the caller is not the owner, call {lsp20VerifyCall} on the pending owner
+            // Depending on the successStatus returned, a second call is done after transferring ownership
+            verifyAfter = _verifyCall(pendingOwnerAddress);
+
+            _setOwner(pendingOwnerAddress);
+            delete _pendingOwner;
+        } else {
+            _acceptOwnership();
+        }
 
         // notify the previous owner if supports LSP1
         previousOwner.tryNotifyUniversalReceiver(
@@ -573,10 +583,16 @@ abstract contract LSP0ERC725AccountCore is
         );
 
         // notify the pending owner if supports LSP1
-        msg.sender.tryNotifyUniversalReceiver(
+        pendingOwnerAddress.tryNotifyUniversalReceiver(
             _TYPEID_LSP0_OwnershipTransferred_RecipientNotification,
             ""
         );
+
+        // If msg.sender != pendingOwnerAddress & verifyAfter is true, Call {lsp20VerifyCallResult} on the new owner
+        // The transferOwnership function does not return, second parameter of {_verifyCallResult} will be empty
+        if (verifyAfter) {
+            _verifyCallResult(pendingOwnerAddress, "");
+        }
     }
 
     /**
@@ -584,7 +600,7 @@ abstract contract LSP0ERC725AccountCore is
      *
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
-     * @custom:danger Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
+     * @custom:danger Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner or an address allowed by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
      *
      */
     function renounceOwnership()
@@ -592,16 +608,16 @@ abstract contract LSP0ERC725AccountCore is
         virtual
         override(LSP14Ownable2Step, OwnableUnset)
     {
-        address _owner = owner();
+        address accountOwner = owner();
 
         // If the caller is the owner perform renounceOwnership directly
-        if (msg.sender == _owner) {
+        if (msg.sender == accountOwner) {
             return LSP14Ownable2Step._renounceOwnership();
         }
 
         // If the caller is not the owner, call {lsp20VerifyCall} on the owner
-        // Depending on the magicValue returned, a second call is done after transferring ownership
-        bool verifyAfter = _verifyCall(_owner);
+        // Depending on the returnedStatus, a second call is done after transferring ownership
+        bool verifyAfter = _verifyCall(accountOwner);
 
         address previousOwner = owner();
         LSP14Ownable2Step._renounceOwnership();
@@ -616,7 +632,7 @@ abstract contract LSP0ERC725AccountCore is
         // If verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
         // The transferOwnership function does not return, second parameter of {_verifyCallResult} will be empty
         if (verifyAfter) {
-            _verifyCallResult(_owner, "");
+            _verifyCallResult(accountOwner, "");
         }
     }
 
@@ -661,29 +677,29 @@ abstract contract LSP0ERC725AccountCore is
      *
      * 1. If the owner is an EOA, recovers an address from the hash and the signature provided:
      *
-     *      - Returns the `magicValue` if the address recovered is the same as the owner, indicating that it was a valid signature.
+     *      - Returns the `_ERC1271_SUCCESSVALUE` if the address recovered is the same as the owner, indicating that it was a valid signature.
      *
-     *      - If the address is different, it returns the fail value indicating that the signature is not valid.
+     *      - If the address is different, it returns the `_ERC1271_FAILVALUE` indicating that the signature is not valid.
      *
      * 2. If the owner is a smart contract, it forwards the call of {isValidSignature()} to the owner contract:
      *
-     *      - If the contract fails or returns the fail value, the {isValidSignature()} on the account returns the fail value, indicating that the signature is not valid.
+     *      - If the contract fails or returns the `_ERC1271_FAILVALUE`, the {isValidSignature()} on the account returns the `_ERC1271_FAILVALUE`, indicating that the signature is not valid.
      *
-     *      - If the {isValidSignature()} on the owner returned the `magicValue`, the {isValidSignature()} on the account returns the `magicValue`, indicating that it's a valid signature.
+     *      - If the {isValidSignature()} on the owner returned the `_ERC1271_SUCCESSVALUE`, the {isValidSignature()} on the account returns the `_ERC1271_SUCCESSVALUE`, indicating that it's a valid signature.
      *
      * @param dataHash The hash of the data to be validated.
      * @param signature A signature that can validate the previous parameter (Hash).
      *
-     * @return magicValue A `bytes4` value that indicates if the signature is valid or not.
+     * @return returnedStatus A `bytes4` value that indicates if the signature is valid or not.
      */
     function isValidSignature(
         bytes32 dataHash,
         bytes memory signature
-    ) public view virtual returns (bytes4 magicValue) {
+    ) public view virtual override returns (bytes4 returnedStatus) {
         address _owner = owner();
 
         // If owner is a contract
-        if (_owner.code.length > 0) {
+        if (_owner.code.length != 0) {
             (bool success, bytes memory result) = _owner.staticcall(
                 abi.encodeWithSelector(
                     IERC1271.isValidSignature.selector,
@@ -694,9 +710,10 @@ abstract contract LSP0ERC725AccountCore is
 
             bool isValid = (success &&
                 result.length == 32 &&
-                abi.decode(result, (bytes32)) == bytes32(_ERC1271_MAGICVALUE));
+                abi.decode(result, (bytes32)) ==
+                bytes32(_ERC1271_SUCCESSVALUE));
 
-            return isValid ? _ERC1271_MAGICVALUE : _ERC1271_FAILVALUE;
+            return isValid ? _ERC1271_SUCCESSVALUE : _ERC1271_FAILVALUE;
         }
         // If owner is an EOA
         else {
@@ -709,11 +726,11 @@ abstract contract LSP0ERC725AccountCore is
                 return _ERC1271_FAILVALUE;
 
             // if recovering is successful and the recovered address matches the owner's address,
-            // return the ERC1271 magic value. Otherwise, return the ERC1271 fail value
+            // return the ERC1271 success value. Otherwise, return the ERC1271 fail value
             // matches the address of the owner, otherwise return fail value
             return
                 recoveredAddress == _owner
-                    ? _ERC1271_MAGICVALUE
+                    ? _ERC1271_SUCCESSVALUE
                     : _ERC1271_FAILVALUE;
         }
     }
@@ -723,11 +740,22 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @dev Forwards the call to an extension mapped to a function selector.
      *
-     * Calls {_getExtension} to get the address of the extension mapped to the function selector being called on the account. If there is no extension, the `address(0)` will be returned.
+     * Calls {_getExtension} to get the address of the extension mapped to the function selector being
+     * called on the account. If there is no extension, the `address(0)` will be returned.
      *
-     * Reverts if there is no extension for the function being called, except for the bytes4(0) function selector, which passes even if there is no extension for it.
+     * Reverts if there is no extension for the function being called, except for the `bytes4(0)` function selector, which passes even if there is no extension for it.
      *
-     * If there is an extension for the function selector being called, it calls the extension with the CALL opcode, passing the `msg.data` appended with the 20 bytes of the `msg.sender` and 32 bytes of the `msg.value`
+     * If there is an extension for the function selector being called, it calls the extension with the
+     * `CALL` opcode, passing the `msg.data` appended with the 20 bytes of the {msg.sender} and 32 bytes of the `msg.value`.
+     *
+     * @custom:hint This function does not forward to the extension contract the `msg.value` received by the contract that inherits `LSP17Extendable`.
+     * If you would like to forward the `msg.value` to the extension contract, you can override the code of this internal function as follow:
+     *
+     * ```solidity
+     * (bool success, bytes memory result) = extension.call{value: msg.value}(
+     *     abi.encodePacked(callData, msg.sender, msg.value)
+     * );
+     * ```
      */
     function _fallbackLSP17Extendable(
         bytes calldata callData

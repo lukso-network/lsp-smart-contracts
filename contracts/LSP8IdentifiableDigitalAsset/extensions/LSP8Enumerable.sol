@@ -1,14 +1,12 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
 // modules
 import {
-    LSP8IdentifiableDigitalAsset
-} from "../LSP8IdentifiableDigitalAsset.sol";
-import {
+    LSP8IdentifiableDigitalAsset,
     LSP8IdentifiableDigitalAssetCore
-} from "../LSP8IdentifiableDigitalAssetCore.sol";
+} from "../LSP8IdentifiableDigitalAsset.sol";
 
 /**
  * @dev LSP8 extension that enables to enumerate over all the `tokenIds` ever minted.
@@ -39,11 +37,13 @@ abstract contract LSP8Enumerable is LSP8IdentifiableDigitalAsset {
      * @param from The address sending the `tokenId` (`address(0)` when `tokenId` is being minted).
      * @param to The address receiving the `tokenId` (`address(0)` when `tokenId` is being burnt).
      * @param tokenId The bytes32 identifier of the token being transferred.
+     * @param data The data sent alongside the the token transfer.
      */
     function _beforeTokenTransfer(
         address from,
         address to,
-        bytes32 tokenId
+        bytes32 tokenId,
+        bytes memory data
     ) internal virtual override(LSP8IdentifiableDigitalAssetCore) {
         // `tokenId` being minted
         if (from == address(0)) {
@@ -65,6 +65,6 @@ abstract contract LSP8Enumerable is LSP8IdentifiableDigitalAsset {
             delete _tokenIndex[tokenId];
         }
 
-        super._beforeTokenTransfer(from, to, tokenId);
+        super._beforeTokenTransfer(from, to, tokenId, data);
     }
 }

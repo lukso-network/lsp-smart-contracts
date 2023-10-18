@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
@@ -17,21 +17,23 @@ contract LSP8InitTester is
     function initialize(
         string memory name,
         string memory symbol,
-        address newOwner
+        address newOwner,
+        uint256 tokenIdType
     ) public initializer {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name,
             symbol,
-            newOwner
+            newOwner,
+            tokenIdType
         );
     }
 
     function mint(
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) public {
-        _mint(to, tokenId, allowNonLSP1Recipient, data);
+        _mint(to, tokenId, force, data);
     }
 }

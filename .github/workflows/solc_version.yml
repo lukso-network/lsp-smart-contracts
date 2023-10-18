@@ -3,6 +3,16 @@
 name: Solidity Compiler Versions
 
 on:
+  workflow_dispatch:
+
+  # Used to check pragma settings for `.sol` files are correct before releasing
+  push:
+    branches:
+      - "develop"
+    # compare gas diff only when editing Solidity smart contract code
+    paths:
+      - "contracts/**/*.sol"
+
   pull_request:
     types: [opened]
 
@@ -16,10 +26,9 @@ jobs:
     strategy:
       matrix:
         solc: [
-            # TODO: wait for a patch release of @erc725/smart-contracts to compile on these 3 versions
-            # "0.8.5",
-            # "0.8.6",
-            # "0.8.7",
+            "0.8.5",
+            "0.8.6",
+            "0.8.7",
             "0.8.8",
             "0.8.9",
             "0.8.10",
@@ -55,17 +64,23 @@ jobs:
           solc-select install ${{ matrix.solc }}
           solc-select use ${{ matrix.solc }}
 
+      - name: Compare versions to filter contracts to compile
+        uses: madhead/semver-utils@latest
+        id: comparison
+        with:
+          version: ${{ matrix.solc }}
+          compare-to: 0.8.12
+
       - name: Compile Smart Contracts
         run: |
-          if [[ ${{ matrix.solc }} < 0.8.12 ]]
+          if [[ "<" == "${{ steps.comparison.outputs.comparison-result }}" ]]
           then 
-            solc $(ls contracts/**/*.sol | grep -v "Compatible") --allow-paths $(pwd)/node_modules/ \
-              @erc725/smart-contracts/=node_modules/@erc725/smart-contracts/ \
-              @openzeppelin/=node_modules/@openzeppelin/ \
-              solidity-bytes-utils/=node_modules/solidity-bytes-utils/
+            solc $(ls contracts/**/*.sol | grep -v "Compatible" | grep -v "Extension4337") --allow-paths $(pwd)/node_modules/ \
+              @=node_modules/@ \
+              solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
+              ../=$(pwd)/contracts/
           else
             solc contracts/**/*.sol \
-              @erc725/smart-contracts/=node_modules/@erc725/smart-contracts/ \
-              @openzeppelin/=node_modules/@openzeppelin/ \
+              @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/
           fi;

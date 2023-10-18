@@ -1,9 +1,13 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 import "@erc725/smart-contracts/contracts/constants.sol";
 import "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
+
+import {
+    LSP20EOACannotVerifyCall
+} from "../../../contracts/LSP20CallVerification/LSP20Errors.sol";
 
 contract Implementation {
     // _pendingOwner is at slot 3 for LSP0ERC725Account
@@ -51,7 +55,12 @@ contract TwoStepRenounceOwnershipTest is Test {
 
         // Call acceptOwnership() to regain ownership should fail
         // as pendingOwner should be deleted on the second call of renounceOwnership again
-        vm.expectRevert("LSP14: caller is not the pendingOwner");
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP20EOACannotVerifyCall.selector,
+                address(0)
+            )
+        );
         account.acceptOwnership();
     }
 }

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // interfaces
@@ -18,8 +18,11 @@ import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
 import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";
+import {LSP7TokenContractCannotHoldValue} from "./LSP7Errors.sol";
 
-import "../LSP17ContractExtension/LSP17Constants.sol";
+import {
+    _LSP17_EXTENSION_PREFIX
+} from "../LSP17ContractExtension/LSP17Constants.sol";
 
 // errors
 
@@ -55,7 +58,6 @@ abstract contract LSP7DigitalAssetInitAbstract is
 
     // fallback function
 
-    // solhint-disable no-complex-fallback
     /**
      * @notice The `fallback` function was called with the following amount of native tokens: `msg.value`; and the following calldata: `callData`.
      *
@@ -75,6 +77,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
      *
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), revert.
      */
+    // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
@@ -82,6 +85,19 @@ abstract contract LSP7DigitalAssetInitAbstract is
             revert InvalidFunctionSelector(callData);
         }
         return _fallbackLSP17Extendable(callData);
+    }
+
+    /**
+     * @dev Reverts whenever someone tries to send native tokens to a LSP7 contract.
+     * @notice LSP7 contract cannot receive native tokens.
+     */
+    receive() external payable virtual {
+        // revert on empty calls with no value
+        if (msg.value == 0) {
+            revert InvalidFunctionSelector(hex"00000000");
+        }
+
+        revert LSP7TokenContractCannotHoldValue();
     }
 
     /**
@@ -96,10 +112,8 @@ abstract contract LSP7DigitalAssetInitAbstract is
      * CALL opcode, passing the {msg.data} appended with the 20 bytes of the {msg.sender} and
      * 32 bytes of the {msg.value}
      *
-     * Because the function uses assembly {return()/revert()} to terminate the call, it cannot be
-     * called before other codes in fallback().
-     *
-     * Otherwise, the codes after _fallbackLSP17Extendable() may never be reached.
+     * @custom:info The LSP7 Token contract should not hold any native tokens. Any native tokens received by the contract
+     * will be forwarded to the extension address mapped to the selector from `msg.sig`.
      */
     function _fallbackLSP17Extendable(
         bytes calldata callData

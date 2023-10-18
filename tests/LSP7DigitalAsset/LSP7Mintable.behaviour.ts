@@ -54,7 +54,7 @@ export const shouldBehaveLikeLSP7Mintable = (
       await context.lsp7Mintable.mint(
         context.accounts.tokenReceiver.address,
         amountToMint,
-        true, // beneficiary is an EOA, so we need to allowNonLSP1Recipient minting
+        true, // beneficiary is an EOA, so we need to force minting
         '0x',
       );
 
@@ -82,7 +82,7 @@ export const shouldBehaveLikeLSP7Mintable = (
 
       await expect(
         context.lsp7Mintable.connect(nonOwner).mint(nonOwner.address, amountToMint, true, '0x'),
-      ).to.be.revertedWith('Ownable: caller is not the owner');
+      ).to.be.revertedWithCustomError(context.lsp7Mintable, 'OwnableCallerNotTheOwner');
     });
   });
 

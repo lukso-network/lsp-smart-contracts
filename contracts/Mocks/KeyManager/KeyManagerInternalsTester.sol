@@ -113,11 +113,15 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         return _addressPermission.hasPermission(_permissions);
     }
 
-    function verifyPermissions(
-        address from,
-        uint256 msgValue,
-        bytes calldata payload
-    ) public view {
-        super._verifyPermissions(from, msgValue, payload);
+    function verifyPermissions(address from, bytes calldata payload) public {
+        super._verifyPermissions(_target, from, false, payload);
+
+        // This event is emitted just for a sake of not marking this function as `view`,
+        // as Hardhat has a bug that does not catch error that occured from failed `abi.decode`
+        // inside view functions.
+        // See these issues in the Github repository of Hardhat:
+        //  - https://github.com/NomicFoundation/hardhat/issues/3084
+        //  - https://github.com/NomicFoundation/hardhat/issues/3475
+        emit PermissionsVerified(from, 0, bytes4(payload));
     }
 }

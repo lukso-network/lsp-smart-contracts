@@ -20,6 +20,5 @@ abstract contract LSP6KeyManagerInitAbstract is
     function _initialize(address target_) internal virtual onlyInitializing {
         if (target_ == address(0)) revert InvalidLSP6Target();
         _target = target_;
-        _setupLSP6ReentrancyGuard();
     }
 }

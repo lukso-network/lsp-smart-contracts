@@ -66,8 +66,8 @@ Internal functions cannot be called externally, whether from other smart contrac
 function _extendableMsgData() internal view returns (bytes);
 ```
 
-Returns the original msg.data passed to the extendable contract
-without the appended msg.sender and msg.value
+Returns the original `msg.data` passed to the extendable contract
+without the appended `msg.sender` and `msg.value`.
 
 <br/>
 
@@ -77,7 +77,7 @@ without the appended msg.sender and msg.value
 function _extendableMsgSender() internal view returns (address);
 ```
 
-Returns the original msg.sender calling the extendable contract
+Returns the original `msg.sender` calling the extendable contract.
 
 <br/>
 
@@ -87,6 +87,6 @@ Returns the original msg.sender calling the extendable contract
 function _extendableMsgValue() internal view returns (uint256);
 ```
 
-Returns the original msg.value sent to the extendable contract
+Returns the original `msg.value` sent to the extendable contract.
 
 <br/>

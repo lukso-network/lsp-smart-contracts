@@ -1,13 +1,10 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // interfaces
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-
-// libraries
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
 /**
  * @title LSP2 Utility library.
@@ -17,8 +14,6 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
  * Based on LSP2 ERC725Y JSON Schema standard.
  */
 library LSP2Utils {
-    using BytesLib for bytes;
-
     /**
      * @dev Generates a data key of keyType Singleton by hashing the string `keyName`. As:
      *
@@ -283,97 +278,6 @@ library LSP2Utils {
         bytes32 jsonDigest = keccak256(bytes(assetBytes));
 
         return abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
-    }
-
-    /**
-     * @dev Verify if `data` is an abi-encoded array.
-     *
-     * @param data The bytes value to verify.
-     *
-     * @return `true` if the `data` represents an abi-encoded array, `false` otherwise.
-     */
-    function isEncodedArray(bytes memory data) internal pure returns (bool) {
-        uint256 nbOfBytes = data.length;
-
-        // there must be at least 32 x length bytes after offset
-        uint256 offset = uint256(bytes32(data));
-        if (nbOfBytes < offset + 32) return false;
-        uint256 arrayLength = data.toUint256(offset);
-
-        //   32 bytes word (= offset)
-        // + 32 bytes word (= array length)
-        // + remaining bytes that make each element of the array
-        if (nbOfBytes < (offset + 32 + (arrayLength * 32))) return false;
-
-        return true;
-    }
-
-    /**
-     * @dev Verify if `data` is an abi-encoded array of addresses (`address[]`) encoded according to the ABI specs.
-     *
-     * @param data The bytes value to verify.
-     *
-     * @return `true` if the `data` represents an abi-encoded array of addresses, `false` otherwise.
-     */
-    function isEncodedArrayOfAddresses(
-        bytes memory data
-    ) internal pure returns (bool) {
-        if (!isEncodedArray(data)) return false;
-
-        uint256 offset = uint256(bytes32(data));
-        uint256 arrayLength = data.toUint256(offset);
-
-        uint256 pointer = offset + 32;
-
-        for (uint256 ii = 0; ii < arrayLength; ) {
-            bytes32 key = data.toBytes32(pointer);
-
-            // check that the leading bytes are zero bytes "00"
-            // NB: address type is padded on the left (unlike bytes20 type that is padded on the right)
-            if (bytes12(key) != bytes12(0)) return false;
-
-            // increment the pointer
-            pointer += 32;
-
-            unchecked {
-                ++ii;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @dev Verify if `data` is an abi-array of `bytes4` values (`bytes4[]`) encoded according to the ABI specs.
-     *
-     * @param data The bytes value to verify.
-     *
-     * @return `true` if the `data` represents an abi-encoded array of `bytes4`, `false` otherwise.
-     */
-    function isBytes4EncodedArray(
-        bytes memory data
-    ) internal pure returns (bool) {
-        if (!isEncodedArray(data)) return false;
-
-        uint256 offset = uint256(bytes32(data));
-        uint256 arrayLength = data.toUint256(offset);
-        uint256 pointer = offset + 32;
-
-        for (uint256 ii = 0; ii < arrayLength; ) {
-            bytes32 key = data.toBytes32(pointer);
-
-            // check that the trailing bytes are zero bytes "00"
-            if (uint224(uint256(key)) != 0) return false;
-
-            // increment the pointer
-            pointer += 32;
-
-            unchecked {
-                ++ii;
-            }
-        }
-
-        return true;
     }
 
     /**

@@ -202,7 +202,7 @@ _`msg.sender` is accepting ownership of contract: `address(this)`._
 
 Transfer ownership of the contract from the current [`owner()`](#owner) to the [`pendingOwner()`](#pendingowner). Once this function is called:
 
-- The current [`owner()`](#owner) will loose access to the functions restricted to the [`owner()`](#owner) only.
+- The current [`owner()`](#owner) will lose access to the functions restricted to the [`owner()`](#owner) only.
 
 - The [`pendingOwner()`](#pendingowner) will gain access to the functions restricted to the [`owner()`](#owner) only.
 
@@ -909,6 +909,12 @@ Perform low-level staticcall (operation type = 3)
 
 ### \_executeDelegateCall
 
+:::caution Warning
+
+The `msg.value` should not be trusted for any method called with `operationType`: `DELEGATECALL` (4).
+
+:::
+
 ```solidity
 function _executeDelegateCall(
   address target,
@@ -1113,6 +1119,19 @@ Returns the extension address stored under the following data key:
 
 ### \_fallbackLSP17Extendable
 
+:::tip Hint
+
+This function does not forward to the extension contract the `msg.value` received by the contract that inherits `LSP17Extendable`.
+If you would like to forward the `msg.value` to the extension contract, you can override the code of this internal function as follow:
+
+```solidity
+(bool success, bytes memory result) = extension.call{value: msg.value}(
+    abi.encodePacked(callData, msg.sender, msg.value)
+);
+```
+
+:::
+
 ```solidity
 function _fallbackLSP17Extendable(
   bytes callData
@@ -1120,9 +1139,11 @@ function _fallbackLSP17Extendable(
 ```
 
 Forwards the call to an extension mapped to a function selector.
-Calls [`_getExtension`](#_getextension) to get the address of the extension mapped to the function selector being called on the account. If there is no extension, the `address(0)` will be returned.
-Reverts if there is no extension for the function being called, except for the bytes4(0) function selector, which passes even if there is no extension for it.
-If there is an extension for the function selector being called, it calls the extension with the CALL opcode, passing the `msg.data` appended with the 20 bytes of the `msg.sender` and 32 bytes of the `msg.value`
+Calls [`_getExtension`](#_getextension) to get the address of the extension mapped to the function selector being
+called on the account. If there is no extension, the `address(0)` will be returned.
+Reverts if there is no extension for the function being called, except for the `bytes4(0)` function selector, which passes even if there is no extension for it.
+If there is an extension for the function selector being called, it calls the extension with the
+`CALL` opcode, passing the `msg.data` appended with the 20 bytes of the [`msg.sender`](#msg.sender) and 32 bytes of the `msg.value`.
 
 <br/>
 
@@ -1339,7 +1360,7 @@ event UniversalReceiver(address indexed from, uint256 indexed value, bytes32 ind
 
 - Data received: `receivedData`.\*
 
-Emitted when the [`universalReceiver`](#universalreceiver) function was called with a specific `typeId` and some `receivedData` s
+Emitted when the [`universalReceiver`](#universalreceiver) function was called with a specific `typeId` and some `receivedData`
 
 #### Parameters
 
@@ -1382,27 +1403,6 @@ Emitted when receiving native tokens.
 <br/>
 
 ## Errors
-
-### CannotTransferOwnershipToSelf
-
-:::note References
-
-- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-9-Vault.md#cannottransferownershiptoself)
-- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP9Vault/LSP9Vault.sol)
-- Error signature: `CannotTransferOwnershipToSelf()`
-- Error hash: `0x43b248cd`
-
-:::
-
-```solidity
-error CannotTransferOwnershipToSelf();
-```
-
-_Cannot transfer ownership to the address of the contract itself._
-
-Reverts when trying to transfer ownership to the `address(this)`.
-
-<br/>
 
 ### ERC725X_ContractDeploymentFailed
 
@@ -1607,6 +1607,52 @@ Reverts when sending value to the [`setData`](#setdata) or [`setDataBatch`](#set
 
 <br/>
 
+### LSP14CallerNotPendingOwner
+
+:::note References
+
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-9-Vault.md#lsp14callernotpendingowner)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP9Vault/LSP9Vault.sol)
+- Error signature: `LSP14CallerNotPendingOwner(address)`
+- Error hash: `0x451e4528`
+
+:::
+
+```solidity
+error LSP14CallerNotPendingOwner(address caller);
+```
+
+Reverts when the `caller` that is trying to accept ownership of the contract is not the pending owner.
+
+#### Parameters
+
+| Name     |   Type    | Description                                 |
+| -------- | :-------: | ------------------------------------------- |
+| `caller` | `address` | The address that tried to accept ownership. |
+
+<br/>
+
+### LSP14CannotTransferOwnershipToSelf
+
+:::note References
+
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-9-Vault.md#lsp14cannottransferownershiptoself)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP9Vault/LSP9Vault.sol)
+- Error signature: `LSP14CannotTransferOwnershipToSelf()`
+- Error hash: `0xe052a6f8`
+
+:::
+
+```solidity
+error LSP14CannotTransferOwnershipToSelf();
+```
+
+_Cannot transfer ownership to the address of the contract itself._
+
+Reverts when trying to transfer ownership to the `address(this)`.
+
+<br/>
+
 ### LSP14MustAcceptOwnershipInSeparateTransaction
 
 :::note References
@@ -1625,6 +1671,37 @@ error LSP14MustAcceptOwnershipInSeparateTransaction();
 _Cannot accept ownership in the same transaction with [`transferOwnership(...)`](#transferownership)._
 
 Reverts when pending owner accept ownership in the same transaction of transferring ownership.
+
+<br/>
+
+### LSP14NotInRenounceOwnershipInterval
+
+:::note References
+
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-9-Vault.md#lsp14notinrenounceownershipinterval)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP9Vault/LSP9Vault.sol)
+- Error signature: `LSP14NotInRenounceOwnershipInterval(uint256,uint256)`
+- Error hash: `0x1b080942`
+
+:::
+
+```solidity
+error LSP14NotInRenounceOwnershipInterval(
+  uint256 renounceOwnershipStart,
+  uint256 renounceOwnershipEnd
+);
+```
+
+_Cannot confirm ownership renouncement yet. The ownership renouncement is allowed from: `renounceOwnershipStart` until: `renounceOwnershipEnd`._
+
+Reverts when trying to renounce ownership before the initial confirmation delay.
+
+#### Parameters
+
+| Name                     |   Type    | Description                                                             |
+| ------------------------ | :-------: | ----------------------------------------------------------------------- |
+| `renounceOwnershipStart` | `uint256` | The start timestamp when one can confirm the renouncement of ownership. |
+| `renounceOwnershipEnd`   | `uint256` | The end timestamp when one can confirm the renouncement of ownership.   |
 
 <br/>
 
@@ -1680,33 +1757,27 @@ reverts when there is no extension for the function selector being called with
 
 <br/>
 
-### NotInRenounceOwnershipInterval
+### OwnableCallerNotTheOwner
 
 :::note References
 
-- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-9-Vault.md#notinrenounceownershipinterval)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-9-Vault.md#ownablecallernottheowner)
 - Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP9Vault/LSP9Vault.sol)
-- Error signature: `NotInRenounceOwnershipInterval(uint256,uint256)`
-- Error hash: `0x8b9bf507`
+- Error signature: `OwnableCallerNotTheOwner(address)`
+- Error hash: `0xbf1169c5`
 
 :::
 
 ```solidity
-error NotInRenounceOwnershipInterval(
-  uint256 renounceOwnershipStart,
-  uint256 renounceOwnershipEnd
-);
+error OwnableCallerNotTheOwner(address callerAddress);
 ```
 
-_Cannot confirm ownership renouncement yet. The ownership renouncement is allowed from: `renounceOwnershipStart` until: `renounceOwnershipEnd`._
-
-Reverts when trying to renounce ownership before the initial confirmation delay.
+Reverts when only the owner is allowed to call the function.
 
 #### Parameters
 
-| Name                     |   Type    | Description                                                             |
-| ------------------------ | :-------: | ----------------------------------------------------------------------- |
-| `renounceOwnershipStart` | `uint256` | The start timestamp when one can confirm the renouncement of ownership. |
-| `renounceOwnershipEnd`   | `uint256` | The end timestamp when one can confirm the renouncement of ownership.   |
+| Name            |   Type    | Description                              |
+| --------------- | :-------: | ---------------------------------------- |
+| `callerAddress` | `address` | The address that tried to make the call. |
 
 <br/>

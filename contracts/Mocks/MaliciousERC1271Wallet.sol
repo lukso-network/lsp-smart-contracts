@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 import {GenericExecutor} from "./GenericExecutor.sol";
@@ -8,7 +8,7 @@ import {GenericExecutor} from "./GenericExecutor.sol";
  */
 contract ERC1271MaliciousMock is GenericExecutor {
     /**
-     * @dev Returns a malicious 4-byte magic value.
+     * @dev Returns a malicious 4-byte value.
      * @return bytes4 The malicious 4-byte magic value.
      */
     function isValidSignature(

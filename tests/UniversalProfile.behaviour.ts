@@ -48,7 +48,7 @@ export const shouldBehaveLikeLSP3 = (
       const signature = await signer.signMessage(dataToSign);
 
       const result = await context.universalProfile.isValidSignature(messageHash, signature);
-      expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+      expect(result).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
     });
 
     it('should return fail value when verifying signature from non-owner', async () => {
@@ -132,6 +132,15 @@ export const shouldBehaveLikeLSP3 = (
       '0xd94353d9b005b3c0a9da169b768a31c57844e490',
       '0xdaea594e385fc724449e3118b2db7e86dfba1826',
     ];
+
+    it('should fail when passing empty arrays of data keys / values', async () => {
+      const keys = [];
+      const values = [];
+
+      await expect(
+        context.universalProfile.setDataBatch(keys, values),
+      ).to.be.revertedWithCustomError(context.universalProfile, 'ERC725Y_DataKeysValuesEmptyArray');
+    });
 
     it('should set the 3 x keys for a basic UP setup => `LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`', async () => {
       const keys = [
@@ -431,8 +440,8 @@ export const shouldBehaveLikeLSP3 = (
         await expect(
           context.universalProfile.connect(context.accounts[4]).batchCalls([setDataPayload]),
         )
-          .to.be.revertedWithCustomError(context.universalProfile, 'LSP20InvalidMagicValue')
-          .withArgs(false, '0x');
+          .to.be.revertedWithCustomError(context.universalProfile, 'LSP20EOACannotVerifyCall')
+          .withArgs(context.deployParams.owner.address);
       });
     });
 

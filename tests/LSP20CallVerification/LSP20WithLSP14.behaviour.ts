@@ -19,7 +19,7 @@ export type LSP14CombinedWithLSP20TestContext = {
   accounts: SignerWithAddress[];
   contract: LSP0ERC725Account;
   deployParams: { owner: SignerWithAddress };
-  onlyOwnerRevertString: string;
+  onlyOwnerCustomError: string;
 };
 
 export const shouldBehaveLikeLSP14WithLSP20 = (
@@ -75,7 +75,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         context.contract
           .connect(context.deployParams.owner)
           .transferOwnership(context.contract.address),
-      ).to.be.revertedWithCustomError(context.contract, 'CannotTransferOwnershipToSelf');
+      ).to.be.revertedWithCustomError(context.contract, 'LSP14CannotTransferOwnershipToSelf');
     });
 
     describe('it should still be allowed to call onlyOwner functions', () => {
@@ -144,16 +144,17 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
       const randomAddress = context.accounts[2];
 
       await expect(context.contract.connect(randomAddress).transferOwnership(randomAddress.address))
-        .to.be.revertedWithCustomError(context.contract, 'LSP20InvalidMagicValue')
-        .withArgs(false, '0x');
+        .to.be.revertedWithCustomError(context.contract, 'LSP20EOACannotVerifyCall')
+        .withArgs(context.deployParams.owner.address);
     });
   });
 
   describe('when calling acceptOwnership(...)', () => {
     it('should revert when caller is not the pending owner', async () => {
-      await expect(
-        context.contract.connect(context.accounts[2]).acceptOwnership(),
-      ).to.be.revertedWith('LSP14: caller is not the pendingOwner');
+      const pendingOwner = await context.contract.pendingOwner();
+      await expect(context.contract.connect(context.accounts[2]).acceptOwnership())
+        .to.be.revertedWithCustomError(context.contract, 'LSP20EOACannotVerifyCall')
+        .withArgs(pendingOwner);
     });
 
     describe('when caller is the pending owner', () => {
@@ -196,8 +197,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
           const value = '0xabcd';
 
           await expect(context.contract.connect(previousOwner).setData(key, value))
-            .to.be.to.be.revertedWithCustomError(context.contract, 'LSP20InvalidMagicValue')
-            .withArgs(false, '0x');
+            .to.be.to.be.revertedWithCustomError(context.contract, 'LSP20EOACannotVerifyCall')
+            .withArgs(newOwner.address);
         });
 
         it('should revert when calling `execute(...)`', async () => {
@@ -209,14 +210,14 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
               .connect(previousOwner)
               .execute(OPERATION_TYPES.CALL, recipient.address, amount, '0x'),
           )
-            .to.be.revertedWithCustomError(context.contract, 'LSP20InvalidMagicValue')
-            .withArgs(false, '0x');
+            .to.be.revertedWithCustomError(context.contract, 'LSP20EOACannotVerifyCall')
+            .withArgs(newOwner.address);
         });
 
         it('should revert when calling `renounceOwnership(...)`', async () => {
           await expect(context.contract.connect(previousOwner).renounceOwnership())
-            .to.be.revertedWithCustomError(context.contract, 'LSP20InvalidMagicValue')
-            .withArgs(false, '0x');
+            .to.be.revertedWithCustomError(context.contract, 'LSP20EOACannotVerifyCall')
+            .withArgs(newOwner.address);
         });
       });
 
@@ -257,8 +258,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         const tx = context.contract.connect(context.accounts[5]).renounceOwnership();
 
         await expect(tx)
-          .to.be.revertedWithCustomError(context.contract, 'LSP20InvalidMagicValue')
-          .withArgs(false, '0x');
+          .to.be.revertedWithCustomError(context.contract, 'LSP20EOACannotVerifyCall')
+          .withArgs(newOwner.address);
       });
     });
 
@@ -294,6 +295,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
             )
           )?.output.contracts[
             'contracts/LSP0ERC725Account/LSP0ERC725Account.sol'
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
           ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
             if (elem.label === '_renounceOwnershipStartedAt') return elem;
           })[0].slot,
@@ -363,7 +366,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         await network.provider.send('hardhat_mine', [ethers.utils.hexValue(98)]);
 
         await expect(context.contract.connect(context.deployParams.owner).renounceOwnership())
-          .to.be.revertedWithCustomError(context.contract, 'NotInRenounceOwnershipInterval')
+          .to.be.revertedWithCustomError(context.contract, 'LSP14NotInRenounceOwnershipInterval')
           .withArgs(
             renounceOwnershipOnceReceipt.blockNumber + 200,
             renounceOwnershipOnceReceipt.blockNumber + 400,
@@ -383,6 +386,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
             )
           )?.output.contracts[
             'contracts/LSP0ERC725Account/LSP0ERC725Account.sol'
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
           ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
             if (elem.label === '_renounceOwnershipStartedAt') return elem;
           })[0].slot,
@@ -449,6 +454,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
               )
             )?.output.contracts[
               'contracts/LSP0ERC725Account/LSP0ERC725Account.sol'
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
             ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
               if (elem.label === '_renounceOwnershipStartedAt') return elem;
             })[0].slot,
@@ -468,8 +475,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
             const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Random Value'));
 
             await expect(context.contract.connect(context.deployParams.owner).setData(key, value))
-              .to.be.revertedWithCustomError(context.contract, 'LSP20InvalidMagicValue')
-              .withArgs(false, '0x');
+              .to.be.revertedWithCustomError(context.contract, 'LSP20EOACannotVerifyCall')
+              .withArgs(ethers.constants.AddressZero);
           });
 
           it('transfer LYX via `execute(...)`', async () => {
@@ -481,8 +488,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
                 .connect(context.deployParams.owner)
                 .execute(OPERATION_TYPES.CALL, recipient, amount, '0x'),
             )
-              .to.be.revertedWithCustomError(context.contract, 'LSP20InvalidMagicValue')
-              .withArgs(false, '0x');
+              .to.be.revertedWithCustomError(context.contract, 'LSP20EOACannotVerifyCall')
+              .withArgs(ethers.constants.AddressZero);
           });
         });
       });
@@ -515,9 +522,10 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         });
 
         it('previous pendingOwner should not be able to call acceptOwnership(...) anymore', async () => {
-          await expect(context.contract.connect(newOwner).acceptOwnership()).to.be.revertedWith(
-            'LSP14: caller is not the pendingOwner',
-          );
+          const pendingOwner = await context.contract.pendingOwner();
+          await expect(context.contract.connect(newOwner).acceptOwnership())
+            .to.be.revertedWithCustomError(context.contract, 'LSP20EOACannotVerifyCall')
+            .withArgs(pendingOwner);
         });
       });
     });
@@ -540,6 +548,8 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
           )
         )?.output.contracts[
           'contracts/LSP0ERC725Account/LSP0ERC725Account.sol'
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
         ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
           if (elem.label === '_renounceOwnershipStartedAt') return elem;
         })[0].slot,

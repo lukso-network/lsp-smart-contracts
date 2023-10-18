@@ -1,27 +1,29 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.12;
+// SPDX-License-Identifier: Apache-2.0
+pragma solidity ^0.8.7;
 
 // interfaces
-import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {ILSP7CompatibleERC20} from "./ILSP7CompatibleERC20.sol";
+import {
+    IERC20Metadata,
+    IERC20
+} from "@openzeppelin/contracts/interfaces/IERC20Metadata.sol";
 
 // modules
 import {
-    LSP4Compatibility
-} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
-import {
     LSP7DigitalAssetCore,
-    LSP7DigitalAssetInitAbstract,
-    LSP4DigitalAssetMetadataInitAbstract,
-    ERC725YCore
+    LSP7DigitalAssetInitAbstract
 } from "../LSP7DigitalAssetInitAbstract.sol";
+
+// constants
+import {
+    _LSP4_TOKEN_NAME_KEY,
+    _LSP4_TOKEN_SYMBOL_KEY
+} from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 
 /**
  * @dev LSP7 extension, for compatibility for clients / tools that expect ERC20.
  */
 abstract contract LSP7CompatibleERC20InitAbstract is
-    ILSP7CompatibleERC20,
-    LSP4Compatibility,
+    IERC20Metadata,
     LSP7DigitalAssetInitAbstract
 {
     /**
@@ -46,32 +48,106 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     }
 
     /**
-     * @inheritdoc LSP7DigitalAssetInitAbstract
+     * @inheritdoc IERC20Metadata
+     * @dev Returns the name of the token.
+     * For compatibility with clients & tools that expect ERC20.
+     *
+     * @return The name of the token
      */
-    function supportsInterface(
-        bytes4 interfaceId
+    function name() public view virtual override returns (string memory) {
+        bytes memory data = _getData(_LSP4_TOKEN_NAME_KEY);
+        return string(data);
+    }
+
+    /**
+     * @inheritdoc IERC20Metadata
+     * @dev Returns the symbol of the token, usually a shorter version of the name.
+     * For compatibility with clients & tools that expect ERC20.
+     *
+     * @return The symbol of the token
+     */
+    function symbol() public view virtual override returns (string memory) {
+        bytes memory data = _getData(_LSP4_TOKEN_SYMBOL_KEY);
+        return string(data);
+    }
+
+    /**
+     * @inheritdoc LSP7DigitalAssetCore
+     */
+    function decimals()
+        public
+        view
+        virtual
+        override(IERC20Metadata, LSP7DigitalAssetCore)
+        returns (uint8)
+    {
+        return super.decimals();
+    }
+
+    /**
+     * @inheritdoc LSP7DigitalAssetCore
+     */
+    function totalSupply()
+        public
+        view
+        virtual
+        override(IERC20, LSP7DigitalAssetCore)
+        returns (uint256)
+    {
+        return super.totalSupply();
+    }
+
+    /**
+     * @inheritdoc LSP7DigitalAssetCore
+     */
+    function balanceOf(
+        address tokenOwner
     )
         public
         view
         virtual
-        override(IERC165, ERC725YCore, LSP7DigitalAssetInitAbstract)
-        returns (bool)
+        override(IERC20, LSP7DigitalAssetCore)
+        returns (uint256)
     {
-        return super.supportsInterface(interfaceId);
+        return super.balanceOf(tokenOwner);
     }
 
     /**
-     * @inheritdoc ILSP7CompatibleERC20
+     * @inheritdoc LSP7DigitalAssetInitAbstract
+     */
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override returns (bool) {
+        return
+            interfaceId == type(IERC20).interfaceId ||
+            interfaceId == type(IERC20Metadata).interfaceId ||
+            super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @inheritdoc IERC20
+     * @dev Function to get operator allowance allowed to spend on behalf of `tokenOwner` from the ERC20 standard interface.
+     *
+     * @param tokenOwner The address of the token owner
+     * @param operator The address approved by the `tokenOwner`
+     *
+     * @return The amount `operator` is approved by `tokenOwner`
      */
     function allowance(
         address tokenOwner,
         address operator
-    ) public view virtual returns (uint256) {
+    ) public view virtual override returns (uint256) {
         return authorizedAmountFor(operator, tokenOwner);
     }
 
     /**
-     * @inheritdoc ILSP7CompatibleERC20
+     * @inheritdoc IERC20
+     * @dev Approval function from th ERC20 standard interface.
+     *
+     * @param operator The address to approve for `amount`
+     * @param amount The amount to approve.
+     *
+     * @return `true` on successful approval.
      */
     function approve(
         address operator,
@@ -82,9 +158,16 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     }
 
     /**
-     * @inheritdoc ILSP7CompatibleERC20
+     * @inheritdoc IERC20
+     * @dev Transfer functions for operators from the ERC20 standard interface.
      *
-     * @custom:info This function uses the `allowNonLSP1Recipient` parameter as `true` so that EOA and any contract can receive tokens.
+     * @param from The address sending tokens.
+     * @param to The address receiving tokens.
+     * @param amount The amount of tokens to transfer.
+     *
+     * @return `true` on successful transfer.
+     *
+     * @custom:info This function uses the `force` parameter as `true` so that EOA and any contract can receive tokens.
      */
     function transferFrom(
         address from,
@@ -98,9 +181,15 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     // --- Overrides
 
     /**
-     * @inheritdoc ILSP7CompatibleERC20
+     * @inheritdoc IERC20
+     * @dev Transfer function from the ERC20 standard interface.
      *
-     * @custom:info This function uses the `allowNonLSP1Recipient` parameter as `true` so that EOA and any contract can receive tokens.
+     * @param to The address receiving tokens.
+     * @param amount The amount of tokens to transfer.
+     *
+     * @return `true` on successful transfer.
+     *
+     * @custom:info This function uses the `force` parameter as `true` so that EOA and any contract can receive tokens.
      */
     function transfer(
         address to,
@@ -125,12 +214,10 @@ abstract contract LSP7CompatibleERC20InitAbstract is
             amount,
             operatorNotificationData
         );
-        emit Approval(tokenOwner, operator, amount);
+        emit IERC20.Approval(tokenOwner, operator, amount);
     }
 
     /**
-     * @inheritdoc LSP7DigitalAssetCore
-     *
      * @custom:events
      * - LSP7 {Transfer} event.
      * - ERC20 {Transfer} event.
@@ -139,16 +226,14 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         address from,
         address to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual override {
-        emit Transfer(from, to, amount);
-        super._transfer(from, to, amount, allowNonLSP1Recipient, data);
+        emit IERC20.Transfer(from, to, amount);
+        super._transfer(from, to, amount, force, data);
     }
 
     /**
-     * @inheritdoc LSP7DigitalAssetCore
-     *
      * @custom:events
      * - LSP7 {Transfer} event with `address(0)` as `from`.
      * - ERC20 {Transfer} event with `address(0)` as `from`.
@@ -156,16 +241,14 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     function _mint(
         address to,
         uint256 amount,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) internal virtual override {
-        emit Transfer(address(0), to, amount);
-        super._mint(to, amount, allowNonLSP1Recipient, data);
+        emit IERC20.Transfer(address(0), to, amount);
+        super._mint(to, amount, force, data);
     }
 
     /**
-     * @inheritdoc LSP7DigitalAssetCore
-     *
      * @custom:events
      * - LSP7 {Transfer} event with `address(0)` as the `to` address.
      * - ERC20 {Transfer} event with `address(0)` as the `to` address.
@@ -175,21 +258,7 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         uint256 amount,
         bytes memory data
     ) internal virtual override {
-        emit Transfer(from, address(0), amount);
+        emit IERC20.Transfer(from, address(0), amount);
         super._burn(from, amount, data);
-    }
-
-    /**
-     * @inheritdoc LSP4DigitalAssetMetadataInitAbstract
-     */
-    function _setData(
-        bytes32 key,
-        bytes memory value
-    )
-        internal
-        virtual
-        override(LSP4DigitalAssetMetadataInitAbstract, ERC725YCore)
-    {
-        super._setData(key, value);
     }
 }

@@ -20,7 +20,7 @@ export type LSP6ControlledToken = {
   accounts: SignerWithAddress[];
   token: LSP7Mintable | LSP8Mintable;
   keyManager: LSP6KeyManager;
-  owner: SignerWithAddress;
+  mainController: SignerWithAddress;
 };
 
 const buildContext = async () => {
@@ -50,7 +50,7 @@ const buildContext = async () => {
     accounts,
     token: lsp7,
     keyManager,
-    owner: accounts[0],
+    mainController: accounts[0],
   };
 };
 
@@ -71,7 +71,7 @@ const addControllerWithPermission = async (
 
   const payload = context.token.interface.encodeFunctionData('setDataBatch', [keys, values]);
 
-  await context.keyManager.connect(context.owner).execute(payload);
+  await context.keyManager.connect(context.mainController).execute(payload);
 };
 
 describe('When deploying LSP7 with LSP6 as owner', () => {
@@ -107,10 +107,11 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
     const keys = [
       ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
       ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '0'.repeat(31) + '0',
-      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        context.mainController.address.substring(2),
     ];
 
-    const values = [ARRAY_LENGTH.ONE, context.owner.address, ALL_PERMISSIONS];
+    const values = [ARRAY_LENGTH.ONE, context.mainController.address, ALL_PERMISSIONS];
 
     expect(await context.token.getDataBatch(keys)).to.deep.equal(values);
   });
@@ -119,37 +120,41 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
     it('should revert because function does not exist on LSP6', async () => {
       const LSP7 = context.token as LSP7Mintable;
       const mintPayload = LSP7.interface.encodeFunctionData('mint', [
-        context.owner.address,
+        context.mainController.address,
         1,
         true,
         '0x',
       ]);
 
-      await expect(context.keyManager.connect(context.owner).execute(mintPayload))
+      await expect(context.keyManager.connect(context.mainController).execute(mintPayload))
         .to.be.revertedWithCustomError(context.keyManager, 'InvalidERC725Function')
         .withArgs(mintPayload.substring(0, 10));
     });
   });
 
   describe('using renounceOwnership(..) in LSP7 through LSP6', () => {
-    it('should revert', async () => {
+    it('should pass', async () => {
       const renounceOwnershipPayload =
         context.token.interface.encodeFunctionData('renounceOwnership');
 
-      await expect(context.keyManager.connect(context.owner).execute(renounceOwnershipPayload))
-        .to.be.revertedWithCustomError(context.keyManager, 'InvalidERC725Function')
-        .withArgs(renounceOwnershipPayload);
+      await context.keyManager.connect(context.mainController).execute(renounceOwnershipPayload);
+
+      expect(await context.token.owner()).to.equal(ethers.constants.AddressZero);
     });
   });
 
   describe('using transferOwnership(..) in LSP7 through LSP6', () => {
+    before("previous token contract's ownership was renounced, build new context", async () => {
+      context = await buildContext();
+    });
+
     it('should change the owner of LSP7 contract', async () => {
       const LSP7 = context.token as LSP7Mintable;
       const transferOwnershipPayload = LSP7.interface.encodeFunctionData('transferOwnership', [
         newOwner.address,
       ]);
 
-      await context.keyManager.connect(context.owner).execute(transferOwnershipPayload);
+      await context.keyManager.connect(context.mainController).execute(transferOwnershipPayload);
 
       expect(await context.token.owner()).to.equal(newOwner.address);
     });
@@ -159,9 +164,9 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
       const value = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('SecondRandomString'));
       const payload = context.token.interface.encodeFunctionData('setData', [key, value]);
 
-      await expect(context.keyManager.connect(context.owner).execute(payload)).to.be.revertedWith(
-        'Ownable: caller is not the owner',
-      );
+      await expect(
+        context.keyManager.connect(context.mainController).execute(payload),
+      ).to.be.revertedWithCustomError(context.token, 'OwnableCallerNotTheOwner');
     });
 
     it('should allow the new owner to call setData(..)', async () => {
@@ -173,16 +178,16 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
       expect(await context.token.getData(key)).to.equal(value);
     });
 
-    it("`mint(..)` -> should revert with 'caller is not the owner' error.", async () => {
+    it("`mint(..)` -> should revert with 'InvalidERC725Function' error.", async () => {
       const LSP7 = context.token as LSP7Mintable;
       const mintPayload = LSP7.interface.encodeFunctionData('mint', [
-        context.owner.address,
+        context.mainController.address,
         1,
         true,
         '0x',
       ]);
 
-      await expect(context.keyManager.connect(context.owner).execute(mintPayload))
+      await expect(context.keyManager.connect(context.mainController).execute(mintPayload))
         .to.be.revertedWithCustomError(context.keyManager, 'InvalidERC725Function')
         .withArgs(mintPayload.substring(0, 10));
     });
@@ -190,9 +195,9 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
     it('should allow the new owner to call mint(..)', async () => {
       const LSP7 = context.token as LSP7Mintable;
 
-      await LSP7.connect(newOwner).mint(context.owner.address, 1, true, '0x');
+      await LSP7.connect(newOwner).mint(context.mainController.address, 1, true, '0x');
 
-      expect(await LSP7.balanceOf(context.owner.address)).to.equal(1);
+      expect(await LSP7.balanceOf(context.mainController.address)).to.equal(1);
     });
 
     it("`transferOwnership(..)` -> should revert with 'caller is not the owner' error.", async () => {
@@ -202,8 +207,8 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
       );
 
       await expect(
-        context.keyManager.connect(context.owner).execute(transferOwnershipPayload),
-      ).to.be.revertedWith('Ownable: caller is not the owner');
+        context.keyManager.connect(context.mainController).execute(transferOwnershipPayload),
+      ).to.be.revertedWithCustomError(context.token, 'OwnableCallerNotTheOwner');
     });
 
     it('should allow the new owner to call transferOwnership(..)', async () => {
@@ -216,9 +221,9 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
       const renounceOwnershipPayload =
         context.token.interface.encodeFunctionData('renounceOwnership');
 
-      await expect(context.keyManager.connect(context.owner).execute(renounceOwnershipPayload))
-        .to.be.revertedWithCustomError(context.keyManager, 'InvalidERC725Function')
-        .withArgs(renounceOwnershipPayload);
+      await expect(
+        context.keyManager.connect(context.mainController).execute(renounceOwnershipPayload),
+      ).to.be.revertedWithCustomError(context.token, 'OwnableCallerNotTheOwner');
     });
 
     it('should allow the new owner to call renounceOwnership(..)', async () => {
@@ -251,13 +256,13 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '0'.repeat(31) + '0',
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '0'.repeat(31) + '1',
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            context.owner.address.substring(2),
+            context.mainController.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
             addressCanChangeOwner.address.substring(2),
         ];
         const values = [
           ARRAY_LENGTH.TWO,
-          context.owner.address,
+          context.mainController.address,
           addressCanChangeOwner.address,
           ALL_PERMISSIONS,
           PERMISSIONS.CHANGEOWNER,
@@ -316,7 +321,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '0'.repeat(31) + '1',
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '0'.repeat(31) + '2',
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            context.owner.address.substring(2),
+            context.mainController.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
             addressCanChangeOwner.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -324,7 +329,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
         ];
         const values = [
           ARRAY_LENGTH.THREE,
-          context.owner.address,
+          context.mainController.address,
           addressCanChangeOwner.address,
           addressCanEditPermissions.address,
           ALL_PERMISSIONS,
@@ -338,7 +343,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
       it("should revert if caller doesn't have EDITPERMISSIONS permission", async () => {
         const key =
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.owner.address.substring(2);
+          context.mainController.address.substring(2);
         const value = PERMISSIONS.CALL;
         const payload = context.token.interface.encodeFunctionData('setData', [key, value]);
 
@@ -350,7 +355,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
       it('should change ALL_PERMISSIONS to CALL permission of the address', async () => {
         const key =
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.owner.address.substring(2);
+          context.mainController.address.substring(2);
         const value = PERMISSIONS.CALL;
         const payload = context.token.interface.encodeFunctionData('setData', [key, value]);
 
@@ -362,7 +367,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
       it('should add back ALL_PERMISSIONS of the address', async () => {
         const key =
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.owner.address.substring(2);
+          context.mainController.address.substring(2);
         const value = ALL_PERMISSIONS;
         const payload = context.token.interface.encodeFunctionData('setData', [key, value]);
 
@@ -392,7 +397,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '0'.repeat(31) + '2',
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '0'.repeat(31) + '3',
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            context.owner.address.substring(2),
+            context.mainController.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
             addressCanChangeOwner.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -402,7 +407,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
         ];
         const values = [
           ARRAY_LENGTH.FOUR,
-          context.owner.address,
+          context.mainController.address,
           addressCanChangeOwner.address,
           addressCanEditPermissions.address,
           addressCanAddController.address,
@@ -446,7 +451,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
         const value = '0x';
         const payload = context.token.interface.encodeFunctionData('setData', [key, value]);
 
-        await context.keyManager.connect(context.owner).execute(payload);
+        await context.keyManager.connect(context.mainController).execute(payload);
       });
     });
 
@@ -481,7 +486,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '0'.repeat(31) + '3',
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '0'.repeat(31) + '4',
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            context.owner.address.substring(2),
+            context.mainController.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
             addressCanChangeOwner.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -493,7 +498,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
         ];
         const values = [
           ARRAY_LENGTH.FIVE,
-          context.owner.address,
+          context.mainController.address,
           addressCanChangeOwner.address,
           addressCanEditPermissions.address,
           addressCanAddController.address,
@@ -525,7 +530,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
         const value = encodeCompactBytesArray([firstRandomSringKey.substring(0, 34)]);
         const payload = context.token.interface.encodeFunctionData('setData', [key, value]);
 
-        await context.keyManager.connect(context.owner).execute(payload);
+        await context.keyManager.connect(context.mainController).execute(payload);
 
         expect(await context.token.getData(key)).to.equal(value);
       });
@@ -588,14 +593,14 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
     describe('when trying to call execute(..) function on LSP7 through LSP6', () => {
       it('should revert because function does not exist on LSP7', async () => {
         // deploying a dummy token contract with public mint function
-        const newTokenContract = await new LSP7Tester__factory(context.owner).deploy(
+        const newTokenContract = await new LSP7Tester__factory(context.mainController).deploy(
           'NewTokenName',
           'NewTokenSymbol',
-          context.owner.address,
+          context.mainController.address,
         );
         // creating a payload to mint tokens in the new contract
         const mintPayload = newTokenContract.interface.encodeFunctionData('mint', [
-          context.owner.address,
+          context.mainController.address,
           1000,
           true,
           '0x',
@@ -609,7 +614,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
         ]);
 
         await expect(
-          context.keyManager.connect(context.owner).execute(payload),
+          context.keyManager.connect(context.mainController).execute(payload),
         ).to.be.revertedWithCustomError(newTokenContract, 'NoExtensionFoundForFunctionSelector');
       });
     });
@@ -636,7 +641,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '0'.repeat(31) + '4',
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '0'.repeat(31) + '5',
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            context.owner.address.substring(2),
+            context.mainController.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
             addressCanChangeOwner.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -650,7 +655,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
         ];
         const values = [
           ARRAY_LENGTH.SIX,
-          context.owner.address,
+          context.mainController.address,
           addressCanChangeOwner.address,
           addressCanEditPermissions.address,
           addressCanAddController.address,
@@ -672,7 +677,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
         const signature = await addressCanSign.signMessage('Some random message');
         const validityOfTheSig = await context.keyManager.isValidSignature(dataHash, signature);
 
-        expect(validityOfTheSig).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+        expect(validityOfTheSig).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
 
       it('should not be allowed to sign messages for the token contract', async () => {

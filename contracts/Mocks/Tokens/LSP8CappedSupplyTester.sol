@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
@@ -15,9 +15,10 @@ contract LSP8CappedSupplyTester is LSP8CappedSupply {
         string memory name_,
         string memory symbol_,
         address newOwner_,
+        uint256 tokenIdType_,
         uint256 tokenSupplyCap_
     )
-        LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_)
+        LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, tokenIdType_)
         LSP8CappedSupply(tokenSupplyCap_)
     {}
 

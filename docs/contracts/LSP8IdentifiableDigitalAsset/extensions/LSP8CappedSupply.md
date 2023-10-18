@@ -56,6 +56,25 @@ This function is executed when:
 
 <br/>
 
+### receive
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#receive)
+- Solidity implementation: [`LSP8CappedSupply.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol)
+
+:::
+
+```solidity
+receive() external payable;
+```
+
+_LSP8 contract cannot receive native tokens._
+
+Reverts whenever someone tries to send native tokens to a LSP8 contract.
+
+<br/>
+
 ### authorizeOperator
 
 :::note References
@@ -535,7 +554,7 @@ Returns the list of `tokenIds` for the `tokenOwner` address.
 function tokenSupplyCap() external view returns (uint256);
 ```
 
-_The maximum supply amount of tokens allowed to exist is `_tokenSupplyCap`._
+_The maximum supply amount of tokens allowed to exist is `_TOKEN_SUPPLY_CAP`._
 
 Get the maximum number of tokens that can exist to circulate. Once [`totalSupply`](#totalsupply) reaches reaches [`totalSuuplyCap`](#totalsuuplycap), it is not possible to mint more tokens.
 
@@ -588,22 +607,22 @@ function transfer(
   address from,
   address to,
   bytes32 tokenId,
-  bool allowNonLSP1Recipient,
+  bool force,
   bytes data
 ) external nonpayable;
 ```
 
-Transfer a given `tokenId` token from the `from` address to the `to` address. If operators are set for a specific `tokenId`, all the operators are revoked after the tokenId have been transferred. The `allowNonLSP1Recipient` parameter MUST be set to `true` when transferring tokens to Externally Owned Accounts (EOAs) or contracts that do not implement the LSP1 standard.
+Transfer a given `tokenId` token from the `from` address to the `to` address. If operators are set for a specific `tokenId`, all the operators are revoked after the tokenId have been transferred. The `force` parameter MUST be set to `true` when transferring tokens to Externally Owned Accounts (EOAs) or contracts that do not implement the LSP1 standard.
 
 #### Parameters
 
-| Name                    |   Type    | Description                                                                                                                                                         |
-| ----------------------- | :-------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `from`                  | `address` | The address that owns the given `tokenId`.                                                                                                                          |
-| `to`                    | `address` | The address that will receive the `tokenId`.                                                                                                                        |
-| `tokenId`               | `bytes32` | The token ID to transfer.                                                                                                                                           |
-| `allowNonLSP1Recipient` |  `bool`   | When set to `true`, the `to` address CAN be any addres. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard. |
-| `data`                  |  `bytes`  | Any additional data the caller wants included in the emitted event, and sent in the hooks of the `from` and `to` addresses.                                         |
+| Name      |   Type    | Description                                                                                                                                                         |
+| --------- | :-------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `from`    | `address` | The address that owns the given `tokenId`.                                                                                                                          |
+| `to`      | `address` | The address that will receive the `tokenId`.                                                                                                                        |
+| `tokenId` | `bytes32` | The token ID to transfer.                                                                                                                                           |
+| `force`   |  `bool`   | When set to `true`, the `to` address CAN be any addres. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard. |
+| `data`    |  `bytes`  | Any additional data the caller wants included in the emitted event, and sent in the hooks of the `from` and `to` addresses.                                         |
 
 <br/>
 
@@ -623,7 +642,7 @@ function transferBatch(
   address[] from,
   address[] to,
   bytes32[] tokenId,
-  bool[] allowNonLSP1Recipient,
+  bool[] force,
   bytes[] data
 ) external nonpayable;
 ```
@@ -632,13 +651,13 @@ Transfers multiple tokens at once based on the arrays of `from`, `to` and `token
 
 #### Parameters
 
-| Name                    |    Type     | Description                                                                                                                               |
-| ----------------------- | :---------: | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `from`                  | `address[]` | An array of sending addresses.                                                                                                            |
-| `to`                    | `address[]` | An array of recipient addresses.                                                                                                          |
-| `tokenId`               | `bytes32[]` | An array of token IDs to transfer.                                                                                                        |
-| `allowNonLSP1Recipient` |  `bool[]`   | When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard and not revert. |
-| `data`                  |  `bytes[]`  | Any additional data the caller wants included in the emitted event, and sent in the hooks to the `from` and `to` addresses.               |
+| Name      |    Type     | Description                                                                                                                               |
+| --------- | :---------: | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `from`    | `address[]` | An array of sending addresses.                                                                                                            |
+| `to`      | `address[]` | An array of recipient addresses.                                                                                                          |
+| `tokenId` | `bytes32[]` | An array of token IDs to transfer.                                                                                                        |
+| `force`   |  `bool[]`   | When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard and not revert. |
+| `data`    |  `bytes[]`  | Any additional data the caller wants included in the emitted event, and sent in the hooks to the `from` and `to` addresses.               |
 
 <br/>
 
@@ -727,7 +746,8 @@ mapping(bytes32 => bytes) _store
 function _setData(bytes32 dataKey, bytes dataValue) internal nonpayable;
 ```
 
-Save gas by emitting the [`DataChanged`](#datachanged) event with only the first 256 bytes of dataValue
+The ERC725Y data key `_LSP8_TOKENID_TYPE_KEY` cannot be changed
+once the identifiable digital asset contract has been deployed.
 
 <br/>
 
@@ -812,7 +832,7 @@ When `tokenId` does not exist then revert with an error.
 function _mint(
   address to,
   bytes32 tokenId,
-  bool allowNonLSP1Recipient,
+  bool force,
   bytes data
 ) internal nonpayable;
 ```
@@ -824,6 +844,16 @@ after a new `tokenId` has of tokens have been minted.
 <br/>
 
 ### \_burn
+
+:::info
+
+Any logic in the:
+
+- {\_beforeTokenTransfer} function will run before updating the balances and ownership of `tokenId`s.
+
+- {\_afterTokenTransfer} function will run after updating the balances and ownership of `tokenId`s, **but before notifying the sender via LSP1**.
+
+:::
 
 :::tip Hint
 
@@ -840,7 +870,6 @@ This will also clear all the operators allowed to transfer the `tokenId`.
 The owner of the `tokenId` will be notified about the `tokenId` being transferred through its LSP1 [`universalReceiver`](#universalreceiver)
 function, if it is a contract that supports the LSP1 interface. Its [`universalReceiver`](#universalreceiver) function will receive
 all the parameters in the calldata packed encoded.
-Any logic in the [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before burning `tokenId` and updating the balances.
 
 <blockquote>
 
@@ -861,6 +890,16 @@ Any logic in the [`_beforeTokenTransfer`](#_beforetokentransfer) function will r
 
 ### \_transfer
 
+:::info
+
+Any logic in the:
+
+- {\_beforeTokenTransfer} function will run before updating the balances and ownership of `tokenId`s.
+
+- {\_afterTokenTransfer} function will run after updating the balances and ownership of `tokenId`s, **but before notifying the sender/recipient via LSP1**.
+
+:::
+
 :::danger
 
 This internal function does not check if the sender is authorized or not to operate on the `tokenId`.
@@ -872,7 +911,7 @@ function _transfer(
   address from,
   address to,
   bytes32 tokenId,
-  bool allowNonLSP1Recipient,
+  bool force,
   bytes data
 ) internal nonpayable;
 ```
@@ -881,7 +920,6 @@ Change the owner of the `tokenId` from `from` to `to`.
 Both the sender and recipient will be notified of the `tokenId` being transferred through their LSP1 [`universalReceiver`](#universalreceiver)
 function, if they are contracts that support the LSP1 interface. Their `universalReceiver` function will receive
 all the parameters in the calldata packed encoded.
-Any logic in the [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before changing the owner of `tokenId`.
 
 <blockquote>
 
@@ -893,13 +931,13 @@ Any logic in the [`_beforeTokenTransfer`](#_beforetokentransfer) function will r
 
 #### Parameters
 
-| Name                    |   Type    | Description                                                                                                                |
-| ----------------------- | :-------: | -------------------------------------------------------------------------------------------------------------------------- |
-| `from`                  | `address` | The sender address.                                                                                                        |
-| `to`                    | `address` | @param tokenId The token to transfer.                                                                                      |
-| `tokenId`               | `bytes32` | The token to transfer.                                                                                                     |
-| `allowNonLSP1Recipient` |  `bool`   | When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard. |
-| `data`                  |  `bytes`  | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.        |
+| Name      |   Type    | Description                                                                                                                |
+| --------- | :-------: | -------------------------------------------------------------------------------------------------------------------------- |
+| `from`    | `address` | The sender address.                                                                                                        |
+| `to`      | `address` | @param tokenId The token to transfer.                                                                                      |
+| `tokenId` | `bytes32` | The token to transfer.                                                                                                     |
+| `force`   |  `bool`   | When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard. |
+| `data`    |  `bytes`  | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.        |
 
 <br/>
 
@@ -909,13 +947,13 @@ Any logic in the [`_beforeTokenTransfer`](#_beforetokentransfer) function will r
 function _beforeTokenTransfer(
   address from,
   address to,
-  bytes32 tokenId
+  bytes32 tokenId,
+  bytes data
 ) internal nonpayable;
 ```
 
 Hook that is called before any token transfer, including minting and burning.
-
-- Allows to run custom logic before updating balances and notifiying sender/recipient by overriding this function.
+Allows to run custom logic before updating balances and notifiying sender/recipient by overriding this function.
 
 #### Parameters
 
@@ -924,6 +962,32 @@ Hook that is called before any token transfer, including minting and burning.
 | `from`    | `address` | The sender address                     |
 | `to`      | `address` | @param tokenId The tokenId to transfer |
 | `tokenId` | `bytes32` | The tokenId to transfer                |
+| `data`    |  `bytes`  | The data sent alongside the transfer   |
+
+<br/>
+
+### \_afterTokenTransfer
+
+```solidity
+function _afterTokenTransfer(
+  address from,
+  address to,
+  bytes32 tokenId,
+  bytes data
+) internal nonpayable;
+```
+
+Hook that is called after any token transfer, including minting and burning.
+Allows to run custom logic after updating balances, but **before notifiying sender/recipient via LSP1** by overriding this function.
+
+#### Parameters
+
+| Name      |   Type    | Description                            |
+| --------- | :-------: | -------------------------------------- |
+| `from`    | `address` | The sender address                     |
+| `to`      | `address` | @param tokenId The tokenId to transfer |
+| `tokenId` | `bytes32` | The tokenId to transfer                |
+| `data`    |  `bytes`  | The data sent alongside the transfer   |
 
 <br/>
 
@@ -965,13 +1029,13 @@ LSP1 interface.
 ```solidity
 function _notifyTokenReceiver(
   address to,
-  bool allowNonLSP1Recipient,
+  bool force,
   bytes lsp1Data
 ) internal nonpayable;
 ```
 
 An attempt is made to notify the token receiver about the `tokenId` changing owners
-using LSP1 interface. When allowNonLSP1Recipient is FALSE the token receiver MUST support LSP1.
+using LSP1 interface. When force is FALSE the token receiver MUST support LSP1.
 The receiver may revert when the token being sent is not wanted.
 
 <br/>
@@ -1008,6 +1072,13 @@ Returns the extension address stored under the following data key:
 
 ### \_fallbackLSP17Extendable
 
+:::info
+
+The LSP8 Token contract should not hold any native tokens. Any native tokens received by the contract
+will be forwarded to the extension address mapped to the selector from `msg.sig`.
+
+:::
+
 ```solidity
 function _fallbackLSP17Extendable(
   bytes callData
@@ -1021,9 +1092,6 @@ Reverts if there is no extension for the function being called.
 If there is an extension for the function selector being called, it calls the extension with the
 CALL opcode, passing the [`msg.data`](#msg.data) appended with the 20 bytes of the [`msg.sender`](#msg.sender) and
 32 bytes of the [`msg.value`](#msg.value)
-Because the function uses assembly [`return()/revert()`](#return) to terminate the call, it cannot be
-called before other codes in fallback().
-Otherwise, the codes after \_fallbackLSP17Extendable() may never be reached.
 
 <br/>
 
@@ -1149,7 +1217,7 @@ Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on i
 :::
 
 ```solidity
-event Transfer(address operator, address indexed from, address indexed to, bytes32 indexed tokenId, bool allowNonLSP1Recipient, bytes data);
+event Transfer(address operator, address indexed from, address indexed to, bytes32 indexed tokenId, bool force, bytes data);
 ```
 
 Emitted when `tokenId` token is transferred from the `from` to the `to` address.
@@ -1162,7 +1230,7 @@ Emitted when `tokenId` token is transferred from the `from` to the `to` address.
 | `from` **`indexed`**    | `address` | The previous owner of the `tokenId`                                                                                                |
 | `to` **`indexed`**      | `address` | The new owner of `tokenId`                                                                                                         |
 | `tokenId` **`indexed`** | `bytes32` | The tokenId that was transferred                                                                                                   |
-| `allowNonLSP1Recipient` |  `bool`   | If the token transfer enforces the `to` recipient address to be a contract that implements the LSP1 standard or not.               |
+| `force`                 |  `bool`   | If the token transfer enforces the `to` recipient address to be a contract that implements the LSP1 standard or not.               |
 | `data`                  |  `bytes`  | Any additional data the caller included by the caller during the transfer, and sent in the hooks to the `from` and `to` addresses. |
 
 <br/>
@@ -1329,7 +1397,7 @@ Reverts when trying to edit the data key `LSP4TokenSymbol` after the digital ass
 error LSP8CannotSendToAddressZero();
 ```
 
-reverts when trying to send token to the zero address.
+Reverts when trying to send token to the zero address.
 
 <br/>
 
@@ -1348,7 +1416,7 @@ reverts when trying to send token to the zero address.
 error LSP8CannotSendToSelf();
 ```
 
-reverts when specifying the same address for `from` and `to` in a token transfer.
+Reverts when specifying the same address for `from` and `to` in a token transfer.
 
 <br/>
 
@@ -1367,7 +1435,7 @@ reverts when specifying the same address for `from` and `to` in a token transfer
 error LSP8CannotUseAddressZeroAsOperator();
 ```
 
-reverts when trying to set the zero address as an operator.
+Reverts when trying to set the zero address as an operator.
 
 <br/>
 
@@ -1428,7 +1496,7 @@ Reverts when setting `0` for the [`tokenSupplyCap`](#tokensupplycap). The max to
 error LSP8InvalidTransferBatch();
 ```
 
-reverts when the parameters used for `transferBatch` have different lengths.
+Reverts when the parameters used for `transferBatch` have different lengths.
 
 <br/>
 
@@ -1447,7 +1515,7 @@ reverts when the parameters used for `transferBatch` have different lengths.
 error LSP8NonExistentTokenId(bytes32 tokenId);
 ```
 
-reverts when `tokenId` has not been minted.
+Reverts when `tokenId` has not been minted.
 
 #### Parameters
 
@@ -1472,7 +1540,7 @@ reverts when `tokenId` has not been minted.
 error LSP8NonExistingOperator(address operator, bytes32 tokenId);
 ```
 
-reverts when `operator` is not an operator for the `tokenId`.
+Reverts when `operator` is not an operator for the `tokenId`.
 
 #### Parameters
 
@@ -1498,7 +1566,7 @@ reverts when `operator` is not an operator for the `tokenId`.
 error LSP8NotTokenOperator(bytes32 tokenId, address caller);
 ```
 
-reverts when `caller` is not an allowed operator for `tokenId`.
+Reverts when `caller` is not an allowed operator for `tokenId`.
 
 #### Parameters
 
@@ -1524,7 +1592,7 @@ reverts when `caller` is not an allowed operator for `tokenId`.
 error LSP8NotTokenOwner(address tokenOwner, bytes32 tokenId, address caller);
 ```
 
-reverts when `caller` is not the `tokenOwner` of the `tokenId`.
+Reverts when `caller` is not the `tokenOwner` of the `tokenId`.
 
 #### Parameters
 
@@ -1553,7 +1621,7 @@ error LSP8NotifyTokenReceiverContractMissingLSP1Interface(
 );
 ```
 
-reverts if the `tokenReceiver` does not implement LSP1 when minting or transferring tokens with `bool allowNonLSP1Recipient` set as `false`.
+Reverts if the `tokenReceiver` does not implement LSP1 when minting or transferring tokens with `bool force` set as `false`.
 
 #### Parameters
 
@@ -1578,7 +1646,7 @@ reverts if the `tokenReceiver` does not implement LSP1 when minting or transferr
 error LSP8NotifyTokenReceiverIsEOA(address tokenReceiver);
 ```
 
-reverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool allowNonLSP1Recipient` set as `false`.
+Reverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool force` set as `false`.
 
 #### Parameters
 
@@ -1603,7 +1671,7 @@ reverts if the `tokenReceiver` is an EOA when minting or transferring tokens wit
 error LSP8OperatorAlreadyAuthorized(address operator, bytes32 tokenId);
 ```
 
-reverts when `operator` is already authorized for the `tokenId`.
+Reverts when `operator` is already authorized for the `tokenId`.
 
 #### Parameters
 
@@ -1611,6 +1679,46 @@ reverts when `operator` is already authorized for the `tokenId`.
 | ---------- | :-------: | ----------- |
 | `operator` | `address` | -           |
 | `tokenId`  | `bytes32` | -           |
+
+<br/>
+
+### LSP8TokenContractCannotHoldValue
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokencontractcannotholdvalue)
+- Solidity implementation: [`LSP8CappedSupply.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol)
+- Error signature: `LSP8TokenContractCannotHoldValue()`
+- Error hash: `0x61f49442`
+
+:::
+
+```solidity
+error LSP8TokenContractCannotHoldValue();
+```
+
+_LSP8 contract cannot receive native tokens._
+
+Error occurs when sending native tokens to the LSP8 contract without sending any data. E.g. Sending value without passing a bytes4 function selector to call a LSP17 Extension.
+
+<br/>
+
+### LSP8TokenIdTypeNotEditable
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidtypenoteditable)
+- Solidity implementation: [`LSP8CappedSupply.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol)
+- Error signature: `LSP8TokenIdTypeNotEditable()`
+- Error hash: `0x53bc1122`
+
+:::
+
+```solidity
+error LSP8TokenIdTypeNotEditable();
+```
+
+Reverts when trying to edit the data key `LSP8TokenIdType` after the identifiable digital asset contract has been deployed. The `LSP8TokenIdType` data key is located inside the ERC725Y Data key-value store of the identifiable digital asset contract. It can be set only once inside the constructor/initializer when the identifiable digital asset contract is being deployed.
 
 <br/>
 
@@ -1629,7 +1737,7 @@ reverts when `operator` is already authorized for the `tokenId`.
 error LSP8TokenOwnerCannotBeOperator();
 ```
 
-reverts when trying to authorize or revoke the token's owner as an operator.
+Reverts when trying to authorize or revoke the token's owner as an operator.
 
 <br/>
 
@@ -1655,5 +1763,49 @@ reverts when there is no extension for the function selector being called with
 | Name               |   Type   | Description |
 | ------------------ | :------: | ----------- |
 | `functionSelector` | `bytes4` | -           |
+
+<br/>
+
+### OwnableCallerNotTheOwner
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#ownablecallernottheowner)
+- Solidity implementation: [`LSP8CappedSupply.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol)
+- Error signature: `OwnableCallerNotTheOwner(address)`
+- Error hash: `0xbf1169c5`
+
+:::
+
+```solidity
+error OwnableCallerNotTheOwner(address callerAddress);
+```
+
+Reverts when only the owner is allowed to call the function.
+
+#### Parameters
+
+| Name            |   Type    | Description                              |
+| --------------- | :-------: | ---------------------------------------- |
+| `callerAddress` | `address` | The address that tried to make the call. |
+
+<br/>
+
+### OwnableCannotSetZeroAddressAsOwner
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#ownablecannotsetzeroaddressasowner)
+- Solidity implementation: [`LSP8CappedSupply.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol)
+- Error signature: `OwnableCannotSetZeroAddressAsOwner()`
+- Error hash: `0x1ad8836c`
+
+:::
+
+```solidity
+error OwnableCannotSetZeroAddressAsOwner();
+```
+
+Reverts when trying to set `address(0)` as the contract owner when deploying the contract, initializing it or transferring ownership of the contract.
 
 <br/>

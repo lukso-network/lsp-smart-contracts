@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 /**
@@ -59,7 +59,7 @@ interface ILSP14Ownable2Step {
      * @dev Transfer ownership of the contract from the current {owner()} to the {pendingOwner()}.
      *
      * Once this function is called:
-     * - The current {owner()} will loose access to the functions restricted to the {owner()} only.
+     * - The current {owner()} will lose access to the functions restricted to the {owner()} only.
      * - The {pendingOwner()} will gain access to the functions restricted to the {owner()} only.
      *
      * @notice `msg.sender` is accepting ownership of contract: `address(this)`.

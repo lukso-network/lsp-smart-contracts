@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { FakeContract, smock } from '@defi-wonderland/smock';
 
@@ -18,12 +17,6 @@ import {
   TransferExtension,
   ReenterAccountExtension__factory,
   ReenterAccountExtension,
-  OnERC721ReceivedExtension,
-  OnERC721ReceivedExtension__factory,
-  RequireCallbackToken,
-  RequireCallbackToken__factory,
-  RevertFallbackExtension,
-  RevertFallbackExtension__factory,
   BuyExtension,
   BuyExtension__factory,
 } from '../../types';
@@ -43,7 +36,6 @@ export type LSP17TestContext = {
 export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestContext>) => {
   let context: LSP17TestContext;
   let notExistingFunctionSignature,
-    onERC721ReceivedFunctionSelector,
     checkMsgVariableFunctionSelector,
     nameFunctionSelector,
     ageFunctionSelector,
@@ -63,7 +55,6 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
     revertStringFunctionExtensionHandlerKey,
     revertCustomFunctionExtensionHandlerKey,
     emitEventFunctionExtensionHandlerKey,
-    onERC721ReceivedFunctionExtensionHandlerKey,
     buyFunctionExtensionHandlerKey,
     supportsInterfaceFunctionExtensionHandlerKey;
 
@@ -96,9 +87,6 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
     // reenterAccount(bytes)
     reenterAccountFunctionSelector = '0x864e5589';
-
-    // onERC721Received(address,address,uint256,bytes)
-    onERC721ReceivedFunctionSelector = '0x150b7a02';
 
     // buy()
     buyFunctionSelector = '0xa6f2ae3a';
@@ -146,11 +134,6 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
       emitEventFunctionSelector.substring(2) +
       '00000000000000000000000000000000'; // zero padded
 
-    onERC721ReceivedFunctionExtensionHandlerKey =
-      ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-      onERC721ReceivedFunctionSelector.substring(2) +
-      '00000000000000000000000000000000'; // zero padded
-
     buyFunctionExtensionHandlerKey =
       ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       buyFunctionSelector.substring(2) +
@@ -160,30 +143,6 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
       ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       supportsInterfaceFunctionSelector.substring(2) +
       '00000000000000000000000000000000'; // zero padded
-  });
-
-  describe('when calling the contract with empty calldata', () => {
-    describe('when making a call without any value', () => {
-      it('should revert', async () => {
-        await expect(
-          context.accounts[0].sendTransaction({
-            to: context.contract.address,
-          }),
-        ).to.be.revertedWithCustomError(context.contract, 'InvalidFunctionSelector');
-      });
-    });
-
-    describe('when making a call with sending value', () => {
-      it('should revert', async () => {
-        const amountSent = 200;
-        await expect(
-          context.accounts[0].sendTransaction({
-            to: context.contract.address,
-            value: amountSent,
-          }),
-        ).to.be.revertedWithCustomError(context.contract, 'InvalidFunctionSelector');
-      });
-    });
   });
 
   describe('when calling the contract with calldata', () => {
@@ -652,8 +611,6 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
     describe('when calling with calldata that is not checked for extension', () => {
       describe('when calling with a payload of length less than 4bytes', () => {
-        let revertFallbackExtension: RevertFallbackExtension;
-
         it('should revert', async () => {
           await expect(
             context.accounts[0].sendTransaction({

@@ -14,7 +14,8 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
     context = await buildContext();
 
     const permissionKeys = [
-      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        context.mainController.address.substring(2),
     ];
 
     const permissionValues = [ALL_PERMISSIONS];
@@ -39,11 +40,14 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
       ]);
 
       await expect(
-        context.keyManagerInternalTester.verifyPermissions(context.owner.address, 0, calldata),
+        context.keyManagerInternalTester.verifyPermissions(
+          context.mainController.address,
+          calldata,
+        ),
       ).to.not.be.reverted;
     });
 
-    it('should revert with `InvalidPayload` error if the address param is not left padded with 12 x `00` bytes', async () => {
+    it('should revert if the address param is not left padded with 12 x `00` bytes', async () => {
       const executeParameters = {
         operationType: OPERATION_TYPES.CALL,
         to: context.accounts[3].address,
@@ -68,11 +72,14 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
         invalidPart + addressPart,
       );
 
-      await context.keyManagerInternalTester.verifyPermissions(
-        context.owner.address,
-        0,
-        invalidCalldata,
-      );
+      // `abi.decode` will fail to decode an `address` type not padded with `00` on the left,
+      // resulting in a revert without any error data
+      await expect(
+        context.keyManagerInternalTester.verifyPermissions(
+          context.mainController.address,
+          invalidCalldata,
+        ),
+      ).to.be.reverted;
     });
   });
 };

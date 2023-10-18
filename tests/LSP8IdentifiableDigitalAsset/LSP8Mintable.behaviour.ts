@@ -28,6 +28,7 @@ export type LSP8MintableDeployParams = {
   name: string;
   symbol: string;
   newOwner: string;
+  tokenIdType: number;
 };
 
 export type LSP8MintableTestContext = {
@@ -54,7 +55,7 @@ export const shouldBehaveLikeLSP8Mintable = (
       await context.lsp8Mintable.mint(
         context.accounts.tokenReceiver.address,
         randomTokenId,
-        true, // beneficiary is an EOA, so we need to allowNonLSP1Recipient minting
+        true, // beneficiary is an EOA, so we need to force minting
         '0x',
       );
 
@@ -82,7 +83,7 @@ export const shouldBehaveLikeLSP8Mintable = (
         context.lsp8Mintable
           .connect(nonOwner)
           .mint(context.accounts.tokenReceiver.address, randomTokenId, true, '0x'),
-      ).to.be.revertedWith('Ownable: caller is not the owner');
+      ).to.be.revertedWithCustomError(context.lsp8Mintable, 'OwnableCallerNotTheOwner');
     });
   });
 

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
 //types
-import { BigNumber, BytesLike } from 'ethers';
+import { BigNumber } from 'ethers';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';
@@ -25,6 +25,7 @@ import {
   generateRelayCall,
   generateExecutePayload,
   loadTestCase,
+  RelayCallParams,
 } from './reentrancyHelpers';
 
 export const testSingleExecuteRelayCallToSingleExecute = (
@@ -40,12 +41,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
   });
 
   describe('when reentering and transferring value', () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      validityTimestamps: BytesLike;
-      payload: BytesLike;
-    };
+    let relayCallParams: RelayCallParams;
     before(async () => {
       const executePayload = generateExecutePayload(
         context.keyManager.address,
@@ -145,12 +141,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
   });
 
   describe('when reentering and setting data', () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      validityTimestamps: BytesLike;
-      payload: BytesLike;
-    };
+    let relayCallParams: RelayCallParams;
     before(async () => {
       const executePayload = generateExecutePayload(
         context.keyManager.address,
@@ -241,12 +232,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
   });
 
   describe('when reentering and adding permissions', () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      validityTimestamps: BytesLike;
-      payload: BytesLike;
-    };
+    let relayCallParams: RelayCallParams;
     before(async () => {
       const executePayload = generateExecutePayload(
         context.keyManager.address,
@@ -317,12 +303,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
   });
 
   describe('when reentering and changing permissions', () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      validityTimestamps: BytesLike;
-      payload: BytesLike;
-    };
+    let relayCallParams: RelayCallParams;
     before(async () => {
       const executePayload = generateExecutePayload(
         context.keyManager.address,
@@ -392,12 +373,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
   });
 
   describe('when reentering and adding URD', () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      validityTimestamps: BytesLike;
-      payload: BytesLike;
-    };
+    let relayCallParams: RelayCallParams;
     before(async () => {
       const executePayload = generateExecutePayload(
         context.keyManager.address,
@@ -468,12 +444,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
   });
 
   describe('when reentering and changing URD', () => {
-    let relayCallParams: {
-      signature: BytesLike;
-      nonce: BigNumber;
-      validityTimestamps: BytesLike;
-      payload: BytesLike;
-    };
+    let relayCallParams: RelayCallParams;
     before(async () => {
       const executePayload = generateExecutePayload(
         context.keyManager.address,

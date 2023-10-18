@@ -64,7 +64,8 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
     );
 
     const permissionsKeys = [
-      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
         addressCanInteractOnlyWithERC1271.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -95,7 +96,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
 
-    await context.owner.sendTransaction({
+    await context.mainController.sendTransaction({
       to: context.universalProfile.address,
       value: ethers.utils.parseEther('10'),
     });
@@ -107,7 +108,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
       const targetPayload = targetContract.interface.encodeFunctionData('setName', [newName]);
 
       await context.universalProfile
-        .connect(context.owner)
+        .connect(context.mainController)
         .execute(OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload);
       const result = await targetContract.callStatic.getName();
 
@@ -117,7 +118,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
     describe('should allow to interact with a contract that implement (+ register) any interface', () => {
       it('ERC1271', async () => {
         const sampleHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Sample Message'));
-        const sampleSignature = await context.owner.signMessage('Sample Message');
+        const sampleSignature = await context.mainController.signMessage('Sample Message');
 
         const payload = signatureValidatorContract.interface.encodeFunctionData(
           'isValidSignature',
@@ -125,18 +126,18 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
         );
 
         const data = await context.universalProfile
-          .connect(context.owner)
+          .connect(context.mainController)
           .callStatic.execute(OPERATION_TYPES.CALL, signatureValidatorContract.address, 0, payload);
 
         const [result] = abiCoder.decode(['bytes4'], data);
-        expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+        expect(result).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
 
       it('LSP0 (ERC725Account)', async () => {
         const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key'));
         const value = '0xcafecafecafecafe';
 
-        await context.universalProfile.connect(context.owner).setData(key, value);
+        await context.universalProfile.connect(context.mainController).setData(key, value);
 
         const result = await context.universalProfile.callStatic['getData(bytes32)'](key);
         expect(result).to.equal(value);
@@ -162,7 +163,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           .callStatic.execute(OPERATION_TYPES.CALL, signatureValidatorContract.address, 0, payload);
 
         const [result] = abiCoder.decode(['bytes4'], data);
-        expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+        expect(result).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
     });
 

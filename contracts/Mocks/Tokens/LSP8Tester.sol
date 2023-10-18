@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
@@ -14,15 +14,16 @@ contract LSP8Tester is LSP8IdentifiableDigitalAsset, LSP8Burnable {
     constructor(
         string memory name,
         string memory symbol,
-        address newOwner
-    ) LSP8IdentifiableDigitalAsset(name, symbol, newOwner) {}
+        address newOwner,
+        uint256 tokenIdType
+    ) LSP8IdentifiableDigitalAsset(name, symbol, newOwner, tokenIdType) {}
 
     function mint(
         address to,
         bytes32 tokenId,
-        bool allowNonLSP1Recipient,
+        bool force,
         bytes memory data
     ) public {
-        _mint(to, tokenId, allowNonLSP1Recipient, data);
+        _mint(to, tokenId, force, data);
     }
 }

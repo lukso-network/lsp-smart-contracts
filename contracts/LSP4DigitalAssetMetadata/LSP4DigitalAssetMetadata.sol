@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // modules
@@ -8,7 +8,12 @@ import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
 // constants
-import "./LSP4Constants.sol";
+import {
+    _LSP4_SUPPORTED_STANDARDS_KEY,
+    _LSP4_SUPPORTED_STANDARDS_VALUE,
+    _LSP4_TOKEN_NAME_KEY,
+    _LSP4_TOKEN_SYMBOL_KEY
+} from "./LSP4Constants.sol";
 
 // errors
 import {
@@ -46,7 +51,7 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
 
     /**
      * @dev The ERC725Y data keys `LSP4TokenName` and `LSP4TokenSymbol` cannot be changed
-     *      via this function once the digital asset contract has been deployed.
+     * via this function once the digital asset contract has been deployed.
      *
      * @dev Save gas by emitting the {DataChanged} event with only the first 256 bytes of dataValue
      */

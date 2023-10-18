@@ -34,7 +34,7 @@ When marked as 'public', a method can be called both externally and internally, 
 constructor(string name_, string symbol_, address newOwner_);
 ```
 
-_Deploying a `LSP7CompatibleERC20Mintable` token contract with: token name = `name_`, token symbol = `symbol*`, and address `newOwner*` as the token contract owner.\_
+_Deploying a `LSP7CompatibleERC20Mintable` token contract with: token name = `name_`, token symbol = `symbol_`, and address `newOwner_` as the token contract owner._
 
 #### Parameters
 
@@ -61,6 +61,21 @@ fallback() external payable;
 
 <br/>
 
+### receive
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#receive)
+- Solidity implementation: [`LSP7CompatibleERC20Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol)
+
+:::
+
+```solidity
+receive() external payable;
+```
+
+<br/>
+
 ### allowance
 
 :::note References
@@ -79,18 +94,20 @@ function allowance(
 ) external view returns (uint256);
 ```
 
+Function to get operator allowance allowed to spend on behalf of `tokenOwner` from the ERC20 standard interface.
+
 #### Parameters
 
-| Name         |   Type    | Description |
-| ------------ | :-------: | ----------- |
-| `tokenOwner` | `address` | -           |
-| `operator`   | `address` | -           |
+| Name         |   Type    | Description                              |
+| ------------ | :-------: | ---------------------------------------- |
+| `tokenOwner` | `address` | The address of the token owner           |
+| `operator`   | `address` | The address approved by the `tokenOwner` |
 
 #### Returns
 
-| Name |   Type    | Description |
-| ---- | :-------: | ----------- |
-| `0`  | `uint256` | -           |
+| Name |   Type    | Description                                       |
+| ---- | :-------: | ------------------------------------------------- |
+| `0`  | `uint256` | The amount `operator` is approved by `tokenOwner` |
 
 <br/>
 
@@ -112,18 +129,20 @@ function approve(
 ) external nonpayable returns (bool);
 ```
 
+Approval function from th ERC20 standard interface.
+
 #### Parameters
 
-| Name       |   Type    | Description |
-| ---------- | :-------: | ----------- |
-| `operator` | `address` | -           |
-| `amount`   | `uint256` | -           |
+| Name       |   Type    | Description                         |
+| ---------- | :-------: | ----------------------------------- |
+| `operator` | `address` | The address to approve for `amount` |
+| `amount`   | `uint256` | The amount to approve.              |
 
 #### Returns
 
-| Name |  Type  | Description |
-| ---- | :----: | ----------- |
-| `0`  | `bool` | -           |
+| Name |  Type  | Description                    |
+| ---- | :----: | ------------------------------ |
+| `0`  | `bool` | `true` on successful approval. |
 
 <br/>
 
@@ -275,12 +294,12 @@ This is a non-standard function, not part of the LSP7 standard interface. It has
 ```solidity
 function decreaseAllowance(
   address operator,
-  uint256 substractedAmount,
+  uint256 subtractedAmount,
   bytes operatorNotificationData
 ) external nonpayable;
 ```
 
-_Decrease the allowance of `operator` by -`substractedAmount`_
+_Decrease the allowance of `operator` by -`subtractedAmount`_
 
 Atomically decreases the allowance granted to `operator` by the caller. This is an alternative approach to [`authorizeOperator`](#authorizeoperator) that can be used as a mitigation for the double spending allowance problem.
 
@@ -289,7 +308,7 @@ Atomically decreases the allowance granted to `operator` by the caller. This is 
 **Requirements:**
 
 - `operator` cannot be the zero address.
-- `operator` must have allowance for the caller of at least `substractedAmount`.
+- `operator` must have allowance for the caller of at least `subtractedAmount`.
 
 </blockquote>
 
@@ -298,7 +317,7 @@ Atomically decreases the allowance granted to `operator` by the caller. This is 
 **Emitted events:**
 
 - [`AuthorizedOperator`](#authorizedoperator) event indicating the updated allowance after decreasing it.
-- [`RevokeOperator`](#revokeoperator) event if `substractedAmount` is the full allowance, indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
+- [`RevokeOperator`](#revokeoperator) event if `subtractedAmount` is the full allowance, indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
 
 </blockquote>
 
@@ -306,8 +325,8 @@ Atomically decreases the allowance granted to `operator` by the caller. This is 
 
 | Name                       |   Type    | Description                                            |
 | -------------------------- | :-------: | ------------------------------------------------------ |
-| `operator`                 | `address` | the operator to decrease allowance for `msg.sender`    |
-| `substractedAmount`        | `uint256` | the amount to decrease by in the operator's allowance. |
+| `operator`                 | `address` | The operator to decrease allowance for `msg.sender`    |
+| `subtractedAmount`         | `uint256` | The amount to decrease by in the operator's allowance. |
 | `operatorNotificationData` |  `bytes`  | -                                                      |
 
 <br/>
@@ -461,8 +480,8 @@ Atomically increases the allowance granted to `operator` by the caller. This is 
 
 | Name                       |   Type    | Description                                                             |
 | -------------------------- | :-------: | ----------------------------------------------------------------------- |
-| `operator`                 | `address` | the operator to increase the allowance for `msg.sender`                 |
-| `addedAmount`              | `uint256` | the additional amount to add on top of the current operator's allowance |
+| `operator`                 | `address` | The operator to increase the allowance for `msg.sender`                 |
+| `addedAmount`              | `uint256` | The additional amount to add on top of the current operator's allowance |
 | `operatorNotificationData` |  `bytes`  | -                                                                       |
 
 <br/>
@@ -482,7 +501,7 @@ Atomically increases the allowance granted to `operator` by the caller. This is 
 function mint(
   address to,
   uint256 amount,
-  bool allowNonLSP1Recipient,
+  bool force,
   bytes data
 ) external nonpayable;
 ```
@@ -491,12 +510,12 @@ Public [`_mint`](#_mint) function only callable by the [`owner`](#owner).
 
 #### Parameters
 
-| Name                    |   Type    | Description |
-| ----------------------- | :-------: | ----------- |
-| `to`                    | `address` | -           |
-| `amount`                | `uint256` | -           |
-| `allowNonLSP1Recipient` |  `bool`   | -           |
-| `data`                  |  `bytes`  | -           |
+| Name     |   Type    | Description |
+| -------- | :-------: | ----------- |
+| `to`     | `address` | -           |
+| `amount` | `uint256` | -           |
+| `force`  |  `bool`   | -           |
+| `data`   |  `bytes`  | -           |
 
 <br/>
 
@@ -515,7 +534,7 @@ Public [`_mint`](#_mint) function only callable by the [`owner`](#owner).
 function name() external view returns (string);
 ```
 
-Returns the name of the token.
+Returns the name of the token. For compatibility with clients & tools that expect ERC20.
 
 #### Returns
 
@@ -744,7 +763,7 @@ Returns true if this contract implements the interface defined by `interfaceId`.
 function symbol() external view returns (string);
 ```
 
-Returns the symbol of the token, usually a shorter version of the name.
+Returns the symbol of the token, usually a shorter version of the name. For compatibility with clients & tools that expect ERC20.
 
 #### Returns
 
@@ -795,7 +814,7 @@ function transfer(
   address from,
   address to,
   uint256 amount,
-  bool allowNonLSP1Recipient,
+  bool force,
   bytes data
 ) external nonpayable;
 ```
@@ -804,13 +823,13 @@ Transfers an `amount` of tokens from the `from` address to the `to` address and 
 
 #### Parameters
 
-| Name                    |   Type    | Description                                                                                                                                                          |
-| ----------------------- | :-------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `from`                  | `address` | The sender address.                                                                                                                                                  |
-| `to`                    | `address` | The recipient address.                                                                                                                                               |
-| `amount`                | `uint256` | The amount of tokens to transfer.                                                                                                                                    |
-| `allowNonLSP1Recipient` |  `bool`   | When set to `true`, the `to` address CAN be any address. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard. |
-| `data`                  |  `bytes`  | Any additional data the caller wants included in the emitted event, and sent in the hooks of the `from` and `to` addresses.                                          |
+| Name     |   Type    | Description                                                                                                                                                          |
+| -------- | :-------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `from`   | `address` | The sender address.                                                                                                                                                  |
+| `to`     | `address` | The recipient address.                                                                                                                                               |
+| `amount` | `uint256` | The amount of tokens to transfer.                                                                                                                                    |
+| `force`  |  `bool`   | When set to `true`, the `to` address CAN be any address. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard. |
+| `data`   |  `bytes`  | Any additional data the caller wants included in the emitted event, and sent in the hooks of the `from` and `to` addresses.                                          |
 
 <br/>
 
@@ -827,7 +846,7 @@ Transfers an `amount` of tokens from the `from` address to the `to` address and 
 
 :::info
 
-This function uses the `allowNonLSP1Recipient` parameter as `true` so that EOA and any contract can receive tokens.
+This function uses the `force` parameter as `true` so that EOA and any contract can receive tokens.
 
 :::
 
@@ -838,18 +857,20 @@ function transfer(
 ) external nonpayable returns (bool);
 ```
 
+Transfer function from the ERC20 standard interface.
+
 #### Parameters
 
-| Name     |   Type    | Description |
-| -------- | :-------: | ----------- |
-| `to`     | `address` | -           |
-| `amount` | `uint256` | -           |
+| Name     |   Type    | Description                       |
+| -------- | :-------: | --------------------------------- |
+| `to`     | `address` | The address receiving tokens.     |
+| `amount` | `uint256` | The amount of tokens to transfer. |
 
 #### Returns
 
-| Name |  Type  | Description |
-| ---- | :----: | ----------- |
-| `0`  | `bool` | -           |
+| Name |  Type  | Description                    |
+| ---- | :----: | ------------------------------ |
+| `0`  | `bool` | `true` on successful transfer. |
 
 <br/>
 
@@ -869,7 +890,7 @@ function transferBatch(
   address[] from,
   address[] to,
   uint256[] amount,
-  bool[] allowNonLSP1Recipient,
+  bool[] force,
   bytes[] data
 ) external nonpayable;
 ```
@@ -878,13 +899,13 @@ Same as [`transfer(...)`](#`transfer) but transfer multiple tokens based on the 
 
 #### Parameters
 
-| Name                    |    Type     | Description                                                                                                                                                                             |
-| ----------------------- | :---------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `from`                  | `address[]` | An array of sending addresses.                                                                                                                                                          |
-| `to`                    | `address[]` | An array of receiving addresses.                                                                                                                                                        |
-| `amount`                | `uint256[]` | An array of amount of tokens to transfer for each `from -> to` transfer.                                                                                                                |
-| `allowNonLSP1Recipient` |  `bool[]`   | For each transfer, when set to `true`, the `to` address CAN be any address. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard. |
-| `data`                  |  `bytes[]`  | An array of additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.                                                         |
+| Name     |    Type     | Description                                                                                                                                                                             |
+| -------- | :---------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `from`   | `address[]` | An array of sending addresses.                                                                                                                                                          |
+| `to`     | `address[]` | An array of receiving addresses.                                                                                                                                                        |
+| `amount` | `uint256[]` | An array of amount of tokens to transfer for each `from -> to` transfer.                                                                                                                |
+| `force`  |  `bool[]`   | For each transfer, when set to `true`, the `to` address CAN be any address. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard. |
+| `data`   |  `bytes[]`  | An array of additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.                                                         |
 
 <br/>
 
@@ -901,7 +922,7 @@ Same as [`transfer(...)`](#`transfer) but transfer multiple tokens based on the 
 
 :::info
 
-This function uses the `allowNonLSP1Recipient` parameter as `true` so that EOA and any contract can receive tokens.
+This function uses the `force` parameter as `true` so that EOA and any contract can receive tokens.
 
 :::
 
@@ -913,19 +934,21 @@ function transferFrom(
 ) external nonpayable returns (bool);
 ```
 
+Transfer functions for operators from the ERC20 standard interface.
+
 #### Parameters
 
-| Name     |   Type    | Description |
-| -------- | :-------: | ----------- |
-| `from`   | `address` | -           |
-| `to`     | `address` | -           |
-| `amount` | `uint256` | -           |
+| Name     |   Type    | Description                       |
+| -------- | :-------: | --------------------------------- |
+| `from`   | `address` | The address sending tokens.       |
+| `to`     | `address` | The address receiving tokens.     |
+| `amount` | `uint256` | The amount of tokens to transfer. |
 
 #### Returns
 
-| Name |  Type  | Description |
-| ---- | :----: | ----------- |
-| `0`  | `bool` | -           |
+| Name |  Type  | Description                    |
+| ---- | :----: | ------------------------------ |
+| `0`  | `bool` | `true` on successful transfer. |
 
 <br/>
 
@@ -1011,8 +1034,10 @@ mapping(bytes32 => bytes) _store
 ### \_setData
 
 ```solidity
-function _setData(bytes32 key, bytes value) internal nonpayable;
+function _setData(bytes32 dataKey, bytes dataValue) internal nonpayable;
 ```
+
+Save gas by emitting the [`DataChanged`](#datachanged) event with only the first 256 bytes of dataValue
 
 <br/>
 
@@ -1035,7 +1060,7 @@ function _updateOperator(
 function _mint(
   address to,
   uint256 amount,
-  bool allowNonLSP1Recipient,
+  bool force,
   bytes data
 ) internal nonpayable;
 ```
@@ -1050,6 +1075,28 @@ function _burn(address from, uint256 amount, bytes data) internal nonpayable;
 
 <br/>
 
+### \_spendAllowance
+
+```solidity
+function _spendAllowance(
+  address operator,
+  address tokenOwner,
+  uint256 amountToSpend
+) internal nonpayable;
+```
+
+Spend `amountToSpend` from the `operator`'s authorized on behalf of the `tokenOwner`.
+
+#### Parameters
+
+| Name            |   Type    | Description                                                         |
+| --------------- | :-------: | ------------------------------------------------------------------- |
+| `operator`      | `address` | The address of the operator to decrease the allowance of.           |
+| `tokenOwner`    | `address` | The address that granted an allowance on its balance to `operator`. |
+| `amountToSpend` | `uint256` | The amount of tokens to substract in allowance of `operator`.       |
+
+<br/>
+
 ### \_transfer
 
 ```solidity
@@ -1057,7 +1104,7 @@ function _transfer(
   address from,
   address to,
   uint256 amount,
-  bool allowNonLSP1Recipient,
+  bool force,
   bytes data
 ) internal nonpayable;
 ```
@@ -1070,7 +1117,8 @@ function _transfer(
 function _beforeTokenTransfer(
   address from,
   address to,
-  uint256 amount
+  uint256 amount,
+  bytes data
 ) internal nonpayable;
 ```
 
@@ -1079,11 +1127,37 @@ Allows to run custom logic before updating balances and notifiying sender/recipi
 
 #### Parameters
 
-| Name     |   Type    | Description                     |
-| -------- | :-------: | ------------------------------- |
-| `from`   | `address` | The sender address              |
-| `to`     | `address` | The recipient address           |
-| `amount` | `uint256` | The amount of token to transfer |
+| Name     |   Type    | Description                          |
+| -------- | :-------: | ------------------------------------ |
+| `from`   | `address` | The sender address                   |
+| `to`     | `address` | The recipient address                |
+| `amount` | `uint256` | The amount of token to transfer      |
+| `data`   |  `bytes`  | The data sent alongside the transfer |
+
+<br/>
+
+### \_afterTokenTransfer
+
+```solidity
+function _afterTokenTransfer(
+  address from,
+  address to,
+  uint256 amount,
+  bytes data
+) internal nonpayable;
+```
+
+Hook that is called after any token transfer, including minting and burning.
+Allows to run custom logic after updating balances, but **before notifiying sender/recipient** by overriding this function.
+
+#### Parameters
+
+| Name     |   Type    | Description                          |
+| -------- | :-------: | ------------------------------------ |
+| `from`   | `address` | The sender address                   |
+| `to`     | `address` | The recipient address                |
+| `amount` | `uint256` | The amount of token to transfer      |
+| `data`   |  `bytes`  | The data sent alongside the transfer |
 
 <br/>
 
@@ -1133,26 +1207,26 @@ If `from` is an EOA or a contract that does not support the LSP1 interface, noth
 ```solidity
 function _notifyTokenReceiver(
   address to,
-  bool allowNonLSP1Recipient,
+  bool force,
   bytes lsp1Data
 ) internal nonpayable;
 ```
 
 Attempt to notify the token receiver `to` about the `amount` tokens being received.
 This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP7_TOKENSRECIPIENT` as typeId, if `to` is a contract that supports the LSP1 interface.
-If `to` is is an EOA or a contract that does not support the LSP1 interface, the behaviour will depend on the `allowNonLSP1Recipient` boolean flag.
+If `to` is is an EOA or a contract that does not support the LSP1 interface, the behaviour will depend on the `force` boolean flag.
 
-- if `allowNonLSP1Recipient` is set to `true`, nothing will happen and no notification will be sent.
+- if `force` is set to `true`, nothing will happen and no notification will be sent.
 
-- if `allowNonLSP1Recipient` is set to `false, the transaction will revert.
+- if `force` is set to `false, the transaction will revert.
 
 #### Parameters
 
-| Name                    |   Type    | Description                                                                                         |
-| ----------------------- | :-------: | --------------------------------------------------------------------------------------------------- |
-| `to`                    | `address` | The address to call the {universalReceiver} function on.                                            |
-| `allowNonLSP1Recipient` |  `bool`   | a boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not. |
-| `lsp1Data`              |  `bytes`  | the data to be sent to the `to` address in the `universalReceiver(...)` call.                       |
+| Name       |   Type    | Description                                                                                         |
+| ---------- | :-------: | --------------------------------------------------------------------------------------------------- |
+| `to`       | `address` | The address to call the {universalReceiver} function on.                                            |
+| `force`    |  `bool`   | A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not. |
+| `lsp1Data` |  `bytes`  | The data to be sent to the `to` address in the `universalReceiver(...)` call.                       |
 
 <br/>
 
@@ -1188,6 +1262,13 @@ Returns the extension address stored under the following data key:
 
 ### \_fallbackLSP17Extendable
 
+:::info
+
+The LSP7 Token contract should not hold any native tokens. Any native tokens received by the contract
+will be forwarded to the extension address mapped to the selector from `msg.sig`.
+
+:::
+
 ```solidity
 function _fallbackLSP17Extendable(
   bytes callData
@@ -1201,9 +1282,6 @@ Reverts if there is no extension for the function being called.
 If there is an extension for the function selector being called, it calls the extension with the
 CALL opcode, passing the [`msg.data`](#msg.data) appended with the 20 bytes of the [`msg.sender`](#msg.sender) and
 32 bytes of the [`msg.value`](#msg.value)
-Because the function uses assembly [`return()/revert()`](#return) to terminate the call, it cannot be
-called before other codes in fallback().
-Otherwise, the codes after \_fallbackLSP17Extendable() may never be reached.
 
 <br/>
 
@@ -1224,15 +1302,15 @@ Otherwise, the codes after \_fallbackLSP17Extendable() may never be reached.
 event Approval(address indexed owner, address indexed spender, uint256 value);
 ```
 
-ERC721 `Approval` event emitted when `owner` enables `operator` for `tokenId`. To provide compatibility with indexing ERC721 events.
+Emitted when the allowance of a `spender` for an `owner` is set by a call to [`approve`](#approve). `value` is the new allowance.
 
 #### Parameters
 
-| Name                    |   Type    | Description                                |
-| ----------------------- | :-------: | ------------------------------------------ |
-| `owner` **`indexed`**   | `address` | The address of the owner of the `tokenId`. |
-| `spender` **`indexed`** | `address` | -                                          |
-| `value`                 | `uint256` | -                                          |
+| Name                    |   Type    | Description |
+| ----------------------- | :-------: | ----------- |
+| `owner` **`indexed`**   | `address` | -           |
+| `spender` **`indexed`** | `address` | -           |
+| `value`                 | `uint256` | -           |
 
 <br/>
 
@@ -1251,14 +1329,14 @@ ERC721 `Approval` event emitted when `owner` enables `operator` for `tokenId`. T
 event AuthorizedOperator(address indexed operator, address indexed tokenOwner, uint256 indexed amount, bytes operatorNotificationData);
 ```
 
-Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
+Emitted when `tokenOwner` enables `operator` for `amount` tokens.
 
 #### Parameters
 
 | Name                       |   Type    | Description                                                             |
 | -------------------------- | :-------: | ----------------------------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address authorized as an operator.                                  |
-| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                             |
+| `operator` **`indexed`**   | `address` | The address authorized as an operator                                   |
+| `tokenOwner` **`indexed`** | `address` | The token owner                                                         |
 | `amount` **`indexed`**     | `uint256` | The amount of tokens `operator` address has access to from `tokenOwner` |
 | `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                         |
 
@@ -1331,15 +1409,15 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 event RevokedOperator(address indexed operator, address indexed tokenOwner, bytes operatorNotificationData);
 ```
 
-Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on its behalf.
+Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`authorizedAmountFor(...)`](#`authorizedamountfor) to `0`.
 
 #### Parameters
 
-| Name                       |   Type    | Description                                                     |
-| -------------------------- | :-------: | --------------------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address revoked from the operator array ({getOperatorsOf}). |
-| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                     |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                 |
+| Name                       |   Type    | Description                                     |
+| -------------------------- | :-------: | ----------------------------------------------- |
+| `operator` **`indexed`**   | `address` | The address revoked from operating              |
+| `tokenOwner` **`indexed`** | `address` | The token owner                                 |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1. |
 
 <br/>
 
@@ -1355,21 +1433,48 @@ Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on i
 :::
 
 ```solidity
-event Transfer(address indexed operator, address indexed from, address indexed to, uint256 amount, bool allowNonLSP1Recipient, bytes data);
+event Transfer(address indexed operator, address indexed from, address indexed to, uint256 amount, bool force, bytes data);
 ```
 
-Emitted when `tokenId` token is transferred from the `from` to the `to` address.
+Emitted when the `from` transferred successfully `amount` of tokens to `to`.
 
 #### Parameters
 
-| Name                     |   Type    | Description                                                                                                                        |
-| ------------------------ | :-------: | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `operator` **`indexed`** | `address` | The address of operator that sent the `tokenId`                                                                                    |
-| `from` **`indexed`**     | `address` | The previous owner of the `tokenId`                                                                                                |
-| `to` **`indexed`**       | `address` | The new owner of `tokenId`                                                                                                         |
-| `amount`                 | `uint256` | The amount of tokens transferred.                                                                                                  |
-| `allowNonLSP1Recipient`  |  `bool`   | If the token transfer enforces the `to` recipient address to be a contract that implements the LSP1 standard or not.               |
-| `data`                   |  `bytes`  | Any additional data the caller included by the caller during the transfer, and sent in the hooks to the `from` and `to` addresses. |
+| Name                     |   Type    | Description                                                                                                                  |
+| ------------------------ | :-------: | ---------------------------------------------------------------------------------------------------------------------------- |
+| `operator` **`indexed`** | `address` | The address of the operator that executed the transfer.                                                                      |
+| `from` **`indexed`**     | `address` | The address which tokens were sent from (balance decreased by `-amount`).                                                    |
+| `to` **`indexed`**       | `address` | The address that received the tokens (balance increased by `+amount`).                                                       |
+| `amount`                 | `uint256` | The amount of tokens transferred.                                                                                            |
+| `force`                  |  `bool`   | if the transferred enforced the `to` recipient address to be a contract that implements the LSP1 standard or not.            |
+| `data`                   |  `bytes`  | Any additional data included by the caller during the transfer, and sent in the LSP1 hooks to the `from` and `to` addresses. |
+
+<br/>
+
+### Transfer
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#transfer)
+- Solidity implementation: [`LSP7CompatibleERC20Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol)
+- Event signature: `Transfer(address,address,uint256)`
+- Event topic hash: `0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef`
+
+:::
+
+```solidity
+event Transfer(address indexed from, address indexed to, uint256 value);
+```
+
+Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.
+
+#### Parameters
+
+| Name                 |   Type    | Description |
+| -------------------- | :-------: | ----------- |
+| `from` **`indexed`** | `address` | -           |
+| `to` **`indexed`**   | `address` | -           |
+| `value`              | `uint256` | -           |
 
 <br/>
 
@@ -1702,7 +1807,7 @@ error LSP7NotifyTokenReceiverContractMissingLSP1Interface(
 );
 ```
 
-reverts if the `tokenReceiver` does not implement LSP1 when minting or transferring tokens with `bool allowNonLSP1Recipient` set as `false`.
+reverts if the `tokenReceiver` does not implement LSP1 when minting or transferring tokens with `bool force` set as `false`.
 
 #### Parameters
 
@@ -1727,13 +1832,34 @@ reverts if the `tokenReceiver` does not implement LSP1 when minting or transferr
 error LSP7NotifyTokenReceiverIsEOA(address tokenReceiver);
 ```
 
-reverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool allowNonLSP1Recipient` set as `false`.
+reverts if the `tokenReceiver` is an EOA when minting or transferring tokens with `bool force` set as `false`.
 
 #### Parameters
 
 | Name            |   Type    | Description |
 | --------------- | :-------: | ----------- |
 | `tokenReceiver` | `address` | -           |
+
+<br/>
+
+### LSP7TokenContractCannotHoldValue
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#lsp7tokencontractcannotholdvalue)
+- Solidity implementation: [`LSP7CompatibleERC20Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol)
+- Error signature: `LSP7TokenContractCannotHoldValue()`
+- Error hash: `0x388f5adc`
+
+:::
+
+```solidity
+error LSP7TokenContractCannotHoldValue();
+```
+
+_LSP7 contract cannot receive native tokens._
+
+Error occurs when sending native tokens to the LSP7 contract without sending any data. E.g. Sending value without passing a bytes4 function selector to call a LSP17 Extension.
 
 <br/>
 
@@ -1778,5 +1904,49 @@ reverts when there is no extension for the function selector being called with
 | Name               |   Type   | Description |
 | ------------------ | :------: | ----------- |
 | `functionSelector` | `bytes4` | -           |
+
+<br/>
+
+### OwnableCallerNotTheOwner
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#ownablecallernottheowner)
+- Solidity implementation: [`LSP7CompatibleERC20Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol)
+- Error signature: `OwnableCallerNotTheOwner(address)`
+- Error hash: `0xbf1169c5`
+
+:::
+
+```solidity
+error OwnableCallerNotTheOwner(address callerAddress);
+```
+
+Reverts when only the owner is allowed to call the function.
+
+#### Parameters
+
+| Name            |   Type    | Description                              |
+| --------------- | :-------: | ---------------------------------------- |
+| `callerAddress` | `address` | The address that tried to make the call. |
+
+<br/>
+
+### OwnableCannotSetZeroAddressAsOwner
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#ownablecannotsetzeroaddressasowner)
+- Solidity implementation: [`LSP7CompatibleERC20Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol)
+- Error signature: `OwnableCannotSetZeroAddressAsOwner()`
+- Error hash: `0x1ad8836c`
+
+:::
+
+```solidity
+error OwnableCannotSetZeroAddressAsOwner();
+```
+
+Reverts when trying to set `address(0)` as the contract owner when deploying the contract, initializing it or transferring ownership of the contract.
 
 <br/>

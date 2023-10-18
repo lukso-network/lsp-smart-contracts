@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // modules
@@ -17,6 +17,10 @@ abstract contract LSP7Burnable is LSP7DigitalAsset {
         uint256 amount,
         bytes memory data
     ) public virtual {
+        if (msg.sender != from) {
+            _spendAllowance(msg.sender, from, amount);
+        }
+
         _burn(from, amount, data);
     }
 }

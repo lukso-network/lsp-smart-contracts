@@ -78,7 +78,8 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
       canOnlyCall = context.accounts[6];
 
       let permissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           canAddAndChangeUniversalReceiverDelegate.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -128,7 +129,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
 
       permissionArrayValues = [
         ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
-        context.owner.address,
+        context.mainController.address,
         canAddAndChangeUniversalReceiverDelegate.address,
         canOnlyAddUniversalReceiverDelegate.address,
         canOnlyChangeUniversalReceiverDelegate.address,
@@ -156,7 +157,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             payloadParam.dataValue,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           const result = await context.universalProfile.getData(payloadParam.dataKey);
           expect(result).to.equal(payloadParam.dataValue);
@@ -173,7 +174,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             payloadParam.dataValue,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           const result = await context.universalProfile.getData(payloadParam.dataKey);
           expect(result).to.equal(payloadParam.dataValue);
@@ -190,7 +191,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             payloadParam.dataValue,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           const result = await context.universalProfile.getData(payloadParam.dataKey);
           expect(result).to.equal(payloadParam.dataValue);
@@ -411,7 +412,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             payloadParam.dataValue,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
         });
         it('should NOT be allowed to ADD another UniversalReceiverDelegate key', async () => {
           const payloadParam = {
@@ -476,7 +477,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             payloadParam.dataValue,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
         });
 
         it('should NOT be allowed to ADD another UniversalReceiverDelegate key even when UniversalReceiverDelegate key is allowed in AllowedERC725YDataKey', async () => {
@@ -542,7 +543,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             payloadParam.dataValue,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
         });
 
         it('should NOT be allowed to ADD another UniversalReceiverDelegate key', async () => {
@@ -616,7 +617,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             payloadParam.dataValues,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
 
@@ -642,7 +643,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             payloadParam.dataValues,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
 
@@ -664,7 +665,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             payloadParam.dataValues,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
 
           const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
 
@@ -765,7 +766,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             payloadParam.dataValues,
           ]);
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager.connect(context.mainController).execute(payload);
         });
         describe('when adding multiple UniversalReceiverDelegate keys', () => {
           it('should pass', async () => {
@@ -1106,7 +1107,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               payloadParam.dataValues,
             ]);
 
-            await context.keyManager.connect(context.owner).execute(payload);
+            await context.keyManager.connect(context.mainController).execute(payload);
           });
           describe('When adding UniversalReceiverDelegate key and one of his allowedERC725Y Data Key', () => {
             it('should pass', async () => {

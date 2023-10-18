@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 /**
@@ -8,8 +8,14 @@ pragma solidity ^0.8.4;
 error LSP20CallingVerifierFailed(bool postCall);
 
 /**
- * @dev reverts when the call to the owner does not return the magic value
+ * @dev reverts when the call to the owner does not return the LSP20 success value
  * @param postCall True if the execution call was done, False otherwise
  * @param returnedData The data returned by the call to the logic verifier
  */
-error LSP20InvalidMagicValue(bool postCall, bytes returnedData);
+error LSP20CallVerificationFailed(bool postCall, bytes returnedData);
+
+/**
+ * @dev Reverts when the logic verifier is an Externally Owned Account (EOA) that cannot return the LSP20 success value.
+ * @param logicVerifier The address of the logic verifier
+ */
+error LSP20EOACannotVerifyCall(address logicVerifier);

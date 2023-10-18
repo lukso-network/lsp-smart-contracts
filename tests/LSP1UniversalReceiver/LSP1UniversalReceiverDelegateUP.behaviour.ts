@@ -30,7 +30,13 @@ import {
 import { ARRAY_LENGTH, LSP1_HOOK_PLACEHOLDER, abiCoder } from '../utils/helpers';
 
 // constants
-import { ERC725YDataKeys, INTERFACE_IDS, OPERATION_TYPES, LSP1_TYPE_IDS } from '../../constants';
+import {
+  ERC725YDataKeys,
+  INTERFACE_IDS,
+  OPERATION_TYPES,
+  LSP1_TYPE_IDS,
+  LSP8_TOKEN_ID_TYPES,
+} from '../../constants';
 
 // fixtures
 import { callPayload, getLSP5MapAndArrayKeysValue, setupKeyManager } from '../utils/fixtures';
@@ -1120,7 +1126,7 @@ export const shouldBehaveLikeLSP1Delegate = (
       before(async () => {
         const setDataPayload = context.universalProfile1.interface.encodeFunctionData('setData', [
           lsp5ArrayLengthDataKey,
-          lsp5ArrayLengthDataValue,
+          lsp5ArrayLengthDataValue.toHexString(),
         ]);
 
         await context.lsp6KeyManager1.connect(context.accounts.owner1).execute(setDataPayload);
@@ -1167,7 +1173,7 @@ export const shouldBehaveLikeLSP1Delegate = (
       before(async () => {
         const setDataPayload = context.universalProfile1.interface.encodeFunctionData('setData', [
           lsp5ArrayLengthDataKey,
-          lsp5ArrayLengthDataValue,
+          lsp5ArrayLengthDataValue.toHexString(),
         ]);
 
         await context.lsp6KeyManager1.connect(context.accounts.owner1).execute(setDataPayload);
@@ -1743,18 +1749,21 @@ export const shouldBehaveLikeLSP1Delegate = (
         'TokenAlpha',
         'TA',
         context.accounts.random.address,
+        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
       );
 
       lsp8TokenB = await new LSP8Tester__factory(context.accounts.random).deploy(
         'TokenBeta',
         'TB',
         context.accounts.random.address,
+        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
       );
 
       lsp8TokenC = await new LSP8Tester__factory(context.accounts.random).deploy(
         'TokenGamma',
         'TA',
         context.accounts.random.address,
+        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
       );
     });
 
@@ -2776,7 +2785,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
       testContext = {
         accounts: signerAddresses,
-        owner: profileOwner,
+        mainController: profileOwner,
         universalProfile: deployedUniversalProfile,
         keyManager: deployedKeyManager,
       };
@@ -2794,7 +2803,9 @@ export const shouldBehaveLikeLSP1Delegate = (
         [ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate, lsp1Delegate.address],
       );
 
-      await testContext.keyManager.connect(testContext.owner).execute(setLSP1DelegatePayload);
+      await testContext.keyManager
+        .connect(testContext.mainController)
+        .execute(setLSP1DelegatePayload);
     });
 
     it('check that the LSP9Vault address is not set under LSP10', async () => {
@@ -2839,7 +2850,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           [OPERATION_TYPES.CALL, vault.address, 0, transferOwnershipPayload],
         );
 
-        await testContext.keyManager.connect(testContext.owner).execute(executePayload);
+        await testContext.keyManager.connect(testContext.mainController).execute(executePayload);
 
         // check that the new vault owner is the pending owner
         expect(await vault.pendingOwner()).to.equal(newVaultOwner.address);
@@ -3069,6 +3080,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           'MyToken',
           'MTK',
           context.universalProfile1.address,
+          LSP8_TOKEN_ID_TYPES.NUMBER,
         );
         // Mint token for UP1
         await LSP8.mint(context.universalProfile1.address, '0x' + '0'.repeat(64), true, '0x');
@@ -3153,24 +3165,6 @@ export const shouldInitializeLikeLSP1Delegate = (
           INTERFACE_IDS.LSP1UniversalReceiver,
         ),
       );
-    });
-  });
-  describe('edge cases', () => {
-    describe('when sending value to universalReceiver(...)', () => {
-      it('should revert with custom error', async () => {
-        // value of 1 ethers
-        const value = ethers.utils.parseEther('1');
-        await expect(
-          context.lsp1universalReceiverDelegateUP.universalReceiver(
-            LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification,
-            '0x',
-            { value },
-          ),
-        ).to.be.revertedWithCustomError(
-          context.lsp1universalReceiverDelegateUP,
-          'NativeTokensNotAccepted',
-        );
-      });
     });
   });
 };

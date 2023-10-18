@@ -1,11 +1,13 @@
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
 // interfaces
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {ILSP1UniversalReceiver} from "../ILSP1UniversalReceiver.sol";
+import {
+    ILSP1UniversalReceiverDelegate
+} from "../ILSP1UniversalReceiverDelegate.sol";
 import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // modules
@@ -15,9 +17,11 @@ import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import {LSP1Utils} from "../LSP1Utils.sol";
-import {LSP2Utils} from "../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP5Utils} from "../../LSP5ReceivedAssets/LSP5Utils.sol";
+import {LSP10Utils} from "../../LSP10ReceivedVaults/LSP10Utils.sol";
+
+// constants
+import {_INTERFACEID_LSP1_DELEGATE} from "../LSP1Constants.sol";
 import {
     _TYPEID_LSP7_TOKENSSENDER,
     _TYPEID_LSP7_TOKENSRECIPIENT,
@@ -32,18 +36,9 @@ import {
     _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
 } from "../../LSP9Vault/LSP9Constants.sol";
-import {LSP10Utils} from "../../LSP10ReceivedVaults/LSP10Utils.sol";
-
-// constants
-import "../LSP1Constants.sol";
-import "../../LSP0ERC725Account/LSP0Constants.sol";
-import "../../LSP6KeyManager/LSP6Constants.sol";
-import "../../LSP9Vault/LSP9Constants.sol";
-import "../../LSP10ReceivedVaults/LSP10Constants.sol";
-import "../../LSP14Ownable2Step/LSP14Constants.sol";
 
 // errors
-import "../LSP1Errors.sol";
+import {CannotRegisterEOAsAsAssets} from "../LSP1Errors.sol";
 
 /**
  * @title Implementation of a UniversalReceiverDelegate for the [LSP-0-ERC725Account]
@@ -57,7 +52,10 @@ import "../LSP1Errors.sol";
  * - Writes the data keys representing the owned vaults from type [LSP-9-Vault] into your account storage, and removes them when transferring ownership to other accounts according to the [LSP-10-ReceivedVaults] Standard.
  *
  */
-contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
+contract LSP1UniversalReceiverDelegateUP is
+    ERC165,
+    ILSP1UniversalReceiverDelegate
+{
     using ERC165Checker for address;
 
     /**
@@ -80,20 +78,15 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
      * @param typeId Unique identifier for a specific notification.
      * @return The result of the reaction for `typeId`.
      */
-    function universalReceiver(
+    function universalReceiverDelegate(
+        address notifier,
+        uint256 /*value*/,
         bytes32 typeId,
         bytes memory /* data */
-    ) public payable virtual returns (bytes memory) {
-        // CHECK that we did not send any native tokens to the LSP1 Delegate, as it cannot transfer them back.
-        if (msg.value != 0) {
-            revert NativeTokensNotAccepted();
-        }
-
-        address notifier = address(bytes20(msg.data[msg.data.length - 52:]));
-
+    ) public virtual override returns (bytes memory) {
         // The notifier is supposed to be either the LSP7 or LSP8 or LSP9 contract
         // If it's EOA we revert to avoid registering the EOA as asset or vault (spam protection)
-        // solhint-disable avoid-tx-origin
+        // solhint-disable-next-line avoid-tx-origin
         if (notifier == tx.origin) {
             revert CannotRegisterEOAsAsAssets(notifier);
         }
@@ -176,7 +169,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
     ) internal returns (bytes memory) {
         // CHECK balance only when the Token contract is already deployed,
         // not when tokens are being transferred on deployment through the `constructor`
-        if (notifier.code.length > 0) {
+        if (notifier.code.length != 0) {
             // if the amount sent is 0, then do not update the keys
             try ILSP7DigitalAsset(notifier).balanceOf(msg.sender) returns (
                 uint256 balance
@@ -275,7 +268,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         bytes4 interfaceId
     ) public view virtual override returns (bool) {
         return
-            interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_LSP1_DELEGATE ||
             super.supportsInterface(interfaceId);
     }
 }

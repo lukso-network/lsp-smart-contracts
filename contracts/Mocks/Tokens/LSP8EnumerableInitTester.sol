@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.4;
 
@@ -14,12 +14,14 @@ contract LSP8EnumerableInitTester is LSP8EnumerableInitAbstract {
     function initialize(
         string memory name,
         string memory symbol,
-        address newOwner
+        address newOwner,
+        uint256 tokenIdType
     ) public virtual initializer {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name,
             symbol,
-            newOwner
+            newOwner,
+            tokenIdType
         );
     }
 

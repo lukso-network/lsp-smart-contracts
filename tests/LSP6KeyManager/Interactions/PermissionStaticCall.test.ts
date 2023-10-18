@@ -62,7 +62,8 @@ export const shouldBehaveLikePermissionStaticCall = (
     ).deploy();
 
     const permissionKeys = [
-      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.owner.address.substring(2),
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
         addressCanMakeStaticCall.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
@@ -107,7 +108,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       ]);
 
       const result = await context.keyManager
-        .connect(context.owner)
+        .connect(context.mainController)
         .callStatic.execute(executePayload);
 
       const [decodedResult] = abiCoder.decode(['string'], result);
@@ -162,7 +163,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       describe('when calling `isValidSignature(bytes32,bytes)` on a contract', () => {
         it('should pass and return data when `value` param is 0', async () => {
           const message = 'some message to sign';
-          const signature = await context.owner.signMessage(message);
+          const signature = await context.mainController.signMessage(message);
           const messageHash = ethers.utils.hashMessage(message);
 
           const erc1271ContractPayload = signatureValidator.interface.encodeFunctionData(
@@ -182,14 +183,14 @@ export const shouldBehaveLikePermissionStaticCall = (
             .callStatic.execute(executePayload);
 
           const [decodedResult] = abiCoder.decode(['bytes4'], result);
-          expect(decodedResult).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+          expect(decodedResult).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
         });
 
         it('should revert with error `ERC725X_MsgValueDisallowedInStaticCall` if `value` param is not 0', async () => {
           const lyxAmount = ethers.utils.parseEther('3');
 
           const message = 'some message to sign';
-          const signature = await context.owner.signMessage(message);
+          const signature = await context.mainController.signMessage(message);
           const messageHash = ethers.utils.hashMessage(message);
 
           const erc1271ContractPayload = signatureValidator.interface.encodeFunctionData(
@@ -219,8 +220,8 @@ export const shouldBehaveLikePermissionStaticCall = (
           const onERC721Payload = onERC721ReceivedContract.interface.encodeFunctionData(
             'onERC721Received',
             [
-              context.owner.address,
-              context.owner.address,
+              context.mainController.address,
+              context.mainController.address,
               1,
               ethers.utils.toUtf8Bytes('some data'),
             ],
@@ -251,7 +252,12 @@ export const shouldBehaveLikePermissionStaticCall = (
         // the params are not relevant for this test and just used as placeholders.
         const onERC721Payload = onERC721ReceivedContract.interface.encodeFunctionData(
           'onERC721Received',
-          [context.owner.address, context.owner.address, 1, ethers.utils.toUtf8Bytes('some data')],
+          [
+            context.mainController.address,
+            context.mainController.address,
+            1,
+            ethers.utils.toUtf8Bytes('some data'),
+          ],
         );
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
