@@ -13,6 +13,7 @@ import {
 } from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
+import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {
     ERC165Checker
@@ -823,25 +824,11 @@ abstract contract LSP0ERC725AccountCore is
     ) internal virtual override {
         ERC725YCore._store[dataKey] = dataValue;
 
-        // If the `dataValue` is more than 256 bytes long
-        if (dataValue.length > 256) {
-            uint256 dataValueLength = dataValue.length;
-
-            // update the 32 bytes word for `dataValue.length` to states it is only 256 bytes long
-            // so that the `DataChanged` event only emits the first 256 bytes of the `dataValue`.
-            assembly {
-                mstore(dataValue, 256)
-            }
-
-            emit DataChanged(dataKey, dataValue);
-
-            // re-update the `dataValue.length` to its initial value
-            // in case the function is overriden and `dataValue` is re-used afterwards.
-            assembly {
-                mstore(dataValue, dataValueLength)
-            }
-        } else {
-            emit DataChanged(dataKey, dataValue);
-        }
+        emit DataChanged(
+            dataKey,
+            dataValue.length <= 256
+                ? dataValue
+                : BytesLib.slice(dataValue, 0, 256)
+        );
     }
 }

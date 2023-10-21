@@ -5,6 +5,7 @@ pragma solidity ^0.8.5;
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // libraries
+import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {LSP6Utils} from "../LSP6Utils.sol";
 import {
     ERC165Checker
@@ -44,6 +45,7 @@ import {
 } from "../LSP6Errors.sol";
 
 abstract contract LSP6ExecuteModule {
+    using BytesLib for bytes;
     using ERC165Checker for address;
     using LSP6Utils for *;
 
@@ -281,15 +283,12 @@ abstract contract LSP6ExecuteModule {
             }
 
             // extract one AllowedCall at a time
-            assembly {
-                // the first 32 bytes word in memory (where `allowedCallsCompacted` is stored)
-                // correspond to the total number of bytes in `allowedCallsCompacted`
-                let offset := add(add(ii, 2), 32)
-                allowedCall := mload(add(allowedCallsCompacted, offset))
-            }
+            allowedCall = allowedCallsCompacted
+                .slice({_start: ii + 2, _length: 32})
+                .toBytes32({_start: 0});
 
-            // 0xxxxxxxxxffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-            // (excluding the callTypes) not allowed
+            // 0xctctctctffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            // (excluding the callTypes `ct`) not allowed
             // as equivalent to whitelisting any call (= SUPER permission)
             if (bytes28(allowedCall << 32) == bytes28(type(uint224).max)) {
                 revert InvalidWhitelistedCall(controllerAddress);
