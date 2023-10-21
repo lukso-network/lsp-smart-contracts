@@ -196,15 +196,6 @@ abstract contract LSP6ExecuteModule {
         );
         bool hasSuperCall = permissions.hasPermission(_PERMISSION_SUPER_CALL);
 
-        // Skip if both SUPER permissions are present
-        if (hasSuperCall && hasSuperTransferValue) return;
-
-        // Skip if caller has SUPER permissions for external calls, with or without calldata (empty calls)
-        if (!isValueTransfer && hasSuperCall) return;
-
-        // Skip if caller has SUPER permission for value transfers
-        if (isEmptyCall && isValueTransfer && hasSuperTransferValue) return;
-
         // CHECK if we are doing a value transfer
         if (isValueTransfer && !hasSuperTransferValue) {
             _requirePermissions(
@@ -215,7 +206,7 @@ abstract contract LSP6ExecuteModule {
         }
 
         // CHECK if we are doing an empty call, as the receive() or fallback() function
-        // of the controlledContract could run some code.
+        // of the contract being called could run some code
         if (isEmptyCall && !isValueTransfer && !hasSuperCall) {
             _requirePermissions(controller, permissions, _PERMISSION_CALL);
         }
@@ -224,6 +215,15 @@ abstract contract LSP6ExecuteModule {
         if (!isEmptyCall && !hasSuperCall) {
             _requirePermissions(controller, permissions, _PERMISSION_CALL);
         }
+
+        // Skip if caller has SUPER permissions for external calls, with or without calldata (empty calls)
+        if (!isValueTransfer && hasSuperCall) return;
+
+        // Skip if caller has SUPER permission for value transfers
+        if (isEmptyCall && isValueTransfer && hasSuperTransferValue) return;
+
+        // Skip if both SUPER permissions are present
+        if (hasSuperCall && hasSuperTransferValue) return;
 
         _verifyAllowedCall(
             controlledContract,
