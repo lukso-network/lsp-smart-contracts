@@ -13,6 +13,7 @@ import {
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 // Errors
+// solhint-disable no-global-import
 import "./LSP11Errors.sol";
 
 /**

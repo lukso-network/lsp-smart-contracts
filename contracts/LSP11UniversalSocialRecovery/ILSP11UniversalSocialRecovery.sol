@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
- /**
+/**
  * @title ILSP11UniversalSocialRecovery
  * @notice Contract providing a mechanism for account recovery through a designated set of guardians.
  * @dev Guardians can be regular Ethereum addresses or secret guardians represented by a salted hash of their address.
