@@ -3154,7 +3154,7 @@ export const shouldInitializeLikeLSP1Delegate = (
     context = await buildContext();
   });
 
-  describe.only('when the contract was initialized', () => {
+  describe('when the contract was initialized', () => {
     it('should have registered the ERC165 interface', async () => {
       const result = await context.lsp1universalReceiverDelegateUP.supportsInterface(
         INTERFACE_IDS.ERC165,
