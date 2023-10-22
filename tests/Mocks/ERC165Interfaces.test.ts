@@ -39,6 +39,11 @@ describe('Calculate LSP interfaces', () => {
     expect(result).to.equal(INTERFACE_IDS.LSP1UniversalReceiver);
   });
 
+  it('LSP1Delegate', async () => {
+    const result = await contract.calculateInterfaceLSP1Delegate();
+    expect(result).to.equal(INTERFACE_IDS.LSP1UniversalReceiverDelegate);
+  });
+
   it('LSP6', async () => {
     const result = await contract.calculateInterfaceLSP6KeyManager();
     expect(result).to.equal(INTERFACE_IDS.LSP6KeyManager);
