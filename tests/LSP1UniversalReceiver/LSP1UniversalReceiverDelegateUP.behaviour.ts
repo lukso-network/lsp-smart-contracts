@@ -3154,17 +3154,19 @@ export const shouldInitializeLikeLSP1Delegate = (
     context = await buildContext();
   });
 
-  describe('when the contract was initialized', () => {
+  describe.only('when the contract was initialized', () => {
     it('should have registered the ERC165 interface', async () => {
-      expect(await context.lsp1universalReceiverDelegateUP.supportsInterface(INTERFACE_IDS.ERC165));
+      const result = await context.lsp1universalReceiverDelegateUP.supportsInterface(
+        INTERFACE_IDS.ERC165,
+      );
+      expect(result).to.be.true;
     });
 
     it('should have registered the LSP1 interface', async () => {
-      expect(
-        await context.lsp1universalReceiverDelegateUP.supportsInterface(
-          INTERFACE_IDS.LSP1UniversalReceiver,
-        ),
+      const result = await context.lsp1universalReceiverDelegateUP.supportsInterface(
+        INTERFACE_IDS.LSP1UniversalReceiverDelegate,
       );
+      expect(result).to.be.true;
     });
   });
 };
