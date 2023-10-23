@@ -264,9 +264,7 @@ abstract contract LSP6ExecuteModule {
 
         bytes32 allowedCall;
 
-        uint256 ii;
-
-        do {
+        for (uint256 ii; ii < allowedCallsCompacted.length; ii += 34) {
             /// @dev structure of an AllowedCall
             //
             /// AllowedCall = 0x00200000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
@@ -300,11 +298,7 @@ abstract contract LSP6ExecuteModule {
                 _isAllowedStandard(allowedCall, to) &&
                 _isAllowedFunction(allowedCall, selector)
             ) return;
-
-            unchecked {
-                ii += 34;
-            }
-        } while (ii < allowedCallsCompacted.length);
+        }
 
         revert NotAllowedCall(controllerAddress, to, selector);
     }

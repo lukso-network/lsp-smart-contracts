@@ -590,7 +590,7 @@ abstract contract LSP6SetDataModule {
          *    first   |   second   |  third
          *    length  |   length   |  length
          */
-        do {
+        while (pointer < allowedERC725YDataKeysCompacted.length) {
             // save the length of the allowed data key to calculate the `mask`.
             length = uint16(
                 bytes2(
@@ -658,7 +658,7 @@ abstract contract LSP6SetDataModule {
             unchecked {
                 pointer = pointer + (length + 2);
             }
-        } while (pointer < allowedERC725YDataKeysCompacted.length);
+        }
 
         revert NotAllowedERC725YDataKey(controllerAddress, inputDataKey);
     }
@@ -711,7 +711,7 @@ abstract contract LSP6SetDataModule {
          *    first   |   second   |  third
          *    length  |   length   |  length
          */
-        do {
+        while (pointer < allowedERC725YDataKeysCompacted.length) {
             // save the length of the allowed data key to calculate the `mask`.
             length = uint16(
                 bytes2(
@@ -809,7 +809,7 @@ abstract contract LSP6SetDataModule {
             unchecked {
                 pointer = pointer + (length + 2);
             }
-        } while (pointer < allowedERC725YDataKeysCompacted.length);
+        }
 
         // if we did not find all the input data keys, search for the first not allowed data key to revert.
         for (uint256 jj; jj < inputKeysLength; ) {

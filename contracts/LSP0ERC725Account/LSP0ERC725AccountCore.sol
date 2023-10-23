@@ -425,8 +425,6 @@ abstract contract LSP0ERC725AccountCore is
             emit ValueReceived(msg.sender, msg.value);
         }
 
-        address universalReceiverDelegate;
-
         // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY}
         bytes memory lsp1DelegateValue = _getData(
             _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
@@ -434,15 +432,15 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory resultDefaultDelegate;
 
         if (lsp1DelegateValue.length >= 20) {
-            universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
+            address lsp1Delegate = address(bytes20(lsp1DelegateValue));
 
             // Checking LSP1 InterfaceId support
             if (
-                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
+                lsp1Delegate.supportsERC165InterfaceUnchecked(
                     _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
-                resultDefaultDelegate = ILSP1Delegate(universalReceiverDelegate)
+                resultDefaultDelegate = ILSP1Delegate(lsp1Delegate)
                     .universalReceiverDelegate(
                         msg.sender,
                         msg.value,
@@ -459,19 +457,19 @@ abstract contract LSP0ERC725AccountCore is
         );
 
         // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX + <bytes32 typeId>}
-        lsp1DelegateValue = _getData(lsp1typeIdDelegateKey);
+        bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
         bytes memory resultTypeIdDelegate;
 
-        if (lsp1DelegateValue.length >= 20) {
-            universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
+        if (lsp1TypeIdDelegateValue.length >= 20) {
+            address lsp1Delegate = address(bytes20(lsp1TypeIdDelegateValue));
 
             // Checking LSP1 InterfaceId support
             if (
-                universalReceiverDelegate.supportsERC165InterfaceUnchecked(
+                lsp1Delegate.supportsERC165InterfaceUnchecked(
                     _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
-                resultTypeIdDelegate = ILSP1Delegate(universalReceiverDelegate)
+                resultTypeIdDelegate = ILSP1Delegate(lsp1Delegate)
                     .universalReceiverDelegate(
                         msg.sender,
                         msg.value,
