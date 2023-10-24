@@ -500,7 +500,7 @@ export const shouldBehaveLikeBatchExecute = (
       });
 
       describe('when `msgValues[1]` is NOT zero for `setData(...)`', () => {
-        it('should revert with default LSP6 `executePayload(...)` error message', async () => {
+        it('should pass and increase the UP balance', async () => {
           const recipient = context.accounts[5].address;
 
           const dataKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Sample Data Key'));
