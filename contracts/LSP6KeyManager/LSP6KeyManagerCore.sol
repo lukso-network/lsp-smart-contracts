@@ -40,6 +40,10 @@ import {LSP6Utils} from "./LSP6Utils.sol";
 
 // errors
 import {
+    ERC725X_ExecuteParametersLengthMismatch,
+    ERC725X_ExecuteParametersEmptyArray
+} from "@erc725/smart-contracts/contracts/errors.sol";
+import {
     BatchExecuteParamsLengthMismatch,
     BatchExecuteRelayCallParamsLengthMismatch,
     LSP6BatchExcessiveValueSent,
@@ -573,7 +577,7 @@ abstract contract LSP6KeyManagerCore is
                 uint256 operationType,
                 address to,
                 uint256 value,
-                bytes memory data
+                bytes memory callData
             ) = abi.decode(payload[4:], (uint256, address, uint256, bytes));
 
             LSP6ExecuteModule._verifyCanExecute(
@@ -583,8 +587,42 @@ abstract contract LSP6KeyManagerCore is
                 operationType,
                 to,
                 value,
-                data
+                callData
             );
+        } else if (erc725Function == IERC725X.executeBatch.selector) {
+            (
+                uint256[] memory operationTypes,
+                address[] memory targets,
+                uint256[] memory values,
+                bytes[] memory callDatas
+            ) = abi.decode(
+                    payload[4:],
+                    (uint256[], address[], uint256[], bytes[])
+                );
+
+            if (
+                operationTypes.length != targets.length ||
+                targets.length != values.length ||
+                values.length != callDatas.length
+            ) {
+                revert ERC725X_ExecuteParametersLengthMismatch();
+            }
+
+            if (operationTypes.length == 0) {
+                revert ERC725X_ExecuteParametersEmptyArray();
+            }
+
+            for (uint256 ii = 0; ii < operationTypes.length; ii++) {
+                LSP6ExecuteModule._verifyCanExecute(
+                    targetContract,
+                    from,
+                    permissions,
+                    operationTypes[ii],
+                    targets[ii],
+                    values[ii],
+                    callDatas[ii]
+                );
+            }
         } else if (
             erc725Function == ILSP14Ownable2Step.transferOwnership.selector ||
             erc725Function == ILSP14Ownable2Step.acceptOwnership.selector ||
