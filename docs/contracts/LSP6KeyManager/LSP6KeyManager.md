@@ -1358,6 +1358,44 @@ Reverts when trying to do a `delegatecall` via the ERC725X.execute(uint256,addre
 
 <br/>
 
+### ERC725X_ExecuteParametersEmptyArray
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#erc725x_executeparametersemptyarray)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `ERC725X_ExecuteParametersEmptyArray()`
+- Error hash: `0xe9ad2b5f`
+
+:::
+
+```solidity
+error ERC725X_ExecuteParametersEmptyArray();
+```
+
+Reverts when one of the array parameter provided to the [`executeBatch`](#executebatch) function is an empty array.
+
+<br/>
+
+### ERC725X_ExecuteParametersLengthMismatch
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#erc725x_executeparameterslengthmismatch)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `ERC725X_ExecuteParametersLengthMismatch()`
+- Error hash: `0x3ff55f4d`
+
+:::
+
+```solidity
+error ERC725X_ExecuteParametersLengthMismatch();
+```
+
+Reverts when there is not the same number of elements in the `operationTypes`, `targets` addresses, `values`, and `datas` array parameters provided when calling the [`executeBatch`](#executebatch) function.
+
+<br/>
+
 ### ERC725Y_DataKeysValuesLengthMismatch
 
 :::note References
