@@ -30,7 +30,7 @@ import {
 import { abiCoder, provider } from '../utils/helpers';
 
 // constants
-import { ERC725YDataKeys } from '../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS } from '../../constants';
 
 export type LSP17TestContext = {
   accounts: SignerWithAddress[];
@@ -152,26 +152,49 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
   describe('when calling the contract with empty calldata', () => {
     describe('when making a call without any value', () => {
-      it('should pass and not emit ValueReceived', async () => {
+      it('should pass and not emit UniversalReceiver', async () => {
         await expect(
           context.accounts[0].sendTransaction({
             to: context.contract.address,
           }),
-        ).to.not.be.reverted.to.not.emit(context.contract, 'ValueReceived');
+        ).to.not.be.reverted.to.not.emit(context.contract, 'UniversalReceiver');
       });
     });
 
     describe('when making a call with sending value', () => {
-      it('should pass and emit ValueReceived', async () => {
+      it('should pass and emit UniversalReceiver', async () => {
         const amountSent = 200;
-        await expect(
-          context.accounts[0].sendTransaction({
-            to: context.contract.address,
-            value: amountSent,
-          }),
-        )
-          .to.emit(context.contract, 'ValueReceived')
-          .withArgs(context.accounts[0].address, amountSent);
+
+        const tx = await context.accounts[0].sendTransaction({
+          to: context.contract.address,
+          value: amountSent,
+        });
+
+        const isSupportingLSP0 = await context.contract.supportsInterface(
+          INTERFACE_IDS.LSP0ERC725Account,
+        );
+
+        const isSupportingLSP9 = await context.contract.supportsInterface(INTERFACE_IDS.LSP9Vault);
+
+        let emittedTypeId;
+        if (isSupportingLSP0) {
+          emittedTypeId = LSP1_TYPE_IDS.LSP0ValueReceived;
+        } else if (isSupportingLSP9) {
+          emittedTypeId = LSP1_TYPE_IDS.LSP9ValueReceived;
+        }
+
+        expect(tx)
+          .to.emit(context.contract, 'UniversalReceiver')
+          .withArgs(
+            context.accounts[0].address,
+            amountSent,
+            emittedTypeId,
+            '0x',
+            abiCoder.encode(
+              ['bytes', 'bytes'],
+              [ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: typeId out of scope')), '0x'],
+            ),
+          );
       });
     });
   });
@@ -682,17 +705,45 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         describe('when no extension is set for bytes4(0)', () => {
           describe('when the payload is `0x00000000`', () => {
             describe('with sending value', () => {
-              it('should pass and emit ValueReceived value', async () => {
+              it('should pass and emit UniversalReceiver', async () => {
                 const amountSent = 2;
-                await expect(
-                  context.accounts[0].sendTransaction({
-                    to: context.contract.address,
-                    data: '0x00000000',
-                    value: amountSent,
-                  }),
-                )
-                  .to.emit(context.contract, 'ValueReceived')
-                  .withArgs(context.accounts[0].address, amountSent);
+
+                const tx = await context.accounts[0].sendTransaction({
+                  to: context.contract.address,
+                  data: '0x00000000',
+                  value: amountSent,
+                });
+
+                const isSupportingLSP0 = await context.contract.supportsInterface(
+                  INTERFACE_IDS.LSP0ERC725Account,
+                );
+
+                const isSupportingLSP9 = await context.contract.supportsInterface(
+                  INTERFACE_IDS.LSP9Vault,
+                );
+
+                let emittedTypeId;
+                if (isSupportingLSP0) {
+                  emittedTypeId = LSP1_TYPE_IDS.LSP0ValueReceived;
+                } else if (isSupportingLSP9) {
+                  emittedTypeId = LSP1_TYPE_IDS.LSP9ValueReceived;
+                }
+
+                expect(tx)
+                  .to.emit(context.contract, 'UniversalReceiver')
+                  .withArgs(
+                    context.accounts[0].address,
+                    amountSent,
+                    emittedTypeId,
+                    '0x',
+                    abiCoder.encode(
+                      ['bytes', 'bytes'],
+                      [
+                        ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: typeId out of scope')),
+                        '0x',
+                      ],
+                    ),
+                  );
               });
             });
 
@@ -718,15 +769,42 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                     .hexlify(ethers.utils.toUtf8Bytes('This is a small tip for you!'))
                     .substring(2);
 
-                await expect(
-                  context.accounts[0].sendTransaction({
-                    to: context.contract.address,
-                    data: graffiti,
-                    value: amountSent,
-                  }),
-                )
-                  .to.emit(context.contract, 'ValueReceived')
-                  .withArgs(context.accounts[0].address, amountSent);
+                const tx = await context.accounts[0].sendTransaction({
+                  to: context.contract.address,
+                  data: graffiti,
+                  value: amountSent,
+                });
+
+                const isSupportingLSP0 = await context.contract.supportsInterface(
+                  INTERFACE_IDS.LSP0ERC725Account,
+                );
+
+                const isSupportingLSP9 = await context.contract.supportsInterface(
+                  INTERFACE_IDS.LSP9Vault,
+                );
+
+                let emittedTypeId;
+                if (isSupportingLSP0) {
+                  emittedTypeId = LSP1_TYPE_IDS.LSP0ValueReceived;
+                } else if (isSupportingLSP9) {
+                  emittedTypeId = LSP1_TYPE_IDS.LSP9ValueReceived;
+                }
+
+                expect(tx)
+                  .to.emit(context.contract, 'UniversalReceiver')
+                  .withArgs(
+                    context.accounts[0].address,
+                    amountSent,
+                    emittedTypeId,
+                    '0x',
+                    abiCoder.encode(
+                      ['bytes', 'bytes'],
+                      [
+                        ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: typeId out of scope')),
+                        '0x',
+                      ],
+                    ),
+                  );
               });
             });
 

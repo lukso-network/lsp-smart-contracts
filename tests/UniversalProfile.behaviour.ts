@@ -10,13 +10,14 @@ import {
 } from '../types';
 
 // helpers
-import { getRandomAddresses } from './utils/helpers';
+import { abiCoder, getRandomAddresses } from './utils/helpers';
 
 // constants
 import {
   ERC1271_VALUES,
   ERC725YDataKeys,
   INTERFACE_IDS,
+  LSP1_TYPE_IDS,
   OPERATION_TYPES,
   SupportedStandards,
 } from '../constants';
@@ -269,7 +270,7 @@ export const shouldBehaveLikeLSP3 = (
 
     describe('when sending value while setting data', () => {
       describe('when calling setData(..)', () => {
-        it('should pass and emit the ValueReceived event', async () => {
+        it('should pass and emit the UniversalReceiver event', async () => {
           const msgValue = ethers.utils.parseEther('2');
           const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
           const value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
@@ -279,8 +280,14 @@ export const shouldBehaveLikeLSP3 = (
               .connect(context.accounts[0])
               .setData(key, value, { value: msgValue }),
           )
-            .to.emit(context.universalProfile, 'ValueReceived')
-            .withArgs(context.accounts[0].address, msgValue);
+            .to.emit(context.universalProfile, 'UniversalReceiver')
+            .withArgs(
+              context.accounts[0].address,
+              msgValue,
+              LSP1_TYPE_IDS.LSP0ValueReceived,
+              '0x',
+              '0x',
+            );
 
           const result = await context.universalProfile.getData(key);
           expect(result).to.equal(value);
@@ -288,7 +295,7 @@ export const shouldBehaveLikeLSP3 = (
       });
 
       describe('when calling setData(..) Array', () => {
-        it('should pass and emit the ValueReceived event', async () => {
+        it('should pass and emit the UniversalReceiver event', async () => {
           const msgValue = ethers.utils.parseEther('2');
           const key = [ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'))];
           const value = [ethers.utils.hexlify(ethers.utils.randomBytes(256))];
@@ -298,8 +305,14 @@ export const shouldBehaveLikeLSP3 = (
               .connect(context.accounts[0])
               .setDataBatch(key, value, { value: msgValue }),
           )
-            .to.emit(context.universalProfile, 'ValueReceived')
-            .withArgs(context.accounts[0].address, msgValue);
+            .to.emit(context.universalProfile, 'UniversalReceiver')
+            .withArgs(
+              context.accounts[0].address,
+              msgValue,
+              LSP1_TYPE_IDS.LSP0ValueReceived,
+              '0x',
+              '0x',
+            );
 
           const result = await context.universalProfile.getDataBatch(key);
           expect(result).to.deep.equal(value);
@@ -309,7 +322,7 @@ export const shouldBehaveLikeLSP3 = (
   });
 
   describe('when calling the contract without any value or data', () => {
-    it('should pass and not emit the ValueReceived event', async () => {
+    it('should pass and not emit the UniversalReceiver event', async () => {
       const sender = context.accounts[0];
       const amount = 0;
 
@@ -320,12 +333,12 @@ export const shouldBehaveLikeLSP3 = (
           value: amount,
         })
       ).to.not.be.reverted
-        .to.not.emit(context.universalProfile, "ValueReceived");
+        .to.not.emit(context.universalProfile, "UniversalReceiver");
     });
   });
 
   describe('when sending native tokens to the contract', () => {
-    it('should emit the right ValueReceived event', async () => {
+    it('should emit the right UniversalReceiver event', async () => {
       const sender = context.accounts[0];
       const amount = ethers.utils.parseEther('5');
 
@@ -335,11 +348,17 @@ export const shouldBehaveLikeLSP3 = (
           value: amount,
         }),
       )
-        .to.emit(context.universalProfile, 'ValueReceived')
-        .withArgs(sender.address, amount);
+        .to.emit(context.universalProfile, 'UniversalReceiver')
+        .withArgs(
+          sender.address,
+          amount,
+          LSP1_TYPE_IDS.LSP0ValueReceived,
+          '0x',
+          abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
+        );
     });
 
-    it('should allow to send a random payload as well, and emit the ValueReceived event', async () => {
+    it('should allow to send a random payload as well, and emit the UniversalReceiver event', async () => {
       const sender = context.accounts[0];
       const amount = ethers.utils.parseEther('5');
 
@@ -352,13 +371,19 @@ export const shouldBehaveLikeLSP3 = (
           data: '0x00000000aabbccdd',
         }),
       )
-        .to.emit(context.universalProfile, 'ValueReceived')
-        .withArgs(sender.address, amount);
+        .to.emit(context.universalProfile, 'UniversalReceiver')
+        .withArgs(
+          sender.address,
+          amount,
+          LSP1_TYPE_IDS.LSP0ValueReceived,
+          '0x',
+          abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
+        );
     });
   });
 
   describe('when sending a random payload, without any value', () => {
-    it('should execute the fallback function, but not emit the ValueReceived event', async () => {
+    it('should execute the fallback function, but not emit the UniversalReceiver event', async () => {
       // The payload must be prepended with bytes4(0) to be interpreted as graffiti
       // and not as a function selector
       const tx = await context.accounts[0].sendTransaction({
@@ -368,13 +393,13 @@ export const shouldBehaveLikeLSP3 = (
       });
 
       // check that no event was emitted
-      await expect(tx).to.not.emit(context.universalProfile, 'ValueReceived');
+      await expect(tx).to.not.emit(context.universalProfile, 'UniversalReceiver');
     });
   });
 
   describe('when using the batch `ERC725X.execute(uint256[],address[],uint256[],bytes[])` function', () => {
     describe('when specifying `msg.value`', () => {
-      it('should emit a `ValueReceived` event', async () => {
+      it('should emit a `UniversalReceiver` event', async () => {
         const operationsType = Array(3).fill(OPERATION_TYPES.CALL);
         const recipients = [
           context.accounts[1].address,
@@ -395,13 +420,19 @@ export const shouldBehaveLikeLSP3 = (
         );
 
         await expect(tx)
-          .to.emit(context.universalProfile, 'ValueReceived')
-          .withArgs(context.deployParams.owner.address, msgValue);
+          .to.emit(context.universalProfile, 'UniversalReceiver')
+          .withArgs(
+            context.deployParams.owner.address,
+            msgValue,
+            LSP1_TYPE_IDS.LSP0ValueReceived,
+            '0x',
+            '0x',
+          );
       });
     });
 
     describe('when NOT sending any `msg.value`', () => {
-      it('should NOT emit a `ValueReceived` event', async () => {
+      it('should NOT emit a `UniversalReceiver` event', async () => {
         const operationsType = Array(3).fill(OPERATION_TYPES.CALL);
         const recipients = [
           context.accounts[1].address,
@@ -421,7 +452,7 @@ export const shouldBehaveLikeLSP3 = (
           { value: msgValue },
         );
 
-        await expect(tx).to.not.emit(context.universalProfile, 'ValueReceived');
+        await expect(tx).to.not.emit(context.universalProfile, 'UniversalReceiver');
       });
     });
   });
