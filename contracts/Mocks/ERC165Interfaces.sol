@@ -33,6 +33,10 @@ import {
     ILSP1UniversalReceiver as ILSP1
 } from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
+import {
+    ILSP1UniversalReceiverDelegate as ILSP1Delegate
+} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+
 import {ILSP6KeyManager as ILSP6} from "../LSP6KeyManager/ILSP6KeyManager.sol";
 import {
     ILSP7DigitalAsset as ILSP7
@@ -57,7 +61,10 @@ import {
 
 // constants
 import {_INTERFACEID_LSP0} from "../LSP0ERC725Account/LSP0Constants.sol";
-import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {
+    _INTERFACEID_LSP1,
+    _INTERFACEID_LSP1_DELEGATE
+} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP6} from "../LSP6KeyManager/LSP6Constants.sol";
 import {_INTERFACEID_LSP7} from "../LSP7DigitalAsset/LSP7Constants.sol";
 import {
@@ -114,6 +121,16 @@ contract CalculateLSPInterfaces {
         require(
             interfaceId == _INTERFACEID_LSP1,
             "hardcoded _INTERFACEID_LSP1 does not match type(ILSP1).interfaceId"
+        );
+
+        return interfaceId;
+    }
+
+    function calculateInterfaceLSP1Delegate() public pure returns (bytes4) {
+        bytes4 interfaceId = type(ILSP1Delegate).interfaceId;
+        require(
+            interfaceId == _INTERFACEID_LSP1_DELEGATE,
+            "hardcoded _INTERFACEID_LSP1_DELEGATE does not match type(ILSP1Delegate).interfaceId"
         );
 
         return interfaceId;
