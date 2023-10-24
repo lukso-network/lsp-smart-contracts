@@ -35,6 +35,14 @@ describe('LSP6KeyManager with proxy', () => {
   };
 
   describe('when deploying the base LSP6KeyManagerInit implementation', () => {
+    it('`target()` of the base Key Manager contract MUST be `address(0)`', async () => {
+      const accounts = await ethers.getSigners();
+      const keyManagerBaseContract = await new LSP6KeyManagerInit__factory(accounts[0]).deploy();
+
+      const linkedTarget = await keyManagerBaseContract.target();
+      expect(linkedTarget).to.equal(ethers.constants.AddressZero);
+    });
+
     it('should prevent any address from calling the `initialize(...)` function on the base contract', async () => {
       const context = await buildProxyTestContext();
 

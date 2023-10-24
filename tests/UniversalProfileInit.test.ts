@@ -124,6 +124,11 @@ describe('UniversalProfileInit with proxy', () => {
   };
 
   describe('when deploying the base implementation contract', () => {
+    it('`owner()` of the base contract MUST be `address(0)`', async () => {
+      const owner = await universalProfileInit.owner();
+      expect(owner).to.equal(ethers.constants.AddressZero);
+    });
+
     it('prevent any address from calling the initialize(...) function on the implementation', async () => {
       const randomCaller = accounts[1];
 
