@@ -84,13 +84,6 @@ contract LSP1UniversalReceiverDelegateUP is
         bytes32 typeId,
         bytes memory /* data */
     ) public virtual override returns (bytes memory) {
-        // The notifier is supposed to be either the LSP7 or LSP8 or LSP9 contract
-        // If it's EOA we revert to avoid registering the EOA as asset or vault (spam protection)
-        // solhint-disable-next-line avoid-tx-origin
-        if (notifier == tx.origin) {
-            revert CannotRegisterEOAsAsAssets(notifier);
-        }
-
         if (typeId == _TYPEID_LSP7_TOKENSSENDER) {
             return _tokenSender(notifier);
         }
@@ -129,6 +122,13 @@ contract LSP1UniversalReceiverDelegateUP is
      * @param notifier The LSP7 or LSP8 token address.
      */
     function _tokenSender(address notifier) internal returns (bytes memory) {
+        // The notifier is supposed to be either the LSP7 or LSP8 or LSP9 contract
+        // If it's EOA we revert to avoid registering the EOA as asset or vault (spam protection)
+        // solhint-disable-next-line avoid-tx-origin
+        if (notifier == tx.origin) {
+            revert CannotRegisterEOAsAsAssets(notifier);
+        }
+
         // if the amount sent is not the full balance, then do not update the keys
         try ILSP7DigitalAsset(notifier).balanceOf(msg.sender) returns (
             uint256 balance
@@ -167,6 +167,13 @@ contract LSP1UniversalReceiverDelegateUP is
         address notifier,
         bytes4 interfaceId
     ) internal returns (bytes memory) {
+        // The notifier is supposed to be either the LSP7 or LSP8 or LSP9 contract
+        // If it's EOA we revert to avoid registering the EOA as asset or vault (spam protection)
+        // solhint-disable-next-line avoid-tx-origin
+        if (notifier == tx.origin) {
+            revert CannotRegisterEOAsAsAssets(notifier);
+        }
+
         // CHECK balance only when the Token contract is already deployed,
         // not when tokens are being transferred on deployment through the `constructor`
         if (notifier.code.length != 0) {
@@ -205,6 +212,13 @@ contract LSP1UniversalReceiverDelegateUP is
      * @param notifier The LSP9 vault address.
      */
     function _vaultSender(address notifier) internal returns (bytes memory) {
+        // The notifier is supposed to be either the LSP7 or LSP8 or LSP9 contract
+        // If it's EOA we revert to avoid registering the EOA as asset or vault (spam protection)
+        // solhint-disable-next-line avoid-tx-origin
+        if (notifier == tx.origin) {
+            revert CannotRegisterEOAsAsAssets(notifier);
+        }
+
         (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
             .generateSentVaultKeys(msg.sender, notifier);
 
@@ -228,6 +242,13 @@ contract LSP1UniversalReceiverDelegateUP is
      * @param notifier The LSP9 vault address.
      */
     function _vaultRecipient(address notifier) internal returns (bytes memory) {
+        // The notifier is supposed to be either the LSP7 or LSP8 or LSP9 contract
+        // If it's EOA we revert to avoid registering the EOA as asset or vault (spam protection)
+        // solhint-disable-next-line avoid-tx-origin
+        if (notifier == tx.origin) {
+            revert CannotRegisterEOAsAsAssets(notifier);
+        }
+
         (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
             .generateReceivedVaultKeys(msg.sender, notifier);
 

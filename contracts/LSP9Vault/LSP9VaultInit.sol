@@ -24,7 +24,7 @@ contract LSP9VaultInit is LSP9VaultInitAbstract {
      * @param newOwner The new owner of the contract.
      *
      * @custom:events
-     * - {ValueReceived} event when funding the contract on deployment.
+     * - {UniversalReceiver} event when funding the contract on deployment.
      * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
      * - {DataChanged} event when updating the {_LSP9_SUPPORTED_STANDARDS_KEY}.
      * - {UniversalReceiver} event when notifying the `initialOwner`.

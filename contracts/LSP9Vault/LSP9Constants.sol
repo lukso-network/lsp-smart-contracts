@@ -12,6 +12,11 @@ bytes32 constant _LSP9_SUPPORTED_STANDARDS_KEY = 0xeafec4d89fa9619884b600007c033
 // bytes4(keccak256('LSP9Vault'))
 bytes constant _LSP9_SUPPORTED_STANDARDS_VALUE = hex"7c0334a1";
 
+// --- Native Token Type Id
+
+// keccak256('LSP9ValueReceived')
+bytes32 constant _TYPEID_LSP9_VALUE_RECEIVED = 0x468cd1581d7bc001c3b685513d2b929b55437be34700410383d58f3aa1ea0abc;
+
 // Ownerhsip Transfer Type IDs
 
 // keccak256('LSP9OwnershipTransferStarted')

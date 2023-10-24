@@ -40,6 +40,7 @@ import {
     _INTERFACEID_ERC1271,
     _ERC1271_SUCCESSVALUE,
     _ERC1271_FAILVALUE,
+    _TYPEID_LSP0_VALUE_RECEIVED,
     _TYPEID_LSP0_OwnershipTransferStarted,
     _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP0_OwnershipTransferred_RecipientNotification
@@ -92,11 +93,11 @@ abstract contract LSP0ERC725AccountCore is
      * - When receiving some native tokens without any additional data.
      * - On empty calls to the contract.
      *
-     * @custom:events {ValueReceived} event when receiving native tokens.
+     * @custom:events {UniversalReceiver} event when receiving native tokens.
      */
     receive() external payable virtual {
         if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+            universalReceiver(_TYPEID_LSP0_VALUE_RECEIVED, "");
         }
     }
 
@@ -119,15 +120,14 @@ abstract contract LSP0ERC725AccountCore is
      *
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), return.
      *
-     * @custom:events {ValueReceived} event when receiving native tokens.
+     * @custom:events {UniversalReceiver} event when receiving native tokens.
      */
     // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
-        if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
-        }
+        // if value is associated with the extension call, react on the call
+        if (msg.value != 0) universalReceiver(_TYPEID_LSP0_VALUE_RECEIVED, "");
 
         if (msg.data.length < 4) {
             return "";
@@ -185,7 +185,7 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:events
      * - {Executed} event for each call that uses under `operationType`: `CALL` (0), `STATICCALL` (3) and `DELEGATECALL` (4).
      * - {ContractCreated} event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2).
-     * - {ValueReceived} event when receiving native tokens.
+     * - {UniversalReceiver} event when receiving native tokens.
      */
     function execute(
         uint256 operationType,
@@ -194,7 +194,13 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory data
     ) public payable virtual override returns (bytes memory) {
         if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+            emit UniversalReceiver(
+                msg.sender,
+                msg.value,
+                _TYPEID_LSP0_VALUE_RECEIVED,
+                "",
+                ""
+            );
         }
 
         address accountOwner = owner();
@@ -243,7 +249,7 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:events
      * - {Executed} event for each call that uses under `operationType`: `CALL` (0), `STATICCALL` (3) and `DELEGATECALL` (4). (each iteration)
      * - {ContractCreated} event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2) (each iteration)
-     * - {ValueReceived} event when receiving native tokens.
+     * - {UniversalReceiver} event when receiving native tokens.
      */
     function executeBatch(
         uint256[] memory operationsType,
@@ -252,7 +258,13 @@ abstract contract LSP0ERC725AccountCore is
         bytes[] memory datas
     ) public payable virtual override returns (bytes[] memory) {
         if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+            emit UniversalReceiver(
+                msg.sender,
+                msg.value,
+                _TYPEID_LSP0_VALUE_RECEIVED,
+                "",
+                ""
+            );
         }
 
         address accountOwner = owner();
@@ -297,7 +309,7 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
      * @custom:events
-     * - {ValueReceived} event when receiving native tokens.
+     * - {UniversalReceiver} event when receiving native tokens.
      * - {DataChanged} event.
      */
     function setData(
@@ -305,7 +317,13 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory dataValue
     ) public payable virtual override {
         if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+            emit UniversalReceiver(
+                msg.sender,
+                msg.value,
+                _TYPEID_LSP0_VALUE_RECEIVED,
+                "",
+                ""
+            );
         }
 
         address accountOwner = owner();
@@ -334,7 +352,7 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
      * @custom:events
-     * - {ValueReceived} event when receiving native tokens.
+     * - {UniversalReceiver} event when receiving native tokens.
      * - {DataChanged} event. (on each iteration of setting data)
      */
     function setDataBatch(
@@ -342,7 +360,13 @@ abstract contract LSP0ERC725AccountCore is
         bytes[] memory dataValues
     ) public payable virtual override {
         if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+            emit UniversalReceiver(
+                msg.sender,
+                msg.value,
+                _TYPEID_LSP0_VALUE_RECEIVED,
+                "",
+                ""
+            );
         }
 
         if (dataKeys.length != dataValues.length) {
@@ -414,15 +438,45 @@ abstract contract LSP0ERC725AccountCore is
      * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call and the LSP1TypeIdDelegate call.
      *
      * @custom:events
-     * - {ValueReceived} when receiving native tokens.
+     * - {UniversalReceiver} when receiving native tokens.
      * - {UniversalReceiver} event with the function parameters, call options, and the response of the UniversalReceiverDelegates (URD) contract that was called.
      */
     function universalReceiver(
         bytes32 typeId,
-        bytes calldata receivedData
+        bytes memory receivedData
     ) public payable virtual override returns (bytes memory returnedValues) {
-        if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0 && (typeId != _TYPEID_LSP0_VALUE_RECEIVED)) {
+            // Generate the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX + <bytes32 _TYPEID_LSP0_VALUE_RECEIVED>}
+            bytes32 lsp1ValueReceivedtypeIdDelegateKey = LSP2Utils
+                .generateMappingKey(
+                    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+                    bytes20(_TYPEID_LSP0_VALUE_RECEIVED)
+                );
+
+            // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX + <bytes32 _TYPEID_LSP0_VALUE_RECEIVED>}
+            bytes memory lsp1ValueReceivedtypeIdDelegateValue = _getData(
+                lsp1ValueReceivedtypeIdDelegateKey
+            );
+
+            if (lsp1ValueReceivedtypeIdDelegateValue.length >= 20) {
+                address lsp1Delegate = address(
+                    bytes20(lsp1ValueReceivedtypeIdDelegateValue)
+                );
+
+                // Checking LSP1 InterfaceId support
+                if (
+                    lsp1Delegate.supportsERC165InterfaceUnchecked(
+                        _INTERFACEID_LSP1_DELEGATE
+                    )
+                ) {
+                    ILSP1Delegate(lsp1Delegate).universalReceiverDelegate(
+                        msg.sender,
+                        msg.value,
+                        _TYPEID_LSP0_VALUE_RECEIVED,
+                        ""
+                    );
+                }
+            }
         }
 
         // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY}

@@ -17,6 +17,7 @@ import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {
     _LSP9_SUPPORTED_STANDARDS_KEY,
     _LSP9_SUPPORTED_STANDARDS_VALUE,
+    _TYPEID_LSP9_VALUE_RECEIVED,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
 } from "../LSP9Vault/LSP9Constants.sol";
 
@@ -36,13 +37,21 @@ abstract contract LSP9VaultInitAbstract is Initializable, LSP9VaultCore {
      * @custom:warning ERC725X & ERC725Y parent contracts are not initialised as they don't have non-zero initial state. If you decide to add non-zero initial state to any of those contracts, you must initialize them here.
      *
      * @custom:events
-     * - {ValueReceived} event when funding the contract on deployment.
+     * - {UniversalReceiver} event when funding the contract on deployment.
      * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
      * - {DataChanged} event when updating the {_LSP9_SUPPORTED_STANDARDS_KEY}.
      * - {UniversalReceiver} event when notifying the `initialOwner`.
      */
     function _initialize(address newOwner) internal virtual onlyInitializing {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0) {
+            emit UniversalReceiver(
+                msg.sender,
+                msg.value,
+                _TYPEID_LSP9_VALUE_RECEIVED,
+                "",
+                ""
+            );
+        }
         OwnableUnset._setOwner(newOwner);
 
         // set key SupportedStandards:LSP9Vault

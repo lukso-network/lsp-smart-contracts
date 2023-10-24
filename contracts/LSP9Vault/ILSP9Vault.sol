@@ -7,14 +7,6 @@ pragma solidity ^0.8.4;
  */
 interface ILSP9Vault {
     /**
-     * @notice `value` native tokens received from `sender`.
-     * @dev Emitted when receiving native tokens.
-     * @param sender The address that sent some native tokens to this contract.
-     * @param value The amount of native tokens received.
-     */
-    event ValueReceived(address indexed sender, uint256 indexed value);
-
-    /**
      * @notice Executing the following batch of abi-encoded function calls on the contract: `data`.
      *
      * @dev Allows a caller to batch different function calls in one call. Perform a `delegatecall` on self, to call different functions with preserving the context.

@@ -55,6 +55,7 @@ import {
 } from "../LSP6KeyManager/LSP6Constants.sol";
 import {
     _INTERFACEID_LSP9,
+    _TYPEID_LSP9_VALUE_RECEIVED,
     _TYPEID_LSP9_OwnershipTransferStarted,
     _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
@@ -94,10 +95,12 @@ contract LSP9VaultCore is
      * - When receiving some native tokens without any additional data.
      * - On empty calls to the contract.
      *
-     * @custom:events {ValueReceived} when receiving native tokens.
+     * @custom:events {UniversalReceiver} when receiving native tokens.
      */
     receive() external payable virtual {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0) {
+            universalReceiver(_TYPEID_LSP9_VALUE_RECEIVED, "");
+        }
     }
 
     /**
@@ -119,14 +122,14 @@ contract LSP9VaultCore is
      *
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), return.
      *
-     * @custom:events {ValueReceived} event when receiving native tokens.
+     * @custom:events {UniversalReceiver} event when receiving native tokens.
      */
     // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
         if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+            universalReceiver(_TYPEID_LSP9_VALUE_RECEIVED, "");
         }
 
         if (msg.data.length < 4) {
@@ -185,7 +188,7 @@ contract LSP9VaultCore is
      * @custom:events
      * - {Executed} event for each call that uses under `operationType`: `CALL` (0) and `STATICCALL` (3).
      * - {ContractCreated} event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2).
-     * - {ValueReceived} event when receiving native tokens.
+     * - {UniversalReceiver} event when receiving native tokens.
      *
      * @custom:info The `operationType` 4 `DELEGATECALL` is disabled by default in the LSP9 Vault.
      */
@@ -195,7 +198,15 @@ contract LSP9VaultCore is
         uint256 value,
         bytes memory data
     ) public payable virtual override onlyOwner returns (bytes memory) {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0) {
+            emit UniversalReceiver(
+                msg.sender,
+                msg.value,
+                _TYPEID_LSP9_VALUE_RECEIVED,
+                "",
+                ""
+            );
+        }
         return _execute(operationType, target, value, data);
     }
 
@@ -212,7 +223,7 @@ contract LSP9VaultCore is
      * @custom:events
      * - {Executed} event for each call that uses under `operationType`: `CALL` (0) and `STATICCALL` (3). (each iteration)
      * - {ContractCreated} event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2). (each iteration)
-     * - {ValueReceived} event when receiving native tokens.
+     * - {UniversalReceiver} event when receiving native tokens.
      *
      * @custom:info The `operationType` 4 `DELEGATECALL` is disabled by default in the LSP9 Vault.
      */
@@ -222,7 +233,15 @@ contract LSP9VaultCore is
         uint256[] memory values,
         bytes[] memory datas
     ) public payable virtual override onlyOwner returns (bytes[] memory) {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0) {
+            emit UniversalReceiver(
+                msg.sender,
+                msg.value,
+                _TYPEID_LSP9_VALUE_RECEIVED,
+                "",
+                ""
+            );
+        }
         return _executeBatch(operationsType, targets, values, datas);
     }
 
@@ -232,7 +251,6 @@ contract LSP9VaultCore is
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
      * @custom:events
-     * - {ValueReceived} event when receiving native tokens.
      * - {DataChanged} event.
      */
     function setData(
@@ -260,7 +278,6 @@ contract LSP9VaultCore is
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
      * @custom:events
-     * - {ValueReceived} event when receiving native tokens.
      * - {DataChanged} event. (on each iteration of setting data)
      */
     function setDataBatch(
@@ -320,15 +337,46 @@ contract LSP9VaultCore is
      * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call and the LSP1TypeIdDelegate call.
      *
      * @custom:events
-     * - {ValueReceived} when receiving native tokens.
      * - {UniversalReceiver} event with the function parameters, call options, and the response of the UniversalReceiverDelegates (URD) contract that was called.
      */
     function universalReceiver(
         bytes32 typeId,
-        bytes calldata receivedData
+        bytes memory receivedData
     ) public payable virtual override returns (bytes memory returnedValues) {
-        if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0 && (typeId != _TYPEID_LSP9_VALUE_RECEIVED)) {
+            // Generate the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX + <bytes32 _TYPEID_LSP0_VALUE_RECEIVED>}
+            bytes32 lsp1ValueReceivedtypeIdDelegateKey = LSP2Utils
+                .generateMappingKey(
+                    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+                    bytes20(_TYPEID_LSP9_VALUE_RECEIVED)
+                );
+
+            // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX + <bytes32 _TYPEID_LSP0_VALUE_RECEIVED>}
+            bytes memory lsp1ValueReceivedtypeIdDelegateValue = _getData(
+                lsp1ValueReceivedtypeIdDelegateKey
+            );
+
+            if (lsp1ValueReceivedtypeIdDelegateValue.length >= 20) {
+                address lsp1Delegate = address(
+                    bytes20(lsp1ValueReceivedtypeIdDelegateValue)
+                );
+
+                // Checking LSP1 InterfaceId support
+                if (
+                    lsp1Delegate.supportsERC165InterfaceUnchecked(
+                        _INTERFACEID_LSP1_DELEGATE
+                    )
+                ) {
+                    _reentrantDelegate = lsp1Delegate;
+                    ILSP1UniversalReceiverDelegate(lsp1Delegate)
+                        .universalReceiverDelegate(
+                            msg.sender,
+                            msg.value,
+                            _TYPEID_LSP9_VALUE_RECEIVED,
+                            ""
+                        );
+                }
+            }
         }
 
         bytes memory lsp1DelegateValue = _getData(
