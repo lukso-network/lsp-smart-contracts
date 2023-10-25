@@ -7,6 +7,10 @@ import {
   UniversalProfile,
   GenericExecutor__factory,
   ERC1271MaliciousMock__factory,
+  UniversalReceiverDelegateDataLYX__factory,
+  UniversalReceiverDelegateDataLYX,
+  EmitEventExtension,
+  EmitEventExtension__factory,
 } from '../types';
 
 // helpers
@@ -587,6 +591,111 @@ export const shouldBehaveLikeLSP3 = (
             );
           });
         });
+      });
+    });
+  });
+
+  describe('when setting a UniversalReceiverDelegate for typeId of LYX receiving', () => {
+    let universalReceiverDelegateLYX: UniversalReceiverDelegateDataLYX;
+    before(async () => {
+      universalReceiverDelegateLYX = await new UniversalReceiverDelegateDataLYX__factory(
+        context.accounts[1],
+      ).deploy();
+
+      await context.universalProfile
+        .connect(context.deployParams.owner)
+        .setData(
+          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+            LSP1_TYPE_IDS.LSP0ValueReceived.substring(2, 42),
+          universalReceiverDelegateLYX.address,
+        );
+    });
+
+    describe('when sending LYX to the receive function', () => {
+      it('should react on the call and apply the logic of the URD', async () => {
+        const tx = await context.accounts[1].sendTransaction({
+          to: context.universalProfile.address,
+          value: 5,
+        });
+
+        expect(tx).to.emit(context.universalProfile, 'UniversalReceiver');
+
+        const result = await universalReceiverDelegateLYX.lastValueReceived(
+          context.universalProfile.address,
+        );
+
+        expect(result).to.equal(5);
+      });
+    });
+
+    describe('when sending empty call to the receive function', () => {
+      it('should not react on the call and not emit UniversalReceiver', async () => {
+        const tx = await context.accounts[1].sendTransaction({
+          to: context.universalProfile.address,
+        });
+
+        expect(tx).to.not.emit(context.universalProfile, 'UniversalReceiver');
+
+        const result = await universalReceiverDelegateLYX.callStatic.lastValueReceived(
+          context.universalProfile.address,
+        );
+
+        expect(result).to.equal(5);
+      });
+    });
+
+    describe('when calling the UP with graffiti and value', () => {
+      it('should not react on the call and not emit UniversalReceiver', async () => {
+        const tx = await context.accounts[1].sendTransaction({
+          to: context.universalProfile.address,
+          data: '0x00000000aabbccdd',
+          value: 7,
+        });
+
+        expect(tx).to.not.emit(context.universalProfile, 'UniversalReceiver');
+
+        const result = await universalReceiverDelegateLYX.callStatic.lastValueReceived(
+          context.universalProfile.address,
+        );
+
+        expect(result).to.equal(7);
+      });
+    });
+
+    describe('when calling an extension with value', () => {
+      let emitEventExtension: EmitEventExtension;
+      let emitEventFunctionSelector;
+
+      before(async () => {
+        emitEventExtension = await new EmitEventExtension__factory(context.accounts[0]).deploy();
+
+        emitEventFunctionSelector = '0x7b0cb839';
+
+        const emitEventFunctionExtensionHandlerKey =
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+          emitEventFunctionSelector.substring(2) +
+          '00000000000000000000000000000000'; // zero padded
+
+        await context.universalProfile
+          .connect(context.deployParams.owner)
+          .setData(emitEventFunctionExtensionHandlerKey, emitEventExtension.address);
+      });
+
+      it('should react on the call and emit UniversalReceiver and run the extension', async () => {
+        const tx = await context.accounts[1].sendTransaction({
+          to: context.universalProfile.address,
+          data: emitEventFunctionSelector,
+          value: 10,
+        });
+
+        expect(tx).to.not.emit(context.universalProfile, 'UniversalReceiver');
+        expect(tx).to.not.emit(emitEventExtension, 'EventEmittedInExtension');
+
+        const result = await universalReceiverDelegateLYX.callStatic.lastValueReceived(
+          context.universalProfile.address,
+        );
+
+        expect(result).to.equal(10);
       });
     });
   });
