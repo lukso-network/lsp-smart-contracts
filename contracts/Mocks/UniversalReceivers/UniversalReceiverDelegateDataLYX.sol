@@ -22,16 +22,14 @@ import {
     _INTERFACEID_LSP1_DELEGATE
 } from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
-import {
-    _TYPEID_LSP9_VALUE_RECEIVED
-} from "../../LSP9Vault/LSP9Constants.sol";
+import {_TYPEID_LSP9_VALUE_RECEIVED} from "../../LSP9Vault/LSP9Constants.sol";
 
 contract UniversalReceiverDelegateDataLYX is
     ERC165Storage,
     ILSP1UniversalReceiverDelegate
 {
+    mapping(address => uint256) public lastValueReceived;
 
-    mapping(address=> uint256) public lastValueReceived;
     constructor() {
         _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }
@@ -42,7 +40,10 @@ contract UniversalReceiverDelegateDataLYX is
         bytes32 typeId,
         bytes memory /* data */
     ) public virtual override returns (bytes memory) {
-        if (typeId == _TYPEID_LSP0_VALUE_RECEIVED || typeId == _TYPEID_LSP9_VALUE_RECEIVED) {
+        if (
+            typeId == _TYPEID_LSP0_VALUE_RECEIVED ||
+            typeId == _TYPEID_LSP9_VALUE_RECEIVED
+        ) {
             lastValueReceived[msg.sender] = value;
         }
 
