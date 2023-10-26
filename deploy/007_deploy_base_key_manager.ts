@@ -1,6 +1,7 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { ethers } from 'hardhat';
+import { SALT } from './salt';
 
 const deployBaseKeyManagerDeterministic: DeployFunction = async ({
   deployments,
@@ -14,7 +15,7 @@ const deployBaseKeyManagerDeterministic: DeployFunction = async ({
     log: true,
     gasLimit: 5_000_000,
     gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei
-    deterministicDeployment: true,
+    deterministicDeployment: SALT,
   });
 };
 
