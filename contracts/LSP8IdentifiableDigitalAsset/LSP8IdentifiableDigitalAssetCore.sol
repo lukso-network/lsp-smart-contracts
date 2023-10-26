@@ -151,6 +151,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             tokenId,
             operatorNotificationData
         );
+
         _notifyTokenOperator(operator, lsp1Data);
     }
 
@@ -160,6 +161,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function revokeOperator(
         address operator,
         bytes32 tokenId,
+        bool notify,
         bytes memory operatorNotificationData
     ) public virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
@@ -180,15 +182,18 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             operator,
             tokenOwner,
             tokenId,
+            notify,
             operatorNotificationData
         );
 
-        bytes memory lsp1Data = abi.encode(
-            msg.sender,
-            tokenId,
-            operatorNotificationData
-        );
-        _notifyTokenOperator(operator, lsp1Data);
+        if (notify) {
+            bytes memory lsp1Data = abi.encode(
+                msg.sender,
+                tokenId,
+                operatorNotificationData
+            );
+            _notifyTokenOperator(operator, lsp1Data);
+        }
     }
 
     /**
@@ -281,6 +286,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address operator,
         address tokenOwner,
         bytes32 tokenId,
+        bool notified,
         bytes memory operatorNotificationData
     ) internal virtual {
         bool isRemoved = _operators[tokenId].remove(operator);
@@ -290,6 +296,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             operator,
             tokenOwner,
             tokenId,
+            notified,
             operatorNotificationData
         );
     }
@@ -319,7 +326,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         for (uint256 i; i < operatorListLength; ) {
             // we are emptying the list, always remove from index 0
             operator = operatorsForTokenId.at(0);
-            _revokeOperator(operator, tokenOwner, tokenId, "");
+            _revokeOperator(operator, tokenOwner, tokenId, false, "");
 
             unchecked {
                 ++i;
@@ -563,16 +570,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 _INTERFACEID_LSP1
             )
         ) {
-            try
-                ILSP1UniversalReceiver(operator).universalReceiver(
-                    _TYPEID_LSP8_TOKENOPERATOR,
-                    lsp1Data
-                )
-            {
-                return;
-            } catch {
-                return;
-            }
+            ILSP1UniversalReceiver(operator).universalReceiver(
+                _TYPEID_LSP8_TOKENOPERATOR,
+                lsp1Data
+            );
         }
     }
 
