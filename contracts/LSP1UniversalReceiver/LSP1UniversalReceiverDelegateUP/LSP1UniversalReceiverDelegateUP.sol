@@ -11,6 +11,7 @@ import {
 import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // modules
+import {Version} from "../../Version.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // libraries
@@ -54,6 +55,7 @@ import {CannotRegisterEOAsAsAssets} from "../LSP1Errors.sol";
  */
 contract LSP1UniversalReceiverDelegateUP is
     ERC165,
+    Version,
     ILSP1UniversalReceiverDelegate
 {
     using ERC165Checker for address;

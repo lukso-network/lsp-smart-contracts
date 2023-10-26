@@ -20,6 +20,7 @@ import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // modules
+import {Version} from "../Version.sol";
 import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {
@@ -79,6 +80,7 @@ import {
 contract LSP9VaultCore is
     ERC725XCore,
     ERC725YCore,
+    Version,
     LSP14Ownable2Step,
     LSP17Extendable,
     ILSP1UniversalReceiver,
