@@ -186,7 +186,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address operator,
         uint256 addedAmount,
         bytes memory operatorNotificationData
-    ) public virtual {
+    ) public virtual override {
         uint256 newAllowance = authorizedAmountFor(operator, msg.sender) +
             addedAmount;
 
@@ -213,7 +213,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address operator,
         uint256 subtractedAmount,
         bytes memory operatorNotificationData
-    ) public virtual {
+    ) public virtual override {
         uint256 currentAllowance = authorizedAmountFor(operator, msg.sender);
         if (currentAllowance < subtractedAmount) {
             revert LSP7DecreasedAllowanceBelowZero();
