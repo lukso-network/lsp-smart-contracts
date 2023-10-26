@@ -128,9 +128,9 @@ contract LSP9VaultCore is
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
-        if (msg.value != 0) {
-            universalReceiver(_TYPEID_LSP9_VALUE_RECEIVED, "");
-        }
+        // if value is associated with the extension call, use the universalReceiver
+        if (msg.value != 0)
+            universalReceiver(_TYPEID_LSP9_VALUE_RECEIVED, callData);
 
         if (msg.data.length < 4) {
             return "";
@@ -344,39 +344,7 @@ contract LSP9VaultCore is
         bytes memory receivedData
     ) public payable virtual override returns (bytes memory returnedValues) {
         if (msg.value != 0 && (typeId != _TYPEID_LSP9_VALUE_RECEIVED)) {
-            // Generate the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX + <bytes32 _TYPEID_LSP0_VALUE_RECEIVED>}
-            bytes32 lsp1ValueReceivedtypeIdDelegateKey = LSP2Utils
-                .generateMappingKey(
-                    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
-                    bytes20(_TYPEID_LSP9_VALUE_RECEIVED)
-                );
-
-            // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX + <bytes32 _TYPEID_LSP0_VALUE_RECEIVED>}
-            bytes memory lsp1ValueReceivedtypeIdDelegateValue = _getData(
-                lsp1ValueReceivedtypeIdDelegateKey
-            );
-
-            if (lsp1ValueReceivedtypeIdDelegateValue.length >= 20) {
-                address lsp1Delegate = address(
-                    bytes20(lsp1ValueReceivedtypeIdDelegateValue)
-                );
-
-                // Checking LSP1 InterfaceId support
-                if (
-                    lsp1Delegate.supportsERC165InterfaceUnchecked(
-                        _INTERFACEID_LSP1_DELEGATE
-                    )
-                ) {
-                    _reentrantDelegate = lsp1Delegate;
-                    ILSP1UniversalReceiverDelegate(lsp1Delegate)
-                        .universalReceiverDelegate(
-                            msg.sender,
-                            msg.value,
-                            _TYPEID_LSP9_VALUE_RECEIVED,
-                            ""
-                        );
-                }
-            }
+            universalReceiver(_TYPEID_LSP9_VALUE_RECEIVED, msg.data);
         }
 
         bytes memory lsp1DelegateValue = _getData(

@@ -14,7 +14,7 @@ import {
 } from '../types';
 
 // helpers
-import { abiCoder, getRandomAddresses } from './utils/helpers';
+import { LSP1_HOOK_PLACEHOLDER, abiCoder, getRandomAddresses } from './utils/helpers';
 
 // constants
 import {
@@ -380,7 +380,7 @@ export const shouldBehaveLikeLSP3 = (
           sender.address,
           amount,
           LSP1_TYPE_IDS.LSP0ValueReceived,
-          '0x',
+          '0x00000000aabbccdd',
           abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
         );
     });
@@ -645,14 +645,14 @@ export const shouldBehaveLikeLSP3 = (
     });
 
     describe('when calling the UP with graffiti and value', () => {
-      it('should not react on the call and not emit UniversalReceiver', async () => {
+      it('should react on the call and emit UniversalReceiver', async () => {
         const tx = await context.accounts[1].sendTransaction({
           to: context.universalProfile.address,
           data: '0x00000000aabbccdd',
           value: 7,
         });
 
-        expect(tx).to.not.emit(context.universalProfile, 'UniversalReceiver');
+        expect(tx).to.emit(context.universalProfile, 'UniversalReceiver');
 
         const result = await universalReceiverDelegateLYX.callStatic.lastValueReceived(
           context.universalProfile.address,
@@ -688,14 +688,51 @@ export const shouldBehaveLikeLSP3 = (
           value: 10,
         });
 
-        expect(tx).to.not.emit(context.universalProfile, 'UniversalReceiver');
-        expect(tx).to.not.emit(emitEventExtension, 'EventEmittedInExtension');
+        expect(tx).to.emit(context.universalProfile, 'UniversalReceiver');
+        expect(tx).to.emit(emitEventExtension, 'EventEmittedInExtension');
 
         const result = await universalReceiverDelegateLYX.callStatic.lastValueReceived(
           context.universalProfile.address,
         );
 
         expect(result).to.equal(10);
+      });
+    });
+
+    describe('when calling the universalReceiver function with Random TypeId and sending', () => {
+      it('should react on the call and emit UniversalReceiver', async () => {
+        const tx = await context.universalProfile
+          .connect(context.accounts[0])
+          .universalReceiver(LSP1_HOOK_PLACEHOLDER, '0xaabbccdd', { value: 15 });
+
+        expect(tx)
+          .to.emit(context.universalProfile, 'UniversalReceiver')
+          .withArgs(
+            context.accounts[0].address,
+            15,
+            LSP1_HOOK_PLACEHOLDER,
+            '0xaabbccdd',
+            abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
+          );
+
+        expect(tx)
+          .to.emit(context.universalProfile, 'UniversalReceiver')
+          .withArgs(
+            context.accounts[0].address,
+            15,
+            LSP1_TYPE_IDS.LSP0ValueReceived,
+            context.universalProfile.interface.getSighash('universalReceiver') +
+              abiCoder
+                .encode(['bytes32', 'bytes'], [LSP1_HOOK_PLACEHOLDER, '0xaabbccdd'])
+                .substr(2),
+            abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
+          );
+
+        const result = await universalReceiverDelegateLYX.callStatic.lastValueReceived(
+          context.universalProfile.address,
+        );
+
+        expect(result).to.equal(15);
       });
     });
   });
