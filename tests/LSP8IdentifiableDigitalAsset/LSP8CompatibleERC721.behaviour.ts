@@ -276,29 +276,6 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 ),
               ).to.be.true;
             });
-
-            it.skip('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
-              const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer =
-                await new UniversalReceiverDelegateGasConsumer__factory(
-                  context.accounts.owner,
-                ).deploy();
-              const operator = operatorThatConsumeAllGas.address;
-              const tokenOwner = context.accounts.owner.address;
-              const tokenId = mintedTokenId;
-
-              const tx = await context.lsp8CompatibleERC721.approve(operator, tokenId);
-
-              await expect(tx)
-                .to.emit(context.lsp8CompatibleERC721, 'AuthorizedOperator')
-                .withArgs(operator, tokenOwner, tokenIdAsBytes32(tokenId), '0x');
-
-              expect(
-                await context.lsp8CompatibleERC721.isOperatorFor(
-                  operator,
-                  tokenIdAsBytes32(tokenId),
-                ),
-              ).to.be.true;
-            });
           });
         });
 
@@ -774,7 +751,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
 
       await expect(tx)
         .to.emit(context.lsp8CompatibleERC721, 'RevokedOperator')
-        .withArgs(context.accounts.operator.address, from, tokenIdAsBytes32(tokenId), '0x');
+        .withArgs(context.accounts.operator.address, from, tokenIdAsBytes32(tokenId), false, '0x');
 
       // post-conditions
       const postOwnerOf = await context.lsp8CompatibleERC721.ownerOf(tokenId);
