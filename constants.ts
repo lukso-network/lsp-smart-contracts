@@ -230,6 +230,9 @@ export const ERC725YDataKeys = {
   },
   LSP8: {
     LSP8TokenIdType: '0x715f248956de7ce65e94d9d836bfead479f7e70d69b718d47bfe7b00e05b4fe4',
+    LSP8MetadataTokenURI: '0x1339e76a390b7b9ec9010000',
+    LSP8TokenMetadataBaseURI: '0x1a7628600c3bac7101f53697f48df381ddc36b9015e7d7c9c5633d1252aa2843',
+    LSP8ReferenceContract: '0x708e7b881795f2e6b6c2752108c177ec89248458de3bf69d0d43480b3e5034e6',
   },
   LSP9: {
     SupportedStandards_LSP9: SupportedStandards.LSP9Vault.key,
