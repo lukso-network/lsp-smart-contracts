@@ -153,7 +153,11 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         address operator,
         uint256 amount
     ) public virtual returns (bool) {
-        authorizeOperator(operator, amount, "");
+        if (amount != 0) {
+            authorizeOperator(operator, amount, "");
+        } else {
+            revokeOperator(operator, false, "");
+        }
         return true;
     }
 
