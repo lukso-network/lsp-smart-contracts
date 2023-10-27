@@ -20,4 +20,4 @@ This folder contains modules related to the deployment of LSP23 Linked Contracts
 Before deploying any of these modules, make sure that the following contracts are already deployed on the same network:
 
 - [Nick's Factory contract](https://github.com/Arachnid/deterministic-deployment-proxy/tree/master)
-- [LSP23 Linked Contracts Factory](https://github.com/lukso-network/LIPs/LSPs/LSP-23-LinkedContractsFactory.md#lsp23linkedcontractsfactory-deployment)
+- [LSP23 Linked Contracts Factory](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-23-LinkedContractsFactory.md#lsp23linkedcontractsfactory-deployment)
