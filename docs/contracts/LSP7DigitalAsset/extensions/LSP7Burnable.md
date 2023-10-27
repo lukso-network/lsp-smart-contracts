@@ -1713,6 +1713,31 @@ reverts when there is no extension for the function selector being called with
 
 <br/>
 
+### OperatorAllowanceCannotBeIncreasedFromZero
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#operatorallowancecannotbeincreasedfromzero)
+- Solidity implementation: [`LSP7Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol)
+- Error signature: `OperatorAllowanceCannotBeIncreasedFromZero(address)`
+- Error hash: `0xcba6e977`
+
+:::
+
+```solidity
+error OperatorAllowanceCannotBeIncreasedFromZero(address operator);
+```
+
+Reverts when token owner call [`increaseAllowance`](#increaseallowance) for an operator that does not have any allowance
+
+#### Parameters
+
+| Name       |   Type    | Description |
+| ---------- | :-------: | ----------- |
+| `operator` | `address` | -           |
+
+<br/>
+
 ### OwnableCallerNotTheOwner
 
 :::note References
