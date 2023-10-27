@@ -149,6 +149,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bytes memory lsp1Data = abi.encode(
             msg.sender,
             tokenId,
+            true, // authorized
             operatorNotificationData
         );
 
@@ -190,6 +191,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             bytes memory lsp1Data = abi.encode(
                 msg.sender,
                 tokenId,
+                false, // unauthorized
                 operatorNotificationData
             );
             _notifyTokenOperator(operator, lsp1Data);
