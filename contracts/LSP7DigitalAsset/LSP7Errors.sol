@@ -77,3 +77,8 @@ error LSP7DecreasedAllowanceBelowZero();
  * @notice LSP7 contract cannot receive native tokens.
  */
 error LSP7TokenContractCannotHoldValue();
+
+/**
+ * @dev Reverts when token owner call {increaseAllowance} for an operator that does not have any allowance
+ */
+error OperatorAllowanceCannotBeIncreasedFromZero(address operator);

@@ -980,7 +980,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
         const vaultSetDataCalldata = context.lsp9Vault1.interface.encodeFunctionData('setData', [
           ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap + token.address.substring(2),
-          '0x0551951200000000000000000000000000000000cafecafe',
+          '0xdaa746b700000000000000000000000000000000cafecafe',
         ]);
 
         await context.universalProfile
@@ -992,7 +992,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         ).to.deep.equal([
           '0x' + '00'.repeat(15) + '01',
           token.address.toLowerCase(),
-          '0x0551951200000000000000000000000000000000cafecafe',
+          '0xdaa746b700000000000000000000000000000000cafecafe',
         ]);
 
         balance = await token.balanceOf(context.lsp9Vault1.address);
@@ -1054,7 +1054,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         ).to.deep.equal([
           '0x' + '00'.repeat(15) + '01',
           token.address.toLowerCase(),
-          '0x0551951200000000000000000000000000000000cafecafe',
+          '0xdaa746b700000000000000000000000000000000cafecafe',
         ]);
       });
     });

@@ -27,7 +27,8 @@ import {
     LSP7TokenOwnerCannotBeOperator,
     LSP7CannotSendWithAddressZero,
     LSP7NotifyTokenReceiverContractMissingLSP1Interface,
-    LSP7NotifyTokenReceiverIsEOA
+    LSP7NotifyTokenReceiverIsEOA,
+    OperatorAllowanceCannotBeIncreasedFromZero
 } from "./LSP7Errors.sol";
 
 // constants
@@ -113,13 +114,20 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         uint256 amount,
         bytes memory operatorNotificationData
     ) public virtual override {
-        _updateOperator(msg.sender, operator, amount, operatorNotificationData);
+        _updateOperator(
+            msg.sender,
+            operator,
+            amount,
+            true,
+            operatorNotificationData
+        );
 
         bytes memory lsp1Data = abi.encode(
             msg.sender,
             amount,
             operatorNotificationData
         );
+
         _notifyTokenOperator(operator, lsp1Data);
     }
 
@@ -128,16 +136,25 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      */
     function revokeOperator(
         address operator,
+        bool notify,
         bytes memory operatorNotificationData
     ) public virtual override {
-        _updateOperator(msg.sender, operator, 0, operatorNotificationData);
-
-        bytes memory lsp1Data = abi.encode(
+        _updateOperator(
             msg.sender,
+            operator,
             0,
+            notify,
             operatorNotificationData
         );
-        _notifyTokenOperator(operator, lsp1Data);
+
+        if (notify) {
+            bytes memory lsp1Data = abi.encode(
+                msg.sender,
+                0,
+                operatorNotificationData
+            );
+            _notifyTokenOperator(operator, lsp1Data);
+        }
     }
 
     /**
@@ -161,6 +178,69 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address tokenOwner
     ) public view virtual override returns (address[] memory) {
         return _operators[tokenOwner].values();
+    }
+
+    /**
+     * @inheritdoc ILSP7DigitalAsset
+     */
+    function increaseAllowance(
+        address operator,
+        uint256 addedAmount,
+        bytes memory operatorNotificationData
+    ) public virtual override {
+        uint256 oldAllowance = authorizedAmountFor(operator, msg.sender);
+        if (oldAllowance == 0)
+            revert OperatorAllowanceCannotBeIncreasedFromZero(operator);
+
+        uint256 newAllowance = oldAllowance + addedAmount;
+
+        _updateOperator(
+            msg.sender,
+            operator,
+            newAllowance,
+            true,
+            operatorNotificationData
+        );
+
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            newAllowance,
+            operatorNotificationData
+        );
+        _notifyTokenOperator(operator, lsp1Data);
+    }
+
+    /**
+     * @inheritdoc ILSP7DigitalAsset
+     */
+    function decreaseAllowance(
+        address operator,
+        uint256 subtractedAmount,
+        bytes memory operatorNotificationData
+    ) public virtual override {
+        uint256 currentAllowance = authorizedAmountFor(operator, msg.sender);
+        if (currentAllowance < subtractedAmount) {
+            revert LSP7DecreasedAllowanceBelowZero();
+        }
+
+        uint256 newAllowance;
+        unchecked {
+            newAllowance = currentAllowance - subtractedAmount;
+            _updateOperator(
+                msg.sender,
+                operator,
+                newAllowance,
+                true,
+                operatorNotificationData
+            );
+        }
+
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            newAllowance,
+            operatorNotificationData
+        );
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     // --- Transfer functionality
@@ -219,101 +299,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     }
 
     /**
-     * @custom:info This is a non-standard function, not part of the LSP7 standard interface.
-     * It has been added in the LSP7 contract implementation so that it can be used as a prevention mechanism
-     * against double spending allowance vulnerability.
-     *
-     * @notice Increase the allowance of `operator` by +`addedAmount`
-     *
-     * @dev Atomically increases the allowance granted to `operator` by the caller.
-     * This is an alternative approach to {authorizeOperator} that can be used as a mitigation
-     * for the double spending allowance problem.
-     *
-     * @param operator The operator to increase the allowance for `msg.sender`
-     * @param addedAmount The additional amount to add on top of the current operator's allowance
-     *
-     * @custom:requirements
-     *  - `operator` cannot be the same address as `msg.sender`
-     *  - `operator` cannot be the zero address.
-     *
-     * @custom:events {AuthorizedOperator} indicating the updated allowance
-     */
-    function increaseAllowance(
-        address operator,
-        uint256 addedAmount,
-        bytes memory operatorNotificationData
-    ) public virtual {
-        uint256 newAllowance = authorizedAmountFor(operator, msg.sender) +
-            addedAmount;
-
-        _updateOperator(
-            msg.sender,
-            operator,
-            newAllowance,
-            operatorNotificationData
-        );
-
-        bytes memory lsp1Data = abi.encode(
-            msg.sender,
-            newAllowance,
-            operatorNotificationData
-        );
-        _notifyTokenOperator(operator, lsp1Data);
-    }
-
-    /**
-     * @custom:info This is a non-standard function, not part of the LSP7 standard interface.
-     * It has been added in the LSP7 contract implementation so that it can be used as a prevention mechanism
-     * against the double spending allowance vulnerability.
-     *
-     * @notice Decrease the allowance of `operator` by -`subtractedAmount`
-     *
-     * @dev Atomically decreases the allowance granted to `operator` by the caller.
-     * This is an alternative approach to {authorizeOperator} that can be used as a mitigation
-     * for the double spending allowance problem.
-     *
-     * @custom:events
-     *  - {AuthorizedOperator} event indicating the updated allowance after decreasing it.
-     *  - {RevokeOperator} event if `subtractedAmount` is the full allowance,
-     *    indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
-     *
-     * @param operator The operator to decrease allowance for `msg.sender`
-     * @param subtractedAmount The amount to decrease by in the operator's allowance.
-     *
-     * @custom:requirements
-     *  - `operator` cannot be the zero address.
-     *  - `operator` must have allowance for the caller of at least `subtractedAmount`.
-     */
-    function decreaseAllowance(
-        address operator,
-        uint256 subtractedAmount,
-        bytes memory operatorNotificationData
-    ) public virtual {
-        uint256 currentAllowance = authorizedAmountFor(operator, msg.sender);
-        if (currentAllowance < subtractedAmount) {
-            revert LSP7DecreasedAllowanceBelowZero();
-        }
-
-        uint256 newAllowance;
-        unchecked {
-            newAllowance = currentAllowance - subtractedAmount;
-            _updateOperator(
-                msg.sender,
-                operator,
-                newAllowance,
-                operatorNotificationData
-            );
-        }
-
-        bytes memory lsp1Data = abi.encode(
-            msg.sender,
-            newAllowance,
-            operatorNotificationData
-        );
-        _notifyTokenOperator(operator, lsp1Data);
-    }
-
-    /**
      * @dev Changes token `amount` the `operator` has access to from `tokenOwner` tokens.
      * If the amount is zero the operator is removed from the list of operators, otherwise he is added to the list of operators.
      * If the amount is zero then the operator is being revoked, otherwise the operator amount is being modified.
@@ -321,6 +306,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @param tokenOwner The address that will give `operator` an allowance for on its balance.
      * @param operator The address to grant an allowance to spend.
      * @param allowance The maximum amount of token that `operator` can spend from the `tokenOwner`'s balance.
+     * @param notified Boolean indicating whether the operator has been notified about the change of allowance
+     * @param operatorNotificationData The data to send to the universalReceiver function of the operator in case of notifying
      *
      * @custom:events
      * - {RevokedOperator} event when operator's allowance is set to `0`.
@@ -334,6 +321,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address tokenOwner,
         address operator,
         uint256 allowance,
+        bool notified,
         bytes memory operatorNotificationData
     ) internal virtual {
         if (operator == address(0)) {
@@ -359,6 +347,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             emit RevokedOperator(
                 operator,
                 tokenOwner,
+                notified,
                 operatorNotificationData
             );
         }
@@ -506,6 +495,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             tokenOwner: tokenOwner,
             operator: operator,
             allowance: authorizedAmount - amountToSpend,
+            notified: false,
             operatorNotificationData: ""
         });
     }
@@ -616,16 +606,10 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
                 _INTERFACEID_LSP1
             )
         ) {
-            try
-                ILSP1UniversalReceiver(operator).universalReceiver(
-                    _TYPEID_LSP7_TOKENOPERATOR,
-                    lsp1Data
-                )
-            {
-                return;
-            } catch {
-                return;
-            }
+            ILSP1UniversalReceiver(operator).universalReceiver(
+                _TYPEID_LSP7_TOKENOPERATOR,
+                lsp1Data
+            );
         }
     }
 
