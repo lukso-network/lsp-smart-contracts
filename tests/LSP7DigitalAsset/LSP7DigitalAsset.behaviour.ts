@@ -325,25 +325,15 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         });
 
         describe('when there was no allowance before for the operator (`authorizedAmountFor` operator = 0)', () => {
-          it('should authorize for the `addedAmount` and add the operator to the list of operators', async () => {
-            const oldOperator = context.accounts.operator.address;
+          it('should revert', async () => {
             const newOperator = context.accounts.anyone.address;
-            const tokenOwner = context.accounts.owner.address;
 
-            const tx = await context.lsp7.increaseAllowance(newOperator, addedAmount, '0x');
-
-            await expect(tx)
-              .to.emit(context.lsp7, 'AuthorizedOperator')
-              .withArgs(newOperator, tokenOwner, addedAmount, '0x');
-
-            expect(await context.lsp7.authorizedAmountFor(newOperator, tokenOwner)).to.equal(
-              addedAmount,
-            );
-
-            expect(await context.lsp7.getOperatorsOf(tokenOwner)).to.deep.equal([
-              oldOperator,
-              newOperator,
-            ]);
+            await expect(context.lsp7.increaseAllowance(newOperator, addedAmount, '0x'))
+              .to.be.revertedWithCustomError(
+                context.lsp7,
+                'OperatorAllowanceCannotBeIncreasedFromZero',
+              )
+              .withArgs(newOperator);
           });
         });
 
@@ -386,23 +376,18 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         });
 
         describe('when there was no authorized amount before for the operator (`authorizedAmountFor` operator = 0)', () => {
-          it('should authorize for the `addedAmount`', async () => {
+          it('should revert', async () => {
             const operator = context.accounts.anyone.address;
             const tokenOwner = context.accounts.owner.address;
 
-            const tx = await context.lsp7.increaseAllowance(
-              operator,
-              addedAmountLargerThanBalance,
-              '0x',
-            );
-
-            await expect(tx)
-              .to.emit(context.lsp7, 'AuthorizedOperator')
-              .withArgs(operator, tokenOwner, addedAmountLargerThanBalance, '0x');
-
-            expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
-              addedAmountLargerThanBalance,
-            );
+            await expect(
+              context.lsp7.increaseAllowance(operator, addedAmountLargerThanBalance, '0x'),
+            )
+              .to.be.revertedWithCustomError(
+                context.lsp7,
+                'OperatorAllowanceCannotBeIncreasedFromZero',
+              )
+              .withArgs(operator);
           });
         });
 
@@ -429,16 +414,6 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
               expectedNewAllowance,
             );
           });
-        });
-      });
-
-      describe('when `operator` param is the zero address', () => {
-        it('should revert', async () => {
-          const addedAmount = ethers.BigNumber.from('1');
-
-          await expect(
-            context.lsp7.increaseAllowance(ethers.constants.AddressZero, addedAmount, '0x'),
-          ).to.be.revertedWithCustomError(context.lsp7, 'LSP7CannotUseAddressZeroAsOperator');
         });
       });
 
