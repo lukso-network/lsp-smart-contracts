@@ -162,39 +162,43 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
     });
 
     describe('when making a call with sending value', () => {
-      it('should pass and emit UniversalReceiver', async () => {
-        const amountSent = 200;
+      describe('when extension is not payable', () => {
+        it('should pass and emit UniversalReceiver', async () => {
+          const amountSent = 200;
 
-        const tx = await context.accounts[0].sendTransaction({
-          to: context.contract.address,
-          value: amountSent,
-        });
+          const tx = await context.accounts[0].sendTransaction({
+            to: context.contract.address,
+            value: amountSent,
+          });
 
-        const isSupportingLSP0 = await context.contract.supportsInterface(
-          INTERFACE_IDS.LSP0ERC725Account,
-        );
-
-        const isSupportingLSP9 = await context.contract.supportsInterface(INTERFACE_IDS.LSP9Vault);
-
-        let emittedTypeId;
-        if (isSupportingLSP0) {
-          emittedTypeId = LSP1_TYPE_IDS.LSP0ValueReceived;
-        } else if (isSupportingLSP9) {
-          emittedTypeId = LSP1_TYPE_IDS.LSP9ValueReceived;
-        }
-
-        expect(tx)
-          .to.emit(context.contract, 'UniversalReceiver')
-          .withArgs(
-            context.accounts[0].address,
-            amountSent,
-            emittedTypeId,
-            '0x',
-            abiCoder.encode(
-              ['bytes', 'bytes'],
-              [ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: typeId out of scope')), '0x'],
-            ),
+          const isSupportingLSP0 = await context.contract.supportsInterface(
+            INTERFACE_IDS.LSP0ERC725Account,
           );
+
+          const isSupportingLSP9 = await context.contract.supportsInterface(
+            INTERFACE_IDS.LSP9Vault,
+          );
+
+          let emittedTypeId;
+          if (isSupportingLSP0) {
+            emittedTypeId = LSP1_TYPE_IDS.LSP0ValueReceived;
+          } else if (isSupportingLSP9) {
+            emittedTypeId = LSP1_TYPE_IDS.LSP9ValueReceived;
+          }
+
+          expect(tx)
+            .to.emit(context.contract, 'UniversalReceiver')
+            .withArgs(
+              context.accounts[0].address,
+              amountSent,
+              emittedTypeId,
+              '0x',
+              abiCoder.encode(
+                ['bytes', 'bytes'],
+                [ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: typeId out of scope')), '0x'],
+              ),
+            );
+        });
       });
     });
   });
@@ -454,6 +458,35 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                 value: 0,
               }),
             ).to.emit(emitEventExtension, 'EventEmittedInExtension');
+          });
+        });
+
+        describe('when the extension function is payable', () => {
+          it('should forward the value to the extension', async () => {
+            const transferExtension = await new TransferExtension__factory(
+              context.accounts[0],
+            ).deploy();
+
+            await context.contract
+              .connect(context.deployParams.owner)
+              .setData(transferFunctionExtensionHandlerKey, transferExtension.address);
+
+            const amountTransferred = 20;
+
+            const transferFunctionSignature =
+              transferFunctionSelector +
+              abiCoder.encode(['uint256'], [amountTransferred]).substring(2);
+
+            await context.accounts[0].sendTransaction({
+              to: context.contract.address,
+              data: transferFunctionSignature,
+            });
+
+            const balanceAfter = await transferExtension.callStatic.balances(
+              context.accounts[0].address,
+            );
+
+            expect(balanceAfter).to.equal(amountTransferred);
           });
         });
 
