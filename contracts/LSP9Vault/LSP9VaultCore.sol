@@ -528,8 +528,9 @@ contract LSP9VaultCore is
     /**
      * @dev Forwards the call to an extension mapped to a function selector.
      *
-     * Calls {_getExtension} to get the address of the extension mapped to the function selector being
+     * Calls {_getExtensionAndPayableBool} to get the address of the extension mapped to the function selector being
      * called on the account. If there is no extension, the `address(0)` will be returned.
+     * Forwards the value if the extension is payable.
      *
      * Reverts if there is no extension for the function being called, except for the `bytes4(0)` function selector, which passes even if there is no extension for it.
      *
@@ -549,7 +550,9 @@ contract LSP9VaultCore is
         bytes calldata callData
     ) internal virtual override returns (bytes memory) {
         // If there is a function selector
-        address extension = _getExtension(msg.sig);
+        (address extension, bool isPayable) = _getExtensionAndPayableBool(
+            msg.sig
+        );
 
         // if no extension was found for bytes4(0) return don't revert
         if (msg.sig == bytes4(0) && extension == address(0)) return "";
@@ -558,9 +561,9 @@ contract LSP9VaultCore is
         if (extension == address(0))
             revert NoExtensionFoundForFunctionSelector(msg.sig);
 
-        (bool success, bytes memory result) = extension.call(
-            abi.encodePacked(callData, msg.sender, msg.value)
-        );
+        (bool success, bytes memory result) = extension.call{
+            value: isPayable ? msg.value : 0
+        }(abi.encodePacked(callData, msg.sender, msg.value));
 
         if (success) {
             return result;
@@ -581,18 +584,29 @@ contract LSP9VaultCore is
      * - {_LSP17_EXTENSION_PREFIX} + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
      * - If no extension is stored, returns the address(0).
      */
-    function _getExtension(
+    function _getExtensionAndPayableBool(
         bytes4 functionSelector
-    ) internal view virtual override returns (address) {
+    ) internal view virtual override returns (address, bool) {
+        // Generate the data key relevant for the functionSelector being called
         bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
             _LSP17_EXTENSION_PREFIX,
             functionSelector
         );
 
-        // Check if there is an extension for the function selector provided
-        address extension = address(bytes20(_getData(mappedExtensionDataKey)));
+        bytes memory extensionData = ERC725YCore._getData(
+            mappedExtensionDataKey
+        );
 
-        return extension;
+        // Check if the extensionData is 21 bytes long (20 bytes of address + 1 byte as bool indicator ot forwards the value)
+        if (extensionData.length == 21) {
+            // Check if the last byte is 1 (true)
+            if (extensionData[20] == hex"01") {
+                // Return the address of the extension
+                return (address(bytes20(extensionData)), true);
+            }
+        }
+
+        return (address(bytes20(extensionData)), false);
     }
 
     /**

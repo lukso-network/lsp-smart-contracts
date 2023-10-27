@@ -130,8 +130,9 @@ abstract contract LSP8IdentifiableDigitalAsset is
     /**
      * @dev Forwards the call with the received value to an extension mapped to a function selector.
      *
-     * Calls {_getExtension} to get the address of the extension mapped to the function selector being
+     * Calls {_getExtensionAndPayableBool} to get the address of the extension mapped to the function selector being
      * called on the account. If there is no extension, the address(0) will be returned.
+     * We will always forward the value to the extension, as the LSP8 contract is not supposed to hold any native tokens.
      *
      * Reverts if there is no extension for the function being called.
      *
@@ -146,7 +147,7 @@ abstract contract LSP8IdentifiableDigitalAsset is
         bytes calldata callData
     ) internal virtual override returns (bytes memory) {
         // If there is a function selector
-        address extension = _getExtension(msg.sig);
+        (address extension, ) = _getExtensionAndPayableBool(msg.sig);
 
         // if no extension was found, revert
         if (extension == address(0))
@@ -175,9 +176,9 @@ abstract contract LSP8IdentifiableDigitalAsset is
      * - {_LSP17_EXTENSION_PREFIX} + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
      * - If no extension is stored, returns the address(0).
      */
-    function _getExtension(
+    function _getExtensionAndPayableBool(
         bytes4 functionSelector
-    ) internal view virtual override returns (address) {
+    ) internal view virtual override returns (address, bool) {
         // Generate the data key relevant for the functionSelector being called
         bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
             _LSP17_EXTENSION_PREFIX,
@@ -191,7 +192,7 @@ abstract contract LSP8IdentifiableDigitalAsset is
         if (extensionAddress.length != 20 && extensionAddress.length != 0)
             revert InvalidExtensionAddress(extensionAddress);
 
-        return address(bytes20(extensionAddress));
+        return (address(bytes20(extensionAddress)), true);
     }
 
     /**

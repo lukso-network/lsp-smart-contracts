@@ -1100,10 +1100,12 @@ extension if the extension is set, if not it returns false.
 
 <br/>
 
-### \_getExtension
+### \_getExtensionAndPayableBool
 
 ```solidity
-function _getExtension(bytes4 functionSelector) internal view returns (address);
+function _getExtensionAndPayableBool(
+  bytes4 functionSelector
+) internal view returns (address, bool);
 ```
 
 Returns the extension address stored under the following data key:
@@ -1136,8 +1138,9 @@ function _fallbackLSP17Extendable(
 ```
 
 Forwards the call to an extension mapped to a function selector.
-Calls [`_getExtension`](#_getextension) to get the address of the extension mapped to the function selector being
+Calls [`_getExtensionAndPayableBool`](#_getextensionandpayablebool) to get the address of the extension mapped to the function selector being
 called on the account. If there is no extension, the `address(0)` will be returned.
+Forwards the value if the extension is payable.
 Reverts if there is no extension for the function being called, except for the `bytes4(0)` function selector, which passes even if there is no extension for it.
 If there is an extension for the function selector being called, it calls the extension with the
 `CALL` opcode, passing the `msg.data` appended with the 20 bytes of the [`msg.sender`](#msg.sender) and 32 bytes of the `msg.value`.

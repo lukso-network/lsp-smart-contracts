@@ -8,6 +8,7 @@ import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
  */
 contract LSP17ExtendableTester is LSP17Extendable {
     mapping(bytes4 => address) internal _extensions;
+    mapping(bytes4 => bool) internal _payableExtensions;
 
     string internal _someStorageData;
     string internal _anotherStorageData;
@@ -33,15 +34,17 @@ contract LSP17ExtendableTester is LSP17Extendable {
 
     function getExtension(
         bytes4 functionSelector
-    ) public view returns (address) {
-        return _getExtension(functionSelector);
+    ) public view returns (address, bool) {
+        return _getExtensionAndPayableBool(functionSelector);
     }
 
     function setExtension(
         bytes4 functionSelector,
-        address extensionContract
+        address extensionContract,
+        bool isPayable
     ) public {
         _extensions[functionSelector] = extensionContract;
+        _payableExtensions[functionSelector] = isPayable;
     }
 
     function getStorageData() public view returns (string memory) {
@@ -60,9 +63,12 @@ contract LSP17ExtendableTester is LSP17Extendable {
         _anotherStorageData = newData;
     }
 
-    function _getExtension(
+    function _getExtensionAndPayableBool(
         bytes4 functionSelector
-    ) internal view override returns (address) {
-        return _extensions[functionSelector];
+    ) internal view override returns (address, bool) {
+        return (
+            _extensions[functionSelector],
+            _payableExtensions[functionSelector]
+        );
     }
 }
