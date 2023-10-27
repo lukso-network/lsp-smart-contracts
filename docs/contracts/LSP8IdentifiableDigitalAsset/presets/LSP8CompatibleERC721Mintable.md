@@ -129,7 +129,7 @@ function authorizeOperator(
 ) external nonpayable;
 ```
 
-Allow an `operator` address to transfer or burn a specific `tokenId` on behalf of its token owner. See [`isOperatorFor`](#isoperatorfor). Notify the operator based on the LSP1-UniversalReceiver standard
+Allow an `operator` address to transfer or burn a specific `tokenId` on behalf of its token owner. See [`isOperatorFor`](#isoperatorfor).
 
 <blockquote>
 
@@ -528,8 +528,8 @@ Leaves the contract without owner. It will not be possible to call `onlyOwner` f
 
 - Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#revokeoperator)
 - Solidity implementation: [`LSP8CompatibleERC721Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol)
-- Function signature: `revokeOperator(address,bytes32,bool,bytes)`
-- Function selector: `0xdb8c9663`
+- Function signature: `revokeOperator(address,bytes32,bytes)`
+- Function selector: `0xf1b97e04`
 
 :::
 
@@ -537,7 +537,6 @@ Leaves the contract without owner. It will not be possible to call `onlyOwner` f
 function revokeOperator(
   address operator,
   bytes32 tokenId,
-  bool notify,
   bytes operatorNotificationData
 ) external nonpayable;
 ```
@@ -546,12 +545,11 @@ Remove access of `operator` for a given `tokenId`, disallowing it to transfer `t
 
 #### Parameters
 
-| Name                       |   Type    | Description                                              |
-| -------------------------- | :-------: | -------------------------------------------------------- |
-| `operator`                 | `address` | The address to revoke as an operator.                    |
-| `tokenId`                  | `bytes32` | The tokenId `operator` is revoked from operating on.     |
-| `notify`                   |  `bool`   | Boolean indicating whether to notify the operator or not |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.          |
+| Name                       |   Type    | Description                                          |
+| -------------------------- | :-------: | ---------------------------------------------------- |
+| `operator`                 | `address` | The address to revoke as an operator.                |
+| `tokenId`                  | `bytes32` | The tokenId `operator` is revoked from operating on. |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.      |
 
 <br/>
 
@@ -1172,7 +1170,6 @@ function _revokeOperator(
   address operator,
   address tokenOwner,
   bytes32 tokenId,
-  bool notified,
   bytes operatorNotificationData
 ) internal nonpayable;
 ```
@@ -1592,13 +1589,13 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 
 - Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#revokedoperator)
 - Solidity implementation: [`LSP8CompatibleERC721Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol)
-- Event signature: `RevokedOperator(address,address,bytes32,bool,bytes)`
-- Event topic hash: `0x3ee932cea40ebbbfd8577d47156cc17cce8683802c57bbd1fb8c131c6f07af0a`
+- Event signature: `RevokedOperator(address,address,bytes32,bytes)`
+- Event topic hash: `0x501bc920d7f604417e315bcf29247652b2327fa1076b27b7f132bd8927cb15ea`
 
 :::
 
 ```solidity
-event RevokedOperator(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bool notified, bytes operatorNotificationData);
+event RevokedOperator(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bytes operatorNotificationData);
 ```
 
 Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on its behalf.
@@ -1610,7 +1607,6 @@ Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on i
 | `operator` **`indexed`**   | `address` | The address revoked from the operator array ({getOperatorsOf}). |
 | `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                     |
 | `tokenId` **`indexed`**    | `bytes32` | The tokenId `operator` is revoked from operating on.            |
-| `notified`                 |  `bool`   | Bool indicating whether the operator has been notified or not   |
 | `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                 |
 
 <br/>

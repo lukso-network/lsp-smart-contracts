@@ -102,7 +102,7 @@ function authorizeOperator(
 ) external nonpayable;
 ```
 
-Sets an `amount` of tokens that an `operator` has access from the caller's balance (allowance). See [`authorizedAmountFor`](#authorizedamountfor). Notify the operator based on the LSP1-UniversalReceiver standard
+Sets an `amount` of tokens that an `operator` has access from the caller's balance (allowance). See [`authorizedAmountFor`](#authorizedamountfor).
 
 #### Parameters
 
@@ -216,6 +216,12 @@ Returns the number of decimals used to get its user representation. If the asset
 
 :::
 
+:::info
+
+This is a non-standard function, not part of the LSP7 standard interface. It has been added in the LSP7 contract implementation so that it can be used as a prevention mechanism against the double spending allowance vulnerability.
+
+:::
+
 ```solidity
 function decreaseAllowance(
   address operator,
@@ -226,7 +232,25 @@ function decreaseAllowance(
 
 _Decrease the allowance of `operator` by -`subtractedAmount`_
 
-Atomically decreases the allowance granted to `operator` by the caller. This is an alternative approach to [`authorizeOperator`](#authorizeoperator) that can be used as a mitigation for the double spending allowance problem. Notify the operator based on the LSP1-UniversalReceiver standard
+Atomically decreases the allowance granted to `operator` by the caller. This is an alternative approach to [`authorizeOperator`](#authorizeoperator) that can be used as a mitigation for the double spending allowance problem.
+
+<blockquote>
+
+**Requirements:**
+
+- `operator` cannot be the zero address.
+- `operator` must have allowance for the caller of at least `subtractedAmount`.
+
+</blockquote>
+
+<blockquote>
+
+**Emitted events:**
+
+- [`AuthorizedOperator`](#authorizedoperator) event indicating the updated allowance after decreasing it.
+- [`RevokeOperator`](#revokeoperator) event if `subtractedAmount` is the full allowance, indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
+
+</blockquote>
 
 #### Parameters
 
@@ -348,6 +372,12 @@ Returns all `operator` addresses that are allowed to transfer or burn on behalf 
 
 :::
 
+:::info
+
+This is a non-standard function, not part of the LSP7 standard interface. It has been added in the LSP7 contract implementation so that it can be used as a prevention mechanism against double spending allowance vulnerability.
+
+:::
+
 ```solidity
 function increaseAllowance(
   address operator,
@@ -358,7 +388,24 @@ function increaseAllowance(
 
 _Increase the allowance of `operator` by +`addedAmount`_
 
-Atomically increases the allowance granted to `operator` by the caller. This is an alternative approach to [`authorizeOperator`](#authorizeoperator) that can be used as a mitigation for the double spending allowance problem. Notify the operator based on the LSP1-UniversalReceiver standard
+Atomically increases the allowance granted to `operator` by the caller. This is an alternative approach to [`authorizeOperator`](#authorizeoperator) that can be used as a mitigation for the double spending allowance problem.
+
+<blockquote>
+
+**Requirements:**
+
+- `operator` cannot be the same address as `msg.sender`
+- `operator` cannot be the zero address.
+
+</blockquote>
+
+<blockquote>
+
+**Emitted events:**
+
+- [`AuthorizedOperator`](#authorizedoperator) indicating the updated allowance
+
+</blockquote>
 
 #### Parameters
 
@@ -420,15 +467,14 @@ Leaves the contract without owner. It will not be possible to call `onlyOwner` f
 
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#revokeoperator)
 - Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol)
-- Function signature: `revokeOperator(address,bool,bytes)`
-- Function selector: `0x4521748e`
+- Function signature: `revokeOperator(address,bytes)`
+- Function selector: `0xca3631e7`
 
 :::
 
 ```solidity
 function revokeOperator(
   address operator,
-  bool notify,
   bytes operatorNotificationData
 ) external nonpayable;
 ```
@@ -437,11 +483,10 @@ Removes the `operator` address as an operator of callers tokens, disallowing it 
 
 #### Parameters
 
-| Name                       |   Type    | Description                                              |
-| -------------------------- | :-------: | -------------------------------------------------------- |
-| `operator`                 | `address` | The address to revoke as an operator.                    |
-| `notify`                   |  `bool`   | Boolean indicating whether to notify the operator or not |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.          |
+| Name                       |   Type    | Description                                     |
+| -------------------------- | :-------: | ----------------------------------------------- |
+| `operator`                 | `address` | The address to revoke as an operator.           |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1. |
 
 <br/>
 
@@ -767,7 +812,6 @@ function _updateOperator(
   address tokenOwner,
   address operator,
   uint256 allowance,
-  bool notified,
   bytes operatorNotificationData
 ) internal nonpayable;
 ```
@@ -778,13 +822,12 @@ If the amount is zero then the operator is being revoked, otherwise the operator
 
 #### Parameters
 
-| Name                       |   Type    | Description                                                                                                             |
-| -------------------------- | :-------: | ----------------------------------------------------------------------------------------------------------------------- |
-| `tokenOwner`               | `address` | The address that will give `operator` an allowance for on its balance.                                                  |
-| `operator`                 | `address` | @param operatorNotificationData The data to send to the universalReceiver function of the operator in case of notifying |
-| `allowance`                | `uint256` | The maximum amount of token that `operator` can spend from the `tokenOwner`'s balance.                                  |
-| `notified`                 |  `bool`   | Boolean indicating whether the operator has been notified about the change of allowance                                 |
-| `operatorNotificationData` |  `bytes`  | The data to send to the universalReceiver function of the operator in case of notifying                                 |
+| Name                       |   Type    | Description                                                                            |
+| -------------------------- | :-------: | -------------------------------------------------------------------------------------- |
+| `tokenOwner`               | `address` | The address that will give `operator` an allowance for on its balance.                 |
+| `operator`                 | `address` | The address to grant an allowance to spend.                                            |
+| `allowance`                | `uint256` | The maximum amount of token that `operator` can spend from the `tokenOwner`'s balance. |
+| `operatorNotificationData` |  `bytes`  | -                                                                                      |
 
 <br/>
 
@@ -1207,25 +1250,24 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#revokedoperator)
 - Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol)
-- Event signature: `RevokedOperator(address,address,bool,bytes)`
-- Event topic hash: `0x66015c8835ee443e5bc280176609215a5035da4bae05bdef994596d7e43aae22`
+- Event signature: `RevokedOperator(address,address,bytes)`
+- Event topic hash: `0x9ebfc34ce0da1178c4be66252d63a8a173d733c4bbb049241ce142dc4f0e0228`
 
 :::
 
 ```solidity
-event RevokedOperator(address indexed operator, address indexed tokenOwner, bool notified, bytes operatorNotificationData);
+event RevokedOperator(address indexed operator, address indexed tokenOwner, bytes operatorNotificationData);
 ```
 
 Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`authorizedAmountFor(...)`](#`authorizedamountfor) to `0`.
 
 #### Parameters
 
-| Name                       |   Type    | Description                                                   |
-| -------------------------- | :-------: | ------------------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address revoked from operating                            |
-| `tokenOwner` **`indexed`** | `address` | The token owner                                               |
-| `notified`                 |  `bool`   | Bool indicating whether the operator has been notified or not |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.               |
+| Name                       |   Type    | Description                                     |
+| -------------------------- | :-------: | ----------------------------------------------- |
+| `operator` **`indexed`**   | `address` | The address revoked from operating              |
+| `tokenOwner` **`indexed`** | `address` | The token owner                                 |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1. |
 
 <br/>
 
@@ -1685,31 +1727,6 @@ reverts when there is no extension for the function selector being called with
 | Name               |   Type   | Description |
 | ------------------ | :------: | ----------- |
 | `functionSelector` | `bytes4` | -           |
-
-<br/>
-
-### OperatorAllowanceCannotBeIncreasedFromZero
-
-:::note References
-
-- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#operatorallowancecannotbeincreasedfromzero)
-- Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol)
-- Error signature: `OperatorAllowanceCannotBeIncreasedFromZero(address)`
-- Error hash: `0xcba6e977`
-
-:::
-
-```solidity
-error OperatorAllowanceCannotBeIncreasedFromZero(address operator);
-```
-
-Reverts when token owner call [`increaseAllowance`](#increaseallowance) for an operator that does not have any allowance
-
-#### Parameters
-
-| Name       |   Type    | Description |
-| ---------- | :-------: | ----------- |
-| `operator` | `address` | -           |
 
 <br/>
 

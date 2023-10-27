@@ -136,6 +136,26 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             await context.lsp7CompatibleERC20.authorizedAmountFor(operator, tokenOwner),
           ).to.equal(amount);
         });
+
+        it.skip('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+          const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer =
+            await new UniversalReceiverDelegateGasConsumer__factory(
+              context.accounts.owner,
+            ).deploy();
+          const operator = operatorThatConsumeAllGas.address;
+          const tokenOwner = context.accounts.owner.address;
+          const amount = 1;
+
+          const tx = await context.lsp7CompatibleERC20.approve(operator, amount);
+
+          await expect(tx)
+            .to.emit(context.lsp7CompatibleERC20, 'AuthorizedOperator')
+            .withArgs(operator, tokenOwner, amount, '0x');
+
+          expect(
+            await context.lsp7CompatibleERC20.authorizedAmountFor(operator, tokenOwner),
+          ).to.equal(amount);
+        });
       });
     });
 
@@ -183,7 +203,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
           await expect(tx)
             .to.emit(context.lsp7CompatibleERC20, 'RevokedOperator')
-            .withArgs(operator, tokenOwner, false, '0x');
+            .withArgs(operator, tokenOwner, '0x');
 
           await expect(tx)
             .to.emit(context.lsp7CompatibleERC20, 'Approval')
@@ -194,7 +214,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
         });
 
         describe('changing the allowance of an LSP1 contract to zero', () => {
-          it('should succeed and not inform the operator', async () => {
+          it('should succeed and inform the operator', async () => {
             const tokenReceiverWithLSP1: TokenReceiverWithLSP1 =
               await new TokenReceiverWithLSP1__factory(context.accounts.owner).deploy();
             const operator = tokenReceiverWithLSP1.address;
@@ -206,9 +226,9 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
             await expect(tx)
               .to.emit(context.lsp7CompatibleERC20, 'RevokedOperator')
-              .withArgs(operator, tokenOwner, false, '0x');
+              .withArgs(operator, tokenOwner, '0x');
 
-            expect(tx).to.not.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
+            await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
 
             expect(
               await context.lsp7CompatibleERC20.authorizedAmountFor(operator, tokenOwner),
@@ -225,7 +245,26 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
             await expect(tx)
               .to.emit(context.lsp7CompatibleERC20, 'RevokedOperator')
-              .withArgs(operator, tokenOwner, false, '0x');
+              .withArgs(operator, tokenOwner, '0x');
+
+            expect(
+              await context.lsp7CompatibleERC20.authorizedAmountFor(operator, tokenOwner),
+            ).to.equal(ethers.constants.Zero);
+          });
+
+          it.skip('should succeed and inform the operator even if the operator use gas indefinitely', async () => {
+            const operatorThatConsumeAllGas: UniversalReceiverDelegateGasConsumer =
+              await new UniversalReceiverDelegateGasConsumer__factory(
+                context.accounts.owner,
+              ).deploy();
+            const operator = operatorThatConsumeAllGas.address;
+            const tokenOwner = context.accounts.owner.address;
+
+            const tx = await context.lsp7CompatibleERC20.approve(operator, 0);
+
+            await expect(tx)
+              .to.emit(context.lsp7CompatibleERC20, 'RevokedOperator')
+              .withArgs(operator, tokenOwner, '0x');
 
             expect(
               await context.lsp7CompatibleERC20.authorizedAmountFor(operator, tokenOwner),
