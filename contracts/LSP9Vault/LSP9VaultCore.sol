@@ -122,7 +122,7 @@ contract LSP9VaultCore is
      *
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), return.
      *
-     * @custom:events {UniversalReceiver} event when receiving native tokens.
+     * @custom:events {UniversalReceiver} event when receiving native tokens and extension function selector is not found or not payable.
      */
     // solhint-disable-next-line no-complex-fallback
     fallback(
@@ -202,7 +202,7 @@ contract LSP9VaultCore is
                 msg.sender,
                 msg.value,
                 _TYPEID_LSP9_VALUE_RECEIVED,
-                "",
+                abi.encodePacked(msg.sig),
                 ""
             );
         }
@@ -237,7 +237,7 @@ contract LSP9VaultCore is
                 msg.sender,
                 msg.value,
                 _TYPEID_LSP9_VALUE_RECEIVED,
-                "",
+                abi.encodePacked(msg.sig),
                 ""
             );
         }

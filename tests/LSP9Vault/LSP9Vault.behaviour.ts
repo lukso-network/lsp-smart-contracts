@@ -801,7 +801,7 @@ export const shouldBehaveLikeLSP9 = (
             context.deployParams.newOwner,
             msgValue,
             LSP1_TYPE_IDS.LSP9ValueReceived,
-            '0x',
+            context.universalProfile.interface.getSighash('executeBatch'),
             '0x',
           );
       });

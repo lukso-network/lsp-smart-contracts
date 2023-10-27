@@ -289,7 +289,7 @@ export const shouldBehaveLikeLSP3 = (
               context.accounts[0].address,
               msgValue,
               LSP1_TYPE_IDS.LSP0ValueReceived,
-              '0x',
+              context.universalProfile.interface.getSighash('setData'),
               '0x',
             );
 
@@ -314,7 +314,7 @@ export const shouldBehaveLikeLSP3 = (
               context.accounts[0].address,
               msgValue,
               LSP1_TYPE_IDS.LSP0ValueReceived,
-              '0x',
+              context.universalProfile.interface.getSighash('setDataBatch'),
               '0x',
             );
 
@@ -429,7 +429,7 @@ export const shouldBehaveLikeLSP3 = (
             context.deployParams.owner.address,
             msgValue,
             LSP1_TYPE_IDS.LSP0ValueReceived,
-            '0x',
+            context.universalProfile.interface.getSighash('executeBatch'),
             '0x',
           );
       });

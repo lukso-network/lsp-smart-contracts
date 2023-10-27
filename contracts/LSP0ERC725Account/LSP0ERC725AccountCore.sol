@@ -120,7 +120,7 @@ abstract contract LSP0ERC725AccountCore is
      *
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), return.
      *
-     * @custom:events {UniversalReceiver} event when receiving native tokens.
+     * @custom:events {UniversalReceiver} event when receiving native tokens and extension function selector is not found or not payable.
      */
     // solhint-disable-next-line no-complex-fallback
     fallback(
@@ -198,7 +198,7 @@ abstract contract LSP0ERC725AccountCore is
                 msg.sender,
                 msg.value,
                 _TYPEID_LSP0_VALUE_RECEIVED,
-                "",
+                abi.encodePacked(msg.sig),
                 ""
             );
         }
@@ -262,7 +262,7 @@ abstract contract LSP0ERC725AccountCore is
                 msg.sender,
                 msg.value,
                 _TYPEID_LSP0_VALUE_RECEIVED,
-                "",
+                abi.encodePacked(msg.sig),
                 ""
             );
         }
@@ -321,7 +321,7 @@ abstract contract LSP0ERC725AccountCore is
                 msg.sender,
                 msg.value,
                 _TYPEID_LSP0_VALUE_RECEIVED,
-                "",
+                abi.encodePacked(msg.sig),
                 ""
             );
         }
@@ -364,7 +364,7 @@ abstract contract LSP0ERC725AccountCore is
                 msg.sender,
                 msg.value,
                 _TYPEID_LSP0_VALUE_RECEIVED,
-                "",
+                abi.encodePacked(msg.sig),
                 ""
             );
         }

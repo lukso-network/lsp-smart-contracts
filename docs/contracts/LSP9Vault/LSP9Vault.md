@@ -96,7 +96,7 @@ This function is executed when:
 
 **Emitted events:**
 
-- [`UniversalReceiver`](#universalreceiver) event when receiving native tokens.
+- [`UniversalReceiver`](#universalreceiver) event when receiving native tokens and extension function selector is not found or not payable.
 
 </blockquote>
 
