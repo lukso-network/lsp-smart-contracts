@@ -463,6 +463,33 @@ Get The address of the contract linked to this Key Manager.
 
 <br/>
 
+### version
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#version)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Function signature: `version()`
+- Function selector: `0x54fd4d50`
+
+:::
+
+```solidity
+function version() external view returns (string);
+```
+
+_Contract version._
+
+Get the version of the contract.
+
+#### Returns
+
+| Name |   Type   | Description                      |
+| ---- | :------: | -------------------------------- |
+| `0`  | `string` | The version of the the contract. |
+
+<br/>
+
 ## Internal Methods
 
 Any method labeled as `internal` serves as utility function within the contract. They can be used when writing solidity contracts that inherit from this contract. These methods can be extended or modified by overriding their internal behavior to suit specific needs.
