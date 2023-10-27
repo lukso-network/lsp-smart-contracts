@@ -1225,8 +1225,6 @@ function _verifyCall(
 ```
 
 Calls [`lsp20VerifyCall`](#lsp20verifycall) function on the logicVerifier.
-Reverts in case the value returned does not match the success value (lsp20VerifyCall selector)
-Returns whether a verification after the execution should happen based on the last byte of the returnedStatus
 
 <br/>
 
@@ -1240,19 +1238,6 @@ function _verifyCallResult(
 ```
 
 Calls [`lsp20VerifyCallResult`](#lsp20verifycallresult) function on the logicVerifier.
-Reverts in case the value returned does not match the success value (lsp20VerifyCallResult selector)
-
-<br/>
-
-### \_validateCall
-
-```solidity
-function _validateCall(
-  bool postCall,
-  bool success,
-  bytes returnedData
-) internal pure;
-```
 
 <br/>
 
@@ -1840,23 +1825,23 @@ Reverts when trying to renounce ownership before the initial confirmation delay.
 
 - Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-0-ERC725Account.md#lsp20callverificationfailed)
 - Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP0ERC725Account/LSP0ERC725Account.sol)
-- Error signature: `LSP20CallVerificationFailed(bool,bytes)`
-- Error hash: `0x00c28d0f`
+- Error signature: `LSP20CallVerificationFailed(bool,bytes4)`
+- Error hash: `0x9d6741e3`
 
 :::
 
 ```solidity
-error LSP20CallVerificationFailed(bool postCall, bytes returnedData);
+error LSP20CallVerificationFailed(bool postCall, bytes4 returnedStatus);
 ```
 
 reverts when the call to the owner does not return the LSP20 success value
 
 #### Parameters
 
-| Name           |  Type   | Description                                          |
-| -------------- | :-----: | ---------------------------------------------------- |
-| `postCall`     | `bool`  | True if the execution call was done, False otherwise |
-| `returnedData` | `bytes` | The data returned by the call to the logic verifier  |
+| Name             |   Type   | Description                                             |
+| ---------------- | :------: | ------------------------------------------------------- |
+| `postCall`       |  `bool`  | True if the execution call was done, False otherwise    |
+| `returnedStatus` | `bytes4` | The bytes4 decoded data returned by the logic verifier. |
 
 <br/>
 
