@@ -48,10 +48,10 @@ abstract contract LSP20CallVerification {
                 bytes3(returnedStatus) !=
                 bytes3(ILSP20.lsp20VerifyCall.selector)
             ) {
-                revert LSP20CallVerificationFailed(
-                    false,
-                    abi.encode(returnedStatus)
-                );
+                revert LSP20CallVerificationFailed({
+                    postCall: false,
+                    returnedStatus: returnedStatus
+                });
             }
 
             return returnedStatus[3] == 0x01;
@@ -90,7 +90,7 @@ abstract contract LSP20CallVerification {
             if (returnedStatus != ILSP20.lsp20VerifyCallResult.selector) {
                 revert LSP20CallVerificationFailed({
                     postCall: true,
-                    returnedData: abi.encode(returnedStatus)
+                    returnedStatus: returnedStatus
                 });
             }
 

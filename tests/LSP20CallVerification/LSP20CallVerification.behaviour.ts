@@ -368,7 +368,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
 
           await expect(context.universalProfile.setData(dataKey, dataValue))
             .to.be.revertedWithCustomError(context.universalProfile, 'LSP20CallVerificationFailed')
-            .withArgs(false, '0xaabbccdd' + '0'.repeat(56));
+            .withArgs(false, '0xaabbccdd');
         });
       });
 
