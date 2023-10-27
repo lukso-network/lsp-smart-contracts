@@ -10,9 +10,9 @@ error LSP20CallingVerifierFailed(bool postCall);
 /**
  * @dev reverts when the call to the owner does not return the LSP20 success value
  * @param postCall True if the execution call was done, False otherwise
- * @param returnedData The data returned by the call to the logic verifier
+ * @param returnedStatus The bytes4 decoded data returned by the logic verifier.
  */
-error LSP20CallVerificationFailed(bool postCall, bytes returnedData);
+error LSP20CallVerificationFailed(bool postCall, bytes4 returnedStatus);
 
 /**
  * @dev Reverts when the logic verifier is an Externally Owned Account (EOA) that cannot return the LSP20 success value.

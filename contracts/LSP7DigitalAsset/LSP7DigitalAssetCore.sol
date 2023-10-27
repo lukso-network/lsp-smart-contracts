@@ -7,6 +7,9 @@ import {
 } from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 
+// modules
+import {Version} from "../Version.sol";
+
 // libraries
 import {
     ERC165Checker
@@ -48,7 +51,7 @@ import {
  * Similar to ERC20, the non-standard {increaseAllowance} and {decreaseAllowance} functions
  * have been added to mitigate the well-known issues around setting allowances.
  */
-abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
+abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset, Version {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     // --- Storage

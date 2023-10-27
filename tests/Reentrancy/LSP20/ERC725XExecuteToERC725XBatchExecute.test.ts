@@ -25,10 +25,10 @@ import {
   loadTestCase,
 } from './reentrancyHelpers';
 
-import { LSP20ReentrantContract__factory } from '../../../types';
+import { LSP20ReentrantContractBatch__factory } from '../../../types';
 import { Interface } from 'ethers/lib/utils';
 
-export const testERC725XBatchExecuteToERC725XExecute = (
+export const testERC725XExecuteToERC725XExecuteBatch = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
   buildReentrancyContext: (context: LSP6TestContext) => Promise<ReentrancyContext>,
 ) => {
@@ -39,7 +39,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
   before(async () => {
     context = await buildContext(ethers.utils.parseEther('10'));
     reentrancyContext = await buildReentrancyContext(context);
-    reentrantContractInterface = new LSP20ReentrantContract__factory().interface;
+    reentrantContractInterface = new LSP20ReentrantContractBatch__factory().interface;
   });
 
   describe('when reentering and transferring value', () => {

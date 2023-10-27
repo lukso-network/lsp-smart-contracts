@@ -21,6 +21,7 @@ import {
   shouldBehaveLikeAllowedAddresses,
   shouldBehaveLikeAllowedFunctions,
   shouldBehaveLikeAllowedStandards,
+  shouldBehaveLikeBatchExecute,
 
   // Set Data
   shouldBehaveLikeAllowedERC725YDataKeys,
@@ -84,6 +85,10 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikeAllowedAddresses(buildContext);
     shouldBehaveLikeAllowedFunctions(buildContext);
     shouldBehaveLikeAllowedStandards(buildContext);
+  });
+
+  describe('`ERC725X.executeBatch([],[],[],[])`', () => {
+    shouldBehaveLikeBatchExecute(buildContext);
   });
 
   describe('miscellaneous', () => {
