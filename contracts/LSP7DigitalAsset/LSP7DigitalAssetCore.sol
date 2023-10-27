@@ -27,7 +27,8 @@ import {
     LSP7TokenOwnerCannotBeOperator,
     LSP7CannotSendWithAddressZero,
     LSP7NotifyTokenReceiverContractMissingLSP1Interface,
-    LSP7NotifyTokenReceiverIsEOA
+    LSP7NotifyTokenReceiverIsEOA,
+    OperatorAllowanceCannotBeIncreasedFromZero
 } from "./LSP7Errors.sol";
 
 // constants
@@ -187,8 +188,11 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         uint256 addedAmount,
         bytes memory operatorNotificationData
     ) public virtual override {
-        uint256 newAllowance = authorizedAmountFor(operator, msg.sender) +
-            addedAmount;
+        uint256 oldAllowance = authorizedAmountFor(operator, msg.sender);
+        if (oldAllowance == 0)
+            revert OperatorAllowanceCannotBeIncreasedFromZero(operator);
+
+        uint256 newAllowance = oldAllowance + addedAmount;
 
         _updateOperator(
             msg.sender,
