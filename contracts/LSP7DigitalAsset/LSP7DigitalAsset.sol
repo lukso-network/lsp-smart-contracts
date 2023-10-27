@@ -108,7 +108,7 @@ abstract contract LSP7DigitalAsset is
     /**
      * @dev Forwards the call with the received value to an extension mapped to a function selector.
      *
-     * Calls {_getExtensionAndFowardValue} to get the address of the extension mapped to the function selector being
+     * Calls {_getExtensionAndForwardValue} to get the address of the extension mapped to the function selector being
      * called on the account. If there is no extension, the address(0) will be returned.
      * Forwards the value if the extension is payable.
      *
@@ -125,7 +125,7 @@ abstract contract LSP7DigitalAsset is
         bytes calldata callData
     ) internal virtual override returns (bytes memory) {
         // If there is a function selector
-        (address extension, ) = _getExtensionAndFowardValue(msg.sig);
+        (address extension, ) = _getExtensionAndForwardValue(msg.sig);
 
         // if no extension was found, revert
         if (extension == address(0))
@@ -155,7 +155,7 @@ abstract contract LSP7DigitalAsset is
      * - If no extension is stored, returns the address(0).
      * - we do not check that payable bool as in lsp7 standard we will always forward the value to the extension
      */
-    function _getExtensionAndFowardValue(
+    function _getExtensionAndForwardValue(
         bytes4 functionSelector
     ) internal view virtual override returns (address, bool) {
         // Generate the data key relevant for the functionSelector being called

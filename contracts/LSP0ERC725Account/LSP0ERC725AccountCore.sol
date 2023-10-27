@@ -764,7 +764,7 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @dev Forwards the call to an extension mapped to a function selector.
      *
-     * Calls {_getExtensionAndFowardValue} to get the address of the extension mapped to the function selector being
+     * Calls {_getExtensionAndForwardValue} to get the address of the extension mapped to the function selector being
      * called on the account. If there is no extension, the `address(0)` will be returned.
      * Forwards the value sent with the call to the extension if the function selector is mapped to a payable extension.
      *
@@ -789,7 +789,7 @@ abstract contract LSP0ERC725AccountCore is
         (
             address extension,
             bool isForwardingValue
-        ) = _getExtensionAndFowardValue(msg.sig);
+        ) = _getExtensionAndForwardValue(msg.sig);
 
         // if value is associated with the extension call and extension function selector is not payable, use the universalReceiver
         if (msg.value != 0 && !isForwardingValue)
@@ -823,7 +823,7 @@ abstract contract LSP0ERC725AccountCore is
      * - {_LSP17_EXTENSION_PREFIX} + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
      * - If no extension is stored, returns the address(0).
      */
-    function _getExtensionAndFowardValue(
+    function _getExtensionAndForwardValue(
         bytes4 functionSelector
     ) internal view virtual override returns (address, bool) {
         // Generate the data key relevant for the functionSelector being called
@@ -836,10 +836,13 @@ abstract contract LSP0ERC725AccountCore is
             mappedExtensionDataKey
         );
 
-        // Check if the extensionData is 21 bytes long (20 bytes of address + 1 byte as bool indicator to forwards the value)
+        // CHECK if the `extensionData` is 21 bytes long
+        // - 20 bytes = extension's address
+        // - 1 byte `0x01` as a boolean indicating if the contract should forward the value to the extension or not
         if (extensionData.length == 21) {
-            // Check if the last byte is 1 (true)
-            if (extensionData[20] == hex"01") {
+            // If the last byte is set to `0x01` (`true`)
+            // this indicates that the contract should forward the value to the extension
+            if (extensionData[20] == 0x01) {
                 // Return the address of the extension
                 return (address(bytes20(extensionData)), true);
             }

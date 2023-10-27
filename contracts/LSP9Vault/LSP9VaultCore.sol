@@ -527,7 +527,7 @@ contract LSP9VaultCore is
     /**
      * @dev Forwards the call to an extension mapped to a function selector.
      *
-     * Calls {_getExtensionAndFowardValue} to get the address of the extension mapped to the function selector being
+     * Calls {_getExtensionAndForwardValue} to get the address of the extension mapped to the function selector being
      * called on the account. If there is no extension, the `address(0)` will be returned.
      * Forwards the value if the extension is payable.
      *
@@ -552,7 +552,7 @@ contract LSP9VaultCore is
         (
             address extension,
             bool isForwardingValue
-        ) = _getExtensionAndFowardValue(msg.sig);
+        ) = _getExtensionAndForwardValue(msg.sig);
 
         // if value is associated with the extension call and function selector is not payable, use the universalReceiver
         if (msg.value != 0 && !isForwardingValue)
@@ -588,7 +588,7 @@ contract LSP9VaultCore is
      * - {_LSP17_EXTENSION_PREFIX} + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
      * - If no extension is stored, returns the address(0).
      */
-    function _getExtensionAndFowardValue(
+    function _getExtensionAndForwardValue(
         bytes4 functionSelector
     ) internal view virtual override returns (address, bool) {
         // Generate the data key relevant for the functionSelector being called

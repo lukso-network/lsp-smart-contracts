@@ -35,7 +35,7 @@ contract LSP17ExtendableTester is LSP17Extendable {
     function getExtension(
         bytes4 functionSelector
     ) public view returns (address, bool) {
-        return _getExtensionAndFowardValue(functionSelector);
+        return _getExtensionAndForwardValue(functionSelector);
     }
 
     function setExtension(
@@ -63,7 +63,7 @@ contract LSP17ExtendableTester is LSP17Extendable {
         _anotherStorageData = newData;
     }
 
-    function _getExtensionAndFowardValue(
+    function _getExtensionAndForwardValue(
         bytes4 functionSelector
     ) internal view override returns (address, bool) {
         return (
