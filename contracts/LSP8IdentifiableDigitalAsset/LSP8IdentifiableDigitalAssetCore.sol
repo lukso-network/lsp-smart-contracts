@@ -9,6 +9,9 @@ import {
     ILSP8IdentifiableDigitalAsset
 } from "./ILSP8IdentifiableDigitalAsset.sol";
 
+// modules
+import {Version} from "../Version.sol";
+
 // libraries
 import {
     EnumerableSet
@@ -48,7 +51,8 @@ import {
  * @dev Core Implementation of a LSP8 compliant contract.
  */
 abstract contract LSP8IdentifiableDigitalAssetCore is
-    ILSP8IdentifiableDigitalAsset
+    ILSP8IdentifiableDigitalAsset,
+    Version
 {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
