@@ -17,7 +17,7 @@ describe('LSP17Extendable - Basic Implementation', () => {
   let exampleExtension: EmitEventExtension;
   let errorsExtension: RevertErrorsTestExtension;
 
-  const selectorWithExtension =
+  const selectorWithExtensionAndNoTransferValue =
     EmitEventExtension__factory.createInterface().getSighash('emitEvent');
   const selectorWithNoExtension = '0xdeadbeef';
 
@@ -43,12 +43,32 @@ describe('LSP17Extendable - Basic Implementation', () => {
     exampleExtension = await new EmitEventExtension__factory(accounts[0]).deploy();
     errorsExtension = await new RevertErrorsTestExtension__factory(accounts[0]).deploy();
 
-    await lsp17Implementation.setExtension(selectorWithExtension, exampleExtension.address);
+    await lsp17Implementation.setExtension(
+      selectorWithExtensionAndNoTransferValue,
+      exampleExtension.address,
+      false,
+    );
 
-    await lsp17Implementation.setExtension(selectorRevertCustomError, errorsExtension.address);
-    await lsp17Implementation.setExtension(selectorRevertErrorString, errorsExtension.address);
-    await lsp17Implementation.setExtension(selectorRevertPanicError, errorsExtension.address);
-    await lsp17Implementation.setExtension(selectorRevertNoErrorData, errorsExtension.address);
+    await lsp17Implementation.setExtension(
+      selectorRevertCustomError,
+      errorsExtension.address,
+      false,
+    );
+    await lsp17Implementation.setExtension(
+      selectorRevertErrorString,
+      errorsExtension.address,
+      false,
+    );
+    await lsp17Implementation.setExtension(
+      selectorRevertPanicError,
+      errorsExtension.address,
+      false,
+    );
+    await lsp17Implementation.setExtension(
+      selectorRevertNoErrorData,
+      errorsExtension.address,
+      false,
+    );
   });
 
   // make sure storage is cleared before running each test
@@ -74,7 +94,7 @@ describe('LSP17Extendable - Basic Implementation', () => {
         await expect(
           accounts[0].sendTransaction({
             to: lsp17Implementation.address,
-            data: selectorWithExtension,
+            data: selectorWithExtensionAndNoTransferValue,
           }),
         ).to.emit(exampleExtension, 'EventEmittedInExtension');
       });
@@ -89,7 +109,7 @@ describe('LSP17Extendable - Basic Implementation', () => {
 
           await accounts[0].sendTransaction({
             to: lsp17Implementation.address,
-            data: selectorWithExtension,
+            data: selectorWithExtensionAndNoTransferValue,
           });
 
           const storageAfter = await lsp17Implementation.getStorageData();

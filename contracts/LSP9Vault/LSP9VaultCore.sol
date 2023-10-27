@@ -56,6 +56,7 @@ import {
 } from "../LSP6KeyManager/LSP6Constants.sol";
 import {
     _INTERFACEID_LSP9,
+    _TYPEID_LSP9_VALUE_RECEIVED,
     _TYPEID_LSP9_OwnershipTransferStarted,
     _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
@@ -96,10 +97,12 @@ contract LSP9VaultCore is
      * - When receiving some native tokens without any additional data.
      * - On empty calls to the contract.
      *
-     * @custom:events {ValueReceived} when receiving native tokens.
+     * @custom:events {UniversalReceiver} when receiving native tokens.
      */
     receive() external payable virtual {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0) {
+            universalReceiver(_TYPEID_LSP9_VALUE_RECEIVED, "");
+        }
     }
 
     /**
@@ -121,17 +124,16 @@ contract LSP9VaultCore is
      *
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), return.
      *
-     * @custom:events {ValueReceived} event when receiving native tokens.
+     * @custom:events {UniversalReceiver} event when receiving native tokens and extension function selector is not found or not payable.
      */
     // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
-        if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
-        }
-
         if (msg.data.length < 4) {
+            // if value is associated with the extension call, use the universalReceiver
+            if (msg.value != 0)
+                universalReceiver(_TYPEID_LSP9_VALUE_RECEIVED, callData);
             return "";
         }
 
@@ -187,7 +189,7 @@ contract LSP9VaultCore is
      * @custom:events
      * - {Executed} event for each call that uses under `operationType`: `CALL` (0) and `STATICCALL` (3).
      * - {ContractCreated} event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2).
-     * - {ValueReceived} event when receiving native tokens.
+     * - {UniversalReceiver} event when receiving native tokens.
      *
      * @custom:info The `operationType` 4 `DELEGATECALL` is disabled by default in the LSP9 Vault.
      */
@@ -197,7 +199,15 @@ contract LSP9VaultCore is
         uint256 value,
         bytes memory data
     ) public payable virtual override onlyOwner returns (bytes memory) {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0) {
+            emit UniversalReceiver(
+                msg.sender,
+                msg.value,
+                _TYPEID_LSP9_VALUE_RECEIVED,
+                abi.encodePacked(msg.sig),
+                ""
+            );
+        }
         return _execute(operationType, target, value, data);
     }
 
@@ -214,7 +224,7 @@ contract LSP9VaultCore is
      * @custom:events
      * - {Executed} event for each call that uses under `operationType`: `CALL` (0) and `STATICCALL` (3). (each iteration)
      * - {ContractCreated} event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2). (each iteration)
-     * - {ValueReceived} event when receiving native tokens.
+     * - {UniversalReceiver} event when receiving native tokens.
      *
      * @custom:info The `operationType` 4 `DELEGATECALL` is disabled by default in the LSP9 Vault.
      */
@@ -224,7 +234,15 @@ contract LSP9VaultCore is
         uint256[] memory values,
         bytes[] memory datas
     ) public payable virtual override onlyOwner returns (bytes[] memory) {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0) {
+            emit UniversalReceiver(
+                msg.sender,
+                msg.value,
+                _TYPEID_LSP9_VALUE_RECEIVED,
+                abi.encodePacked(msg.sig),
+                ""
+            );
+        }
         return _executeBatch(operationsType, targets, values, datas);
     }
 
@@ -234,7 +252,6 @@ contract LSP9VaultCore is
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
      * @custom:events
-     * - {ValueReceived} event when receiving native tokens.
      * - {DataChanged} event.
      */
     function setData(
@@ -262,7 +279,6 @@ contract LSP9VaultCore is
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
      * @custom:events
-     * - {ValueReceived} event when receiving native tokens.
      * - {DataChanged} event. (on each iteration of setting data)
      */
     function setDataBatch(
@@ -322,15 +338,14 @@ contract LSP9VaultCore is
      * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call and the LSP1TypeIdDelegate call.
      *
      * @custom:events
-     * - {ValueReceived} when receiving native tokens.
      * - {UniversalReceiver} event with the function parameters, call options, and the response of the UniversalReceiverDelegates (URD) contract that was called.
      */
     function universalReceiver(
         bytes32 typeId,
-        bytes calldata receivedData
+        bytes memory receivedData
     ) public payable virtual override returns (bytes memory returnedValues) {
-        if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0 && (typeId != _TYPEID_LSP9_VALUE_RECEIVED)) {
+            universalReceiver(_TYPEID_LSP9_VALUE_RECEIVED, msg.data);
         }
 
         bytes memory lsp1DelegateValue = _getData(
@@ -514,8 +529,9 @@ contract LSP9VaultCore is
     /**
      * @dev Forwards the call to an extension mapped to a function selector.
      *
-     * Calls {_getExtension} to get the address of the extension mapped to the function selector being
+     * Calls {_getExtensionAndForwardValue} to get the address of the extension mapped to the function selector being
      * called on the account. If there is no extension, the `address(0)` will be returned.
+     * Forwards the value if the extension is payable.
      *
      * Reverts if there is no extension for the function being called, except for the `bytes4(0)` function selector, which passes even if there is no extension for it.
      *
@@ -535,7 +551,14 @@ contract LSP9VaultCore is
         bytes calldata callData
     ) internal virtual override returns (bytes memory) {
         // If there is a function selector
-        address extension = _getExtension(msg.sig);
+        (
+            address extension,
+            bool isForwardingValue
+        ) = _getExtensionAndForwardValue(msg.sig);
+
+        // if value is associated with the extension call and function selector is not payable, use the universalReceiver
+        if (msg.value != 0 && !isForwardingValue)
+            universalReceiver(_TYPEID_LSP9_VALUE_RECEIVED, callData);
 
         // if no extension was found for bytes4(0) return don't revert
         if (msg.sig == bytes4(0) && extension == address(0)) return "";
@@ -544,9 +567,9 @@ contract LSP9VaultCore is
         if (extension == address(0))
             revert NoExtensionFoundForFunctionSelector(msg.sig);
 
-        (bool success, bytes memory result) = extension.call(
-            abi.encodePacked(callData, msg.sender, msg.value)
-        );
+        (bool success, bytes memory result) = extension.call{
+            value: isForwardingValue ? msg.value : 0
+        }(abi.encodePacked(callData, msg.sender, msg.value));
 
         if (success) {
             return result;
@@ -567,18 +590,29 @@ contract LSP9VaultCore is
      * - {_LSP17_EXTENSION_PREFIX} + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
      * - If no extension is stored, returns the address(0).
      */
-    function _getExtension(
+    function _getExtensionAndForwardValue(
         bytes4 functionSelector
-    ) internal view virtual override returns (address) {
+    ) internal view virtual override returns (address, bool) {
+        // Generate the data key relevant for the functionSelector being called
         bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
             _LSP17_EXTENSION_PREFIX,
             functionSelector
         );
 
-        // Check if there is an extension for the function selector provided
-        address extension = address(bytes20(_getData(mappedExtensionDataKey)));
+        bytes memory extensionData = ERC725YCore._getData(
+            mappedExtensionDataKey
+        );
 
-        return extension;
+        // Check if the extensionData is 21 bytes long (20 bytes of address + 1 byte as bool indicator ot forwards the value)
+        if (extensionData.length == 21) {
+            // Check if the last byte is 1 (true)
+            if (extensionData[20] == hex"01") {
+                // Return the address of the extension
+                return (address(bytes20(extensionData)), true);
+            }
+        }
+
+        return (address(bytes20(extensionData)), false);
     }
 
     /**

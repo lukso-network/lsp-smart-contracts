@@ -41,6 +41,7 @@ import {
     _INTERFACEID_ERC1271,
     _ERC1271_SUCCESSVALUE,
     _ERC1271_FAILVALUE,
+    _TYPEID_LSP0_VALUE_RECEIVED,
     _TYPEID_LSP0_OwnershipTransferStarted,
     _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP0_OwnershipTransferred_RecipientNotification
@@ -94,11 +95,11 @@ abstract contract LSP0ERC725AccountCore is
      * - When receiving some native tokens without any additional data.
      * - On empty calls to the contract.
      *
-     * @custom:events {ValueReceived} event when receiving native tokens.
+     * @custom:events {UniversalReceiver} event when receiving native tokens.
      */
     receive() external payable virtual {
         if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+            universalReceiver(_TYPEID_LSP0_VALUE_RECEIVED, "");
         }
     }
 
@@ -121,17 +122,16 @@ abstract contract LSP0ERC725AccountCore is
      *
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), return.
      *
-     * @custom:events {ValueReceived} event when receiving native tokens.
+     * @custom:events {UniversalReceiver} event when receiving native tokens and extension function selector is not found or not payable.
      */
     // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
-        if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
-        }
-
         if (msg.data.length < 4) {
+            // if value is associated with the extension call, use the universalReceiver
+            if (msg.value != 0)
+                universalReceiver(_TYPEID_LSP0_VALUE_RECEIVED, callData);
             return "";
         }
 
@@ -187,7 +187,7 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:events
      * - {Executed} event for each call that uses under `operationType`: `CALL` (0), `STATICCALL` (3) and `DELEGATECALL` (4).
      * - {ContractCreated} event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2).
-     * - {ValueReceived} event when receiving native tokens.
+     * - {UniversalReceiver} event when receiving native tokens.
      */
     function execute(
         uint256 operationType,
@@ -196,7 +196,13 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory data
     ) public payable virtual override returns (bytes memory) {
         if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+            emit UniversalReceiver(
+                msg.sender,
+                msg.value,
+                _TYPEID_LSP0_VALUE_RECEIVED,
+                abi.encodePacked(msg.sig),
+                ""
+            );
         }
 
         address accountOwner = owner();
@@ -245,7 +251,7 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:events
      * - {Executed} event for each call that uses under `operationType`: `CALL` (0), `STATICCALL` (3) and `DELEGATECALL` (4). (each iteration)
      * - {ContractCreated} event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2) (each iteration)
-     * - {ValueReceived} event when receiving native tokens.
+     * - {UniversalReceiver} event when receiving native tokens.
      */
     function executeBatch(
         uint256[] memory operationsType,
@@ -254,7 +260,13 @@ abstract contract LSP0ERC725AccountCore is
         bytes[] memory datas
     ) public payable virtual override returns (bytes[] memory) {
         if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+            emit UniversalReceiver(
+                msg.sender,
+                msg.value,
+                _TYPEID_LSP0_VALUE_RECEIVED,
+                abi.encodePacked(msg.sig),
+                ""
+            );
         }
 
         address accountOwner = owner();
@@ -299,7 +311,7 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
      * @custom:events
-     * - {ValueReceived} event when receiving native tokens.
+     * - {UniversalReceiver} event when receiving native tokens.
      * - {DataChanged} event.
      */
     function setData(
@@ -307,7 +319,13 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory dataValue
     ) public payable virtual override {
         if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+            emit UniversalReceiver(
+                msg.sender,
+                msg.value,
+                _TYPEID_LSP0_VALUE_RECEIVED,
+                abi.encodePacked(msg.sig),
+                ""
+            );
         }
 
         address accountOwner = owner();
@@ -336,7 +354,7 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
      * @custom:events
-     * - {ValueReceived} event when receiving native tokens.
+     * - {UniversalReceiver} event when receiving native tokens.
      * - {DataChanged} event. (on each iteration of setting data)
      */
     function setDataBatch(
@@ -344,7 +362,13 @@ abstract contract LSP0ERC725AccountCore is
         bytes[] memory dataValues
     ) public payable virtual override {
         if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+            emit UniversalReceiver(
+                msg.sender,
+                msg.value,
+                _TYPEID_LSP0_VALUE_RECEIVED,
+                abi.encodePacked(msg.sig),
+                ""
+            );
         }
 
         if (dataKeys.length != dataValues.length) {
@@ -416,15 +440,15 @@ abstract contract LSP0ERC725AccountCore is
      * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call and the LSP1TypeIdDelegate call.
      *
      * @custom:events
-     * - {ValueReceived} when receiving native tokens.
+     * - {UniversalReceiver} when receiving native tokens.
      * - {UniversalReceiver} event with the function parameters, call options, and the response of the UniversalReceiverDelegates (URD) contract that was called.
      */
     function universalReceiver(
         bytes32 typeId,
-        bytes calldata receivedData
+        bytes memory receivedData
     ) public payable virtual override returns (bytes memory returnedValues) {
-        if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0 && (typeId != _TYPEID_LSP0_VALUE_RECEIVED)) {
+            universalReceiver(_TYPEID_LSP0_VALUE_RECEIVED, msg.data);
         }
 
         // Query the ERC725Y storage with the data key {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY}
@@ -742,8 +766,9 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @dev Forwards the call to an extension mapped to a function selector.
      *
-     * Calls {_getExtension} to get the address of the extension mapped to the function selector being
+     * Calls {_getExtensionAndForwardValue} to get the address of the extension mapped to the function selector being
      * called on the account. If there is no extension, the `address(0)` will be returned.
+     * Forwards the value sent with the call to the extension if the function selector is mapped to a payable extension.
      *
      * Reverts if there is no extension for the function being called, except for the `bytes4(0)` function selector, which passes even if there is no extension for it.
      *
@@ -763,7 +788,14 @@ abstract contract LSP0ERC725AccountCore is
         bytes calldata callData
     ) internal virtual override returns (bytes memory) {
         // If there is a function selector
-        address extension = _getExtension(msg.sig);
+        (
+            address extension,
+            bool isForwardingValue
+        ) = _getExtensionAndForwardValue(msg.sig);
+
+        // if value is associated with the extension call and extension function selector is not payable, use the universalReceiver
+        if (msg.value != 0 && !isForwardingValue)
+            universalReceiver(_TYPEID_LSP0_VALUE_RECEIVED, callData);
 
         // if no extension was found for bytes4(0) return don't revert
         if (msg.sig == bytes4(0) && extension == address(0)) return "";
@@ -772,9 +804,9 @@ abstract contract LSP0ERC725AccountCore is
         if (extension == address(0))
             revert NoExtensionFoundForFunctionSelector(msg.sig);
 
-        (bool success, bytes memory result) = extension.call(
-            abi.encodePacked(callData, msg.sender, msg.value)
-        );
+        (bool success, bytes memory result) = extension.call{
+            value: isForwardingValue ? msg.value : 0
+        }(abi.encodePacked(callData, msg.sender, msg.value));
 
         if (success) {
             return result;
@@ -793,21 +825,32 @@ abstract contract LSP0ERC725AccountCore is
      * - {_LSP17_EXTENSION_PREFIX} + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
      * - If no extension is stored, returns the address(0).
      */
-    function _getExtension(
+    function _getExtensionAndForwardValue(
         bytes4 functionSelector
-    ) internal view virtual override returns (address) {
+    ) internal view virtual override returns (address, bool) {
         // Generate the data key relevant for the functionSelector being called
         bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
             _LSP17_EXTENSION_PREFIX,
             functionSelector
         );
 
-        // Check if there is an extension stored under the generated data key
-        address extension = address(
-            bytes20(ERC725YCore._getData(mappedExtensionDataKey))
+        bytes memory extensionData = ERC725YCore._getData(
+            mappedExtensionDataKey
         );
 
-        return extension;
+        // CHECK if the `extensionData` is 21 bytes long
+        // - 20 bytes = extension's address
+        // - 1 byte `0x01` as a boolean indicating if the contract should forward the value to the extension or not
+        if (extensionData.length == 21) {
+            // If the last byte is set to `0x01` (`true`)
+            // this indicates that the contract should forward the value to the extension
+            if (extensionData[20] == 0x01) {
+                // Return the address of the extension
+                return (address(bytes20(extensionData)), true);
+            }
+        }
+
+        return (address(bytes20(extensionData)), false);
     }
 
     /**

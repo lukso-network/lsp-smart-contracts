@@ -319,6 +319,9 @@ export const PERMISSIONS = {
  * (e.g: token transfer, vault transfer, ownership transfer, etc...)
  */
 export const LSP1_TYPE_IDS = {
+  // keccak256('LSP0ValueReceived')
+  LSP0ValueReceived: '0x9c4705229491d365fb5434052e12a386d6771d976bea61070a8c694e8affea3d',
+
   // keccak256('LSP0OwnershipTransferStarted')
   LSP0OwnershipTransferStarted:
     '0xe17117c9d2665d1dbeb479ed8058bbebde3c50ac50e2e65619f60006caac6926',
@@ -354,6 +357,9 @@ export const LSP1_TYPE_IDS = {
   // keccak256('LSP8Tokens_OperatorNotification')
   LSP8Tokens_OperatorNotification:
     '0x8a1c15a8799f71b547e08e2bcb2e85257e81b0a07eee2ce6712549eef1f00970',
+
+  // keccak256('LSP9ValueReceived')
+  LSP9ValueReceived: '0x468cd1581d7bc001c3b685513d2b929b55437be34700410383d58f3aa1ea0abc',
 
   // keccak256('LSP9OwnershipTransferStarted')
   LSP9OwnershipTransferStarted:

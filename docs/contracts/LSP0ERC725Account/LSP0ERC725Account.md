@@ -60,7 +60,7 @@ Set `initialOwner` as the contract owner. The `constructor` also allows funding 
 
 **Emitted events:**
 
-- [`ValueReceived`](#valuereceived) event when funding the contract on deployment.
+- [`UniversalReceiver`](#universalreceiver) event when funding the contract on deployment.
 - [`OwnershipTransferred`](#ownershiptransferred) event when `initialOwner` is set as the contract [`owner`](#owner).
 
 </blockquote>
@@ -110,7 +110,7 @@ This function is executed when:
 
 **Emitted events:**
 
-- [`ValueReceived`](#valuereceived) event when receiving native tokens.
+- [`UniversalReceiver`](#universalreceiver) event when receiving native tokens and extension function selector is not found or not payable.
 
 </blockquote>
 
@@ -139,7 +139,7 @@ Executed:
 
 **Emitted events:**
 
-- [`ValueReceived`](#valuereceived) event when receiving native tokens.
+- [`UniversalReceiver`](#universalreceiver) event when receiving native tokens.
 
 </blockquote>
 
@@ -318,7 +318,7 @@ Generic executor function to:
 
 - [`Executed`](#executed) event for each call that uses under `operationType`: `CALL` (0), `STATICCALL` (3) and `DELEGATECALL` (4).
 - [`ContractCreated`](#contractcreated) event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2).
-- [`ValueReceived`](#valuereceived) event when receiving native tokens.
+- [`UniversalReceiver`](#universalreceiver) event when receiving native tokens.
 
 </blockquote>
 
@@ -387,7 +387,7 @@ Batch executor function that behaves the same as [`execute`](#execute) but allow
 
 - [`Executed`](#executed) event for each call that uses under `operationType`: `CALL` (0), `STATICCALL` (3) and `DELEGATECALL` (4). (each iteration)
 - [`ContractCreated`](#contractcreated) event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2) (each iteration)
-- [`ValueReceived`](#valuereceived) event when receiving native tokens.
+- [`UniversalReceiver`](#universalreceiver) event when receiving native tokens.
 
 </blockquote>
 
@@ -651,7 +651,7 @@ Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data
 
 **Emitted events:**
 
-- [`ValueReceived`](#valuereceived) event when receiving native tokens.
+- [`UniversalReceiver`](#universalreceiver) event when receiving native tokens.
 - [`DataChanged`](#datachanged) event.
 
 </blockquote>
@@ -696,7 +696,7 @@ Batch data setting function that behaves the same as [`setData`](#setdata) but a
 
 **Emitted events:**
 
-- [`ValueReceived`](#valuereceived) event when receiving native tokens.
+- [`UniversalReceiver`](#universalreceiver) event when receiving native tokens.
 - [`DataChanged`](#datachanged) event. (on each iteration of setting data)
 
 </blockquote>
@@ -818,7 +818,7 @@ Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be not
 
 **Emitted events:**
 
-- [`ValueReceived`](#valuereceived) when receiving native tokens.
+- [`UniversalReceiver`](#universalreceiver) when receiving native tokens.
 - [`UniversalReceiver`](#universalreceiver) event with the function parameters, call options, and the response of the UniversalReceiverDelegates (URD) contract that was called.
 
 </blockquote>
@@ -1172,10 +1172,12 @@ extension if the extension is set, if not it returns false.
 
 <br/>
 
-### \_getExtension
+### \_getExtensionAndForwardValue
 
 ```solidity
-function _getExtension(bytes4 functionSelector) internal view returns (address);
+function _getExtensionAndForwardValue(
+  bytes4 functionSelector
+) internal view returns (address, bool);
 ```
 
 Returns the extension address stored under the following data key:
@@ -1208,8 +1210,9 @@ function _fallbackLSP17Extendable(
 ```
 
 Forwards the call to an extension mapped to a function selector.
-Calls [`_getExtension`](#_getextension) to get the address of the extension mapped to the function selector being
+Calls [`_getExtensionAndForwardValue`](#_getextensionandforwardvalue) to get the address of the extension mapped to the function selector being
 called on the account. If there is no extension, the `address(0)` will be returned.
+Forwards the value sent with the call to the extension if the function selector is mapped to a payable extension.
 Reverts if there is no extension for the function being called, except for the `bytes4(0)` function selector, which passes even if there is no extension for it.
 If there is an extension for the function selector being called, it calls the extension with the
 `CALL` opcode, passing the `msg.data` appended with the 20 bytes of the [`msg.sender`](#msg.sender) and 32 bytes of the `msg.value`.
@@ -1466,34 +1469,6 @@ Emitted when the [`universalReceiver`](#universalreceiver) function was called w
 | `typeId` **`indexed`** | `bytes32` | A `bytes32` unique identifier (= _"hook"_)that describe the type of notification, information or transaction received by the contract. Can be related to a specific standard or a hook. |
 | `receivedData`         |  `bytes`  | Any arbitrary data that was sent to the {universalReceiver(...)} function.                                                                                                              |
 | `returnedValue`        |  `bytes`  | The value returned by the {universalReceiver(...)} function.                                                                                                                            |
-
-<br/>
-
-### ValueReceived
-
-:::note References
-
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-0-ERC725Account.md#valuereceived)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP0ERC725Account/LSP0ERC725Account.sol)
-- Event signature: `ValueReceived(address,uint256)`
-- Event topic hash: `0x7e71433ddf847725166244795048ecf3e3f9f35628254ecbf736056664233493`
-
-:::
-
-```solidity
-event ValueReceived(address indexed sender, uint256 indexed value);
-```
-
-_`value` native tokens received from `sender`._
-
-Emitted when receiving native tokens.
-
-#### Parameters
-
-| Name                   |   Type    | Description                                                |
-| ---------------------- | :-------: | ---------------------------------------------------------- |
-| `sender` **`indexed`** | `address` | The address that sent some native tokens to this contract. |
-| `value` **`indexed`**  | `uint256` | The amount of native tokens received.                      |
 
 <br/>
 

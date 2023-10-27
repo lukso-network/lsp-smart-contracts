@@ -28,7 +28,7 @@ abstract contract UniversalProfileInitAbstract is
      * @custom:warning ERC725X & ERC725Y parent contracts are not initialised as they don't have non-zero initial state. If you decide to add non-zero initial state to any of those contracts, you must initialize them here.
      *
      * @custom:events
-     * - {ValueReceived} event when funding the contract on deployment.
+     * - {UniversalReceiver} event when funding the contract on deployment.
      * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
      */
     function _initialize(

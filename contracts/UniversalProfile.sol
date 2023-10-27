@@ -24,7 +24,7 @@ contract UniversalProfile is LSP0ERC725Account {
      * @param initialOwner the owner of the contract
      *
      * @custom:events
-     * - {ValueReceived} event when funding the contract on deployment.
+     * - {UniversalReceiver} event when funding the contract on deployment.
      * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
      * - {DataChanged} event when setting the {_LSP3_SUPPORTED_STANDARDS_KEY}.
      */
