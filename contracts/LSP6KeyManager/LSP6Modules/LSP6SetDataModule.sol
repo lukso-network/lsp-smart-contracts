@@ -8,9 +8,6 @@ import {
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
-import {
-    ERC725Y_DataKeysValuesLengthMismatch
-} from "@erc725/smart-contracts/contracts/errors.sol";
 
 // libraries
 import {LSP6Utils} from "../LSP6Utils.sol";
@@ -41,6 +38,9 @@ import {
 } from "../../LSP17ContractExtension/LSP17Constants.sol";
 
 // errors
+import {
+    ERC725Y_DataKeysValuesLengthMismatch
+} from "@erc725/smart-contracts/contracts/errors.sol";
 import {
     NotRecognisedPermissionKey,
     InvalidEncodedAllowedCalls,
