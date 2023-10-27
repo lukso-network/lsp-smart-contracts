@@ -1168,8 +1168,6 @@ function _verifyCall(
 ```
 
 Calls [`lsp20VerifyCall`](#lsp20verifycall) function on the logicVerifier.
-Reverts in case the value returned does not match the success value (lsp20VerifyCall selector)
-Returns whether a verification after the execution should happen based on the last byte of the returnedStatus
 
 <br/>
 
@@ -1183,19 +1181,6 @@ function _verifyCallResult(
 ```
 
 Calls [`lsp20VerifyCallResult`](#lsp20verifycallresult) function on the logicVerifier.
-Reverts in case the value returned does not match the success value (lsp20VerifyCallResult selector)
-
-<br/>
-
-### \_validateCall
-
-```solidity
-function _validateCall(
-  bool postCall,
-  bool success,
-  bytes returnedData
-) internal pure;
-```
 
 <br/>
 

@@ -22,8 +22,8 @@ abstract contract LSP20CallVerification {
      * @dev Calls {lsp20VerifyCall} function on the logicVerifier.
      *
      * @custom:info
-     * - Reverts in case the value returned does not match the magic value (lsp20VerifyCall selector).
-     * - Returns whether a verification after the execution should happen based on the last byte of the magicValue.
+     * - Reverts in case the value returned does not match the returned status (lsp20VerifyCall selector).
+     * - Returns whether a verification after the execution should happen based on the last byte of the `returnedStatus`.
      * - Reverts with no reason if the  data returned by `ILSP20(logicVerifier).lsp20VerifyCall(...)` cannot be decoded (_e.g:_ any other data type besides `bytes4`).
      * See this link for more info: https://forum.soliditylang.org/t/call-for-feedback-the-future-of-try-catch-in-solidity/1497.
      */
@@ -43,15 +43,18 @@ abstract contract LSP20CallVerification {
                 msg.value,
                 msg.data
             )
-        returns (bytes4 magicValue) {
-            if (bytes3(magicValue) != bytes3(ILSP20.lsp20VerifyCall.selector)) {
+        returns (bytes4 returnedStatus) {
+            if (
+                bytes3(returnedStatus) !=
+                bytes3(ILSP20.lsp20VerifyCall.selector)
+            ) {
                 revert LSP20CallVerificationFailed(
                     false,
-                    abi.encode(magicValue)
+                    abi.encode(returnedStatus)
                 );
             }
 
-            return magicValue[3] == 0x01;
+            return returnedStatus[3] == 0x01;
         } catch (bytes memory errorData) {
             _revertWithLSP20DefaultError(false, errorData);
         }
@@ -61,8 +64,8 @@ abstract contract LSP20CallVerification {
      * @dev Calls {lsp20VerifyCallResult} function on the logicVerifier.
      *
      * @custom:info
-     * - Reverts in case the value returned does not match the magic value (lsp20VerifyCallResult selector).
-     * - Reverts with no reason if the  data returned by `ILSP20(logicVerifier).lsp20VerifyCallResult(...)` cannot be decoded (_e.g:_ any other data type besides `bytes4`).
+     * - Reverts in case the value returned does not match the returned status (lsp20VerifyCallResult selector).
+     * - Reverts with no reason if the data returned by `ILSP20(logicVerifier).lsp20VerifyCallResult(...)` cannot be decoded (_e.g:_ any other data type besides `bytes4`).
      * See this link for more info: https://forum.soliditylang.org/t/call-for-feedback-the-future-of-try-catch-in-solidity/1497.
      */
     function _verifyCallResult(
@@ -83,11 +86,11 @@ abstract contract LSP20CallVerification {
                 ),
                 callResult
             )
-        returns (bytes4 magicValue) {
-            if (magicValue != ILSP20.lsp20VerifyCallResult.selector) {
+        returns (bytes4 returnedStatus) {
+            if (returnedStatus != ILSP20.lsp20VerifyCallResult.selector) {
                 revert LSP20CallVerificationFailed({
                     postCall: true,
-                    returnedData: abi.encode(magicValue)
+                    returnedData: abi.encode(returnedStatus)
                 });
             }
 
