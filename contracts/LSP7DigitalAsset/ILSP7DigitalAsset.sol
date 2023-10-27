@@ -50,13 +50,11 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @dev Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its {`authorizedAmountFor(...)`} to `0`.
      * @param operator The address revoked from operating
      * @param tokenOwner The token owner
-     * @param notified Bool indicating whether the operator has been notified or not
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
     event RevokedOperator(
         address indexed operator,
         address indexed tokenOwner,
-        bool notified,
         bytes operatorNotificationData
     );
 
@@ -103,7 +101,6 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
 
     /**
      * @dev Sets an `amount` of tokens that an `operator` has access from the caller's balance (allowance). See {authorizedAmountFor}.
-     * Notify the operator based on the LSP1-UniversalReceiver standard
      *
      * @param operator The address to authorize as an operator.
      * @param amount The allowance amount of tokens operator has access to.
@@ -126,7 +123,6 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * on behalf of the token owner (the caller of the function `msg.sender`). See also {authorizedAmountFor}.
      *
      * @param operator The address to revoke as an operator.
-     * @param notify Boolean indicating whether to notify the operator or not
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
@@ -137,62 +133,6 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      */
     function revokeOperator(
         address operator,
-        bool notify,
-        bytes memory operatorNotificationData
-    ) external;
-
-    /**
-     * @custom:info This function in the LSP7 contract can be used as a prevention mechanism
-     * against double spending allowance vulnerability.
-     *
-     * @notice Increase the allowance of `operator` by +`addedAmount`
-     *
-     * @dev Atomically increases the allowance granted to `operator` by the caller.
-     * This is an alternative approach to {authorizeOperator} that can be used as a mitigation
-     * for the double spending allowance problem.
-     * Notify the operator based on the LSP1-UniversalReceiver standard
-     *
-     * @param operator The operator to increase the allowance for `msg.sender`
-     * @param addedAmount The additional amount to add on top of the current operator's allowance
-     *
-     * @custom:requirements
-     *  - `operator` cannot be the same address as `msg.sender`
-     *  - `operator` cannot be the zero address.
-     *
-     * @custom:events {AuthorizedOperator} indicating the updated allowance
-     */
-    function increaseAllowance(
-        address operator,
-        uint256 addedAmount,
-        bytes memory operatorNotificationData
-    ) external;
-
-    /**
-     * @custom:info This function in the LSP7 contract can be used as a prevention mechanism
-     * against the double spending allowance vulnerability.
-     *
-     * @notice Decrease the allowance of `operator` by -`subtractedAmount`
-     *
-     * @dev Atomically decreases the allowance granted to `operator` by the caller.
-     * This is an alternative approach to {authorizeOperator} that can be used as a mitigation
-     * for the double spending allowance problem.
-     * Notify the operator based on the LSP1-UniversalReceiver standard
-     *
-     * @custom:events
-     *  - {AuthorizedOperator} event indicating the updated allowance after decreasing it.
-     *  - {RevokeOperator} event if `subtractedAmount` is the full allowance,
-     *    indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
-     *
-     * @param operator The operator to decrease allowance for `msg.sender`
-     * @param subtractedAmount The amount to decrease by in the operator's allowance.
-     *
-     * @custom:requirements
-     *  - `operator` cannot be the zero address.
-     *  - `operator` must have allowance for the caller of at least `subtractedAmount`.
-     */
-    function decreaseAllowance(
-        address operator,
-        uint256 subtractedAmount,
         bytes memory operatorNotificationData
     ) external;
 
