@@ -764,7 +764,7 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @dev Forwards the call to an extension mapped to a function selector.
      *
-     * Calls {_getExtensionAndPayableBool} to get the address of the extension mapped to the function selector being
+     * Calls {_getExtensionAndFowardValue} to get the address of the extension mapped to the function selector being
      * called on the account. If there is no extension, the `address(0)` will be returned.
      * Forwards the value sent with the call to the extension if the function selector is mapped to a payable extension.
      *
@@ -786,25 +786,24 @@ abstract contract LSP0ERC725AccountCore is
         bytes calldata callData
     ) internal virtual override returns (bytes memory) {
         // If there is a function selector
-        (address extension, bool isPayable) = _getExtensionAndPayableBool(
-            msg.sig
-        );
+        (
+            address extension,
+            bool isForwardingValue
+        ) = _getExtensionAndFowardValue(msg.sig);
 
         // if value is associated with the extension call and extension function selector is not payable, use the universalReceiver
-        if (msg.value != 0 && !isPayable)
+        if (msg.value != 0 && !isForwardingValue)
             universalReceiver(_TYPEID_LSP0_VALUE_RECEIVED, callData);
 
         // if no extension was found for bytes4(0) return don't revert
-        if (msg.sig == bytes4(0) && extension == address(0)) {
-            return "";
-        }
+        if (msg.sig == bytes4(0) && extension == address(0)) return "";
 
         // if no extension was found for other function selectors, revert
         if (extension == address(0))
             revert NoExtensionFoundForFunctionSelector(msg.sig);
 
         (bool success, bytes memory result) = extension.call{
-            value: isPayable ? msg.value : 0
+            value: isForwardingValue ? msg.value : 0
         }(abi.encodePacked(callData, msg.sender, msg.value));
 
         if (success) {
@@ -824,7 +823,7 @@ abstract contract LSP0ERC725AccountCore is
      * - {_LSP17_EXTENSION_PREFIX} + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
      * - If no extension is stored, returns the address(0).
      */
-    function _getExtensionAndPayableBool(
+    function _getExtensionAndFowardValue(
         bytes4 functionSelector
     ) internal view virtual override returns (address, bool) {
         // Generate the data key relevant for the functionSelector being called

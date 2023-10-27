@@ -133,7 +133,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
     /**
      * @dev Forwards the call with the received value to an extension mapped to a function selector.
      *
-     * Calls {_getExtensionAndPayableBool} to get the address of the extension mapped to the function selector being
+     * Calls {_getExtensionAndFowardValue} to get the address of the extension mapped to the function selector being
      * called on the account. If there is no extension, the address(0) will be returned.
      * We will always forward the value to the extension, as the LSP8 contract is not supposed to hold any native tokens.
      *
@@ -150,7 +150,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         bytes calldata callData
     ) internal virtual override returns (bytes memory) {
         // If there is a function selector
-        (address extension, ) = _getExtensionAndPayableBool(msg.sig);
+        (address extension, ) = _getExtensionAndFowardValue(msg.sig);
 
         // if no extension was found, revert
         if (extension == address(0))
@@ -179,7 +179,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
      * - {_LSP17_EXTENSION_PREFIX} + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
      * - If no extension is stored, returns the address(0).
      */
-    function _getExtensionAndPayableBool(
+    function _getExtensionAndFowardValue(
         bytes4 functionSelector
     ) internal view virtual override returns (address, bool) {
         // Generate the data key relevant for the functionSelector being called

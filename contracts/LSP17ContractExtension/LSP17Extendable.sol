@@ -44,7 +44,7 @@ abstract contract LSP17Extendable is ERC165 {
     function _supportsInterfaceInERC165Extension(
         bytes4 interfaceId
     ) internal view virtual returns (bool) {
-        (address erc165Extension, ) = _getExtensionAndPayableBool(
+        (address erc165Extension, ) = _getExtensionAndFowardValue(
             ERC165.supportsInterface.selector
         );
         if (erc165Extension == address(0)) return false;
@@ -62,14 +62,14 @@ abstract contract LSP17Extendable is ERC165 {
      * To be overrided.
      * Up to the implementor contract to return an extension based on a function selector
      */
-    function _getExtensionAndPayableBool(
+    function _getExtensionAndFowardValue(
         bytes4 functionSelector
     ) internal view virtual returns (address, bool);
 
     /**
      * @dev Forwards the call to an extension mapped to a function selector.
      *
-     * Calls {_getExtensionAndPayableBool} to get the address of the extension mapped to the function selector being
+     * Calls {_getExtensionAndFowardValue} to get the address of the extension mapped to the function selector being
      * called on the account. If there is no extension, the `address(0)` will be returned.
      * Forwards the value if the extension is payable.
      *
@@ -91,16 +91,17 @@ abstract contract LSP17Extendable is ERC165 {
         bytes calldata callData
     ) internal virtual returns (bytes memory) {
         // If there is a function selector
-        (address extension, bool isPayable) = _getExtensionAndPayableBool(
-            msg.sig
-        );
+        (
+            address extension,
+            bool isForwardingValue
+        ) = _getExtensionAndFowardValue(msg.sig);
 
         // if no extension was found, revert
         if (extension == address(0))
             revert NoExtensionFoundForFunctionSelector(msg.sig);
 
         (bool success, bytes memory result) = extension.call{
-            value: isPayable ? msg.value : 0
+            value: isForwardingValue ? msg.value : 0
         }(abi.encodePacked(callData, msg.sender, msg.value));
 
         if (success) {
