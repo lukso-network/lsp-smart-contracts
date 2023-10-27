@@ -126,11 +126,10 @@ abstract contract LSP0ERC725AccountCore is
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
-        // if value is associated with the extension call, use the universalReceiver
-        if (msg.value != 0)
-            universalReceiver(_TYPEID_LSP0_VALUE_RECEIVED, callData);
-
         if (msg.data.length < 4) {
+            // if value is associated with the extension call, use the universalReceiver
+            if (msg.value != 0)
+                universalReceiver(_TYPEID_LSP0_VALUE_RECEIVED, callData);
             return "";
         }
 
@@ -791,8 +790,14 @@ abstract contract LSP0ERC725AccountCore is
             msg.sig
         );
 
+        // if value is associated with the extension call and extension function selector is not payable, use the universalReceiver
+        if (msg.value != 0 && !isPayable)
+            universalReceiver(_TYPEID_LSP0_VALUE_RECEIVED, callData);
+
         // if no extension was found for bytes4(0) return don't revert
-        if (msg.sig == bytes4(0) && extension == address(0)) return "";
+        if (msg.sig == bytes4(0) && extension == address(0)) {
+            return "";
+        }
 
         // if no extension was found for other function selectors, revert
         if (extension == address(0))
