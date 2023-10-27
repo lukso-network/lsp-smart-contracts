@@ -1109,10 +1109,10 @@ extension if the extension is set, if not it returns false.
 
 <br/>
 
-### \_getExtensionAndFowardValue
+### \_getExtensionAndForwardValue
 
 ```solidity
-function _getExtensionAndFowardValue(
+function _getExtensionAndForwardValue(
   bytes4 functionSelector
 ) internal view returns (address, bool);
 ```
@@ -1141,7 +1141,7 @@ function _fallbackLSP17Extendable(
 ```
 
 Forwards the call with the received value to an extension mapped to a function selector.
-Calls [`_getExtensionAndFowardValue`](#_getextensionandfowardvalue) to get the address of the extension mapped to the function selector being
+Calls [`_getExtensionAndForwardValue`](#_getextensionandforwardvalue) to get the address of the extension mapped to the function selector being
 called on the account. If there is no extension, the address(0) will be returned.
 We will always forward the value to the extension, as the LSP8 contract is not supposed to hold any native tokens.
 Reverts if there is no extension for the function being called.
