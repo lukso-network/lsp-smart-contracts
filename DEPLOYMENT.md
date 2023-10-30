@@ -37,27 +37,30 @@ Available `--tags <options>` are:
 
 - `LSP6KeyManager`: deploy a `UniversalProfile` + `KeyManager`, with the Universal Profile address linked to the Key Manager.
 
-- `LSP6KeyManagerInit`: deploy + initialize (= lock) both a `UniversalProfileInit` + `KeyManagerInit`, as base contracts (**NB:** the Key Manager will be initialized with reference to `address(0)`).
+- `LSP6KeyManagerInit`: deploy at deterministic address + initialize (= lock) both a `UniversalProfileInit` + `KeyManagerInit`, as base contracts (**NB:** the Key Manager will be initialized with reference to `address(0)`).
 
-- `LSP1UniversalReceiverDelegateUP`: deploy a Universal Receiver Delegate contract that can be used to register assets and vaults received by a Universal Profile.
+- `LSP1UniversalReceiverDelegateUP`: deploy at deterministic address a Universal Receiver Delegate contract that can be used to register assets and vaults received by a Universal Profile.
 
-- `LSP1UniversalReceiverDelegateVault`: deploy a Universal Receiver Delegate contract that can be used to register assets received by a LSP9Vault.
+- `LSP1UniversalReceiverDelegateVault`: deploy at deterministic address a Universal Receiver Delegate contract that can be used to register assets received by a LSP9Vault.
 
 - `LSP7Mintable`: deploy a `LSP7Mintable` contract (Token), using the deployer address as the owner and allowing this deployer address to then mint tokens. The `isNFT_` parameter is set to `false`, making the token divisible.
 
 - `LSP8Mintable`: deploy a `LSP7Mintable` contract (NFT), using the deployer address as the owner and allowing this deployer address to then mint tokens.
 
-- `LSP7MintableInit`: deploy + initialize (= lock) a `LSP7MintableInit` contract (Token), that can be used as implementation behind proxy. The base contract is deployed with the `isNonDivisible_` parameter set to `false`, making the implementation token divisible.
+- `LSP7MintableInit`: deploy at deterministic address + initialize (= lock) a `LSP7MintableInit` contract (Token), that can be used as implementation behind proxy. The base contract is deployed with the `isNonDivisible_` parameter set to `false`, making the implementation token divisible.
 
-- `LSP8MintableInit`: deploy + initialize (= lock) a `LSP8MintableInit` contract, that can be used as implementation behind proxy.
+- `LSP8MintableInit`: deploy at deterministic address + initialize (= lock) a `LSP8MintableInit` contract, that can be used as implementation behind proxy.
 
 - `LSP9Vault`: deploy a `LSP9Vault` contract with the deployer as the owner.
 
-- `LSP9VaultInit`: deploy + initialize (= lock) a `LSP9VaultInit` contract that can be used as implementation behind proxy.
+- `LSP9VaultInit`: deploy at deterministic address + initialize (= lock) a `LSP9VaultInit` contract that can be used as implementation behind proxy.
 
 - `standard`: deploy the 4 standard contract above.
 
-- `base`: deploy the 4 base contract above (for proxy use)
+- `base`: deploy the 4 base contract above (for proxy use) at deterministic addresses.
+
+> **Note:** all the contracts marked as `base` or `Init` are deployed at deterministic addresses, so that they can be used as implementation behind proxies. If the contract is already deployed on the network, the address where the contract exists already will be returned.
+> Moreover, **these contracts use `bytes32(0)` as their `salt` to deploy with CREATE2.**
 
 &nbsp;
 
