@@ -126,7 +126,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * on behalf of the token owner (the caller of the function `msg.sender`). See also {authorizedAmountFor}.
      *
      * @param operator The address to revoke as an operator.
-     * @param notify Boolean indicating whether to notify the operator or not
+     * @param notify Boolean indicating whether to notify the operator or not.
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
      * @custom:requirements

@@ -16,6 +16,8 @@ import {
     EnumerableSet
 } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
+import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
+
 // errors
 import {
     LSP7CannotSendToSelf,
@@ -128,7 +130,11 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             operatorNotificationData
         );
 
-        _notifyTokenOperator(operator, lsp1Data);
+        LSP1Utils.tryNotifyUniversalReceiver(
+            operator,
+            _TYPEID_LSP7_TOKENOPERATOR,
+            lsp1Data
+        );
     }
 
     /**
@@ -153,7 +159,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
                 0,
                 operatorNotificationData
             );
-            _notifyTokenOperator(operator, lsp1Data);
+
+            LSP1Utils.tryNotifyUniversalReceiver(
+                operator,
+                _TYPEID_LSP7_TOKENOPERATOR,
+                lsp1Data
+            );
         }
     }
 
@@ -207,7 +218,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             newAllowance,
             operatorNotificationData
         );
-        _notifyTokenOperator(operator, lsp1Data);
+
+        LSP1Utils.tryNotifyUniversalReceiver(
+            operator,
+            _TYPEID_LSP7_TOKENOPERATOR,
+            lsp1Data
+        );
     }
 
     /**
@@ -240,7 +256,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             newAllowance,
             operatorNotificationData
         );
-        _notifyTokenOperator(operator, lsp1Data);
+
+        LSP1Utils.tryNotifyUniversalReceiver(
+            operator,
+            _TYPEID_LSP7_TOKENOPERATOR,
+            lsp1Data
+        );
     }
 
     // --- Transfer functionality
@@ -454,7 +475,11 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         _afterTokenTransfer(from, address(0), amount, data);
 
         bytes memory lsp1Data = abi.encode(from, address(0), amount, data);
-        _notifyTokenSender(from, lsp1Data);
+        LSP1Utils.tryNotifyUniversalReceiver(
+            from,
+            _TYPEID_LSP7_TOKENSSENDER,
+            lsp1Data
+        );
     }
 
     /**
@@ -552,7 +577,11 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         bytes memory lsp1Data = abi.encode(from, to, amount, data);
 
-        _notifyTokenSender(from, lsp1Data);
+        LSP1Utils.tryNotifyUniversalReceiver(
+            from,
+            _TYPEID_LSP7_TOKENSSENDER,
+            lsp1Data
+        );
         _notifyTokenReceiver(to, force, lsp1Data);
     }
 
@@ -587,56 +616,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         uint256 amount,
         bytes memory data // solhint-disable-next-line no-empty-blocks
     ) internal virtual {}
-
-    /**
-     * @dev Attempt to notify the operator `operator` about the `amount` tokens being authorized with.
-     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
-     * If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
-     
-     * @param operator The address to call the {universalReceiver} function on.                                                                                                                                                                                   
-     * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
-     */
-    function _notifyTokenOperator(
-        address operator,
-        bytes memory lsp1Data
-    ) internal virtual {
-        if (
-            ERC165Checker.supportsERC165InterfaceUnchecked(
-                operator,
-                _INTERFACEID_LSP1
-            )
-        ) {
-            ILSP1UniversalReceiver(operator).universalReceiver(
-                _TYPEID_LSP7_TOKENOPERATOR,
-                lsp1Data
-            );
-        }
-    }
-
-    /**
-     * @dev Attempt to notify the token sender `from` about the `amount` of tokens being transferred.
-     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
-     * If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
-     
-     * @param from The address to call the {universalReceiver} function on.                                                                                                                                                                                   
-     * @param lsp1Data the data to be sent to the `from` address in the `universalReceiver` call.
-     */
-    function _notifyTokenSender(
-        address from,
-        bytes memory lsp1Data
-    ) internal virtual {
-        if (
-            ERC165Checker.supportsERC165InterfaceUnchecked(
-                from,
-                _INTERFACEID_LSP1
-            )
-        ) {
-            ILSP1UniversalReceiver(from).universalReceiver(
-                _TYPEID_LSP7_TOKENSSENDER,
-                lsp1Data
-            );
-        }
-    }
 
     /**
      * @dev Attempt to notify the token receiver `to` about the `amount` tokens being received.
