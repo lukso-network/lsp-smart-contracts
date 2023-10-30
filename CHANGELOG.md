@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.12.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.12.0-rc.0...v0.12.0) (2023-10-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* Optional LSP1 Notification on `revokeOperator(..)` #2 ([#767](https://github.com/lukso-network/lsp-smart-contracts/issues/767))
+* replace `ValueReceived` with `UniversalReceiver` ([#759](https://github.com/lukso-network/lsp-smart-contracts/issues/759))
+* Allows `ERC725X.executeBatch` path in LSP6 Key Manager ([#760](https://github.com/lukso-network/lsp-smart-contracts/issues/760))
+* update LS8 Metadata keys to new LSP8 standard specs ([#762](https://github.com/lukso-network/lsp-smart-contracts/issues/762))
+* create `Version` contract and inherit it ([#764](https://github.com/lukso-network/lsp-smart-contracts/issues/764))
+* Optional LSP1 Notification on `revokeOperator(..)` ([#763](https://github.com/lukso-network/lsp-smart-contracts/issues/763))
+
+### refactor
+
+* Optional LSP1 Notification on `revokeOperator(..)` ([#763](https://github.com/lukso-network/lsp-smart-contracts/issues/763)) ([63c1a0f](https://github.com/lukso-network/lsp-smart-contracts/commit/63c1a0fb68502e11d58f7582e4e849d2f24c4924))
+* Optional LSP1 Notification on `revokeOperator(..)` [#2](https://github.com/lukso-network/lsp-smart-contracts/issues/2) ([#767](https://github.com/lukso-network/lsp-smart-contracts/issues/767)) ([1f92ca5](https://github.com/lukso-network/lsp-smart-contracts/commit/1f92ca530fb56cf2b626b0feae311d6c4737b8a0))
+* replace `ValueReceived` with `UniversalReceiver` ([#759](https://github.com/lukso-network/lsp-smart-contracts/issues/759)) ([0c17386](https://github.com/lukso-network/lsp-smart-contracts/commit/0c1738619818bcf2e01636f31782886b26fb91d7))
+* update LS8 Metadata keys to new LSP8 standard specs ([#762](https://github.com/lukso-network/lsp-smart-contracts/issues/762)) ([a909926](https://github.com/lukso-network/lsp-smart-contracts/commit/a9099268f63b7a8f60e4304d61098b496ed03de0))
+
+
+### Features
+
+* Allows `ERC725X.executeBatch` path in LSP6 Key Manager ([#760](https://github.com/lukso-network/lsp-smart-contracts/issues/760)) ([941c06a](https://github.com/lukso-network/lsp-smart-contracts/commit/941c06a8f1a0d758b92bc890c382a38d13bb8cec))
+* create `Version` contract and inherit it ([#764](https://github.com/lukso-network/lsp-smart-contracts/issues/764)) ([0745ed4](https://github.com/lukso-network/lsp-smart-contracts/commit/0745ed40b6bf93b929bb2e81b74ac27cad8e168a))
+
+
+### Bug Fixes
+
+* replaced broken LSP23 link ([#766](https://github.com/lukso-network/lsp-smart-contracts/issues/766)) ([492efab](https://github.com/lukso-network/lsp-smart-contracts/commit/492efab86d70817a472691ec7fc75dfc991e6f77))
+
+
+### Miscellaneous
+
+* release 0.12.0 ([fbbec61](https://github.com/lukso-network/lsp-smart-contracts/commit/fbbec6199c6351721acedb35110fc1cc7bbb65ad))
+
 ## [0.12.0-rc.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.11.1...v0.12.0-rc.0) (2023-10-18)
 
 ### ⚠ BREAKING CHANGES
