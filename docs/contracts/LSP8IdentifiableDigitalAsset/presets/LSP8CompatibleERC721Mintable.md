@@ -1081,6 +1081,33 @@ Transfers ownership of the contract to a new account (`newOwner`). Can only be c
 
 <br/>
 
+### version
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#version)
+- Solidity implementation: [`LSP8CompatibleERC721Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol)
+- Function signature: `version()`
+- Function selector: `0x54fd4d50`
+
+:::
+
+```solidity
+function version() external view returns (string);
+```
+
+_Contract version._
+
+Get the version of the contract.
+
+#### Returns
+
+| Name |   Type   | Description                      |
+| ---- | :------: | -------------------------------- |
+| `0`  | `string` | The version of the the contract. |
+
+<br/>
+
 ## Internal Methods
 
 Any method labeled as `internal` serves as utility function within the contract. They can be used when writing solidity contracts that inherit from this contract. These methods can be extended or modified by overriding their internal behavior to suit specific needs.
@@ -1339,10 +1366,12 @@ extension if the extension is set, if not it returns false.
 
 <br/>
 
-### \_getExtension
+### \_getExtensionAndForwardValue
 
 ```solidity
-function _getExtension(bytes4 functionSelector) internal view returns (address);
+function _getExtensionAndForwardValue(
+  bytes4 functionSelector
+) internal view returns (address, bool);
 ```
 
 Returns the extension address stored under the following data key:
@@ -1369,8 +1398,9 @@ function _fallbackLSP17Extendable(
 ```
 
 Forwards the call with the received value to an extension mapped to a function selector.
-Calls [`_getExtension`](#_getextension) to get the address of the extension mapped to the function selector being
+Calls [`_getExtensionAndForwardValue`](#_getextensionandforwardvalue) to get the address of the extension mapped to the function selector being
 called on the account. If there is no extension, the address(0) will be returned.
+We will always forward the value to the extension, as the LSP8 contract is not supposed to hold any native tokens.
 Reverts if there is no extension for the function being called.
 If there is an extension for the function selector being called, it calls the extension with the
 CALL opcode, passing the [`msg.data`](#msg.data) appended with the 20 bytes of the [`msg.sender`](#msg.sender) and

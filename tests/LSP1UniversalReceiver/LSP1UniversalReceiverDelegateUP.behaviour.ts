@@ -141,11 +141,19 @@ export const shouldBehaveLikeLSP1Delegate = (
 
     describe('when calling with random bytes32 typeId', () => {
       describe('when caller is an EOA', () => {
-        it('should revert with custom error `CannotRegisterEOAsAsAssets`', async () => {
+        it('should not revert with custom error `CannotRegisterEOAsAsAssets` if its a random typeId', async () => {
           await expect(
             context.universalProfile1
               .connect(context.accounts.any)
-              .callStatic.universalReceiver(LSP1_HOOK_PLACEHOLDER, '0x'),
+              .universalReceiver(LSP1_HOOK_PLACEHOLDER, '0x'),
+          ).to.not.be.reverted;
+        });
+
+        it('should revert with custom error `CannotRegisterEOAsAsAssets` if its a typeId of LSP7/LSP8', async () => {
+          await expect(
+            context.universalProfile1
+              .connect(context.accounts.any)
+              .callStatic.universalReceiver(LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification, '0x'),
           )
             .to.be.revertedWithCustomError(
               context.lsp1universalReceiverDelegateUP,

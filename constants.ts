@@ -230,6 +230,9 @@ export const ERC725YDataKeys = {
   },
   LSP8: {
     LSP8TokenIdType: '0x715f248956de7ce65e94d9d836bfead479f7e70d69b718d47bfe7b00e05b4fe4',
+    LSP8MetadataTokenURI: '0x1339e76a390b7b9ec9010000',
+    LSP8TokenMetadataBaseURI: '0x1a7628600c3bac7101f53697f48df381ddc36b9015e7d7c9c5633d1252aa2843',
+    LSP8ReferenceContract: '0x708e7b881795f2e6b6c2752108c177ec89248458de3bf69d0d43480b3e5034e6',
   },
   LSP9: {
     SupportedStandards_LSP9: SupportedStandards.LSP9Vault.key,
@@ -316,6 +319,9 @@ export const PERMISSIONS = {
  * (e.g: token transfer, vault transfer, ownership transfer, etc...)
  */
 export const LSP1_TYPE_IDS = {
+  // keccak256('LSP0ValueReceived')
+  LSP0ValueReceived: '0x9c4705229491d365fb5434052e12a386d6771d976bea61070a8c694e8affea3d',
+
   // keccak256('LSP0OwnershipTransferStarted')
   LSP0OwnershipTransferStarted:
     '0xe17117c9d2665d1dbeb479ed8058bbebde3c50ac50e2e65619f60006caac6926',
@@ -351,6 +357,9 @@ export const LSP1_TYPE_IDS = {
   // keccak256('LSP8Tokens_OperatorNotification')
   LSP8Tokens_OperatorNotification:
     '0x8a1c15a8799f71b547e08e2bcb2e85257e81b0a07eee2ce6712549eef1f00970',
+
+  // keccak256('LSP9ValueReceived')
+  LSP9ValueReceived: '0x468cd1581d7bc001c3b685513d2b929b55437be34700410383d58f3aa1ea0abc',
 
   // keccak256('LSP9OwnershipTransferStarted')
   LSP9OwnershipTransferStarted:

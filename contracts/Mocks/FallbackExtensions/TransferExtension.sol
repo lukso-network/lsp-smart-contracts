@@ -13,4 +13,7 @@ contract TransferExtension {
         );
         balances[msgSender] = amount;
     }
+
+    // solhint-disable-next-line no-empty-blocks
+    function receiveFund() public payable {}
 }

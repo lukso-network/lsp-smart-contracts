@@ -696,6 +696,33 @@ Transfers ownership of the contract to a new account (`newOwner`). Can only be c
 
 <br/>
 
+### version
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#version)
+- Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol)
+- Function signature: `version()`
+- Function selector: `0x54fd4d50`
+
+:::
+
+```solidity
+function version() external view returns (string);
+```
+
+_Contract version._
+
+Get the version of the contract.
+
+#### Returns
+
+| Name |   Type   | Description                      |
+| ---- | :------: | -------------------------------- |
+| `0`  | `string` | The version of the the contract. |
+
+<br/>
+
 ## Internal Methods
 
 Any method labeled as `internal` serves as utility function within the contract. They can be used when writing solidity contracts that inherit from this contract. These methods can be extended or modified by overriding their internal behavior to suit specific needs.
@@ -1039,10 +1066,12 @@ extension if the extension is set, if not it returns false.
 
 <br/>
 
-### \_getExtension
+### \_getExtensionAndForwardValue
 
 ```solidity
-function _getExtension(bytes4 functionSelector) internal view returns (address);
+function _getExtensionAndForwardValue(
+  bytes4 functionSelector
+) internal view returns (address, bool);
 ```
 
 Returns the extension address stored under the following data key:
@@ -1050,6 +1079,8 @@ Returns the extension address stored under the following data key:
 - [`_LSP17_EXTENSION_PREFIX`](#_lsp17_extension_prefix) + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
 
 - If no extension is stored, returns the address(0).
+
+- we do not check that payable bool as in lsp7 standard we will always forward the value to the extension
 
 <br/>
 
@@ -1069,8 +1100,9 @@ function _fallbackLSP17Extendable(
 ```
 
 Forwards the call with the received value to an extension mapped to a function selector.
-Calls [`_getExtension`](#_getextension) to get the address of the extension mapped to the function selector being
+Calls [`_getExtensionAndForwardValue`](#_getextensionandforwardvalue) to get the address of the extension mapped to the function selector being
 called on the account. If there is no extension, the address(0) will be returned.
+Forwards the value if the extension is payable.
 Reverts if there is no extension for the function being called.
 If there is an extension for the function selector being called, it calls the extension with the
 CALL opcode, passing the [`msg.data`](#msg.data) appended with the 20 bytes of the [`msg.sender`](#msg.sender) and

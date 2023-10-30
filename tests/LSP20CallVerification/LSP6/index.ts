@@ -19,6 +19,7 @@ export * from './Interactions/AllowedFunctions.test';
 export * from './Interactions/AllowedStandards.test';
 export * from './Interactions/OtherScenarios.test';
 export * from './Interactions/Security.test';
+export * from './Interactions/ERC725XExecuteBatch.test';
 
 // SetData
 export * from './SetData/PermissionSetData.test';
