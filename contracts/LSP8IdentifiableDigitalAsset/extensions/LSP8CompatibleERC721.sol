@@ -12,10 +12,11 @@ import {
 } from "@openzeppelin/contracts/interfaces/IERC721Metadata.sol";
 
 // libraries
+import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {
     EnumerableSet
 } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
+import {LSP1Utils} from "../../LSP1UniversalReceiver/LSP1Utils.sol";
 
 // modules
 import {
@@ -38,6 +39,7 @@ import {
     _LSP4_TOKEN_NAME_KEY,
     _LSP4_TOKEN_SYMBOL_KEY
 } from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
+import {_TYPEID_LSP8_TOKENOPERATOR} from "../LSP8Constants.sol";
 
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
@@ -46,7 +48,9 @@ abstract contract LSP8CompatibleERC721 is
     IERC721Metadata,
     LSP8IdentifiableDigitalAsset
 {
+    using BytesLib for bytes;
     using EnumerableSet for EnumerableSet.AddressSet;
+    using LSP1Utils for address;
 
     /**
      * @dev Mapping from owner to operator approvals for backward compatibility with ERC721
@@ -141,11 +145,7 @@ abstract contract LSP8CompatibleERC721 is
         // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36
         uint256 offset = 36;
 
-        bytes memory uriBytes = BytesLib.slice(
-            data,
-            offset,
-            data.length - offset
-        );
+        bytes memory uriBytes = data.slice(offset, data.length - offset);
         return string(uriBytes);
     }
 
@@ -357,7 +357,10 @@ abstract contract LSP8CompatibleERC721 is
             tokenId,
             operatorNotificationData
         );
-        _notifyTokenOperator(operator, lsp1Data);
+        operator.tryNotifyUniversalReceiver(
+            _TYPEID_LSP8_TOKENOPERATOR,
+            lsp1Data
+        );
     }
 
     /**

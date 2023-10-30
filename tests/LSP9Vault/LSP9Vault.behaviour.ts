@@ -432,7 +432,7 @@ export const shouldBehaveLikeLSP9 = (
     });
 
     describe('when calling the contract without any value or data', () => {
-      it('should pass and not emit the ValueReceived event', async () => {
+      it('should pass and not emit the UniversalReceiver event', async () => {
         const sender = context.accounts.anyone;
         const amount = 0;
 
@@ -443,7 +443,7 @@ export const shouldBehaveLikeLSP9 = (
             value: amount,
           })
         ).to.not.be.reverted
-          .to.not.emit(context.lsp9Vault, "ValueReceived");
+          .to.not.emit(context.lsp9Vault, "UniversalReceiver");
       });
     });
 
@@ -779,7 +779,7 @@ export const shouldBehaveLikeLSP9 = (
 
   describe('when using the batch `ERC725X.execute(uint256[],address[],uint256[],bytes[])` function', () => {
     describe('when specifying `msg.value`', () => {
-      it('should emit a `ValueReceived` event', async () => {
+      it('should emit a `UniversalReceiver` event', async () => {
         const operationsType = Array(3).fill(OPERATION_TYPES.CALL);
         const recipients = [
           context.accounts.friend.address,
@@ -796,13 +796,19 @@ export const shouldBehaveLikeLSP9 = (
         });
 
         await expect(tx)
-          .to.emit(context.lsp9Vault, 'ValueReceived')
-          .withArgs(context.deployParams.newOwner, msgValue);
+          .to.emit(context.lsp9Vault, 'UniversalReceiver')
+          .withArgs(
+            context.deployParams.newOwner,
+            msgValue,
+            LSP1_TYPE_IDS.LSP9ValueReceived,
+            context.universalProfile.interface.getSighash('executeBatch'),
+            '0x',
+          );
       });
     });
 
     describe('when NOT sending any `msg.value`', () => {
-      it('should NOT emit a `ValueReceived` event', async () => {
+      it('should NOT emit a `UniversalReceiver` event', async () => {
         const operationsType = Array(3).fill(OPERATION_TYPES.CALL);
         const recipients = [
           context.accounts.friend.address,
@@ -818,7 +824,7 @@ export const shouldBehaveLikeLSP9 = (
           value: msgValue,
         });
 
-        await expect(tx).to.not.emit(context.lsp9Vault, 'ValueReceived');
+        await expect(tx).to.not.emit(context.lsp9Vault, 'UniversalReceiver');
       });
     });
   });

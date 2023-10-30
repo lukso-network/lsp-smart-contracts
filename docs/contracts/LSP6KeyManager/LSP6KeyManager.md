@@ -463,6 +463,33 @@ Get The address of the contract linked to this Key Manager.
 
 <br/>
 
+### version
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#version)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Function signature: `version()`
+- Function selector: `0x54fd4d50`
+
+:::
+
+```solidity
+function version() external view returns (string);
+```
+
+_Contract version._
+
+Get the version of the contract.
+
+#### Returns
+
+| Name |   Type   | Description                      |
+| ---- | :------: | -------------------------------- |
+| `0`  | `string` | The version of the the contract. |
+
+<br/>
+
 ## Internal Methods
 
 Any method labeled as `internal` serves as utility function within the contract. They can be used when writing solidity contracts that inherit from this contract. These methods can be extended or modified by overriding their internal behavior to suit specific needs.
@@ -1328,6 +1355,44 @@ error DelegateCallDisallowedViaKeyManager();
 _Performing DELEGATE CALLS via the Key Manager is currently disallowed._
 
 Reverts when trying to do a `delegatecall` via the ERC725X.execute(uint256,address,uint256,bytes) (operation type 4) function of the linked [`target`](#target). `DELEGATECALL` is disallowed by default on the LSP6KeyManager.
+
+<br/>
+
+### ERC725X_ExecuteParametersEmptyArray
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#erc725x_executeparametersemptyarray)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `ERC725X_ExecuteParametersEmptyArray()`
+- Error hash: `0xe9ad2b5f`
+
+:::
+
+```solidity
+error ERC725X_ExecuteParametersEmptyArray();
+```
+
+Reverts when one of the array parameter provided to the [`executeBatch`](#executebatch) function is an empty array.
+
+<br/>
+
+### ERC725X_ExecuteParametersLengthMismatch
+
+:::note References
+
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-KeyManager.md#erc725x_executeparameterslengthmismatch)
+- Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP6KeyManager/LSP6KeyManager.sol)
+- Error signature: `ERC725X_ExecuteParametersLengthMismatch()`
+- Error hash: `0x3ff55f4d`
+
+:::
+
+```solidity
+error ERC725X_ExecuteParametersLengthMismatch();
+```
+
+Reverts when there is not the same number of elements in the `operationTypes`, `targets` addresses, `values`, and `datas` array parameters provided when calling the [`executeBatch`](#executebatch) function.
 
 <br/>
 

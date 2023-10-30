@@ -28,7 +28,7 @@ contract UniversalProfileInit is UniversalProfileInitAbstract {
      * @param initialOwner the owner of the contract
      *
      * @custom:events
-     * - {ValueReceived} event when funding the contract on deployment.
+     * - {UniversalReceiver} event when funding the contract on deployment.
      * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
      */
     function initialize(

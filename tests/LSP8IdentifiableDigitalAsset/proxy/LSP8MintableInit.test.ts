@@ -10,7 +10,7 @@ import {
 } from '../LSP8Mintable.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
-import { LSP8_TOKEN_ID_TYPES } from '../../../constants';
+import { ERC725YDataKeys, LSP8_TOKEN_ID_TYPES } from '../../../constants';
 
 describe('LSP8MintableInit with proxy', () => {
   const buildTestContext = async () => {
@@ -42,6 +42,19 @@ describe('LSP8MintableInit with proxy', () => {
   };
 
   describe('when deploying the base implementation contract', () => {
+    it('should have initialized the tokenName + tokenSymbol to "" and contract owner to `address(0)`', async () => {
+      const accounts = await ethers.getSigners();
+
+      const lsp8MintableInit = await new LSP8MintableInit__factory(accounts[0]).deploy();
+
+      expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenName)).to.equal('0x');
+      expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenSymbol)).to.equal('0x');
+      expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP4.LSP4Metadata)).to.equal('0x');
+      expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP8.LSP8TokenIdType)).to.equal('0x');
+
+      expect(await lsp8MintableInit.owner()).to.equal(ethers.constants.AddressZero);
+    });
+
     it('prevent any address from calling the initialize(...) function on the implementation', async () => {
       const accounts = await ethers.getSigners();
 

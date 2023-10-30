@@ -171,7 +171,7 @@ function authorizeOperator(
 ) external nonpayable;
 ```
 
-Sets an `amount` of tokens that an `operator` has access from the caller's balance (allowance). See [`authorizedAmountFor`](#authorizedamountfor).
+Sets an `amount` of tokens that an `operator` has access from the caller's balance (allowance). See [`authorizedAmountFor`](#authorizedamountfor). Notify the operator based on the LSP1-UniversalReceiver standard
 
 #### Parameters
 
@@ -285,12 +285,6 @@ Returns the number of decimals used to get its user representation. If the asset
 
 :::
 
-:::info
-
-This is a non-standard function, not part of the LSP7 standard interface. It has been added in the LSP7 contract implementation so that it can be used as a prevention mechanism against the double spending allowance vulnerability.
-
-:::
-
 ```solidity
 function decreaseAllowance(
   address operator,
@@ -301,25 +295,7 @@ function decreaseAllowance(
 
 _Decrease the allowance of `operator` by -`subtractedAmount`_
 
-Atomically decreases the allowance granted to `operator` by the caller. This is an alternative approach to [`authorizeOperator`](#authorizeoperator) that can be used as a mitigation for the double spending allowance problem.
-
-<blockquote>
-
-**Requirements:**
-
-- `operator` cannot be the zero address.
-- `operator` must have allowance for the caller of at least `subtractedAmount`.
-
-</blockquote>
-
-<blockquote>
-
-**Emitted events:**
-
-- [`AuthorizedOperator`](#authorizedoperator) event indicating the updated allowance after decreasing it.
-- [`RevokeOperator`](#revokeoperator) event if `subtractedAmount` is the full allowance, indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
-
-</blockquote>
+Atomically decreases the allowance granted to `operator` by the caller. This is an alternative approach to [`authorizeOperator`](#authorizeoperator) that can be used as a mitigation for the double spending allowance problem. Notify the operator based on the LSP1-UniversalReceiver standard
 
 #### Parameters
 
@@ -441,12 +417,6 @@ Returns all `operator` addresses that are allowed to transfer or burn on behalf 
 
 :::
 
-:::info
-
-This is a non-standard function, not part of the LSP7 standard interface. It has been added in the LSP7 contract implementation so that it can be used as a prevention mechanism against double spending allowance vulnerability.
-
-:::
-
 ```solidity
 function increaseAllowance(
   address operator,
@@ -457,24 +427,7 @@ function increaseAllowance(
 
 _Increase the allowance of `operator` by +`addedAmount`_
 
-Atomically increases the allowance granted to `operator` by the caller. This is an alternative approach to [`authorizeOperator`](#authorizeoperator) that can be used as a mitigation for the double spending allowance problem.
-
-<blockquote>
-
-**Requirements:**
-
-- `operator` cannot be the same address as `msg.sender`
-- `operator` cannot be the zero address.
-
-</blockquote>
-
-<blockquote>
-
-**Emitted events:**
-
-- [`AuthorizedOperator`](#authorizedoperator) indicating the updated allowance
-
-</blockquote>
+Atomically increases the allowance granted to `operator` by the caller. This is an alternative approach to [`authorizeOperator`](#authorizeoperator) that can be used as a mitigation for the double spending allowance problem. Notify the operator based on the LSP1-UniversalReceiver standard
 
 #### Parameters
 
@@ -594,14 +547,15 @@ Leaves the contract without owner. It will not be possible to call `onlyOwner` f
 
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#revokeoperator)
 - Solidity implementation: [`LSP7CompatibleERC20Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol)
-- Function signature: `revokeOperator(address,bytes)`
-- Function selector: `0xca3631e7`
+- Function signature: `revokeOperator(address,bool,bytes)`
+- Function selector: `0x4521748e`
 
 :::
 
 ```solidity
 function revokeOperator(
   address operator,
+  bool notify,
   bytes operatorNotificationData
 ) external nonpayable;
 ```
@@ -610,10 +564,11 @@ Removes the `operator` address as an operator of callers tokens, disallowing it 
 
 #### Parameters
 
-| Name                       |   Type    | Description                                     |
-| -------------------------- | :-------: | ----------------------------------------------- |
-| `operator`                 | `address` | The address to revoke as an operator.           |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1. |
+| Name                       |   Type    | Description                                               |
+| -------------------------- | :-------: | --------------------------------------------------------- |
+| `operator`                 | `address` | The address to revoke as an operator.                     |
+| `notify`                   |  `bool`   | Boolean indicating whether to notify the operator or not. |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.           |
 
 <br/>
 
@@ -977,6 +932,33 @@ Transfers ownership of the contract to a new account (`newOwner`). Can only be c
 
 <br/>
 
+### version
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#version)
+- Solidity implementation: [`LSP7CompatibleERC20Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol)
+- Function signature: `version()`
+- Function selector: `0x54fd4d50`
+
+:::
+
+```solidity
+function version() external view returns (string);
+```
+
+_Contract version._
+
+Get the version of the contract.
+
+#### Returns
+
+| Name |   Type   | Description                      |
+| ---- | :------: | -------------------------------- |
+| `0`  | `string` | The version of the the contract. |
+
+<br/>
+
 ## Internal Methods
 
 Any method labeled as `internal` serves as utility function within the contract. They can be used when writing solidity contracts that inherit from this contract. These methods can be extended or modified by overriding their internal behavior to suit specific needs.
@@ -1048,6 +1030,7 @@ function _updateOperator(
   address tokenOwner,
   address operator,
   uint256 amount,
+  bool notified,
   bytes operatorNotificationData
 ) internal nonpayable;
 ```
@@ -1161,47 +1144,6 @@ Allows to run custom logic after updating balances, but **before notifiying send
 
 <br/>
 
-### \_notifyTokenOperator
-
-```solidity
-function _notifyTokenOperator(
-  address operator,
-  bytes lsp1Data
-) internal nonpayable;
-```
-
-Attempt to notify the operator `operator` about the `amount` tokens being authorized with.
-This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP7_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
-If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
-
-#### Parameters
-
-| Name       |   Type    | Description                                                                    |
-| ---------- | :-------: | ------------------------------------------------------------------------------ |
-| `operator` | `address` | The address to call the {universalReceiver} function on.                       |
-| `lsp1Data` |  `bytes`  | the data to be sent to the `operator` address in the `universalReceiver` call. |
-
-<br/>
-
-### \_notifyTokenSender
-
-```solidity
-function _notifyTokenSender(address from, bytes lsp1Data) internal nonpayable;
-```
-
-Attempt to notify the token sender `from` about the `amount` of tokens being transferred.
-This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP7_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
-If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
-
-#### Parameters
-
-| Name       |   Type    | Description                                                                |
-| ---------- | :-------: | -------------------------------------------------------------------------- |
-| `from`     | `address` | The address to call the {universalReceiver} function on.                   |
-| `lsp1Data` |  `bytes`  | the data to be sent to the `from` address in the `universalReceiver` call. |
-
-<br/>
-
 ### \_notifyTokenReceiver
 
 ```solidity
@@ -1246,10 +1188,12 @@ extension if the extension is set, if not it returns false.
 
 <br/>
 
-### \_getExtension
+### \_getExtensionAndForwardValue
 
 ```solidity
-function _getExtension(bytes4 functionSelector) internal view returns (address);
+function _getExtensionAndForwardValue(
+  bytes4 functionSelector
+) internal view returns (address, bool);
 ```
 
 Returns the extension address stored under the following data key:
@@ -1257,6 +1201,8 @@ Returns the extension address stored under the following data key:
 - [`_LSP17_EXTENSION_PREFIX`](#_lsp17_extension_prefix) + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
 
 - If no extension is stored, returns the address(0).
+
+- we do not check that payable bool as in lsp7 standard we will always forward the value to the extension
 
 <br/>
 
@@ -1276,8 +1222,9 @@ function _fallbackLSP17Extendable(
 ```
 
 Forwards the call with the received value to an extension mapped to a function selector.
-Calls [`_getExtension`](#_getextension) to get the address of the extension mapped to the function selector being
+Calls [`_getExtensionAndForwardValue`](#_getextensionandforwardvalue) to get the address of the extension mapped to the function selector being
 called on the account. If there is no extension, the address(0) will be returned.
+Forwards the value if the extension is payable.
 Reverts if there is no extension for the function being called.
 If there is an extension for the function selector being called, it calls the extension with the
 CALL opcode, passing the [`msg.data`](#msg.data) appended with the 20 bytes of the [`msg.sender`](#msg.sender) and
@@ -1400,24 +1347,25 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#revokedoperator)
 - Solidity implementation: [`LSP7CompatibleERC20Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol)
-- Event signature: `RevokedOperator(address,address,bytes)`
-- Event topic hash: `0x9ebfc34ce0da1178c4be66252d63a8a173d733c4bbb049241ce142dc4f0e0228`
+- Event signature: `RevokedOperator(address,address,bool,bytes)`
+- Event topic hash: `0x66015c8835ee443e5bc280176609215a5035da4bae05bdef994596d7e43aae22`
 
 :::
 
 ```solidity
-event RevokedOperator(address indexed operator, address indexed tokenOwner, bytes operatorNotificationData);
+event RevokedOperator(address indexed operator, address indexed tokenOwner, bool notified, bytes operatorNotificationData);
 ```
 
 Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`authorizedAmountFor(...)`](#`authorizedamountfor) to `0`.
 
 #### Parameters
 
-| Name                       |   Type    | Description                                     |
-| -------------------------- | :-------: | ----------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address revoked from operating              |
-| `tokenOwner` **`indexed`** | `address` | The token owner                                 |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1. |
+| Name                       |   Type    | Description                                                   |
+| -------------------------- | :-------: | ------------------------------------------------------------- |
+| `operator` **`indexed`**   | `address` | The address revoked from operating                            |
+| `tokenOwner` **`indexed`** | `address` | The token owner                                               |
+| `notified`                 |  `bool`   | Bool indicating whether the operator has been notified or not |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.               |
 
 <br/>
 
@@ -1904,6 +1852,31 @@ reverts when there is no extension for the function selector being called with
 | Name               |   Type   | Description |
 | ------------------ | :------: | ----------- |
 | `functionSelector` | `bytes4` | -           |
+
+<br/>
+
+### OperatorAllowanceCannotBeIncreasedFromZero
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#operatorallowancecannotbeincreasedfromzero)
+- Solidity implementation: [`LSP7CompatibleERC20Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol)
+- Error signature: `OperatorAllowanceCannotBeIncreasedFromZero(address)`
+- Error hash: `0xcba6e977`
+
+:::
+
+```solidity
+error OperatorAllowanceCannotBeIncreasedFromZero(address operator);
+```
+
+Reverts when token owner call [`increaseAllowance`](#increaseallowance) for an operator that does not have any allowance
+
+#### Parameters
+
+| Name       |   Type    | Description |
+| ---------- | :-------: | ----------- |
+| `operator` | `address` | -           |
 
 <br/>
 

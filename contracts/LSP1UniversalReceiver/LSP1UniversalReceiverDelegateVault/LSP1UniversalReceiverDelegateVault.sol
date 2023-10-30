@@ -11,6 +11,7 @@ import {
 import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // modules
+import {Version} from "../../Version.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // libraries
@@ -44,6 +45,7 @@ import {CannotRegisterEOAsAsAssets} from "../LSP1Errors.sol";
  */
 contract LSP1UniversalReceiverDelegateVault is
     ERC165,
+    Version,
     ILSP1UniversalReceiverDelegate
 {
     /**
@@ -68,13 +70,6 @@ contract LSP1UniversalReceiverDelegateVault is
         bytes32 typeId,
         bytes memory /* data */
     ) public virtual override returns (bytes memory) {
-        // The notifier is supposed to be either the LSP7 or LSP8 contract
-        // If it's EOA we revert to avoid registering the EOA as asset (spam protection)
-        // solhint-disable-next-line avoid-tx-origin
-        if (notifier == tx.origin) {
-            revert CannotRegisterEOAsAsAssets(notifier);
-        }
-
         if (typeId == _TYPEID_LSP7_TOKENSSENDER) {
             return _tokenSender(notifier);
         }
@@ -105,6 +100,13 @@ contract LSP1UniversalReceiverDelegateVault is
      * @param notifier The LSP7 or LSP8 token address.
      */
     function _tokenSender(address notifier) internal returns (bytes memory) {
+        // The notifier is supposed to be either the LSP7 or LSP8 contract
+        // If it's EOA we revert to avoid registering the EOA as asset (spam protection)
+        // solhint-disable-next-line avoid-tx-origin
+        if (notifier == tx.origin) {
+            revert CannotRegisterEOAsAsAssets(notifier);
+        }
+
         // if the amount sent is not the full balance, then do not update the keys
         try ILSP7DigitalAsset(notifier).balanceOf(msg.sender) returns (
             uint256 balance
@@ -143,6 +145,13 @@ contract LSP1UniversalReceiverDelegateVault is
         address notifier,
         bytes4 interfaceId
     ) internal returns (bytes memory) {
+        // The notifier is supposed to be either the LSP7 or LSP8 contract
+        // If it's EOA we revert to avoid registering the EOA as asset (spam protection)
+        // solhint-disable-next-line avoid-tx-origin
+        if (notifier == tx.origin) {
+            revert CannotRegisterEOAsAsAssets(notifier);
+        }
+
         // CHECK balance only when the Token contract is already deployed,
         // not when tokens are being transferred on deployment through the `constructor`
         if (notifier.code.length != 0) {

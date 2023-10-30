@@ -159,7 +159,7 @@ E.g.:
 
 ```solidity
 /**
- * @custom:events {ValueReceived} event when someone tranfers native tokens to the contract.
+ * @custom:events {UniversalReceiver} event when someone tranfers native tokens to the contract.
  */
 ```
 
@@ -168,7 +168,7 @@ E.g.:
 ```solidity
 /**
  * @custom:events
- * - {ValueReceived} event when someone tranfers native tokens to the contract.
+ * - {UniversalReceiver} event when someone tranfers native tokens to the contract.
  * - {Executes} event when the function is executed without any issues.
  */
 ```

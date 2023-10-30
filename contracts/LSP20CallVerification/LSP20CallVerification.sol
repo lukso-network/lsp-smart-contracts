@@ -20,48 +20,61 @@ import {
 abstract contract LSP20CallVerification {
     /**
      * @dev Calls {lsp20VerifyCall} function on the logicVerifier.
-     * Reverts in case the value returned does not match the success value (lsp20VerifyCall selector)
-     * Returns whether a verification after the execution should happen based on the last byte of the returnedStatus
+     *
+     * @custom:info
+     * - Reverts in case the value returned does not match the returned status (lsp20VerifyCall selector).
+     * - Returns whether a verification after the execution should happen based on the last byte of the `returnedStatus`.
+     * - Reverts with no reason if the  data returned by `ILSP20(logicVerifier).lsp20VerifyCall(...)` cannot be decoded (_e.g:_ any other data type besides `bytes4`).
+     * See this link for more info: https://forum.soliditylang.org/t/call-for-feedback-the-future-of-try-catch-in-solidity/1497.
      */
     function _verifyCall(
         address logicVerifier
     ) internal virtual returns (bool verifyAfter) {
-        if (logicVerifier.code.length == 0)
+        if (logicVerifier.code.length == 0) {
             revert LSP20EOACannotVerifyCall(logicVerifier);
+        }
 
-        (bool success, bytes memory returnedData) = logicVerifier.call(
-            abi.encodeWithSelector(
-                ILSP20.lsp20VerifyCall.selector,
+        // Reverts with no reason if the returned data type is not a `bytes4` value
+        try
+            ILSP20(logicVerifier).lsp20VerifyCall(
                 msg.sender,
                 address(this),
                 msg.sender,
                 msg.value,
                 msg.data
             )
-        );
+        returns (bytes4 returnedStatus) {
+            if (
+                bytes3(returnedStatus) !=
+                bytes3(ILSP20.lsp20VerifyCall.selector)
+            ) {
+                revert LSP20CallVerificationFailed({
+                    postCall: false,
+                    returnedStatus: returnedStatus
+                });
+            }
 
-        _validateCall(false, success, returnedData);
-
-        bytes4 returnedStatus = abi.decode(returnedData, (bytes4));
-
-        if (bytes3(returnedStatus) != bytes3(ILSP20.lsp20VerifyCall.selector)) {
-            revert LSP20CallVerificationFailed(false, returnedData);
+            return returnedStatus[3] == 0x01;
+        } catch (bytes memory errorData) {
+            _revertWithLSP20DefaultError(false, errorData);
         }
-
-        return returnedStatus[3] == 0x01;
     }
 
     /**
      * @dev Calls {lsp20VerifyCallResult} function on the logicVerifier.
-     * Reverts in case the value returned does not match the success value (lsp20VerifyCallResult selector)
+     *
+     * @custom:info
+     * - Reverts in case the value returned does not match the returned status (lsp20VerifyCallResult selector).
+     * - Reverts with no reason if the data returned by `ILSP20(logicVerifier).lsp20VerifyCallResult(...)` cannot be decoded (_e.g:_ any other data type besides `bytes4`).
+     * See this link for more info: https://forum.soliditylang.org/t/call-for-feedback-the-future-of-try-catch-in-solidity/1497.
      */
     function _verifyCallResult(
         address logicVerifier,
         bytes memory callResult
     ) internal virtual {
-        (bool success, bytes memory returnedData) = logicVerifier.call(
-            abi.encodeWithSelector(
-                ILSP20.lsp20VerifyCallResult.selector,
+        // Reverts with no reason if the returned data type is not a `bytes4` value
+        try
+            ILSP20(logicVerifier).lsp20VerifyCallResult(
                 keccak256(
                     abi.encodePacked(
                         msg.sender,
@@ -73,37 +86,18 @@ abstract contract LSP20CallVerification {
                 ),
                 callResult
             )
-        );
+        returns (bytes4 returnedStatus) {
+            if (returnedStatus != ILSP20.lsp20VerifyCallResult.selector) {
+                revert LSP20CallVerificationFailed({
+                    postCall: true,
+                    returnedStatus: returnedStatus
+                });
+            }
 
-        _validateCall(true, success, returnedData);
-
-        if (
-            abi.decode(returnedData, (bytes4)) !=
-            ILSP20.lsp20VerifyCallResult.selector
-        )
-            revert LSP20CallVerificationFailed({
-                postCall: true,
-                returnedData: returnedData
-            });
-    }
-
-    function _validateCall(
-        bool postCall,
-        bool success,
-        bytes memory returnedData
-    ) internal pure virtual {
-        if (!success) _revertWithLSP20DefaultError(postCall, returnedData);
-
-        // check if the returned data contains at least 32 bytes, potentially an abi encoded bytes4 value
-        // check if the returned data has in the first 32 bytes an abi encoded bytes4 value
-        if (
-            returnedData.length < 32 ||
-            bytes28(bytes32(returnedData) << 32) != bytes28(0)
-        )
-            revert LSP20CallVerificationFailed({
-                postCall: postCall,
-                returnedData: returnedData
-            });
+            return;
+        } catch (bytes memory errorData) {
+            _revertWithLSP20DefaultError(true, errorData);
+        }
     }
 
     function _revertWithLSP20DefaultError(

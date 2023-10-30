@@ -35,7 +35,7 @@ contract UPWithInstantAcceptOwnership is LSP0ERC725AccountCore {
 
     function universalReceiver(
         bytes32 typeId,
-        bytes calldata receivedData
+        bytes memory receivedData
     ) public payable virtual override returns (bytes memory) {
         if (
             typeId == _TYPEID_LSP0_OwnershipTransferStarted ||

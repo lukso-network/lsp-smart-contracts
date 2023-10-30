@@ -11,6 +11,7 @@ import {
 } from '../LSP7Mintable.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
+import { ERC725YDataKeys } from '../../../constants';
 
 describe('LSP7MintableInit with proxy', () => {
   const buildTestContext = async () => {
@@ -43,6 +44,18 @@ describe('LSP7MintableInit with proxy', () => {
   };
 
   describe('when deploying the base implementation contract', () => {
+    it('should have initialized the tokenName + tokenSymbol to "" and contract owner to `address(0)`', async () => {
+      const accounts = await ethers.getSigners();
+
+      const lsp7MintableInit = await new LSP7MintableInit__factory(accounts[0]).deploy();
+
+      expect(await lsp7MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenName)).to.equal('0x');
+      expect(await lsp7MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenSymbol)).to.equal('0x');
+      expect(await lsp7MintableInit.getData(ERC725YDataKeys.LSP4.LSP4Metadata)).to.equal('0x');
+
+      expect(await lsp7MintableInit.owner()).to.equal(ethers.constants.AddressZero);
+    });
+
     it('prevent any address from calling the initialize(...) function on the implementation', async () => {
       const accounts = await ethers.getSigners();
 

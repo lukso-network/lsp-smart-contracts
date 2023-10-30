@@ -9,6 +9,11 @@ bytes4 constant _INTERFACEID_ERC1271 = 0x1626ba7e;
 bytes4 constant _ERC1271_SUCCESSVALUE = 0x1626ba7e;
 bytes4 constant _ERC1271_FAILVALUE = 0xffffffff;
 
+// --- Native Token Type Id
+
+// keccak256('LSP0ValueReceived')
+bytes32 constant _TYPEID_LSP0_VALUE_RECEIVED = 0x9c4705229491d365fb5434052e12a386d6771d976bea61070a8c694e8affea3d;
+
 // Ownerhsip Transfer Type IDs
 
 // keccak256('LSP0OwnershipTransferStarted')

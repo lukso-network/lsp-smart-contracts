@@ -141,11 +141,19 @@ export const shouldBehaveLikeLSP1Delegate = (
 
     describe('when calling with random bytes32 typeId', () => {
       describe('when caller is an EOA', () => {
-        it('should revert with custom error `CannotRegisterEOAsAsAssets`', async () => {
+        it('should not revert with custom error `CannotRegisterEOAsAsAssets` if its a random typeId', async () => {
           await expect(
             context.universalProfile1
               .connect(context.accounts.any)
-              .callStatic.universalReceiver(LSP1_HOOK_PLACEHOLDER, '0x'),
+              .universalReceiver(LSP1_HOOK_PLACEHOLDER, '0x'),
+          ).to.not.be.reverted;
+        });
+
+        it('should revert with custom error `CannotRegisterEOAsAsAssets` if its a typeId of LSP7/LSP8', async () => {
+          await expect(
+            context.universalProfile1
+              .connect(context.accounts.any)
+              .callStatic.universalReceiver(LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification, '0x'),
           )
             .to.be.revertedWithCustomError(
               context.lsp1universalReceiverDelegateUP,
@@ -1331,7 +1339,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           .connect(context.accounts.owner1)
           .setData(
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap + token.address.substring(2),
-            '0x0551951200000000000000000000000000000000cafecafe',
+            '0xdaa746b700000000000000000000000000000000cafecafe',
           );
 
         expect(
@@ -1339,7 +1347,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         ).to.deep.equal([
           '0x' + '00'.repeat(15) + '01',
           token.address.toLowerCase(),
-          '0x0551951200000000000000000000000000000000cafecafe',
+          '0xdaa746b700000000000000000000000000000000cafecafe',
         ]);
 
         balance = await token.balanceOf(context.universalProfile1.address);
@@ -1400,7 +1408,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         ).to.deep.equal([
           '0x' + '00'.repeat(15) + '01',
           token.address.toLowerCase(),
-          '0x0551951200000000000000000000000000000000cafecafe',
+          '0xdaa746b700000000000000000000000000000000cafecafe',
         ]);
       });
     });
@@ -3156,15 +3164,17 @@ export const shouldInitializeLikeLSP1Delegate = (
 
   describe('when the contract was initialized', () => {
     it('should have registered the ERC165 interface', async () => {
-      expect(await context.lsp1universalReceiverDelegateUP.supportsInterface(INTERFACE_IDS.ERC165));
+      const result = await context.lsp1universalReceiverDelegateUP.supportsInterface(
+        INTERFACE_IDS.ERC165,
+      );
+      expect(result).to.be.true;
     });
 
     it('should have registered the LSP1 interface', async () => {
-      expect(
-        await context.lsp1universalReceiverDelegateUP.supportsInterface(
-          INTERFACE_IDS.LSP1UniversalReceiver,
-        ),
+      const result = await context.lsp1universalReceiverDelegateUP.supportsInterface(
+        INTERFACE_IDS.LSP1UniversalReceiverDelegate,
       );
+      expect(result).to.be.true;
     });
   });
 };

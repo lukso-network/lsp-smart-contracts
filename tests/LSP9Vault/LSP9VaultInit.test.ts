@@ -70,6 +70,16 @@ describe('LSP9VaultInit with proxy', () => {
   };
 
   describe('when deploying the base implementation contract', () => {
+    it('`owner()` of the base contract MUST be `address(0)`', async () => {
+      const accounts = await ethers.getSigners();
+
+      const lsp9VaultInit = await new LSP9VaultInit__factory(accounts[0]).deploy();
+
+      const owner = await lsp9VaultInit.owner();
+
+      expect(owner).to.equal(ethers.constants.AddressZero);
+    });
+
     it('prevent any address from calling the initialize(...) function on the implementation', async () => {
       const accounts = await ethers.getSigners();
 

@@ -1,0 +1,58 @@
+name: Github + NPM Release
+
+on:
+  push:
+    branches:
+      - "main"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          release-type: node
+          package-name: "@lukso/lsp-smart-contracts"
+          bump-minor-pre-major: true
+          default-branch: main
+          changelog-types: '[{"type": "feat!","section":"BREAKING CHANGES","hidden": false},{"type": "refactor!","section":"BREAKING CHANGES","hidden": false},{"type": "build!","section":"BREAKING CHANGES","hidden": false},{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"chore","section":"Miscellaneous","hidden":false}]'
+
+      # The logic below handles the npm publication.
+      # The `if` statements ensure that a publication only occurs when
+      # a new release is created:
+
+      - uses: actions/checkout@v3
+        if: ${{ steps.release.outputs.release_created }}
+
+      - name: Use Node.js '16.15.0'
+        uses: actions/setup-node@v2
+        if: ${{ steps.release.outputs.release_created }}
+        with:
+          node-version: "16.15.0"
+          registry-url: "https://registry.npmjs.org"
+          scope: "@lukso"
+          cache: "npm"
+
+      - name: Install Dependencies
+        if: ${{ steps.release.outputs.release_created }}
+        run: npm ci
+
+      # `npm run build:js` will also generate the auto-generated constants for methods, errors and events,
+      # including extracting their devdocs and userdocs
+      - name: Prepare artifacts to publish
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          npm run build
+          npm run build:js
+          npm run package
+
+      - name: Publish on NPM
+        if: ${{ steps.release.outputs.release_created }}
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}

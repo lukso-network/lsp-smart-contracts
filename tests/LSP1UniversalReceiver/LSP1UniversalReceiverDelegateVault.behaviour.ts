@@ -150,11 +150,19 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
     describe('when calling with random bytes32 typeId', () => {
       describe('when caller is an EOA', () => {
-        it('should revert with custom error `CannotRegisterEOAsAsAssets`', async () => {
+        it('should not revert with custom error `CannotRegisterEOAsAsAssets` if its a random typeId', async () => {
           await expect(
             context.lsp9Vault1
               .connect(context.accounts.any)
-              .callStatic.universalReceiver(LSP1_HOOK_PLACEHOLDER, '0x'),
+              .universalReceiver(LSP1_HOOK_PLACEHOLDER, '0x'),
+          ).to.not.be.reverted;
+        });
+
+        it('should revert with custom error `CannotRegisterEOAsAsAssets` if its a typeId of LSP7/LSP8', async () => {
+          await expect(
+            context.lsp9Vault1
+              .connect(context.accounts.any)
+              .callStatic.universalReceiver(LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification, '0x'),
           )
             .to.be.revertedWithCustomError(
               context.lsp1universalReceiverDelegateVault,
@@ -980,7 +988,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
         const vaultSetDataCalldata = context.lsp9Vault1.interface.encodeFunctionData('setData', [
           ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap + token.address.substring(2),
-          '0x0551951200000000000000000000000000000000cafecafe',
+          '0xdaa746b700000000000000000000000000000000cafecafe',
         ]);
 
         await context.universalProfile
@@ -992,7 +1000,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         ).to.deep.equal([
           '0x' + '00'.repeat(15) + '01',
           token.address.toLowerCase(),
-          '0x0551951200000000000000000000000000000000cafecafe',
+          '0xdaa746b700000000000000000000000000000000cafecafe',
         ]);
 
         balance = await token.balanceOf(context.lsp9Vault1.address);
@@ -1054,7 +1062,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         ).to.deep.equal([
           '0x' + '00'.repeat(15) + '01',
           token.address.toLowerCase(),
-          '0x0551951200000000000000000000000000000000cafecafe',
+          '0xdaa746b700000000000000000000000000000000cafecafe',
         ]);
       });
     });

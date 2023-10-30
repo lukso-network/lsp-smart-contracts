@@ -10,6 +10,9 @@ import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
+// constants
+import {_TYPEID_LSP0_VALUE_RECEIVED} from "./LSP0Constants.sol";
+
 /**
  * @title Inheritable Proxy Implementation of [LSP-0-ERC725Account] Standard.
  *
@@ -27,14 +30,20 @@ abstract contract LSP0ERC725AccountInitAbstract is
      * @custom:warning ERC725X & ERC725Y parent contracts are not initialised as they don't have non-zero initial state. If you decide to add non-zero initial state to any of those contracts, you must initialize them here.
      *
      * @custom:events
-     * - {ValueReceived} event when funding the contract on deployment.
+     * - {UniversalReceiver} event when funding the contract on deployment.
      * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
      */
     function _initialize(
         address initialOwner
     ) internal virtual onlyInitializing {
         if (msg.value != 0) {
-            emit ValueReceived(msg.sender, msg.value);
+            emit UniversalReceiver(
+                msg.sender,
+                msg.value,
+                _TYPEID_LSP0_VALUE_RECEIVED,
+                "",
+                ""
+            );
         }
         OwnableUnset._setOwner(initialOwner);
     }
