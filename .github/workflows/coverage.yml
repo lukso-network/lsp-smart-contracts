@@ -5,13 +5,16 @@
 name: Solidity Code coverage
 
 on:
-  push:
+  pull_request:
     branches:
       - "develop"
+    types:
+      - closed
 
 jobs:
   coverage:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
     steps:
       - uses: actions/checkout@v3
 
