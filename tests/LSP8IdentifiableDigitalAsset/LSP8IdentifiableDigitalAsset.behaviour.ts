@@ -450,11 +450,10 @@ export const shouldBehaveLikeLSP8 = (
             await new TokenReceiverWithLSP1Revert__factory(context.accounts.owner).deploy();
 
           const operator = operatorThatReverts.address;
-          const tokenOwner = context.accounts.owner.address;
           const tokenId = newMintedTokenId;
 
           // pre-condition
-          await context.lsp8.connect(tokenOwner).authorizeOperator(operator, tokenId, '0xaabbccdd');
+          await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
 
           await operatorThatReverts.addLSP1Support();
 

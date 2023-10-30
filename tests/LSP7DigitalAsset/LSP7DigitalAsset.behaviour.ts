@@ -378,12 +378,9 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         describe('when there was no authorized amount before for the operator (`authorizedAmountFor` operator = 0)', () => {
           it('should revert', async () => {
             const operator = context.accounts.anyone.address;
-            const tokenOwner = context.accounts.owner;
 
             await expect(
-              context.lsp7
-                .connect(tokenOwner)
-                .increaseAllowance(operator, addedAmountLargerThanBalance, '0x'),
+              context.lsp7.increaseAllowance(operator, addedAmountLargerThanBalance, '0x'),
             )
               .to.be.revertedWithCustomError(
                 context.lsp7,
@@ -644,9 +641,8 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           await new TokenReceiverWithLSP1Revert__factory(context.accounts.owner).deploy();
 
         const operator = operatorThatReverts.address;
-        const tokenOwner = context.accounts.owner;
 
-        await context.lsp7.connect(tokenOwner).authorizeOperator(operator, 1, '0x');
+        await context.lsp7.authorizeOperator(operator, 1, '0x');
 
         await operatorThatReverts.addLSP1Support();
 
@@ -660,9 +656,8 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           await new TokenReceiverWithLSP1Revert__factory(context.accounts.owner).deploy();
 
         const operator = operatorThatReverts.address;
-        const tokenOwner = context.accounts.owner;
 
-        await context.lsp7.connect(tokenOwner).authorizeOperator(operator, 1, '0x');
+        await context.lsp7.authorizeOperator(operator, 1, '0x');
 
         await operatorThatReverts.addLSP1Support();
 
