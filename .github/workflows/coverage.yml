@@ -4,6 +4,10 @@
 
 name: Solidity Code coverage
 
+env:
+  # 4GB of memory to prevent max heap size error when running code coverage
+  NODE_OPTIONS: "--max_old_space_size=4096"
+
 on:
   pull_request:
     branches:
