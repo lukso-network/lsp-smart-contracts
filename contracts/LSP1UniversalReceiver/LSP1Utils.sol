@@ -25,6 +25,8 @@ import {
  * Based on LSP1 Universal Receiver standard.
  */
 library LSP1Utils {
+    using ERC165Checker for address;
+
     /**
      * @dev Notify a contract at `lsp1Implementation` address by calling its `universalReceiver` function if this contract
      * supports the LSP1 interface.
@@ -39,8 +41,7 @@ library LSP1Utils {
         bytes memory data
     ) internal {
         if (
-            ERC165Checker.supportsERC165InterfaceUnchecked(
-                lsp1Implementation,
+            lsp1Implementation.supportsERC165InterfaceUnchecked(
                 _INTERFACEID_LSP1
             )
         ) {
