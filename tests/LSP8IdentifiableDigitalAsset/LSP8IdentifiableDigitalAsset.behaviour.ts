@@ -14,8 +14,6 @@ import {
   TokenReceiverWithoutLSP1__factory,
   UniversalReceiverDelegateRevert,
   UniversalReceiverDelegateRevert__factory,
-  UniversalReceiverDelegateGasConsumer,
-  UniversalReceiverDelegateGasConsumer__factory,
   TokenReceiverWithLSP1Revert,
   TokenReceiverWithLSP1Revert__factory,
 } from '../../types';
@@ -450,12 +448,13 @@ export const shouldBehaveLikeLSP8 = (
         it('should inform the operator and revert when the operator revert', async () => {
           const operatorThatReverts: TokenReceiverWithLSP1Revert =
             await new TokenReceiverWithLSP1Revert__factory(context.accounts.owner).deploy();
+
           const operator = operatorThatReverts.address;
           const tokenOwner = context.accounts.owner.address;
           const tokenId = newMintedTokenId;
 
           // pre-condition
-          await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
+          await context.lsp8.connect(tokenOwner).authorizeOperator(operator, tokenId, '0xaabbccdd');
 
           await operatorThatReverts.addLSP1Support();
 

@@ -14,8 +14,6 @@ import {
   TokenReceiverWithLSP1__factory,
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
-  UniversalReceiverDelegateGasConsumer,
-  UniversalReceiverDelegateGasConsumer__factory,
   UniversalReceiverDelegateRevert,
   UniversalReceiverDelegateRevert__factory,
 } from '../../types';
