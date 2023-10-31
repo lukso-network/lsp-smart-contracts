@@ -12,7 +12,7 @@ import {
 contract LSP0Implementation is LSP0ERC725Account {
     constructor(address _addr) LSP0ERC725Account(_addr) {}
 
-    function renounceOwnershipStartedAt() public view returns(uint256){
+    function renounceOwnershipStartedAt() public view returns (uint256) {
         return _renounceOwnershipStartedAt;
     }
 }
@@ -22,13 +22,14 @@ contract Implementation {
     bytes32[2] __gap;
     uint256 _renounceOwnershipStartedAt;
 
-    function setRenounceOwnershipStartedAt(uint256 newRenounceOwnershipStartedAt) external {
+    function setRenounceOwnershipStartedAt(
+        uint256 newRenounceOwnershipStartedAt
+    ) external {
         _renounceOwnershipStartedAt = newRenounceOwnershipStartedAt;
     }
 }
 
 contract OwnershipAccepter {
-
     function acceptOwnership(address _account) public {
         LSP0Implementation(payable(_account)).acceptOwnership();
     }
@@ -45,7 +46,6 @@ contract TwoStepRenounceOwnershipTest is Test {
     }
 
     function testRenounceOwnershipVariableClearedAfterAcceptOwnership() public {
-
         // Call transferOwnership so we can check acceptOwnership behavior
         account.transferOwnership(address(ownershipAccepter));
 
