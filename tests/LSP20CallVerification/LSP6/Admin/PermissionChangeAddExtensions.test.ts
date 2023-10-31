@@ -81,19 +81,19 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        canAddAndChangeExtensions.address.substring(2),
+          canAddAndChangeExtensions.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        canOnlyAddExtensions.address.substring(2),
+          canOnlyAddExtensions.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        canOnlyChangeExtensions.address.substring(2),
+          canOnlyChangeExtensions.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        canOnlySuperSetData.address.substring(2),
+          canOnlySuperSetData.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        canOnlySetData.address.substring(2),
+          canOnlySetData.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-        canOnlySetData.address.substring(2),
+          canOnlySetData.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + canOnlyCall.address.substring(2),
       ];
 
@@ -931,7 +931,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             const payloadParam = {
               dataKeys: [
                 ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-                canOnlySetData.address.substring(2),
+                  canOnlySetData.address.substring(2),
               ],
               dataValues: [combinePermissions(PERMISSIONS.ADDEXTENSIONS, PERMISSIONS.SETDATA)],
             };
