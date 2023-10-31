@@ -322,7 +322,11 @@ abstract contract LSP6SetDataModule {
             // LSP17Extension:<bytes4>
         } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
             // CHECK that `dataValue` contains exactly 20 bytes, which corresponds to an address for a LSP17 Extension
-            if (inputDataValue.length != 20 && inputDataValue.length != 0) {
+            if (
+                inputDataValue.length != 20 &&
+                inputDataValue.length != 21 &&
+                inputDataValue.length != 0
+            ) {
                 revert InvalidDataValuesForDataKeys(
                     inputDataKey,
                     inputDataValue
