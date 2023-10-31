@@ -838,6 +838,12 @@ abstract contract LSP0ERC725AccountCore is
             mappedExtensionDataKey
         );
 
+        // Prevent casting data shorter than 20 bytes to an address to avoid
+        // unintentionally calling a different extension, return address(0) instead.
+        if (extensionData.length < 20) {
+            return (address(0), false);
+        }
+
         // CHECK if the `extensionData` is 21 bytes long
         // - 20 bytes = extension's address
         // - 1 byte `0x01` as a boolean indicating if the contract should forward the value to the extension or not
