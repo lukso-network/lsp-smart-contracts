@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
-import { BigNumber } from 'ethers';
+import { BigNumber, Signer } from 'ethers';
 import { FakeContract, smock } from '@defi-wonderland/smock';
 
 import {
@@ -52,10 +52,10 @@ export const shouldBehaveLikePermissionTransferValue = (
   describe('when caller = EOA', () => {
     let canTransferValue: SignerWithAddress,
       canTransferValueAndCall: SignerWithAddress,
-      cannotTransferValue: SignerWithAddress;
+      canCallOnly: SignerWithAddress,
+      canNeitherCallNorTransferValue: SignerWithAddress;
 
     let recipient;
-
     let recipientUP: UniversalProfile;
 
     // used to test when sending data as graffiti
@@ -66,9 +66,10 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       canTransferValue = context.accounts[1];
       canTransferValueAndCall = context.accounts[2];
-      cannotTransferValue = context.accounts[3];
-      recipient = context.accounts[4];
+      canCallOnly = context.accounts[3];
+      canNeitherCallNorTransferValue = context.accounts[4];
 
+      recipient = context.accounts[5];
       recipientUP = await new UniversalProfile__factory(context.accounts[0]).deploy(
         context.accounts[0].address,
       );
@@ -77,8 +78,8 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       const lsp17ExtensionDataKeyForGraffiti =
         ERC725YDataKeys.LSP17['LSP17ExtensionPrefix'] +
-        '00000000' + // selector for graffiti data,
-        '00000000000000000000000000000000'; // zero padded
+        '00'.repeat(4) + // bytes4 selector for graffiti data,
+        '00'.repeat(16); // zero padded on the right
 
       await recipientUP
         .connect(context.accounts[0])
@@ -90,23 +91,28 @@ export const shouldBehaveLikePermissionTransferValue = (
         ethers.utils.getAddress(await recipientUP.getData(lsp17ExtensionDataKeyForGraffiti)),
       ).to.equal(graffitiExtension.address);
 
+      // prettier-ignore
       const permissionsKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.mainController.address.substring(2),
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          canTransferValue.address.substring(2),
-        ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          canTransferValue.address.substring(2),
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          canTransferValueAndCall.address.substring(2),
-        ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          canTransferValueAndCall.address.substring(2),
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          cannotTransferValue.address.substring(2),
+        // main controller
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + context.mainController.address.substring(2),
+        // canTransferValue
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + canTransferValue.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + canTransferValue.address.substring(2),
+        // canTransferValueAndCall
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + canTransferValueAndCall.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + canTransferValueAndCall.address.substring(2),
+        // canCallOnly (not Transfer Value)
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + canCallOnly.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + canCallOnly.address.substring(2),
+        // canNeitherCallNorTransferValue
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + canNeitherCallNorTransferValue.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + canNeitherCallNorTransferValue.address.substring(2),
       ];
 
       const permissionsValues = [
+        // main controller
         ALL_PERMISSIONS,
+        // canTransferValue
         PERMISSIONS.TRANSFERVALUE,
         combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
@@ -114,6 +120,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
+        // canTransferValueAndCall
         combinePermissions(PERMISSIONS.TRANSFERVALUE, PERMISSIONS.CALL),
         combineAllowedCalls(
           [
@@ -124,7 +131,26 @@ export const shouldBehaveLikePermissionTransferValue = (
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
+        // canCallOnly (not Transfer Value)
         PERMISSIONS.CALL,
+        combineAllowedCalls(
+          [CALLTYPE.CALL, CALLTYPE.CALL],
+          [recipient.address, recipientUP.address],
+          ['0xffffffff', '0xffffffff'],
+          ['0xffffffff', '0xffffffff'],
+        ),
+        // canNeitherCallNorTransferValue
+        PERMISSIONS.SIGN,
+        combineAllowedCalls(
+          // we set call types but test that it should not reach the point of checking the call types
+          [
+            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
+            combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
+          ],
+          [recipient.address, recipientUP.address],
+          ['0xffffffff', '0xffffffff'],
+          ['0xffffffff', '0xffffffff'],
+        ),
       ];
 
       await setupKeyManager(context, permissionsKeys, permissionsValues);
@@ -135,7 +161,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         describe('when transferring value without bytes `_data`', () => {
           const data = '0x';
 
-          it('should pass when caller has ALL PERMISSIONS', async () => {
+          it('should pass when controller has ALL PERMISSIONS', async () => {
             const amount = ethers.utils.parseEther('3');
 
             const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
@@ -157,7 +183,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
           });
 
-          it('should pass when caller has permission TRANSFERVALUE only', async () => {
+          it('should pass when controller has permission TRANSFERVALUE only', async () => {
             const amount = ethers.utils.parseEther('3');
 
             const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
@@ -175,7 +201,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
           });
 
-          it('should pass when caller has permission TRANSFERVALUE + CALL', async () => {
+          it('should pass when controller has permission TRANSFERVALUE + CALL', async () => {
             const amount = ethers.utils.parseEther('3');
 
             const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
@@ -193,7 +219,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
           });
 
-          it('should fail when caller does not have permission TRANSFERVALUE', async () => {
+          it('should fail when controller has permission CALL only but not TRANSFERVALUE', async () => {
             const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
             const initialBalanceRecipient = await provider.getBalance(recipient.address);
 
@@ -204,9 +230,34 @@ export const shouldBehaveLikePermissionTransferValue = (
               data,
             ]);
 
-            await expect(context.keyManager.connect(cannotTransferValue).execute(transferPayload))
+            await expect(context.keyManager.connect(canCallOnly).execute(transferPayload))
               .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-              .withArgs(cannotTransferValue.address, 'TRANSFERVALUE');
+              .withArgs(canCallOnly.address, 'TRANSFERVALUE');
+
+            const newBalanceUP = await provider.getBalance(context.universalProfile.address);
+            const newBalanceRecipient = await provider.getBalance(recipient.address);
+
+            // verify that native token balances have not changed
+            expect(newBalanceUP).to.equal(initialBalanceUP);
+            expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
+          });
+
+          it('should fail when controller has neither CALL nor TRANSFERVALUE permissions', async () => {
+            const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
+            const initialBalanceRecipient = await provider.getBalance(recipient.address);
+
+            const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
+              OPERATION_TYPES.CALL,
+              recipient.address,
+              ethers.utils.parseEther('3'),
+              data,
+            ]);
+
+            await expect(
+              context.keyManager.connect(canNeitherCallNorTransferValue).execute(transferPayload),
+            )
+              .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+              .withArgs(canNeitherCallNorTransferValue.address, 'TRANSFERVALUE');
 
             const newBalanceUP = await provider.getBalance(context.universalProfile.address);
             const newBalanceRecipient = await provider.getBalance(recipient.address);
@@ -220,7 +271,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         describe('when transferring value with bytes `_data`', () => {
           const data = '0xaabbccdd';
 
-          it('should pass when caller has ALL PERMISSIONS', async () => {
+          it('should pass when controller has ALL PERMISSIONS', async () => {
             const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
 
             const initialBalanceRecipient = await provider.getBalance(recipient.address);
@@ -241,7 +292,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             expect(newBalanceRecipient).to.be.gt(initialBalanceRecipient);
           });
 
-          it('should pass when caller has permission TRANSFERVALUE + CALL', async () => {
+          it('should pass when controller has permission TRANSFERVALUE + CALL', async () => {
             const amount = ethers.utils.parseEther('3');
 
             const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
@@ -259,7 +310,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
           });
 
-          it('should fail when caller has permission TRANSFERVALUE only', async () => {
+          it('should fail when controller has permission TRANSFERVALUE only', async () => {
             const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
             const initialBalanceRecipient = await provider.getBalance(recipient.address);
 
@@ -282,7 +333,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
           });
 
-          it('should fail when caller does not have permission TRANSFERVALUE', async () => {
+          it('should fail when controller has permission CALL only but not TRANSFERVALUE', async () => {
             const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
             const initialBalanceRecipient = await provider.getBalance(recipient.address);
 
@@ -293,9 +344,34 @@ export const shouldBehaveLikePermissionTransferValue = (
               data,
             ]);
 
-            await expect(context.keyManager.connect(cannotTransferValue).execute(transferPayload))
+            await expect(context.keyManager.connect(canCallOnly).execute(transferPayload))
               .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-              .withArgs(cannotTransferValue.address, 'TRANSFERVALUE');
+              .withArgs(canCallOnly.address, 'TRANSFERVALUE');
+
+            const newBalanceUP = await provider.getBalance(context.universalProfile.address);
+            const newBalanceRecipient = await provider.getBalance(recipient.address);
+
+            // verify that native token balances have not changed
+            expect(newBalanceUP).to.equal(initialBalanceUP);
+            expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
+          });
+
+          it('should fail when controller has neither CALL nor TRANSFERVALUE permissions', async () => {
+            const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
+            const initialBalanceRecipient = await provider.getBalance(recipient.address);
+
+            const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
+              OPERATION_TYPES.CALL,
+              recipient.address,
+              ethers.utils.parseEther('3'),
+              data,
+            ]);
+
+            await expect(
+              context.keyManager.connect(canNeitherCallNorTransferValue).execute(transferPayload),
+            )
+              .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+              .withArgs(canNeitherCallNorTransferValue.address, 'TRANSFERVALUE');
 
             const newBalanceUP = await provider.getBalance(context.universalProfile.address);
             const newBalanceRecipient = await provider.getBalance(recipient.address);
@@ -309,7 +385,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         describe('when transferring value with graffiti `_data` (prefixed with `bytes4(0)`)', () => {
           const data = '0x00000000aabbccdd';
 
-          it('should fail when caller has permission TRANSFERVALUE only', async () => {
+          it('should fail when controller has permission TRANSFERVALUE only', async () => {
             const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
             const initialBalanceRecipient = await provider.getBalance(recipient.address);
 
@@ -325,6 +401,56 @@ export const shouldBehaveLikePermissionTransferValue = (
             )
               .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
               .withArgs(canTransferValue.address, 'CALL');
+
+            const newBalanceUP = await provider.getBalance(context.universalProfile.address);
+            const newBalanceRecipient = await provider.getBalance(recipient.address);
+
+            // verify that native token balances have not changed
+            expect(newBalanceUP).to.equal(initialBalanceUP);
+            expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
+          });
+
+          it('it should fail when controller has permission CALL only', async () => {
+            const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
+            const initialBalanceRecipient = await provider.getBalance(recipient.address);
+
+            const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
+              OPERATION_TYPES.CALL,
+              recipient.address,
+              ethers.utils.parseEther('3'),
+              data,
+            ]);
+
+            await expect(context.keyManager.connect(canCallOnly)['execute(bytes)'](transferPayload))
+              .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+              .withArgs(canCallOnly.address, 'TRANSFERVALUE');
+
+            const newBalanceUP = await provider.getBalance(context.universalProfile.address);
+            const newBalanceRecipient = await provider.getBalance(recipient.address);
+
+            // verify that native token balances have not changed
+            expect(newBalanceUP).to.equal(initialBalanceUP);
+            expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
+          });
+
+          it('it should fail when caller has neither permissions CALL nor TRANSFERVALUE', async () => {
+            const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
+            const initialBalanceRecipient = await provider.getBalance(recipient.address);
+
+            const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
+              OPERATION_TYPES.CALL,
+              recipient.address,
+              ethers.utils.parseEther('3'),
+              data,
+            ]);
+
+            await expect(
+              context.keyManager
+                .connect(canNeitherCallNorTransferValue)
+                ['execute(bytes)'](transferPayload),
+            )
+              .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+              .withArgs(canNeitherCallNorTransferValue.address, 'TRANSFERVALUE');
 
             const newBalanceUP = await provider.getBalance(context.universalProfile.address);
             const newBalanceRecipient = await provider.getBalance(recipient.address);
@@ -451,7 +577,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       describe('when transferring value with graffiti `_data` (prefixed with `bytes4(0)`)', () => {
         const data = '0x00000000aabbccdd';
 
-        it('should fail when caller has permission TRANSFERVALUE only', async () => {
+        it('should fail when controller has permission TRANSFERVALUE only', async () => {
           const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
           const initialBalanceRecipient = await provider.getBalance(recipientUP.address);
 
@@ -476,7 +602,30 @@ export const shouldBehaveLikePermissionTransferValue = (
           expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
         });
 
-        it('should pass when caller has permission TRANSFERVALUE + CALL', async () => {
+        it('should fail when controller has permission CALL only', async () => {
+          const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
+          const initialBalanceRecipient = await provider.getBalance(recipientUP.address);
+
+          const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
+            OPERATION_TYPES.CALL,
+            recipientUP.address,
+            ethers.utils.parseEther('3'),
+            data,
+          ]);
+
+          await expect(context.keyManager.connect(canCallOnly)['execute(bytes)'](transferPayload))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canCallOnly.address, 'TRANSFERVALUE');
+
+          const newBalanceUP = await provider.getBalance(context.universalProfile.address);
+          const newBalanceRecipient = await provider.getBalance(recipientUP.address);
+
+          // verify that native token balances have not changed
+          expect(newBalanceUP).to.equal(initialBalanceUP);
+          expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
+        });
+
+        it('should pass when controller has permission TRANSFERVALUE + CALL', async () => {
           const amount = ethers.utils.parseEther('3');
 
           const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
