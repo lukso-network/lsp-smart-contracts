@@ -81,19 +81,19 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          canAddAndChangeExtensions.address.substring(2),
+        canAddAndChangeExtensions.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          canOnlyAddExtensions.address.substring(2),
+        canOnlyAddExtensions.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          canOnlyChangeExtensions.address.substring(2),
+        canOnlyChangeExtensions.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          canOnlySuperSetData.address.substring(2),
+        canOnlySuperSetData.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          canOnlySetData.address.substring(2),
+        canOnlySetData.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-          canOnlySetData.address.substring(2),
+        canOnlySetData.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + canOnlyCall.address.substring(2),
       ];
 
@@ -255,11 +255,11 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           const payloadParam = {
             dataKeys: [
               ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-                lsp20VerifyCallSelector.slice(2) +
-                '00000000000000000000000000000000',
+              lsp20VerifyCallSelector.slice(2) +
+              '00000000000000000000000000000000',
               ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-                lsp20VerifyCallResultSelector.slice(2) +
-                '00000000000000000000000000000000',
+              lsp20VerifyCallResultSelector.slice(2) +
+              '00000000000000000000000000000000',
             ], // zero padded,
             dataValues: [context.accounts[2].address, context.accounts[3].address],
           };
@@ -1096,7 +1096,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             const payloadParam = {
               dataKeys: [
                 ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-                  canOnlySetData.address.substring(2),
+                canOnlySetData.address.substring(2),
               ],
               dataValues: [combinePermissions(PERMISSIONS.ADDEXTENSIONS, PERMISSIONS.SETDATA)],
             };
@@ -1131,6 +1131,58 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             });
           });
         });
+      });
+    });
+
+    describe('when setting random bytes under the LSP17Extension data key ', () => {
+      it('should be allowed to set a 20 bytes long address', async () => {
+        const key =
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+          ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+        const value = ethers.Wallet.createRandom().address.toLowerCase();
+
+        await context.universalProfile.connect(context.mainController).setData(key, value);
+
+        const result = await context.universalProfile.getData(key);
+        expect(result).to.equal(value);
+      });
+
+      it('should be allowed to set a 21 bytes long address', async () => {
+        const key =
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+          ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+        const value = ethers.Wallet.createRandom().address.toLowerCase() + '00';
+
+        await context.universalProfile.connect(context.mainController).setData(key, value);
+
+        const result = await context.universalProfile.getData(key);
+        expect(result).to.equal(value);
+      });
+
+      it('should revert when setting a random 10 bytes value', async () => {
+        const key =
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+          ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+        const randomValue = '0xcafecafecafecafecafe';
+
+        await expect(
+          context.universalProfile.connect(context.mainController).setData(key, randomValue),
+        )
+          .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
+          .withArgs(key, randomValue);
+      });
+
+      it('should revert when setting a random 30 bytes value', async () => {
+        const key =
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+          ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+        const randomValue = '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef';
+
+        await expect(
+          context.universalProfile.connect(context.mainController).setData(key, randomValue),
+        )
+          .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
+          .withArgs(key, randomValue);
       });
     });
   });
