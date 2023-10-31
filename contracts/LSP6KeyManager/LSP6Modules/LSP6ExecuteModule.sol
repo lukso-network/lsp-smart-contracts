@@ -314,6 +314,7 @@ abstract contract LSP6ExecuteModule {
             requiredCallTypes |= _ALLOWEDCALLS_TRANSFERVALUE;
         }
 
+        // if we are doing a message call with some data
         if (!isEmptyCall) {
             if (operationType == OPERATION_0_CALL) {
                 requiredCallTypes |= _ALLOWEDCALLS_CALL;
@@ -322,6 +323,8 @@ abstract contract LSP6ExecuteModule {
             } else if (operationType == OPERATION_4_DELEGATECALL) {
                 requiredCallTypes |= _ALLOWEDCALLS_DELEGATECALL;
             }
+
+            // if we are doing an empty call without value
         } else if (value == 0) {
             if (operationType == OPERATION_0_CALL) {
                 requiredCallTypes |= _ALLOWEDCALLS_CALL;
