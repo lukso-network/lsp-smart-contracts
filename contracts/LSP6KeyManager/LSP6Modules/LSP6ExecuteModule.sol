@@ -252,9 +252,6 @@ abstract contract LSP6ExecuteModule {
 
         bool isEmptyCall = data.length == 0;
 
-        // CHECK if there is at least a 4 bytes function selector
-        bytes4 selector = data.length >= 4 ? bytes4(data) : bytes4(0);
-
         bytes4 requiredCallTypes = _extractCallType(
             operationType,
             value,
@@ -294,11 +291,11 @@ abstract contract LSP6ExecuteModule {
                 _isAllowedCallType(allowedCall, requiredCallTypes) &&
                 _isAllowedAddress(allowedCall, to) &&
                 _isAllowedStandard(allowedCall, to) &&
-                _isAllowedFunction(allowedCall, selector)
+                _isAllowedFunction(allowedCall, data)
             ) return;
         }
 
-        revert NotAllowedCall(controllerAddress, to, selector);
+        revert NotAllowedCall(controllerAddress, to, bytes4(data));
     }
 
     /**
@@ -322,6 +319,12 @@ abstract contract LSP6ExecuteModule {
                 requiredCallTypes |= _ALLOWEDCALLS_CALL;
             } else if (operationType == OPERATION_3_STATICCALL) {
                 requiredCallTypes |= _ALLOWEDCALLS_STATICCALL;
+            } else if (operationType == OPERATION_4_DELEGATECALL) {
+                requiredCallTypes |= _ALLOWEDCALLS_DELEGATECALL;
+            }
+        } else if (value == 0) {
+            if (operationType == OPERATION_0_CALL) {
+                requiredCallTypes |= _ALLOWEDCALLS_CALL;
             } else if (operationType == OPERATION_4_DELEGATECALL) {
                 requiredCallTypes |= _ALLOWEDCALLS_DELEGATECALL;
             }
@@ -363,7 +366,7 @@ abstract contract LSP6ExecuteModule {
 
     function _isAllowedFunction(
         bytes memory allowedCall,
-        bytes4 requiredFunction
+        bytes memory data
     ) internal pure virtual returns (bool) {
         // <offset> = 28 bytes x 8 bits = 224 bits
         //
@@ -372,7 +375,9 @@ abstract contract LSP6ExecuteModule {
         // 0000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
         bytes4 allowedFunction = bytes4(bytes32(allowedCall) << 224);
 
-        bool isFunctionCall = requiredFunction != bytes4(0);
+        bool isFunctionCall = data.length >= 4;
+
+        bytes4 requiredFunction = bytes4(data);
 
         // ANY function = 0xffffffff
         return
