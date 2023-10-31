@@ -17,7 +17,7 @@ contract LSP0Implementation is LSP0ERC725Account {
     }
 }
 
-contract Implementation {
+contract LSP0StorageUpdater {
     // _renounceOwnershipStartedAt is at slot 2 for LSP0ERC725Account
     bytes32[2] __gap;
     uint256 _renounceOwnershipStartedAt;
@@ -50,21 +50,27 @@ contract TwoStepRenounceOwnershipTest is Test {
         account.transferOwnership(address(ownershipAccepter));
 
         // Overwrite _renounceOwnershipAt using a delegatecall
-        Implementation implementation = new Implementation();
+        LSP0StorageUpdater implementation = new LSP0StorageUpdater();
+
+        uint256 newRenounceOwnershipStartedAt = 10_000_000; // number of blocks
+
         account.execute(
             OPERATION_4_DELEGATECALL,
             address(implementation),
             0,
             abi.encodeWithSelector(
-                Implementation.setRenounceOwnershipStartedAt.selector,
-                10000000
+                LSP0StorageUpdater.setRenounceOwnershipStartedAt.selector,
+                newRenounceOwnershipStartedAt
             )
         );
 
         // _renounceOwnershipAt is now set to this value
-        assertEq(account.renounceOwnershipStartedAt(), 10000000);
+        assertEq(
+            account.renounceOwnershipStartedAt(),
+            newRenounceOwnershipStartedAt
+        );
 
-        // Will call LSP0's accceptOwnership function that
+        // Calling LSP0's `acceptOwnership()` function that
         // should reset _renounceOwnershipAt variable
         ownershipAccepter.acceptOwnership(address(account));
 
