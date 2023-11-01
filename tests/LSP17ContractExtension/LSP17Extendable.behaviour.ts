@@ -919,7 +919,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         const lsp17DataKey =
           ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
           randomSelector.substring(2) +
-          '00000000000000000000000000000000';
+          '00'.repeat(16);
 
         it('should pass when setting the bytes', async () => {
           await expect(context.contract.setData(lsp17DataKey, randomBytes10Value))
