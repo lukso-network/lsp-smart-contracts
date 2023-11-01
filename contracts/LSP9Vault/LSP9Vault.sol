@@ -57,7 +57,7 @@ contract LSP9Vault is LSP9VaultCore {
             _LSP9_SUPPORTED_STANDARDS_VALUE
         );
 
-        newOwner.tryNotifyUniversalReceiver(
+        newOwner.notifyUniversalReceiver(
             _TYPEID_LSP9_OwnershipTransferred_RecipientNotification,
             ""
         );
