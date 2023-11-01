@@ -21,13 +21,19 @@ import {
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX,
-    _ALLOWEDCALLS_TRANSFERVALUE
+    _ALLOWEDCALLS_TRANSFERVALUE,
+    _ALLOWEDCALLS_CALL,
+    _ALLOWEDCALLS_STATICCALL,
+    _ALLOWEDCALLS_DELEGATECALL
 } from "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 
 // errors to test
 import {NotAllowedCall} from "../../../contracts/LSP6KeyManager/LSP6Errors.sol";
 
 // mock contracts for testing
+import {
+    FallbackInitializer
+} from "../../../contracts/Mocks/FallbackInitializer.sol";
 import {TargetContract} from "../../../contracts/Mocks/TargetContract.sol";
 
 contract LSP6AllowedCallsTest is Test {
@@ -37,15 +43,20 @@ contract LSP6AllowedCallsTest is Test {
     KeyManagerInternalTester keyManager;
 
     TargetContract targetContract;
+    FallbackInitializer targetWithFallback;
 
     function setUp() public {
         universalProfile = new UniversalProfile(address(this));
         keyManager = new KeyManagerInternalTester(address(universalProfile));
 
         targetContract = new TargetContract();
+        targetWithFallback = new FallbackInitializer();
     }
 
-    function _setupCallTypes(bytes4 callTypesAllowed) internal {
+    function _setupCallTypes(
+        bytes4 callTypesAllowed,
+        address contractToAllow
+    ) internal {
         // setup allowed calls for this controller, when we will read them from storage
         bytes32 allowedCallsDataKey = LSP2Utils.generateMappingWithGroupingKey({
             keyPrefix: _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX,
@@ -55,9 +66,9 @@ contract LSP6AllowedCallsTest is Test {
         bytes memory allowedCallsDataValue = abi.encodePacked(
             hex"0020", // 2 bytes to specify the entry is 32 bytes long (32 = 0x0020 in hex)
             callTypesAllowed, // restrictionOperations (= callTypes allowed)
-            targetContract,
-            bytes4(0),
-            bytes4(0)
+            contractToAllow, // address
+            bytes4(0xffffffff), // any standard
+            bytes4(0xffffffff) // any function
         );
 
         universalProfile.setData(allowedCallsDataKey, allowedCallsDataValue);
@@ -67,7 +78,7 @@ contract LSP6AllowedCallsTest is Test {
         public
     {
         // setup allowed calls for this controller, when we will read them from storage
-        _setupCallTypes(_ALLOWEDCALLS_TRANSFERVALUE);
+        _setupCallTypes(_ALLOWEDCALLS_TRANSFERVALUE, address(targetContract));
 
         bytes memory expectedRevertData = abi.encodeWithSelector(
             NotAllowedCall.selector,
@@ -108,21 +119,108 @@ contract LSP6AllowedCallsTest is Test {
     }
 
     function testFail_ShouldRevertForAnyMessageCallToTargetWithNoCallTypeAllowed(
-        uint256 operationType,
+        uint8 operationType,
         uint256 value,
         bytes memory callData
     ) public {
-        _setupCallTypes(bytes4(0));
+        _setupCallTypes(bytes4(0), address(targetContract));
 
+        // We don't test for operation `CREATE` or `CREATE2`
+        vm.assume(operationType != 1 && operationType != 2);
         // we should use a valid operation type
         vm.assume(operationType <= 4);
 
         keyManager.verifyAllowedCall(
             address(this),
-            operationType,
+            uint256(operationType),
             address(targetContract),
             value,
             callData
+        );
+    }
+
+    function testFail_ShouldRevertWithEmptyCallNoValueWhenAssociatedCallTypeIsNotSet(
+        uint8 operationType,
+        bytes4 callTypeToGrant
+    ) public {
+        // We don't test for operation `CREATE` or `CREATE2`
+        vm.assume(operationType != 1 && operationType != 2);
+        // we should use a valid operation type
+        vm.assume(operationType <= 4);
+
+        // Check for testing that the callType is not set for the associated operationType
+        if (operationType == OPERATION_0_CALL) {
+            vm.assume(
+                callTypeToGrant & _ALLOWEDCALLS_CALL != _ALLOWEDCALLS_CALL
+            );
+        }
+
+        if (operationType == OPERATION_3_STATICCALL) {
+            vm.assume(
+                callTypeToGrant & _ALLOWEDCALLS_STATICCALL !=
+                    _ALLOWEDCALLS_STATICCALL
+            );
+        }
+
+        if (operationType == OPERATION_4_DELEGATECALL) {
+            vm.assume(
+                callTypeToGrant & _ALLOWEDCALLS_DELEGATECALL !=
+                    _ALLOWEDCALLS_DELEGATECALL
+            );
+        }
+
+        _setupCallTypes(callTypeToGrant, address(targetWithFallback));
+
+        keyManager.verifyAllowedCall(
+            address(this),
+            uint256(operationType),
+            address(targetWithFallback),
+            0,
+            ""
+        );
+    }
+
+    function test_ShouldPassWithEmptyCallNoValueWhenAssociatedCallTypeIsSet(
+        uint8 operationType,
+        bytes4 callTypeToGrant
+    ) public {
+        // We don't test for operation `CREATE` or `CREATE2`
+        vm.assume(operationType != 1 && operationType != 2);
+        // we should use a valid operation type
+        vm.assume(operationType <= 4);
+
+        // We should have at least one bit set in the callTypes
+        vm.assume(callTypeToGrant != bytes4(0));
+
+        // Check for testing that the callType is not set for the associated operationType
+        if (operationType == OPERATION_0_CALL) {
+            vm.assume(
+                callTypeToGrant & _ALLOWEDCALLS_CALL == _ALLOWEDCALLS_CALL
+            );
+        }
+
+        if (operationType == OPERATION_3_STATICCALL) {
+            vm.assume(
+                callTypeToGrant & _ALLOWEDCALLS_STATICCALL ==
+                    _ALLOWEDCALLS_STATICCALL
+            );
+        }
+
+        if (operationType == OPERATION_4_DELEGATECALL) {
+            vm.assume(
+                callTypeToGrant & _ALLOWEDCALLS_DELEGATECALL ==
+                    _ALLOWEDCALLS_DELEGATECALL
+            );
+        }
+
+        _setupCallTypes(callTypeToGrant, address(targetWithFallback));
+
+        keyManager.verifyAllowedCall(
+            address(this),
+            uint256(operationType),
+            address(targetWithFallback),
+            0,
+            ""
         );
     }
 }
