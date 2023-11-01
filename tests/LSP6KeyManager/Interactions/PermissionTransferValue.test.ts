@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
-import { BigNumber, Signer } from 'ethers';
+import { BigNumber } from 'ethers';
 import { FakeContract, smock } from '@defi-wonderland/smock';
 
 import {
