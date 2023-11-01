@@ -250,13 +250,7 @@ abstract contract LSP6ExecuteModule {
             revert NoCallsAllowed(controllerAddress);
         }
 
-        bool isEmptyCall = data.length == 0;
-
-        bytes4 requiredCallTypes = _extractCallType(
-            operationType,
-            value,
-            isEmptyCall
-        );
+        bytes4 requiredCallTypes = _extractCallType(operationType, value, data);
 
         for (uint256 ii; ii < allowedCalls.length; ii += 34) {
             /// @dev structure of an AllowedCall
@@ -306,7 +300,7 @@ abstract contract LSP6ExecuteModule {
     function _extractCallType(
         uint256 operationType,
         uint256 value,
-        bool isEmptyCall
+        bytes memory data
     ) internal pure returns (bytes4 requiredCallTypes) {
         // if there is value being transferred, add the extra bit
         // for the first bit for Value Transfer in the `requiredCallTypes`
@@ -314,20 +308,16 @@ abstract contract LSP6ExecuteModule {
             requiredCallTypes |= _ALLOWEDCALLS_TRANSFERVALUE;
         }
 
+        bool isCallDataPresent = data.length != 0;
+        bool isEmptyCallWithoutValue = !isCallDataPresent && value == 0;
+
         // if we are doing a message call with some data
-        if (!isEmptyCall) {
+        // or if we are doing an empty call without value
+        if (isCallDataPresent || isEmptyCallWithoutValue) {
             if (operationType == OPERATION_0_CALL) {
                 requiredCallTypes |= _ALLOWEDCALLS_CALL;
             } else if (operationType == OPERATION_3_STATICCALL) {
                 requiredCallTypes |= _ALLOWEDCALLS_STATICCALL;
-            } else if (operationType == OPERATION_4_DELEGATECALL) {
-                requiredCallTypes |= _ALLOWEDCALLS_DELEGATECALL;
-            }
-
-            // if we are doing an empty call without value
-        } else if (value == 0) {
-            if (operationType == OPERATION_0_CALL) {
-                requiredCallTypes |= _ALLOWEDCALLS_CALL;
             } else if (operationType == OPERATION_4_DELEGATECALL) {
                 requiredCallTypes |= _ALLOWEDCALLS_DELEGATECALL;
             }
