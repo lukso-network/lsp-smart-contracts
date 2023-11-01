@@ -139,10 +139,6 @@ abstract contract LSP25MultiChannelNonce {
         address from,
         uint256 idx
     ) internal view virtual returns (bool) {
-        uint256 mask = ~uint128(0);
-        // Alternatively:
-        // uint256 mask = (1<<128)-1;
-        // uint256 mask = 0xffffffffffffffffffffffffffffffff;
-        return (idx & mask) == _nonceStore[from][idx >> 128];
+        return uint128(idx) == _nonceStore[from][idx >> 128];
     }
 }
