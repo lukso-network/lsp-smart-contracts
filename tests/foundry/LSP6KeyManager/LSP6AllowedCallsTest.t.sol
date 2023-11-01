@@ -55,7 +55,8 @@ contract LSP6AllowedCallsTest is Test {
 
     function _setupCallTypes(
         bytes4 callTypesAllowed,
-        address contractToAllow
+        address contractToAllow,
+        bytes4 allowedSelector
     ) internal {
         // setup allowed calls for this controller, when we will read them from storage
         bytes32 allowedCallsDataKey = LSP2Utils.generateMappingWithGroupingKey({
@@ -68,7 +69,7 @@ contract LSP6AllowedCallsTest is Test {
             callTypesAllowed, // restrictionOperations (= callTypes allowed)
             contractToAllow, // address
             bytes4(0xffffffff), // any standard
-            bytes4(0xffffffff) // any function
+            allowedSelector // function
         );
 
         universalProfile.setData(allowedCallsDataKey, allowedCallsDataValue);
@@ -78,7 +79,11 @@ contract LSP6AllowedCallsTest is Test {
         public
     {
         // setup allowed calls for this controller, when we will read them from storage
-        _setupCallTypes(_ALLOWEDCALLS_TRANSFERVALUE, address(targetContract));
+        _setupCallTypes(
+            _ALLOWEDCALLS_TRANSFERVALUE,
+            address(targetContract),
+            bytes4(0xffffffff) // for any function
+        );
 
         bytes memory expectedRevertData = abi.encodeWithSelector(
             NotAllowedCall.selector,
@@ -123,7 +128,7 @@ contract LSP6AllowedCallsTest is Test {
         uint256 value,
         bytes memory callData
     ) public {
-        _setupCallTypes(bytes4(0), address(targetContract));
+        _setupCallTypes(bytes4(0), address(targetContract), bytes4(0xffffffff)); // for any function
 
         // We don't test for operation `CREATE` or `CREATE2`
         vm.assume(operationType != 1 && operationType != 2);
@@ -169,7 +174,11 @@ contract LSP6AllowedCallsTest is Test {
             );
         }
 
-        _setupCallTypes(callTypeToGrant, address(targetWithFallback));
+        _setupCallTypes(
+            callTypeToGrant,
+            address(targetWithFallback),
+            bytes4(0xffffffff)
+        ); // for any function
 
         keyManager.verifyAllowedCall(
             address(this),
@@ -213,7 +222,11 @@ contract LSP6AllowedCallsTest is Test {
             );
         }
 
-        _setupCallTypes(callTypeToGrant, address(targetWithFallback));
+        _setupCallTypes(
+            callTypeToGrant,
+            address(targetWithFallback),
+            bytes4(0xffffffff)
+        ); // for any function
 
         keyManager.verifyAllowedCall(
             address(this),
@@ -221,6 +234,103 @@ contract LSP6AllowedCallsTest is Test {
             address(targetWithFallback),
             0,
             ""
+        );
+    }
+
+    function test_ShouldPassWithCallDataAs0x00000000WhenCallTypeAllowBytes4ZeroSelector(
+        uint8 operationType,
+        bytes4 callTypeToGrant
+    ) public {
+        // We don't test for operation `CREATE` or `CREATE2`
+        vm.assume(operationType != 1 && operationType != 2);
+        // we should use a valid operation type
+        vm.assume(operationType <= 4);
+
+        // Check for testing that the callType is not set for the associated operationType
+        if (operationType == OPERATION_0_CALL) {
+            vm.assume(
+                callTypeToGrant & _ALLOWEDCALLS_CALL == _ALLOWEDCALLS_CALL
+            );
+        }
+
+        if (operationType == OPERATION_3_STATICCALL) {
+            vm.assume(
+                callTypeToGrant & _ALLOWEDCALLS_STATICCALL ==
+                    _ALLOWEDCALLS_STATICCALL
+            );
+        }
+
+        if (operationType == OPERATION_4_DELEGATECALL) {
+            vm.assume(
+                callTypeToGrant & _ALLOWEDCALLS_DELEGATECALL ==
+                    _ALLOWEDCALLS_DELEGATECALL
+            );
+        }
+
+        _setupCallTypes(
+            callTypeToGrant,
+            address(targetWithFallback),
+            bytes4(0) // only for the bytes4(0) selector
+        );
+
+        keyManager.verifyAllowedCall(
+            address(this),
+            uint256(operationType),
+            address(targetWithFallback),
+            0,
+            hex"00000000"
+        );
+    }
+
+    function testFail_ShouldRevertWithCallDataAs0x00000000WhenCallTypeDoesNotAllowBytes4ZeroSelector(
+        uint8 operationType,
+        bytes4 callTypeToGrant,
+        bytes4 randomFunctionSelectorToAllow
+    ) public {
+        // We don't test for operation `CREATE` or `CREATE2`
+        vm.assume(operationType != 1 && operationType != 2);
+        // we should use a valid operation type
+        vm.assume(operationType <= 4);
+
+        // exclude the bytes4(0) selector for graffiti, and 0xffffffff for any function allowed
+        vm.assume(
+            randomFunctionSelectorToAllow != bytes4(0) &&
+                randomFunctionSelectorToAllow != 0xffffffff
+        );
+
+        // Check for testing that the callType is not set for the associated operationType
+        if (operationType == OPERATION_0_CALL) {
+            vm.assume(
+                callTypeToGrant & _ALLOWEDCALLS_CALL == _ALLOWEDCALLS_CALL
+            );
+        }
+
+        if (operationType == OPERATION_3_STATICCALL) {
+            vm.assume(
+                callTypeToGrant & _ALLOWEDCALLS_STATICCALL ==
+                    _ALLOWEDCALLS_STATICCALL
+            );
+        }
+
+        if (operationType == OPERATION_4_DELEGATECALL) {
+            vm.assume(
+                callTypeToGrant & _ALLOWEDCALLS_DELEGATECALL ==
+                    _ALLOWEDCALLS_DELEGATECALL
+            );
+        }
+
+        _setupCallTypes(
+            callTypeToGrant,
+            address(targetWithFallback),
+            randomFunctionSelectorToAllow
+        );
+
+        keyManager.verifyAllowedCall(
+            address(this),
+            uint256(operationType),
+            address(targetWithFallback),
+            0,
+            hex"00000000"
         );
     }
 }
