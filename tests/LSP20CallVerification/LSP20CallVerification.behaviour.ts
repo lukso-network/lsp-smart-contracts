@@ -20,10 +20,12 @@ import {
   LSP0ERC725Account,
   ILSP20CallVerifier,
   ILSP20CallVerifier__factory,
+  OwnerWithURD,
+  OwnerWithURD__factory,
 } from '../../types';
 
 // constants
-import { LSP20_SUCCESS_VALUES, OPERATION_TYPES } from '../../constants';
+import { LSP1_TYPE_IDS, LSP20_SUCCESS_VALUES, OPERATION_TYPES } from '../../constants';
 
 export type LSP20TestContext = {
   accounts: SignerWithAddress[];
@@ -199,6 +201,46 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
           await expect(context.universalProfile.connect(context.accounts[3]).renounceOwnership())
             .to.be.revertedWithCustomError(context.universalProfile, 'LSP20EOACannotVerifyCall')
             .withArgs(context.deployParams.owner.address);
+        });
+
+        describe('when caller is not owner', () => {
+          let newContractOwner: OwnerWithURD;
+
+          before('Use custom owner that implements LSP1', async () => {
+            newContractOwner = await new OwnerWithURD__factory(context.accounts[0]).deploy(
+              context.universalProfile.address,
+            );
+
+            await context.universalProfile
+              .connect(context.deployParams.owner)
+              .transferOwnership(newContractOwner.address);
+
+            await newContractOwner.acceptOwnership();
+          });
+
+          after('`renounceOwnership()` was used, build new context', async () => {
+            context = await buildContext();
+          });
+
+          it('should renounce ownership of the contract and call the URD of the previous owner', async () => {
+            await context.universalProfile.connect(context.accounts[0]).renounceOwnership();
+
+            await network.provider.send('hardhat_mine', [ethers.utils.hexValue(199)]);
+
+            const tx = await context.universalProfile
+              .connect(context.accounts[0])
+              .renounceOwnership();
+
+            await expect(tx)
+              .to.emit(newContractOwner, 'UniversalReceiver')
+              .withArgs(
+                context.universalProfile.address,
+                0,
+                LSP1_TYPE_IDS.LSP0OwnershipTransferred_SenderNotification,
+                '0x',
+                '0x',
+              );
+          });
         });
       });
     });
