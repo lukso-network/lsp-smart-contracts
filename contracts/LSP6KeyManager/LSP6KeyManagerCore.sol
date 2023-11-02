@@ -510,13 +510,14 @@ abstract contract LSP6KeyManagerCore is
             value: msgValue,
             gas: gasleft()
         }(payload);
+
         bytes memory result = Address.verifyCallResult(
             success,
             returnData,
             "LSP6: failed executing payload"
         );
 
-        return result.length != 0 ? abi.decode(result, (bytes)) : result;
+        return result;
     }
 
     /**
