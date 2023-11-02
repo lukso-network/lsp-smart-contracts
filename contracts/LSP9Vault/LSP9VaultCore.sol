@@ -438,7 +438,7 @@ contract LSP9VaultCore is
         address currentOwner = owner();
         emit OwnershipTransferStarted(currentOwner, newOwner);
 
-        newOwner.tryNotifyUniversalReceiver(
+        newOwner.notifyUniversalReceiver(
             _TYPEID_LSP9_OwnershipTransferStarted,
             ""
         );
@@ -460,12 +460,12 @@ contract LSP9VaultCore is
 
         _acceptOwnership();
 
-        previousOwner.tryNotifyUniversalReceiver(
+        previousOwner.notifyUniversalReceiver(
             _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
             ""
         );
 
-        msg.sender.tryNotifyUniversalReceiver(
+        msg.sender.notifyUniversalReceiver(
             _TYPEID_LSP9_OwnershipTransferred_RecipientNotification,
             ""
         );
@@ -488,7 +488,7 @@ contract LSP9VaultCore is
         LSP14Ownable2Step._renounceOwnership();
 
         if (owner() == address(0)) {
-            previousOwner.tryNotifyUniversalReceiver(
+            previousOwner.notifyUniversalReceiver(
                 _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
                 ""
             );

@@ -24,10 +24,10 @@ Any method labeled as `internal` serves as utility function within the contract.
 
 Internal functions cannot be called externally, whether from other smart contracts, dApp interfaces, or backend services. Their restricted accessibility ensures that they remain exclusively available within the context of the current contract, promoting controlled and encapsulated usage of these internal utilities.
 
-### tryNotifyUniversalReceiver
+### notifyUniversalReceiver
 
 ```solidity
-function tryNotifyUniversalReceiver(
+function notifyUniversalReceiver(
   address lsp1Implementation,
   bytes32 typeId,
   bytes data
