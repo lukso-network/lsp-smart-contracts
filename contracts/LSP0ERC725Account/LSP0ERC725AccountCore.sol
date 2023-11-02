@@ -541,7 +541,7 @@ abstract contract LSP0ERC725AccountCore is
             emit OwnershipTransferStarted(currentOwner, pendingNewOwner);
 
             // notify the pending owner through LSP1
-            pendingNewOwner.tryNotifyUniversalReceiver(
+            pendingNewOwner.notifyUniversalReceiver(
                 _TYPEID_LSP0_OwnershipTransferStarted,
                 ""
             );
@@ -561,7 +561,7 @@ abstract contract LSP0ERC725AccountCore is
             emit OwnershipTransferStarted(currentOwner, pendingNewOwner);
 
             // notify the pending owner through LSP1
-            pendingNewOwner.tryNotifyUniversalReceiver(
+            pendingNewOwner.notifyUniversalReceiver(
                 _TYPEID_LSP0_OwnershipTransferStarted,
                 ""
             );
@@ -603,13 +603,13 @@ abstract contract LSP0ERC725AccountCore is
         }
 
         // notify the previous owner if supports LSP1
-        previousOwner.tryNotifyUniversalReceiver(
+        previousOwner.notifyUniversalReceiver(
             _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
             ""
         );
 
         // notify the pending owner if supports LSP1
-        pendingOwnerAddress.tryNotifyUniversalReceiver(
+        pendingOwnerAddress.notifyUniversalReceiver(
             _TYPEID_LSP0_OwnershipTransferred_RecipientNotification,
             ""
         );
@@ -649,7 +649,7 @@ abstract contract LSP0ERC725AccountCore is
         LSP14Ownable2Step._renounceOwnership();
 
         if (owner() == address(0)) {
-            previousOwner.tryNotifyUniversalReceiver(
+            previousOwner.notifyUniversalReceiver(
                 _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
                 ""
             );
@@ -837,6 +837,12 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory extensionData = ERC725YCore._getData(
             mappedExtensionDataKey
         );
+
+        // Prevent casting data shorter than 20 bytes to an address to avoid
+        // unintentionally calling a different extension, return address(0) instead.
+        if (extensionData.length < 20) {
+            return (address(0), false);
+        }
 
         // CHECK if the `extensionData` is 21 bytes long
         // - 20 bytes = extension's address

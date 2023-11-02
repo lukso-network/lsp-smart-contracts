@@ -438,7 +438,7 @@ contract LSP9VaultCore is
         address currentOwner = owner();
         emit OwnershipTransferStarted(currentOwner, newOwner);
 
-        newOwner.tryNotifyUniversalReceiver(
+        newOwner.notifyUniversalReceiver(
             _TYPEID_LSP9_OwnershipTransferStarted,
             ""
         );
@@ -460,12 +460,12 @@ contract LSP9VaultCore is
 
         _acceptOwnership();
 
-        previousOwner.tryNotifyUniversalReceiver(
+        previousOwner.notifyUniversalReceiver(
             _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
             ""
         );
 
-        msg.sender.tryNotifyUniversalReceiver(
+        msg.sender.notifyUniversalReceiver(
             _TYPEID_LSP9_OwnershipTransferred_RecipientNotification,
             ""
         );
@@ -488,7 +488,7 @@ contract LSP9VaultCore is
         LSP14Ownable2Step._renounceOwnership();
 
         if (owner() == address(0)) {
-            previousOwner.tryNotifyUniversalReceiver(
+            previousOwner.notifyUniversalReceiver(
                 _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
                 ""
             );
@@ -603,10 +603,19 @@ contract LSP9VaultCore is
             mappedExtensionDataKey
         );
 
-        // Check if the extensionData is 21 bytes long (20 bytes of address + 1 byte as bool indicator ot forwards the value)
+        // Prevent casting data shorter than 20 bytes to an address to avoid
+        // unintentionally calling a different extension, return address(0) instead.
+        if (extensionData.length < 20) {
+            return (address(0), false);
+        }
+
+        // CHECK if the `extensionData` is 21 bytes long
+        // - 20 bytes = extension's address
+        // - 1 byte `0x01` as a boolean indicating if the contract should forward the value to the extension or not
         if (extensionData.length == 21) {
-            // Check if the last byte is 1 (true)
-            if (extensionData[20] == hex"01") {
+            // If the last byte is set to `0x01` (`true`)
+            // this indicates that the contract should forward the value to the extension
+            if (extensionData[20] == 0x01) {
                 // Return the address of the extension
                 return (address(bytes20(extensionData)), true);
             }

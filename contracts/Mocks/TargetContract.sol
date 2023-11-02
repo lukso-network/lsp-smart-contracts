@@ -38,4 +38,15 @@ contract TargetContract {
     function revertCall() public pure {
         revert("TargetContract:revertCall: this function has reverted!");
     }
+
+    function getDynamicArrayOf2Numbers()
+        public
+        pure
+        returns (uint256[] memory)
+    {
+        uint256[] memory results = new uint256[](2);
+        results[0] = 10;
+        results[1] = 20;
+        return results;
+    }
 }
