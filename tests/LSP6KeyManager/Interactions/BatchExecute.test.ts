@@ -212,9 +212,12 @@ export const shouldBehaveLikeBatchExecute = (
         [OPERATION_TYPES.CREATE, ethers.constants.AddressZero, 0, lsp7TokenProxyBytecode],
       );
 
-      const futureTokenAddress = await context.keyManager
+      const callResult = await context.keyManager
         .connect(context.mainController)
         .callStatic.execute(lsp7ProxyDeploymentPayload);
+
+      const [futureTokenAddress] = abiCoder.decode(['bytes'], callResult);
+
       const futureTokenInstance = await new LSP7MintableInit__factory(context.accounts[0]).attach(
         futureTokenAddress,
       );
@@ -304,9 +307,11 @@ export const shouldBehaveLikeBatchExecute = (
       // we simulate deploying the token contract to know the future address of the LSP7 Token contract,
       // so that we can then pass the token address to the `to` parameter of ERC725X.execute(...)
       // in the 2nd and 3rd payloads of the LSP6 batch `execute(bytes[])`
-      const futureTokenAddress = await context.keyManager
+      const callResult = await context.keyManager
         .connect(context.mainController)
         .callStatic.execute(lsp7DeploymentPayload);
+
+      const [futureTokenAddress] = abiCoder.decode(['bytes'], callResult);
 
       // step 2 - mint some tokens
       // use the interface of an existing token for encoding the function call
