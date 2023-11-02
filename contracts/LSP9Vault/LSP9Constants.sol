@@ -17,7 +17,7 @@ bytes constant _LSP9_SUPPORTED_STANDARDS_VALUE = hex"7c0334a1";
 // keccak256('LSP9ValueReceived')
 bytes32 constant _TYPEID_LSP9_VALUE_RECEIVED = 0x468cd1581d7bc001c3b685513d2b929b55437be34700410383d58f3aa1ea0abc;
 
-// Ownerhsip Transfer Type IDs
+// Ownership Transfer Type IDs
 
 // keccak256('LSP9OwnershipTransferStarted')
 bytes32 constant _TYPEID_LSP9_OwnershipTransferStarted = 0xaefd43f45fed1bcd8992f23c803b6f4ec45cf6b62b0d404d565f290a471e763f;

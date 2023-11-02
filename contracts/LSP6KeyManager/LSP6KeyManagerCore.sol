@@ -612,7 +612,7 @@ abstract contract LSP6KeyManagerCore is
                 revert ERC725X_ExecuteParametersEmptyArray();
             }
 
-            for (uint256 ii = 0; ii < operationTypes.length; ii++) {
+            for (uint256 ii; ii < operationTypes.length; ii++) {
                 LSP6ExecuteModule._verifyCanExecute(
                     targetContract,
                     from,
