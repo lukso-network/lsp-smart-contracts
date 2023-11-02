@@ -453,7 +453,9 @@ export const shouldBehaveLikePermissionCall = (
               .connect(context.mainController)
               .callStatic.execute(executePayload);
 
-            const [decodedResult] = abiCoder.decode(['string'], result);
+            const [decodedBytes] = abiCoder.decode(['bytes'], result);
+
+            const [decodedResult] = abiCoder.decode(['string'], decodedBytes);
             expect(decodedResult).to.equal(expectedName);
           });
 
@@ -471,7 +473,9 @@ export const shouldBehaveLikePermissionCall = (
               .connect(context.mainController)
               .callStatic.execute(executePayload);
 
-            const [decodedResult] = abiCoder.decode(['uint256'], result);
+            const [decodedBytes] = abiCoder.decode(['bytes'], result);
+
+            const [decodedResult] = abiCoder.decode(['uint256'], decodedBytes);
             expect(decodedResult).to.equal(expectedNumber);
           });
         });
