@@ -274,6 +274,58 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           const result = await context.universalProfile.getDataBatch(payloadParam.dataKeys);
           expect(result).to.deep.equal(payloadParam.dataValues);
         });
+
+        describe('when setting random bytes under the LSP17Extension data key ', () => {
+          it('should be allowed to set a 20 bytes long address', async () => {
+            const key =
+              ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+              ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+            const value = ethers.Wallet.createRandom().address.toLowerCase();
+
+            await context.universalProfile.connect(context.mainController).setData(key, value);
+
+            const result = await context.universalProfile.getData(key);
+            expect(result).to.equal(value);
+          });
+
+          it('should be allowed to set a 21 bytes long address', async () => {
+            const key =
+              ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+              ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+            const value = ethers.Wallet.createRandom().address.toLowerCase() + '00';
+
+            await context.universalProfile.connect(context.mainController).setData(key, value);
+
+            const result = await context.universalProfile.getData(key);
+            expect(result).to.equal(value);
+          });
+
+          it('should revert when setting a random 10 bytes value', async () => {
+            const key =
+              ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+              ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+            const randomValue = '0xcafecafecafecafecafe';
+
+            await expect(
+              context.universalProfile.connect(context.mainController).setData(key, randomValue),
+            )
+              .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
+              .withArgs(key, randomValue);
+          });
+
+          it('should revert when setting a random 30 bytes value', async () => {
+            const key =
+              ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+              ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+            const randomValue = '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef';
+
+            await expect(
+              context.universalProfile.connect(context.mainController).setData(key, randomValue),
+            )
+              .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
+              .withArgs(key, randomValue);
+          });
+        });
       });
 
       describe('when caller is an address with ADD/CHANGE Extensions permission', () => {
@@ -327,10 +379,62 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           const result = await context.universalProfile.getData(payloadParam.dataKey);
           expect(result).to.equal(payloadParam.dataValue);
         });
+
+        describe('when setting random bytes under the LSP17Extension data key ', () => {
+          it('should be allowed to set a 20 bytes long address', async () => {
+            const key =
+              ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+              ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+            const value = ethers.Wallet.createRandom().address.toLowerCase();
+
+            await context.universalProfile.connect(canAddAndChangeExtensions).setData(key, value);
+
+            const result = await context.universalProfile.getData(key);
+            expect(result).to.equal(value);
+          });
+
+          it('should be allowed to set a 21 bytes long address', async () => {
+            const key =
+              ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+              ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+            const value = ethers.Wallet.createRandom().address.toLowerCase() + '00';
+
+            await context.universalProfile.connect(canAddAndChangeExtensions).setData(key, value);
+
+            const result = await context.universalProfile.getData(key);
+            expect(result).to.equal(value);
+          });
+
+          it('should revert when setting a random 10 bytes value', async () => {
+            const key =
+              ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+              ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+            const randomValue = '0xcafecafecafecafecafe';
+
+            await expect(
+              context.universalProfile.connect(canAddAndChangeExtensions).setData(key, randomValue),
+            )
+              .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
+              .withArgs(key, randomValue);
+          });
+
+          it('should revert when setting a random 30 bytes value', async () => {
+            const key =
+              ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+              ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+            const randomValue = '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef';
+
+            await expect(
+              context.universalProfile.connect(canAddAndChangeExtensions).setData(key, randomValue),
+            )
+              .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
+              .withArgs(key, randomValue);
+          });
+        });
       });
 
       describe('when caller is an address with ADDExtensions permission', () => {
-        it('should be allowed to ADD a ExtensionHandler key', async () => {
+        it('should be allowed to ADD an ExtensionHandler key', async () => {
           const payloadParam = {
             dataKey: extensionHandlerKey5,
             dataValue: extensionA,
@@ -345,6 +449,56 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
           const result = await context.universalProfile.getData(payloadParam.dataKey);
           expect(result).to.equal(payloadParam.dataValue);
+        });
+
+        it('should be allowed to set a 20 bytes long address for a new handler', async () => {
+          const key =
+            ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+            ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+          const value = ethers.Wallet.createRandom().address.toLowerCase();
+
+          await context.universalProfile.connect(canOnlyAddExtensions).setData(key, value);
+
+          const result = await context.universalProfile.getData(key);
+          expect(result).to.equal(value);
+        });
+
+        it('should be allowed to set a 21 bytes long address for a new handler', async () => {
+          const key =
+            ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+            ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+          const value = ethers.Wallet.createRandom().address.toLowerCase() + '00';
+
+          await context.universalProfile.connect(canOnlyAddExtensions).setData(key, value);
+
+          const result = await context.universalProfile.getData(key);
+          expect(result).to.equal(value);
+        });
+
+        it('should revert with `InvalidDataValuesForDataKeys` when setting a random 10 bytes value for a new handler', async () => {
+          const key =
+            ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+            ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+          const randomValue = '0xcafecafecafecafecafe';
+
+          await expect(
+            context.universalProfile.connect(canOnlyAddExtensions).setData(key, randomValue),
+          )
+            .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
+            .withArgs(key, randomValue);
+        });
+
+        it('should revert with `InvalidDataValuesForDataKeys` when setting a random 30 bytes value for a new handler', async () => {
+          const key =
+            ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+            ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+          const randomValue = '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef';
+
+          await expect(
+            context.universalProfile.connect(canOnlyAddExtensions).setData(key, randomValue),
+          )
+            .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
+            .withArgs(key, randomValue);
         });
 
         it("should NOT be allowed to edit the ExtensionHandler key set even if it's setting existing data", async () => {
@@ -394,6 +548,28 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
             .withArgs(canOnlyAddExtensions.address, 'CHANGEEXTENSIONS');
         });
+
+        it('should revert with `InvalidDataValuesForDataKeys` error when setting a random 10 bytes value for an existing handler', async () => {
+          const key = extensionHandlerKey5;
+          const randomValue = '0xcafecafecafecafecafe';
+
+          await expect(
+            context.universalProfile.connect(canOnlyAddExtensions).setData(key, randomValue),
+          )
+            .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
+            .withArgs(key, randomValue);
+        });
+
+        it('should revert with `InvalidDataValuesForDataKeys` error when setting a random 30 bytes value for an existing handler', async () => {
+          const key = extensionHandlerKey5;
+          const randomValue = '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef';
+
+          await expect(
+            context.universalProfile.connect(canOnlyAddExtensions).setData(key, randomValue),
+          )
+            .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
+            .withArgs(key, randomValue);
+        });
       });
 
       describe('when caller is an address with CHANGEExtensions permission', () => {
@@ -411,6 +587,64 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           await expect(context.keyManager.connect(canOnlyChangeExtensions).execute(payload))
             .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
             .withArgs(canOnlyChangeExtensions.address, 'ADDEXTENSIONS');
+        });
+
+        it('should NOT be allowed to set a 20 bytes long address for a new handler', async () => {
+          const key =
+            ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+            ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+          const value = ethers.Wallet.createRandom().address.toLowerCase();
+
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
+            key,
+            value,
+          ]);
+
+          await expect(context.keyManager.connect(canOnlyChangeExtensions).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canOnlyChangeExtensions.address, 'ADDEXTENSIONS');
+        });
+
+        it('should NOT be allowed to set a 21 bytes long address for a new handler', async () => {
+          const key =
+            ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+            ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+          const value = ethers.Wallet.createRandom().address.toLowerCase() + '00';
+
+          const payload = context.universalProfile.interface.encodeFunctionData('setData', [
+            key,
+            value,
+          ]);
+
+          await expect(context.keyManager.connect(canOnlyChangeExtensions).execute(payload))
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
+            .withArgs(canOnlyChangeExtensions.address, 'ADDEXTENSIONS');
+        });
+
+        it('should revert with `InvalidValueForDataKey` error when setting a random 10 bytes value for a new handler', async () => {
+          const key =
+            ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+            ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+          const randomValue = '0xcafecafecafecafecafe';
+
+          await expect(
+            context.universalProfile.connect(canOnlyChangeExtensions).setData(key, randomValue),
+          )
+            .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
+            .withArgs(key, randomValue);
+        });
+
+        it('should revert with `InvalidValueForDataKey` error when setting a random 30 bytes value for a new handler', async () => {
+          const key =
+            ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+            ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+          const randomValue = '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef';
+
+          await expect(
+            context.universalProfile.connect(canOnlyChangeExtensions).setData(key, randomValue),
+          )
+            .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
+            .withArgs(key, randomValue);
         });
 
         it('should be allowed to edit the ExtensionHandler key set', async () => {
@@ -466,6 +700,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
           await context.keyManager.connect(context.mainController).execute(payload);
         });
+
         it('should NOT be allowed to ADD another ExtensionHandler key', async () => {
           const payloadParam = {
             dataKey: extensionHandlerKey1,
@@ -1029,6 +1264,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               .withArgs(canOnlySuperSetData.address, 'ADDEXTENSIONS');
           });
         });
+
         describe('when Adding multiple ExtensionHandler keys with adding ERC725Y Data Key', () => {
           it("should revert because caller don't have ADDExtensions permission", async () => {
             const payloadParam = {
@@ -1108,6 +1344,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
             await context.keyManager.connect(context.mainController).execute(payload);
           });
+
           describe('When adding ExtensionHandler key and one of his allowedERC725Y Data Key', () => {
             it('should pass', async () => {
               const payloadParam = {
@@ -1131,58 +1368,6 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             });
           });
         });
-      });
-    });
-
-    describe('when setting random bytes under the LSP17Extension data key ', () => {
-      it('should be allowed to set a 20 bytes long address', async () => {
-        const key =
-          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-          ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
-        const value = ethers.Wallet.createRandom().address.toLowerCase();
-
-        await context.universalProfile.connect(context.mainController).setData(key, value);
-
-        const result = await context.universalProfile.getData(key);
-        expect(result).to.equal(value);
-      });
-
-      it('should be allowed to set a 21 bytes long address', async () => {
-        const key =
-          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-          ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
-        const value = ethers.Wallet.createRandom().address.toLowerCase() + '00';
-
-        await context.universalProfile.connect(context.mainController).setData(key, value);
-
-        const result = await context.universalProfile.getData(key);
-        expect(result).to.equal(value);
-      });
-
-      it('should revert when setting a random 10 bytes value', async () => {
-        const key =
-          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-          ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
-        const randomValue = '0xcafecafecafecafecafe';
-
-        await expect(
-          context.universalProfile.connect(context.mainController).setData(key, randomValue),
-        )
-          .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
-          .withArgs(key, randomValue);
-      });
-
-      it('should revert when setting a random 30 bytes value', async () => {
-        const key =
-          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-          ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
-        const randomValue = '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef';
-
-        await expect(
-          context.universalProfile.connect(context.mainController).setData(key, randomValue),
-        )
-          .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
-          .withArgs(key, randomValue);
       });
     });
   });
