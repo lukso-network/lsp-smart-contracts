@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { ethers, network } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 // types
@@ -11,6 +11,8 @@ import {
   UniversalReceiverDelegateDataLYX,
   EmitEventExtension,
   EmitEventExtension__factory,
+  OwnerWithURD__factory,
+  OwnerWithURD,
 } from '../types';
 
 // helpers
@@ -733,6 +735,46 @@ export const shouldBehaveLikeLSP3 = (
         );
 
         expect(result).to.equal(15);
+      });
+    });
+  });
+
+  describe('when using `renounceOwnership()`', () => {
+    describe('when caller is owner', () => {
+      let newContractOwner: OwnerWithURD;
+
+      before('Use custom owner that implements LSP1', async () => {
+        newContractOwner = await new OwnerWithURD__factory(context.accounts[0]).deploy(
+          context.universalProfile.address,
+        );
+
+        await context.universalProfile
+          .connect(context.deployParams.owner)
+          .transferOwnership(newContractOwner.address);
+
+        await newContractOwner.acceptOwnership();
+      });
+
+      after('`renounceOwnership()` was used, build new context', async () => {
+        context = await buildContext();
+      });
+
+      it('should renounce ownership of the contract and call the URD of the previous owner', async () => {
+        await newContractOwner.connect(context.accounts[0]).renounceOwnership();
+
+        await network.provider.send('hardhat_mine', [ethers.utils.hexValue(199)]);
+
+        const tx = await newContractOwner.connect(context.accounts[0]).renounceOwnership();
+
+        await expect(tx)
+          .to.emit(newContractOwner, 'UniversalReceiver')
+          .withArgs(
+            context.universalProfile.address,
+            0,
+            LSP1_TYPE_IDS.LSP0OwnershipTransferred_SenderNotification,
+            '0x',
+            '0x',
+          );
       });
     });
   });

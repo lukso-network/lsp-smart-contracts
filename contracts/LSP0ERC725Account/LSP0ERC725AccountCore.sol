@@ -638,27 +638,35 @@ abstract contract LSP0ERC725AccountCore is
 
         // If the caller is the owner perform renounceOwnership directly
         if (msg.sender == accountOwner) {
-            return LSP14Ownable2Step._renounceOwnership();
-        }
+            address previousOwner = owner();
+            LSP14Ownable2Step._renounceOwnership();
 
-        // If the caller is not the owner, call {lsp20VerifyCall} on the owner
-        // Depending on the returnedStatus, a second call is done after transferring ownership
-        bool verifyAfter = _verifyCall(accountOwner);
+            if (owner() == address(0)) {
+                previousOwner.notifyUniversalReceiver(
+                    _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
+                    ""
+                );
+            }
+        } else {
+            // If the caller is not the owner, call {lsp20VerifyCall} on the owner
+            // Depending on the returnedStatus, a second call is done after transferring ownership
+            bool verifyAfter = _verifyCall(accountOwner);
 
-        address previousOwner = owner();
-        LSP14Ownable2Step._renounceOwnership();
+            address previousOwner = owner();
+            LSP14Ownable2Step._renounceOwnership();
 
-        if (owner() == address(0)) {
-            previousOwner.notifyUniversalReceiver(
-                _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
-                ""
-            );
-        }
+            if (owner() == address(0)) {
+                previousOwner.notifyUniversalReceiver(
+                    _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
+                    ""
+                );
+            }
 
-        // If verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
-        // The transferOwnership function does not return, second parameter of {_verifyCallResult} will be empty
-        if (verifyAfter) {
-            _verifyCallResult(accountOwner, "");
+            // If verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
+            // The transferOwnership function does not return, second parameter of {_verifyCallResult} will be empty
+            if (verifyAfter) {
+                _verifyCallResult(accountOwner, "");
+            }
         }
     }
 
