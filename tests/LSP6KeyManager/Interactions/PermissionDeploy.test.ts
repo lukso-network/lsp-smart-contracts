@@ -19,7 +19,7 @@ import {
 import { LSP6TestContext } from '../../utils/context';
 import { setupKeyManager } from '../../utils/fixtures';
 
-import { combinePermissions, LOCAL_PRIVATE_KEYS, provider } from '../../utils/helpers';
+import { abiCoder, combinePermissions, LOCAL_PRIVATE_KEYS, provider } from '../../utils/helpers';
 import { BigNumber } from 'ethers';
 
 export const shouldBehaveLikePermissionDeploy = (
@@ -85,9 +85,11 @@ export const shouldBehaveLikePermissionDeploy = (
 
       // do first a callstatic to retrieve the address of the contract expected to be deployed
       // so we can check it against the address emitted in the ContractCreated event
-      const expectedContractAddress = await context.keyManager
+      const result = await context.keyManager
         .connect(context.mainController)
         .callStatic.execute(payload);
+
+      const [expectedContractAddress] = abiCoder.decode(['bytes'], result);
 
       await expect(context.keyManager.connect(context.mainController).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
@@ -120,9 +122,11 @@ export const shouldBehaveLikePermissionDeploy = (
 
       // do first a callstatic to retrieve the address of the contract expected to be deployed
       // so we can check it against the address emitted in the ContractCreated event
-      const expectedContractAddress = await context.keyManager
+      const callResult = await context.keyManager
         .connect(context.mainController)
         .callStatic.execute(payload);
+
+      const [expectedContractAddress] = abiCoder.decode(['bytes'], callResult);
 
       await expect(context.keyManager.connect(context.mainController).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
@@ -222,9 +226,9 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy,
       ]);
 
-      const expectedContractAddress = await context.keyManager
-        .connect(addressCanDeploy)
-        .callStatic.execute(payload);
+      const result = await context.keyManager.connect(addressCanDeploy).callStatic.execute(payload);
+
+      const [expectedContractAddress] = abiCoder.decode(['bytes'], result);
 
       await expect(context.keyManager.connect(addressCanDeploy).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
@@ -322,9 +326,11 @@ export const shouldBehaveLikePermissionDeploy = (
 
       // do first a callstatic to retrieve the address of the contract expected to be deployed
       // so we can check it against the address emitted in the ContractCreated event
-      const expectedContractAddress = await context.keyManager
+      const result = await context.keyManager
         .connect(addressCanDeployAndTransferValue)
         .callStatic.execute(payload);
+
+      const [expectedContractAddress] = abiCoder.decode(['bytes'], result);
 
       await expect(context.keyManager.connect(addressCanDeployAndTransferValue).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
@@ -422,9 +428,11 @@ export const shouldBehaveLikePermissionDeploy = (
 
       // do first a callstatic to retrieve the address of the contract expected to be deployed
       // so we can check it against the address emitted in the ContractCreated event
-      const expectedContractAddress = await context.keyManager
+      const result = await context.keyManager
         .connect(addressCanDeployAndSuperTransferValue)
         .callStatic.execute(payload);
+
+      const [expectedContractAddress] = abiCoder.decode(['bytes'], result);
 
       await expect(
         context.keyManager.connect(addressCanDeployAndSuperTransferValue).execute(payload),
@@ -459,9 +467,11 @@ export const shouldBehaveLikePermissionDeploy = (
 
       // do first a callstatic to retrieve the address of the contract expected to be deployed
       // so we can check it against the address emitted in the ContractCreated event
-      const expectedContractAddress = await context.keyManager
+      const result = await context.keyManager
         .connect(addressCanDeployAndSuperTransferValue)
         .callStatic.execute(payload);
+
+      const [expectedContractAddress] = abiCoder.decode(['bytes'], result);
 
       await expect(
         context.keyManager.connect(addressCanDeployAndSuperTransferValue).execute(payload),

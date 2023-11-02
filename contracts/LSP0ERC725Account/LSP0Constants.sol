@@ -14,7 +14,7 @@ bytes4 constant _ERC1271_FAILVALUE = 0xffffffff;
 // keccak256('LSP0ValueReceived')
 bytes32 constant _TYPEID_LSP0_VALUE_RECEIVED = 0x9c4705229491d365fb5434052e12a386d6771d976bea61070a8c694e8affea3d;
 
-// Ownerhsip Transfer Type IDs
+// Ownership Transfer Type IDs
 
 // keccak256('LSP0OwnershipTransferStarted')
 bytes32 constant _TYPEID_LSP0_OwnershipTransferStarted = 0xe17117c9d2665d1dbeb479ed8058bbebde3c50ac50e2e65619f60006caac6926;

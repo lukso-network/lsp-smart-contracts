@@ -510,13 +510,14 @@ abstract contract LSP6KeyManagerCore is
             value: msgValue,
             gas: gasleft()
         }(payload);
+
         bytes memory result = Address.verifyCallResult(
             success,
             returnData,
             "LSP6: failed executing payload"
         );
 
-        return result.length != 0 ? abi.decode(result, (bytes)) : result;
+        return result;
     }
 
     /**
@@ -612,7 +613,7 @@ abstract contract LSP6KeyManagerCore is
                 revert ERC725X_ExecuteParametersEmptyArray();
             }
 
-            for (uint256 ii = 0; ii < operationTypes.length; ii++) {
+            for (uint256 ii; ii < operationTypes.length; ii++) {
                 LSP6ExecuteModule._verifyCanExecute(
                     targetContract,
                     from,
