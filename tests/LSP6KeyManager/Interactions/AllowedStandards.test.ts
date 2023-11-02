@@ -137,11 +137,14 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           payload,
         ]);
 
-        const data = await context.keyManager
+        const callResult = await context.keyManager
           .connect(context.mainController)
           .callStatic.execute(upPayload);
-        const [result] = abiCoder.decode(['bytes4'], data);
-        expect(result).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
+
+        const [decodedResult] = abiCoder.decode(['bytes'], callResult);
+
+        const [decodedBytes4] = abiCoder.decode(['bytes4'], decodedResult);
+        expect(decodedBytes4).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
 
       it('LSP0 (ERC725Account)', async () => {
@@ -181,11 +184,14 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           payload,
         ]);
 
-        const data = await context.keyManager
+        const callResult = await context.keyManager
           .connect(addressCanInteractOnlyWithERC1271)
           .callStatic.execute(upPayload);
-        const [result] = abiCoder.decode(['bytes4'], data);
-        expect(result).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
+
+        const [decodedResult] = abiCoder.decode(['bytes'], callResult);
+
+        const [decodedBytes4] = abiCoder.decode(['bytes4'], decodedResult);
+        expect(decodedBytes4).to.equal(ERC1271_VALUES.SUCCESS_VALUE);
       });
     });
 
