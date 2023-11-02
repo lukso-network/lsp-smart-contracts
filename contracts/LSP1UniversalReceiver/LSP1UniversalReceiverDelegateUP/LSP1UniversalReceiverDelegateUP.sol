@@ -61,6 +61,26 @@ contract LSP1UniversalReceiverDelegateUP is
     using ERC165Checker for address;
 
     /**
+     * @dev When receiving notifications about:
+     * - LSP7 Tokens sent or received
+     * - LSP8 Tokens sent or received
+     * - LSP9 Vaults sent or received
+     * The notifier should be either the LSP7 or LSP8 or LSP9 contract.
+     *
+     * We revert to avoid registering the EOA as asset (spam protection)
+     * if we received a typeId associated with tokens or vaults transfers.
+     *
+     * @param notifier The address that notified.
+     */
+    modifier NotEOA(address notifier) {
+        // solhint-disable-next-line avoid-tx-origin
+        if (notifier == tx.origin) {
+            revert CannotRegisterEOAsAsAssets(notifier);
+        }
+        _;
+    }
+
+    /**
      * @dev
      * 1. Writes the data keys of the received [LSP-7-DigitalAsset], [LSP-8-IdentifiableDigitalAsset] and [LSP-9-Vault] contract addresses into the account storage according to the [LSP-5-ReceivedAssets] and [LSP-10-ReceivedVaults] Standard.
      * 2. The data keys representing an asset/vault are cleared when the asset/vault is no longer owned by the account.
@@ -123,14 +143,9 @@ contract LSP1UniversalReceiverDelegateUP is
      *
      * @param notifier The LSP7 or LSP8 token address.
      */
-    function _tokenSender(address notifier) internal returns (bytes memory) {
-        // The notifier is supposed to be either the LSP7 or LSP8 or LSP9 contract
-        // If it's EOA we revert (spam protection)
-        // solhint-disable-next-line avoid-tx-origin
-        if (notifier == tx.origin) {
-            revert CannotRegisterEOAsAsAssets(notifier);
-        }
-
+    function _tokenSender(
+        address notifier
+    ) internal NotEOA(notifier) returns (bytes memory) {
         // if the amount sent is not the full balance, then do not update the keys
         try ILSP7DigitalAsset(notifier).balanceOf(msg.sender) returns (
             uint256 balance
@@ -168,14 +183,7 @@ contract LSP1UniversalReceiverDelegateUP is
     function _tokenRecipient(
         address notifier,
         bytes4 interfaceId
-    ) internal returns (bytes memory) {
-        // The notifier is supposed to be either the LSP7 or LSP8 or LSP9 contract
-        // If it's EOA we revert to avoid registering the EOA as asset or vault (spam protection)
-        // solhint-disable-next-line avoid-tx-origin
-        if (notifier == tx.origin) {
-            revert CannotRegisterEOAsAsAssets(notifier);
-        }
-
+    ) internal NotEOA(notifier) returns (bytes memory) {
         // CHECK balance only when the Token contract is already deployed,
         // not when tokens are being transferred on deployment through the `constructor`
         if (notifier.code.length != 0) {
@@ -213,14 +221,9 @@ contract LSP1UniversalReceiverDelegateUP is
      *
      * @param notifier The LSP9 vault address.
      */
-    function _vaultSender(address notifier) internal returns (bytes memory) {
-        // The notifier is supposed to be either the LSP7 or LSP8 or LSP9 contract
-        // If it's EOA we revert (spam protection)
-        // solhint-disable-next-line avoid-tx-origin
-        if (notifier == tx.origin) {
-            revert CannotRegisterEOAsAsAssets(notifier);
-        }
-
+    function _vaultSender(
+        address notifier
+    ) internal NotEOA(notifier) returns (bytes memory) {
         (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
             .generateSentVaultKeys(msg.sender, notifier);
 
@@ -243,14 +246,9 @@ contract LSP1UniversalReceiverDelegateUP is
      *
      * @param notifier The LSP9 vault address.
      */
-    function _vaultRecipient(address notifier) internal returns (bytes memory) {
-        // The notifier is supposed to be either the LSP7 or LSP8 or LSP9 contract
-        // If it's EOA we revert to avoid registering the EOA as asset or vault (spam protection)
-        // solhint-disable-next-line avoid-tx-origin
-        if (notifier == tx.origin) {
-            revert CannotRegisterEOAsAsAssets(notifier);
-        }
-
+    function _vaultRecipient(
+        address notifier
+    ) internal NotEOA(notifier) returns (bytes memory) {
         (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
             .generateReceivedVaultKeys(msg.sender, notifier);
 

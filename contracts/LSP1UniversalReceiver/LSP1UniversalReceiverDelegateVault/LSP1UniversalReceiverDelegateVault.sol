@@ -49,6 +49,25 @@ contract LSP1UniversalReceiverDelegateVault is
     ILSP1UniversalReceiverDelegate
 {
     /**
+     * @dev When receiving notifications about:
+     * - LSP7 Tokens sent or received
+     * - LSP8 Tokens sent or received
+     * The notifier should be either the LSP7 or LSP8 contract.
+     *
+     * We revert to avoid registering the EOA as asset (spam protection)
+     * if we received a typeId associated with tokens transfers.
+     *
+     * @param notifier The address that notified.
+     */
+    modifier NotEOA(address notifier) {
+        // solhint-disable-next-line avoid-tx-origin
+        if (notifier == tx.origin) {
+            revert CannotRegisterEOAsAsAssets(notifier);
+        }
+        _;
+    }
+
+    /**
      * @inheritdoc ILSP1UniversalReceiverDelegate
      * @dev Handles two cases:
      *
@@ -99,14 +118,9 @@ contract LSP1UniversalReceiverDelegateVault is
      *
      * @param notifier The LSP7 or LSP8 token address.
      */
-    function _tokenSender(address notifier) internal returns (bytes memory) {
-        // The notifier is supposed to be either the LSP7 or LSP8 contract
-        // If it's EOA we revert to avoid registering the EOA as asset (spam protection)
-        // solhint-disable-next-line avoid-tx-origin
-        if (notifier == tx.origin) {
-            revert CannotRegisterEOAsAsAssets(notifier);
-        }
-
+    function _tokenSender(
+        address notifier
+    ) internal NotEOA(notifier) returns (bytes memory) {
         // if the amount sent is not the full balance, then do not update the keys
         try ILSP7DigitalAsset(notifier).balanceOf(msg.sender) returns (
             uint256 balance
@@ -144,14 +158,7 @@ contract LSP1UniversalReceiverDelegateVault is
     function _tokenRecipient(
         address notifier,
         bytes4 interfaceId
-    ) internal returns (bytes memory) {
-        // The notifier is supposed to be either the LSP7 or LSP8 contract
-        // If it's EOA we revert to avoid registering the EOA as asset (spam protection)
-        // solhint-disable-next-line avoid-tx-origin
-        if (notifier == tx.origin) {
-            revert CannotRegisterEOAsAsAssets(notifier);
-        }
-
+    ) internal NotEOA(notifier) returns (bytes memory) {
         // CHECK balance only when the Token contract is already deployed,
         // not when tokens are being transferred on deployment through the `constructor`
         if (notifier.code.length != 0) {
