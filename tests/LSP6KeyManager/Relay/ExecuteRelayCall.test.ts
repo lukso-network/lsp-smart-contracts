@@ -25,6 +25,7 @@ import {
 
 // helpers
 import {
+  abiCoder,
   combineAllowedCalls,
   combinePermissions,
   createValidityTimestamps,
@@ -107,6 +108,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       await setupKeyManager(context, permissionKeys, permissionsValues);
     });
+
     describe('When signer does not have EXECUTE_RELAY_CALL permission', () => {
       it('should revert', async () => {
         const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
@@ -165,6 +167,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           .withArgs(signerWithoutExecuteRelayCall.address, 'EXECUTE_RELAY_CALL');
       });
     });
+
     describe('When testing signed message', () => {
       describe('When testing msg.value', () => {
         describe('When sending more than the signed msg.value', () => {
@@ -1179,6 +1182,180 @@ export const shouldBehaveLikeExecuteRelayCall = (
           });
         });
       });
+
+      describe('when calling `executeRelayCall -> LSP0.execute(uint256,address,uint256,bytes) -> TargetContract`', () => {
+        describe('when TargetContract returns an `uint256[]` array of 2 numbers', () => {
+          it('should return a `bytes` that can be decoded as a `uint256[]', async () => {
+            const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+
+            const channelId = 0;
+            const validityTimestamp = 0;
+
+            const keyManagerNonce = await context.keyManager.getNonce(
+              context.mainController.address,
+              channelId,
+            );
+
+            const getDynamicArrayOf2NumbersSig = targetContract.interface.getSighash(
+              'getDynamicArrayOf2Numbers',
+            );
+
+            const erc725xExecutePayload = context.universalProfile.interface.encodeFunctionData(
+              'execute',
+              [OPERATION_TYPES.STATICCALL, targetContract.address, 0, getDynamicArrayOf2NumbersSig],
+            );
+
+            const executeRelayCallSignature = await signLSP6ExecuteRelayCall(
+              context.keyManager,
+              keyManagerNonce.toHexString(),
+              validityTimestamp,
+              LOCAL_PRIVATE_KEYS.ACCOUNT0,
+              0,
+              erc725xExecutePayload,
+            );
+
+            const result = await context.keyManager
+              .connect(context.mainController)
+              .callStatic.executeRelayCall(
+                executeRelayCallSignature,
+                keyManagerNonce,
+                validityTimestamp,
+                erc725xExecutePayload,
+              );
+
+            // Since we are calling the function `execute(uint256,address,uint256,bytes)` on the LSP0 contract
+            // and this function `returns(bytes memory)`
+            // we need to decode the result as `bytes` first before decoding to the expected type
+            // returned by the function targeted on the target contract
+            const [decodedResult] = abiCoder.decode(['bytes'], result);
+
+            const expectedArrayOfNumbers = await targetContract.getDynamicArrayOf2Numbers();
+
+            const [decodedUint256Array] = abiCoder.decode(['uint256[]'], decodedResult);
+            expect(decodedUint256Array).to.deep.equal(expectedArrayOfNumbers);
+          });
+        });
+      });
+
+      describe('when calling `executeRelayCall -> LSP0.executeBatch(uint256[],address[],uint256[],bytes[])` and doing 2 x STATICCALLs in the batch', () => {
+        it('should return an array of `bytes[]` where each entry can be decoded individually', async () => {
+          const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+
+          const channelId = 0;
+          const validityTimestamp = 0;
+
+          const keyManagerNonce = await context.keyManager.getNonce(
+            context.mainController.address,
+            channelId,
+          );
+
+          const getNameSelector = targetContract.interface.getSighash('getName');
+          const getNumberSelector = targetContract.interface.getSighash('getNumber');
+
+          const erc725xExecuteBatchPayload = context.universalProfile.interface.encodeFunctionData(
+            'executeBatch',
+            [
+              [OPERATION_TYPES.STATICCALL, OPERATION_TYPES.STATICCALL],
+              [targetContract.address, targetContract.address],
+              [0, 0],
+              [getNameSelector, getNumberSelector],
+            ],
+          );
+
+          const executeRelayCallSignature = await signLSP6ExecuteRelayCall(
+            context.keyManager,
+            keyManagerNonce.toHexString(),
+            validityTimestamp,
+            LOCAL_PRIVATE_KEYS.ACCOUNT0,
+            0,
+            erc725xExecuteBatchPayload,
+          );
+
+          const result = await context.keyManager
+            .connect(context.mainController)
+            .callStatic.executeRelayCall(
+              executeRelayCallSignature,
+              keyManagerNonce,
+              validityTimestamp,
+              erc725xExecuteBatchPayload,
+            );
+
+          const expectedString = await targetContract.getName();
+          const expectedNumber = await targetContract.getNumber();
+
+          // Since we are calling the function `executeBatch(uint256[],address[],uint256[],bytes[])` on the LSP0 contract
+          // and this function `returns(bytes[] memory)`
+          // we need to decode the result as `bytes[]` first before decoding each entry inside to the expected type
+          // returned by each functions called on the target contract
+          const [decodedBytesArray] = abiCoder.decode(['bytes[]'], result);
+
+          const [decodedString] = abiCoder.decode(['string'], decodedBytesArray[0]);
+          expect(decodedString).to.equal(expectedString);
+
+          const [decodedNumber] = abiCoder.decode(['uint256'], decodedBytesArray[1]);
+          expect(decodedNumber).to.equal(expectedNumber);
+        });
+      });
+
+      describe('when calling `executeRelayCall -> LSP0.transferOwnership(address)`', () => {
+        it('should return nothing 0x, set the `pendingOwner` and emit `PermissionsVerified` event with right arguments', async () => {
+          const channelId = 0;
+          const validityTimestamp = 0;
+
+          const keyManagerNonce = await context.keyManager.getNonce(
+            context.mainController.address,
+            channelId,
+          );
+
+          const newOwner = context.accounts[1].address;
+
+          const transferOwnershipPayload = context.universalProfile.interface.encodeFunctionData(
+            'transferOwnership',
+            [newOwner],
+          );
+
+          const executeRelayCallSignature = await signLSP6ExecuteRelayCall(
+            context.keyManager,
+            keyManagerNonce.toHexString(),
+            validityTimestamp,
+            LOCAL_PRIVATE_KEYS.ACCOUNT0,
+            0,
+            transferOwnershipPayload,
+          );
+
+          const result = await context.keyManager
+            .connect(context.mainController)
+            .callStatic.executeRelayCall(
+              executeRelayCallSignature,
+              keyManagerNonce,
+              validityTimestamp,
+              transferOwnershipPayload,
+            );
+
+          // Since the function transferOwnership does not `returns` anything, the result should be 0x
+          expect(result).to.equal('0x');
+
+          // Run the transaction
+          const tx = await context.keyManager
+            .connect(context.mainController)
+            .executeRelayCall(
+              executeRelayCallSignature,
+              keyManagerNonce,
+              validityTimestamp,
+              transferOwnershipPayload,
+            );
+
+          // CHECK that the pendingOwner is set
+          expect(await context.universalProfile.pendingOwner()).to.equal(newOwner);
+
+          // CHECK the `PermissionsVerified` event was emitted
+          await expect(tx).to.emit(context.keyManager, 'PermissionsVerified').withArgs(
+            context.mainController.address, // signer
+            0, // value
+            context.universalProfile.interface.getSighash('transferOwnership'), // selector
+          );
+        });
+      });
     });
   });
 
@@ -1419,7 +1596,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
     describe('when specifying msg.value', () => {
       describe('when total `values[]` is LESS than `msg.value`', () => {
-        it('should revert because insufficent `msg.value`', async () => {
+        it('should revert because insufficient `msg.value`', async () => {
           const firstRecipient = context.accounts[1].address;
           const secondRecipient = context.accounts[2].address;
           const thirdRecipient = context.accounts[3].address;
