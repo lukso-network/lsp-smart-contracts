@@ -1180,7 +1180,7 @@ If there is an extension for the function selector being called, it calls the ex
 function _validateAndIdentifyCaller() internal view returns (bool isURD);
 ```
 
-Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
+Internal method restricting the call to the owner of the contract and the UniversalReceiverDelegate
 
 <br/>
 

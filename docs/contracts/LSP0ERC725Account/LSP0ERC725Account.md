@@ -54,7 +54,11 @@ constructor(address initialOwner);
 
 _Deploying a LSP0ERC725Account contract with owner set to address `initialOwner`._
 
-Set `initialOwner` as the contract owner. The `constructor` also allows funding the contract on deployment.
+Set `initialOwner` as the contract owner.
+
+- The `constructor` also allows funding the contract on deployment.
+
+- The `initialOwner` will then be allowed to call protected functions marked with the `onlyOwner` modifier.
 
 <blockquote>
 
