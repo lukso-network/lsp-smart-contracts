@@ -29,7 +29,11 @@ import {_TYPEID_LSP0_VALUE_RECEIVED} from "./LSP0Constants.sol";
 contract LSP0ERC725Account is LSP0ERC725AccountCore {
     /**
      * @notice Deploying a LSP0ERC725Account contract with owner set to address `initialOwner`.
-     * @dev Set `initialOwner` as the contract owner. The `constructor` also allows funding the contract on deployment.
+     *
+     * @dev Set `initialOwner` as the contract owner.
+     * - The `constructor` also allows funding the contract on deployment.
+     * - The `initialOwner` will then be allowed to call protected functions marked with the `onlyOwner` modifier.
+     *
      * @param initialOwner The owner of the contract.
      *
      * @custom:events

@@ -625,7 +625,7 @@ contract LSP9VaultCore is
     }
 
     /**
-     * @dev Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
+     * @dev Internal method restricting the call to the owner of the contract and the UniversalReceiverDelegate
      */
     function _validateAndIdentifyCaller()
         internal

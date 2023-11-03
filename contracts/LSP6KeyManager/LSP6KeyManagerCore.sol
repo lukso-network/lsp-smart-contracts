@@ -641,9 +641,9 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @dev Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
-     * the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
-     * Used in the beginning of the `nonReentrant` modifier, before the method execution starts.
+     * @dev Update the status from `false` to `true` and checks if
+     * the status is `true` in order to revert the call unless the caller has the `REENTRANCY` permission
+     * Used in the beginning of the {`lsp20VerifyCall`}, {`_execute`} and {`_executeRelayCall`} functions, before the methods execution starts.
      */
     function _nonReentrantBefore(
         address targetContract,
@@ -668,7 +668,7 @@ abstract contract LSP6KeyManagerCore is
 
     /**
      * @dev Resets the status to `false`
-     * Used in the end of the `nonReentrant` modifier after the method execution is terminated
+     * Used in the end of the {`lsp20VerifyCall`}, {`_execute`} and {`_executeRelayCall`} functions after the methods execution is terminated.
      */
     function _nonReentrantAfter(address targetContract) internal virtual {
         // By storing the original value once again, a refund is triggered (see

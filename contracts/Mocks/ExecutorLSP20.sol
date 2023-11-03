@@ -23,10 +23,8 @@ contract ExecutorLSP20 {
 
     UniversalProfile private _universalProfile;
 
-    // payable modifier is required as _account is non-payable by default
-    // but UniversalProfile has a payable fallback function
-    constructor(address payable account_) {
-        _universalProfile = UniversalProfile(account_);
+    constructor(UniversalProfile account_) {
+        _universalProfile = account_;
     }
 
     // contract calls
