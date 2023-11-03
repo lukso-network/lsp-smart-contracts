@@ -302,6 +302,12 @@ Get the nonce for a specific `from` address that can be used for signing relay t
 
 :::
 
+:::caution Warning
+
+This function does not enforce by default the inclusion of the address of this contract in the signature digest. It is recommended that protocols or applications using this contract include the targeted address (= this contract) in the data to sign. To ensure that a signature is valid for a specific LSP6KeyManager and prevent signatures from the same EOA to be replayed across different LSP6KeyManager.
+
+:::
+
 ```solidity
 function isValidSignature(
   bytes32 dataHash,

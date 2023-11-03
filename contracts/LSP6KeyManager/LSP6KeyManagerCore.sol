@@ -152,6 +152,11 @@ abstract contract LSP6KeyManagerCore is
      * If the signer is a controller with the permission `SIGN`, it will return the ERC1271 success value.
      *
      * @return returnedStatus `0x1626ba7e` on success, or `0xffffffff` on failure.
+     *
+     * @custom:warning This function does not enforce by default the inclusion of the address of this contract in the signature digest.
+     * It is recommended that protocols or applications using this contract include the targeted address (= this contract) in the data to sign.
+     * To ensure that a signature is valid for a specific LSP6KeyManager and prevent signatures from the same EOA to be replayed
+     * across different LSP6KeyManager.
      */
     function isValidSignature(
         bytes32 dataHash,
