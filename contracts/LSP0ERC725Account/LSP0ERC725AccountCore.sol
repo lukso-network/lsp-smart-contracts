@@ -725,6 +725,11 @@ abstract contract LSP0ERC725AccountCore is
      * @param signature A signature that can validate the previous parameter (Hash).
      *
      * @return returnedStatus A `bytes4` value that indicates if the signature is valid or not.
+     *
+     * @custom:warning This function does not enforce by default the inclusion of the address of this contract in the signature digest.
+     * It is recommended that protocols or applications using this contract include the targeted address (= this contract) in the data to sign.
+     * To ensure that a signature is valid for a specific LSP0ERC725Account and prevent signatures from the same EOA to be replayed
+     * across different LSP0ERC725Accounts.
      */
     function isValidSignature(
         bytes32 dataHash,
