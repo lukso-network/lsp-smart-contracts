@@ -12,6 +12,7 @@ import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import {Version} from "../../Version.sol";
 
 // libraries
 import {
@@ -54,20 +55,10 @@ import {CannotRegisterEOAsAsAssets} from "../LSP1Errors.sol";
  */
 contract LSP1UniversalReceiverDelegateUP is
     ERC165,
+    Version,
     ILSP1UniversalReceiverDelegate
 {
     using ERC165Checker for address;
-
-    /**
-     * @dev Get the version of the contract.
-     * @notice Contract version.
-     */
-    // DO NOT CHANGE
-    // Comments block below is used by release-please to automatically update the version in this file.
-    // x-release-please-start-version
-    string public constant VERSION = "0.12.0";
-
-    // x-release-please-end
 
     /**
      * @dev When receiving notifications about:

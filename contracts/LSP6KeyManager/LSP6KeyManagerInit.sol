@@ -2,6 +2,7 @@
 pragma solidity ^0.8.5;
 
 // modules
+import {Version} from "../Version.sol";
 import {LSP6KeyManagerInitAbstract} from "./LSP6KeyManagerInitAbstract.sol";
 
 /**
@@ -9,18 +10,7 @@ import {LSP6KeyManagerInitAbstract} from "./LSP6KeyManagerInitAbstract.sol";
  * @author Fabian Vogelsteller <frozeman>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
  * @dev All the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
-contract LSP6KeyManagerInit is LSP6KeyManagerInitAbstract {
-    /**
-     * @dev Get the version of the contract.
-     * @notice Contract version.
-     */
-    // DO NOT CHANGE
-    // Comments block below is used by release-please to automatically update the version in this file.
-    // x-release-please-start-version
-    string public constant VERSION = "0.12.0";
-
-    // x-release-please-end
-
+contract LSP6KeyManagerInit is LSP6KeyManagerInitAbstract, Version {
     /**
      * @notice Deploying a LSP6KeyManagerInit to be used as base contract behind proxy.
      * @dev Initialize (= lock) base implementation contract on deployment.

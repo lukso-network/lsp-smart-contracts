@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 // modules
+import {Version} from "./Version.sol";
 import {UniversalProfileInitAbstract} from "./UniversalProfileInitAbstract.sol";
 
 /**
@@ -9,18 +10,7 @@ import {UniversalProfileInitAbstract} from "./UniversalProfileInitAbstract.sol";
  * @author Fabian Vogelsteller <fabian@lukso.network>
  * @dev Implementation of the ERC725Account + LSP1 universalReceiver
  */
-contract UniversalProfileInit is UniversalProfileInitAbstract {
-    /**
-     * @dev Get the version of the contract.
-     * @notice Contract version.
-     */
-    // DO NOT CHANGE
-    // Comments block below is used by release-please to automatically update the version in this file.
-    // x-release-please-start-version
-    string public constant VERSION = "0.12.0";
-
-    // x-release-please-end
-
+contract UniversalProfileInit is UniversalProfileInitAbstract, Version {
     /**
      * @notice deploying a `UniversalProfileInit` base contract to be used behind proxy
      * @dev Locks the base contract on deployment, so that it cannot be initialized, owned and controlled by anyone after it has been deployed.

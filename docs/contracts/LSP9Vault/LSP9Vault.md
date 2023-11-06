@@ -200,8 +200,6 @@ function VERSION() external view returns (string);
 
 _Contract version._
 
-Get the version of the contract.
-
 #### Returns
 
 | Name |   Type   | Description |

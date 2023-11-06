@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 // modules
+import {Version} from "../Version.sol";
 import {
     LSP0ERC725AccountInitAbstract
 } from "./LSP0ERC725AccountInitAbstract.sol";
@@ -21,18 +22,7 @@ import {
  * - Extending the account with new functions and interfaceIds of future standards using [LSP-17-ContractExtension]
  * - Verifying calls on the owner to make it easier to interact with the account directly using [LSP-20-CallVerification]
  */
-contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract {
-    /**
-     * @dev Get the version of the contract.
-     * @notice Contract version.
-     */
-    // DO NOT CHANGE
-    // Comments block below is used by release-please to automatically update the version in this file.
-    // x-release-please-start-version
-    string public constant VERSION = "0.12.0";
-
-    // x-release-please-end
-
+contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract, Version {
     /**
      * @notice deploying a `LSP0ERC725AccountInit` base contract to be used behind proxy
      * @dev Locks the base contract on deployment, so that it cannot be initialized, owned and controlled by anyone after it has been deployed. This is intended so that the sole purpose of this contract is to be used as a base contract behind a proxy.

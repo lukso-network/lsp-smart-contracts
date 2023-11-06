@@ -5,6 +5,7 @@ pragma solidity ^0.8.4;
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {Version} from "../Version.sol";
 import {LSP9VaultCore} from "./LSP9VaultCore.sol";
 
 // libraries
@@ -23,18 +24,7 @@ import {
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Could be owned by an EOA or by a contract and is able to receive and send assets. Also allows for registering received assets by leveraging the key-value storage.
  */
-contract LSP9Vault is LSP9VaultCore {
-    /**
-     * @dev Get the version of the contract.
-     * @notice Contract version.
-     */
-    // DO NOT CHANGE
-    // Comments block below is used by release-please to automatically update the version in this file.
-    // x-release-please-start-version
-    string public constant VERSION = "0.12.0";
-
-    // x-release-please-end
-
+contract LSP9Vault is LSP9VaultCore, Version {
     using LSP1Utils for address;
 
     /**
