@@ -23,6 +23,33 @@ Implementation of the extension logic according to LSP17ContractExtension. This 
 Public methods are accessible externally from users, allowing interaction with this function from dApps or other smart contracts.
 When marked as 'public', a method can be called both externally and internally, on the other hand, when marked as 'external', a method can only be called externally.
 
+### VERSION
+
+:::note References
+
+- Specification details: [**LSP-17-ContractExtension**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-17-ContractExtension.md#version)
+- Solidity implementation: [`LSP17Extension.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP17ContractExtension/LSP17Extension.sol)
+- Function signature: `VERSION()`
+- Function selector: `0xffa1ad74`
+
+:::
+
+```solidity
+function VERSION() external view returns (string);
+```
+
+_Contract version._
+
+Get the version of the contract.
+
+#### Returns
+
+| Name |   Type   | Description |
+| ---- | :------: | ----------- |
+| `0`  | `string` | -           |
+
+<br/>
+
 ### supportsInterface
 
 :::note References
@@ -51,33 +78,6 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 | Name |  Type  | Description |
 | ---- | :----: | ----------- |
 | `0`  | `bool` | -           |
-
-<br/>
-
-### version
-
-:::note References
-
-- Specification details: [**LSP-17-ContractExtension**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-17-ContractExtension.md#version)
-- Solidity implementation: [`LSP17Extension.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP17ContractExtension/LSP17Extension.sol)
-- Function signature: `version()`
-- Function selector: `0x54fd4d50`
-
-:::
-
-```solidity
-function version() external view returns (string);
-```
-
-_Contract version._
-
-Get the version of the contract.
-
-#### Returns
-
-| Name |   Type   | Description                      |
-| ---- | :------: | -------------------------------- |
-| `0`  | `string` | The version of the the contract. |
 
 <br/>
 
