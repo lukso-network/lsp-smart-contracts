@@ -38,7 +38,7 @@ constructor(address initialOwner);
 
 _Deploying a UniversalProfile contract with owner set to address `initialOwner`._
 
-Set `initialOwner` as the contract owner and the `SupportedStandards:LSP3UniversalProfile` data key in the ERC725Y data key/value store.
+Set `initialOwner` as the contract owner and the `SupportedStandards:LSP3Profile` data key in the ERC725Y data key/value store.
 
 - The `constructor` is payable and allows funding the contract on deployment.
 
