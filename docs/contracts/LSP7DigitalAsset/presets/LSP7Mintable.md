@@ -1057,6 +1057,47 @@ Allows to run custom logic after updating balances, but **before notifiying send
 
 <br/>
 
+### \_notifyTokenOperator
+
+```solidity
+function _notifyTokenOperator(
+  address operator,
+  bytes lsp1Data
+) internal nonpayable;
+```
+
+Attempt to notify the operator `operator` about the `amount` tokens being authorized with.
+This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP7_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
+If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+
+#### Parameters
+
+| Name       |   Type    | Description                                                                    |
+| ---------- | :-------: | ------------------------------------------------------------------------------ |
+| `operator` | `address` | The address to call the {universalReceiver} function on.                       |
+| `lsp1Data` |  `bytes`  | the data to be sent to the `operator` address in the `universalReceiver` call. |
+
+<br/>
+
+### \_notifyTokenSender
+
+```solidity
+function _notifyTokenSender(address from, bytes lsp1Data) internal nonpayable;
+```
+
+Attempt to notify the token sender `from` about the `amount` of tokens being transferred.
+This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP7_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
+If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+
+#### Parameters
+
+| Name       |   Type    | Description                                                                |
+| ---------- | :-------: | -------------------------------------------------------------------------- |
+| `from`     | `address` | The address to call the {universalReceiver} function on.                   |
+| `lsp1Data` |  `bytes`  | the data to be sent to the `from` address in the `universalReceiver` call. |
+
+<br/>
+
 ### \_notifyTokenReceiver
 
 ```solidity

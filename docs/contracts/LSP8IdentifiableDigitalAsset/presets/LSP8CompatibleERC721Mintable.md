@@ -1307,6 +1307,39 @@ Allows to run custom logic after updating balances, but **before notifiying send
 
 <br/>
 
+### \_notifyTokenOperator
+
+```solidity
+function _notifyTokenOperator(
+  address operator,
+  bytes lsp1Data
+) internal nonpayable;
+```
+
+Attempt to notify the operator `operator` about the `tokenId` tokens being authorized.
+This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP8_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
+If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+
+#### Parameters
+
+| Name       |   Type    | Description                                                                    |
+| ---------- | :-------: | ------------------------------------------------------------------------------ |
+| `operator` | `address` | The address to call the {universalReceiver} function on.                       |
+| `lsp1Data` |  `bytes`  | the data to be sent to the `operator` address in the `universalReceiver` call. |
+
+<br/>
+
+### \_notifyTokenSender
+
+```solidity
+function _notifyTokenSender(address from, bytes lsp1Data) internal nonpayable;
+```
+
+An attempt is made to notify the token sender about the `tokenId` changing owners using
+LSP1 interface.
+
+<br/>
+
 ### \_notifyTokenReceiver
 
 ```solidity
@@ -1464,7 +1497,7 @@ Emitted when the allowance of a `spender` for an `owner` is set by a call to [`a
 event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 ```
 
-Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to `approved`.
+Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
 
 #### Parameters
 
