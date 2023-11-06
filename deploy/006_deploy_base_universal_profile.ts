@@ -10,10 +10,12 @@ const deployBaseUniversalProfileDeterministic: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner: deployer } = await getNamedAccounts();
 
+  const gasPrice = await ethers.provider.getGasPrice();
+
   await deploy('UniversalProfileInit', {
     from: deployer,
     log: true,
-    gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei
+    gasPrice,
     deterministicDeployment: SALT,
   });
 };
