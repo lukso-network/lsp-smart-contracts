@@ -18,7 +18,6 @@ import {
 } from "../LSP25ExecuteRelayCall/ILSP25ExecuteRelayCall.sol";
 
 // modules
-import {Version} from "../Version.sol";
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
@@ -88,7 +87,6 @@ abstract contract LSP6KeyManagerCore is
     ILSP6,
     ILSP20,
     ILSP25,
-    Version,
     LSP6SetDataModule,
     LSP6ExecuteModule,
     LSP6ExecuteRelayCallModule,

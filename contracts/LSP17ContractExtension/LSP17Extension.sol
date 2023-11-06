@@ -2,7 +2,6 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {Version} from "../Version.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // constants
@@ -14,7 +13,17 @@ import {_INTERFACEID_LSP17_EXTENSION} from "./LSP17Constants.sol";
  * @dev Implementation of the extension logic according to LSP17ContractExtension.
  * This module can be inherited to provide context of the msg variable related to the extendable contract
  */
-abstract contract LSP17Extension is ERC165, Version {
+abstract contract LSP17Extension is ERC165 {
+    /**
+     * @dev Get the version of the contract.
+     * @notice Contract version.
+     */
+    // DO NOT CHANGE
+    // Comments block below is used by release-please to automatically update the version in this file.
+    // x-release-please-start-version
+    string public constant VERSION = "0.12.0";
+
+    // x-release-please-end
     /**
      * @dev See {IERC165-supportsInterface}.
      */

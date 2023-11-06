@@ -11,6 +11,17 @@ import {LSP6KeyManagerInitAbstract} from "./LSP6KeyManagerInitAbstract.sol";
  */
 contract LSP6KeyManagerInit is LSP6KeyManagerInitAbstract {
     /**
+     * @dev Get the version of the contract.
+     * @notice Contract version.
+     */
+    // DO NOT CHANGE
+    // Comments block below is used by release-please to automatically update the version in this file.
+    // x-release-please-start-version
+    string public constant VERSION = "0.12.0";
+
+    // x-release-please-end
+
+    /**
      * @notice Deploying a LSP6KeyManagerInit to be used as base contract behind proxy.
      * @dev Initialize (= lock) base implementation contract on deployment.
      */

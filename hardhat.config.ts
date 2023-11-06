@@ -167,7 +167,6 @@ const config: HardhatUserConfig = {
       'Create2Factory',
       'LSP16UniversalFactory',
       'LSP23LinkedContractsFactory',
-      'Version',
     ],
     // Whether to include the TypeChain factories or not.
     // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.

@@ -8,7 +8,6 @@ import {
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 // constants
-
 import {_TYPEID_LSP0_VALUE_RECEIVED} from "./LSP0Constants.sol";
 
 /**
@@ -27,6 +26,17 @@ import {_TYPEID_LSP0_VALUE_RECEIVED} from "./LSP0Constants.sol";
  * - Verifying calls on the owner to make it easier to interact with the account directly using [LSP-20-CallVerification]
  */
 contract LSP0ERC725Account is LSP0ERC725AccountCore {
+    /**
+     * @dev Get the version of the contract.
+     * @notice Contract version.
+     */
+    // DO NOT CHANGE
+    // Comments block below is used by release-please to automatically update the version in this file.
+    // x-release-please-start-version
+    string public constant VERSION = "0.12.0";
+
+    // x-release-please-end
+
     /**
      * @notice Deploying a LSP0ERC725Account contract with owner set to address `initialOwner`.
      *

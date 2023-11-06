@@ -11,6 +11,17 @@ import {LSP9VaultInitAbstract} from "./LSP9VaultInitAbstract.sol";
  */
 contract LSP9VaultInit is LSP9VaultInitAbstract {
     /**
+     * @dev Get the version of the contract.
+     * @notice Contract version.
+     */
+    // DO NOT CHANGE
+    // Comments block below is used by release-please to automatically update the version in this file.
+    // x-release-please-start-version
+    string public constant VERSION = "0.12.0";
+
+    // x-release-please-end
+
+    /**
      * @dev initialize (= lock) base implementation contract on deployment
      */
     constructor() {

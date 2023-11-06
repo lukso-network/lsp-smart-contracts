@@ -24,6 +24,17 @@ import {
  * @dev Could be owned by an EOA or by a contract and is able to receive and send assets. Also allows for registering received assets by leveraging the key-value storage.
  */
 contract LSP9Vault is LSP9VaultCore {
+    /**
+     * @dev Get the version of the contract.
+     * @notice Contract version.
+     */
+    // DO NOT CHANGE
+    // Comments block below is used by release-please to automatically update the version in this file.
+    // x-release-please-start-version
+    string public constant VERSION = "0.12.0";
+
+    // x-release-please-end
+
     using LSP1Utils for address;
 
     /**
