@@ -598,6 +598,7 @@ abstract contract LSP0ERC725AccountCore is
 
             _setOwner(pendingOwnerAddress);
             delete _pendingOwner;
+            delete _renounceOwnershipStartedAt;
         } else {
             _acceptOwnership();
         }
