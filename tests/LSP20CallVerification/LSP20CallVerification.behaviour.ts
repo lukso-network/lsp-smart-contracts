@@ -26,6 +26,7 @@ import {
 
 // constants
 import { LSP1_TYPE_IDS, LSP20_SUCCESS_VALUES, OPERATION_TYPES } from '../../constants';
+import { abiCoder } from './..//utils/helpers';
 
 export type LSP20TestContext = {
   accounts: SignerWithAddress[];
@@ -237,7 +238,10 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
                 context.universalProfile.address,
                 0,
                 LSP1_TYPE_IDS.LSP0OwnershipTransferred_SenderNotification,
-                '0x',
+                abiCoder.encode(
+                  ['address', 'address'],
+                  [newContractOwner.address, ethers.constants.AddressZero],
+                ),
                 '0x',
               );
           });
