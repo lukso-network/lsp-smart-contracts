@@ -541,7 +541,7 @@ abstract contract LSP0ERC725AccountCore is
             emit OwnershipTransferStarted(currentOwner, pendingNewOwner);
 
             // notify the pending owner through LSP1
-            pendingNewOwner.tryNotifyUniversalReceiver(
+            pendingNewOwner.notifyUniversalReceiver(
                 _TYPEID_LSP0_OwnershipTransferStarted,
                 ""
             );
@@ -561,7 +561,7 @@ abstract contract LSP0ERC725AccountCore is
             emit OwnershipTransferStarted(currentOwner, pendingNewOwner);
 
             // notify the pending owner through LSP1
-            pendingNewOwner.tryNotifyUniversalReceiver(
+            pendingNewOwner.notifyUniversalReceiver(
                 _TYPEID_LSP0_OwnershipTransferStarted,
                 ""
             );
@@ -603,13 +603,13 @@ abstract contract LSP0ERC725AccountCore is
         }
 
         // notify the previous owner if supports LSP1
-        previousOwner.tryNotifyUniversalReceiver(
+        previousOwner.notifyUniversalReceiver(
             _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
             ""
         );
 
         // notify the pending owner if supports LSP1
-        pendingOwnerAddress.tryNotifyUniversalReceiver(
+        pendingOwnerAddress.notifyUniversalReceiver(
             _TYPEID_LSP0_OwnershipTransferred_RecipientNotification,
             ""
         );
@@ -638,27 +638,35 @@ abstract contract LSP0ERC725AccountCore is
 
         // If the caller is the owner perform renounceOwnership directly
         if (msg.sender == accountOwner) {
-            return LSP14Ownable2Step._renounceOwnership();
-        }
+            address previousOwner = owner();
+            LSP14Ownable2Step._renounceOwnership();
 
-        // If the caller is not the owner, call {lsp20VerifyCall} on the owner
-        // Depending on the returnedStatus, a second call is done after transferring ownership
-        bool verifyAfter = _verifyCall(accountOwner);
+            if (owner() == address(0)) {
+                previousOwner.notifyUniversalReceiver(
+                    _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
+                    ""
+                );
+            }
+        } else {
+            // If the caller is not the owner, call {lsp20VerifyCall} on the owner
+            // Depending on the returnedStatus, a second call is done after transferring ownership
+            bool verifyAfter = _verifyCall(accountOwner);
 
-        address previousOwner = owner();
-        LSP14Ownable2Step._renounceOwnership();
+            address previousOwner = owner();
+            LSP14Ownable2Step._renounceOwnership();
 
-        if (owner() == address(0)) {
-            previousOwner.tryNotifyUniversalReceiver(
-                _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
-                ""
-            );
-        }
+            if (owner() == address(0)) {
+                previousOwner.notifyUniversalReceiver(
+                    _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
+                    ""
+                );
+            }
 
-        // If verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
-        // The transferOwnership function does not return, second parameter of {_verifyCallResult} will be empty
-        if (verifyAfter) {
-            _verifyCallResult(accountOwner, "");
+            // If verifyAfter is true, Call {lsp20VerifyCallResult} on the owner
+            // The transferOwnership function does not return, second parameter of {_verifyCallResult} will be empty
+            if (verifyAfter) {
+                _verifyCallResult(accountOwner, "");
+            }
         }
     }
 
@@ -837,6 +845,12 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory extensionData = ERC725YCore._getData(
             mappedExtensionDataKey
         );
+
+        // Prevent casting data shorter than 20 bytes to an address to avoid
+        // unintentionally calling a different extension, return address(0) instead.
+        if (extensionData.length < 20) {
+            return (address(0), false);
+        }
 
         // CHECK if the `extensionData` is 21 bytes long
         // - 20 bytes = extension's address

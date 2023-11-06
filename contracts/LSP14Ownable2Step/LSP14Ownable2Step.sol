@@ -97,7 +97,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         address currentOwner = owner();
         emit OwnershipTransferStarted(currentOwner, newOwner);
 
-        newOwner.tryNotifyUniversalReceiver(
+        newOwner.notifyUniversalReceiver(
             _TYPEID_LSP14_OwnershipTransferStarted,
             ""
         );
@@ -116,12 +116,12 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
 
         _acceptOwnership();
 
-        previousOwner.tryNotifyUniversalReceiver(
+        previousOwner.notifyUniversalReceiver(
             _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
             ""
         );
 
-        msg.sender.tryNotifyUniversalReceiver(
+        msg.sender.notifyUniversalReceiver(
             _TYPEID_LSP14_OwnershipTransferred_RecipientNotification,
             ""
         );
@@ -142,7 +142,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         _renounceOwnership();
 
         if (owner() == address(0)) {
-            previousOwner.tryNotifyUniversalReceiver(
+            previousOwner.notifyUniversalReceiver(
                 _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
                 ""
             );
@@ -175,6 +175,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
 
         _setOwner(msg.sender);
         delete _pendingOwner;
+        delete _renounceOwnershipStartedAt;
     }
 
     /**

@@ -962,5 +962,57 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         });
       });
     });
+
+    describe('when setting random bytes under the LSP17Extension data key ', () => {
+      it('should be allowed to set a 20 bytes long address', async () => {
+        const key =
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+          ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+        const value = ethers.Wallet.createRandom().address.toLowerCase();
+
+        await context.universalProfile.connect(context.mainController).setData(key, value);
+
+        const result = await context.universalProfile.getData(key);
+        expect(result).to.equal(value);
+      });
+
+      it('should be allowed to set a 21 bytes long address', async () => {
+        const key =
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+          ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+        const value = ethers.Wallet.createRandom().address.toLowerCase() + '00';
+
+        await context.universalProfile.connect(context.mainController).setData(key, value);
+
+        const result = await context.universalProfile.getData(key);
+        expect(result).to.equal(value);
+      });
+
+      it('should revert when setting a random 10 bytes value', async () => {
+        const key =
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+          ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+        const randomValue = '0xcafecafecafecafecafe';
+
+        await expect(
+          context.universalProfile.connect(context.mainController).setData(key, randomValue),
+        )
+          .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
+          .withArgs(key, randomValue);
+      });
+
+      it('should revert when setting a random 30 bytes value', async () => {
+        const key =
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+          ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+        const randomValue = '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef';
+
+        await expect(
+          context.universalProfile.connect(context.mainController).setData(key, randomValue),
+        )
+          .to.be.revertedWithCustomError(context.keyManager, 'InvalidDataValuesForDataKeys')
+          .withArgs(key, randomValue);
+      });
+    });
   });
 };

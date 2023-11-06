@@ -911,6 +911,35 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
       });
     });
 
+    describe('edge cases', () => {
+      describe('when setting less than 20 bytes as data value for the LSP17Extension data key', () => {
+        const randomSelector = ethers.utils.hexlify(ethers.utils.randomBytes(4));
+        const randomBytes10Value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
+
+        const lsp17DataKey =
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+          randomSelector.substring(2) +
+          '00'.repeat(16);
+
+        it('should pass when setting the bytes', async () => {
+          await expect(context.contract.setData(lsp17DataKey, randomBytes10Value))
+            .to.emit(context.contract, 'DataChanged')
+            .withArgs(lsp17DataKey, randomBytes10Value);
+        });
+
+        it('should revert with no ExtensionFoundForSelector when calling the function selector mapped to the 10 random bytes', async () => {
+          await expect(
+            context.accounts[0].sendTransaction({
+              to: context.contract.address,
+              data: randomSelector,
+            }),
+          )
+            .to.be.revertedWithCustomError(context.contract, 'NoExtensionFoundForFunctionSelector')
+            .withArgs(randomSelector);
+        });
+      });
+    });
+
     describe('use cases', async () => {
       describe('when interacting with a contract that require the recipient to implement onERC721Received function to mint', () => {
         let token: RequireCallbackToken;

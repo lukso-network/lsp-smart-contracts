@@ -906,7 +906,7 @@ function _verifyAllowedCall(
 function _extractCallType(
   uint256 operationType,
   uint256 value,
-  bool isEmptyCall
+  bytes data
 ) internal pure returns (bytes4 requiredCallTypes);
 ```
 
@@ -918,7 +918,7 @@ extract the bytes4 representation of a single bit for the type of call according
 | --------------- | :-------: | -------------------------------------------- |
 | `operationType` | `uint256` | 0 = CALL, 3 = STATICCALL or 3 = DELEGATECALL |
 | `value`         | `uint256` | -                                            |
-| `isEmptyCall`   |  `bool`   | -                                            |
+| `data`          |  `bytes`  | -                                            |
 
 #### Returns
 
@@ -955,7 +955,7 @@ function _isAllowedStandard(
 ```solidity
 function _isAllowedFunction(
   bytes allowedCall,
-  bytes4 requiredFunction
+  bytes data
 ) internal pure returns (bool);
 ```
 

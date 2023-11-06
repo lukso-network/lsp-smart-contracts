@@ -160,10 +160,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             operatorNotificationData
         );
 
-        operator.tryNotifyUniversalReceiver(
-            _TYPEID_LSP8_TOKENOPERATOR,
-            lsp1Data
-        );
+        operator.notifyUniversalReceiver(_TYPEID_LSP8_TOKENOPERATOR, lsp1Data);
     }
 
     /**
@@ -205,7 +202,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 operatorNotificationData
             );
 
-            operator.tryNotifyUniversalReceiver(
+            operator.notifyUniversalReceiver(
                 _TYPEID_LSP8_TOKENOPERATOR,
                 lsp1Data
             );
@@ -467,10 +464,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             data
         );
 
-        tokenOwner.tryNotifyUniversalReceiver(
-            _TYPEID_LSP8_TOKENSSENDER,
-            lsp1Data
-        );
+        tokenOwner.notifyUniversalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
     }
 
     /**
@@ -536,7 +530,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         bytes memory lsp1Data = abi.encode(from, to, tokenId, data);
 
-        from.tryNotifyUniversalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
+        from.notifyUniversalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
         _notifyTokenReceiver(to, force, lsp1Data);
     }
 

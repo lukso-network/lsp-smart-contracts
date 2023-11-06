@@ -79,7 +79,7 @@ const config: HardhatUserConfig = {
         network: 'luksoTestnet',
         chainId: 4201,
         urls: {
-          apiURL: 'https://explorer.execution.testnet.lukso.network/api',
+          apiURL: 'https://api.explorer.execution.testnet.lukso.network/api',
           browserURL: 'https://explorer.execution.testnet.lukso.network/',
         },
       },

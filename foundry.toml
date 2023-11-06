@@ -8,3 +8,4 @@ test = 'tests/foundry'
 solc_version = "0.8.17"
 [fuzz]
 runs = 10_000
+max_test_rejects = 200_000
