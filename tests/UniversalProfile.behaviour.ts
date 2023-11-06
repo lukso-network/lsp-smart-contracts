@@ -772,7 +772,10 @@ export const shouldBehaveLikeLSP3 = (
             context.universalProfile.address,
             0,
             LSP1_TYPE_IDS.LSP0OwnershipTransferred_SenderNotification,
-            '0x',
+            abiCoder.encode(
+              ['address', 'address'],
+              [newContractOwner.address, ethers.constants.AddressZero],
+            ),
             '0x',
           );
       });

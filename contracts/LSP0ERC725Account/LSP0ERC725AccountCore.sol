@@ -543,7 +543,7 @@ abstract contract LSP0ERC725AccountCore is
             // notify the pending owner through LSP1
             pendingNewOwner.notifyUniversalReceiver(
                 _TYPEID_LSP0_OwnershipTransferStarted,
-                ""
+                abi.encode(currentOwner, pendingNewOwner)
             );
 
             // reset the transfer ownership lock
@@ -563,7 +563,7 @@ abstract contract LSP0ERC725AccountCore is
             // notify the pending owner through LSP1
             pendingNewOwner.notifyUniversalReceiver(
                 _TYPEID_LSP0_OwnershipTransferStarted,
-                ""
+                abi.encode(currentOwner, pendingNewOwner)
             );
 
             // reset the transfer ownership lock
@@ -598,6 +598,7 @@ abstract contract LSP0ERC725AccountCore is
 
             _setOwner(pendingOwnerAddress);
             delete _pendingOwner;
+            delete _renounceOwnershipStartedAt;
         } else {
             _acceptOwnership();
         }
@@ -605,13 +606,13 @@ abstract contract LSP0ERC725AccountCore is
         // notify the previous owner if supports LSP1
         previousOwner.notifyUniversalReceiver(
             _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
-            ""
+            abi.encode(previousOwner, pendingOwnerAddress)
         );
 
         // notify the pending owner if supports LSP1
         pendingOwnerAddress.notifyUniversalReceiver(
             _TYPEID_LSP0_OwnershipTransferred_RecipientNotification,
-            ""
+            abi.encode(previousOwner, pendingOwnerAddress)
         );
 
         // If msg.sender != pendingOwnerAddress & verifyAfter is true, Call {lsp20VerifyCallResult} on the new owner
@@ -644,7 +645,7 @@ abstract contract LSP0ERC725AccountCore is
             if (owner() == address(0)) {
                 previousOwner.notifyUniversalReceiver(
                     _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
-                    ""
+                    abi.encode(accountOwner, address(0))
                 );
             }
         } else {
@@ -658,7 +659,7 @@ abstract contract LSP0ERC725AccountCore is
             if (owner() == address(0)) {
                 previousOwner.notifyUniversalReceiver(
                     _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
-                    ""
+                    abi.encode(accountOwner, address(0))
                 );
             }
 
