@@ -38,7 +38,11 @@ constructor(address initialOwner);
 
 _Deploying a UniversalProfile contract with owner set to address `initialOwner`._
 
-Set `initialOwner` as the contract owner and the `SupportedStandards:LSP3UniversalProfile` data key in the ERC725Y data key/value store. The `constructor` also allows funding the contract on deployment.
+Set `initialOwner` as the contract owner and the `SupportedStandards:LSP3UniversalProfile` data key in the ERC725Y data key/value store.
+
+- The `constructor` is payable and allows funding the contract on deployment.
+
+- The `initialOwner` will then be allowed to call protected functions marked with the `onlyOwner` modifier.
 
 <blockquote>
 
@@ -427,6 +431,12 @@ Get in the ERC725Y storage the bytes data stored at multiple data keys `dataKeys
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `isValidSignature(bytes32,bytes)`
 - Function selector: `0x1626ba7e`
+
+:::
+
+:::caution Warning
+
+This function does not enforce by default the inclusion of the address of this contract in the signature digest. It is recommended that protocols or applications using this contract include the targeted address (= this contract) in the data to sign. To ensure that a signature is valid for a specific LSP0ERC725Account and prevent signatures from the same EOA to be replayed across different LSP0ERC725Accounts.
 
 :::
 

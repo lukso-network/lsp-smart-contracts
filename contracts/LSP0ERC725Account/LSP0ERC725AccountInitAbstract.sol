@@ -24,10 +24,12 @@ abstract contract LSP0ERC725AccountInitAbstract is
 {
     /**
      * @dev Set `initialOwner` as the contract owner.
+     * The `initialOwner` will then be allowed to call protected functions marked with the `onlyOwner` modifier.
      *
      * @param initialOwner The owner of the contract.
      *
-     * @custom:warning ERC725X & ERC725Y parent contracts are not initialised as they don't have non-zero initial state. If you decide to add non-zero initial state to any of those contracts, you must initialize them here.
+     * @custom:warning ERC725X & ERC725Y parent contracts are not initialixed as they don't have non-zero initial state.
+     * If you decide to add non-zero initial state to any of those contracts, you MUST initialize them here.
      *
      * @custom:events
      * - {UniversalReceiver} event when funding the contract on deployment.

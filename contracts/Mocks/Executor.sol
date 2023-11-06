@@ -26,10 +26,8 @@ contract Executor {
     LSP6KeyManager private _keyManager;
     UniversalProfile private _universalProfile;
 
-    // payable modifier is required as _account is non-payable by default
-    // but UniversalProfile has a payable fallback function
-    constructor(address payable account_, address keyManager_) {
-        _universalProfile = UniversalProfile(account_);
+    constructor(UniversalProfile account_, address keyManager_) {
+        _universalProfile = account_;
         _keyManager = LSP6KeyManager(keyManager_);
     }
 

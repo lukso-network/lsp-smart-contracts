@@ -72,7 +72,7 @@ contract LSP1UniversalReceiverDelegateUP is
      *
      * @param notifier The address that notified.
      */
-    modifier NotEOA(address notifier) {
+    modifier notEOA(address notifier) {
         // solhint-disable-next-line avoid-tx-origin
         if (notifier == tx.origin) {
             revert CannotRegisterEOAsAsAssets(notifier);
@@ -145,7 +145,7 @@ contract LSP1UniversalReceiverDelegateUP is
      */
     function _tokenSender(
         address notifier
-    ) internal NotEOA(notifier) returns (bytes memory) {
+    ) internal notEOA(notifier) returns (bytes memory) {
         // if the amount sent is not the full balance, then do not update the keys
         try ILSP7DigitalAsset(notifier).balanceOf(msg.sender) returns (
             uint256 balance
@@ -183,7 +183,7 @@ contract LSP1UniversalReceiverDelegateUP is
     function _tokenRecipient(
         address notifier,
         bytes4 interfaceId
-    ) internal NotEOA(notifier) returns (bytes memory) {
+    ) internal notEOA(notifier) returns (bytes memory) {
         // CHECK balance only when the Token contract is already deployed,
         // not when tokens are being transferred on deployment through the `constructor`
         if (notifier.code.length != 0) {
@@ -223,7 +223,7 @@ contract LSP1UniversalReceiverDelegateUP is
      */
     function _vaultSender(
         address notifier
-    ) internal NotEOA(notifier) returns (bytes memory) {
+    ) internal notEOA(notifier) returns (bytes memory) {
         (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
             .generateSentVaultKeys(msg.sender, notifier);
 
@@ -248,7 +248,7 @@ contract LSP1UniversalReceiverDelegateUP is
      */
     function _vaultRecipient(
         address notifier
-    ) internal NotEOA(notifier) returns (bytes memory) {
+    ) internal notEOA(notifier) returns (bytes memory) {
         (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
             .generateReceivedVaultKeys(msg.sender, notifier);
 

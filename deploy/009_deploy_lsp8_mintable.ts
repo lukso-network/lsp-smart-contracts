@@ -9,10 +9,12 @@ const deployLSP8MintableDeterministic: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner: deployer } = await getNamedAccounts();
 
+  const gasPrice = await ethers.provider.getGasPrice();
+
   await deploy('LSP8Mintable', {
     from: deployer,
     args: ['LSP8 Mintable', 'LSP8M', deployer],
-    gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei,
+    gasPrice,
     log: true,
     deterministicDeployment: true,
   });
