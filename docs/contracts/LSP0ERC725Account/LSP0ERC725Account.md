@@ -201,6 +201,31 @@ function RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD()
 
 <br/>
 
+### VERSION
+
+:::note References
+
+- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-0-ERC725Account.md#version)
+- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP0ERC725Account/LSP0ERC725Account.sol)
+- Function signature: `VERSION()`
+- Function selector: `0xffa1ad74`
+
+:::
+
+```solidity
+function VERSION() external view returns (string);
+```
+
+_Contract version._
+
+#### Returns
+
+| Name |   Type   | Description |
+| ---- | :------: | ----------- |
+| `0`  | `string` | -           |
+
+<br/>
+
 ### acceptOwnership
 
 :::note References
@@ -845,33 +870,6 @@ Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be not
 | Name             |  Type   | Description                                                                                             |
 | ---------------- | :-----: | ------------------------------------------------------------------------------------------------------- |
 | `returnedValues` | `bytes` | The ABI encoded return value of the LSP1UniversalReceiverDelegate call and the LSP1TypeIdDelegate call. |
-
-<br/>
-
-### version
-
-:::note References
-
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-0-ERC725Account.md#version)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP0ERC725Account/LSP0ERC725Account.sol)
-- Function signature: `version()`
-- Function selector: `0x54fd4d50`
-
-:::
-
-```solidity
-function version() external view returns (string);
-```
-
-_Contract version._
-
-Get the version of the contract.
-
-#### Returns
-
-| Name |   Type   | Description                      |
-| ---- | :------: | -------------------------------- |
-| `0`  | `string` | The version of the the contract. |
 
 <br/>
 

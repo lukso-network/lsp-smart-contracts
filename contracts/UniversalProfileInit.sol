@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 // modules
+import {Version} from "./Version.sol";
 import {UniversalProfileInitAbstract} from "./UniversalProfileInitAbstract.sol";
 
 /**
@@ -9,7 +10,7 @@ import {UniversalProfileInitAbstract} from "./UniversalProfileInitAbstract.sol";
  * @author Fabian Vogelsteller <fabian@lukso.network>
  * @dev Implementation of the ERC725Account + LSP1 universalReceiver
  */
-contract UniversalProfileInit is UniversalProfileInitAbstract {
+contract UniversalProfileInit is UniversalProfileInitAbstract, Version {
     /**
      * @notice deploying a `UniversalProfileInit` base contract to be used behind proxy
      * @dev Locks the base contract on deployment, so that it cannot be initialized, owned and controlled by anyone after it has been deployed.
@@ -22,7 +23,7 @@ contract UniversalProfileInit is UniversalProfileInitAbstract {
     /**
      * @notice Initializing a UniversalProfile contract with owner set to address `initialOwner`.
      *
-     * @dev Set `initialOwner` as the contract owner and the `SupportedStandards:LSP3UniversalProfile` data key in the ERC725Y data key/value store.
+     * @dev Set `initialOwner` as the contract owner and the `SupportedStandards:LSP3Profile` data key in the ERC725Y data key/value store.
      * - The `initialize(address)` function is payable and allows funding the contract on initialization.
      * - The `initialOwner` will then be allowed to call protected functions marked with the `onlyOwner` modifier.
      *

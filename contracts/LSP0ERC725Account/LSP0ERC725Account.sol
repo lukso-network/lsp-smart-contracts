@@ -2,13 +2,13 @@
 pragma solidity ^0.8.4;
 
 // modules
+import {Version} from "../Version.sol";
 import {LSP0ERC725AccountCore} from "./LSP0ERC725AccountCore.sol";
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 // constants
-
 import {_TYPEID_LSP0_VALUE_RECEIVED} from "./LSP0Constants.sol";
 
 /**
@@ -26,7 +26,7 @@ import {_TYPEID_LSP0_VALUE_RECEIVED} from "./LSP0Constants.sol";
  * - Extending the account with new functions and interfaceIds of future standards using [LSP-17-ContractExtension]
  * - Verifying calls on the owner to make it easier to interact with the account directly using [LSP-20-CallVerification]
  */
-contract LSP0ERC725Account is LSP0ERC725AccountCore {
+contract LSP0ERC725Account is LSP0ERC725AccountCore, Version {
     /**
      * @notice Deploying a LSP0ERC725Account contract with owner set to address `initialOwner`.
      *

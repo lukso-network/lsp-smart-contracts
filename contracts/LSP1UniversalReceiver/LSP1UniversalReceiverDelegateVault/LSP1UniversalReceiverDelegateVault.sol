@@ -11,8 +11,8 @@ import {
 import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // modules
-import {Version} from "../../Version.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import {Version} from "../../Version.sol";
 
 // libraries
 import {LSP5Utils} from "../../LSP5ReceivedAssets/LSP5Utils.sol";
