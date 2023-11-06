@@ -134,8 +134,6 @@ This function is executed when:
 receive() external payable;
 ```
 
-_Invokes the `universalReceiver` function logic internally when receiving native tokens._
-
 Executed:
 
 - When receiving some native tokens without any additional data.
@@ -1206,7 +1204,7 @@ Returns the extension address and the boolean indicating whether to forward the 
 
 :::tip Hint
 
-If you would like to forward the `msg.value` to the extension contract, you should store an additiona `0x01` byte after the address of the extension under the corresponding LSP17 data key.
+If you would like to forward the `msg.value` to the extension contract, you should store an additional `0x01` byte after the address of the extension under the corresponding LSP17 data key.
 
 :::
 

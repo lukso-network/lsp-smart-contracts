@@ -1145,7 +1145,7 @@ Returns the extension address and the boolean indicating whether to forward the 
 
 :::tip Hint
 
-If you would like to forward the `msg.value` to the extension contract, you should store an additiona `0x01` byte after the address of the extension under the corresponding LSP17 data key.
+If you would like to forward the `msg.value` to the extension contract, you should store an additional `0x01` byte after the address of the extension under the corresponding LSP17 data key.
 
 :::
 

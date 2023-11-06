@@ -89,13 +89,6 @@ abstract contract LSP0ERC725AccountCore is
     using Address for address;
 
     /**
-
-     *
-     * @custom:events {UniversalReceiver} event when receiving native tokens.
-     */
-
-    /**
-     * @notice Invokes the `universalReceiver` function logic internally when receiving native tokens.
      * @dev Executed:
      * - When receiving some native tokens without any additional data.
      * - On empty calls to the contract.
@@ -799,7 +792,7 @@ abstract contract LSP0ERC725AccountCore is
      * If there is an extension for the function selector being called, it calls the extension with the
      * `CALL` opcode, passing the `msg.data` appended with the 20 bytes of the {msg.sender} and 32 bytes of the `msg.value`.
      *
-     * @custom:hint If you would like to forward the `msg.value` to the extension contract, you should store an additiona `0x01` byte after the address of the extension under the corresponding LSP17 data key.
+     * @custom:hint If you would like to forward the `msg.value` to the extension contract, you should store an additional `0x01` byte after the address of the extension under the corresponding LSP17 data key.
      */
     function _fallbackLSP17Extendable(
         bytes calldata callData
