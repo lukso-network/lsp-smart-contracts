@@ -767,7 +767,10 @@ export const shouldBehaveLikeLSP9 = (
             context.lsp9Vault.address,
             0,
             LSP1_TYPE_IDS.LSP9OwnershipTransferStarted,
-            '0x',
+            abiCoder.encode(
+              ['address', 'address'],
+              [context.accounts.owner.address, context.universalProfile.address],
+            ),
             abiCoder.encode(
               ['bytes', 'bytes'],
               [ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: typeId out of scope')), '0x'],

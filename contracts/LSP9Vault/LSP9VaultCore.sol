@@ -440,7 +440,7 @@ contract LSP9VaultCore is
 
         newOwner.notifyUniversalReceiver(
             _TYPEID_LSP9_OwnershipTransferStarted,
-            ""
+            abi.encode(currentOwner, newOwner)
         );
 
         // reset the transfer ownership lock
@@ -462,12 +462,12 @@ contract LSP9VaultCore is
 
         previousOwner.notifyUniversalReceiver(
             _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
-            ""
+            abi.encode(previousOwner, msg.sender)
         );
 
         msg.sender.notifyUniversalReceiver(
             _TYPEID_LSP9_OwnershipTransferred_RecipientNotification,
-            ""
+            abi.encode(previousOwner, msg.sender)
         );
     }
 
@@ -490,7 +490,7 @@ contract LSP9VaultCore is
         if (owner() == address(0)) {
             previousOwner.notifyUniversalReceiver(
                 _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
-                ""
+                abi.encode(previousOwner, address(0))
             );
         }
     }

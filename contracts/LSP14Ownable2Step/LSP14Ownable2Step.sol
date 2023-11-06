@@ -99,7 +99,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
 
         newOwner.notifyUniversalReceiver(
             _TYPEID_LSP14_OwnershipTransferStarted,
-            ""
+            abi.encode(currentOwner, newOwner)
         );
 
         // reset the transfer ownership lock
@@ -118,12 +118,12 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
 
         previousOwner.notifyUniversalReceiver(
             _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
-            ""
+            abi.encode(previousOwner, msg.sender)
         );
 
         msg.sender.notifyUniversalReceiver(
             _TYPEID_LSP14_OwnershipTransferred_RecipientNotification,
-            ""
+            abi.encode(previousOwner, msg.sender)
         );
     }
 
@@ -144,7 +144,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         if (owner() == address(0)) {
             previousOwner.notifyUniversalReceiver(
                 _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
-                ""
+                abi.encode(previousOwner, address(0))
             );
         }
     }
