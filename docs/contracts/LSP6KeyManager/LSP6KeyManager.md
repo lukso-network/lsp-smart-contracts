@@ -1230,9 +1230,12 @@ function _nonReentrantBefore(
 ) internal nonpayable returns (bool reentrancyStatus);
 ```
 
-Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
-the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
-Used in the beginning of the `nonReentrant` modifier, before the method execution starts.
+Check if we are in the context of a reentrant call, by checking if the reentrancy status is `true`.
+
+- If the status is `true`, the caller (or signer for relay call) MUST have the `REENTRANCY` permission. Otherwise, the call is reverted.
+
+- If the status is `false`, it is set to `true` only if we are not dealing with a call to the functions `setData` or `setDataBatch`.
+  Used at the beginning of the [`lsp20VerifyCall`](#`lsp20verifycall`), [`_execute`](#`_execute`) and [`_executeRelayCall`](#`_executerelaycall`) functions, before the methods execution starts.
 
 <br/>
 
@@ -1242,8 +1245,8 @@ Used in the beginning of the `nonReentrant` modifier, before the method executio
 function _nonReentrantAfter(address targetContract) internal nonpayable;
 ```
 
-Resets the status to `false`
-Used in the end of the `nonReentrant` modifier after the method execution is terminated
+Resets the reentrancy status to `false`
+Used at the end of the [`lsp20VerifyCall`](#`lsp20verifycall`), [`_execute`](#`_execute`) and [`_executeRelayCall`](#`_executerelaycall`) functions after the functions' execution is terminated.
 
 <br/>
 

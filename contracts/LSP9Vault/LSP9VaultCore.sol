@@ -455,7 +455,7 @@ contract LSP9VaultCore is
      * - When notifying the previous owner via LSP1, the typeId used must be the `keccak256(...)` hash of [LSP0OwnershipTransferred_SenderNotification].
      * - When notifying the new owner via LSP1, the typeId used must be the `keccak256(...)` hash of [LSP0OwnershipTransferred_RecipientNotification].
      */
-    function acceptOwnership() public virtual override NotInTransferOwnership {
+    function acceptOwnership() public virtual override notInTransferOwnership {
         address previousOwner = owner();
 
         _acceptOwnership();
@@ -625,7 +625,7 @@ contract LSP9VaultCore is
     }
 
     /**
-     * @dev Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
+     * @dev Internal method restricting the call to the owner of the contract and the UniversalReceiverDelegate
      */
     function _validateAndIdentifyCaller()
         internal
