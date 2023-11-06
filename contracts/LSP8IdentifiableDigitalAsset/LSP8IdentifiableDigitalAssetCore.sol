@@ -156,7 +156,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             operatorNotificationData
         );
 
-        operator.notifyUniversalReceiver(_TYPEID_LSP8_TOKENOPERATOR, lsp1Data);
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
@@ -198,10 +198,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 operatorNotificationData
             );
 
-            operator.notifyUniversalReceiver(
-                _TYPEID_LSP8_TOKENOPERATOR,
-                lsp1Data
-            );
+            _notifyTokenOperator(operator, lsp1Data);
         }
     }
 
@@ -460,7 +457,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             data
         );
 
-        tokenOwner.notifyUniversalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
+        _notifyTokenSender(tokenOwner, lsp1Data);
     }
 
     /**
@@ -526,7 +523,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         bytes memory lsp1Data = abi.encode(from, to, tokenId, data);
 
-        from.notifyUniversalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
+        _notifyTokenSender(from, lsp1Data);
         _notifyTokenReceiver(to, force, lsp1Data);
     }
 
@@ -561,6 +558,49 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bytes32 tokenId,
         bytes memory data // solhint-disable-next-line no-empty-blocks
     ) internal virtual {}
+
+    /**
+     * @dev Attempt to notify the operator `operator` about the `tokenId` tokens being authorized.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
+     * If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+     
+     * @param operator The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+     * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
+     */
+    function _notifyTokenOperator(
+        address operator,
+        bytes memory lsp1Data
+    ) internal virtual {
+        if (
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                operator,
+                _INTERFACEID_LSP1
+            )
+        ) {
+            ILSP1(operator).universalReceiver(
+                _TYPEID_LSP8_TOKENOPERATOR,
+                lsp1Data
+            );
+        }
+    }
+
+    /**
+     * @dev An attempt is made to notify the token sender about the `tokenId` changing owners using
+     * LSP1 interface.
+     */
+    function _notifyTokenSender(
+        address from,
+        bytes memory lsp1Data
+    ) internal virtual {
+        if (
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                from,
+                _INTERFACEID_LSP1
+            )
+        ) {
+            ILSP1(from).universalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
+        }
+    }
 
     /**
      * @dev An attempt is made to notify the token receiver about the `tokenId` changing owners
