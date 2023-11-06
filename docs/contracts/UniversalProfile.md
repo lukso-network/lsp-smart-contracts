@@ -430,6 +430,12 @@ Get in the ERC725Y storage the bytes data stored at multiple data keys `dataKeys
 
 :::
 
+:::caution Warning
+
+This function does not enforce by default the inclusion of the address of this contract in the signature digest. It is recommended that protocols or applications using this contract include the targeted address (= this contract) in the data to sign. To ensure that a signature is valid for a specific LSP0ERC725Account and prevent signatures from the same EOA to be replayed across different LSP0ERC725Accounts.
+
+:::
+
 ```solidity
 function isValidSignature(
   bytes32 dataHash,
