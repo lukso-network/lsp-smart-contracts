@@ -102,15 +102,15 @@ Execute A `payload` on the linked [`target`](#target) contract after having veri
 
 #### Parameters
 
-| Name      |  Type   | Description                                                      |
-| --------- | :-----: | ---------------------------------------------------------------- |
-| `payload` | `bytes` | The abi-encoded function call to execute on the linked {target}. |
+| Name      |  Type   | Description                                                                 |
+| --------- | :-----: | --------------------------------------------------------------------------- |
+| `payload` | `bytes` | The abi-encoded function call to execute on the linked [`target`](#target). |
 
 #### Returns
 
-| Name |  Type   | Description                                                                  |
-| ---- | :-----: | ---------------------------------------------------------------------------- |
-| `0`  | `bytes` | The abi-decoded data returned by the function called on the linked {target}. |
+| Name |  Type   | Description                                                                             |
+| ---- | :-----: | --------------------------------------------------------------------------------------- |
+| `0`  | `bytes` | The abi-decoded data returned by the function called on the linked [`target`](#target). |
 
 <br/>
 
@@ -150,16 +150,16 @@ Same as [`execute`](#execute) but execute a batch of payloads (abi-encoded funct
 
 #### Parameters
 
-| Name       |    Type     | Description                                                                            |
-| ---------- | :---------: | -------------------------------------------------------------------------------------- |
-| `values`   | `uint256[]` | An array of amount of native tokens to be transferred for each `payload`.              |
-| `payloads` |  `bytes[]`  | An array of abi-encoded function calls to execute successively on the linked {target}. |
+| Name       |    Type     | Description                                                                                       |
+| ---------- | :---------: | ------------------------------------------------------------------------------------------------- |
+| `values`   | `uint256[]` | An array of amount of native tokens to be transferred for each `payload`.                         |
+| `payloads` |  `bytes[]`  | An array of abi-encoded function calls to execute successively on the linked [`target`](#target). |
 
 #### Returns
 
-| Name |   Type    | Description                                                                           |
-| ---- | :-------: | ------------------------------------------------------------------------------------- |
-| `0`  | `bytes[]` | An array of abi-decoded data returned by the functions called on the linked {target}. |
+| Name |   Type    | Description                                                                                      |
+| ---- | :-------: | ------------------------------------------------------------------------------------------------ |
+| `0`  | `bytes[]` | An array of abi-decoded data returned by the functions called on the linked [`target`](#target). |
 
 <br/>
 
@@ -206,7 +206,7 @@ Allows any address (executor) to execute a payload (= abi-encoded function call)
 | Name                 |   Type    | Description                                                                                                                                                            |
 | -------------------- | :-------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `signature`          |  `bytes`  | A 65 bytes long signature for a meta transaction according to LSP25.                                                                                                   |
-| `nonce`              | `uint256` | The nonce of the address that signed the calldata (in a specific `_channel`), obtained via {getNonce}. Used to prevent replay attack.                                  |
+| `nonce`              | `uint256` | The nonce of the address that signed the calldata (in a specific `_channel`), obtained via [`getNonce`](#getnonce). Used to prevent replay attack.                     |
 | `validityTimestamps` | `uint256` | Two `uint128` timestamps concatenated together that describes when the relay transaction is valid "from" (left `uint128`) and "until" as a deadline (right `uint128`). |
 | `payload`            |  `bytes`  | The abi-encoded function call to execute.                                                                                                                              |
 
@@ -254,13 +254,13 @@ Same as [`executeRelayCall`](#executerelaycall) but execute a batch of signed ca
 
 #### Parameters
 
-| Name                 |    Type     | Description                                                                                                                                                |
-| -------------------- | :---------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `signatures`         |  `bytes[]`  | An array of 65 bytes long signatures for meta transactions according to LSP25.                                                                             |
-| `nonces`             | `uint256[]` | An array of nonces of the addresses that signed the calldata payloads (in specific channels). Obtained via {getNonce}. Used to prevent replay attack.      |
-| `validityTimestamps` | `uint256[]` | An array of two `uint128` concatenated timestamps that describe when the relay transaction is valid "from" (left `uint128`) and "until" (right `uint128`). |
-| `values`             | `uint256[]` | An array of amount of native tokens to be transferred for each calldata `payload`.                                                                         |
-| `payloads`           |  `bytes[]`  | An array of abi-encoded function calls to be executed successively.                                                                                        |
+| Name                 |    Type     | Description                                                                                                                                                        |
+| -------------------- | :---------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `signatures`         |  `bytes[]`  | An array of 65 bytes long signatures for meta transactions according to LSP25.                                                                                     |
+| `nonces`             | `uint256[]` | An array of nonces of the addresses that signed the calldata payloads (in specific channels). Obtained via [`getNonce`](#getnonce). Used to prevent replay attack. |
+| `validityTimestamps` | `uint256[]` | An array of two `uint128` concatenated timestamps that describe when the relay transaction is valid "from" (left `uint128`) and "until" (right `uint128`).         |
+| `values`             | `uint256[]` | An array of amount of native tokens to be transferred for each calldata `payload`.                                                                                 |
+| `payloads`           |  `bytes[]`  | An array of abi-encoded function calls to be executed successively.                                                                                                |
 
 #### Returns
 
@@ -1060,13 +1060,13 @@ The address of the signer will be recovered using the LSP25 signature format.
 
 #### Parameters
 
-| Name                 |   Type    | Description                                                                                                             |
-| -------------------- | :-------: | ----------------------------------------------------------------------------------------------------------------------- |
-| `signature`          |  `bytes`  | A 65 bytes long signature generated according to the signature format specified in the LSP25 standard.                  |
-| `nonce`              | `uint256` | The nonce that the signer used to generate the `signature`.                                                             |
-| `validityTimestamps` | `uint256` | The validity timestamp that the signer used to generate the signature (See {\_verifyValidityTimestamps} to learn more). |
-| `msgValue`           | `uint256` | The amount of native tokens intended to be sent for the relay transaction.                                              |
-| `callData`           |  `bytes`  | The calldata to execute as a relay transaction that the signer signed for.                                              |
+| Name                 |   Type    | Description                                                                                                                                          |
+| -------------------- | :-------: | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `signature`          |  `bytes`  | A 65 bytes long signature generated according to the signature format specified in the LSP25 standard.                                               |
+| `nonce`              | `uint256` | The nonce that the signer used to generate the `signature`.                                                                                          |
+| `validityTimestamps` | `uint256` | The validity timestamp that the signer used to generate the signature (See [`_verifyValidityTimestamps`](#_verifyvaliditytimestamps) to learn more). |
+| `msgValue`           | `uint256` | The amount of native tokens intended to be sent for the relay transaction.                                                                           |
+| `callData`           |  `bytes`  | The calldata to execute as a relay transaction that the signer signed for.                                                                           |
 
 #### Returns
 
@@ -1180,17 +1180,17 @@ _Execute the `payload` passed to `execute(...)` or `executeRelayCall(...)`_
 
 #### Parameters
 
-| Name             |   Type    | Description                                                        |
-| ---------------- | :-------: | ------------------------------------------------------------------ |
-| `targetContract` | `address` | -                                                                  |
-| `msgValue`       | `uint256` | -                                                                  |
-| `payload`        |  `bytes`  | The abi-encoded function call to execute on the {target} contract. |
+| Name             |   Type    | Description                                                                   |
+| ---------------- | :-------: | ----------------------------------------------------------------------------- |
+| `targetContract` | `address` | -                                                                             |
+| `msgValue`       | `uint256` | -                                                                             |
+| `payload`        |  `bytes`  | The abi-encoded function call to execute on the [`target`](#target) contract. |
 
 #### Returns
 
-| Name |  Type   | Description                                                               |
-| ---- | :-----: | ------------------------------------------------------------------------- |
-| `0`  | `bytes` | bytes The data returned by the call made to the linked {target} contract. |
+| Name |  Type   | Description                                                                          |
+| ---- | :-----: | ------------------------------------------------------------------------------------ |
+| `0`  | `bytes` | bytes The data returned by the call made to the linked [`target`](#target) contract. |
 
 <br/>
 
@@ -1209,12 +1209,12 @@ Verify if the `from` address is allowed to execute the `payload` on the [`target
 
 #### Parameters
 
-| Name             |   Type    | Description                                                         |
-| ---------------- | :-------: | ------------------------------------------------------------------- |
-| `targetContract` | `address` | The contract that is owned by the Key Manager                       |
-| `from`           | `address` | Either the caller of {execute} or the signer of {executeRelayCall}. |
-| `isRelayedCall`  |  `bool`   | -                                                                   |
-| `payload`        |  `bytes`  | The abi-encoded function call to execute on the {target} contract.  |
+| Name             |   Type    | Description                                                                                          |
+| ---------------- | :-------: | ---------------------------------------------------------------------------------------------------- |
+| `targetContract` | `address` | The contract that is owned by the Key Manager                                                        |
+| `from`           | `address` | Either the caller of [`execute`](#execute) or the signer of [`executeRelayCall`](#executerelaycall). |
+| `isRelayedCall`  |  `bool`   | -                                                                                                    |
+| `payload`        |  `bytes`  | The abi-encoded function call to execute on the [`target`](#target) contract.                        |
 
 <br/>
 
@@ -1271,11 +1271,11 @@ Emitted when the LSP6KeyManager contract verified the permissions of the `signer
 
 #### Parameters
 
-| Name                     |   Type    | Description                                                                                                                                        |
-| ------------------------ | :-------: | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `signer` **`indexed`**   | `address` | The address of the controller that executed the calldata payload (either directly via {execute} or via meta transaction using {executeRelayCall}). |
-| `value` **`indexed`**    | `uint256` | The amount of native token to be transferred in the calldata payload.                                                                              |
-| `selector` **`indexed`** | `bytes4`  | The bytes4 function of the function that was executed on the linked {target}                                                                       |
+| Name                     |   Type    | Description                                                                                                                                                                         |
+| ------------------------ | :-------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `signer` **`indexed`**   | `address` | The address of the controller that executed the calldata payload (either directly via [`execute`](#execute) or via meta transaction using [`executeRelayCall`](#executerelaycall)). |
+| `value` **`indexed`**    | `uint256` | The amount of native token to be transferred in the calldata payload.                                                                                                               |
+| `selector` **`indexed`** | `bytes4`  | The bytes4 function of the function that was executed on the linked [`target`](#target)                                                                                             |
 
 <br/>
 
@@ -1483,9 +1483,9 @@ Reverts when trying to call a function on the linked [`target`](#target), that i
 
 #### Parameters
 
-| Name              |   Type   | Description                                                                                                      |
-| ----------------- | :------: | ---------------------------------------------------------------------------------------------------------------- |
-| `invalidFunction` | `bytes4` | The `bytes4` selector of the function that was attempted to be called on the linked {target} but not recognised. |
+| Name              |   Type   | Description                                                                                                                 |
+| ----------------- | :------: | --------------------------------------------------------------------------------------------------------------------------- |
+| `invalidFunction` | `bytes4` | The `bytes4` selector of the function that was attempted to be called on the linked [`target`](#target) but not recognised. |
 
 <br/>
 
@@ -1834,7 +1834,7 @@ Reverts when `from` is not authorised to call the `execute(uint256,address,uint2
 | Name       |   Type    | Description                                                                                                                                                                  |
 | ---------- | :-------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `from`     | `address` | The controller that tried to call the `execute(uint256,address,uint256,bytes)` function.                                                                                     |
-| `to`       | `address` | The address of an EOA or contract that `from` tried to call using the linked {target}                                                                                        |
+| `to`       | `address` | The address of an EOA or contract that `from` tried to call using the linked [`target`](#target)                                                                             |
 | `selector` | `bytes4`  | If `to` is a contract, the bytes4 selector of the function that `from` is trying to call. If no function is called (_e.g: a native token transfer_), selector = `0x00000000` |
 
 <br/>
@@ -1860,10 +1860,10 @@ Reverts when address `from` is not authorised to set the key `disallowedKey` on 
 
 #### Parameters
 
-| Name            |   Type    | Description                                                                                            |
-| --------------- | :-------: | ------------------------------------------------------------------------------------------------------ |
-| `from`          | `address` | address The controller that tried to `setData` on the linked {target}.                                 |
-| `disallowedKey` | `bytes32` | A bytes32 data key that `from` is not authorised to set on the ERC725Y storage of the linked {target}. |
+| Name            |   Type    | Description                                                                                                       |
+| --------------- | :-------: | ----------------------------------------------------------------------------------------------------------------- |
+| `from`          | `address` | address The controller that tried to `setData` on the linked [`target`](#target).                                 |
+| `disallowedKey` | `bytes32` | A bytes32 data key that `from` is not authorised to set on the ERC725Y storage of the linked [`target`](#target). |
 
 <br/>
 

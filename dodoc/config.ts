@@ -362,7 +362,7 @@ const formatParamDescription = (textToFormat: string) => {
     formatedText = formatedText.replace('&gt;', '<');
   }
 
-  return formatedText;
+  return createLocalLinks(formatedText);
 };
 
 const formatParamType = (textToFormat: string) => {
