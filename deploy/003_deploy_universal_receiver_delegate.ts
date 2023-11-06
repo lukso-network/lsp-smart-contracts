@@ -10,9 +10,11 @@ const deployUniversalReceiverDelegateUPDeterministic: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner: deployer } = await getNamedAccounts();
 
+  const gasPrice = await ethers.provider.getGasPrice();
+
   await deploy('LSP1UniversalReceiverDelegateUP', {
     from: deployer,
-    gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei
+    gasPrice,
     log: true,
     deterministicDeployment: SALT,
   });
