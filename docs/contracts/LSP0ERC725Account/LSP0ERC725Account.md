@@ -86,6 +86,13 @@ Set `initialOwner` as the contract owner.
 
 :::
 
+:::info
+
+Whenever the call is associated with native tokens, the function will delegate the handling of native tokens internally to the {universalReceiver} function
+passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and the calldata as received data, except when the native token will be sent directly to the extension.
+
+:::
+
 ```solidity
 fallback(bytes calldata callData) external payable returns (bytes memory);
 ```
@@ -109,7 +116,6 @@ This function is executed when:
 - If there is an address, forward the `msg.data` to the extension using the CALL opcode, appending 52 bytes (20 bytes of `msg.sender` and 32 bytes of `msg.value`). Return what the calls returns, or revert if the call failed.
 
 2. If the data sent to this function is of length less than 4 bytes (not a function selector), return.
-   Whenever the call is associated with native tokens, the function will delegate internally the handling of native tokens to the [`universalReceiver`](#universalreceiver) function passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and the calldata as received data, except when the native token will be sent directly to the extension.
 
 <blockquote>
 
@@ -130,6 +136,13 @@ This function is executed when:
 
 :::
 
+:::info
+
+This function internally delegates the handling of native tokens to the {universalReceiver} function
+passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and an empty bytes array as received data.
+
+:::
+
 ```solidity
 receive() external payable;
 ```
@@ -139,7 +152,6 @@ Executed:
 - When receiving some native tokens without any additional data.
 
 - On empty calls to the contract.
-  This function delegates internally the handling of native tokens to the [`universalReceiver`](#universalreceiver) function passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and an empty bytes array as received data.
 
 <blockquote>
 

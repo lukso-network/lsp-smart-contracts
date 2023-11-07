@@ -93,7 +93,9 @@ abstract contract LSP0ERC725AccountCore is
      * - When receiving some native tokens without any additional data.
      * - On empty calls to the contract.
      *
-     * This function delegates internally the handling of native tokens to the {universalReceiver} function passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and an empty bytes array as received data.
+     * @custom:info This function internally delegates the handling of native tokens to the {universalReceiver} function
+     * passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and an empty bytes array as received data.
+     *
      * @custom:events Emits a {UniversalReceiver} event when the `universalReceiver` logic is executed upon receiving native tokens.
      */
     receive() external payable virtual {
@@ -121,18 +123,19 @@ abstract contract LSP0ERC725AccountCore is
      *
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), return.
      *
-     * Whenever the call is associated with native tokens, the function will delegate internally the handling of native tokens to the {universalReceiver} function passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and the calldata as received data, except when the native token will be sent directly to the extension.
+     * @custom:info Whenever the call is associated with native tokens, the function will delegate the handling of native tokens internally to the {universalReceiver} function
+     * passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and the calldata as received data, except when the native token will be sent directly to the extension.
      *
      * @custom:events {UniversalReceiver} event when receiving native tokens and extension function selector is not found or not payable.
      */
-    // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
         if (msg.data.length < 4) {
             // if value is associated with the extension call, use the universalReceiver
-            if (msg.value != 0)
+            if (msg.value != 0) {
                 universalReceiver(_TYPEID_LSP0_VALUE_RECEIVED, callData);
+            }
             return "";
         }
 
@@ -804,8 +807,9 @@ abstract contract LSP0ERC725AccountCore is
         ) = _getExtensionAndForwardValue(msg.sig);
 
         // if value is associated with the extension call and extension function selector is not payable, use the universalReceiver
-        if (msg.value != 0 && !isForwardingValue)
+        if (msg.value != 0 && !isForwardingValue) {
             universalReceiver(_TYPEID_LSP0_VALUE_RECEIVED, callData);
+        }
 
         // if no extension was found for bytes4(0) return don't revert
         if (msg.sig == bytes4(0) && extension == address(0)) return "";
