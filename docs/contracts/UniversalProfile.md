@@ -38,7 +38,11 @@ constructor(address initialOwner);
 
 _Deploying a UniversalProfile contract with owner set to address `initialOwner`._
 
-Set `initialOwner` as the contract owner and the `SupportedStandards:LSP3UniversalProfile` data key in the ERC725Y data key/value store. The `constructor` also allows funding the contract on deployment.
+Set `initialOwner` as the contract owner and the `SupportedStandards:LSP3Profile` data key in the ERC725Y data key/value store.
+
+- The `constructor` is payable and allows funding the contract on deployment.
+
+- The `initialOwner` will then be allowed to call protected functions marked with the `onlyOwner` modifier.
 
 <blockquote>
 
@@ -137,6 +141,31 @@ function RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD()
 | Name |   Type    | Description |
 | ---- | :-------: | ----------- |
 | `0`  | `uint256` | -           |
+
+<br/>
+
+### VERSION
+
+:::note References
+
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#version)
+- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
+- Function signature: `VERSION()`
+- Function selector: `0xffa1ad74`
+
+:::
+
+```solidity
+function VERSION() external view returns (string);
+```
+
+_Contract version._
+
+#### Returns
+
+| Name |   Type   | Description |
+| ---- | :------: | ----------- |
+| `0`  | `string` | -           |
 
 <br/>
 
@@ -427,6 +456,12 @@ Get in the ERC725Y storage the bytes data stored at multiple data keys `dataKeys
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `isValidSignature(bytes32,bytes)`
 - Function selector: `0x1626ba7e`
+
+:::
+
+:::caution Warning
+
+This function does not enforce by default the inclusion of the address of this contract in the signature digest. It is recommended that protocols or applications using this contract include the targeted address (= this contract) in the data to sign. To ensure that a signature is valid for a specific LSP0ERC725Account and prevent signatures from the same EOA to be replayed across different LSP0ERC725Accounts.
 
 :::
 
@@ -755,7 +790,7 @@ Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be not
 
 - If there is an address stored under the data key, check if this address supports the LSP1 interfaceId.
 
-- If yes, call this address with the typeId and data (params), along with additional calldata consisting of 20 bytes of `msg.sender` and 32 bytes of `msg.value`. If not, continue the execution of the function.
+- If yes, call this address with the typeId and data (params), along with additional calldata consisting of 20 bytes of `msg.sender` and 32 bytes of `msg.value`. If not, continue the execution of the function. This function delegates internally the handling of native tokens to the [`universalReceiver`](#universalreceiver) function itself passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and the calldata as received data.
 
 <blockquote>
 
@@ -778,33 +813,6 @@ Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be not
 | Name             |  Type   | Description                                                                                             |
 | ---------------- | :-----: | ------------------------------------------------------------------------------------------------------- |
 | `returnedValues` | `bytes` | The ABI encoded return value of the LSP1UniversalReceiverDelegate call and the LSP1TypeIdDelegate call. |
-
-<br/>
-
-### version
-
-:::note References
-
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#version)
-- Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
-- Function signature: `version()`
-- Function selector: `0x54fd4d50`
-
-:::
-
-```solidity
-function version() external view returns (string);
-```
-
-_Contract version._
-
-Get the version of the contract.
-
-#### Returns
-
-| Name |   Type   | Description                      |
-| ---- | :------: | -------------------------------- |
-| `0`  | `string` | The version of the the contract. |
 
 <br/>
 
@@ -1123,11 +1131,13 @@ function _getExtensionAndForwardValue(
 ) internal view returns (address, bool);
 ```
 
-Returns the extension address stored under the following data key:
+Returns the extension address and the boolean indicating whether to forward the value received to the extension, stored under the following data key:
 
 - [`_LSP17_EXTENSION_PREFIX`](#_lsp17_extension_prefix) + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
 
 - If no extension is stored, returns the address(0).
+
+- If the stored value is 20 bytes, return false for the boolean
 
 <br/>
 
@@ -1135,14 +1145,7 @@ Returns the extension address stored under the following data key:
 
 :::tip Hint
 
-This function does not forward to the extension contract the `msg.value` received by the contract that inherits `LSP17Extendable`.
-If you would like to forward the `msg.value` to the extension contract, you can override the code of this internal function as follow:
-
-```solidity
-(bool success, bytes memory result) = extension.call{value: msg.value}(
-    abi.encodePacked(callData, msg.sender, msg.value)
-);
-```
+If you would like to forward the `msg.value` to the extension contract, you should store an additional `0x01` byte after the address of the extension under the corresponding LSP17 data key.
 
 :::
 
@@ -1407,11 +1410,11 @@ Emitted when the [`universalReceiver`](#universalreceiver) function was called w
 
 | Name                   |   Type    | Description                                                                                                                                                                             |
 | ---------------------- | :-------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `from` **`indexed`**   | `address` | The address of the EOA or smart contract that called the {universalReceiver(...)} function.                                                                                             |
-| `value` **`indexed`**  | `uint256` | The amount sent to the {universalReceiver(...)} function.                                                                                                                               |
+| `from` **`indexed`**   | `address` | The address of the EOA or smart contract that called the [`universalReceiver(...)`](#universalreceiver) function.                                                                       |
+| `value` **`indexed`**  | `uint256` | The amount sent to the [`universalReceiver(...)`](#universalreceiver) function.                                                                                                         |
 | `typeId` **`indexed`** | `bytes32` | A `bytes32` unique identifier (= _"hook"_)that describe the type of notification, information or transaction received by the contract. Can be related to a specific standard or a hook. |
-| `receivedData`         |  `bytes`  | Any arbitrary data that was sent to the {universalReceiver(...)} function.                                                                                                              |
-| `returnedValue`        |  `bytes`  | The value returned by the {universalReceiver(...)} function.                                                                                                                            |
+| `receivedData`         |  `bytes`  | Any arbitrary data that was sent to the [`universalReceiver(...)`](#universalreceiver) function.                                                                                        |
+| `returnedValue`        |  `bytes`  | The value returned by the [`universalReceiver(...)`](#universalreceiver) function.                                                                                                      |
 
 <br/>
 

@@ -21,7 +21,8 @@ abstract contract UniversalProfileInitAbstract is
     LSP0ERC725AccountInitAbstract
 {
     /**
-     * @dev Set `initialOwner` as the contract owner and the `SupportedStandards:LSP3UniversalProfile` data key in the ERC725Y data key/value store.
+     * @dev Set `initialOwner` as the contract owner and the `SupportedStandards:LSP3Profile` data key in the ERC725Y data key/value store.
+     * The `initialOwner` will then be allowed to call protected functions marked with the `onlyOwner` modifier.
      *
      * @param initialOwner The owner of the contract.
      *
@@ -30,13 +31,14 @@ abstract contract UniversalProfileInitAbstract is
      * @custom:events
      * - {UniversalReceiver} event when funding the contract on deployment.
      * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
+     * - {DataChanged} event when setting the {_LSP3_SUPPORTED_STANDARDS_KEY}.
      */
     function _initialize(
         address initialOwner
     ) internal virtual override onlyInitializing {
         LSP0ERC725AccountInitAbstract._initialize(initialOwner);
 
-        // set data key SupportedStandards:LSP3UniversalProfile
+        // set data key SupportedStandards:LSP3Profile
         _setData(
             _LSP3_SUPPORTED_STANDARDS_KEY,
             _LSP3_SUPPORTED_STANDARDS_VALUE

@@ -8,7 +8,6 @@ import {
 import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 
 // modules
-import {Version} from "../Version.sol";
 
 // libraries
 import {
@@ -52,7 +51,7 @@ import {
  * Similar to ERC20, the non-standard {increaseAllowance} and {decreaseAllowance} functions
  * have been added to mitigate the well-known issues around setting allowances.
  */
-abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset, Version {
+abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     using EnumerableSet for EnumerableSet.AddressSet;
     using ERC165Checker for address;
     using LSP1Utils for address;
@@ -133,10 +132,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset, Version {
             operatorNotificationData
         );
 
-        operator.tryNotifyUniversalReceiver(
-            _TYPEID_LSP7_TOKENOPERATOR,
-            lsp1Data
-        );
+        operator.notifyUniversalReceiver(_TYPEID_LSP7_TOKENOPERATOR, lsp1Data);
     }
 
     /**
@@ -162,7 +158,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset, Version {
                 operatorNotificationData
             );
 
-            operator.tryNotifyUniversalReceiver(
+            operator.notifyUniversalReceiver(
                 _TYPEID_LSP7_TOKENOPERATOR,
                 lsp1Data
             );
@@ -220,10 +216,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset, Version {
             operatorNotificationData
         );
 
-        operator.tryNotifyUniversalReceiver(
-            _TYPEID_LSP7_TOKENOPERATOR,
-            lsp1Data
-        );
+        operator.notifyUniversalReceiver(_TYPEID_LSP7_TOKENOPERATOR, lsp1Data);
     }
 
     /**
@@ -257,10 +250,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset, Version {
             operatorNotificationData
         );
 
-        operator.tryNotifyUniversalReceiver(
-            _TYPEID_LSP7_TOKENOPERATOR,
-            lsp1Data
-        );
+        operator.notifyUniversalReceiver(_TYPEID_LSP7_TOKENOPERATOR, lsp1Data);
     }
 
     // --- Transfer functionality
@@ -474,7 +464,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset, Version {
         _afterTokenTransfer(from, address(0), amount, data);
 
         bytes memory lsp1Data = abi.encode(from, address(0), amount, data);
-        from.tryNotifyUniversalReceiver(_TYPEID_LSP7_TOKENSSENDER, lsp1Data);
+        from.notifyUniversalReceiver(_TYPEID_LSP7_TOKENSSENDER, lsp1Data);
     }
 
     /**
@@ -572,7 +562,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset, Version {
 
         bytes memory lsp1Data = abi.encode(from, to, amount, data);
 
-        from.tryNotifyUniversalReceiver(_TYPEID_LSP7_TOKENSSENDER, lsp1Data);
+        from.notifyUniversalReceiver(_TYPEID_LSP7_TOKENSSENDER, lsp1Data);
         _notifyTokenReceiver(to, force, lsp1Data);
     }
 

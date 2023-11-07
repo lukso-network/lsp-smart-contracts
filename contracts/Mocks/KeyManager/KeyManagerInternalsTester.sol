@@ -33,7 +33,7 @@ contract KeyManagerInternalTester is LSP6KeyManager {
     }
 
     function verifyAllowedCall(
-        address _sender,
+        address controller,
         uint256 operationType,
         address to,
         uint256 value,
@@ -41,7 +41,7 @@ contract KeyManagerInternalTester is LSP6KeyManager {
     ) public view {
         super._verifyAllowedCall(
             _target,
-            _sender,
+            controller,
             operationType,
             to,
             value,

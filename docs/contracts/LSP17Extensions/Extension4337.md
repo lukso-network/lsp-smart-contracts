@@ -40,6 +40,31 @@ constructor(address entryPoint_);
 
 <br/>
 
+### VERSION
+
+:::note References
+
+- Specification details: [**LSP-17-Extensions**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-17-Extensions.md#version)
+- Solidity implementation: [`Extension4337.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP17Extensions/Extension4337.sol)
+- Function signature: `VERSION()`
+- Function selector: `0xffa1ad74`
+
+:::
+
+```solidity
+function VERSION() external view returns (string);
+```
+
+_Contract version._
+
+#### Returns
+
+| Name |   Type   | Description |
+| ---- | :------: | ----------- |
+| `0`  | `string` | -           |
+
+<br/>
+
 ### entryPoint
 
 :::note References
@@ -132,33 +157,6 @@ Must validate caller is the entryPoint. Must validate the signature and nonce
 | Name |   Type    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ---- | :-------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `0`  | `uint256` | packaged ValidationData structure. use `_packValidationData` and `_unpackValidationData` to encode and decode <20-byte> sigAuthorizer - 0 for valid signature, 1 to mark signature failure, otherwise, an address of an "authorizer" contract. <6-byte> validUntil - last timestamp this operation is valid. 0 for "indefinite" <6-byte> validAfter - first timestamp this operation is valid If an account doesn't use time-range, it is enough to return SIG_VALIDATION_FAILED value (1) for signature failure. Note that the validation code cannot use block.timestamp (or block.number) directly. |
-
-<br/>
-
-### version
-
-:::note References
-
-- Specification details: [**LSP-17-Extensions**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-17-Extensions.md#version)
-- Solidity implementation: [`Extension4337.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP17Extensions/Extension4337.sol)
-- Function signature: `version()`
-- Function selector: `0x54fd4d50`
-
-:::
-
-```solidity
-function version() external view returns (string);
-```
-
-_Contract version._
-
-Get the version of the contract.
-
-#### Returns
-
-| Name |   Type   | Description                      |
-| ---- | :------: | -------------------------------- |
-| `0`  | `string` | The version of the the contract. |
 
 <br/>
 

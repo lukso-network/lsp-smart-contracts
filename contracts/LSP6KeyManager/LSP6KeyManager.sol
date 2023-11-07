@@ -2,6 +2,7 @@
 pragma solidity ^0.8.5;
 
 // modules
+import {Version} from "../Version.sol";
 import {LSP6KeyManagerCore} from "./LSP6KeyManagerCore.sol";
 import {InvalidLSP6Target} from "./LSP6Errors.sol";
 
@@ -10,7 +11,7 @@ import {InvalidLSP6Target} from "./LSP6Errors.sol";
  * @author Fabian Vogelsteller <frozeman>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
  * @dev All the permissions can be set on the ERC725 Account using `setData(bytes32,bytes)` or `setData(bytes32[],bytes[])`.
  */
-contract LSP6KeyManager is LSP6KeyManagerCore {
+contract LSP6KeyManager is LSP6KeyManagerCore, Version {
     /**
      * @notice Deploying a LSP6KeyManager linked to the contract at address `target_`.
      * @dev Deploy a Key Manager and set the `target_` address in the contract storage,

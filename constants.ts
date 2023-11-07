@@ -123,8 +123,11 @@ export type LSP4DigitalAssetMetadata = {
 export type ImageMetadata = {
   width: number;
   height: number;
-  hashFunction: string;
-  hash: string;
+  verification?: {
+    method: string;
+    data: string;
+    source?: string;
+  };
   url: string;
 };
 
@@ -134,8 +137,11 @@ export type LinkMetadata = {
 };
 
 export type AssetMetadata = {
-  hashFunction: string;
-  hash: string;
+  verification?: {
+    method: string;
+    data: string;
+    source?: string;
+  };
   url: string;
   fileType: string;
 };

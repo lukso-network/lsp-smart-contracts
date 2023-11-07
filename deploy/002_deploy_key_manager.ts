@@ -11,10 +11,12 @@ const deployKeyManager: DeployFunction = async ({
 
   const UniversalProfile = await deployments.get('UniversalProfile');
 
+  const gasPrice = await ethers.provider.getGasPrice();
+
   await deploy('LSP6KeyManager', {
     from: owner,
     args: [UniversalProfile.address],
-    gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei
+    gasPrice,
     log: true,
   });
 };

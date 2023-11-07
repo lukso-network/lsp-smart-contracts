@@ -18,7 +18,6 @@ import {
 } from "../LSP25ExecuteRelayCall/ILSP25ExecuteRelayCall.sol";
 
 // modules
-import {Version} from "../Version.sol";
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
@@ -88,7 +87,6 @@ abstract contract LSP6KeyManagerCore is
     ILSP6,
     ILSP20,
     ILSP25,
-    Version,
     LSP6SetDataModule,
     LSP6ExecuteModule,
     LSP6ExecuteRelayCallModule,
@@ -152,6 +150,11 @@ abstract contract LSP6KeyManagerCore is
      * If the signer is a controller with the permission `SIGN`, it will return the ERC1271 success value.
      *
      * @return returnedStatus `0x1626ba7e` on success, or `0xffffffff` on failure.
+     *
+     * @custom:warning This function does not enforce by default the inclusion of the address of this contract in the signature digest.
+     * It is recommended that protocols or applications using this contract include the targeted address (= this contract) in the data to sign.
+     * To ensure that a signature is valid for a specific LSP6KeyManager and prevent signatures from the same EOA to be replayed
+     * across different LSP6KeyManager.
      */
     function isValidSignature(
         bytes32 dataHash,
@@ -510,13 +513,14 @@ abstract contract LSP6KeyManagerCore is
             value: msgValue,
             gas: gasleft()
         }(payload);
+
         bytes memory result = Address.verifyCallResult(
             success,
             returnData,
             "LSP6: failed executing payload"
         );
 
-        return result.length != 0 ? abi.decode(result, (bytes)) : result;
+        return result;
     }
 
     /**
@@ -612,7 +616,7 @@ abstract contract LSP6KeyManagerCore is
                 revert ERC725X_ExecuteParametersEmptyArray();
             }
 
-            for (uint256 ii = 0; ii < operationTypes.length; ii++) {
+            for (uint256 ii; ii < operationTypes.length; ii++) {
                 LSP6ExecuteModule._verifyCanExecute(
                     targetContract,
                     from,
@@ -635,9 +639,11 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @dev Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
-     * the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
-     * Used in the beginning of the `nonReentrant` modifier, before the method execution starts.
+     * @dev Check if we are in the context of a reentrant call, by checking if the reentrancy status is `true`.
+     * - If the status is `true`, the caller (or signer for relay call) MUST have the `REENTRANCY` permission. Otherwise, the call is reverted.
+     * - If the status is `false`, it is set to `true` only if we are not dealing with a call to the functions `setData` or `setDataBatch`.
+     * Used at the beginning of the {`lsp20VerifyCall`}, {`_execute`} and {`_executeRelayCall`} functions, before the methods execution starts.
+     *
      */
     function _nonReentrantBefore(
         address targetContract,
@@ -661,8 +667,8 @@ abstract contract LSP6KeyManagerCore is
     }
 
     /**
-     * @dev Resets the status to `false`
-     * Used in the end of the `nonReentrant` modifier after the method execution is terminated
+     * @dev Resets the reentrancy status to `false`
+     * Used at the end of the {`lsp20VerifyCall`}, {`_execute`} and {`_executeRelayCall`} functions after the functions' execution is terminated.
      */
     function _nonReentrantAfter(address targetContract) internal virtual {
         // By storing the original value once again, a refund is triggered (see

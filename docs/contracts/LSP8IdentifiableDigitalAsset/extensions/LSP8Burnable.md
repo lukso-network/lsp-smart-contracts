@@ -689,33 +689,6 @@ Transfers ownership of the contract to a new account (`newOwner`). Can only be c
 
 <br/>
 
-### version
-
-:::note References
-
-- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#version)
-- Solidity implementation: [`LSP8Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol)
-- Function signature: `version()`
-- Function selector: `0x54fd4d50`
-
-:::
-
-```solidity
-function version() external view returns (string);
-```
-
-_Contract version._
-
-Get the version of the contract.
-
-#### Returns
-
-| Name |   Type   | Description                      |
-| ---- | :------: | -------------------------------- |
-| `0`  | `string` | The version of the the contract. |
-
-<br/>
-
 ## Internal Methods
 
 Any method labeled as `internal` serves as utility function within the contract. They can be used when writing solidity contracts that inherit from this contract. These methods can be extended or modified by overriding their internal behavior to suit specific needs.
@@ -1222,13 +1195,13 @@ Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on i
 
 #### Parameters
 
-| Name                       |   Type    | Description                                                     |
-| -------------------------- | :-------: | --------------------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address revoked from the operator array ({getOperatorsOf}). |
-| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                     |
-| `tokenId` **`indexed`**    | `bytes32` | The tokenId `operator` is revoked from operating on.            |
-| `notified`                 |  `bool`   | Bool indicating whether the operator has been notified or not   |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                 |
+| Name                       |   Type    | Description                                                                        |
+| -------------------------- | :-------: | ---------------------------------------------------------------------------------- |
+| `operator` **`indexed`**   | `address` | The address revoked from the operator array ([`getOperatorsOf`](#getoperatorsof)). |
+| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                                        |
+| `tokenId` **`indexed`**    | `bytes32` | The tokenId `operator` is revoked from operating on.                               |
+| `notified`                 |  `bool`   | Bool indicating whether the operator has been notified or not                      |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                                    |
 
 <br/>
 

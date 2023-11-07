@@ -9,9 +9,6 @@ import {
     ILSP8IdentifiableDigitalAsset
 } from "./ILSP8IdentifiableDigitalAsset.sol";
 
-// modules
-import {Version} from "../Version.sol";
-
 // libraries
 import {
     EnumerableSet
@@ -52,8 +49,7 @@ import {
  * @dev Core Implementation of a LSP8 compliant contract.
  */
 abstract contract LSP8IdentifiableDigitalAssetCore is
-    ILSP8IdentifiableDigitalAsset,
-    Version
+    ILSP8IdentifiableDigitalAsset
 {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
@@ -160,10 +156,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             operatorNotificationData
         );
 
-        operator.tryNotifyUniversalReceiver(
-            _TYPEID_LSP8_TOKENOPERATOR,
-            lsp1Data
-        );
+        operator.notifyUniversalReceiver(_TYPEID_LSP8_TOKENOPERATOR, lsp1Data);
     }
 
     /**
@@ -205,7 +198,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 operatorNotificationData
             );
 
-            operator.tryNotifyUniversalReceiver(
+            operator.notifyUniversalReceiver(
                 _TYPEID_LSP8_TOKENOPERATOR,
                 lsp1Data
             );
@@ -467,10 +460,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             data
         );
 
-        tokenOwner.tryNotifyUniversalReceiver(
-            _TYPEID_LSP8_TOKENSSENDER,
-            lsp1Data
-        );
+        tokenOwner.notifyUniversalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
     }
 
     /**
@@ -536,7 +526,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         bytes memory lsp1Data = abi.encode(from, to, tokenId, data);
 
-        from.tryNotifyUniversalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
+        from.notifyUniversalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
         _notifyTokenReceiver(to, force, lsp1Data);
     }
 

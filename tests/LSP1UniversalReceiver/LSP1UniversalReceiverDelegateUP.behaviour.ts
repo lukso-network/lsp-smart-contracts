@@ -1573,7 +1573,10 @@ export const shouldBehaveLikeLSP1Delegate = (
             vault.address,
             0,
             LSP1_TYPE_IDS.LSP9OwnershipTransferred_SenderNotification,
-            '0x',
+            abiCoder.encode(
+              ['address', 'address'],
+              [context.universalProfile1.address, context.accounts.owner1.address],
+            ),
             lsp1ReturnedData,
           );
       });
@@ -1649,7 +1652,10 @@ export const shouldBehaveLikeLSP1Delegate = (
             vault.address,
             0,
             LSP1_TYPE_IDS.LSP9OwnershipTransferred_SenderNotification,
-            '0x',
+            abiCoder.encode(
+              ['address', 'address'],
+              [context.universalProfile1.address, context.accounts.owner1.address],
+            ),
             lsp1ReturnedData,
           );
       });
@@ -1732,7 +1738,10 @@ export const shouldBehaveLikeLSP1Delegate = (
             vault.address,
             0,
             LSP1_TYPE_IDS.LSP9OwnershipTransferred_SenderNotification,
-            '0x',
+            abiCoder.encode(
+              ['address', 'address'],
+              [context.universalProfile1.address, context.accounts.owner1.address],
+            ),
             lsp1ReturnedData,
           );
       });
@@ -2882,7 +2891,10 @@ export const shouldBehaveLikeLSP1Delegate = (
             vault.address,
             0,
             LSP1_TYPE_IDS.LSP9OwnershipTransferred_SenderNotification,
-            '0x',
+            abiCoder.encode(
+              ['address', 'address'],
+              [testContext.universalProfile.address, newVaultOwner.address],
+            ),
             expectedReturnedValues,
           );
 
@@ -3004,7 +3016,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           vault.address,
           0,
           LSP1_TYPE_IDS.LSP9OwnershipTransferred_RecipientNotification,
-          '0x',
+          abiCoder.encode(
+            ['address', 'address'],
+            [vaultOwner.address, context.universalProfile1.address],
+          ),
           expectedReturnedValues,
         );
 

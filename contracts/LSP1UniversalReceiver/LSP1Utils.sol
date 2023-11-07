@@ -35,7 +35,7 @@ library LSP1Utils {
      * @param typeId A `bytes32` typeId.
      * @param data Any optional data to send to the `universalReceiver` function to the `lsp1Implementation` address.
      */
-    function tryNotifyUniversalReceiver(
+    function notifyUniversalReceiver(
         address lsp1Implementation,
         bytes32 typeId,
         bytes memory data

@@ -183,6 +183,31 @@ function RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD()
 
 <br/>
 
+### VERSION
+
+:::note References
+
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-9-Vault.md#version)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP9Vault/LSP9Vault.sol)
+- Function signature: `VERSION()`
+- Function selector: `0xffa1ad74`
+
+:::
+
+```solidity
+function VERSION() external view returns (string);
+```
+
+_Contract version._
+
+#### Returns
+
+| Name |   Type   | Description |
+| ---- | :------: | ----------- |
+| `0`  | `string` | -           |
+
+<br/>
+
 ### acceptOwnership
 
 :::note References
@@ -778,33 +803,6 @@ Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be not
 
 <br/>
 
-### version
-
-:::note References
-
-- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-9-Vault.md#version)
-- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP9Vault/LSP9Vault.sol)
-- Function signature: `version()`
-- Function selector: `0x54fd4d50`
-
-:::
-
-```solidity
-function version() external view returns (string);
-```
-
-_Contract version._
-
-Get the version of the contract.
-
-#### Returns
-
-| Name |   Type   | Description                      |
-| ---- | :------: | -------------------------------- |
-| `0`  | `string` | The version of the the contract. |
-
-<br/>
-
 ## Internal Methods
 
 Any method labeled as `internal` serves as utility function within the contract. They can be used when writing solidity contracts that inherit from this contract. These methods can be extended or modified by overriding their internal behavior to suit specific needs.
@@ -1180,7 +1178,7 @@ If there is an extension for the function selector being called, it calls the ex
 function _validateAndIdentifyCaller() internal view returns (bool isURD);
 ```
 
-Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
+Internal method restricting the call to the owner of the contract and the UniversalReceiverDelegate
 
 <br/>
 
@@ -1393,11 +1391,11 @@ Emitted when the [`universalReceiver`](#universalreceiver) function was called w
 
 | Name                   |   Type    | Description                                                                                                                                                                             |
 | ---------------------- | :-------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `from` **`indexed`**   | `address` | The address of the EOA or smart contract that called the {universalReceiver(...)} function.                                                                                             |
-| `value` **`indexed`**  | `uint256` | The amount sent to the {universalReceiver(...)} function.                                                                                                                               |
+| `from` **`indexed`**   | `address` | The address of the EOA or smart contract that called the [`universalReceiver(...)`](#universalreceiver) function.                                                                       |
+| `value` **`indexed`**  | `uint256` | The amount sent to the [`universalReceiver(...)`](#universalreceiver) function.                                                                                                         |
 | `typeId` **`indexed`** | `bytes32` | A `bytes32` unique identifier (= _"hook"_)that describe the type of notification, information or transaction received by the contract. Can be related to a specific standard or a hook. |
-| `receivedData`         |  `bytes`  | Any arbitrary data that was sent to the {universalReceiver(...)} function.                                                                                                              |
-| `returnedValue`        |  `bytes`  | The value returned by the {universalReceiver(...)} function.                                                                                                                            |
+| `receivedData`         |  `bytes`  | Any arbitrary data that was sent to the [`universalReceiver(...)`](#universalreceiver) function.                                                                                        |
+| `returnedValue`        |  `bytes`  | The value returned by the [`universalReceiver(...)`](#universalreceiver) function.                                                                                                      |
 
 <br/>
 

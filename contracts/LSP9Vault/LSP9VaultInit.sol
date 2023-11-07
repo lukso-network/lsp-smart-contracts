@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 // modules
+import {Version} from "../Version.sol";
 import {LSP9VaultInitAbstract} from "./LSP9VaultInitAbstract.sol";
 
 /**
@@ -9,7 +10,7 @@ import {LSP9VaultInitAbstract} from "./LSP9VaultInitAbstract.sol";
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
-contract LSP9VaultInit is LSP9VaultInitAbstract {
+contract LSP9VaultInit is LSP9VaultInitAbstract, Version {
     /**
      * @dev initialize (= lock) base implementation contract on deployment
      */

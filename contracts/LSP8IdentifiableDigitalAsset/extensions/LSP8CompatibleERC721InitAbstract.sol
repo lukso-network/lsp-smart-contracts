@@ -366,10 +366,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
             tokenId,
             operatorNotificationData
         );
-        operator.tryNotifyUniversalReceiver(
-            _TYPEID_LSP8_TOKENOPERATOR,
-            lsp1Data
-        );
+        operator.notifyUniversalReceiver(_TYPEID_LSP8_TOKENOPERATOR, lsp1Data);
     }
 
     /**

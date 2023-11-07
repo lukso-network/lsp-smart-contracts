@@ -65,7 +65,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     /**
      * @dev reverts when {_inTransferOwnership} variable is true
      */
-    modifier NotInTransferOwnership() virtual {
+    modifier notInTransferOwnership() virtual {
         if (_inTransferOwnership) {
             revert LSP14MustAcceptOwnershipInSeparateTransaction();
         }
@@ -97,9 +97,9 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         address currentOwner = owner();
         emit OwnershipTransferStarted(currentOwner, newOwner);
 
-        newOwner.tryNotifyUniversalReceiver(
+        newOwner.notifyUniversalReceiver(
             _TYPEID_LSP14_OwnershipTransferStarted,
-            ""
+            abi.encode(currentOwner, newOwner)
         );
 
         // reset the transfer ownership lock
@@ -111,19 +111,19 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
      *
      * @custom:requirements This function can only be called by the {pendingOwner()}.
      */
-    function acceptOwnership() public virtual override NotInTransferOwnership {
+    function acceptOwnership() public virtual override notInTransferOwnership {
         address previousOwner = owner();
 
         _acceptOwnership();
 
-        previousOwner.tryNotifyUniversalReceiver(
+        previousOwner.notifyUniversalReceiver(
             _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
-            ""
+            abi.encode(previousOwner, msg.sender)
         );
 
-        msg.sender.tryNotifyUniversalReceiver(
+        msg.sender.notifyUniversalReceiver(
             _TYPEID_LSP14_OwnershipTransferred_RecipientNotification,
-            ""
+            abi.encode(previousOwner, msg.sender)
         );
     }
 
@@ -142,9 +142,9 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         _renounceOwnership();
 
         if (owner() == address(0)) {
-            previousOwner.tryNotifyUniversalReceiver(
+            previousOwner.notifyUniversalReceiver(
                 _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
-                ""
+                abi.encode(previousOwner, address(0))
             );
         }
     }
@@ -175,6 +175,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
 
         _setOwner(msg.sender);
         delete _pendingOwner;
+        delete _renounceOwnershipStartedAt;
     }
 
     /**

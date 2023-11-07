@@ -721,33 +721,6 @@ Transfers ownership of the contract to a new account (`newOwner`). Can only be c
 
 <br/>
 
-### version
-
-:::note References
-
-- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#version)
-- Solidity implementation: [`LSP7Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol)
-- Function signature: `version()`
-- Function selector: `0x54fd4d50`
-
-:::
-
-```solidity
-function version() external view returns (string);
-```
-
-_Contract version._
-
-Get the version of the contract.
-
-#### Returns
-
-| Name |   Type   | Description                      |
-| ---- | :------: | -------------------------------- |
-| `0`  | `string` | The version of the the contract. |
-
-<br/>
-
 ## Internal Methods
 
 Any method labeled as `internal` serves as utility function within the contract. They can be used when writing solidity contracts that inherit from this contract. These methods can be extended or modified by overriding their internal behavior to suit specific needs.
@@ -873,12 +846,12 @@ Mints `amount` of tokens and transfers it to `to`.
 
 #### Parameters
 
-| Name     |   Type    | Description                                                                                                               |
-| -------- | :-------: | ------------------------------------------------------------------------------------------------------------------------- |
-| `to`     | `address` | The address to mint tokens for.                                                                                           |
-| `amount` | `uint256` | The amount of tokens to mint.                                                                                             |
-| `force`  |  `bool`   | A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.                       |
-| `data`   |  `bytes`  | Additional data the caller wants included in the emitted {Transfer} event, and sent in the LSP1 hook to the `to` address. |
+| Name     |   Type    | Description                                                                                                                            |
+| -------- | :-------: | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `to`     | `address` | The address to mint tokens for.                                                                                                        |
+| `amount` | `uint256` | The amount of tokens to mint.                                                                                                          |
+| `force`  |  `bool`   | A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.                                    |
+| `data`   |  `bytes`  | Additional data the caller wants included in the emitted [`Transfer`](#transfer) event, and sent in the LSP1 hook to the `to` address. |
 
 <br/>
 
@@ -1069,7 +1042,7 @@ If `to` is is an EOA or a contract that does not support the LSP1 interface, the
 
 | Name       |   Type    | Description                                                                                         |
 | ---------- | :-------: | --------------------------------------------------------------------------------------------------- |
-| `to`       | `address` | The address to call the {universalReceiver} function on.                                            |
+| `to`       | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on.                      |
 | `force`    |  `bool`   | A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not. |
 | `lsp1Data` |  `bytes`  | The data to be sent to the `to` address in the `universalReceiver(...)` call.                       |
 
