@@ -93,7 +93,10 @@ abstract contract LSP0ERC725AccountCore is
      * - When receiving some native tokens without any additional data.
      * - On empty calls to the contract.
      *
-     * @custom:events {UniversalReceiver} event when receiving native tokens.
+     * @custom:info This function internally delegates the handling of native tokens to the {universalReceiver} function
+     * passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and an empty bytes array as received data.
+     *
+     * @custom:events Emits a {UniversalReceiver} event when the `universalReceiver` logic is executed upon receiving native tokens.
      */
     receive() external payable virtual {
         if (msg.value != 0) {
@@ -120,16 +123,19 @@ abstract contract LSP0ERC725AccountCore is
      *
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), return.
      *
+     * @custom:info Whenever the call is associated with native tokens, the function will delegate the handling of native tokens internally to the {universalReceiver} function
+     * passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and the calldata as received data, except when the native token will be sent directly to the extension.
+     *
      * @custom:events {UniversalReceiver} event when receiving native tokens and extension function selector is not found or not payable.
      */
-    // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
         if (msg.data.length < 4) {
             // if value is associated with the extension call, use the universalReceiver
-            if (msg.value != 0)
+            if (msg.value != 0) {
                 universalReceiver(_TYPEID_LSP0_VALUE_RECEIVED, callData);
+            }
             return "";
         }
 
@@ -431,6 +437,8 @@ abstract contract LSP0ERC725AccountCore is
      *      - If there is an address stored under the data key, check if this address supports the LSP1 interfaceId.
      *
      *      - If yes, call this address with the typeId and data (params), along with additional calldata consisting of 20 bytes of `msg.sender` and 32 bytes of `msg.value`. If not, continue the execution of the function.
+     *
+     * This function delegates internally the handling of native tokens to the {universalReceiver} function itself passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and the calldata as received data.
      *
      * @param typeId The type of call received.
      * @param receivedData The data received.
@@ -787,14 +795,7 @@ abstract contract LSP0ERC725AccountCore is
      * If there is an extension for the function selector being called, it calls the extension with the
      * `CALL` opcode, passing the `msg.data` appended with the 20 bytes of the {msg.sender} and 32 bytes of the `msg.value`.
      *
-     * @custom:hint This function does not forward to the extension contract the `msg.value` received by the contract that inherits `LSP17Extendable`.
-     * If you would like to forward the `msg.value` to the extension contract, you can override the code of this internal function as follow:
-     *
-     * ```solidity
-     * (bool success, bytes memory result) = extension.call{value: msg.value}(
-     *     abi.encodePacked(callData, msg.sender, msg.value)
-     * );
-     * ```
+     * @custom:hint If you would like to forward the `msg.value` to the extension contract, you should store an additional `0x01` byte after the address of the extension under the corresponding LSP17 data key.
      */
     function _fallbackLSP17Extendable(
         bytes calldata callData
@@ -806,8 +807,9 @@ abstract contract LSP0ERC725AccountCore is
         ) = _getExtensionAndForwardValue(msg.sig);
 
         // if value is associated with the extension call and extension function selector is not payable, use the universalReceiver
-        if (msg.value != 0 && !isForwardingValue)
+        if (msg.value != 0 && !isForwardingValue) {
             universalReceiver(_TYPEID_LSP0_VALUE_RECEIVED, callData);
+        }
 
         // if no extension was found for bytes4(0) return don't revert
         if (msg.sig == bytes4(0) && extension == address(0)) return "";
@@ -833,9 +835,10 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @dev Returns the extension address stored under the following data key:
+     * @dev Returns the extension address and the boolean indicating whether to forward the value received to the extension, stored under the following data key:
      * - {_LSP17_EXTENSION_PREFIX} + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
      * - If no extension is stored, returns the address(0).
+     * - If the stored value is 20 bytes, return false for the boolean
      */
     function _getExtensionAndForwardValue(
         bytes4 functionSelector

@@ -790,7 +790,7 @@ Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be not
 
 - If there is an address stored under the data key, check if this address supports the LSP1 interfaceId.
 
-- If yes, call this address with the typeId and data (params), along with additional calldata consisting of 20 bytes of `msg.sender` and 32 bytes of `msg.value`. If not, continue the execution of the function.
+- If yes, call this address with the typeId and data (params), along with additional calldata consisting of 20 bytes of `msg.sender` and 32 bytes of `msg.value`. If not, continue the execution of the function. This function delegates internally the handling of native tokens to the [`universalReceiver`](#universalreceiver) function itself passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and the calldata as received data.
 
 <blockquote>
 
@@ -1131,11 +1131,13 @@ function _getExtensionAndForwardValue(
 ) internal view returns (address, bool);
 ```
 
-Returns the extension address stored under the following data key:
+Returns the extension address and the boolean indicating whether to forward the value received to the extension, stored under the following data key:
 
 - [`_LSP17_EXTENSION_PREFIX`](#_lsp17_extension_prefix) + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
 
 - If no extension is stored, returns the address(0).
+
+- If the stored value is 20 bytes, return false for the boolean
 
 <br/>
 
@@ -1143,14 +1145,7 @@ Returns the extension address stored under the following data key:
 
 :::tip Hint
 
-This function does not forward to the extension contract the `msg.value` received by the contract that inherits `LSP17Extendable`.
-If you would like to forward the `msg.value` to the extension contract, you can override the code of this internal function as follow:
-
-```solidity
-(bool success, bytes memory result) = extension.call{value: msg.value}(
-    abi.encodePacked(callData, msg.sender, msg.value)
-);
-```
+If you would like to forward the `msg.value` to the extension contract, you should store an additional `0x01` byte after the address of the extension under the corresponding LSP17 data key.
 
 :::
 
