@@ -1105,7 +1105,7 @@ If `to` is is an EOA or a contract that does not support the LSP1 interface, the
 
 | Name       |   Type    | Description                                                                                         |
 | ---------- | :-------: | --------------------------------------------------------------------------------------------------- |
-| `to`       | `address` | The address to call the {universalReceiver} function on.                                            |
+| `to`       | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on.                      |
 | `force`    |  `bool`   | A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not. |
 | `lsp1Data` |  `bytes`  | The data to be sent to the `to` address in the `universalReceiver(...)` call.                       |
 
