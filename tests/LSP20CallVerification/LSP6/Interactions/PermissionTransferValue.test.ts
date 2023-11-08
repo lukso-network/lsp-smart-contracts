@@ -882,7 +882,7 @@ export const shouldBehaveLikePermissionTransferValue = (
     });
   });
 
-  describe('when caller has TRANSFERVALUE + SUPER_CALL', () => {
+  describe.only('when caller has TRANSFERVALUE + SUPER_CALL', () => {
     let caller: SignerWithAddress;
     let allowedAddress: SignerWithAddress;
 
@@ -900,9 +900,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       const permissionsValues = [
         combinePermissions(PERMISSIONS.TRANSFERVALUE, PERMISSIONS.SUPER_CALL),
         combineAllowedCalls(
-          // TODO: we set the bits for both TRANSFERVALUE + CALL in this test.
-          // is the bit for CALL required as well? (since the controller has SUPER_CALL)
-          [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL)],
+          [CALLTYPE.VALUE],
           [allowedAddress.address],
           ['0xffffffff'],
           ['0xffffffff'],
@@ -913,46 +911,103 @@ export const shouldBehaveLikePermissionTransferValue = (
     });
 
     describe('when transferring LYX without `data`', () => {
-      it('should not be allowed to transfer LYX to a non-allowed address', async () => {
-        const recipient = context.accounts[3].address;
-        const amount = ethers.utils.parseEther('1');
+      describe('when controller has CALLTYPE set to `VALUE`', () => {
+        it('should not be allowed to transfer LYX to a non-allowed address', async () => {
+          const recipient = context.accounts[3].address;
+          const amount = ethers.utils.parseEther('1');
 
-        const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
+          const initialBalanceUP = await provider.getBalance(context.universalProfile.address);
 
-        const initialBalanceRecipient = await provider.getBalance(recipient);
+          const initialBalanceRecipient = await provider.getBalance(recipient);
 
-        await expect(
-          context.universalProfile
-            .connect(caller)
-            .execute(OPERATION_TYPES.CALL, recipient, amount, '0x'),
-        )
-          .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
-          .withArgs(caller.address, recipient, '0x00000000');
+          await expect(
+            context.universalProfile
+              .connect(caller)
+              .execute(OPERATION_TYPES.CALL, recipient, amount, '0x'),
+          )
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
+            .withArgs(caller.address, recipient, '0x00000000');
 
-        const newBalanceUP = await provider.getBalance(context.universalProfile.address);
-        expect(newBalanceUP).to.equal(initialBalanceUP);
+          const newBalanceUP = await provider.getBalance(context.universalProfile.address);
+          expect(newBalanceUP).to.equal(initialBalanceUP);
 
-        const newBalanceRecipient = await provider.getBalance(recipient);
-        expect(newBalanceRecipient).to.equal(initialBalanceRecipient);
+          const newBalanceRecipient = await provider.getBalance(recipient);
+          expect(newBalanceRecipient).to.equal(initialBalanceRecipient);
+        });
+
+        it('should be allowed to transfer LYX to an allowed address', async () => {
+          const amount = ethers.utils.parseEther('1');
+
+          await expect(() =>
+            context.universalProfile
+              .connect(caller)
+              .execute(OPERATION_TYPES.CALL, allowedAddress.address, amount, '0x'),
+          ).to.changeEtherBalances(
+            [context.universalProfile.address, allowedAddress.address],
+            [`-${amount}`, amount],
+          );
+        });
       });
 
-      it('should be allowed to transfer LYX to an allowed address', async () => {
-        const amount = ethers.utils.parseEther('1');
+      describe('when controller does not have callType set to `VALUE`', () => {
+        before('remove callType `VALUE`', async () => {
+          const permissionDataKey =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + caller.address.substring(2);
 
-        await expect(() =>
-          context.universalProfile
-            .connect(caller)
-            .execute(OPERATION_TYPES.CALL, allowedAddress.address, amount, '0x'),
-        ).to.changeEtherBalances(
-          [context.universalProfile.address, allowedAddress.address],
-          [`-${amount}`, amount],
-        );
+          const permissionDataValue = combineAllowedCalls(
+            ['0x00000000'],
+            [allowedAddress.address],
+            ['0xffffffff'],
+            ['0xffffffff'],
+          );
+
+          await context.universalProfile
+            .connect(context.mainController)
+            .setData(permissionDataKey, permissionDataValue);
+        });
+
+        it('should NOT be allowed to transfer LYX to any address (address from allowed calls or not)', async () => {
+          const amount = ethers.utils.parseEther('1');
+          const randomRecipient = context.accounts[3].address;
+
+          await expect(
+            context.universalProfile
+              .connect(caller)
+              .execute(OPERATION_TYPES.CALL, randomRecipient, amount, '0x'),
+          )
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
+            .withArgs(caller.address, randomRecipient, '0x00000000');
+
+          await expect(
+            context.universalProfile
+              .connect(caller)
+              .execute(OPERATION_TYPES.CALL, allowedAddress.address, amount, '0x'),
+          )
+            .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
+            .withArgs(caller.address, allowedAddress.address, '0x00000000');
+        });
+
+        after('reset callType `VALUE` for controller', async () => {
+          const dataKey =
+            ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + caller.address.substring(2);
+
+          const dataValue = combineAllowedCalls(
+            [CALLTYPE.VALUE],
+            [allowedAddress.address],
+            ['0xffffffff'],
+            ['0xffffffff'],
+          );
+
+          await context.universalProfile
+            .connect(context.mainController)
+            .setData(dataKey, dataValue);
+        });
       });
     });
 
     // TODO: this test overlaps with the one above and pass, but the expected behaviour is not clear
     describe('when transferring LYX with `data`', () => {
-      it('should be allowed to transfer LYX to an allowed address while sending some `data`', async () => {
+      it('should be authorised to transfer LYX when call type `CALL` is set for the allowed address', async () => {
         const amount = ethers.utils.parseEther('1');
         const data = '0x12345678';
 
@@ -965,6 +1020,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           [`-${amount}`, amount],
         );
       });
+
+      it('should fail with `NotAllowedCall` error when transferring LYX to a not allowed address', async () => {});
     });
 
     describe('should be allowed to interact with any contract', () => {

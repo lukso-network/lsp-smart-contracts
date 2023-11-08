@@ -977,8 +977,6 @@ export const shouldBehaveLikeLSP1Delegate = (
           [txParams.from, txParams.to, txParams.amount, txParams.data],
         );
 
-        // TODO: debug the 4th argument for the receivedData: why is it not empty?
-        // receivedData = 0xa513e6e4b8f2a923d98304ec87f64353c4d5c8533c44cdddb6a900fa2b585dd299e03d12fa4293bc0000000000000000000000000000000000000000000000000000000000000000
         await expect(tx)
           .to.emit(context.universalProfile1, 'UniversalReceiver')
           .withArgs(
