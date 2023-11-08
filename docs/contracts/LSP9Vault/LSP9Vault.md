@@ -256,7 +256,7 @@ Transfer ownership of the contract from the current [`owner()`](#owner) to the [
 
 :::info
 
-It&#39;s not possible to send value along the functions call due to the use of `delegatecall`.
+It's not possible to send value along the functions call due to the use of `delegatecall`.
 
 :::
 
@@ -834,7 +834,7 @@ This pattern is useful in inheritance.
 
 :::caution Warning
 
-Providing operation type DELEGATECALL (4) as argument will result in custom error {ERC725X_UnknownOperationType(4)}
+Providing operation type DELEGATECALL (4) as argument will result in custom error [`ERC725X_UnknownOperationType(4)`](#erc725x_unknownoperationtype)
 
 :::
 

@@ -14,7 +14,7 @@
 
 :::
 
-> LSP7DigitalAsset deployable preset contract with a public {mint} function callable only by the contract {owner}.
+> LSP7DigitalAsset deployable preset contract with a public [`mint`](#mint) function callable only by the contract [`owner`](#owner).
 
 ## Public Methods
 
@@ -119,7 +119,7 @@ Reverts whenever someone tries to send native tokens to a LSP7 contract.
 
 :::danger
 
-To avoid front-running and Allowance Double-Spend Exploit when increasing or decreasing the authorized amount of an operator, it is advised to: 1. either call {revokeOperator} first, and then re-call {authorizeOperator} with the new amount. 2. or use the non-standard functions {increaseAllowance} or {decreaseAllowance}. For more information, see: https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
+To avoid front-running and Allowance Double-Spend Exploit when increasing or decreasing the authorized amount of an operator, it is advised to: 1. either call [`revokeOperator`](#revokeoperator) first, and then re-call [`authorizeOperator`](#authorizeoperator) with the new amount. 2. or use the non-standard functions [`increaseAllowance`](#increaseallowance) or [`decreaseAllowance`](#decreaseallowance). For more information, see: https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
 
 :::
 
@@ -856,9 +856,9 @@ If the amount is zero then the operator is being revoked, otherwise the operator
 
 Any logic in the:
 
-- {\_beforeTokenTransfer} function will run before updating the balances.
+- [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances.
 
-- {\_afterTokenTransfer} function will run after updating the balances, **but before notifying the recipient via LSP1**.
+- [`_afterTokenTransfer`](#_aftertokentransfer) function will run after updating the balances, **but before notifying the recipient via LSP1**.
 
 :::
 
@@ -898,9 +898,9 @@ Mints `amount` of tokens and transfers it to `to`.
 
 Any logic in the:
 
-- {\_beforeTokenTransfer} function will run before updating the balances.
+- [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances.
 
-- {\_afterTokenTransfer} function will run after updating the balances, **but before notifying the sender via LSP1**.
+- [`_afterTokenTransfer`](#_aftertokentransfer) function will run after updating the balances, **but before notifying the sender via LSP1**.
 
 :::
 
@@ -965,9 +965,9 @@ Spend `amountToSpend` from the `operator`'s authorized on behalf of the `tokenOw
 
 Any logic in the:
 
-- {\_beforeTokenTransfer} function will run before updating the balances.
+- [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances.
 
-- {\_afterTokenTransfer} function will run after updating the balances, **but before notifying the sender/recipient via LSP1**.
+- [`_afterTokenTransfer`](#_aftertokentransfer) function will run after updating the balances, **but before notifying the sender/recipient via LSP1**.
 
 :::
 

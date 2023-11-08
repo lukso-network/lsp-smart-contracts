@@ -217,7 +217,7 @@ Transfer ownership of the contract from the current [`owner()`](#owner) to the [
 
 :::info
 
-It&#39;s not possible to send value along the functions call due to the use of `delegatecall`.
+It's not possible to send value along the functions call due to the use of `delegatecall`.
 
 :::
 
