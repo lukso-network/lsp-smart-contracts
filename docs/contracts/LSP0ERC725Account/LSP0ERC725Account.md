@@ -88,7 +88,7 @@ Set `initialOwner` as the contract owner.
 
 :::info
 
-Whenever the call is associated with native tokens, the function will delegate the handling of native tokens internally to the {universalReceiver} function
+Whenever the call is associated with native tokens, the function will delegate the handling of native tokens internally to the [`universalReceiver`](#universalreceiver) function
 passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and the calldata as received data, except when the native token will be sent directly to the extension.
 
 :::
@@ -138,7 +138,7 @@ This function is executed when:
 
 :::info
 
-This function internally delegates the handling of native tokens to the {universalReceiver} function
+This function internally delegates the handling of native tokens to the [`universalReceiver`](#universalreceiver) function
 passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and an empty bytes array as received data.
 
 :::
@@ -288,7 +288,7 @@ Transfer ownership of the contract from the current [`owner()`](#owner) to the [
 
 :::info
 
-It&#39;s not possible to send value along the functions call due to the use of `delegatecall`.
+It's not possible to send value along the functions call due to the use of `delegatecall`.
 
 :::
 

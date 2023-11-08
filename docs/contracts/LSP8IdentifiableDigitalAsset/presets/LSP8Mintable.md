@@ -14,7 +14,7 @@
 
 :::
 
-> LSP8IdentifiableDigitalAsset deployable preset contract with a public {mint} function callable only by the contract {owner}.
+> LSP8IdentifiableDigitalAsset deployable preset contract with a public [`mint`](#mint) function callable only by the contract [`owner`](#owner).
 
 ## Public Methods
 
@@ -874,9 +874,9 @@ When `tokenId` does not exist then revert with an error.
 
 Any logic in the:
 
-- {\_beforeTokenTransfer} function will run before updating the balances and ownership of `tokenId`s.
+- [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances and ownership of `tokenId`s.
 
-- {\_afterTokenTransfer} function will run after updating the balances and ownership of `tokenId`s, **but before notifying the recipient via LSP1**.
+- [`_afterTokenTransfer`](#_aftertokentransfer) function will run after updating the balances and ownership of `tokenId`s, **but before notifying the recipient via LSP1**.
 
 :::
 
@@ -916,9 +916,9 @@ Create `tokenId` by minting it and transfers it to `to`.
 
 Any logic in the:
 
-- {\_beforeTokenTransfer} function will run before updating the balances and ownership of `tokenId`s.
+- [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances and ownership of `tokenId`s.
 
-- {\_afterTokenTransfer} function will run after updating the balances and ownership of `tokenId`s, **but before notifying the sender via LSP1**.
+- [`_afterTokenTransfer`](#_aftertokentransfer) function will run after updating the balances and ownership of `tokenId`s, **but before notifying the sender via LSP1**.
 
 :::
 
@@ -961,9 +961,9 @@ all the parameters in the calldata packed encoded.
 
 Any logic in the:
 
-- {\_beforeTokenTransfer} function will run before updating the balances and ownership of `tokenId`s.
+- [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances and ownership of `tokenId`s.
 
-- {\_afterTokenTransfer} function will run after updating the balances and ownership of `tokenId`s, **but before notifying the sender/recipient via LSP1**.
+- [`_afterTokenTransfer`](#_aftertokentransfer) function will run after updating the balances and ownership of `tokenId`s, **but before notifying the sender/recipient via LSP1**.
 
 :::
 

@@ -14,7 +14,7 @@
 
 :::
 
-> LSP8CompatibleERC721Mintable deployable preset contract with a public {mint} function callable only by the contract {owner}.
+> LSP8CompatibleERC721Mintable deployable preset contract with a public [`mint`](#mint) function callable only by the contract [`owner`](#owner).
 
 ## Public Methods
 
