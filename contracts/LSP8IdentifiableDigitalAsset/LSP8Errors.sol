@@ -87,3 +87,9 @@ error LSP8TokenContractCannotHoldValue();
  * It can be set only once inside the constructor/initializer when the identifiable digital asset contract is being deployed.
  */
 error LSP8TokenIdTypeNotEditable();
+
+/**
+ * @dev Reverts when trying to edit the data key `LSP8ReferenceContract` after the LSP8 Metadata Contract
+ * (for tokenId type `Address`) has been deployed.
+ */
+error LSP8ReferenceContractNotEditable();
