@@ -1,4 +1,4 @@
-import { ethers } from 'hardhat';
+import { ethers, network } from 'hardhat';
 import { expect } from 'chai';
 
 import {
@@ -482,6 +482,8 @@ describe('LSP11UniversalSocialRecovery', () => {
           'transferOwnership',
           [votedAddress.address],
         );
+
+        await network.provider.send('evm_increaseTime', [101]);
 
         // Voted address tries to recover with the correct secret and initiates a transfer ownership
         const secretHash = generateSecretHash('mySecret');

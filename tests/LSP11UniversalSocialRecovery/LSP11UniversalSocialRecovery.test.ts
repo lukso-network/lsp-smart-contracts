@@ -1,4 +1,4 @@
-import { ethers } from 'hardhat';
+import { ethers, network } from 'hardhat';
 import { expect } from 'chai';
 
 import { LSP11UniversalSocialRecovery__factory, LSP11UniversalSocialRecovery } from '../../types';
@@ -792,6 +792,8 @@ describe('LSP11UniversalSocialRecovery', () => {
             validCommitment,
           );
 
+        await network.provider.send('evm_increaseTime', [101]);
+
         const invalidSecretHash = generateSecretHash('secretB');
 
         // VotedAddress1 tries to recover access with wrong secret
@@ -856,6 +858,8 @@ describe('LSP11UniversalSocialRecovery', () => {
             validCommitment,
           );
 
+        await network.provider.send('evm_increaseTime', [101]);
+
         const recoveryCounter = await lsp11Contract.getRecoveryCounterOf(accounts.account1.address);
 
         const secretHash = generateSecretHash('secret');
@@ -879,6 +883,131 @@ describe('LSP11UniversalSocialRecovery', () => {
         expect(storedSecretHash).to.equal(
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NewSecret')),
         );
+      });
+
+      it('Voted address cannot recover directly after commitment given the correct parameters', async () => {
+        const { lsp11Contract, accounts } = context;
+        const saltedSecretHash = generateSaltedSecretHash(accounts.account1.address, 'secret');
+
+        // Set secret hash, add two guardians, set threshold to 2, and both vote for VotedAddress1
+        await lsp11Contract
+          .connect(accounts.account1)
+          .setRecoverySecretHash(accounts.account1.address, saltedSecretHash);
+        await lsp11Contract
+          .connect(accounts.account1)
+          .addGuardian(accounts.account1.address, accounts.guardians[0].address);
+        await lsp11Contract
+          .connect(accounts.account1)
+          .addGuardian(accounts.account1.address, accounts.guardians[1].address);
+        await lsp11Contract
+          .connect(accounts.account1)
+          .setGuardiansThreshold(accounts.account1.address, 2);
+        await lsp11Contract
+          .connect(accounts.guardians[0])
+          .voteForRecoverer(
+            accounts.account1.address,
+            accounts.guardians[0].address,
+            accounts.votedAddresses[0].address,
+          );
+        await lsp11Contract
+          .connect(accounts.guardians[1])
+          .voteForRecoverer(
+            accounts.account1.address,
+            accounts.guardians[1].address,
+            accounts.votedAddresses[0].address,
+          );
+
+        const validCommitment = generateCommitment(
+          accounts.votedAddresses[0].address,
+          accounts.account1.address,
+          'secret',
+        );
+
+        const secretHash = generateSecretHash('secret');
+
+        await lsp11Contract
+          .connect(accounts.votedAddresses[0])
+          .commitPlainSecret(
+            accounts.account1.address,
+            accounts.votedAddresses[0].address,
+            validCommitment,
+          );
+
+        await expect(
+          lsp11Contract
+            .connect(accounts.votedAddresses[0])
+            .recoverAccess(
+              accounts.account1.address,
+              accounts.votedAddresses[0].address,
+              secretHash,
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NewSecret')),
+              '0x',
+            ),
+        )
+          .to.be.revertedWithCustomError(lsp11Contract, 'CannotRecoverAfterDirectCommit')
+          .withArgs(accounts.account1.address, accounts.votedAddresses[0].address);
+      });
+
+      it('Voted address cannot batch recovery with commitment given the correct parameters', async () => {
+        const { lsp11Contract, accounts } = context;
+        const saltedSecretHash = generateSaltedSecretHash(accounts.account1.address, 'secret');
+
+        // Set secret hash, add two guardians, set threshold to 2, and both vote for VotedAddress1
+        await lsp11Contract
+          .connect(accounts.account1)
+          .setRecoverySecretHash(accounts.account1.address, saltedSecretHash);
+        await lsp11Contract
+          .connect(accounts.account1)
+          .addGuardian(accounts.account1.address, accounts.guardians[0].address);
+        await lsp11Contract
+          .connect(accounts.account1)
+          .addGuardian(accounts.account1.address, accounts.guardians[1].address);
+        await lsp11Contract
+          .connect(accounts.account1)
+          .setGuardiansThreshold(accounts.account1.address, 2);
+        await lsp11Contract
+          .connect(accounts.guardians[0])
+          .voteForRecoverer(
+            accounts.account1.address,
+            accounts.guardians[0].address,
+            accounts.votedAddresses[0].address,
+          );
+        await lsp11Contract
+          .connect(accounts.guardians[1])
+          .voteForRecoverer(
+            accounts.account1.address,
+            accounts.guardians[1].address,
+            accounts.votedAddresses[0].address,
+          );
+
+        const validCommitment = generateCommitment(
+          accounts.votedAddresses[0].address,
+          accounts.account1.address,
+          'secret',
+        );
+
+        const secretHash = generateSecretHash('secret');
+
+        const commitPlainSecretPayload = lsp11Contract.interface.encodeFunctionData(
+          'commitPlainSecret',
+          [accounts.account1.address, accounts.votedAddresses[0].address, validCommitment],
+        );
+
+        const recoverAccessPayload = lsp11Contract.interface.encodeFunctionData('recoverAccess', [
+          accounts.account1.address,
+          accounts.votedAddresses[0].address,
+          secretHash,
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NewSecret')),
+          '0x',
+        ]);
+
+        await expect(
+          lsp11Contract
+            .connect(accounts.votedAddresses[0])
+            .batchCalls([commitPlainSecretPayload, recoverAccessPayload]),
+        )
+          .to.be.revertedWithCustomError(lsp11Contract, 'CannotRecoverAfterDirectCommit')
+          .withArgs(accounts.account1.address, accounts.votedAddresses[0].address);
       });
 
       it('The recovery counter is incremented after a valid recovery process', async () => {
@@ -928,6 +1057,8 @@ describe('LSP11UniversalSocialRecovery', () => {
             accounts.votedAddresses[0].address,
             validCommitment,
           );
+
+        await network.provider.send('evm_increaseTime', [101]);
 
         const secretHash = generateSecretHash('secret');
 
@@ -1067,6 +1198,8 @@ describe('LSP11UniversalSocialRecovery', () => {
             accounts.votedAddresses[0].address,
             validCommitment,
           );
+
+        await network.provider.send('evm_increaseTime', [101]);
 
         const secretHash = generateSecretHash('secret');
         const oldRecoveryCounter = await lsp11Contract.getRecoveryCounterOf(
