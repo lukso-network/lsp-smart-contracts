@@ -124,7 +124,7 @@ export type MetadataVerification = {
   method: string;
   data: string;
   source?: string;
-}
+};
 
 export type ImageMetadata = {
   width: number;
