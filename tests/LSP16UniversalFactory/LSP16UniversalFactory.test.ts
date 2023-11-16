@@ -1,6 +1,5 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { FakeContract, smock } from '@defi-wonderland/smock';
 
 import { LSP11UniversalSocialRecovery__factory, LSP11UniversalSocialRecovery } from '../../types';
 

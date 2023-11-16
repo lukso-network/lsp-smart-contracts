@@ -122,7 +122,6 @@ error InvalidCommitment(address account, address committer);
  */
 error InvalidSecretHash(address account, bytes32 secretHash);
 
-
 /**
  * @dev The commitment provided is too early.
  * @param account The account for which the commitment is being checked.
