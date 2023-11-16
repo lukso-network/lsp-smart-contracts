@@ -70,6 +70,12 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
         internal _commitmentOf;
 
     /**
+     * @dev This mapping stores the time of the commitment associated with an address for recovery for each account in a specific recovery counter.
+     */
+    mapping(address => mapping(uint256 => mapping(address => mapping(bytes32 => uint256))))
+        internal _timeOfcommitment;
+
+    /**
      * @notice Modifier to ensure that a function is called only by designated guardians for a specific account.
      * @dev Throws if called by any account other than the guardians
      * @param account The account to check against for guardian status.
@@ -261,6 +267,27 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
         address committedBy
     ) public view returns (bytes32) {
         return _commitmentOf[account][recoveryCounter][committedBy];
+    }
+
+    /**
+     * @notice Checks if the votes received by a given address from guardians have reached the threshold necessary for account recovery.
+     * @param account The account for which the threshold check is performed.
+     * @param recoveryCounter The recovery counter for which the threshold check is performed.
+     * @param votedAddress The address for which the votes are counted.
+     * @return A boolean indicating whether the votes for the specified address have reached the necessary threshold for the given account and recovery counter.
+     * @dev This function evaluates if the number of votes from guardians for a specific voted address meets or exceeds the required threshold for account recovery.
+     * This is part of the account recovery process where guardians vote for the legitimacy of a recovery address.
+     */
+    function hasReachedThreshold(
+        address account,
+        uint256 recoveryCounter,
+        address votedAddress
+    ) public view returns (bool) {
+        return
+            _guardiansThresholdOf[account] ==
+            _votesOfguardianVotedAddress[account][recoveryCounter][
+                votedAddress
+            ];
     }
 
     /**
@@ -488,6 +515,9 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
             revert CallerIsNotRecoverer(recoverer, msg.sender);
         uint256 recoveryCounter = _recoveryCounterOf[account];
         _commitmentOf[account][recoveryCounter][recoverer] = commitment;
+        _timeOfcommitment[account][recoveryCounter][recoverer][
+            commitment
+        ] = block.timestamp;
 
         emit PlainSecretCommitted(
             account,
@@ -547,11 +577,24 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
         // if there is a secret require a commitment first
         if (_secretHash != bytes32(0)) {
             bytes32 saltedHash = keccak256(abi.encode(account, plainHash));
+            bytes32 commitment = keccak256(abi.encode(recoverer, saltedHash));
+
+            // Check that the commitment is valid
             if (
-                keccak256(abi.encode(recoverer, saltedHash)) !=
+                commitment !=
                 _commitmentOf[account][accountRecoveryCounter][recoverer]
             ) revert InvalidCommitment(account, recoverer);
 
+            // Check that the commitment is not too early
+            if (
+                _timeOfcommitment[account][accountRecoveryCounter][recoverer][
+                    commitment
+                ] +
+                    100 >
+                block.timestamp
+            ) revert CannotRecoverAfterDirectCommit(account, recoverer);
+
+            // Check that the secret hash is valid
             if (saltedHash != _secretHash)
                 revert InvalidSecretHash(account, plainHash);
         }

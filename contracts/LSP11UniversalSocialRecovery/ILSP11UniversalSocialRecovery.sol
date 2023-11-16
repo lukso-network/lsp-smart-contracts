@@ -191,6 +191,21 @@ interface ILSP11UniversalSocialRecovery {
     ) external view returns (uint256);
 
     /**
+     * @notice Checks if the votes received by a given address from guardians have reached the threshold necessary for account recovery.
+     * @param account The account for which the threshold check is performed.
+     * @param recoveryCounter The recovery counter for which the threshold check is performed.
+     * @param votedAddress The address for which the votes are counted.
+     * @return A boolean indicating whether the votes for the specified address have reached the necessary threshold for the given account and recovery counter.
+     * @dev This function evaluates if the number of votes from guardians for a specific voted address meets or exceeds the required threshold for account recovery.
+     * This is part of the account recovery process where guardians vote for the legitimacy of a recovery address.
+     */
+    function hasReachedThreshold(
+        address account,
+        uint256 recoveryCounter,
+        address votedAddress
+    ) external view returns (bool);
+
+    /**
      * @notice Get the commitment associated with an address for recovery for a specific account and recovery counter.
      * @param account The account for which the commitment is queried.
      * @param recoveryCounter The recovery counter for which the commitment is queried.

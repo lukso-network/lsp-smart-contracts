@@ -121,3 +121,11 @@ error InvalidCommitment(address account, address committer);
  * @param secretHash The invalid secret hash provided.
  */
 error InvalidSecretHash(address account, bytes32 secretHash);
+
+
+/**
+ * @dev The commitment provided is too early.
+ * @param account The account for which the commitment is being checked.
+ * @param committer The address providing the commitment.
+ */
+error CannotRecoverAfterDirectCommit(address account, address committer);
