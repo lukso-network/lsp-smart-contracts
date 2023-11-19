@@ -120,14 +120,16 @@ export type LSP4DigitalAssetMetadata = {
   icon: ImageMetadata[];
 };
 
+export type Verification = {
+  method: string;
+  data: string;
+  source?: string;
+};
+
 export type ImageMetadata = {
   width: number;
   height: number;
-  verification?: {
-    method: string;
-    data: string;
-    source?: string;
-  };
+  verification?: Verification;
   url: string;
 };
 
@@ -137,11 +139,7 @@ export type LinkMetadata = {
 };
 
 export type AssetMetadata = {
-  verification?: {
-    method: string;
-    data: string;
-    source?: string;
-  };
+  verification?: Verification;
   url: string;
   fileType: string;
 };
