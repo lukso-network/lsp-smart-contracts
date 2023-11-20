@@ -1,9 +1,30 @@
 {
   "name": "@lukso/lsp-smart-contracts",
   "version": "0.12.1",
-  "description": "The reference implementation for universal profiles smart contracts",
+  "description": "The reference smart contract implementation for the LUKSO LSP standards",
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/lukso-network/lsp-smart-contracts/issues"
+  },
+  "homepage": "https://github.com/lukso-network/lsp-smart-contracts#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lukso-network/lsp-smart-contracts.git"
+  },
+  "keywords": [
+    "Blockchain",
+    "Ethereum",
+    "EVM",
+    "LUKSO",
+    "LSP",
+    "Smart Contracts",
+    "Standards",
+    "Solidity",
+    "Universal Profiles"
+  ],
   "directories": {
-    "test": "test"
+    "test": "tests"
   },
   "files": [
     "contracts/**/*.sol",
@@ -42,6 +63,15 @@
     "./package.json": "./package.json"
   },
   "scripts": {
+    "build": "hardhat compile",
+    "build:docs": "hardhat dodoc && ts-node scripts/interfaceIds.ts && prettier -w ./docs",
+    "build:js": "vite build && dts-bundle-generator --config dtsconfig.json",
+    "clean": "hardhat clean && rm -rf module common",
+    "format": "prettier --write .",
+    "lint": "eslint . --ext .ts,.js",
+    "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
+    "package": "hardhat prepare-package",
+    "remixd": "remixd -s . --remix-ide",
     "test": "hardhat test",
     "test:benchmark": "hardhat test --no-compile tests/Benchmark.test.ts",
     "test:coverage": "hardhat coverage",
@@ -71,35 +101,8 @@
     "test:reentrancy": "hardhat test --no-compile tests/Reentrancy/Reentrancy.test.ts",
     "test:reentrancyinit": "hardhat test --no-compile tests/Reentrancy/ReentrancyInit.test.ts",
     "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
-    "test:importRequire": "npm run build:js && ./tests/importRequire.sh",
-    "clean": "hardhat clean && rm -rf module common",
-    "build": "hardhat compile",
-    "build:docs": "hardhat dodoc && ts-node scripts/interfaceIds.ts && prettier -w ./docs",
-    "build:js": "vite build && dts-bundle-generator --config dtsconfig.json",
-    "package": "hardhat prepare-package",
-    "remixd": "remixd -s . --remix-ide",
-    "lint": "eslint . --ext .ts,.js",
-    "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
-    "format": "prettier --write ."
+    "test:importRequire": "npm run build:js && ./tests/importRequire.sh"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lukso-network/lsp-smart-contracts.git"
-  },
-  "keywords": [
-    "LSP",
-    "smart contracts",
-    "solidity",
-    "universalprofiles",
-    "lukso",
-    "ethereum"
-  ],
-  "author": "",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/lukso-network/lsp-smart-contracts/issues"
-  },
-  "homepage": "https://github.com/lukso-network/lsp-smart-contracts#readme",
   "dependencies": {
     "@account-abstraction/contracts": "^0.6.0",
     "@erc725/smart-contracts": "^7.0.0",
@@ -115,12 +118,15 @@
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "@remix-project/remixd": "^0.6.12",
+    "@turbo/gen": "^1.9.7",
     "@typechain/ethers-v5": "^10.2.0",
     "@typescript-eslint/eslint-plugin": "^5.60.0",
     "all-contributors-cli": "^6.24.0",
     "dotenv": "^16.0.3",
     "dts-bundle-generator": "^8.0.0",
     "esbuild": "^0.17.15",
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "*",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eth-create2-calculator": "^1.1.5",
@@ -141,11 +147,16 @@
     "rollup-plugin-esbuild": "^5.0.0",
     "solhint": "^3.6.2",
     "ts-node": "^10.2.0",
+    "turbo": "latest",
     "typechain": "^8.0.0",
     "typescript": "^4.9.5",
     "vite": "^4.2.1",
     "vite-plugin-checker": "^0.5.6",
     "vite-tsconfig-paths": "^4.0.7",
     "web3": "^1.5.2"
-  }
+  },
+  "workspaces": [
+    "config/*",
+    "packages/*"
+  ]
 }
