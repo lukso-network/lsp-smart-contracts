@@ -23,6 +23,28 @@
     "Solidity",
     "Universal Profiles"
   ],
+  "description": "The reference smart contract implementation for the LUKSO LSP standards",
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/lukso-network/lsp-smart-contracts/issues"
+  },
+  "homepage": "https://github.com/lukso-network/lsp-smart-contracts#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lukso-network/lsp-smart-contracts.git"
+  },
+  "keywords": [
+    "Blockchain",
+    "Ethereum",
+    "EVM",
+    "LUKSO",
+    "LSP",
+    "Smart Contracts",
+    "Standards",
+    "Solidity",
+    "Universal Profiles"
+  ],
   "directories": {
     "test": "tests"
   },
