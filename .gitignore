@@ -143,3 +143,6 @@ gas_benchmark.md
 
 # test temporary folder
 /.test
+
+# Turborepo
+.turbo
