@@ -15,8 +15,11 @@
     "private-vars-leading-underscore": ["error", { "strict": false }],
     "imports-on-top": "error",
     "visibility-modifier-order": "error",
+    "no-unused-import": "error",
+    "no-global-import": "error",
     "reason-string": ["warn", { "maxLength": 120 }],
     "avoid-low-level-calls": "off",
-    "no-empty-blocks": "off"
+    "no-empty-blocks": ["error", { "ignoreConstructors": true }],
+    "custom-errors": "off"
   }
 }

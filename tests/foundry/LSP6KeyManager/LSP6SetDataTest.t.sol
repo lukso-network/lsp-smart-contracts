@@ -11,7 +11,7 @@ import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {
     LSP2Utils
-} from "../../../contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol";
+} from "../../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
 import {LSP6Utils} from "../../../contracts/LSP6KeyManager/LSP6Utils.sol";
 
 import "../../../contracts/LSP1UniversalReceiver/LSP1Constants.sol";
