@@ -1,7 +1,7 @@
 {
-  "name": "lspN",
+  "name": "lsp5",
   "version": "0.12.1",
-  "description": "Package for the LSPN <write the standard name here> standard",
+  "description": "Package for the LSP5 Received Assets standard",
   "license": "Apache-2.0",
   "author": "",
   "keywords": [
@@ -19,14 +19,10 @@
     "clean": "hardhat clean",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
-    "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
-    "test": "hardhat test --no-compile tests/*.test.ts",
-    "test:foundry": "forge test --no-match-test Skip -vvv",
-    "test:coverage": "hardhat coverage"
+    "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
   },
   "dependencies": {
-    "@erc725/smart-contracts": "^5.1.0",
-    "@openzeppelin/contracts": "^4.9.3"
+    "@erc725/smart-contracts": "^6.0.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
@@ -39,6 +35,7 @@
     "hardhat-deploy": "^0.11.25",
     "hardhat-gas-reporter": "^1.0.9",
     "hardhat-packager": "^1.4.2",
+    "lsp2": "*",
     "solhint": "^3.3.6",
     "ts-node": "^10.2.0",
     "tsconfig": "*",

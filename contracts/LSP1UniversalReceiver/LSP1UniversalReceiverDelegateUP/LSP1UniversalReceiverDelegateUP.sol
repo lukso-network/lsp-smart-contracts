@@ -18,8 +18,12 @@ import {Version} from "../../Version.sol";
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import {LSP5Utils} from "../../LSP5ReceivedAssets/LSP5Utils.sol";
-import {LSP10Utils} from "../../LSP10ReceivedVaults/LSP10Utils.sol";
+import {
+    LSP5Utils
+} from "../../../packages/LSP5ReceivedAssets/contracts/LSP5Utils.sol";
+import {
+    LSP10Utils
+} from "../../../packages/LSP10ReceivedVaults/contracts/LSP10Utils.sol";
 
 // constants
 import {_INTERFACEID_LSP1_DELEGATE} from "../LSP1Constants.sol";
