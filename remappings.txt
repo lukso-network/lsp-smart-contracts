@@ -12,3 +12,4 @@ lsp4/=packages/LSP4DigitalAssetMetadata/
 lsp5/=packages/LSP5ReceivedAssets/
 lsp20/=packages/LSP20CallVerification/
 lsp25/=packages/LSP25ExecuteRelayCall/
+lsp10/=packages/LSP10ReceivedVaults/

@@ -1,7 +1,7 @@
 {
-  "name": "lsp5",
+  "name": "lsp10",
   "version": "0.12.1",
-  "description": "Package for the LSP5 Received Assets standard",
+  "description": "Package for the LSP10 Received Vaults standard",
   "license": "Apache-2.0",
   "author": "",
   "keywords": [
@@ -22,7 +22,7 @@
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
   },
   "dependencies": {
-    "@erc725/smart-contracts": "^7.0.0"
+    "@erc725/smart-contracts": "^6.0.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
