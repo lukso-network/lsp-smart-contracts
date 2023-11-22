@@ -30,7 +30,6 @@ abstract contract LSP8MetadataContractInitAbstract is ERC725YInitAbstract {
      * Set a reference to the LSP8 collection that this metadata contract belongs to on deployment.
      */
     function _initialize(
-        address metadataContractOwner,
         ILSP8 lsp8ReferenceContract
     ) internal virtual onlyInitializing {
         super._setData(
