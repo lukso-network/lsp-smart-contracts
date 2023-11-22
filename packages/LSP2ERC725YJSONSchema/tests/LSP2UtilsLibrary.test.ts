@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { LSP2UtilsLibraryTester, LSP2UtilsLibraryTester__factory } from '../../../types';
+import { LSP2UtilsLibraryTester, LSP2UtilsLibraryTester__factory } from '../types';
 
 import { encodeCompactBytesArray } from '../../../tests/utils/helpers';
 

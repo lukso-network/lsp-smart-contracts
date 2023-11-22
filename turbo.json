@@ -13,6 +13,9 @@
     "test": {
       "cache": true
     },
+    "test:foundry": {
+      "cache": true
+    },
     "test:coverage": {
       "dependsOn": ["test"],
       "cache": false
