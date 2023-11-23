@@ -18,13 +18,14 @@ describe('LSP7CompatibleERC20 with constructor', () => {
       name: 'Compat for ERC20',
       symbol: 'NFT',
       newOwner: accounts.owner.address,
+      lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
     };
 
     const lsp7CompatibleERC20 = await new LSP7CompatibleERC20Tester__factory(accounts.owner).deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
-      LSP4_TOKEN_TYPES.TOKEN,
+      deployParams.lsp4TokenType,
     );
 
     return {

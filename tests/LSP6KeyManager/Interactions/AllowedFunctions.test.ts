@@ -21,6 +21,7 @@ import {
   INTERFACE_IDS,
   CALLTYPE,
   LSP8_TOKEN_ID_TYPES,
+  LSP4_TOKEN_TYPES,
 } from '../../../constants';
 
 // setup
@@ -335,6 +336,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
         'TKN',
         context.accounts[0].address,
         false,
+        LSP4_TOKEN_TYPES.TOKEN,
       );
 
       lsp8Contract = await new LSP8Mintable__factory(context.accounts[0]).deploy(
@@ -342,6 +344,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
         'NFT',
         context.accounts[0].address,
         LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
+        LSP4_TOKEN_TYPES.NFT,
       );
 
       await lsp7Contract

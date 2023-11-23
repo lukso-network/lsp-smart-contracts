@@ -21,6 +21,7 @@ import {
   PERMISSIONS,
   CALLTYPE,
   INTERFACE_IDS,
+  LSP4_TOKEN_TYPES,
 } from '../../../constants';
 
 // helpers
@@ -1379,6 +1380,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         'LSP7',
         context.universalProfile.address,
         false,
+        LSP4_TOKEN_TYPES.TOKEN,
       );
 
       const permissionKeys = [

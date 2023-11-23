@@ -3,7 +3,12 @@ import { ethers } from 'hardhat';
 import { BigNumber } from 'ethers';
 
 // constants
-import { ALL_PERMISSIONS, ERC725YDataKeys, OPERATION_TYPES } from '../../../constants';
+import {
+  ALL_PERMISSIONS,
+  ERC725YDataKeys,
+  LSP4_TOKEN_TYPES,
+  OPERATION_TYPES,
+} from '../../../constants';
 
 // setup
 import { LSP6TestContext } from '../../utils/context';
@@ -42,6 +47,7 @@ export const shouldBehaveLikeBatchExecute = (
       'LYXDAI',
       context.accounts[0].address,
       false,
+      LSP4_TOKEN_TYPES.TOKEN,
     );
 
     metaCoin = await new LSP7Mintable__factory(context.accounts[0]).deploy(
@@ -49,6 +55,7 @@ export const shouldBehaveLikeBatchExecute = (
       'MTC',
       context.accounts[0].address,
       false,
+      LSP4_TOKEN_TYPES.TOKEN,
     );
 
     rLyxToken = await new LSP7Mintable__factory(context.accounts[0]).deploy(
@@ -56,6 +63,7 @@ export const shouldBehaveLikeBatchExecute = (
       'rLYX',
       context.accounts[0].address,
       false,
+      LSP4_TOKEN_TYPES.TOKEN,
     );
 
     await lyxDaiToken.mint(context.universalProfile.address, 100, false, '0x');
@@ -227,6 +235,7 @@ export const shouldBehaveLikeBatchExecute = (
         'UPLSP7',
         context.universalProfile.address,
         false,
+        LSP4_TOKEN_TYPES.TOKEN,
       ]);
 
       // use interface of an existing token contract

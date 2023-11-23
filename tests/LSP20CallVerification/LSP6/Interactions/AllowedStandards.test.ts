@@ -22,6 +22,7 @@ import {
   OPERATION_TYPES,
   PERMISSIONS,
   CALLTYPE,
+  LSP4_TOKEN_TYPES,
 } from '../../../../constants';
 
 // setup
@@ -261,6 +262,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           'TKNA',
           context.accounts[0].address,
           false,
+          LSP4_TOKEN_TYPES.TOKEN,
         );
 
         lsp7TokenB = await new LSP7Mintable__factory(context.accounts[0]).deploy(
@@ -268,6 +270,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           'TKNB',
           context.accounts[0].address,
           false,
+          LSP4_TOKEN_TYPES.TOKEN,
         );
 
         lsp7TokenC = await new LSP7Mintable__factory(context.accounts[0]).deploy(
@@ -275,6 +278,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           'TKNC',
           context.accounts[0].address,
           false,
+          LSP4_TOKEN_TYPES.TOKEN,
         );
 
         await lsp7TokenA
