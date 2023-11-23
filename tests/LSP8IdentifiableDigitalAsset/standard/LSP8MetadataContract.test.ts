@@ -1,12 +1,12 @@
 import { ethers } from 'hardhat';
 
-import { LSP8MetadataContractTester__factory } from '../../../types';
-
 import {
   shouldInitializeLikeLSP8MetadataContract,
   shouldBehaveLikeLSP8MetadataContract,
   LSP8MetadataContractTestContext,
 } from '../LSP8MetadataContract.behaviour';
+
+import { LSP8MetadataContractTester__factory } from '../../../types';
 
 describe('LSP8MetadataContract with constructor', () => {
   const buildContext = async (): Promise<LSP8MetadataContractTestContext> => {
@@ -17,7 +17,7 @@ describe('LSP8MetadataContract with constructor', () => {
       referenceContract: ethers.Wallet.createRandom().address,
     };
 
-    const lsp8MetadataContract = await new LSP8MetadataContract__factory(accounts[0]).deploy(
+    const lsp8MetadataContract = await new LSP8MetadataContractTester__factory(accounts[0]).deploy(
       deployParams.contractOwner.address,
       deployParams.referenceContract,
     );

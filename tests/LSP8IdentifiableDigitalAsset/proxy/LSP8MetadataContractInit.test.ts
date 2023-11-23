@@ -10,7 +10,7 @@ import {
 } from '../LSP8MetadataContract.behaviour';
 import { deployProxy } from '../../utils/fixtures';
 
-describe('LSP8MetadataContract with constructor', () => {
+describe('LSP8MetadataContractInit with proxy', () => {
   const buildContext = async (): Promise<LSP8MetadataContractTestContext> => {
     const accounts = await ethers.getSigners();
 
@@ -22,7 +22,7 @@ describe('LSP8MetadataContract with constructor', () => {
     const lsp8MetadataContractInit = await new LSP8MetadataContractInitTester__factory(
       accounts[0],
     ).deploy();
-    const lsp8Proxy = await deployProxy(lsp8MetadataContractInit.address, accounts.owner);
+    const lsp8Proxy = await deployProxy(lsp8MetadataContractInit.address, accounts[0]);
     const lsp8 = lsp8MetadataContractInit.attach(lsp8Proxy);
 
     return {
@@ -48,7 +48,7 @@ describe('LSP8MetadataContract with constructor', () => {
     it('should revert when initializing with address(0) as owner', async () => {
       await expect(
         context.lsp8MetadataContract['initialize(address,address)'](
-          context.deployParams.contractOwner,
+          ethers.constants.AddressZero,
           '0xcafecafecafecafecafecafecafecafecafecafe', // reference contract
         ),
       ).to.be.revertedWithCustomError(

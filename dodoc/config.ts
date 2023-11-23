@@ -35,6 +35,7 @@ export const dodocConfig = {
     'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol',
     'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721.sol',
     'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol',
+    'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8MetadataContract.sol',
     'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol',
     'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol',
 
