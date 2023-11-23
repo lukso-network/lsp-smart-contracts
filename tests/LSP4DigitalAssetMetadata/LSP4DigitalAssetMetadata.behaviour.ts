@@ -7,11 +7,12 @@ import { LSP7DigitalAsset, LSP8IdentifiableDigitalAsset, LSP9Vault } from '../..
 
 // constants
 import { ERC725YDataKeys } from '../../constants';
+import { abiCoder } from '../utils/helpers';
 
 export type LS4DigitalAssetMetadataTestContext = {
   accounts: SignerWithAddress[];
   contract: LSP7DigitalAsset | LSP8IdentifiableDigitalAsset | LSP9Vault;
-  deployParams: { owner: SignerWithAddress };
+  deployParams: { owner: SignerWithAddress; lsp4TokenType: number };
 };
 
 export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
@@ -66,6 +67,15 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
       expect(
         context.contract.connect(context.deployParams.owner).setData(key, value),
       ).to.be.revertedWithCustomError(context.contract, 'LSP4TokenSymbolNotEditable');
+    });
+
+    it('should revert when trying to edit Token Type', async () => {
+      const key = ERC725YDataKeys.LSP4['LSP4TokenType'];
+      const value = abiCoder.encode(['uint256'], [12345]);
+
+      expect(
+        context.contract.connect(context.deployParams.owner).setData(key, value),
+      ).to.be.revertedWithCustomError(context.contract, 'LSP4TokenTypeNotEditable');
     });
 
     describe('when setting a data key with a value less than 256 bytes', () => {
