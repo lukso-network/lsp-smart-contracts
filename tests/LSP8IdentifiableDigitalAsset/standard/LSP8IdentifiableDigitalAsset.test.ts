@@ -19,7 +19,7 @@ import {
   LS4DigitalAssetMetadataTestContext,
   shouldBehaveLikeLSP4DigitalAssetMetadata,
 } from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour';
-import { LSP8_TOKEN_ID_TYPES } from '../../../constants';
+import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_TYPES } from '../../../constants';
 
 describe('LSP8IdentifiableDigitalAsset with constructor', () => {
   const buildTestContext = async (nftType: number): Promise<LSP8TestContext> => {
@@ -28,6 +28,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
       name: 'LSP8 - deployed with constructor',
       symbol: 'NFT',
       newOwner: accounts.owner.address,
+      lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       tokenIdType: nftType,
     };
     const lsp8 = await new LSP8Tester__factory(accounts.owner).deploy(
@@ -35,6 +36,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
       deployParams.symbol,
       deployParams.newOwner,
       deployParams.tokenIdType,
+      deployParams.lsp4TokenType,
     );
 
     return { accounts, lsp8, deployParams };
@@ -47,6 +49,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
 
       const deployParams = {
         owner: accounts[0],
+        lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       };
 
       return {
@@ -63,6 +66,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
       name: 'LSP8 - deployed with constructor',
       symbol: 'NFT',
       owner: accounts[0],
+      lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
     };
     const contract = await new LSP8Tester__factory(accounts[0]).deploy(
@@ -70,6 +74,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
       deployParams.symbol,
       deployParams.owner.address,
       deployParams.tokenIdType,
+      deployParams.lsp4TokenType,
     );
 
     return { accounts, contract, deployParams };
@@ -83,6 +88,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
         name: 'LSP8 - deployed with constructor',
         symbol: 'NFT',
         newOwner: ethers.constants.AddressZero,
+        lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       };
 
       const contractToDeploy = new LSP8Tester__factory(accounts[0]);
@@ -93,6 +99,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
           deployParams.symbol,
           ethers.constants.AddressZero,
           LSP8_TOKEN_ID_TYPES.NUMBER,
+          deployParams.lsp4TokenType,
         ),
       ).to.be.revertedWithCustomError(contractToDeploy, 'OwnableCannotSetZeroAddressAsOwner');
     });

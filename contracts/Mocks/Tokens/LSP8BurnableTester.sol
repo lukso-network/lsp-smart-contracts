@@ -15,6 +15,15 @@ contract LSP8BurnableTester is LSP8Burnable {
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        uint256 tokenIdType_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, tokenIdType_) {}
+        uint256 tokenIdType_,
+        uint256 lsp4TokenType_
+    )
+        LSP8IdentifiableDigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            tokenIdType_,
+            lsp4TokenType_
+        )
+    {}
 }

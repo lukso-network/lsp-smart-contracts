@@ -1,4 +1,4 @@
-import { LSP8_TOKEN_ID_TYPES } from '../../../constants';
+import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_TYPES } from '../../../constants';
 import { LSP8Mintable, LSP8Mintable__factory } from '../../../types';
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
@@ -16,6 +16,7 @@ describe('LSP8Mintable with constructor', () => {
       name: 'LSP8 Mintable - deployed with constructor',
       symbol: 'LSP8 MNTBL',
       newOwner: accounts.owner.address,
+      lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
     };
 
@@ -24,6 +25,7 @@ describe('LSP8Mintable with constructor', () => {
       deployParams.symbol,
       deployParams.newOwner,
       deployParams.tokenIdType,
+      deployParams.lsp4TokenType,
     );
 
     return { accounts, lsp8Mintable, deployParams };

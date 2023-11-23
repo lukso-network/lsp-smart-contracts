@@ -42,6 +42,7 @@ export type LSP8DeployParams = {
   name: string;
   symbol: string;
   newOwner: string;
+  lsp4TokenType: number;
   tokenIdType: number;
 };
 
@@ -1855,6 +1856,13 @@ export const shouldInitializeLikeLSP8 = (
         .to.emit(context.lsp8, 'DataChanged')
         .withArgs(symbolKey, expectedSymbolValue);
       expect(await context.lsp8.getData(symbolKey)).to.equal(expectedSymbolValue);
+
+      const tokenTypeKey = ERC725YDataKeys.LSP4['LSP4TokenType'];
+      const expectedTokenTypeValue = abiCoder.encode(
+        ['uint256'],
+        [context.deployParams.lsp4TokenType],
+      );
+      expect(await context.lsp8.getData(tokenTypeKey)).to.equal(expectedTokenTypeValue);
 
       const lsp8TokenIdTypeDataKey = ERC725YDataKeys.LSP8['LSP8TokenIdType'];
       const expectedTokenIdDataValue = abiCoder.encode(

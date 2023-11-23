@@ -47,6 +47,7 @@ type LSP8CompatibleERC721DeployParams = {
   symbol: string;
   newOwner: string;
   lsp4MetadataValue: string;
+  lsp4TokenType: number;
   tokenIdType: number;
 };
 

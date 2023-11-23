@@ -10,7 +10,7 @@ import {
 } from '../LSP8Mintable.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
-import { ERC725YDataKeys, LSP8_TOKEN_ID_TYPES } from '../../../constants';
+import { ERC725YDataKeys, LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_TYPES } from '../../../constants';
 
 describe('LSP8MintableInit with proxy', () => {
   const buildTestContext = async () => {
@@ -19,6 +19,7 @@ describe('LSP8MintableInit with proxy', () => {
       name: 'LSP8 Mintable - deployed with proxy',
       symbol: 'MNTBL',
       newOwner: accounts.owner.address,
+      lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
     };
 
@@ -33,11 +34,12 @@ describe('LSP8MintableInit with proxy', () => {
   };
 
   const initializeProxy = async (context: LSP8MintableTestContext) => {
-    return context.lsp8Mintable['initialize(string,string,address,uint256)'](
+    return context.lsp8Mintable['initialize(string,string,address,uint256,uint256)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
       context.deployParams.tokenIdType,
+      context.deployParams.lsp4TokenType,
     );
   };
 
@@ -50,6 +52,7 @@ describe('LSP8MintableInit with proxy', () => {
       expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenName)).to.equal('0x');
       expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenSymbol)).to.equal('0x');
       expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP4.LSP4Metadata)).to.equal('0x');
+      expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenType)).to.equal('0x');
       expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP8.LSP8TokenIdType)).to.equal('0x');
 
       expect(await lsp8MintableInit.owner()).to.equal(ethers.constants.AddressZero);
@@ -63,11 +66,12 @@ describe('LSP8MintableInit with proxy', () => {
       const randomCaller = accounts[1];
 
       await expect(
-        lsp8Mintable['initialize(string,string,address,uint256)'](
+        lsp8Mintable['initialize(string,string,address,uint256,uint256)'](
           'XXXXXXXXXXX',
           'XXX',
           randomCaller.address,
           0,
+          12345,
         ),
       ).to.be.revertedWith('Initializable: contract is already initialized');
     });

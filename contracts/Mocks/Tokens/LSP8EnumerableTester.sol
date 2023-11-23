@@ -12,11 +12,20 @@ import {
 
 contract LSP8EnumerableTester is LSP8Enumerable {
     constructor(
-        string memory name,
-        string memory symbol,
-        address newOwner,
-        uint256 tokenIdType
-    ) LSP8IdentifiableDigitalAsset(name, symbol, newOwner, tokenIdType) {}
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 tokenIdType_,
+        uint256 lsp4TokenType_
+    )
+        LSP8IdentifiableDigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            tokenIdType_,
+            lsp4TokenType_
+        )
+    {}
 
     function mint(address to, bytes32 tokenId) public {
         _mint(to, tokenId, true, "token printer go brrr");

@@ -8,7 +8,7 @@ import {
   LSP8CappedSupplyTestContext,
   getNamedAccounts,
 } from '../LSP8CappedSupply.behaviour';
-import { LSP8_TOKEN_ID_TYPES } from '../../../constants';
+import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_TYPES } from '../../../constants';
 
 describe('LSP8CappedSupply with constructor', () => {
   const buildTestContext = async () => {
@@ -17,6 +17,7 @@ describe('LSP8CappedSupply with constructor', () => {
       name: 'LSP8 capped supply - deployed with constructor',
       symbol: 'CAP',
       newOwner: accounts.owner.address,
+      lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
       tokenSupplyCap: ethers.BigNumber.from('2'),
     };
@@ -26,6 +27,7 @@ describe('LSP8CappedSupply with constructor', () => {
       deployParams.newOwner,
       deployParams.tokenIdType,
       deployParams.tokenSupplyCap,
+      deployParams.lsp4TokenType,
     );
 
     return { accounts, lsp8CappedSupply, deployParams };

@@ -15,16 +15,18 @@ contract LSP8InitTester is
     LSP8BurnableInitAbstract
 {
     function initialize(
-        string memory name,
-        string memory symbol,
-        address newOwner,
-        uint256 tokenIdType
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 tokenIdType_,
+        uint256 lsp4TokenType_
     ) public initializer {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
-            name,
-            symbol,
-            newOwner,
-            tokenIdType
+            name_,
+            symbol_,
+            newOwner_,
+            tokenIdType_,
+            lsp4TokenType_
         );
     }
 

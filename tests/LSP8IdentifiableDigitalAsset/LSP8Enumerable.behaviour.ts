@@ -18,6 +18,7 @@ export type LSP8EnumerableDeployParams = {
   name: string;
   symbol: string;
   newOwner: string;
+  lsp4TokenType: number;
   tokenIdType: number;
 };
 
