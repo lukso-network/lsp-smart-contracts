@@ -192,7 +192,7 @@ export const ERC725YDataKeys = {
     // keccak256('LSP4TokenSymbol')
     LSP4TokenSymbol: '0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756',
 
-    // kecca256('LSP4TokenType)
+    // keccak256('LSP4TokenType)
     LSP4TokenType: '0xe0261fa95db2eb3b5439bd033cda66d56b96f92f243a8228fd87550ed7bdfdb3',
 
     // keccak256('LSP4Metadata')

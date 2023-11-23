@@ -11,6 +11,10 @@ import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../../../../contracts/LSP1UniversalReceiver/LSP1Constants.sol";
 import {
+    _LSP4_TOKEN_TYPE_TOKEN,
+    _LSP4_TOKEN_TYPE_NFT
+} from "../../../../contracts/LSP4DigitalAssetMetadata/LSP4Constants.sol";
+import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
     _PERMISSION_SUPER_SETDATA,
     _PERMISSION_SUPER_CALL,
@@ -264,7 +268,8 @@ contract ExecuteUnrestrictedController is UniversalProfileTestsHelper {
             "TestLSP8",
             "TSTLSP8",
             digitalAssetsOwner,
-            _LSP8_TOKENID_TYPE_NUMBER
+            _LSP8_TOKENID_TYPE_NUMBER,
+            _LSP4_TOKEN_TYPE_NFT
         );
 
         bytes32 tokenID = bytes32(uint256(1));
@@ -289,7 +294,8 @@ contract ExecuteUnrestrictedController is UniversalProfileTestsHelper {
         digitalAsset = new LSP7Tester(
             "TestLSP7",
             "TSTLSP7",
-            digitalAssetsOwner
+            digitalAssetsOwner,
+            _LSP4_TOKEN_TYPE_TOKEN
         );
 
         // mint 100 tokens to UniversalProfile
