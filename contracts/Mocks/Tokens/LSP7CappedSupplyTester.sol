@@ -10,13 +10,14 @@ import {
 
 contract LSP7CappedSupplyTester is LSP7CappedSupply {
     constructor(
-        string memory name,
-        string memory symbol,
-        address newOwner,
-        uint256 tokenSupplyCap
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 tokenSupplyCap_,
+        uint256 lsp4TokenType_
     )
-        LSP7DigitalAsset(name, symbol, newOwner, true)
-        LSP7CappedSupply(tokenSupplyCap)
+        LSP7DigitalAsset(name_, symbol_, newOwner_, true, lsp4TokenType_)
+        LSP7CappedSupply(tokenSupplyCap_)
     {}
 
     function mint(address to, uint256 amount) public {

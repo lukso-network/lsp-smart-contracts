@@ -11,7 +11,7 @@ import {
 } from '../LSP7Mintable.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
-import { ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys, LSP4_TOKEN_TYPES } from '../../../constants';
 
 describe('LSP7MintableInit with proxy', () => {
   const buildTestContext = async () => {
@@ -22,6 +22,7 @@ describe('LSP7MintableInit with proxy', () => {
       symbol: 'LSP7 MNTBL',
       newOwner: accounts.owner.address,
       isNFT: false,
+      lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
     };
 
     const LSP7MintableInit: LSP7MintableInit = await new LSP7MintableInit__factory(
@@ -35,11 +36,12 @@ describe('LSP7MintableInit with proxy', () => {
   };
 
   const initializeProxy = async (context: LSP7MintableTestContext) => {
-    return context.lsp7Mintable['initialize(string,string,address,bool)'](
+    return context.lsp7Mintable['initialize(string,string,address,bool,uint256)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
       context.deployParams.isNFT,
+      context.deployParams.lsp4TokenType,
     );
   };
 
@@ -52,6 +54,7 @@ describe('LSP7MintableInit with proxy', () => {
       expect(await lsp7MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenName)).to.equal('0x');
       expect(await lsp7MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenSymbol)).to.equal('0x');
       expect(await lsp7MintableInit.getData(ERC725YDataKeys.LSP4.LSP4Metadata)).to.equal('0x');
+      expect(await lsp7MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenType)).to.equal('0x');
 
       expect(await lsp7MintableInit.owner()).to.equal(ethers.constants.AddressZero);
     });
@@ -64,11 +67,12 @@ describe('LSP7MintableInit with proxy', () => {
       const randomCaller = accounts[1];
 
       await expect(
-        lsp7MintableInit['initialize(string,string,address,bool)'](
+        lsp7MintableInit['initialize(string,string,address,bool,uint256)'](
           'XXXXXXXXXXX',
           'XXX',
           randomCaller.address,
           false,
+          12345,
         ),
       ).to.be.revertedWith('Initializable: contract is already initialized');
     });

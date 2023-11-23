@@ -7,10 +7,11 @@ import {LSP7Burnable} from "../../LSP7DigitalAsset/extensions/LSP7Burnable.sol";
 
 contract LSP7Tester is LSP7DigitalAsset, LSP7Burnable {
     constructor(
-        string memory name,
-        string memory symbol,
-        address newOwner
-    ) LSP7DigitalAsset(name, symbol, newOwner, false) {}
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 lsp4TokenType_
+    ) LSP7DigitalAsset(name_, symbol_, newOwner_, false, lsp4TokenType_) {}
 
     function mint(
         address to,

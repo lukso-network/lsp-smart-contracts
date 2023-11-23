@@ -8,6 +8,7 @@ import {
   shouldInitializeLikeLSP7CompatibleERC20,
   shouldBehaveLikeLSP7CompatibleERC20,
 } from '../LSP7CompatibleERC20.behaviour';
+import { LSP4_TOKEN_TYPES } from '../../../constants';
 
 describe('LSP7CompatibleERC20 with constructor', () => {
   const buildTestContext = async (): Promise<LSP7CompatibleERC20TestContext> => {
@@ -23,6 +24,7 @@ describe('LSP7CompatibleERC20 with constructor', () => {
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
+      LSP4_TOKEN_TYPES.TOKEN,
     );
 
     return {

@@ -19,6 +19,7 @@ import {
   LS4DigitalAssetMetadataTestContext,
   shouldBehaveLikeLSP4DigitalAssetMetadata,
 } from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour';
+import { LSP4_TOKEN_TYPES } from '../../../constants';
 
 describe('LSP7DigitalAsset with constructor', () => {
   const buildTestContext = async (): Promise<LSP7TestContext> => {
@@ -28,12 +29,14 @@ describe('LSP7DigitalAsset with constructor', () => {
       name: 'LSP7 - deployed with constructor',
       symbol: 'Token',
       newOwner: accounts.owner.address,
+      lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
     };
 
     const lsp7 = await new LSP7Tester__factory(accounts.owner).deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
+      deployParams.lsp4TokenType,
     );
 
     // mint tokens for the owner
@@ -49,6 +52,7 @@ describe('LSP7DigitalAsset with constructor', () => {
 
       const deployParams = {
         owner: accounts[0],
+        lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
       };
 
       return {
@@ -65,12 +69,14 @@ describe('LSP7DigitalAsset with constructor', () => {
       name: 'LSP8 - deployed with constructor',
       symbol: 'NFT',
       owner: accounts[0],
+      lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
     };
 
     const contract = await new LSP7Tester__factory(accounts[0]).deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.owner.address,
+      deployParams.lsp4TokenType,
     );
 
     return { accounts, contract, deployParams };
@@ -84,12 +90,18 @@ describe('LSP7DigitalAsset with constructor', () => {
         name: 'LSP7 - deployed with constructor',
         symbol: 'Token',
         newOwner: ethers.constants.AddressZero,
+        lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
       };
 
       const contractToDeploy = new LSP7Tester__factory(accounts[0]);
 
       await expect(
-        contractToDeploy.deploy(deployParams.name, deployParams.symbol, deployParams.newOwner),
+        contractToDeploy.deploy(
+          deployParams.name,
+          deployParams.symbol,
+          deployParams.newOwner,
+          deployParams.lsp4TokenType,
+        ),
       ).to.be.revertedWithCustomError(contractToDeploy, 'OwnableCannotSetZeroAddressAsOwner');
     });
 

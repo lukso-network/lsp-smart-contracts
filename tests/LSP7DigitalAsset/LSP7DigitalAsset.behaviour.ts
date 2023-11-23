@@ -56,6 +56,7 @@ export type LSP7DeployParams = {
   name: string;
   symbol: string;
   newOwner: string;
+  lsp4TokenType?: number;
 };
 
 export type LSP7TestContext = {
@@ -2254,6 +2255,13 @@ export const shouldInitializeLikeLSP7 = (
         .to.emit(context.lsp7, 'DataChanged')
         .withArgs(symbolKey, expectedSymbolValue);
       expect(await context.lsp7.getData(symbolKey)).to.equal(expectedSymbolValue);
+
+      const tokenTypeKey = ERC725YDataKeys.LSP4['LSP4TokenType'];
+      const expectedTokenTypeValue = abiCoder.encode(
+        ['uint256'],
+        [context.deployParams.lsp4TokenType],
+      );
+      expect(await context.lsp7.getData(tokenTypeKey)).to.equal(expectedTokenTypeValue);
     });
   });
 };

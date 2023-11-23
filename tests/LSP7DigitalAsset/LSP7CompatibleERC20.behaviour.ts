@@ -36,6 +36,7 @@ export type LSP7CompatibleERC20DeployParams = {
   name: string;
   symbol: string;
   newOwner: string;
+  lsp4TokenType: number;
 };
 
 export type LSP7CompatibleERC20TestContext = {

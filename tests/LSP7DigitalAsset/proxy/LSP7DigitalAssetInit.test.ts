@@ -16,6 +16,7 @@ import {
 } from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
+import { LSP4_TOKEN_TYPES } from '../../../constants';
 
 describe('LSP7DigitalAssetInit with proxy', () => {
   const buildTestContext = async (): Promise<LSP7TestContext> => {
@@ -25,6 +26,7 @@ describe('LSP7DigitalAssetInit with proxy', () => {
       name: 'LSP7 - deployed with proxy',
       symbol: 'TKN',
       newOwner: accounts.owner.address,
+      lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
     };
 
     const lsp7TesterInit = await new LSP7InitTester__factory(accounts.owner).deploy();
@@ -46,6 +48,7 @@ describe('LSP7DigitalAssetInit with proxy', () => {
 
       const deployParams = {
         owner: accounts[0],
+        lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
       };
 
       return {
@@ -56,11 +59,12 @@ describe('LSP7DigitalAssetInit with proxy', () => {
     };
 
   const initializeProxy = async (context: LSP7TestContext) => {
-    return context.lsp7['initialize(string,string,address,bool)'](
+    return context.lsp7['initialize(string,string,address,bool,uint256)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
       false,
+      context.deployParams.lsp4TokenType,
     );
   };
 
@@ -73,11 +77,12 @@ describe('LSP7DigitalAssetInit with proxy', () => {
 
     it('should revert when initializing with address(0) as owner', async () => {
       await expect(
-        context.lsp7['initialize(string,string,address,bool)'](
+        context.lsp7['initialize(string,string,address,bool,uint256)'](
           context.deployParams.name,
           context.deployParams.symbol,
           ethers.constants.AddressZero,
           false,
+          12345,
         ),
       ).to.be.revertedWithCustomError(context.lsp7, 'OwnableCannotSetZeroAddressAsOwner');
     });
@@ -108,11 +113,12 @@ describe('LSP7DigitalAssetInit with proxy', () => {
     shouldBehaveLikeLSP4DigitalAssetMetadata(async () => {
       const lsp4Context = await buildLSP4DigitalAssetMetadataTestContext();
 
-      await lsp4Context.contract['initialize(string,string,address,bool)'](
+      await lsp4Context.contract['initialize(string,string,address,bool,uint256)'](
         'LSP7 - deployed with proxy',
         'TKN',
         lsp4Context.deployParams.owner.address,
         false,
+        lsp4Context.deployParams.lsp4TokenType,
       );
 
       return lsp4Context;
