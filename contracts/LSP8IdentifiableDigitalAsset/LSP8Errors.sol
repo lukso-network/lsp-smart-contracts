@@ -87,3 +87,10 @@ error LSP8TokenContractCannotHoldValue();
  * It can be set only once inside the constructor/initializer when the identifiable digital asset contract is being deployed.
  */
 error LSP8TokenIdTypeNotEditable();
+
+/**
+ * @dev Reverts when trying to mint an Token with a `tokenId` - Address and its not properly refrenced back to the
+ * actual LP8 collection contract address.
+ */
+error InvalidReferenceAddress(address referenceAddress);
+

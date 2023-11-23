@@ -36,7 +36,7 @@ When marked as 'public', a method can be called both externally and internally, 
 constructor(address target_);
 ```
 
-_Deploying a LSP6KeyManager linked to the contract at address `target_`._
+_Deploying a LSP6KeyManager linked to the contract at address `target_`.\_
 
 Deploy a Key Manager and set the `target_` address in the contract storage, making this Key Manager linked to this `target_` contract.
 
