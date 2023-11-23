@@ -20,13 +20,23 @@ contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable {
      * @param name_ The name of the token.
      * @param symbol_ The symbol of the token.
      * @param newOwner_ The owner of the token contract.
+     * @param lsp4TokenType_ The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection).
      */
     constructor(
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        bool isNonDivisible_
-    ) LSP7DigitalAsset(name_, symbol_, newOwner_, isNonDivisible_) {}
+        bool isNonDivisible_,
+        uint256 lsp4TokenType_
+    )
+        LSP7DigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            isNonDivisible_,
+            lsp4TokenType_
+        )
+    {}
 
     /**
      * @dev Public {_mint} function only callable by the {owner}.

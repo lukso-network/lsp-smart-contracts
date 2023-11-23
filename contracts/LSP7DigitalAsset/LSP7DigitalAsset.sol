@@ -56,8 +56,9 @@ abstract contract LSP7DigitalAsset is
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        bool isNonDivisible_
-    ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {
+        bool isNonDivisible_,
+        uint256 lsp4TokenType_
+    ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_, lsp4TokenType_) {
         _isNonDivisible = isNonDivisible_;
     }
 

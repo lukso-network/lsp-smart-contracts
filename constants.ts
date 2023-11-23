@@ -192,6 +192,9 @@ export const ERC725YDataKeys = {
     // keccak256('LSP4TokenSymbol')
     LSP4TokenSymbol: '0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756',
 
+    // kecca256('LSP4TokenType)
+    LSP4TokenType: '0xe0261fa95db2eb3b5439bd033cda66d56b96f92f243a8228fd87550ed7bdfdb3',
+
     // keccak256('LSP4Metadata')
     LSP4Metadata: '0x9afb95cacc9f95858ec44aa8c3b685511002e30ae54415823f406128b85b238e',
 
@@ -390,11 +393,24 @@ export const LSP1_TYPE_IDS = {
     '0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
 };
 
+// LSP4
+// ----------
+
+/**
+ * @dev list of LSP4 Token types to describe the type of token a digital asset contract represents.
+ * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-4-DigitalAsset-Metadata.md#lsp4tokentype
+ */
+export const LSP4_TOKEN_TYPES = {
+  TOKEN: 0,
+  NFT: 1,
+  COLLECTION: 2,
+};
+
 // LSP8
 // ----------
 
 /**
- * @dev list of LSP8 Token ID types that can be used to create different types of NFTs.
+ * @dev list of LSP8 Token ID types that can be used to create different types of NFTs and represent each NFT identifiers differently.
  * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidtype
  */
 export const LSP8_TOKEN_ID_TYPES = {
