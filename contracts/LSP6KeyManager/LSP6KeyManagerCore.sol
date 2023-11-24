@@ -236,7 +236,7 @@ abstract contract LSP6KeyManagerCore is
      * @custom:events {PermissionsVerified} event when the permissions related to `payload` have been verified successfully.
      *
      * @custom:hint If you are looking to learn how to sign and execute relay transactions via the Key Manager,
-     * see our Javascript step by step guide [_"Execute Relay Transactions"_](../../../guides/key-manager/execute-relay-transactions.md).
+     * see our Javascript step by step guide [_"Execute Relay Transactions"_](../../../learn/expert-guides/key-manager/execute-relay-transactions.md).
      * See the LSP6 Standard page for more details on how to
      * [generate a valid signature for Execute Relay Call](../../../standards/universal-profile/lsp6-key-manager.md#how-to-sign-relay-transactions).
      */

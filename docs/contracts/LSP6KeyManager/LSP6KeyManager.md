@@ -176,7 +176,7 @@ Same as [`execute`](#execute) but execute a batch of payloads (abi-encoded funct
 
 :::tip Hint
 
-If you are looking to learn how to sign and execute relay transactions via the Key Manager, see our Javascript step by step guide [_"Execute Relay Transactions"_](../../../guides/key-manager/execute-relay-transactions.md). See the LSP6 Standard page for more details on how to [generate a valid signature for Execute Relay Call](../../../standards/universal-profile/lsp6-key-manager.md#how-to-sign-relay-transactions).
+If you are looking to learn how to sign and execute relay transactions via the Key Manager, see our Javascript step by step guide [_"Execute Relay Transactions"_](../../../learn/expert-guides/key-manager/execute-relay-transactions.md). See the LSP6 Standard page for more details on how to [generate a valid signature for Execute Relay Call](../../../standards/universal-profile/lsp6-key-manager.md#how-to-sign-relay-transactions).
 
 :::
 
