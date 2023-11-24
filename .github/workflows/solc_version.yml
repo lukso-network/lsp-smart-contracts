@@ -81,10 +81,12 @@ jobs:
               @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
               ../=$(pwd)/contracts/ \
+              lsp20/=packages/LSP20CallVerification/ \
               lsp25/=packages/LSP25ExecuteRelayCall/
           else
             solc contracts/**/*.sol \
               @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
+              lsp20/=packages/LSP20CallVerification/ \
               lsp25/=packages/LSP25ExecuteRelayCall/
           fi;
