@@ -8,7 +8,9 @@ import {
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
+import {
+    LSP14Ownable2Step
+} from "../../packages/LSP14Ownable2Step/contracts/LSP14Ownable2Step.sol";
 
 // constants
 import {
@@ -19,7 +21,7 @@ import {
 } from "../LSP9Vault/LSP9Constants.sol";
 import {
     _TYPEID_LSP14_OwnershipTransferStarted
-} from "../LSP14Ownable2Step/LSP14Constants.sol";
+} from "../../packages/LSP14Ownable2Step/contracts/LSP14Constants.sol";
 
 /**
  * @dev This contract is used only for testing purposes

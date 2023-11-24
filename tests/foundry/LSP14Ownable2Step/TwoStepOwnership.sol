@@ -7,7 +7,7 @@ import "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
 
 import {
     LSP14MustAcceptOwnershipInSeparateTransaction
-} from "../../../contracts/LSP14Ownable2Step/LSP14Errors.sol";
+} from "../../../packages/LSP14Ownable2Step/contracts/LSP14Errors.sol";
 
 contract Implementation is LSP0ERC725Account {
     constructor() LSP0ERC725Account(msg.sender) {}

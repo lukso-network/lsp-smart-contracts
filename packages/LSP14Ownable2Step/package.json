@@ -1,7 +1,7 @@
 {
-  "name": "lsp20",
+  "name": "lsp14",
   "version": "0.12.1",
-  "description": "Package for the LSP20 Call Verification standard",
+  "description": "Package for the LSP14 Ownable 2 Step standard",
   "license": "Apache-2.0",
   "author": "",
   "keywords": [
@@ -21,7 +21,9 @@
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@erc725/smart-contracts": "^5.1.0"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
     "@typechain/ethers-v5": "^10.2.0",
@@ -33,6 +35,7 @@
     "hardhat-deploy": "^0.11.25",
     "hardhat-gas-reporter": "^1.0.9",
     "hardhat-packager": "^1.4.2",
+    "lsp1": "*",
     "solhint": "^3.3.6",
     "ts-node": "^10.2.0",
     "tsconfig": "*",

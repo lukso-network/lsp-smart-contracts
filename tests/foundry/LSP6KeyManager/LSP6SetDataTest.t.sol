@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import "../../../contracts/UniversalProfile.sol";
 import "../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol";
 import "../../../contracts/LSP6KeyManager/LSP6KeyManager.sol";
-import "../../../contracts/LSP14Ownable2Step/ILSP14Ownable2Step.sol";
+import "../../../packages/LSP14Ownable2Step/contracts/ILSP14Ownable2Step.sol";
 import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -14,7 +14,7 @@ import {
 } from "../../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
 import {LSP6Utils} from "../../../contracts/LSP6KeyManager/LSP6Utils.sol";
 
-import "../../../contracts/LSP1UniversalReceiver/LSP1Constants.sol";
+import "../../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
 import "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 import "../../../contracts/LSP17ContractExtension/LSP17Constants.sol";
 

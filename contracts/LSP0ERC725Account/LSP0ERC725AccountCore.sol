@@ -32,7 +32,9 @@ import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
+import {
+    LSP14Ownable2Step
+} from "../../packages/LSP14Ownable2Step/contracts/LSP14Ownable2Step.sol";
 import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 import {
     LSP20CallVerification
@@ -55,7 +57,9 @@ import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
-import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
+import {
+    _INTERFACEID_LSP14
+} from "../../packages/LSP14Ownable2Step/contracts/LSP14Constants.sol";
 
 import {
     _LSP17_EXTENSION_PREFIX

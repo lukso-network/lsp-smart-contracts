@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 import {
     ILSP14Ownable2Step
-} from "../../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
+} from "../../../packages/LSP14Ownable2Step/contracts/ILSP14Ownable2Step.sol";
 
 /**
  * @title sample contract used for testing

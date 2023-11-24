@@ -7,7 +7,7 @@ import "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
 
 import {
     LSP20EOACannotVerifyCall
-} from "../../../contracts/LSP20CallVerification/LSP20Errors.sol";
+} from "../../../packages/LSP20CallVerification/contracts/LSP20Errors.sol";
 
 contract LSP0Implementation is LSP0ERC725Account {
     constructor(address _addr) LSP0ERC725Account(_addr) {}
