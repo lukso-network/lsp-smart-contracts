@@ -11,7 +11,7 @@ import {
 import {LSP9VaultCore} from "./LSP9VaultCore.sol";
 
 // libraries
-import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
+import {LSP1Utils} from "lsp1/contracts/LSP1Utils.sol";
 
 // constants
 import {
