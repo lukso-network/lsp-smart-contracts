@@ -7,7 +7,7 @@ import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 // constants
 import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
-} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+} from "../../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
 
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX

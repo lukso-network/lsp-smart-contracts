@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 
 import {
     ILSP1UniversalReceiverDelegate
-} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+} from "../../../packages/LSP1UniversalReceiver/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 // modules
 import {
@@ -20,7 +20,7 @@ import {
 
 import {
     _INTERFACEID_LSP1_DELEGATE
-} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+} from "../../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
 
 import {_TYPEID_LSP9_VALUE_RECEIVED} from "../../LSP9Vault/LSP9Constants.sol";
 

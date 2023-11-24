@@ -11,7 +11,7 @@ import {
 
 import {
     ILSP1UniversalReceiverDelegate
-} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+} from "../../../packages/LSP1UniversalReceiver/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 // modules
 import {
@@ -23,7 +23,7 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {
     _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
-} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+} from "../../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PREFIX
 } from "../../LSP6KeyManager/LSP6Constants.sol";

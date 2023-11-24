@@ -5,9 +5,7 @@ pragma solidity ^0.8.4;
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import {
-    LSP2Utils
-} from "../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
 
 // constants
 import {ILSP1UniversalReceiver as ILSP1} from "./ILSP1UniversalReceiver.sol";
@@ -17,7 +15,7 @@ import {
     _INTERFACEID_LSP1,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
-} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+} from "./LSP1Constants.sol";
 
 /**
  * @title LSP1 Utility library.

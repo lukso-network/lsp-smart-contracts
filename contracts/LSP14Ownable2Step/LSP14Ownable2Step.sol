@@ -10,7 +10,9 @@ import {
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 // libraries
-import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
+import {
+    LSP1Utils
+} from "../../packages/LSP1UniversalReceiver/contracts/LSP1Utils.sol";
 
 // errors
 import {

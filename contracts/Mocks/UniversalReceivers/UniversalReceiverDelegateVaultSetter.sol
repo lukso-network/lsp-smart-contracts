@@ -14,7 +14,7 @@ import {
 // constants
 import {
     _INTERFACEID_LSP1_DELEGATE
-} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+} from "../../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
 
 /**
  * @dev This contract is used only for testing purposes

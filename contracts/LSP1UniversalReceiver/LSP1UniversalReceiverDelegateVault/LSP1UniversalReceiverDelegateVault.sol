@@ -7,7 +7,7 @@ import {
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {
     ILSP1UniversalReceiverDelegate
-} from "../ILSP1UniversalReceiverDelegate.sol";
+} from "../../../packages/LSP1UniversalReceiver/contracts/ILSP1UniversalReceiverDelegate.sol";
 import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // modules
@@ -20,7 +20,9 @@ import {
 } from "../../../packages/LSP5ReceivedAssets/contracts/LSP5Utils.sol";
 
 // constants
-import {_INTERFACEID_LSP1_DELEGATE} from "../LSP1Constants.sol";
+import {
+    _INTERFACEID_LSP1_DELEGATE
+} from "../../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
 import {
     _TYPEID_LSP7_TOKENSSENDER,
     _TYPEID_LSP7_TOKENSRECIPIENT,

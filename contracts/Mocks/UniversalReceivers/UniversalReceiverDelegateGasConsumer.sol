@@ -4,11 +4,11 @@ pragma solidity ^0.8.4;
 // interfaces
 import {
     ILSP1UniversalReceiverDelegate
-} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+} from "../../../packages/LSP1UniversalReceiver/contracts/ILSP1UniversalReceiverDelegate.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {
     _INTERFACEID_LSP1_DELEGATE
-} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+} from "../../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
 
 /**
  * @dev This contract is used only for testing purposes

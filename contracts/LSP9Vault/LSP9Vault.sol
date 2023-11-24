@@ -9,7 +9,9 @@ import {Version} from "../Version.sol";
 import {LSP9VaultCore} from "./LSP9VaultCore.sol";
 
 // libraries
-import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
+import {
+    LSP1Utils
+} from "../../packages/LSP1UniversalReceiver/contracts/LSP1Utils.sol";
 
 // constants
 import {

@@ -7,7 +7,7 @@ import {
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {
     ILSP1UniversalReceiverDelegate
-} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+} from "../../../packages/LSP1UniversalReceiver/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 // modules
 import {
@@ -17,7 +17,7 @@ import {
 // constants
 import {
     _INTERFACEID_LSP1_DELEGATE
-} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+} from "../../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
 
 /**
  * @dev This contract is used only for testing purposes

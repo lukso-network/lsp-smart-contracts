@@ -16,7 +16,9 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {
     EnumerableSet
 } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {LSP1Utils} from "../../LSP1UniversalReceiver/LSP1Utils.sol";
+import {
+    LSP1Utils
+} from "../../../packages/LSP1UniversalReceiver/contracts/LSP1Utils.sol";
 
 // modules
 import {

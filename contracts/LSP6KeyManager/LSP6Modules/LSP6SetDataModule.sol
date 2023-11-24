@@ -32,7 +32,7 @@ import {
 import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+} from "../../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
 import {
     _LSP17_EXTENSION_PREFIX
 } from "../../LSP17ContractExtension/LSP17Constants.sol";

@@ -31,11 +31,11 @@ import {IERC223} from "./Tokens/IERC223.sol";
 import {ILSP0ERC725Account} from "../LSP0ERC725Account/ILSP0ERC725Account.sol";
 import {
     ILSP1UniversalReceiver as ILSP1
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+} from "../../packages/LSP1UniversalReceiver/contracts/ILSP1UniversalReceiver.sol";
 
 import {
     ILSP1UniversalReceiverDelegate as ILSP1Delegate
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+} from "../../packages/LSP1UniversalReceiver/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 import {ILSP6KeyManager as ILSP6} from "../LSP6KeyManager/ILSP6KeyManager.sol";
 import {
@@ -64,7 +64,7 @@ import {_INTERFACEID_LSP0} from "../LSP0ERC725Account/LSP0Constants.sol";
 import {
     _INTERFACEID_LSP1,
     _INTERFACEID_LSP1_DELEGATE
-} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+} from "../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
 import {_INTERFACEID_LSP6} from "../LSP6KeyManager/LSP6Constants.sol";
 import {_INTERFACEID_LSP7} from "../LSP7DigitalAsset/LSP7Constants.sol";
 import {

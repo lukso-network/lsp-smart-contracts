@@ -4,11 +4,11 @@ pragma solidity ^0.8.4;
 // interfaces
 import {
     ILSP1UniversalReceiver
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+} from "../../packages/LSP1UniversalReceiver/contracts/ILSP1UniversalReceiver.sol";
 
 import {
     ILSP1UniversalReceiverDelegate
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+} from "../../packages/LSP1UniversalReceiver/contracts/ILSP1UniversalReceiverDelegate.sol";
 import {ILSP9Vault} from "./ILSP9Vault.sol";
 
 // libraries
@@ -16,7 +16,9 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
+import {
+    LSP1Utils
+} from "../../packages/LSP1UniversalReceiver/contracts/LSP1Utils.sol";
 import {
     LSP2Utils
 } from "../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
@@ -50,7 +52,7 @@ import {
     _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+} from "../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
 
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PREFIX

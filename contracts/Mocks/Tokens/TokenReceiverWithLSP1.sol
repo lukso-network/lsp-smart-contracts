@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 // interfaces
 import {
     ILSP1UniversalReceiver
-} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+} from "../../../packages/LSP1UniversalReceiver/contracts/ILSP1UniversalReceiver.sol";
 
 // modules
 import {
@@ -12,7 +12,9 @@ import {
 } from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // constants
-import {_INTERFACEID_LSP1} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+import {
+    _INTERFACEID_LSP1
+} from "../../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
 
 contract TokenReceiverWithLSP1 is ERC165Storage, ILSP1UniversalReceiver {
     constructor() {

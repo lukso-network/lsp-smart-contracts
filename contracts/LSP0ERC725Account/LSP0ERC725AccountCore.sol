@@ -6,11 +6,11 @@ import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP0ERC725Account} from "./ILSP0ERC725Account.sol";
 import {
     ILSP1UniversalReceiver
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+} from "../../packages/LSP1UniversalReceiver/contracts/ILSP1UniversalReceiver.sol";
 
 import {
     ILSP1UniversalReceiverDelegate as ILSP1Delegate
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+} from "../../packages/LSP1UniversalReceiver/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -19,7 +19,9 @@ import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
+import {
+    LSP1Utils
+} from "../../packages/LSP1UniversalReceiver/contracts/LSP1Utils.sol";
 import {
     LSP2Utils
 } from "../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
@@ -52,7 +54,7 @@ import {
     _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+} from "../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 import {
