@@ -256,7 +256,7 @@ Transfer ownership of the contract from the current [`owner()`](#owner) to the [
 
 :::info
 
-It&#39;s not possible to send value along the functions call due to the use of `delegatecall`.
+It's not possible to send value along the functions call due to the use of `delegatecall`.
 
 :::
 
@@ -834,7 +834,7 @@ This pattern is useful in inheritance.
 
 :::caution Warning
 
-Providing operation type DELEGATECALL (4) as argument will result in custom error {ERC725X_UnknownOperationType(4)}
+Providing operation type DELEGATECALL (4) as argument will result in custom error [`ERC725X_UnknownOperationType(4)`](#erc725x_unknownoperationtype)
 
 :::
 
@@ -1391,11 +1391,11 @@ Emitted when the [`universalReceiver`](#universalreceiver) function was called w
 
 | Name                   |   Type    | Description                                                                                                                                                                             |
 | ---------------------- | :-------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `from` **`indexed`**   | `address` | The address of the EOA or smart contract that called the {universalReceiver(...)} function.                                                                                             |
-| `value` **`indexed`**  | `uint256` | The amount sent to the {universalReceiver(...)} function.                                                                                                                               |
+| `from` **`indexed`**   | `address` | The address of the EOA or smart contract that called the [`universalReceiver(...)`](#universalreceiver) function.                                                                       |
+| `value` **`indexed`**  | `uint256` | The amount sent to the [`universalReceiver(...)`](#universalreceiver) function.                                                                                                         |
 | `typeId` **`indexed`** | `bytes32` | A `bytes32` unique identifier (= _"hook"_)that describe the type of notification, information or transaction received by the contract. Can be related to a specific standard or a hook. |
-| `receivedData`         |  `bytes`  | Any arbitrary data that was sent to the {universalReceiver(...)} function.                                                                                                              |
-| `returnedValue`        |  `bytes`  | The value returned by the {universalReceiver(...)} function.                                                                                                                            |
+| `receivedData`         |  `bytes`  | Any arbitrary data that was sent to the [`universalReceiver(...)`](#universalreceiver) function.                                                                                        |
+| `returnedValue`        |  `bytes`  | The value returned by the [`universalReceiver(...)`](#universalreceiver) function.                                                                                                      |
 
 <br/>
 

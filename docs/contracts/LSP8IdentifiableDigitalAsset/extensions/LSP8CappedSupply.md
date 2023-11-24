@@ -852,9 +852,9 @@ after a new `tokenId` has of tokens have been minted.
 
 Any logic in the:
 
-- {\_beforeTokenTransfer} function will run before updating the balances and ownership of `tokenId`s.
+- [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances and ownership of `tokenId`s.
 
-- {\_afterTokenTransfer} function will run after updating the balances and ownership of `tokenId`s, **but before notifying the sender via LSP1**.
+- [`_afterTokenTransfer`](#_aftertokentransfer) function will run after updating the balances and ownership of `tokenId`s, **but before notifying the sender via LSP1**.
 
 :::
 
@@ -897,9 +897,9 @@ all the parameters in the calldata packed encoded.
 
 Any logic in the:
 
-- {\_beforeTokenTransfer} function will run before updating the balances and ownership of `tokenId`s.
+- [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances and ownership of `tokenId`s.
 
-- {\_afterTokenTransfer} function will run after updating the balances and ownership of `tokenId`s, **but before notifying the sender/recipient via LSP1**.
+- [`_afterTokenTransfer`](#_aftertokentransfer) function will run after updating the balances and ownership of `tokenId`s, **but before notifying the sender/recipient via LSP1**.
 
 :::
 
@@ -1011,7 +1011,7 @@ If `operator` is an EOA or a contract that does not support the LSP1 interface, 
 
 | Name       |   Type    | Description                                                                    |
 | ---------- | :-------: | ------------------------------------------------------------------------------ |
-| `operator` | `address` | The address to call the {universalReceiver} function on.                       |
+| `operator` | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on. |
 | `lsp1Data` |  `bytes`  | the data to be sent to the `operator` address in the `universalReceiver` call. |
 
 <br/>
@@ -1028,10 +1028,10 @@ If `from` is an EOA or a contract that does not support the LSP1 interface, noth
 
 #### Parameters
 
-| Name       |   Type    | Description                                                                |
-| ---------- | :-------: | -------------------------------------------------------------------------- |
-| `from`     | `address` | The address to call the {universalReceiver} function on.                   |
-| `lsp1Data` |  `bytes`  | the data to be sent to the `from` address in the `universalReceiver` call. |
+| Name       |   Type    | Description                                                                    |
+| ---------- | :-------: | ------------------------------------------------------------------------------ |
+| `from`     | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on. |
+| `lsp1Data` |  `bytes`  | the data to be sent to the `from` address in the `universalReceiver` call.     |
 
 <br/>
 
@@ -1057,7 +1057,7 @@ If `to` is is an EOA or a contract that does not support the LSP1 interface, the
 
 | Name       |   Type    | Description                                                                                         |
 | ---------- | :-------: | --------------------------------------------------------------------------------------------------- |
-| `to`       | `address` | The address to call the {universalReceiver} function on.                                            |
+| `to`       | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on.                      |
 | `force`    |  `bool`   | A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not. |
 | `lsp1Data` |  `bytes`  | The data to be sent to the `to` address in the `universalReceiver(...)` call.                       |
 
@@ -1222,13 +1222,13 @@ Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on i
 
 #### Parameters
 
-| Name                       |   Type    | Description                                                     |
-| -------------------------- | :-------: | --------------------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address revoked from the operator array ({getOperatorsOf}). |
-| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                     |
-| `tokenId` **`indexed`**    | `bytes32` | The tokenId `operator` is revoked from operating on.            |
-| `notified`                 |  `bool`   | Bool indicating whether the operator has been notified or not   |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                 |
+| Name                       |   Type    | Description                                                                        |
+| -------------------------- | :-------: | ---------------------------------------------------------------------------------- |
+| `operator` **`indexed`**   | `address` | The address revoked from the operator array ([`getOperatorsOf`](#getoperatorsof)). |
+| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                                        |
+| `tokenId` **`indexed`**    | `bytes32` | The tokenId `operator` is revoked from operating on.                               |
+| `notified`                 |  `bool`   | Bool indicating whether the operator has been notified or not                      |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                                    |
 
 <br/>
 

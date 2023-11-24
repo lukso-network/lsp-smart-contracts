@@ -88,7 +88,7 @@ Reverts whenever someone tries to send native tokens to a LSP7 contract.
 
 :::danger
 
-To avoid front-running and Allowance Double-Spend Exploit when increasing or decreasing the authorized amount of an operator, it is advised to: 1. either call {revokeOperator} first, and then re-call {authorizeOperator} with the new amount. 2. or use the non-standard functions {increaseAllowance} or {decreaseAllowance}. For more information, see: https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
+To avoid front-running and Allowance Double-Spend Exploit when increasing or decreasing the authorized amount of an operator, it is advised to: 1. either call [`revokeOperator`](#revokeoperator) first, and then re-call [`authorizeOperator`](#authorizeoperator) with the new amount. 2. or use the non-standard functions [`increaseAllowance`](#increaseallowance) or [`decreaseAllowance`](#decreaseallowance). For more information, see: https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
 
 :::
 
@@ -819,9 +819,9 @@ If the amount is zero then the operator is being revoked, otherwise the operator
 
 Any logic in the:
 
-- {\_beforeTokenTransfer} function will run before updating the balances.
+- [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances.
 
-- {\_afterTokenTransfer} function will run after updating the balances, **but before notifying the recipient via LSP1**.
+- [`_afterTokenTransfer`](#_aftertokentransfer) function will run after updating the balances, **but before notifying the recipient via LSP1**.
 
 :::
 
@@ -846,12 +846,12 @@ Mints `amount` of tokens and transfers it to `to`.
 
 #### Parameters
 
-| Name     |   Type    | Description                                                                                                               |
-| -------- | :-------: | ------------------------------------------------------------------------------------------------------------------------- |
-| `to`     | `address` | The address to mint tokens for.                                                                                           |
-| `amount` | `uint256` | The amount of tokens to mint.                                                                                             |
-| `force`  |  `bool`   | A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.                       |
-| `data`   |  `bytes`  | Additional data the caller wants included in the emitted {Transfer} event, and sent in the LSP1 hook to the `to` address. |
+| Name     |   Type    | Description                                                                                                                            |
+| -------- | :-------: | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `to`     | `address` | The address to mint tokens for.                                                                                                        |
+| `amount` | `uint256` | The amount of tokens to mint.                                                                                                          |
+| `force`  |  `bool`   | A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.                                    |
+| `data`   |  `bytes`  | Additional data the caller wants included in the emitted [`Transfer`](#transfer) event, and sent in the LSP1 hook to the `to` address. |
 
 <br/>
 
@@ -861,9 +861,9 @@ Mints `amount` of tokens and transfers it to `to`.
 
 Any logic in the:
 
-- {\_beforeTokenTransfer} function will run before updating the balances.
+- [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances.
 
-- {\_afterTokenTransfer} function will run after updating the balances, **but before notifying the sender via LSP1**.
+- [`_afterTokenTransfer`](#_aftertokentransfer) function will run after updating the balances, **but before notifying the sender via LSP1**.
 
 :::
 
@@ -928,9 +928,9 @@ Spend `amountToSpend` from the `operator`'s authorized on behalf of the `tokenOw
 
 Any logic in the:
 
-- {\_beforeTokenTransfer} function will run before updating the balances.
+- [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances.
 
-- {\_afterTokenTransfer} function will run after updating the balances, **but before notifying the sender/recipient via LSP1**.
+- [`_afterTokenTransfer`](#_aftertokentransfer) function will run after updating the balances, **but before notifying the sender/recipient via LSP1**.
 
 :::
 
@@ -1037,7 +1037,7 @@ If `operator` is an EOA or a contract that does not support the LSP1 interface, 
 
 | Name       |   Type    | Description                                                                    |
 | ---------- | :-------: | ------------------------------------------------------------------------------ |
-| `operator` | `address` | The address to call the {universalReceiver} function on.                       |
+| `operator` | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on. |
 | `lsp1Data` |  `bytes`  | the data to be sent to the `operator` address in the `universalReceiver` call. |
 
 <br/>
@@ -1054,10 +1054,10 @@ If `from` is an EOA or a contract that does not support the LSP1 interface, noth
 
 #### Parameters
 
-| Name       |   Type    | Description                                                                |
-| ---------- | :-------: | -------------------------------------------------------------------------- |
-| `from`     | `address` | The address to call the {universalReceiver} function on.                   |
-| `lsp1Data` |  `bytes`  | the data to be sent to the `from` address in the `universalReceiver` call. |
+| Name       |   Type    | Description                                                                    |
+| ---------- | :-------: | ------------------------------------------------------------------------------ |
+| `from`     | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on. |
+| `lsp1Data` |  `bytes`  | the data to be sent to the `from` address in the `universalReceiver` call.     |
 
 <br/>
 
@@ -1083,7 +1083,7 @@ If `to` is is an EOA or a contract that does not support the LSP1 interface, the
 
 | Name       |   Type    | Description                                                                                         |
 | ---------- | :-------: | --------------------------------------------------------------------------------------------------- |
-| `to`       | `address` | The address to call the {universalReceiver} function on.                                            |
+| `to`       | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on.                      |
 | `force`    |  `bool`   | A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not. |
 | `lsp1Data` |  `bytes`  | The data to be sent to the `to` address in the `universalReceiver(...)` call.                       |
 

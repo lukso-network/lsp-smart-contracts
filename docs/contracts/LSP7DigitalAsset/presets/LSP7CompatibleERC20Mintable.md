@@ -14,7 +14,7 @@
 
 :::
 
-> LSP7CompatibleERC20 deployable preset contract with a public {mint} function callable only by the contract {owner}.
+> LSP7CompatibleERC20 deployable preset contract with a public [`mint`](#mint) function callable only by the contract [`owner`](#owner).
 
 ## Public Methods
 
@@ -159,7 +159,7 @@ Approval function from th ERC20 standard interface.
 
 :::danger
 
-To avoid front-running and Allowance Double-Spend Exploit when increasing or decreasing the authorized amount of an operator, it is advised to: 1. either call {revokeOperator} first, and then re-call {authorizeOperator} with the new amount. 2. or use the non-standard functions {increaseAllowance} or {decreaseAllowance}. For more information, see: https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
+To avoid front-running and Allowance Double-Spend Exploit when increasing or decreasing the authorized amount of an operator, it is advised to: 1. either call [`revokeOperator`](#revokeoperator) first, and then re-call [`authorizeOperator`](#authorizeoperator) with the new amount. 2. or use the non-standard functions [`increaseAllowance`](#increaseallowance) or [`decreaseAllowance`](#decreaseallowance). For more information, see: https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
 
 :::
 
@@ -1134,7 +1134,7 @@ If `operator` is an EOA or a contract that does not support the LSP1 interface, 
 
 | Name       |   Type    | Description                                                                    |
 | ---------- | :-------: | ------------------------------------------------------------------------------ |
-| `operator` | `address` | The address to call the {universalReceiver} function on.                       |
+| `operator` | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on. |
 | `lsp1Data` |  `bytes`  | the data to be sent to the `operator` address in the `universalReceiver` call. |
 
 <br/>
@@ -1151,10 +1151,10 @@ If `from` is an EOA or a contract that does not support the LSP1 interface, noth
 
 #### Parameters
 
-| Name       |   Type    | Description                                                                |
-| ---------- | :-------: | -------------------------------------------------------------------------- |
-| `from`     | `address` | The address to call the {universalReceiver} function on.                   |
-| `lsp1Data` |  `bytes`  | the data to be sent to the `from` address in the `universalReceiver` call. |
+| Name       |   Type    | Description                                                                    |
+| ---------- | :-------: | ------------------------------------------------------------------------------ |
+| `from`     | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on. |
+| `lsp1Data` |  `bytes`  | the data to be sent to the `from` address in the `universalReceiver` call.     |
 
 <br/>
 
@@ -1180,7 +1180,7 @@ If `to` is is an EOA or a contract that does not support the LSP1 interface, the
 
 | Name       |   Type    | Description                                                                                         |
 | ---------- | :-------: | --------------------------------------------------------------------------------------------------- |
-| `to`       | `address` | The address to call the {universalReceiver} function on.                                            |
+| `to`       | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on.                      |
 | `force`    |  `bool`   | A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not. |
 | `lsp1Data` |  `bytes`  | The data to be sent to the `to` address in the `universalReceiver(...)` call.                       |
 
