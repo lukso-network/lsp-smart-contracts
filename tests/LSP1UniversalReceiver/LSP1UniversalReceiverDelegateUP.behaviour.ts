@@ -1788,24 +1788,24 @@ export const shouldBehaveLikeLSP1Delegate = (
         'TokenAlpha',
         'TA',
         context.accounts.random.address,
-        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
         LSP4_TOKEN_TYPES.NFT,
+        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
       );
 
       lsp8TokenB = await new LSP8Tester__factory(context.accounts.random).deploy(
         'TokenBeta',
         'TB',
         context.accounts.random.address,
-        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
         LSP4_TOKEN_TYPES.NFT,
+        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
       );
 
       lsp8TokenC = await new LSP8Tester__factory(context.accounts.random).deploy(
         'TokenGamma',
         'TA',
         context.accounts.random.address,
-        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
         LSP4_TOKEN_TYPES.NFT,
+        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
       );
     });
 
@@ -3129,8 +3129,8 @@ export const shouldBehaveLikeLSP1Delegate = (
           'MyToken',
           'MTK',
           context.universalProfile1.address,
-          LSP8_TOKEN_ID_TYPES.NUMBER,
           LSP4_TOKEN_TYPES.NFT,
+          LSP8_TOKEN_ID_TYPES.NUMBER,
         );
         // Mint token for UP1
         await LSP8.mint(context.universalProfile1.address, '0x' + '0'.repeat(64), true, '0x');

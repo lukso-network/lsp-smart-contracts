@@ -20,7 +20,7 @@ describe('LSP8CappedSupplyInit with proxy', () => {
       symbol: 'CAP',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
+      lsp8TokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
       tokenSupplyCap: ethers.BigNumber.from('2'),
     };
     const lsp8CappedSupplyInit = await new LSP8CappedSupplyInitTester__factory(
@@ -37,9 +37,9 @@ describe('LSP8CappedSupplyInit with proxy', () => {
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
-      context.deployParams.tokenIdType,
-      context.deployParams.tokenSupplyCap,
       context.deployParams.lsp4TokenType,
+      context.deployParams.lsp8TokenIdType,
+      context.deployParams.tokenSupplyCap,
     );
   };
 

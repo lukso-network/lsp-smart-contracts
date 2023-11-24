@@ -11,7 +11,7 @@ contract LSP7Tester is LSP7DigitalAsset, LSP7Burnable {
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_
-    ) LSP7DigitalAsset(name_, symbol_, newOwner_, false, lsp4TokenType_) {}
+    ) LSP7DigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, false) {}
 
     function mint(
         address to,

@@ -15,15 +15,15 @@ contract LSP8EnumerableTester is LSP8Enumerable {
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        uint256 tokenIdType_,
-        uint256 lsp4TokenType_
+        uint256 lsp4TokenType_,
+        uint256 lsp8TokenIdType_
     )
         LSP8IdentifiableDigitalAsset(
             name_,
             symbol_,
             newOwner_,
-            tokenIdType_,
-            lsp4TokenType_
+            lsp4TokenType_,
+            lsp8TokenIdType_
         )
     {}
 

@@ -34,7 +34,7 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_
-    ) LSP7DigitalAsset(name_, symbol_, newOwner_, false, lsp4TokenType_) {}
+    ) LSP7DigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, false) {}
 
     /**
      * @inheritdoc IERC20Metadata

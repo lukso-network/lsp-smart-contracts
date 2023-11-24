@@ -43,7 +43,7 @@ export type LSP8DeployParams = {
   symbol: string;
   newOwner: string;
   lsp4TokenType: number;
-  tokenIdType: number;
+  lsp8TokenIdType: number;
 };
 
 export type LSP8TestContext = {
@@ -1857,17 +1857,20 @@ export const shouldInitializeLikeLSP8 = (
         .withArgs(symbolKey, expectedSymbolValue);
       expect(await context.lsp8.getData(symbolKey)).to.equal(expectedSymbolValue);
 
-      const tokenTypeKey = ERC725YDataKeys.LSP4['LSP4TokenType'];
+      const lsp4TokenTypeKey = ERC725YDataKeys.LSP4['LSP4TokenType'];
       const expectedTokenTypeValue = abiCoder.encode(
         ['uint256'],
         [context.deployParams.lsp4TokenType],
       );
-      expect(await context.lsp8.getData(tokenTypeKey)).to.equal(expectedTokenTypeValue);
+      await expect(context.initializeTransaction)
+        .to.emit(context.lsp8, 'DataChanged')
+        .withArgs(lsp4TokenTypeKey, expectedTokenTypeValue);
+      expect(await context.lsp8.getData(lsp4TokenTypeKey)).to.equal(expectedTokenTypeValue);
 
       const lsp8TokenIdTypeDataKey = ERC725YDataKeys.LSP8['LSP8TokenIdType'];
       const expectedTokenIdDataValue = abiCoder.encode(
         ['uint256'],
-        [context.deployParams.tokenIdType],
+        [context.deployParams.lsp8TokenIdType],
       );
       await expect(context.initializeTransaction)
         .to.emit(context.lsp8, 'DataChanged')

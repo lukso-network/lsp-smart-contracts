@@ -20,7 +20,7 @@ describe('LSP8MintableInit with proxy', () => {
       symbol: 'MNTBL',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
+      lsp8TokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
     };
 
     const LSP8MintableInit: LSP8MintableInit = await new LSP8MintableInit__factory(
@@ -38,8 +38,8 @@ describe('LSP8MintableInit with proxy', () => {
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
-      context.deployParams.tokenIdType,
       context.deployParams.lsp4TokenType,
+      context.deployParams.lsp8TokenIdType,
     );
   };
 

@@ -18,15 +18,15 @@ contract LSP7InitTester is
         string memory tokenName_,
         string memory tokenSymbol_,
         address newOwner_,
-        bool isNonDivisible_,
-        uint256 lsp4TokenType_
+        uint256 lsp4TokenType_,
+        bool isNonDivisible_
     ) public initializer {
         LSP7DigitalAssetInitAbstract._initialize(
             tokenName_,
             tokenSymbol_,
             newOwner_,
-            isNonDivisible_,
-            lsp4TokenType_
+            lsp4TokenType_,
+            isNonDivisible_
         );
     }
 

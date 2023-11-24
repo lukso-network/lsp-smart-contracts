@@ -17,16 +17,16 @@ describe('LSP7CappedSupply with constructor', () => {
       name: 'LSP7 capped supply - deployed with constructor',
       symbol: 'CAP',
       newOwner: accounts.owner.address,
-      tokenSupplyCap: ethers.BigNumber.from('2'),
       lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
+      tokenSupplyCap: ethers.BigNumber.from('2'),
     };
 
     const lsp7CappedSupply = await new LSP7CappedSupplyTester__factory(accounts.owner).deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
-      deployParams.tokenSupplyCap,
       deployParams.lsp4TokenType,
+      deployParams.tokenSupplyCap,
     );
 
     return { accounts, lsp7CappedSupply, deployParams };

@@ -15,15 +15,15 @@ contract LSP7CappedSupplyInitTester is LSP7CappedSupplyInitAbstract {
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        uint256 tokenSupplyCap_,
-        uint256 lsp4TokenType_
+        uint256 lsp4TokenType_,
+        uint256 tokenSupplyCap_
     ) public virtual initializer {
         LSP7DigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
-            true,
-            lsp4TokenType_
+            lsp4TokenType_,
+            true
         );
         LSP7CappedSupplyInitAbstract._initialize(tokenSupplyCap_);
     }

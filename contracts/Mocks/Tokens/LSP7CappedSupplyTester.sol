@@ -13,10 +13,10 @@ contract LSP7CappedSupplyTester is LSP7CappedSupply {
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        uint256 tokenSupplyCap_,
-        uint256 lsp4TokenType_
+        uint256 lsp4TokenType_,
+        uint256 tokenSupplyCap_
     )
-        LSP7DigitalAsset(name_, symbol_, newOwner_, true, lsp4TokenType_)
+        LSP7DigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, true)
         LSP7CappedSupply(tokenSupplyCap_)
     {}
 

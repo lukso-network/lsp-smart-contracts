@@ -1379,8 +1379,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
         'My LSP7 Token',
         'LSP7',
         context.universalProfile.address,
-        false,
         LSP4_TOKEN_TYPES.TOKEN,
+        false,
       );
 
       const permissionKeys = [

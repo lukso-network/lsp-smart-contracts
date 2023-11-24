@@ -9,7 +9,7 @@ contract LSP7MintWhenDeployed is LSP7DigitalAsset {
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_
-    ) LSP7DigitalAsset(name_, symbol_, newOwner_, false, lsp4TokenType_) {
+    ) LSP7DigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, false) {
         _mint(newOwner_, 1_000, true, "");
     }
 }

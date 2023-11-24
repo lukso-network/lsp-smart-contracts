@@ -62,9 +62,9 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
      * @param newOwner_ The owner of the the token-Metadata
-     * @param tokenIdType_ The type of tokenIds (= NFTs) that this contract will create.
-     * Available options are: NUMBER = `0`; STRING = `1`; UNIQUE_ID = `2`; HASH = `3`; ADDRESS = `4`.
      * @param lsp4TokenType_ The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection).
+     * @param lsp8TokenIdType_ The type of tokenIds (= NFTs) that this contract will create.
+     * Available options are: NUMBER = `0`; STRING = `1`; UNIQUE_ID = `2`; HASH = `3`; ADDRESS = `4`.
      *
      * @custom:warning Make sure the tokenId type provided on deployment is correct, as it can only be set once
      * and cannot be changed in the ERC725Y storage after the contract has been initialized.
@@ -73,8 +73,8 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        uint256 tokenIdType_,
-        uint256 lsp4TokenType_
+        uint256 lsp4TokenType_,
+        uint256 lsp8TokenIdType_
     ) internal virtual onlyInitializing {
         LSP4DigitalAssetMetadataInitAbstract._initialize(
             name_,
@@ -85,7 +85,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
 
         LSP4DigitalAssetMetadataInitAbstract._setData(
             _LSP8_TOKENID_TYPE_KEY,
-            abi.encode(tokenIdType_)
+            abi.encode(lsp8TokenIdType_)
         );
     }
 

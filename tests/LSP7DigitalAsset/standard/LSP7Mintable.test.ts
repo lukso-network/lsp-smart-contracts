@@ -25,8 +25,8 @@ describe('LSP7Mintable with constructor', () => {
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
-      deployParams.isNFT,
       deployParams.lsp4TokenType,
+      deployParams.isNFT,
     );
 
     return { accounts, lsp7Mintable, deployParams };

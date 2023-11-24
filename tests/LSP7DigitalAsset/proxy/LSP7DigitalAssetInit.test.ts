@@ -59,12 +59,12 @@ describe('LSP7DigitalAssetInit with proxy', () => {
     };
 
   const initializeProxy = async (context: LSP7TestContext) => {
-    return context.lsp7['initialize(string,string,address,bool,uint256)'](
+    return context.lsp7['initialize(string,string,address,uint256,bool)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
-      false,
       context.deployParams.lsp4TokenType,
+      false,
     );
   };
 
@@ -77,12 +77,12 @@ describe('LSP7DigitalAssetInit with proxy', () => {
 
     it('should revert when initializing with address(0) as owner', async () => {
       await expect(
-        context.lsp7['initialize(string,string,address,bool,uint256)'](
+        context.lsp7['initialize(string,string,address,uint256,bool)'](
           context.deployParams.name,
           context.deployParams.symbol,
           ethers.constants.AddressZero,
-          false,
           12345,
+          false,
         ),
       ).to.be.revertedWithCustomError(context.lsp7, 'OwnableCannotSetZeroAddressAsOwner');
     });
@@ -113,12 +113,12 @@ describe('LSP7DigitalAssetInit with proxy', () => {
     shouldBehaveLikeLSP4DigitalAssetMetadata(async () => {
       const lsp4Context = await buildLSP4DigitalAssetMetadataTestContext();
 
-      await lsp4Context.contract['initialize(string,string,address,bool,uint256)'](
+      await lsp4Context.contract['initialize(string,string,address,uint256,bool)'](
         'LSP7 - deployed with proxy',
         'TKN',
         lsp4Context.deployParams.owner.address,
-        false,
         lsp4Context.deployParams.lsp4TokenType,
+        false,
       );
 
       return lsp4Context;

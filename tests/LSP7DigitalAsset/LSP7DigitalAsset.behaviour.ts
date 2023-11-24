@@ -2261,6 +2261,9 @@ export const shouldInitializeLikeLSP7 = (
         ['uint256'],
         [context.deployParams.lsp4TokenType],
       );
+      await expect(context.initializeTransaction)
+        .to.emit(context.lsp7, 'DataChanged')
+        .withArgs(tokenTypeKey, expectedTokenTypeValue);
       expect(await context.lsp7.getData(tokenTypeKey)).to.equal(expectedTokenTypeValue);
     });
   });

@@ -17,15 +17,15 @@ describe('LSP8Mintable with constructor', () => {
       symbol: 'LSP8 MNTBL',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
+      lsp8TokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
     };
 
     const lsp8Mintable: LSP8Mintable = await new LSP8Mintable__factory(accounts.owner).deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
-      deployParams.tokenIdType,
       deployParams.lsp4TokenType,
+      deployParams.lsp8TokenIdType,
     );
 
     return { accounts, lsp8Mintable, deployParams };

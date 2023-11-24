@@ -17,16 +17,16 @@ contract LSP8CompatibleERC721Tester is LSP8CompatibleERC721 {
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        uint256 tokenIdType_,
-        bytes memory tokenURIValue_,
-        uint256 lsp4TokenType_
+        uint256 lsp4TokenType_,
+        uint256 lsp8TokenIdType_,
+        bytes memory tokenURIValue_
     )
         LSP8CompatibleERC721(
             name_,
             symbol_,
             newOwner_,
-            tokenIdType_,
-            lsp4TokenType_
+            lsp4TokenType_,
+            lsp8TokenIdType_
         )
     {
         _setData(_LSP4_METADATA_KEY, tokenURIValue_);

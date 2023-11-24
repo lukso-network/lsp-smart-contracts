@@ -35,8 +35,8 @@ constructor(
   string name_,
   string symbol_,
   address newOwner_,
-  uint256 tokenIdType_,
-  uint256 lsp4TokenType_
+  uint256 lsp4TokenType_,
+  uint256 lsp8TokenIdType_
 );
 ```
 
@@ -44,13 +44,13 @@ _Deploying a `LSP8Mintable` token contract with: token name = `name_`, token sym
 
 #### Parameters
 
-| Name             |   Type    | Description                                                                                          |
-| ---------------- | :-------: | ---------------------------------------------------------------------------------------------------- |
-| `name_`          | `string`  | The name of the token.                                                                               |
-| `symbol_`        | `string`  | The symbol of the token.                                                                             |
-| `newOwner_`      | `address` | The owner of the token contract.                                                                     |
-| `tokenIdType_`   | `uint256` | -                                                                                                    |
-| `lsp4TokenType_` | `uint256` | The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection). |
+| Name               |   Type    | Description                                                                                                                                                  |
+| ------------------ | :-------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name_`            | `string`  | The name of the token.                                                                                                                                       |
+| `symbol_`          | `string`  | The symbol of the token.                                                                                                                                     |
+| `newOwner_`        | `address` | The owner of the token contract.                                                                                                                             |
+| `lsp4TokenType_`   | `uint256` | The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection).                                                         |
+| `lsp8TokenIdType_` | `uint256` | The type of tokenIds (= NFTs) that this contract will create. Available options are: NUMBER = `0`; STRING = `1`; UNIQUE_ID = `2`; HASH = `3`; ADDRESS = `4`. |
 
 <br/>
 

@@ -268,8 +268,8 @@ contract ExecuteUnrestrictedController is UniversalProfileTestsHelper {
             "TestLSP8",
             "TSTLSP8",
             digitalAssetsOwner,
-            _LSP8_TOKENID_TYPE_NUMBER,
-            _LSP4_TOKEN_TYPE_NFT
+            _LSP4_TOKEN_TYPE_NFT,
+            _LSP8_TOKENID_TYPE_NUMBER
         );
 
         bytes32 tokenID = bytes32(uint256(1));

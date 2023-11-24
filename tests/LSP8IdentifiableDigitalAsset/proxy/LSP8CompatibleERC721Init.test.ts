@@ -33,7 +33,7 @@ describe('LSP8CompatibleERC721Init with proxy', () => {
       symbol: 'NFT',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
+      lsp8TokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
       lsp4MetadataValue,
     };
 
@@ -50,13 +50,13 @@ describe('LSP8CompatibleERC721Init with proxy', () => {
   };
 
   const initializeProxy = async (context: LSP8CompatibleERC721TestContext) => {
-    return context.lsp8CompatibleERC721['initialize(string,string,address,uint256,bytes,uint256)'](
+    return context.lsp8CompatibleERC721['initialize(string,string,address,uint256,uint256,bytes)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
-      context.deployParams.tokenIdType,
-      context.deployParams.lsp4MetadataValue,
       context.deployParams.lsp4TokenType,
+      context.deployParams.lsp8TokenIdType,
+      context.deployParams.lsp4MetadataValue,
     );
   };
 
@@ -74,9 +74,9 @@ describe('LSP8CompatibleERC721Init with proxy', () => {
           'XXXXXXXXXXX',
           'XXX',
           randomCaller.address,
-          0,
-          '0x',
           12345,
+          6789,
+          '0x',
         ),
       ).to.be.revertedWith('Initializable: contract is already initialized');
     });
@@ -95,8 +95,8 @@ describe('LSP8CompatibleERC721Init with proxy', () => {
           'XXXXXXXXXXX',
           'XXX',
           randomCaller.address,
-          0,
           12345,
+          6789,
         ),
       ).to.be.revertedWith('Initializable: contract is already initialized');
     });

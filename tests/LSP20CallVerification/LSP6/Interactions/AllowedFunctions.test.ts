@@ -190,16 +190,16 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
         'LSP7 Token',
         'TKN',
         context.accounts[0].address,
-        false,
         LSP4_TOKEN_TYPES.TOKEN,
+        false,
       );
 
       lsp8Contract = await new LSP8Mintable__factory(context.accounts[0]).deploy(
         'LSP8 NFT',
         'NFT',
         context.accounts[0].address,
-        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
         LSP4_TOKEN_TYPES.NFT,
+        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
       );
 
       await lsp7Contract

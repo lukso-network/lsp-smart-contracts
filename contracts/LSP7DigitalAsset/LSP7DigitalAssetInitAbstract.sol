@@ -46,17 +46,17 @@ abstract contract LSP7DigitalAssetInitAbstract is
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        bool isNonDivisible_,
-        uint256 lsp4TokenType_
+        uint256 lsp4TokenType_,
+        bool isNonDivisible_
     ) internal virtual onlyInitializing {
-        _isNonDivisible = isNonDivisible_;
-
         LSP4DigitalAssetMetadataInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
             lsp4TokenType_
         );
+
+        _isNonDivisible = isNonDivisible_;
     }
 
     // fallback function

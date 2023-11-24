@@ -45,8 +45,8 @@ abstract contract LSP7CompatibleERC20InitAbstract is
             name_,
             symbol_,
             newOwner_,
-            false,
-            lsp4TokenType_
+            lsp4TokenType_,
+            false
         );
     }
 

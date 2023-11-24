@@ -17,7 +17,7 @@ type LSP8BurnableInitTestContext = {
     symbol: string;
     newOwner: string;
     lsp4TokenType: number;
-    tokenIdType: number;
+    lsp8TokenIdType: number;
   };
 };
 
@@ -29,7 +29,7 @@ describe('LSP8BurnableInit with proxy', () => {
       symbol: 'BRN',
       newOwner: accounts[0].address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
+      lsp8TokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
     };
 
     const lsp8BurnableImplementation = await new LSP8BurnableInitTester__factory(
@@ -46,8 +46,8 @@ describe('LSP8BurnableInit with proxy', () => {
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
-      context.deployParams.tokenIdType,
       context.deployParams.lsp4TokenType,
+      context.deployParams.lsp8TokenIdType,
     );
   };
 

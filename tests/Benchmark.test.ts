@@ -129,8 +129,8 @@ describe('⛽📊 Gas Benchmark', () => {
         'Token',
         'MTKN',
         accounts[0].address,
-        false,
         LSP4_TOKEN_TYPES.TOKEN,
+        false,
       );
 
       const lsp7DeployTransaction = lsp7Mintable.deployTransaction;
@@ -143,8 +143,8 @@ describe('⛽📊 Gas Benchmark', () => {
         'My NFT',
         'MNFT',
         accounts[0].address,
-        LSP8_TOKEN_ID_TYPES.NUMBER,
         LSP4_TOKEN_TYPES.NFT,
+        LSP8_TOKEN_ID_TYPES.NUMBER,
       );
 
       const lsp8DeployTransaction = lsp8Mintable.deployTransaction;
@@ -554,8 +554,8 @@ describe('⛽📊 Gas Benchmark', () => {
           'Token',
           'MTKN',
           context.mainController.address,
-          false,
           LSP4_TOKEN_TYPES.TOKEN,
+          false,
         );
 
         // deploy a LSP8 token
@@ -563,8 +563,8 @@ describe('⛽📊 Gas Benchmark', () => {
           'My NFT',
           'MNFT',
           context.mainController.address,
-          LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
           LSP4_TOKEN_TYPES.NFT,
+          LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
         );
 
         universalProfile1 = await new UniversalProfile__factory(context.mainController).deploy(
@@ -708,8 +708,8 @@ describe('⛽📊 Gas Benchmark', () => {
             'MetaCoin',
             'MTC',
             context.mainController.address,
-            false,
             LSP4_TOKEN_TYPES.TOKEN,
+            false,
           );
 
           // deploy a LSP8 NFT
@@ -717,8 +717,8 @@ describe('⛽📊 Gas Benchmark', () => {
             'MetaNFT',
             'MNF',
             context.mainController.address,
-            LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
             LSP4_TOKEN_TYPES.NFT,
+            LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
           );
 
           // mint some tokens to the UP
@@ -897,16 +897,16 @@ describe('⛽📊 Gas Benchmark', () => {
             'MetaCoin',
             'MTC',
             context.mainController.address,
-            false,
             LSP4_TOKEN_TYPES.TOKEN,
+            false,
           );
 
           lsp7LyxDai = await new LSP7Mintable__factory(context.mainController).deploy(
             'LyxDai',
             'LDAI',
             context.mainController.address,
-            false,
             LSP4_TOKEN_TYPES.TOKEN,
+            false,
           );
 
           [lsp7MetaCoin, lsp7LyxDai].forEach(async (token) => {
@@ -920,16 +920,16 @@ describe('⛽📊 Gas Benchmark', () => {
             'MetaNFT',
             'MNF',
             context.mainController.address,
-            LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
             LSP4_TOKEN_TYPES.NFT,
+            LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
           );
 
           lsp8LyxPunks = await new LSP8Mintable__factory(context.mainController).deploy(
             'LyxPunks',
             'LPK',
             context.mainController.address,
-            LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
             LSP4_TOKEN_TYPES.NFT,
+            LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
           );
 
           [

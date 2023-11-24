@@ -20,8 +20,8 @@ describe('LSP7CappedSupplyInit with proxy', () => {
       name: 'LSP7 capped supply - deployed with proxy',
       symbol: 'CAP',
       newOwner: accounts.owner.address,
-      tokenSupplyCap: ethers.BigNumber.from('2'),
       lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
+      tokenSupplyCap: ethers.BigNumber.from('2'),
     };
     const lsp7CappedSupplyInit = await new LSP7CappedSupplyInitTester__factory(
       accounts.owner,
@@ -37,8 +37,8 @@ describe('LSP7CappedSupplyInit with proxy', () => {
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
-      context.deployParams.tokenSupplyCap,
       context.deployParams.lsp4TokenType,
+      context.deployParams.tokenSupplyCap,
     );
   };
 

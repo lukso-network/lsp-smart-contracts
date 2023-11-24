@@ -19,7 +19,7 @@ describe('LSP8EnumerableInit with proxy', () => {
       symbol: 'LSP8 NMRBL',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
+      lsp8TokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
     };
 
     const LSP8EnumerableInit: LSP8EnumerableInitTester =
@@ -36,8 +36,8 @@ describe('LSP8EnumerableInit with proxy', () => {
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
-      context.deployParams.tokenIdType,
       context.deployParams.lsp4TokenType,
+      context.deployParams.lsp8TokenIdType,
     );
   };
 

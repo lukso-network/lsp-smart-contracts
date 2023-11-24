@@ -35,8 +35,8 @@ constructor(
   string name_,
   string symbol_,
   address newOwner_,
-  bool isNonDivisible_,
-  uint256 lsp4TokenType_
+  uint256 lsp4TokenType_,
+  bool isNonDivisible_
 );
 ```
 
@@ -49,8 +49,8 @@ _Deploying a `LSP7Mintable` token contract with: token name = `name_`, token sym
 | `name_`           | `string`  | The name of the token.                                                                               |
 | `symbol_`         | `string`  | The symbol of the token.                                                                             |
 | `newOwner_`       | `address` | The owner of the token contract.                                                                     |
-| `isNonDivisible_` |  `bool`   | -                                                                                                    |
 | `lsp4TokenType_`  | `uint256` | The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection). |
+| `isNonDivisible_` |  `bool`   | Specify if the LSP7 token is a fungible or non-fungible token.                                       |
 
 <br/>
 
