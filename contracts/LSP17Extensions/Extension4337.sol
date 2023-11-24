@@ -8,7 +8,7 @@ import {
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {
     ILSP20CallVerifier
-} from "../LSP20CallVerification/ILSP20CallVerifier.sol";
+} from "../../packages/LSP20CallVerification/contracts/ILSP20CallVerifier.sol";
 
 // modules
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";

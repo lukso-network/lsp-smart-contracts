@@ -54,7 +54,7 @@ import {
 } from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 import {
     ILSP20CallVerifier as ILSP20
-} from "../LSP20CallVerification/ILSP20CallVerifier.sol";
+} from "../../packages/LSP20CallVerification/contracts/ILSP20CallVerifier.sol";
 import {
     ILSP25ExecuteRelayCall as ILSP25
 } from "../../packages/LSP25ExecuteRelayCall/contracts/ILSP25ExecuteRelayCall.sol";
@@ -82,7 +82,7 @@ import {
 import {
     _INTERFACEID_LSP20_CALL_VERIFICATION,
     _INTERFACEID_LSP20_CALL_VERIFIER
-} from "../LSP20CallVerification/LSP20Constants.sol";
+} from "../../packages/LSP20CallVerification/contracts/LSP20Constants.sol";
 import {
     _INTERFACEID_LSP25
 } from "../../packages/LSP25ExecuteRelayCall/contracts/LSP25Constants.sol";

@@ -4,7 +4,7 @@ pragma solidity ^0.8.5;
 // interfaces
 import {
     ILSP20CallVerifier as ILSP20
-} from "../../LSP20CallVerification/ILSP20CallVerifier.sol";
+} from "../../../packages/LSP20CallVerification/contracts/ILSP20CallVerifier.sol";
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";

@@ -34,7 +34,7 @@ import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 import {
     LSP20CallVerification
-} from "../LSP20CallVerification/LSP20CallVerification.sol";
+} from "../../packages/LSP20CallVerification/contracts/LSP20CallVerification.sol";
 
 // constants
 import {
@@ -60,7 +60,7 @@ import {
 } from "../LSP17ContractExtension/LSP17Constants.sol";
 import {
     _INTERFACEID_LSP20_CALL_VERIFICATION
-} from "../LSP20CallVerification/LSP20Constants.sol";
+} from "../../packages/LSP20CallVerification/contracts/LSP20Constants.sol";
 
 // errors
 import {

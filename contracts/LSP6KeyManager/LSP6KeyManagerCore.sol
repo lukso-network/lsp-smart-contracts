@@ -12,7 +12,7 @@ import {
 import {ILSP6KeyManager as ILSP6} from "./ILSP6KeyManager.sol";
 import {
     ILSP20CallVerifier as ILSP20
-} from "../LSP20CallVerification/ILSP20CallVerifier.sol";
+} from "../../packages/LSP20CallVerification/contracts/ILSP20CallVerifier.sol";
 import {
     ILSP25ExecuteRelayCall as ILSP25
 } from "../../packages/LSP25ExecuteRelayCall/contracts/ILSP25ExecuteRelayCall.sol";
@@ -68,7 +68,7 @@ import {
     _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITHOUT_POST_VERIFICATION,
     _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITH_POST_VERIFICATION,
     _LSP20_VERIFY_CALL_RESULT_SUCCESS_VALUE
-} from "../LSP20CallVerification/LSP20Constants.sol";
+} from "../../packages/LSP20CallVerification/contracts/LSP20Constants.sol";
 import {
     _INTERFACEID_LSP25
 } from "../../packages/LSP25ExecuteRelayCall/contracts/LSP25Constants.sol";

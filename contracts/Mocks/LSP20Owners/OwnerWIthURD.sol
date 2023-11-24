@@ -11,11 +11,11 @@ import {
 
 import {
     ILSP20CallVerifier
-} from "../../LSP20CallVerification/ILSP20CallVerifier.sol";
+} from "../../../packages/LSP20CallVerification/contracts/ILSP20CallVerifier.sol";
 import {
     _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITH_POST_VERIFICATION,
     _LSP20_VERIFY_CALL_RESULT_SUCCESS_VALUE
-} from "../../LSP20CallVerification/LSP20Constants.sol";
+} from "../../../packages/LSP20CallVerification/contracts/LSP20Constants.sol";
 
 contract OwnerWithURD is ILSP20CallVerifier, ILSP1UniversalReceiver {
     address private immutable _OWNED_CONTRACT;
