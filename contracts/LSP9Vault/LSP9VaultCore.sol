@@ -24,7 +24,7 @@ import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
+import {LSP14Ownable2Step} from "lsp14/contracts/LSP14Ownable2Step.sol";
 import {
     LSP17Extendable
 } from "lsp17contractextension/contracts/LSP17Extendable.sol";
@@ -61,7 +61,7 @@ import {
     _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
 } from "./LSP9Constants.sol";
-import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
+import {_INTERFACEID_LSP14} from "lsp14/contracts/LSP14Constants.sol";
 import {
     _LSP17_EXTENSION_PREFIX
 } from "lsp17contractextension/contracts/LSP17Constants.sol";

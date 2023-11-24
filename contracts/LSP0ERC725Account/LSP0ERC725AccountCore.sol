@@ -20,6 +20,8 @@ import {
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP1Utils} from "lsp1/contracts/LSP1Utils.sol";
 import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
+import {LSP1Utils} from "lsp1/contracts/LSP1Utils.sol";
+import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
 
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
@@ -27,7 +29,7 @@ import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
+import {LSP14Ownable2Step} from "lsp14/contracts/LSP14Ownable2Step.sol";
 import {
     LSP17Extendable
 } from "lsp17contractextension/contracts/LSP17Extendable.sol";
@@ -50,7 +52,7 @@ import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "lsp1/contracts/LSP1Constants.sol";
-import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
+import {_INTERFACEID_LSP14} from "lsp14/contracts/LSP14Constants.sol";
 
 import {
     _LSP17_EXTENSION_PREFIX

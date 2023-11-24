@@ -11,7 +11,7 @@ export const dodocConfig = {
     'contracts/LSP6KeyManager/LSP6KeyManager.sol',
     'contracts/LSP9Vault/LSP9Vault.sol',
     'contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol',
-    'contracts/LSP14Ownable2Step/LSP14Ownable2Step.sol',
+    'lsp14/contracts/LSP14Ownable2Step.sol',
     'contracts/LSP16UniversalFactory/LSP16UniversalFactory.sol',
     'lsp17contractextension/contracts/LSP17Extendable.sol',
     'lsp17contractextension/contracts/LSP17Extension.sol',

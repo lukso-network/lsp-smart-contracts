@@ -18,7 +18,7 @@ import {
 } from "lsp25/contracts/ILSP25ExecuteRelayCall.sol";
 
 // modules
-import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
+import {ILSP14Ownable2Step} from "lsp14/contracts/ILSP14Ownable2Step.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {LSP6SetDataModule} from "./LSP6Modules/LSP6SetDataModule.sol";

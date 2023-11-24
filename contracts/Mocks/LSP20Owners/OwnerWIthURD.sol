@@ -5,9 +5,7 @@ import {
     ILSP1UniversalReceiver
 } from "lsp1/contracts/ILSP1UniversalReceiver.sol";
 
-import {
-    ILSP14Ownable2Step
-} from "../../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
+import {ILSP14Ownable2Step} from "lsp14/contracts/ILSP14Ownable2Step.sol";
 
 import {ILSP20CallVerifier} from "lsp20/contracts/ILSP20CallVerifier.sol";
 import {
