@@ -775,8 +775,8 @@ export const shouldBehaveLikeLSP8 = (
 
                 const typeId = LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification;
                 const packedData = abiCoder.encode(
-                  ['address', 'address', 'bytes32', 'bytes'],
-                  [txParams.from, txParams.to, txParams.tokenId, txParams.data],
+                  ['address', 'address', 'address', 'bytes32', 'bytes'],
+                  [operator.address, txParams.from, txParams.to, txParams.tokenId, txParams.data],
                 );
 
                 await expect(tx)
@@ -874,8 +874,8 @@ export const shouldBehaveLikeLSP8 = (
 
                 const typeId = LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification;
                 const packedData = abiCoder.encode(
-                  ['address', 'address', 'bytes32', 'bytes'],
-                  [txParams.from, txParams.to, txParams.tokenId, txParams.data],
+                  ['address', 'address', 'address', 'bytes32', 'bytes'],
+                  [operator.address, txParams.from, txParams.to, txParams.tokenId, txParams.data],
                 );
 
                 await expect(tx)

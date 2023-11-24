@@ -1307,6 +1307,47 @@ Allows to run custom logic after updating balances, but **before notifiying send
 
 <br/>
 
+### \_notifyTokenOperator
+
+```solidity
+function _notifyTokenOperator(
+  address operator,
+  bytes lsp1Data
+) internal nonpayable;
+```
+
+Attempt to notify the operator `operator` about the `tokenId` being authorized.
+This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP8_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
+If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+
+#### Parameters
+
+| Name       |   Type    | Description                                                                    |
+| ---------- | :-------: | ------------------------------------------------------------------------------ |
+| `operator` | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on. |
+| `lsp1Data` |  `bytes`  | the data to be sent to the `operator` address in the `universalReceiver` call. |
+
+<br/>
+
+### \_notifyTokenSender
+
+```solidity
+function _notifyTokenSender(address from, bytes lsp1Data) internal nonpayable;
+```
+
+Attempt to notify the token sender `from` about the `tokenId` being transferred.
+This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP8_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
+If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+
+#### Parameters
+
+| Name       |   Type    | Description                                                                    |
+| ---------- | :-------: | ------------------------------------------------------------------------------ |
+| `from`     | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on. |
+| `lsp1Data` |  `bytes`  | the data to be sent to the `from` address in the `universalReceiver` call.     |
+
+<br/>
+
 ### \_notifyTokenReceiver
 
 ```solidity
@@ -1317,9 +1358,21 @@ function _notifyTokenReceiver(
 ) internal nonpayable;
 ```
 
-An attempt is made to notify the token receiver about the `tokenId` changing owners
-using LSP1 interface. When force is FALSE the token receiver MUST support LSP1.
-The receiver may revert when the token being sent is not wanted.
+Attempt to notify the token receiver `to` about the `tokenId` being received.
+This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP8_TOKENSRECIPIENT` as typeId, if `to` is a contract that supports the LSP1 interface.
+If `to` is is an EOA or a contract that does not support the LSP1 interface, the behaviour will depend on the `force` boolean flag.
+
+- if `force` is set to `true`, nothing will happen and no notification will be sent.
+
+- if `force` is set to `false, the transaction will revert.
+
+#### Parameters
+
+| Name       |   Type    | Description                                                                                         |
+| ---------- | :-------: | --------------------------------------------------------------------------------------------------- |
+| `to`       | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on.                      |
+| `force`    |  `bool`   | A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not. |
+| `lsp1Data` |  `bytes`  | The data to be sent to the `to` address in the `universalReceiver(...)` call.                       |
 
 <br/>
 

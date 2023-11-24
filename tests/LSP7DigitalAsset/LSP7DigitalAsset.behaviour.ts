@@ -891,8 +891,8 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 
                   const typeId = LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification;
                   const packedData = abiCoder.encode(
-                    ['address', 'address', 'uint256', 'bytes'],
-                    [txParams.from, txParams.to, txParams.amount, txParams.data],
+                    ['address', 'address', 'address', 'uint256', 'bytes'],
+                    [operator.address, txParams.from, txParams.to, txParams.amount, txParams.data],
                   );
 
                   await expect(tx)
@@ -964,8 +964,8 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 
                   const typeId = LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification;
                   const packedData = abiCoder.encode(
-                    ['address', 'address', 'uint256', 'bytes'],
-                    [txParams.from, txParams.to, txParams.amount, txParams.data],
+                    ['address', 'address', 'address', 'uint256', 'bytes'],
+                    [operator.address, txParams.from, txParams.to, txParams.amount, txParams.data],
                   );
 
                   await expect(tx)
