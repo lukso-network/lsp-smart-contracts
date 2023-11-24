@@ -53,8 +53,6 @@ import {
  */
 abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     using EnumerableSet for EnumerableSet.AddressSet;
-    using ERC165Checker for address;
-    using LSP1Utils for address;
 
     // --- Storage
 
@@ -398,7 +396,13 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         _afterTokenTransfer(address(0), to, amount, data);
 
-        bytes memory lsp1Data = abi.encode(address(0), to, amount, data);
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            address(0),
+            to,
+            amount,
+            data
+        );
         _notifyTokenReceiver(to, force, lsp1Data);
     }
 
@@ -460,7 +464,13 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         _afterTokenTransfer(from, address(0), amount, data);
 
-        bytes memory lsp1Data = abi.encode(from, address(0), amount, data);
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            from,
+            address(0),
+            amount,
+            data
+        );
         _notifyTokenSender(from, lsp1Data);
     }
 
@@ -557,7 +567,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         _afterTokenTransfer(from, to, amount, data);
 
-        bytes memory lsp1Data = abi.encode(from, to, amount, data);
+        bytes memory lsp1Data = abi.encode(msg.sender, from, to, amount, data);
 
         _notifyTokenSender(from, lsp1Data);
         _notifyTokenReceiver(to, force, lsp1Data);
@@ -607,17 +617,11 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address operator,
         bytes memory lsp1Data
     ) internal virtual {
-        if (
-            ERC165Checker.supportsERC165InterfaceUnchecked(
-                operator,
-                _INTERFACEID_LSP1
-            )
-        ) {
-            ILSP1(operator).universalReceiver(
-                _TYPEID_LSP7_TOKENOPERATOR,
-                lsp1Data
-            );
-        }
+        LSP1Utils.notifyUniversalReceiver(
+            operator,
+            _TYPEID_LSP7_TOKENOPERATOR,
+            lsp1Data
+        );
     }
 
     /**
@@ -632,14 +636,11 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address from,
         bytes memory lsp1Data
     ) internal virtual {
-        if (
-            ERC165Checker.supportsERC165InterfaceUnchecked(
-                from,
-                _INTERFACEID_LSP1
-            )
-        ) {
-            ILSP1(from).universalReceiver(_TYPEID_LSP7_TOKENSSENDER, lsp1Data);
-        }
+        LSP1Utils.notifyUniversalReceiver(
+            from,
+            _TYPEID_LSP7_TOKENSSENDER,
+            lsp1Data
+        );
     }
 
     /**
@@ -659,7 +660,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         bool force,
         bytes memory lsp1Data
     ) internal virtual {
-        if (to.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
+        if (
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                to,
+                _INTERFACEID_LSP1
+            )
+        ) {
             ILSP1(to).universalReceiver(_TYPEID_LSP7_TOKENSRECIPIENT, lsp1Data);
         } else if (!force) {
             if (to.code.length != 0) {
