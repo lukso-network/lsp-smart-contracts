@@ -52,10 +52,10 @@ contract UniversalReceiverDelegateTokenReentrant is
             typeId == _TYPEID_LSP8_TOKENSRECIPIENT
         ) {
             // if the optional data field when minting/transferring is existing, re-execute the data on token contract
-            if (data.length > 160) {
-                (, , , bytes memory tokenPayload) = abi.decode(
+            if (data.length > 192) {
+                (, , , , bytes memory tokenPayload) = abi.decode(
                     data,
-                    (address, address, uint256, bytes)
+                    (address, address, address, uint256, bytes)
                 );
 
                 bytes memory executePayload = abi.encodeWithSelector(
