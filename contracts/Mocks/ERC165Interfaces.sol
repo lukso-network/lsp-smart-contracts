@@ -80,7 +80,7 @@ import {
 import {
     _INTERFACEID_LSP17_EXTENDABLE,
     _INTERFACEID_LSP17_EXTENSION
-} from "../LSP17ContractExtension/LSP17Constants.sol";
+} from "../../packages/LSP17ContractExtension/contracts/LSP17Constants.sol";
 import {
     _INTERFACEID_LSP20_CALL_VERIFICATION,
     _INTERFACEID_LSP20_CALL_VERIFIER

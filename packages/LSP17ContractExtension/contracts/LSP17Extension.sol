@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {Version} from "../Version.sol";
+import {Version} from "./Version.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // constants

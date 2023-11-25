@@ -35,7 +35,7 @@ import {
 } from "../../../packages/LSP1UniversalReceiver/contracts/LSP1Constants.sol";
 import {
     _LSP17_EXTENSION_PREFIX
-} from "../../LSP17ContractExtension/LSP17Constants.sol";
+} from "../../../packages/LSP17ContractExtension/contracts/LSP17Constants.sol";
 
 // errors
 import {

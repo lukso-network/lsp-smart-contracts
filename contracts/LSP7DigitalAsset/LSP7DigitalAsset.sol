@@ -10,7 +10,9 @@ import {
     LSP4DigitalAssetMetadata
 } from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol";
 import {LSP7DigitalAssetCore} from "./LSP7DigitalAssetCore.sol";
-import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
+import {
+    LSP17Extendable
+} from "../../packages/LSP17ContractExtension/contracts/LSP17Extendable.sol";
 
 // libraries
 import {
@@ -23,7 +25,7 @@ import {LSP7TokenContractCannotHoldValue} from "./LSP7Errors.sol";
 
 import {
     _LSP17_EXTENSION_PREFIX
-} from "../LSP17ContractExtension/LSP17Constants.sol";
+} from "../../packages/LSP17ContractExtension/contracts/LSP17Constants.sol";
 
 // errors
 
@@ -31,7 +33,7 @@ import {
     NoExtensionFoundForFunctionSelector,
     InvalidFunctionSelector,
     InvalidExtensionAddress
-} from "../LSP17ContractExtension/LSP17Errors.sol";
+} from "../../packages/LSP17ContractExtension/contracts/LSP17Errors.sol";
 
 /**
  * @title Implementation of a LSP7 Digital Asset, a contract that represents a fungible token.

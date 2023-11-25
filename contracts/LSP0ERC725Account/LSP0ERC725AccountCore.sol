@@ -35,7 +35,9 @@ import {
 import {
     LSP14Ownable2Step
 } from "../../packages/LSP14Ownable2Step/contracts/LSP14Ownable2Step.sol";
-import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
+import {
+    LSP17Extendable
+} from "../../packages/LSP17ContractExtension/contracts/LSP17Extendable.sol";
 import {
     LSP20CallVerification
 } from "../../packages/LSP20CallVerification/contracts/LSP20CallVerification.sol";
@@ -63,7 +65,7 @@ import {
 
 import {
     _LSP17_EXTENSION_PREFIX
-} from "../LSP17ContractExtension/LSP17Constants.sol";
+} from "../../packages/LSP17ContractExtension/contracts/LSP17Constants.sol";
 import {
     _INTERFACEID_LSP20_CALL_VERIFICATION
 } from "../../packages/LSP20CallVerification/contracts/LSP20Constants.sol";
@@ -75,7 +77,7 @@ import {
 } from "@erc725/smart-contracts/contracts/errors.sol";
 import {
     NoExtensionFoundForFunctionSelector
-} from "../LSP17ContractExtension/LSP17Errors.sol";
+} from "../../packages/LSP17ContractExtension/contracts/LSP17Errors.sol";
 
 /**
  * @title The Core Implementation of [LSP-0-ERC725Account] Standard.
