@@ -7,7 +7,9 @@
       "outputs": ["**/artifacts/**", "types/**", "**/types/**"],
       "cache": true
     },
-    "lint": {},
+    "lint": {
+      "env": ["CONTRACT_VERIFICATION_TESTNET_PK"]
+    },
     "lint:solidity": {},
     "clean": {},
     "test": {
