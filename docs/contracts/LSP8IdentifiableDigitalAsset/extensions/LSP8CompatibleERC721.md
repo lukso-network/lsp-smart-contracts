@@ -1577,7 +1577,7 @@ Emitted when the allowance of a `spender` for an `owner` is set by a call to [`a
 event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 ```
 
-Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
+Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to `approved`.
 
 #### Parameters
 
