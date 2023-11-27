@@ -325,7 +325,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
      * @inheritdoc LSP8IdentifiableDigitalAssetCore
      *
      * @custom:events
-     * - LSP7 {AuthorizedOperator} event.
+     * - LSP7 {OperatorAuthorizationChanged} event.
      * - ERC721 {Approval} event.
      */
     function authorizeOperator(
@@ -353,7 +353,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         bool isAdded = _operators[tokenId].add(operator);
         if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
 
-        emit AuthorizedOperator(
+        emit OperatorAuthorizationChanged(
             operator,
             tokenOwner,
             tokenId,

@@ -140,7 +140,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool isAdded = _operators[tokenId].add(operator);
         if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
 
-        emit AuthorizedOperator(
+        emit OperatorAuthorizationChanged(
             operator,
             tokenOwner,
             tokenId,
@@ -296,7 +296,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool isRemoved = _operators[tokenId].remove(operator);
         if (!isRemoved) revert LSP8NonExistingOperator(operator, tokenId);
 
-        emit RevokedOperator(
+        emit OperatorRevoked(
             operator,
             tokenOwner,
             tokenId,
