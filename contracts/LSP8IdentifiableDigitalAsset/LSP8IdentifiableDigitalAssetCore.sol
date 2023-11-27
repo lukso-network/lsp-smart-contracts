@@ -133,7 +133,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bytes32 tokenId,
         bytes32 dataKey,
         bytes memory dataValue
-    ) public virtual override {
+    ) public virtual override onlyOwner {
         _setTokenIdData(tokenId, dataKey, dataValue);
     }
 
@@ -144,9 +144,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bytes32[] memory tokenIds,
         bytes32[] memory dataKeys,
         bytes[] memory dataValues
-    ) public virtual override {
+    ) public virtual override onlyOwner {
         if (
-            tokenIds.length != dataKeys.length &&
+            tokenIds.length != dataKeys.length ||
             dataKeys.length != dataValues.length
         ) {
             revert LSP8TokenIdsDataLengthMismatch();
@@ -612,6 +612,14 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         _notifyTokenReceiver(to, force, lsp1Data);
     }
 
+    /**
+     * @dev Sets data for a specific `tokenId` and `dataKey` in the ERC725Y storage
+     * The ERC725Y data key is the hash of the `tokenId` and `dataKey` concatenated
+     * @param tokenId The unique identifier for a token.
+     * @param dataKey The key for the data to set.
+     * @param dataValue The value to set for the given data key.
+     * @custom:events {TokenIdDataChanged} event.
+     */
     function _setTokenIdData(
         bytes32 tokenId,
         bytes32 dataKey,
@@ -621,6 +629,13 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         emit TokenIdDataChanged(tokenId, dataKey, dataValue);
     }
 
+    /**
+     * @dev Retrieves data for a specific `tokenId` and `dataKey` from the ERC725Y storage
+     * The ERC725Y data key is the hash of the `tokenId` and `dataKey` concatenated
+     * @param tokenId The unique identifier for a token.
+     * @param dataKey The key for the data to retrieve.
+     * @return dataValues The data value associated with the given `tokenId` and `dataKey`.
+     */
     function _getTokenIdData(
         bytes32 tokenId,
         bytes32 dataKey
