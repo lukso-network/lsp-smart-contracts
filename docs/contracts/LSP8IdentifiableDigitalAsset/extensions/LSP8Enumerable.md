@@ -1117,6 +1117,25 @@ function _setTokenIdData(
 ) internal nonpayable;
 ```
 
+Sets data for a specific `tokenId` and `dataKey` in the ERC725Y storage
+The ERC725Y data key is the hash of the `tokenId` and `dataKey` concatenated
+
+<blockquote>
+
+**Emitted events:**
+
+- [`TokenIdDataChanged`](#tokeniddatachanged) event.
+
+</blockquote>
+
+#### Parameters
+
+| Name        |   Type    | Description                              |
+| ----------- | :-------: | ---------------------------------------- |
+| `tokenId`   | `bytes32` | The unique identifier for a token.       |
+| `dataKey`   | `bytes32` | The key for the data to set.             |
+| `dataValue` |  `bytes`  | The value to set for the given data key. |
+
 <br/>
 
 ### \_getTokenIdData
@@ -1127,6 +1146,22 @@ function _getTokenIdData(
   bytes32 dataKey
 ) internal view returns (bytes dataValues);
 ```
+
+Retrieves data for a specific `tokenId` and `dataKey` from the ERC725Y storage
+The ERC725Y data key is the hash of the `tokenId` and `dataKey` concatenated
+
+#### Parameters
+
+| Name      |   Type    | Description                        |
+| --------- | :-------: | ---------------------------------- |
+| `tokenId` | `bytes32` | The unique identifier for a token. |
+| `dataKey` | `bytes32` | The key for the data to retrieve.  |
+
+#### Returns
+
+| Name         |  Type   | Description                                                       |
+| ------------ | :-----: | ----------------------------------------------------------------- |
+| `dataValues` | `bytes` | The data value associated with the given `tokenId` and `dataKey`. |
 
 <br/>
 

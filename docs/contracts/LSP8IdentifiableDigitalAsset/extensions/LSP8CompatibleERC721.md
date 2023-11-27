@@ -1357,6 +1357,25 @@ function _setTokenIdData(
 ) internal nonpayable;
 ```
 
+Sets data for a specific `tokenId` and `dataKey` in the ERC725Y storage
+The ERC725Y data key is the hash of the `tokenId` and `dataKey` concatenated
+
+<blockquote>
+
+**Emitted events:**
+
+- [`TokenIdDataChanged`](#tokeniddatachanged) event.
+
+</blockquote>
+
+#### Parameters
+
+| Name        |   Type    | Description                              |
+| ----------- | :-------: | ---------------------------------------- |
+| `tokenId`   | `bytes32` | The unique identifier for a token.       |
+| `dataKey`   | `bytes32` | The key for the data to set.             |
+| `dataValue` |  `bytes`  | The value to set for the given data key. |
+
 <br/>
 
 ### \_getTokenIdData
@@ -1367,6 +1386,22 @@ function _getTokenIdData(
   bytes32 dataKey
 ) internal view returns (bytes dataValues);
 ```
+
+Retrieves data for a specific `tokenId` and `dataKey` from the ERC725Y storage
+The ERC725Y data key is the hash of the `tokenId` and `dataKey` concatenated
+
+#### Parameters
+
+| Name      |   Type    | Description                        |
+| --------- | :-------: | ---------------------------------- |
+| `tokenId` | `bytes32` | The unique identifier for a token. |
+| `dataKey` | `bytes32` | The key for the data to retrieve.  |
+
+#### Returns
+
+| Name         |  Type   | Description                                                       |
+| ------------ | :-----: | ----------------------------------------------------------------- |
+| `dataValues` | `bytes` | The data value associated with the given `tokenId` and `dataKey`. |
 
 <br/>
 
@@ -1550,7 +1585,7 @@ Approve `operator` to operate on all tokens of `tokensOwner`.
 event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
 ```
 
-Emitted when the allowance of a `spender` for an `owner` is set by a call to [`approve`](#approve). `value` is the new allowance.
+Emitted when `owner` enables `approved` to manage the `tokenId` token.
 
 #### Parameters
 
@@ -1577,7 +1612,7 @@ Emitted when the allowance of a `spender` for an `owner` is set by a call to [`a
 event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 ```
 
-Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to `approved`.
+Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
 
 #### Parameters
 
@@ -1770,7 +1805,7 @@ Emitted when `tokenId` token is transferred from the `from` to the `to` address.
 event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 ```
 
-Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.
+Emitted when `tokenId` token is transferred from `from` to `to`.
 
 #### Parameters
 
