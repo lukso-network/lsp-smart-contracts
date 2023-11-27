@@ -75,39 +75,6 @@ Reverts whenever someone tries to send native tokens to a LSP8 contract.
 
 <br/>
 
-### \_getTokenIdData
-
-:::note References
-
-- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#_gettokeniddata)
-- Solidity implementation: [`LSP8CompatibleERC721.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721.sol)
-- Function signature: `_getTokenIdData(bytes32,bytes32)`
-- Function selector: `0x7e34d3e2`
-
-:::
-
-```solidity
-function _getTokenIdData(
-  bytes32 tokenId,
-  bytes32 dataKey
-) external view returns (bytes dataValues);
-```
-
-#### Parameters
-
-| Name      |   Type    | Description |
-| --------- | :-------: | ----------- |
-| `tokenId` | `bytes32` | -           |
-| `dataKey` | `bytes32` | -           |
-
-#### Returns
-
-| Name         |  Type   | Description |
-| ------------ | :-----: | ----------- |
-| `dataValues` | `bytes` | -           |
-
-<br/>
-
 ### approve
 
 :::note References
@@ -1269,18 +1236,6 @@ once the identifiable digital asset contract has been deployed.
 
 <br/>
 
-### \_setTokenIdData
-
-```solidity
-function _setTokenIdData(
-  bytes32 tokenId,
-  bytes32 dataKey,
-  bytes dataValue
-) internal nonpayable;
-```
-
-<br/>
-
 ### \_isOperatorOrOwner
 
 ```solidity
@@ -1388,6 +1343,29 @@ function _transfer(
   bool force,
   bytes data
 ) internal nonpayable;
+```
+
+<br/>
+
+### \_setTokenIdData
+
+```solidity
+function _setTokenIdData(
+  bytes32 tokenId,
+  bytes32 dataKey,
+  bytes dataValue
+) internal nonpayable;
+```
+
+<br/>
+
+### \_getTokenIdData
+
+```solidity
+function _getTokenIdData(
+  bytes32 tokenId,
+  bytes32 dataKey
+) internal view returns (bytes dataValues);
 ```
 
 <br/>
@@ -1599,7 +1577,7 @@ Emitted when the allowance of a `spender` for an `owner` is set by a call to [`a
 event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 ```
 
-Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to `approved`.
+Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
 
 #### Parameters
 

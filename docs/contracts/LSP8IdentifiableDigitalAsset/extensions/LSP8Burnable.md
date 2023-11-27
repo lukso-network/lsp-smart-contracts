@@ -75,39 +75,6 @@ Reverts whenever someone tries to send native tokens to a LSP8 contract.
 
 <br/>
 
-### \_getTokenIdData
-
-:::note References
-
-- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#_gettokeniddata)
-- Solidity implementation: [`LSP8Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol)
-- Function signature: `_getTokenIdData(bytes32,bytes32)`
-- Function selector: `0x7e34d3e2`
-
-:::
-
-```solidity
-function _getTokenIdData(
-  bytes32 tokenId,
-  bytes32 dataKey
-) external view returns (bytes dataValues);
-```
-
-#### Parameters
-
-| Name      |   Type    | Description |
-| --------- | :-------: | ----------- |
-| `tokenId` | `bytes32` | -           |
-| `dataKey` | `bytes32` | -           |
-
-#### Returns
-
-| Name         |  Type   | Description |
-| ------------ | :-----: | ----------- |
-| `dataValues` | `bytes` | -           |
-
-<br/>
-
 ### authorizeOperator
 
 :::note References
@@ -919,18 +886,6 @@ once the identifiable digital asset contract has been deployed.
 
 <br/>
 
-### \_setTokenIdData
-
-```solidity
-function _setTokenIdData(
-  bytes32 tokenId,
-  bytes32 dataKey,
-  bytes dataValue
-) internal nonpayable;
-```
-
-<br/>
-
 ### \_isOperatorOrOwner
 
 ```solidity
@@ -1144,6 +1099,29 @@ all the parameters in the calldata packed encoded.
 | `tokenId` | `bytes32` | The token to transfer.                                                                                                     |
 | `force`   |  `bool`   | When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard. |
 | `data`    |  `bytes`  | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.        |
+
+<br/>
+
+### \_setTokenIdData
+
+```solidity
+function _setTokenIdData(
+  bytes32 tokenId,
+  bytes32 dataKey,
+  bytes dataValue
+) internal nonpayable;
+```
+
+<br/>
+
+### \_getTokenIdData
+
+```solidity
+function _getTokenIdData(
+  bytes32 tokenId,
+  bytes32 dataKey
+) internal view returns (bytes dataValues);
+```
 
 <br/>
 
