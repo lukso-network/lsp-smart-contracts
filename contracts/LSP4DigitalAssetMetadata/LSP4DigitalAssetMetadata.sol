@@ -6,9 +6,6 @@ import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {LSP4DigitalAssetMetadataCore} from "./LSP4DigitalAssetMetadataCore.sol";
 
-// libraries
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-
 // constants
 import {
     _LSP4_SUPPORTED_STANDARDS_KEY,
@@ -16,12 +13,6 @@ import {
     _LSP4_TOKEN_NAME_KEY,
     _LSP4_TOKEN_SYMBOL_KEY
 } from "./LSP4Constants.sol";
-
-// errors
-import {
-    LSP4TokenNameNotEditable,
-    LSP4TokenSymbolNotEditable
-} from "./LSP4Errors.sol";
 
 /**
  * @title Implementation of a LSP4DigitalAssetMetadata contract that stores the **Token-Metadata** (`LSP4TokenName` and `LSP4TokenSymbol`) in its ERC725Y data store.
@@ -45,13 +36,13 @@ abstract contract LSP4DigitalAssetMetadata is
         address initialOwner_
     ) ERC725Y(initialOwner_) {
         // set data key SupportedStandards:LSP4DigitalAsset
-        super._setData(
+        ERC725YCore._setData(
             _LSP4_SUPPORTED_STANDARDS_KEY,
             _LSP4_SUPPORTED_STANDARDS_VALUE
         );
 
-        super._setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
-        super._setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
+        ERC725YCore._setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
+        ERC725YCore._setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
     }
 
     /**

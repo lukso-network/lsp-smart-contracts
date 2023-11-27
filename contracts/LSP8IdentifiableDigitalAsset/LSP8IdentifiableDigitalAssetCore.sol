@@ -126,15 +126,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
     // --- TokenId Metadata functionality
 
-    function _setTokenIdData(
-        bytes32 tokenId,
-        bytes32 dataKey,
-        bytes memory dataValue
-    ) internal virtual {
-        _store[keccak256(bytes.concat(tokenId, dataKey))] = dataValue;
-        emit TokenIdDataChanged(tokenId, dataKey, dataValue);
-    }
-
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
@@ -173,13 +164,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 ++i;
             }
         }
-    }
-
-    function _getTokenIdData(
-        bytes32 tokenId,
-        bytes32 dataKey
-    ) public view virtual returns (bytes memory dataValues) {
-        return _store[keccak256(bytes.concat(tokenId, dataKey))];
     }
 
     /**
@@ -626,6 +610,22 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         from.notifyUniversalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
         _notifyTokenReceiver(to, force, lsp1Data);
+    }
+
+    function _setTokenIdData(
+        bytes32 tokenId,
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) internal virtual {
+        _store[keccak256(bytes.concat(tokenId, dataKey))] = dataValue;
+        emit TokenIdDataChanged(tokenId, dataKey, dataValue);
+    }
+
+    function _getTokenIdData(
+        bytes32 tokenId,
+        bytes32 dataKey
+    ) internal view virtual returns (bytes memory dataValues) {
+        return _store[keccak256(bytes.concat(tokenId, dataKey))];
     }
 
     /**
