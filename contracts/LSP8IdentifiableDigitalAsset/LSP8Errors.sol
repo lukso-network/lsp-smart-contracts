@@ -87,3 +87,9 @@ error LSP8TokenContractCannotHoldValue();
  * It can be set only once inside the constructor/initializer when the identifiable digital asset contract is being deployed.
  */
 error LSP8TokenIdTypeNotEditable();
+
+/**
+ * @dev Reverts when a batch call failed.
+ * @notice Batch call failed.
+ */
+error LSP8BatchCallFailed(uint256 callIndex);
