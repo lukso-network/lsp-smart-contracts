@@ -1286,7 +1286,7 @@ function _revertWithLSP20DefaultError(
 :::
 
 ```solidity
-event ContractCreated(uint256 indexed operationType, address indexed contractAddress, uint256 indexed value, bytes32 salt);
+event ContractCreated(uint256 indexed operationType, address indexed contractAddress, uint256 value, bytes32 indexed salt);
 ```
 
 _Deployed new contract at address `contractAddress` and funded with `value` wei (deployed using opcode: `operationType`)._
@@ -1299,8 +1299,8 @@ Emitted when a new contract was created and deployed.
 | ------------------------------- | :-------: | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `operationType` **`indexed`**   | `uint256` | The opcode used to deploy the contract (`CREATE` or `CREATE2`).                                                                           |
 | `contractAddress` **`indexed`** | `address` | The created contract address.                                                                                                             |
-| `value` **`indexed`**           | `uint256` | The amount of native tokens (in Wei) sent to fund the created contract on deployment.                                                     |
-| `salt`                          | `bytes32` | The salt used to deterministically deploy the contract (`CREATE2` only). If `CREATE` opcode is used, the salt value will be `bytes32(0)`. |
+| `value`                         | `uint256` | The amount of native tokens (in Wei) sent to fund the created contract on deployment.                                                     |
+| `salt` **`indexed`**            | `bytes32` | The salt used to deterministically deploy the contract (`CREATE2` only). If `CREATE` opcode is used, the salt value will be `bytes32(0)`. |
 
 <br/>
 
@@ -1344,7 +1344,7 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 :::
 
 ```solidity
-event Executed(uint256 indexed operationType, address indexed target, uint256 indexed value, bytes4 selector);
+event Executed(uint256 indexed operationType, address indexed target, uint256 value, bytes4 indexed selector);
 ```
 
 _Called address `target` using `operationType` with `value` wei and `data`._
@@ -1357,8 +1357,8 @@ Emitted when calling an address `target` (EOA or contract) with `value`.
 | ----------------------------- | :-------: | ---------------------------------------------------------------------------------------------------- |
 | `operationType` **`indexed`** | `uint256` | The low-level call opcode used to call the `target` address (`CALL`, `STATICALL` or `DELEGATECALL`). |
 | `target` **`indexed`**        | `address` | The address to call. `target` will be unused if a contract is created (operation types 1 and 2).     |
-| `value` **`indexed`**         | `uint256` | The amount of native tokens transferred along the call (in Wei).                                     |
-| `selector`                    | `bytes4`  | The first 4 bytes (= function selector) of the data sent with the call.                              |
+| `value`                       | `uint256` | The amount of native tokens transferred along the call (in Wei).                                     |
+| `selector` **`indexed`**      | `bytes4`  | The first 4 bytes (= function selector) of the data sent with the call.                              |
 
 <br/>
 
