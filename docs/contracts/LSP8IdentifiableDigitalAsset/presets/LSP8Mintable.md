@@ -1248,6 +1248,47 @@ Allows to run custom logic after updating balances, but **before notifiying send
 
 <br/>
 
+### \_notifyTokenOperator
+
+```solidity
+function _notifyTokenOperator(
+  address operator,
+  bytes lsp1Data
+) internal nonpayable;
+```
+
+Attempt to notify the operator `operator` about the `tokenId` being authorized.
+This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP8_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
+If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+
+#### Parameters
+
+| Name       |   Type    | Description                                                                    |
+| ---------- | :-------: | ------------------------------------------------------------------------------ |
+| `operator` | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on. |
+| `lsp1Data` |  `bytes`  | the data to be sent to the `operator` address in the `universalReceiver` call. |
+
+<br/>
+
+### \_notifyTokenSender
+
+```solidity
+function _notifyTokenSender(address from, bytes lsp1Data) internal nonpayable;
+```
+
+Attempt to notify the token sender `from` about the `tokenId` being transferred.
+This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP8_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
+If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+
+#### Parameters
+
+| Name       |   Type    | Description                                                                    |
+| ---------- | :-------: | ------------------------------------------------------------------------------ |
+| `from`     | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on. |
+| `lsp1Data` |  `bytes`  | the data to be sent to the `from` address in the `universalReceiver` call.     |
+
+<br/>
+
 ### \_notifyTokenReceiver
 
 ```solidity
@@ -1258,9 +1299,21 @@ function _notifyTokenReceiver(
 ) internal nonpayable;
 ```
 
-An attempt is made to notify the token receiver about the `tokenId` changing owners
-using LSP1 interface. When force is FALSE the token receiver MUST support LSP1.
-The receiver may revert when the token being sent is not wanted.
+Attempt to notify the token receiver `to` about the `tokenId` being received.
+This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP8_TOKENSRECIPIENT` as typeId, if `to` is a contract that supports the LSP1 interface.
+If `to` is is an EOA or a contract that does not support the LSP1 interface, the behaviour will depend on the `force` boolean flag.
+
+- if `force` is set to `true`, nothing will happen and no notification will be sent.
+
+- if `force` is set to `false, the transaction will revert.
+
+#### Parameters
+
+| Name       |   Type    | Description                                                                                         |
+| ---------- | :-------: | --------------------------------------------------------------------------------------------------- |
+| `to`       | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on.                      |
+| `force`    |  `bool`   | A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not. |
+| `lsp1Data` |  `bytes`  | The data to be sent to the `to` address in the `universalReceiver(...)` call.                       |
 
 <br/>
 
@@ -1324,34 +1377,6 @@ CALL opcode, passing the [`msg.data`](#msg.data) appended with the 20 bytes of t
 
 ## Events
 
-### AuthorizedOperator
-
-:::note References
-
-- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#authorizedoperator)
-- Solidity implementation: [`LSP8Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol)
-- Event signature: `AuthorizedOperator(address,address,bytes32,bytes)`
-- Event topic hash: `0x0052e433f2d4225671bc164dd1cdc9a76044356091f27ad234798bd0cbf08349`
-
-:::
-
-```solidity
-event AuthorizedOperator(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bytes operatorNotificationData);
-```
-
-Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
-
-#### Parameters
-
-| Name                       |   Type    | Description                                                          |
-| -------------------------- | :-------: | -------------------------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address authorized as an operator.                               |
-| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                          |
-| `tokenId` **`indexed`**    | `bytes32` | The tokenId `operator` address has access on behalf of `tokenOwner`. |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                      |
-
-<br/>
-
 ### DataChanged
 
 :::note References
@@ -1380,6 +1405,63 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 
 <br/>
 
+### OperatorAuthorizationChanged
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#operatorauthorizationchanged)
+- Solidity implementation: [`LSP8Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol)
+- Event signature: `OperatorAuthorizationChanged(address,address,bytes32,bytes)`
+- Event topic hash: `0x1b1b58aa2ec0cec2228b2d37124556d41f5a1f7b12f089171f896cc236671215`
+
+:::
+
+```solidity
+event OperatorAuthorizationChanged(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bytes operatorNotificationData);
+```
+
+Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
+
+#### Parameters
+
+| Name                       |   Type    | Description                                                          |
+| -------------------------- | :-------: | -------------------------------------------------------------------- |
+| `operator` **`indexed`**   | `address` | The address authorized as an operator.                               |
+| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                          |
+| `tokenId` **`indexed`**    | `bytes32` | The tokenId `operator` address has access on behalf of `tokenOwner`. |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                      |
+
+<br/>
+
+### OperatorRevoked
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#operatorrevoked)
+- Solidity implementation: [`LSP8Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol)
+- Event signature: `OperatorRevoked(address,address,bytes32,bool,bytes)`
+- Event topic hash: `0xc78cd419d6136f9f1c1c6aec1d3fae098cffaf8bc86314a8f2685e32fe574e3c`
+
+:::
+
+```solidity
+event OperatorRevoked(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bool notified, bytes operatorNotificationData);
+```
+
+Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on its behalf.
+
+#### Parameters
+
+| Name                       |   Type    | Description                                                                        |
+| -------------------------- | :-------: | ---------------------------------------------------------------------------------- |
+| `operator` **`indexed`**   | `address` | The address revoked from the operator array ([`getOperatorsOf`](#getoperatorsof)). |
+| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                                        |
+| `tokenId` **`indexed`**    | `bytes32` | The tokenId `operator` is revoked from operating on.                               |
+| `notified`                 |  `bool`   | Bool indicating whether the operator has been notified or not                      |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                                    |
+
+<br/>
+
 ### OwnershipTransferred
 
 :::note References
@@ -1401,35 +1483,6 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 | ----------------------------- | :-------: | ----------- |
 | `previousOwner` **`indexed`** | `address` | -           |
 | `newOwner` **`indexed`**      | `address` | -           |
-
-<br/>
-
-### RevokedOperator
-
-:::note References
-
-- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#revokedoperator)
-- Solidity implementation: [`LSP8Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol)
-- Event signature: `RevokedOperator(address,address,bytes32,bool,bytes)`
-- Event topic hash: `0x3ee932cea40ebbbfd8577d47156cc17cce8683802c57bbd1fb8c131c6f07af0a`
-
-:::
-
-```solidity
-event RevokedOperator(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bool notified, bytes operatorNotificationData);
-```
-
-Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on its behalf.
-
-#### Parameters
-
-| Name                       |   Type    | Description                                                                        |
-| -------------------------- | :-------: | ---------------------------------------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address revoked from the operator array ([`getOperatorsOf`](#getoperatorsof)). |
-| `tokenOwner` **`indexed`** | `address` | The owner of the `tokenId`.                                                        |
-| `tokenId` **`indexed`**    | `bytes32` | The tokenId `operator` is revoked from operating on.                               |
-| `notified`                 |  `bool`   | Bool indicating whether the operator has been notified or not                      |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                                    |
 
 <br/>
 

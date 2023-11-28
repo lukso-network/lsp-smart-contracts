@@ -62,8 +62,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
-    using ERC165Checker for address;
-    using LSP1Utils for address;
 
     // --- Storage
 
@@ -224,7 +222,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool isAdded = _operators[tokenId].add(operator);
         if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
 
-        emit AuthorizedOperator(
+        emit OperatorAuthorizationChanged(
             operator,
             tokenOwner,
             tokenId,
@@ -238,7 +236,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             operatorNotificationData
         );
 
-        operator.notifyUniversalReceiver(_TYPEID_LSP8_TOKENOPERATOR, lsp1Data);
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
@@ -280,10 +278,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 operatorNotificationData
             );
 
-            operator.notifyUniversalReceiver(
-                _TYPEID_LSP8_TOKENOPERATOR,
-                lsp1Data
-            );
+            _notifyTokenOperator(operator, lsp1Data);
         }
     }
 
@@ -383,7 +378,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool isRemoved = _operators[tokenId].remove(operator);
         if (!isRemoved) revert LSP8NonExistingOperator(operator, tokenId);
 
-        emit RevokedOperator(
+        emit OperatorRevoked(
             operator,
             tokenOwner,
             tokenId,
@@ -488,7 +483,13 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         _afterTokenTransfer(address(0), to, tokenId, data);
 
-        bytes memory lsp1Data = abi.encode(address(0), to, tokenId, data);
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            address(0),
+            to,
+            tokenId,
+            data
+        );
         _notifyTokenReceiver(to, force, lsp1Data);
     }
 
@@ -536,13 +537,14 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         _afterTokenTransfer(tokenOwner, address(0), tokenId, data);
 
         bytes memory lsp1Data = abi.encode(
+            msg.sender,
             tokenOwner,
             address(0),
             tokenId,
             data
         );
 
-        tokenOwner.notifyUniversalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
+        _notifyTokenSender(tokenOwner, lsp1Data);
     }
 
     /**
@@ -606,9 +608,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         _afterTokenTransfer(from, to, tokenId, data);
 
-        bytes memory lsp1Data = abi.encode(from, to, tokenId, data);
+        bytes memory lsp1Data = abi.encode(msg.sender, from, to, tokenId, data);
 
-        from.notifyUniversalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
+        _notifyTokenSender(from, lsp1Data);
         _notifyTokenReceiver(to, force, lsp1Data);
     }
 
@@ -676,17 +678,66 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     ) internal virtual {}
 
     /**
-     * @dev An attempt is made to notify the token receiver about the `tokenId` changing owners
-     * using LSP1 interface. When force is FALSE the token receiver MUST support LSP1.
+     * @dev Attempt to notify the operator `operator` about the `tokenId` being authorized.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
+     * If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+     
+     * @param operator The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+     * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
+     */
+    function _notifyTokenOperator(
+        address operator,
+        bytes memory lsp1Data
+    ) internal virtual {
+        LSP1Utils.notifyUniversalReceiver(
+            operator,
+            _TYPEID_LSP8_TOKENOPERATOR,
+            lsp1Data
+        );
+    }
+
+    /**
+     * @dev Attempt to notify the token sender `from` about the `tokenId` being transferred.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
+     * If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+     
+     * @param from The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+     * @param lsp1Data the data to be sent to the `from` address in the `universalReceiver` call.
+     */
+    function _notifyTokenSender(
+        address from,
+        bytes memory lsp1Data
+    ) internal virtual {
+        LSP1Utils.notifyUniversalReceiver(
+            from,
+            _TYPEID_LSP8_TOKENSSENDER,
+            lsp1Data
+        );
+    }
+
+    /**
+     * @dev Attempt to notify the token receiver `to` about the `tokenId` being received.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENSRECIPIENT` as typeId, if `to` is a contract that supports the LSP1 interface.
      *
-     * The receiver may revert when the token being sent is not wanted.
+     * If `to` is is an EOA or a contract that does not support the LSP1 interface, the behaviour will depend on the `force` boolean flag.
+     * - if `force` is set to `true`, nothing will happen and no notification will be sent.
+     * - if `force` is set to `false, the transaction will revert.
+     *
+     * @param to The address to call the {universalReceiver} function on.
+     * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
+     * @param lsp1Data The data to be sent to the `to` address in the `universalReceiver(...)` call.
      */
     function _notifyTokenReceiver(
         address to,
         bool force,
         bytes memory lsp1Data
     ) internal virtual {
-        if (to.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
+        if (
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                to,
+                _INTERFACEID_LSP1
+            )
+        ) {
             ILSP1(to).universalReceiver(_TYPEID_LSP8_TOKENSRECIPIENT, lsp1Data);
         } else if (!force) {
             if (to.code.length != 0) {

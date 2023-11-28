@@ -941,8 +941,9 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(balance.toHexString(), 32);
 
         const tokenTransferData = abiCoder.encode(
-          ['address', 'address', 'uint256', 'bytes'],
+          ['address', 'address', 'address', 'uint256', 'bytes'],
           [
+            context.lsp9Vault1.address,
             context.lsp9Vault1.address,
             context.accounts.owner1.address,
             tokensSentBytes32Value,
@@ -1031,8 +1032,9 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(balance.toHexString(), 32);
 
         const tokenTransferData = abiCoder.encode(
-          ['address', 'address', 'uint256', 'bytes'],
+          ['address', 'address', 'address', 'uint256', 'bytes'],
           [
+            context.lsp9Vault1.address,
             context.lsp9Vault1.address,
             context.accounts.owner1.address,
             tokensSentBytes32Value,
@@ -1121,8 +1123,9 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(balance.toHexString(), 32);
 
         const tokenTransferData = abiCoder.encode(
-          ['address', 'address', 'uint256', 'bytes'],
+          ['address', 'address', 'address', 'uint256', 'bytes'],
           [
+            context.lsp9Vault1.address,
             context.lsp9Vault1.address,
             context.accounts.owner1.address,
             tokensSentBytes32Value,

@@ -973,8 +973,14 @@ export const shouldBehaveLikeLSP1Delegate = (
         // the call to the universalReceiver(...) in LSP7 sends the transfer details as `data` argument
         // all the params are packed/concatenated together.
         const expectedReceivedData = abiCoder.encode(
-          ['address', 'address', 'uint256', 'bytes'],
-          [txParams.from, txParams.to, txParams.amount, txParams.data],
+          ['address', 'address', 'address', 'uint256', 'bytes'],
+          [
+            context.universalProfile1.address,
+            txParams.from,
+            txParams.to,
+            txParams.amount,
+            txParams.data,
+          ],
         );
 
         // TODO: debug the 4th argument for the receivedData: why is it not empty?
@@ -1155,8 +1161,14 @@ export const shouldBehaveLikeLSP1Delegate = (
             0,
             LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification,
             abiCoder.encode(
-              ['address', 'address', 'uint256', 'bytes'],
-              [ethers.constants.AddressZero, context.universalProfile1.address, 10_000, '0x'],
+              ['address', 'address', 'address', 'uint256', 'bytes'],
+              [
+                context.accounts.random.address,
+                ethers.constants.AddressZero,
+                context.universalProfile1.address,
+                10_000,
+                '0x',
+              ],
             ),
             abiCoder.encode(
               ['bytes', 'bytes'],
@@ -1290,8 +1302,9 @@ export const shouldBehaveLikeLSP1Delegate = (
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(balance.toHexString(), 32);
 
         const tokenTransferData = abiCoder.encode(
-          ['address', 'address', 'uint256', 'bytes'],
+          ['address', 'address', 'address', 'uint256', 'bytes'],
           [
+            context.universalProfile1.address,
             context.universalProfile1.address,
             context.accounts.owner1.address,
             tokensSentBytes32Value,
@@ -1373,8 +1386,9 @@ export const shouldBehaveLikeLSP1Delegate = (
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(balance.toHexString(), 32);
 
         const tokenTransferData = abiCoder.encode(
-          ['address', 'address', 'uint256', 'bytes'],
+          ['address', 'address', 'address', 'uint256', 'bytes'],
           [
+            context.universalProfile1.address,
             context.universalProfile1.address,
             context.accounts.owner1.address,
             tokensSentBytes32Value,
@@ -1460,8 +1474,9 @@ export const shouldBehaveLikeLSP1Delegate = (
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(balance.toHexString(), 32);
 
         const tokenTransferData = abiCoder.encode(
-          ['address', 'address', 'uint256', 'bytes'],
+          ['address', 'address', 'address', 'uint256', 'bytes'],
           [
+            context.universalProfile1.address,
             context.universalProfile1.address,
             context.accounts.owner1.address,
             tokensSentBytes32Value,

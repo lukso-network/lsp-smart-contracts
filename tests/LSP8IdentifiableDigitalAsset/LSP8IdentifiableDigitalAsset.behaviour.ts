@@ -351,7 +351,7 @@ export const shouldBehaveLikeLSP8 = (
           const tx = await context.lsp8.authorizeOperator(operator, tokenId, '0x');
 
           await expect(tx)
-            .to.emit(context.lsp8, 'AuthorizedOperator')
+            .to.emit(context.lsp8, 'OperatorAuthorizationChanged')
             .withArgs(operator, tokenOwner, tokenId, '0x');
 
           expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.true;
@@ -399,7 +399,7 @@ export const shouldBehaveLikeLSP8 = (
             });
 
             await expect(tx)
-              .to.emit(context.lsp8, 'AuthorizedOperator')
+              .to.emit(context.lsp8, 'OperatorAuthorizationChanged')
               .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
 
             await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
@@ -417,7 +417,7 @@ export const shouldBehaveLikeLSP8 = (
             const tx = await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
 
             await expect(tx)
-              .to.emit(context.lsp8, 'AuthorizedOperator')
+              .to.emit(context.lsp8, 'OperatorAuthorizationChanged')
               .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
 
             expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.true;
@@ -480,7 +480,7 @@ export const shouldBehaveLikeLSP8 = (
           // effects
           const tx = await context.lsp8.revokeOperator(operator, tokenId, false, '0x');
           await expect(tx)
-            .to.emit(context.lsp8, 'RevokedOperator')
+            .to.emit(context.lsp8, 'OperatorRevoked')
             .withArgs(operator, tokenOwner, tokenId, false, '0x');
 
           // post-conditions
@@ -533,7 +533,7 @@ export const shouldBehaveLikeLSP8 = (
           });
 
           await expect(tx)
-            .to.emit(context.lsp8, 'RevokedOperator')
+            .to.emit(context.lsp8, 'OperatorRevoked')
             .withArgs(operator, tokenOwner, tokenId, true, '0xaabbccdd');
 
           await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
@@ -774,11 +774,11 @@ export const shouldBehaveLikeLSP8 = (
           .withArgs(operator.address, from, to, tokenId, force, data);
 
         await expect(tx)
-          .to.emit(context.lsp8, 'RevokedOperator')
+          .to.emit(context.lsp8, 'OperatorRevoked')
           .withArgs(context.accounts.operator.address, from, tokenId, false, '0x');
 
         await expect(tx)
-          .to.emit(context.lsp8, 'RevokedOperator')
+          .to.emit(context.lsp8, 'OperatorRevoked')
           .withArgs(context.accounts.anotherOperator.address, from, tokenId, false, '0x');
 
         // post-conditions
@@ -871,8 +871,8 @@ export const shouldBehaveLikeLSP8 = (
 
                 const typeId = LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification;
                 const packedData = abiCoder.encode(
-                  ['address', 'address', 'bytes32', 'bytes'],
-                  [txParams.from, txParams.to, txParams.tokenId, txParams.data],
+                  ['address', 'address', 'address', 'bytes32', 'bytes'],
+                  [operator.address, txParams.from, txParams.to, txParams.tokenId, txParams.data],
                 );
 
                 await expect(tx)
@@ -970,8 +970,8 @@ export const shouldBehaveLikeLSP8 = (
 
                 const typeId = LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification;
                 const packedData = abiCoder.encode(
-                  ['address', 'address', 'bytes32', 'bytes'],
-                  [txParams.from, txParams.to, txParams.tokenId, txParams.data],
+                  ['address', 'address', 'address', 'bytes32', 'bytes'],
+                  [operator.address, txParams.from, txParams.to, txParams.tokenId, txParams.data],
                 );
 
                 await expect(tx)
@@ -1196,7 +1196,7 @@ export const shouldBehaveLikeLSP8 = (
                 data[index],
               );
             await expect(tx)
-              .to.emit(context.lsp8, 'RevokedOperator')
+              .to.emit(context.lsp8, 'OperatorRevoked')
               .withArgs(
                 context.accounts.operator.address,
                 from[index],
@@ -1205,7 +1205,7 @@ export const shouldBehaveLikeLSP8 = (
                 '0x',
               );
             await expect(tx)
-              .to.emit(context.lsp8, 'RevokedOperator')
+              .to.emit(context.lsp8, 'OperatorRevoked')
               .withArgs(
                 context.accounts.anotherOperator.address,
                 from[index],
