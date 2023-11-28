@@ -1352,7 +1352,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           .connect(context.accounts.owner1)
           .setData(
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap + token.address.substring(2),
-            '0xdaa746b700000000000000000000000000000000cafecafe',
+            '0xb3c4928f00000000000000000000000000000000cafecafe',
           );
 
         expect(
@@ -1360,7 +1360,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         ).to.deep.equal([
           '0x' + '00'.repeat(15) + '01',
           token.address.toLowerCase(),
-          '0xdaa746b700000000000000000000000000000000cafecafe',
+          '0xb3c4928f00000000000000000000000000000000cafecafe',
         ]);
 
         balance = await token.balanceOf(context.universalProfile1.address);
@@ -1422,7 +1422,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         ).to.deep.equal([
           '0x' + '00'.repeat(15) + '01',
           token.address.toLowerCase(),
-          '0xdaa746b700000000000000000000000000000000cafecafe',
+          '0xb3c4928f00000000000000000000000000000000cafecafe',
         ]);
       });
     });

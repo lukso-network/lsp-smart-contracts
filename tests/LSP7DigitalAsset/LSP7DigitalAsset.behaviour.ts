@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat';
 import { assert, expect } from 'chai';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber } from 'ethers';
+import type { BigNumber, BytesLike } from 'ethers';
 import type { TransactionResponse } from '@ethersproject/abstract-provider';
 
 // types
@@ -22,6 +22,7 @@ import {
 import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } from '../../constants';
 
 import { abiCoder } from '../utils/helpers';
+import { AddressZero } from '../LSP17Extensions/helpers/utils';
 
 export type LSP7TestAccounts = {
   owner: SignerWithAddress;
@@ -2189,6 +2190,323 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
             value: amountSent,
           }),
         ).to.be.revertedWithCustomError(context.lsp7, 'LSP7TokenContractCannotHoldValue');
+      });
+    });
+  });
+
+  describe('batchCalls', () => {
+    describe('when using one function', () => {
+      describe('using `mint(...)`', () => {
+        it('should pass', async () => {
+          const mintCalldata = context.lsp7.interface.encodeFunctionData('mint', [
+            context.accounts.tokenReceiver.address,
+            1,
+            true,
+            '0x',
+          ]);
+
+          await expect(context.lsp7.connect(context.accounts.owner).batchCalls([mintCalldata]))
+            .to.emit(context.lsp7, 'Transfer')
+            .withArgs(
+              context.accounts.owner.address,
+              AddressZero,
+              context.accounts.tokenReceiver.address,
+              1,
+              true,
+              '0x',
+            );
+        });
+      });
+
+      describe('using `burn(...)`', () => {
+        it('should pass', async () => {
+          const burnCalldata = context.lsp7.interface.encodeFunctionData('burn', [
+            context.accounts.owner.address,
+            1,
+            '0x',
+          ]);
+
+          await expect(context.lsp7.connect(context.accounts.owner).batchCalls([burnCalldata]))
+            .to.emit(context.lsp7, 'Transfer')
+            .withArgs(
+              context.accounts.owner.address,
+              context.accounts.owner.address,
+              AddressZero,
+              1,
+              false,
+              '0x',
+            );
+        });
+      });
+
+      describe('using `transfer(...)`', () => {
+        it('should pass', async () => {
+          await context.lsp7.mint(context.accounts.tokenReceiver.address, 1, true, '0x');
+
+          const transferCalldata = context.lsp7.interface.encodeFunctionData('transfer', [
+            context.accounts.tokenReceiver.address,
+            context.accounts.anotherTokenReceiver.address,
+            1,
+            true,
+            '0x',
+          ]);
+
+          await expect(
+            context.lsp7.connect(context.accounts.tokenReceiver).batchCalls([transferCalldata]),
+          )
+            .to.emit(context.lsp7, 'Transfer')
+            .withArgs(
+              context.accounts.tokenReceiver.address,
+              context.accounts.tokenReceiver.address,
+              context.accounts.anotherTokenReceiver.address,
+              1,
+              true,
+              '0x',
+            );
+        });
+      });
+
+      describe('using authorizeOperator', () => {
+        it('should pass', async () => {
+          const authorizeOperatorCalldata = context.lsp7.interface.encodeFunctionData(
+            'authorizeOperator',
+            [context.accounts.tokenReceiver.address, 1, '0x'],
+          );
+
+          await expect(
+            context.lsp7.connect(context.accounts.owner).batchCalls([authorizeOperatorCalldata]),
+          )
+            .to.emit(context.lsp7, 'OperatorAuthorizationChanged')
+            .withArgs(
+              context.accounts.tokenReceiver.address,
+              context.accounts.owner.address,
+              1,
+              '0x',
+            );
+        });
+      });
+
+      describe('using revokeOperator', () => {
+        it('should pass', async () => {
+          const revokeOperatorCalldata = context.lsp7.interface.encodeFunctionData(
+            'revokeOperator',
+            [context.accounts.tokenReceiver.address, true, '0x'],
+          );
+
+          await expect(
+            context.lsp7.connect(context.accounts.owner).batchCalls([revokeOperatorCalldata]),
+          )
+            .to.emit(context.lsp7, 'OperatorRevoked')
+            .withArgs(
+              context.accounts.tokenReceiver.address,
+              context.accounts.owner.address,
+              true,
+              '0x',
+            );
+        });
+      });
+
+      describe('using increaseAllowance', () => {
+        it('should pass', async () => {
+          await context.lsp7.authorizeOperator(context.accounts.tokenReceiver.address, 1, '0x');
+
+          const increaseAllowanceCalldata = context.lsp7.interface.encodeFunctionData(
+            'increaseAllowance',
+            [context.accounts.tokenReceiver.address, 1, '0x'],
+          );
+
+          await expect(
+            context.lsp7.connect(context.accounts.owner).batchCalls([increaseAllowanceCalldata]),
+          )
+            .to.emit(context.lsp7, 'OperatorAuthorizationChanged')
+            .withArgs(
+              context.accounts.tokenReceiver.address,
+              context.accounts.owner.address,
+              2,
+              '0x',
+            );
+        });
+      });
+
+      describe('using decreaseAllowance', () => {
+        it('should pass', async () => {
+          await context.lsp7.authorizeOperator(context.accounts.tokenReceiver.address, 1, '0x');
+
+          const decreaseAllowanceCalldata = context.lsp7.interface.encodeFunctionData(
+            'decreaseAllowance',
+            [context.accounts.tokenReceiver.address, 1, '0x'],
+          );
+
+          await expect(
+            context.lsp7.connect(context.accounts.owner).batchCalls([decreaseAllowanceCalldata]),
+          )
+            .to.emit(context.lsp7, 'OperatorRevoked')
+            .withArgs(
+              context.accounts.tokenReceiver.address,
+              context.accounts.owner.address,
+              true,
+              '0x',
+            );
+        });
+      });
+    });
+
+    describe('when using multiple functions', () => {
+      describe('making 2x `transfer(...)`, 1x `authorizeOperator(...)` & `burn(...)`', () => {
+        let mintCalldata: BytesLike;
+        let firstTransferCalldata: BytesLike;
+        let secondTransferCalldata: BytesLike;
+        let authorizeOperatorCalldata: BytesLike;
+        let burnCalldata: BytesLike;
+
+        before(async () => {
+          mintCalldata = context.lsp7.interface.encodeFunctionData('mint', [
+            context.accounts.owner.address,
+            4,
+            true,
+            '0xbeef0001',
+          ]);
+
+          firstTransferCalldata = context.lsp7.interface.encodeFunctionData('transfer', [
+            context.accounts.owner.address,
+            context.accounts.tokenReceiver.address,
+            1,
+            true,
+            '0xcafe0001',
+          ]);
+
+          secondTransferCalldata = context.lsp7.interface.encodeFunctionData('transfer', [
+            context.accounts.owner.address,
+            context.accounts.anotherTokenReceiver.address,
+            1,
+            true,
+            '0xcafe0002',
+          ]);
+
+          authorizeOperatorCalldata = context.lsp7.interface.encodeFunctionData(
+            'authorizeOperator',
+            [context.accounts.anyone.address, 1, '0xfeed0001'],
+          );
+
+          burnCalldata = context.lsp7.interface.encodeFunctionData('burn', [
+            context.accounts.owner.address,
+            1,
+            '0xdead0001',
+          ]);
+        });
+
+        it('should emit mint Transfer event', async () => {
+          await expect(
+            context.lsp7
+              .connect(context.accounts.owner)
+              .batchCalls([
+                mintCalldata,
+                firstTransferCalldata,
+                secondTransferCalldata,
+                authorizeOperatorCalldata,
+                burnCalldata,
+              ]),
+          )
+            .to.emit(context.lsp7, 'Transfer')
+            .withArgs(
+              context.accounts.owner.address,
+              AddressZero,
+              context.accounts.owner.address,
+              4,
+              true,
+              '0xbeef0001',
+            );
+        });
+
+        it('should emit First Transfer event', async () => {
+          await expect(
+            context.lsp7
+              .connect(context.accounts.owner)
+              .batchCalls([
+                mintCalldata,
+                firstTransferCalldata,
+                secondTransferCalldata,
+                authorizeOperatorCalldata,
+                burnCalldata,
+              ]),
+          )
+            .to.emit(context.lsp7, 'Transfer')
+            .withArgs(
+              context.accounts.owner.address,
+              context.accounts.owner.address,
+              context.accounts.tokenReceiver.address,
+              1,
+              true,
+              '0xcafe0001',
+            );
+        });
+
+        it('should emit Second Transfer event', async () => {
+          await expect(
+            context.lsp7
+              .connect(context.accounts.owner)
+              .batchCalls([
+                mintCalldata,
+                firstTransferCalldata,
+                secondTransferCalldata,
+                authorizeOperatorCalldata,
+                burnCalldata,
+              ]),
+          )
+            .to.emit(context.lsp7, 'Transfer')
+            .withArgs(
+              context.accounts.owner.address,
+              context.accounts.owner.address,
+              context.accounts.anotherTokenReceiver.address,
+              1,
+              true,
+              '0xcafe0002',
+            );
+        });
+
+        it('should emit AuthoriseOperator event', async () => {
+          await expect(
+            context.lsp7
+              .connect(context.accounts.owner)
+              .batchCalls([
+                mintCalldata,
+                firstTransferCalldata,
+                secondTransferCalldata,
+                authorizeOperatorCalldata,
+                burnCalldata,
+              ]),
+          )
+            .to.emit(context.lsp7, 'OperatorAuthorizationChanged')
+            .withArgs(
+              context.accounts.anyone.address,
+              context.accounts.owner.address,
+              1,
+              '0xfeed0001',
+            );
+        });
+
+        it('should emit burn Transfer event', async () => {
+          await expect(
+            context.lsp7
+              .connect(context.accounts.owner)
+              .batchCalls([
+                mintCalldata,
+                firstTransferCalldata,
+                secondTransferCalldata,
+                authorizeOperatorCalldata,
+                burnCalldata,
+              ]),
+          )
+            .to.emit(context.lsp7, 'Transfer')
+            .withArgs(
+              context.accounts.owner.address,
+              context.accounts.owner.address,
+              AddressZero,
+              1,
+              false,
+              '0xdead0001',
+            );
+        });
       });
     });
   });

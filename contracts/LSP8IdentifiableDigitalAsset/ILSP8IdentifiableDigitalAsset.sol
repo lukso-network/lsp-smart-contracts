@@ -253,4 +253,15 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
         bool[] memory force,
         bytes[] memory data
     ) external;
+
+    /**
+     * @notice Executing the following batch of abi-encoded function calls on the contract: `data`.
+     *
+     * @dev Allows a caller to batch different function calls in one call. Perform a `delegatecall` on self, to call different functions with preserving the context.
+     * @param data An array of ABI encoded function calls to be called on the contract.
+     * @return results An array of abi-encoded data returned by the functions executed.
+     */
+    function batchCalls(
+        bytes[] calldata data
+    ) external returns (bytes[] memory results);
 }
