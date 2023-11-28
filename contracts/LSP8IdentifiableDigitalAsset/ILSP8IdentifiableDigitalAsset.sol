@@ -39,7 +39,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param tokenId The tokenId `operator` address has access on behalf of `tokenOwner`.
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
-    event AuthorizedOperator(
+    event OperatorAuthorizationChanged(
         address indexed operator,
         address indexed tokenOwner,
         bytes32 indexed tokenId,
@@ -54,7 +54,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param notified Bool indicating whether the operator has been notified or not
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
-    event RevokedOperator(
+    event OperatorRevoked(
         address indexed operator,
         address indexed tokenOwner,
         bytes32 indexed tokenId,
@@ -116,7 +116,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * - the owner of a `tokenId` cannot grant itself as an `operator` (`operator` cannot be the calling address).
      * - `operator` cannot be the zero address.
      *
-     * @custom:events {AuthorizedOperator} event.
+     * @custom:events {OperatorAuthorizationChanged} event.
      */
     function authorizeOperator(
         address operator,
@@ -139,7 +139,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * - the owner of a `tokenId` cannot grant revoke itself as an `operator` (`operator` cannot be the calling address).
      * - `operator` cannot be the zero address.
      *
-     * @custom:events {RevokedOperator} event with address of the operator being revoked for the caller (token owner)..
+     * @custom:events {OperatorRevoked} event with address of the operator being revoked for the caller (token owner)..
      */
     function revokeOperator(
         address operator,

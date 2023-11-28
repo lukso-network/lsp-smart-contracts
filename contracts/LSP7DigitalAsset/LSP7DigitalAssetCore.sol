@@ -315,8 +315,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @param operatorNotificationData The data to send to the universalReceiver function of the operator in case of notifying
      *
      * @custom:events
-     * - {RevokedOperator} event when operator's allowance is set to `0`.
-     * - {AuthorizedOperator} event when operator's allowance is set to any other amount.
+     * - {OperatorRevoked} event when operator's allowance is set to `0`.
+     * - {OperatorAuthorizationChanged} event when operator's allowance is set to any other amount.
      *
      * @custom:requirements
      * - `operator` cannot be the zero address.
@@ -341,7 +341,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         if (allowance != 0) {
             _operators[tokenOwner].add(operator);
-            emit AuthorizedOperator(
+            emit OperatorAuthorizationChanged(
                 operator,
                 tokenOwner,
                 allowance,
@@ -349,7 +349,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             );
         } else {
             _operators[tokenOwner].remove(operator);
-            emit RevokedOperator(
+            emit OperatorRevoked(
                 operator,
                 tokenOwner,
                 notified,
@@ -482,8 +482,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @param amountToSpend The amount of tokens to substract in allowance of `operator`.
      *
      * @custom:events
-     * - {RevokedOperator} event when operator's allowance is set to `0`.
-     * - {AuthorizedOperator} event when operator's allowance is set to any other amount.
+     * - {OperatorRevoked} event when operator's allowance is set to `0`.
+     * - {OperatorAuthorizationChanged} event when operator's allowance is set to any other amount.
      *
      * @custom:requirements
      * - The `amountToSpend` MUST be at least the allowance granted to `operator` (accessible via {`authorizedAmountFor}`)
