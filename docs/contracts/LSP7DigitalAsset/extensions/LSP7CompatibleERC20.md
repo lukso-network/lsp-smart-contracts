@@ -248,6 +248,45 @@ Get the number of tokens owned by `tokenOwner`. If the token is divisible (the [
 
 <br/>
 
+### batchCalls
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#batchcalls)
+- Solidity implementation: [`LSP7CompatibleERC20.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol)
+- Function signature: `batchCalls(bytes[])`
+- Function selector: `0x6963d438`
+
+:::
+
+:::info
+
+It's not possible to send value along the functions call due to the use of `delegatecall`.
+
+:::
+
+```solidity
+function batchCalls(bytes[] data) external nonpayable returns (bytes[] results);
+```
+
+_Executing the following batch of abi-encoded function calls on the contract: `data`._
+
+Allows a caller to batch different function calls in one call. Perform a `delegatecall` on self, to call different functions with preserving the context.
+
+#### Parameters
+
+| Name   |   Type    | Description                                                          |
+| ------ | :-------: | -------------------------------------------------------------------- |
+| `data` | `bytes[]` | An array of ABI encoded function calls to be called on the contract. |
+
+#### Returns
+
+| Name      |   Type    | Description                                                      |
+| --------- | :-------: | ---------------------------------------------------------------- |
+| `results` | `bytes[]` | An array of abi-encoded data returned by the functions executed. |
+
+<br/>
+
 ### decimals
 
 :::note References
@@ -1241,34 +1280,6 @@ Emitted when the allowance of a `spender` for an `owner` is set by a call to [`a
 
 <br/>
 
-### AuthorizedOperator
-
-:::note References
-
-- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#authorizedoperator)
-- Solidity implementation: [`LSP7CompatibleERC20.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol)
-- Event signature: `AuthorizedOperator(address,address,uint256,bytes)`
-- Event topic hash: `0x0744b3de98efaff36606a0e67662fb8697adb0ed49d90730bdb4bbf885f30597`
-
-:::
-
-```solidity
-event AuthorizedOperator(address indexed operator, address indexed tokenOwner, uint256 indexed amount, bytes operatorNotificationData);
-```
-
-Emitted when `tokenOwner` enables `operator` for `amount` tokens.
-
-#### Parameters
-
-| Name                       |   Type    | Description                                                             |
-| -------------------------- | :-------: | ----------------------------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address authorized as an operator                                   |
-| `tokenOwner` **`indexed`** | `address` | The token owner                                                         |
-| `amount` **`indexed`**     | `uint256` | The amount of tokens `operator` address has access to from `tokenOwner` |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                         |
-
-<br/>
-
 ### DataChanged
 
 :::note References
@@ -1297,6 +1308,62 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 
 <br/>
 
+### OperatorAuthorizationChanged
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#operatorauthorizationchanged)
+- Solidity implementation: [`LSP7CompatibleERC20.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol)
+- Event signature: `OperatorAuthorizationChanged(address,address,uint256,bytes)`
+- Event topic hash: `0xf772a43bfdf4729b196e3fb54a818b91a2ca6c49d10b2e16278752f9f515c25d`
+
+:::
+
+```solidity
+event OperatorAuthorizationChanged(address indexed operator, address indexed tokenOwner, uint256 indexed amount, bytes operatorNotificationData);
+```
+
+Emitted when `tokenOwner` enables `operator` for `amount` tokens.
+
+#### Parameters
+
+| Name                       |   Type    | Description                                                             |
+| -------------------------- | :-------: | ----------------------------------------------------------------------- |
+| `operator` **`indexed`**   | `address` | The address authorized as an operator                                   |
+| `tokenOwner` **`indexed`** | `address` | The token owner                                                         |
+| `amount` **`indexed`**     | `uint256` | The amount of tokens `operator` address has access to from `tokenOwner` |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                         |
+
+<br/>
+
+### OperatorRevoked
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#operatorrevoked)
+- Solidity implementation: [`LSP7CompatibleERC20.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol)
+- Event signature: `OperatorRevoked(address,address,bool,bytes)`
+- Event topic hash: `0x0ebf5762d8855cbe012d2ca42fb33a81175e17c8a8751f8859931ba453bd4167`
+
+:::
+
+```solidity
+event OperatorRevoked(address indexed operator, address indexed tokenOwner, bool indexed notified, bytes operatorNotificationData);
+```
+
+Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`authorizedAmountFor(...)`](#`authorizedamountfor) to `0`.
+
+#### Parameters
+
+| Name                       |   Type    | Description                                                   |
+| -------------------------- | :-------: | ------------------------------------------------------------- |
+| `operator` **`indexed`**   | `address` | The address revoked from operating                            |
+| `tokenOwner` **`indexed`** | `address` | The token owner                                               |
+| `notified` **`indexed`**   |  `bool`   | Bool indicating whether the operator has been notified or not |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.               |
+
+<br/>
+
 ### OwnershipTransferred
 
 :::note References
@@ -1318,34 +1385,6 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 | ----------------------------- | :-------: | ----------- |
 | `previousOwner` **`indexed`** | `address` | -           |
 | `newOwner` **`indexed`**      | `address` | -           |
-
-<br/>
-
-### RevokedOperator
-
-:::note References
-
-- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#revokedoperator)
-- Solidity implementation: [`LSP7CompatibleERC20.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol)
-- Event signature: `RevokedOperator(address,address,bool,bytes)`
-- Event topic hash: `0x66015c8835ee443e5bc280176609215a5035da4bae05bdef994596d7e43aae22`
-
-:::
-
-```solidity
-event RevokedOperator(address indexed operator, address indexed tokenOwner, bool notified, bytes operatorNotificationData);
-```
-
-Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`authorizedAmountFor(...)`](#`authorizedamountfor) to `0`.
-
-#### Parameters
-
-| Name                       |   Type    | Description                                                   |
-| -------------------------- | :-------: | ------------------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address revoked from operating                            |
-| `tokenOwner` **`indexed`** | `address` | The token owner                                               |
-| `notified`                 |  `bool`   | Bool indicating whether the operator has been notified or not |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.               |
 
 <br/>
 
@@ -1633,6 +1672,33 @@ reverts when sending an `amount` of tokens larger than the current `balance` of 
 | `balance`    | `uint256` | -           |
 | `tokenOwner` | `address` | -           |
 | `amount`     | `uint256` | -           |
+
+<br/>
+
+### LSP7BatchCallFailed
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#lsp7batchcallfailed)
+- Solidity implementation: [`LSP7CompatibleERC20.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol)
+- Error signature: `LSP7BatchCallFailed(uint256)`
+- Error hash: `0xb774c284`
+
+:::
+
+```solidity
+error LSP7BatchCallFailed(uint256 callIndex);
+```
+
+_Batch call failed._
+
+Reverts when a batch call failed.
+
+#### Parameters
+
+| Name        |   Type    | Description |
+| ----------- | :-------: | ----------- |
+| `callIndex` | `uint256` | -           |
 
 <br/>
 

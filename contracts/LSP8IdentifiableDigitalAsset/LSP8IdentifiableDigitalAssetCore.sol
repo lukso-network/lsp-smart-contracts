@@ -9,6 +9,12 @@ import {
     ILSP8IdentifiableDigitalAsset
 } from "./ILSP8IdentifiableDigitalAsset.sol";
 
+// modules
+
+import {
+    LSP4DigitalAssetMetadataCore
+} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataCore.sol";
+
 // libraries
 import {
     EnumerableSet
@@ -32,7 +38,10 @@ import {
     LSP8TokenIdAlreadyMinted,
     LSP8CannotSendToSelf,
     LSP8NotifyTokenReceiverContractMissingLSP1Interface,
-    LSP8NotifyTokenReceiverIsEOA
+    LSP8NotifyTokenReceiverIsEOA,
+    LSP8TokenIdsDataLengthMismatch,
+    LSP8TokenIdsDataEmptyArray,
+    LSP8BatchCallFailed
 } from "./LSP8Errors.sol";
 
 // constants
@@ -49,6 +58,7 @@ import {
  * @dev Core Implementation of a LSP8 compliant contract.
  */
 abstract contract LSP8IdentifiableDigitalAssetCore is
+    LSP4DigitalAssetMetadataCore,
     ILSP8IdentifiableDigitalAsset
 {
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -113,6 +123,118 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         return _ownedTokens[tokenOwner].values();
     }
 
+    // --- TokenId Metadata functionality
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     */
+    function setTokenIdData(
+        bytes32 tokenId,
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) public virtual override onlyOwner {
+        _setTokenIdData(tokenId, dataKey, dataValue);
+    }
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     */
+    function setTokenIdDataBatch(
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys,
+        bytes[] memory dataValues
+    ) public virtual override onlyOwner {
+        if (
+            tokenIds.length != dataKeys.length ||
+            dataKeys.length != dataValues.length
+        ) {
+            revert LSP8TokenIdsDataLengthMismatch();
+        }
+
+        if (tokenIds.length == 0) {
+            revert LSP8TokenIdsDataEmptyArray();
+        }
+
+        for (uint256 i; i < tokenIds.length; ) {
+            _setTokenIdData(tokenIds[i], dataKeys[i], dataValues[i]);
+
+            // Increment the iterator in unchecked block to save gas
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
+    // --- General functionality
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     *
+     * @custom:info It's not possible to send value along the functions call due to the use of `delegatecall`.
+     */
+    function batchCalls(
+        bytes[] calldata data
+    ) public virtual override returns (bytes[] memory results) {
+        results = new bytes[](data.length);
+        for (uint256 i; i < data.length; ) {
+            (bool success, bytes memory result) = address(this).delegatecall(
+                data[i]
+            );
+
+            if (!success) {
+                // Look for revert reason and bubble it up if present
+                if (result.length != 0) {
+                    // The easiest way to bubble the revert reason is using memory via assembly
+                    // solhint-disable no-inline-assembly
+                    /// @solidity memory-safe-assembly
+                    assembly {
+                        let returndata_size := mload(result)
+                        revert(add(32, result), returndata_size)
+                    }
+                } else {
+                    revert LSP8BatchCallFailed({callIndex: i});
+                }
+            }
+
+            results[i] = result;
+
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     */
+    function getTokenIdData(
+        bytes32 tokenId,
+        bytes32 dataKey
+    ) public view virtual override returns (bytes memory dataValues) {
+        return _getTokenIdData(tokenId, dataKey);
+    }
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     */
+    function getTokenIdDataBatch(
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys
+    ) public view virtual override returns (bytes[] memory dataValues) {
+        dataValues = new bytes[](tokenIds.length);
+
+        for (uint256 i; i < tokenIds.length; ) {
+            dataValues[i] = _getTokenIdData(tokenIds[i], dataKeys[i]);
+
+            // Increment the iterator in unchecked block to save gas
+            unchecked {
+                ++i;
+            }
+        }
+
+        return dataValues;
+    }
+
     // --- Operator functionality
 
     /**
@@ -140,7 +262,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool isAdded = _operators[tokenId].add(operator);
         if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
 
-        emit AuthorizedOperator(
+        emit OperatorAuthorizationChanged(
             operator,
             tokenOwner,
             tokenId,
@@ -296,7 +418,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool isRemoved = _operators[tokenId].remove(operator);
         if (!isRemoved) revert LSP8NonExistingOperator(operator, tokenId);
 
-        emit RevokedOperator(
+        emit OperatorRevoked(
             operator,
             tokenOwner,
             tokenId,
@@ -530,6 +652,37 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         _notifyTokenSender(from, lsp1Data);
         _notifyTokenReceiver(to, force, lsp1Data);
+    }
+
+    /**
+     * @dev Sets data for a specific `tokenId` and `dataKey` in the ERC725Y storage
+     * The ERC725Y data key is the hash of the `tokenId` and `dataKey` concatenated
+     * @param tokenId The unique identifier for a token.
+     * @param dataKey The key for the data to set.
+     * @param dataValue The value to set for the given data key.
+     * @custom:events {TokenIdDataChanged} event.
+     */
+    function _setTokenIdData(
+        bytes32 tokenId,
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) internal virtual {
+        _store[keccak256(bytes.concat(tokenId, dataKey))] = dataValue;
+        emit TokenIdDataChanged(tokenId, dataKey, dataValue);
+    }
+
+    /**
+     * @dev Retrieves data for a specific `tokenId` and `dataKey` from the ERC725Y storage
+     * The ERC725Y data key is the hash of the `tokenId` and `dataKey` concatenated
+     * @param tokenId The unique identifier for a token.
+     * @param dataKey The key for the data to retrieve.
+     * @return dataValues The data value associated with the given `tokenId` and `dataKey`.
+     */
+    function _getTokenIdData(
+        bytes32 tokenId,
+        bytes32 dataKey
+    ) internal view virtual returns (bytes memory dataValues) {
+        return _store[keccak256(bytes.concat(tokenId, dataKey))];
     }
 
     /**

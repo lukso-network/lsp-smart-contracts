@@ -13,6 +13,10 @@ import {
     LSP4DigitalAssetMetadataInitAbstract
 } from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataInitAbstract.sol";
 
+import {
+    LSP4DigitalAssetMetadataCore
+} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataCore.sol";
+
 import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 
 // libraries
@@ -226,7 +230,14 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
     function _setData(
         bytes32 dataKey,
         bytes memory dataValue
-    ) internal virtual override {
+    )
+        internal
+        virtual
+        override(
+            LSP4DigitalAssetMetadataInitAbstract,
+            LSP4DigitalAssetMetadataCore
+        )
+    {
         if (dataKey == _LSP8_TOKENID_SCHEMA_KEY) {
             revert LSP8TokenIdSchemaNotEditable();
         }

@@ -222,7 +222,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
             const tx = await context.lsp8CompatibleERC721.approve(operator, tokenId);
 
             await expect(tx)
-              .to.emit(context.lsp8CompatibleERC721, 'AuthorizedOperator')
+              .to.emit(context.lsp8CompatibleERC721, 'OperatorAuthorizationChanged')
               .withArgs(operator, context.accounts.owner.address, tokenIdAsBytes32(tokenId), '0x');
 
             await expect(tx)
@@ -243,7 +243,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               });
 
               await expect(tx)
-                .to.emit(context.lsp8CompatibleERC721, 'AuthorizedOperator')
+                .to.emit(context.lsp8CompatibleERC721, 'OperatorAuthorizationChanged')
                 .withArgs(operator, tokenOwner, tokenIdAsBytes32(tokenId), '0x');
 
               await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
@@ -266,7 +266,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               const tx = await context.lsp8CompatibleERC721.approve(operator, tokenId);
 
               await expect(tx)
-                .to.emit(context.lsp8CompatibleERC721, 'AuthorizedOperator')
+                .to.emit(context.lsp8CompatibleERC721, 'OperatorAuthorizationChanged')
                 .withArgs(operator, tokenOwner, tokenIdAsBytes32(tokenId), '0x');
 
               expect(
@@ -750,7 +750,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         .withArgs(from, to, ethers.BigNumber.from(tokenId));
 
       await expect(tx)
-        .to.emit(context.lsp8CompatibleERC721, 'RevokedOperator')
+        .to.emit(context.lsp8CompatibleERC721, 'OperatorRevoked')
         .withArgs(context.accounts.operator.address, from, tokenIdAsBytes32(tokenId), false, '0x');
 
       // post-conditions
