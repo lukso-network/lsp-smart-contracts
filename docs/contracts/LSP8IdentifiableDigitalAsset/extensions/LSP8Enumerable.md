@@ -275,6 +275,76 @@ Returns all `operator` addresses that are allowed to transfer or burn a specific
 
 <br/>
 
+### getTokenIdData
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#gettokeniddata)
+- Solidity implementation: [`LSP8Enumerable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol)
+- Function signature: `getTokenIdData(bytes32,bytes32)`
+- Function selector: `0xe7bb5942`
+
+:::
+
+```solidity
+function getTokenIdData(
+  bytes32 tokenId,
+  bytes32 dataKey
+) external view returns (bytes dataValues);
+```
+
+_Retrieves data for a specific `tokenId` and `dataKey`._
+
+#### Parameters
+
+| Name      |   Type    | Description                        |
+| --------- | :-------: | ---------------------------------- |
+| `tokenId` | `bytes32` | The unique identifier for a token. |
+| `dataKey` | `bytes32` | The key for the data to retrieve.  |
+
+#### Returns
+
+| Name         |  Type   | Description                                                       |
+| ------------ | :-----: | ----------------------------------------------------------------- |
+| `dataValues` | `bytes` | The data value associated with the given `tokenId` and `dataKey`. |
+
+<br/>
+
+### getTokenIdDataBatch
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#gettokeniddatabatch)
+- Solidity implementation: [`LSP8Enumerable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol)
+- Function signature: `getTokenIdDataBatch(bytes32[],bytes32[])`
+- Function selector: `0xc797c777`
+
+:::
+
+```solidity
+function getTokenIdDataBatch(
+  bytes32[] tokenIds,
+  bytes32[] dataKeys
+) external view returns (bytes[] dataValues);
+```
+
+_Retrieves data in batch for multiple `tokenId` and `dataKey` pairs._
+
+#### Parameters
+
+| Name       |    Type     | Description |
+| ---------- | :---------: | ----------- |
+| `tokenIds` | `bytes32[]` | -           |
+| `dataKeys` | `bytes32[]` | -           |
+
+#### Returns
+
+| Name         |   Type    | Description                                                       |
+| ------------ | :-------: | ----------------------------------------------------------------- |
+| `dataValues` | `bytes[]` | An array of data values for each pair of `tokenId` and `dataKey`. |
+
+<br/>
+
 ### isOperatorFor
 
 :::note References
@@ -484,6 +554,68 @@ Batch data setting function that behaves the same as [`setData`](#setdata) but a
 | ------------ | :---------: | ---------------------------------------------------- |
 | `dataKeys`   | `bytes32[]` | An array of data keys to set bytes values for.       |
 | `dataValues` |  `bytes[]`  | An array of bytes values to set for each `dataKeys`. |
+
+<br/>
+
+### setTokenIdData
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#settokeniddata)
+- Solidity implementation: [`LSP8Enumerable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol)
+- Function signature: `setTokenIdData(bytes32,bytes32,bytes)`
+- Function selector: `0x3b38c1d7`
+
+:::
+
+```solidity
+function setTokenIdData(
+  bytes32 tokenId,
+  bytes32 dataKey,
+  bytes dataValue
+) external nonpayable;
+```
+
+_Sets data for a specific `tokenId` and `dataKey`._
+
+#### Parameters
+
+| Name        |   Type    | Description                              |
+| ----------- | :-------: | ---------------------------------------- |
+| `tokenId`   | `bytes32` | The unique identifier for a token.       |
+| `dataKey`   | `bytes32` | The key for the data to set.             |
+| `dataValue` |  `bytes`  | The value to set for the given data key. |
+
+<br/>
+
+### setTokenIdDataBatch
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#settokeniddatabatch)
+- Solidity implementation: [`LSP8Enumerable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol)
+- Function signature: `setTokenIdDataBatch(bytes32[],bytes32[],bytes[])`
+- Function selector: `0xae0646d7`
+
+:::
+
+```solidity
+function setTokenIdDataBatch(
+  bytes32[] tokenIds,
+  bytes32[] dataKeys,
+  bytes[] dataValues
+) external nonpayable;
+```
+
+_Sets data in batch for multiple `tokenId` and `dataKey` pairs._
+
+#### Parameters
+
+| Name         |    Type     | Description |
+| ------------ | :---------: | ----------- |
+| `tokenIds`   | `bytes32[]` | -           |
+| `dataKeys`   | `bytes32[]` | -           |
+| `dataValues` |  `bytes[]`  | -           |
 
 <br/>
 
@@ -1014,6 +1146,64 @@ all the parameters in the calldata packed encoded.
 
 <br/>
 
+### \_setTokenIdData
+
+```solidity
+function _setTokenIdData(
+  bytes32 tokenId,
+  bytes32 dataKey,
+  bytes dataValue
+) internal nonpayable;
+```
+
+Sets data for a specific `tokenId` and `dataKey` in the ERC725Y storage
+The ERC725Y data key is the hash of the `tokenId` and `dataKey` concatenated
+
+<blockquote>
+
+**Emitted events:**
+
+- [`TokenIdDataChanged`](#tokeniddatachanged) event.
+
+</blockquote>
+
+#### Parameters
+
+| Name        |   Type    | Description                              |
+| ----------- | :-------: | ---------------------------------------- |
+| `tokenId`   | `bytes32` | The unique identifier for a token.       |
+| `dataKey`   | `bytes32` | The key for the data to set.             |
+| `dataValue` |  `bytes`  | The value to set for the given data key. |
+
+<br/>
+
+### \_getTokenIdData
+
+```solidity
+function _getTokenIdData(
+  bytes32 tokenId,
+  bytes32 dataKey
+) internal view returns (bytes dataValues);
+```
+
+Retrieves data for a specific `tokenId` and `dataKey` from the ERC725Y storage
+The ERC725Y data key is the hash of the `tokenId` and `dataKey` concatenated
+
+#### Parameters
+
+| Name      |   Type    | Description                        |
+| --------- | :-------: | ---------------------------------- |
+| `tokenId` | `bytes32` | The unique identifier for a token. |
+| `dataKey` | `bytes32` | The key for the data to retrieve.  |
+
+#### Returns
+
+| Name         |  Type   | Description                                                       |
+| ------------ | :-----: | ----------------------------------------------------------------- |
+| `dataValues` | `bytes` | The data value associated with the given `tokenId` and `dataKey`. |
+
+<br/>
+
 ### \_beforeTokenTransfer
 
 ```solidity
@@ -1296,6 +1486,33 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 | ----------------------------- | :-------: | ----------- |
 | `previousOwner` **`indexed`** | `address` | -           |
 | `newOwner` **`indexed`**      | `address` | -           |
+
+<br/>
+
+### TokenIdDataChanged
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#tokeniddatachanged)
+- Solidity implementation: [`LSP8Enumerable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol)
+- Event signature: `TokenIdDataChanged(bytes32,bytes32,bytes)`
+- Event topic hash: `0xa6e4251f855f750545fe414f120db91c76b88def14d120969e5bb2d3f05debbb`
+
+:::
+
+```solidity
+event TokenIdDataChanged(bytes32 indexed tokenId, bytes32 indexed dataKey, bytes dataValue);
+```
+
+Emitted when setting data for `tokenId`.
+
+#### Parameters
+
+| Name                    |   Type    | Description                                  |
+| ----------------------- | :-------: | -------------------------------------------- |
+| `tokenId` **`indexed`** | `bytes32` | The tokenId which data is set for.           |
+| `dataKey` **`indexed`** | `bytes32` | The data key for which a bytes value is set. |
+| `dataValue`             |  `bytes`  | The value to set for the given data key.     |
 
 <br/>
 
@@ -1798,6 +2015,44 @@ error LSP8TokenIdTypeNotEditable();
 ```
 
 Reverts when trying to edit the data key `LSP8TokenIdType` after the identifiable digital asset contract has been deployed. The `LSP8TokenIdType` data key is located inside the ERC725Y Data key-value store of the identifiable digital asset contract. It can be set only once inside the constructor/initializer when the identifiable digital asset contract is being deployed.
+
+<br/>
+
+### LSP8TokenIdsDataEmptyArray
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidsdataemptyarray)
+- Solidity implementation: [`LSP8Enumerable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol)
+- Error signature: `LSP8TokenIdsDataEmptyArray()`
+- Error hash: `0x80c98305`
+
+:::
+
+```solidity
+error LSP8TokenIdsDataEmptyArray();
+```
+
+Reverts when empty arrays is passed to the function
+
+<br/>
+
+### LSP8TokenIdsDataLengthMismatch
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidsdatalengthmismatch)
+- Solidity implementation: [`LSP8Enumerable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol)
+- Error signature: `LSP8TokenIdsDataLengthMismatch()`
+- Error hash: `0x2fa71dfe`
+
+:::
+
+```solidity
+error LSP8TokenIdsDataLengthMismatch();
+```
+
+Reverts when the length of the token IDs data arrays is not equal
 
 <br/>
 
