@@ -4,9 +4,6 @@ pragma solidity ^0.8.4;
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 
-// libraries
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-
 // constants
 import {
     _LSP4_TOKEN_NAME_KEY,
@@ -30,8 +27,6 @@ abstract contract LSP4DigitalAssetMetadataCore is ERC725YCore {
     /**
      * @dev The ERC725Y data keys `LSP4TokenName` and `LSP4TokenSymbol` cannot be changed
      * via this function once the digital asset contract has been deployed.
-     *
-     * @dev Save gas by emitting the {DataChanged} event with only the first 256 bytes of dataValue
      */
     function _setData(
         bytes32 dataKey,
@@ -46,12 +41,7 @@ abstract contract LSP4DigitalAssetMetadataCore is ERC725YCore {
         } else {
             _store[dataKey] = dataValue;
 
-            emit DataChanged(
-                dataKey,
-                dataValue.length <= 256
-                    ? dataValue
-                    : BytesLib.slice(dataValue, 0, 256)
-            );
+            emit DataChanged(dataKey, dataValue);
         }
     }
 }
