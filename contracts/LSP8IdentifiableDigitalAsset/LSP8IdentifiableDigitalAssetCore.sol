@@ -198,6 +198,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             }
 
             results[i] = result;
+
+            unchecked {
+                ++i;
+            }
         }
     }
 
