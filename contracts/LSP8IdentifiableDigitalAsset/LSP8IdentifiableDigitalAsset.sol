@@ -23,12 +23,12 @@ import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
-import {_INTERFACEID_LSP8, _LSP8_TOKENID_TYPE_KEY} from "./LSP8Constants.sol";
+import {_INTERFACEID_LSP8, _LSP8_TOKENID_SCHEMA_KEY} from "./LSP8Constants.sol";
 
 // errors
 import {
     LSP8TokenContractCannotHoldValue,
-    LSP8TokenIdTypeNotEditable
+    LSP8TokenIdSchemaNotEditable
 } from "./LSP8Errors.sol";
 
 import {
@@ -61,29 +61,30 @@ abstract contract LSP8IdentifiableDigitalAsset is
 {
     /**
      * @notice Deploying a LSP8IdentifiableDigitalAsset with name `name_`, symbol `symbol_`, owned by address `newOwner_`
-     * with tokenId type `tokenIdType_`.
+     * with tokenId schema `lsp8TokenIdSchema_`.
      *
-     * @dev Deploy a `LSP8IdentifiableDigitalAsset` contract and set the tokenId type inside the ERC725Y storage of the contract.
+     * @dev Deploy a `LSP8IdentifiableDigitalAsset` contract and set the tokenId schema inside the ERC725Y storage of the contract.
      * This will also set the token `name_` and `symbol_` under the ERC725Y data keys `LSP4TokenName` and `LSP4TokenSymbol`.
      *
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
      * @param newOwner_ The owner of the the token-Metadata
-     * @param tokenIdType_ The type of tokenIds (= NFTs) that this contract will create.
-     * Available options are: NUMBER = `0`; STRING = `1`; UNIQUE_ID = `2`; HASH = `3`; ADDRESS = `4`.
+     * @param lsp4TokenType_ The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection).
+     * @param lsp8TokenIdSchema_ The schema of tokenIds (= NFTs) that this contract will create.
      *
-     * @custom:warning Make sure the tokenId type provided on deployment is correct, as it can only be set once
+     * @custom:warning Make sure the tokenId schema provided on deployment is correct, as it can only be set once
      * and cannot be changed in the ERC725Y storage after the contract has been deployed.
      */
     constructor(
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        uint256 tokenIdType_
-    ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {
+        uint256 lsp4TokenType_,
+        uint256 lsp8TokenIdSchema_
+    ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_, lsp4TokenType_) {
         LSP4DigitalAssetMetadata._setData(
-            _LSP8_TOKENID_TYPE_KEY,
-            abi.encode(tokenIdType_)
+            _LSP8_TOKENID_SCHEMA_KEY,
+            abi.encode(lsp8TokenIdSchema_)
         );
     }
 
@@ -219,7 +220,7 @@ abstract contract LSP8IdentifiableDigitalAsset is
 
     /**
      * @inheritdoc LSP4DigitalAssetMetadata
-     * @dev The ERC725Y data key `_LSP8_TOKENID_TYPE_KEY` cannot be changed
+     * @dev The ERC725Y data key `_LSP8_TOKENID_SCHEMA_KEY` cannot be changed
      * once the identifiable digital asset contract has been deployed.
      */
     function _setData(
@@ -230,8 +231,8 @@ abstract contract LSP8IdentifiableDigitalAsset is
         virtual
         override(LSP4DigitalAssetMetadata, LSP4DigitalAssetMetadataCore)
     {
-        if (dataKey == _LSP8_TOKENID_TYPE_KEY) {
-            revert LSP8TokenIdTypeNotEditable();
+        if (dataKey == _LSP8_TOKENID_SCHEMA_KEY) {
+            revert LSP8TokenIdSchemaNotEditable();
         }
         LSP4DigitalAssetMetadata._setData(dataKey, dataValue);
     }

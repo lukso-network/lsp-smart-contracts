@@ -31,18 +31,24 @@ When marked as 'public', a method can be called both externally and internally, 
 :::
 
 ```solidity
-constructor(string name_, string symbol_, address newOwner_);
+constructor(
+  string name_,
+  string symbol_,
+  address newOwner_,
+  uint256 lsp4TokenType_
+);
 ```
 
 _Deploying a `LSP7CompatibleERC20Mintable` token contract with: token name = `name_`, token symbol = `symbol_`, and address `newOwner_` as the token contract owner._
 
 #### Parameters
 
-| Name        |   Type    | Description                      |
-| ----------- | :-------: | -------------------------------- |
-| `name_`     | `string`  | The name of the token.           |
-| `symbol_`   | `string`  | The symbol of the token.         |
-| `newOwner_` | `address` | The owner of the token contract. |
+| Name             |   Type    | Description                                                                                          |
+| ---------------- | :-------: | ---------------------------------------------------------------------------------------------------- |
+| `name_`          | `string`  | The name of the token.                                                                               |
+| `symbol_`        | `string`  | The symbol of the token.                                                                             |
+| `newOwner_`      | `address` | The owner of the token contract.                                                                     |
+| `lsp4TokenType_` | `uint256` | The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection). |
 
 <br/>
 
@@ -1603,7 +1609,7 @@ reverts when the contract is called with a function selector not valid (less tha
 error LSP4TokenNameNotEditable();
 ```
 
-Reverts when trying to edit the data key `LSP4TokenName` after the digital asset contract has been deployed. The `LSP4TokenName` data key is located inside the ERC725Y Data key-value store of the digital asset contract. It can be set only once inside the constructor/initializer when the digital asset contract is being deployed.
+Reverts when trying to edit the data key `LSP4TokenName` after the digital asset contract has been deployed / initialized. The `LSP4TokenName` data key is located inside the ERC725Y data key-value store of the digital asset contract. It can be set only once inside the constructor/initializer when the digital asset contract is being deployed / initialized.
 
 <br/>
 
@@ -1622,7 +1628,26 @@ Reverts when trying to edit the data key `LSP4TokenName` after the digital asset
 error LSP4TokenSymbolNotEditable();
 ```
 
-Reverts when trying to edit the data key `LSP4TokenSymbol` after the digital asset contract has been deployed. The `LSP4TokenSymbol` data key is located inside the ERC725Y Data key-value store of the digital asset contract. It can be set only once inside the constructor/initializer when the digital asset contract is being deployed.
+Reverts when trying to edit the data key `LSP4TokenSymbol` after the digital asset contract has been deployed / initialized. The `LSP4TokenSymbol` data key is located inside the ERC725Y data key-value store of the digital asset contract. It can be set only once inside the constructor/initializer when the digital asset contract is being deployed / initialized.
+
+<br/>
+
+### LSP4TokenTypeNotEditable
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#lsp4tokentypenoteditable)
+- Solidity implementation: [`LSP7CompatibleERC20Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol)
+- Error signature: `LSP4TokenTypeNotEditable()`
+- Error hash: `0x4ef6d7fb`
+
+:::
+
+```solidity
+error LSP4TokenTypeNotEditable();
+```
+
+Reverts when trying to edit the data key `LSP4TokenType` after the digital asset contract has been deployed / initialized. The `LSP4TokenType` data key is located inside the ERC725Y data key-value store of the digital asset contract. It can be set only once inside the constructor / initializer when the digital asset contract is being deployed / initialized.
 
 <br/>
 

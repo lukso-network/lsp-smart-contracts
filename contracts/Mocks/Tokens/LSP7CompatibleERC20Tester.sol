@@ -11,8 +11,9 @@ contract LSP7CompatibleERC20Tester is LSP7CompatibleERC20 {
     constructor(
         string memory name_,
         string memory symbol_,
-        address newOwner_
-    ) LSP7CompatibleERC20(name_, symbol_, newOwner_) {}
+        address newOwner_,
+        uint256 lsp4TokenType_
+    ) LSP7CompatibleERC20(name_, symbol_, newOwner_, lsp4TokenType_) {}
 
     function mint(address to, uint256 amount, bytes calldata data) public {
         // using force=true so we can send to EOA in test

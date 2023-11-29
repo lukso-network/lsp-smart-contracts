@@ -920,7 +920,7 @@ mapping(bytes32 => bytes) _store
 function _setData(bytes32 dataKey, bytes dataValue) internal nonpayable;
 ```
 
-The ERC725Y data key `_LSP8_TOKENID_TYPE_KEY` cannot be changed
+The ERC725Y data key `_LSP8_TOKENID_SCHEMA_KEY` cannot be changed
 once the identifiable digital asset contract has been deployed.
 
 <br/>
@@ -1668,7 +1668,7 @@ reverts when the contract is called with a function selector not valid (less tha
 error LSP4TokenNameNotEditable();
 ```
 
-Reverts when trying to edit the data key `LSP4TokenName` after the digital asset contract has been deployed. The `LSP4TokenName` data key is located inside the ERC725Y Data key-value store of the digital asset contract. It can be set only once inside the constructor/initializer when the digital asset contract is being deployed.
+Reverts when trying to edit the data key `LSP4TokenName` after the digital asset contract has been deployed / initialized. The `LSP4TokenName` data key is located inside the ERC725Y data key-value store of the digital asset contract. It can be set only once inside the constructor/initializer when the digital asset contract is being deployed / initialized.
 
 <br/>
 
@@ -1687,7 +1687,26 @@ Reverts when trying to edit the data key `LSP4TokenName` after the digital asset
 error LSP4TokenSymbolNotEditable();
 ```
 
-Reverts when trying to edit the data key `LSP4TokenSymbol` after the digital asset contract has been deployed. The `LSP4TokenSymbol` data key is located inside the ERC725Y Data key-value store of the digital asset contract. It can be set only once inside the constructor/initializer when the digital asset contract is being deployed.
+Reverts when trying to edit the data key `LSP4TokenSymbol` after the digital asset contract has been deployed / initialized. The `LSP4TokenSymbol` data key is located inside the ERC725Y data key-value store of the digital asset contract. It can be set only once inside the constructor/initializer when the digital asset contract is being deployed / initialized.
+
+<br/>
+
+### LSP4TokenTypeNotEditable
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp4tokentypenoteditable)
+- Solidity implementation: [`LSP8Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol)
+- Error signature: `LSP4TokenTypeNotEditable()`
+- Error hash: `0x4ef6d7fb`
+
+:::
+
+```solidity
+error LSP4TokenTypeNotEditable();
+```
+
+Reverts when trying to edit the data key `LSP4TokenType` after the digital asset contract has been deployed / initialized. The `LSP4TokenType` data key is located inside the ERC725Y data key-value store of the digital asset contract. It can be set only once inside the constructor / initializer when the digital asset contract is being deployed / initialized.
 
 <br/>
 
@@ -1997,22 +2016,22 @@ Error occurs when sending native tokens to the LSP8 contract without sending any
 
 <br/>
 
-### LSP8TokenIdTypeNotEditable
+### LSP8TokenIdSchemaNotEditable
 
 :::note References
 
-- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidtypenoteditable)
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidschemanoteditable)
 - Solidity implementation: [`LSP8Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol)
-- Error signature: `LSP8TokenIdTypeNotEditable()`
-- Error hash: `0x53bc1122`
+- Error signature: `LSP8TokenIdSchemaNotEditable()`
+- Error hash: `0xce0c7552`
 
 :::
 
 ```solidity
-error LSP8TokenIdTypeNotEditable();
+error LSP8TokenIdSchemaNotEditable();
 ```
 
-Reverts when trying to edit the data key `LSP8TokenIdType` after the identifiable digital asset contract has been deployed. The `LSP8TokenIdType` data key is located inside the ERC725Y Data key-value store of the identifiable digital asset contract. It can be set only once inside the constructor/initializer when the identifiable digital asset contract is being deployed.
+Reverts when trying to edit the data key `LSP8TokenIdSchema` after the identifiable digital asset contract has been deployed. The `LSP8TokenIdSchema` data key is located inside the ERC725Y Data key-value store of the identifiable digital asset contract. It can be set only once inside the constructor/initializer when the identifiable digital asset contract is being deployed.
 
 <br/>
 

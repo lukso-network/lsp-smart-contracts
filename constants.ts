@@ -192,6 +192,9 @@ export const ERC725YDataKeys = {
     // keccak256('LSP4TokenSymbol')
     LSP4TokenSymbol: '0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756',
 
+    // keccak256('LSP4TokenType)
+    LSP4TokenType: '0xe0261fa95db2eb3b5439bd033cda66d56b96f92f243a8228fd87550ed7bdfdb3',
+
     // keccak256('LSP4Metadata')
     LSP4Metadata: '0x9afb95cacc9f95858ec44aa8c3b685511002e30ae54415823f406128b85b238e',
 
@@ -233,8 +236,7 @@ export const ERC725YDataKeys = {
     'AddressPermissions:AllowedCalls': '0x4b80742de2bf393a64c70000',
   },
   LSP8: {
-    LSP8TokenIdType: '0x715f248956de7ce65e94d9d836bfead479f7e70d69b718d47bfe7b00e05b4fe4',
-    LSP8MetadataTokenURI: '0x1339e76a390b7b9ec9010000',
+    LSP8TokenIdSchema: '0x341bc44e55234544c70af9d37b2cb8cc7ba74685b58526221de2cc977f469924',
     LSP8TokenMetadataBaseURI: '0x1a7628600c3bac7101f53697f48df381ddc36b9015e7d7c9c5633d1252aa2843',
     LSP8ReferenceContract: '0x708e7b881795f2e6b6c2752108c177ec89248458de3bf69d0d43480b3e5034e6',
   },
@@ -390,19 +392,37 @@ export const LSP1_TYPE_IDS = {
     '0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
 };
 
+// LSP4
+// ----------
+
+/**
+ * @dev list of LSP4 Token types to describe the type of token a digital asset contract represents.
+ * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-4-DigitalAsset-Metadata.md#lsp4tokentype
+ */
+export const LSP4_TOKEN_TYPES = {
+  TOKEN: 0,
+  NFT: 1,
+  COLLECTION: 2,
+};
+
 // LSP8
 // ----------
 
 /**
- * @dev list of LSP8 Token ID types that can be used to create different types of NFTs.
- * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidtype
+ * @dev list of LSP8 Token ID Schemas that can be used to create different types of NFTs and represent each NFT identifiers differently.
+ * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidschema
  */
-export const LSP8_TOKEN_ID_TYPES = {
+export const LSP8_TOKEN_ID_SCHEMA = {
   NUMBER: 0,
   STRING: 1,
-  UNIQUE_ID: 2,
-  HASH: 3,
-  ADDRESS: 4,
+  ADDRESS: 2,
+  UNIQUE_ID: 3,
+  HASH: 4,
+  MIXED_DEFAULT_NUMBER: 100,
+  MIXED_DEFAULT_STRING: 101,
+  MIXED_DEFAULT_ADDRESS: 102,
+  MIXED_DEFAULT_UNIQUE_ID: 103,
+  MIXED_DEFAULT_HASH: 104,
 };
 
 // LSP25
