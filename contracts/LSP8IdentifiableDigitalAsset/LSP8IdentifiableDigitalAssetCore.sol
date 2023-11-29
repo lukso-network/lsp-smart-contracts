@@ -158,13 +158,12 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         for (uint256 i; i < tokenIds.length; ) {
             _setTokenIdData(tokenIds[i], dataKeys[i], dataValues[i]);
 
+            // Increment the iterator in unchecked block to save gas
             unchecked {
                 ++i;
             }
         }
     }
-
-    // Increment the iterator in unchecked block to save gas
 
     // --- General functionality
 
