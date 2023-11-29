@@ -19,13 +19,6 @@ import {
     _LSP4_TOKEN_TYPE_KEY
 } from "./LSP4Constants.sol";
 
-// errors
-import {
-    LSP4TokenNameNotEditable,
-    LSP4TokenSymbolNotEditable,
-    LSP4TokenTypeNotEditable
-} from "./LSP4Errors.sol";
-
 /**
  * @title Implementation of a LSP4DigitalAssetMetadata contract that stores the **Token-Metadata** (`LSP4TokenName` and `LSP4TokenSymbol`) in its ERC725Y data store.
  * @author Matthew Stevens

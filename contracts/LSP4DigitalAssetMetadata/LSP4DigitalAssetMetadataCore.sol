@@ -10,13 +10,15 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 // constants
 import {
     _LSP4_TOKEN_NAME_KEY,
-    _LSP4_TOKEN_SYMBOL_KEY
+    _LSP4_TOKEN_SYMBOL_KEY,
+    _LSP4_TOKEN_TYPE_KEY
 } from "./LSP4Constants.sol";
 
 // errors
 import {
     LSP4TokenNameNotEditable,
-    LSP4TokenSymbolNotEditable
+    LSP4TokenSymbolNotEditable,
+    LSP4TokenTypeNotEditable
 } from "./LSP4Errors.sol";
 
 /**
@@ -39,8 +41,11 @@ abstract contract LSP4DigitalAssetMetadataCore is ERC725YCore {
             revert LSP4TokenNameNotEditable();
         } else if (dataKey == _LSP4_TOKEN_SYMBOL_KEY) {
             revert LSP4TokenSymbolNotEditable();
+        } else if (dataKey == _LSP4_TOKEN_TYPE_KEY) {
+            revert LSP4TokenTypeNotEditable();
         } else {
             _store[dataKey] = dataValue;
+
             emit DataChanged(
                 dataKey,
                 dataValue.length <= 256
