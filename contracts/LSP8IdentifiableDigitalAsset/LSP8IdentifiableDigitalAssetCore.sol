@@ -40,7 +40,8 @@ import {
     LSP8NotifyTokenReceiverContractMissingLSP1Interface,
     LSP8NotifyTokenReceiverIsEOA,
     LSP8TokenIdsDataLengthMismatch,
-    LSP8TokenIdsDataEmptyArray
+    LSP8TokenIdsDataEmptyArray,
+    LSP8BatchCallFailed
 } from "./LSP8Errors.sol";
 
 // constants
@@ -157,10 +158,46 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         for (uint256 i; i < tokenIds.length; ) {
             _setTokenIdData(tokenIds[i], dataKeys[i], dataValues[i]);
 
-            // Increment the iterator in unchecked block to save gas
             unchecked {
                 ++i;
             }
+        }
+    }
+
+    // Increment the iterator in unchecked block to save gas
+
+    // --- General functionality
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     *
+     * @custom:info It's not possible to send value along the functions call due to the use of `delegatecall`.
+     */
+    function batchCalls(
+        bytes[] calldata data
+    ) public virtual override returns (bytes[] memory results) {
+        results = new bytes[](data.length);
+        for (uint256 i; i < data.length; ) {
+            (bool success, bytes memory result) = address(this).delegatecall(
+                data[i]
+            );
+
+            if (!success) {
+                // Look for revert reason and bubble it up if present
+                if (result.length != 0) {
+                    // The easiest way to bubble the revert reason is using memory via assembly
+                    // solhint-disable no-inline-assembly
+                    /// @solidity memory-safe-assembly
+                    assembly {
+                        let returndata_size := mload(result)
+                        revert(add(32, result), returndata_size)
+                    }
+                } else {
+                    revert LSP8BatchCallFailed({callIndex: i});
+                }
+            }
+
+            results[i] = result;
         }
     }
 

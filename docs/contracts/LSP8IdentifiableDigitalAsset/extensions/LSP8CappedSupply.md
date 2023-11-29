@@ -137,6 +137,45 @@ Get the number of token IDs owned by `tokenOwner`.
 
 <br/>
 
+### batchCalls
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#batchcalls)
+- Solidity implementation: [`LSP8CappedSupply.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol)
+- Function signature: `batchCalls(bytes[])`
+- Function selector: `0x6963d438`
+
+:::
+
+:::info
+
+It's not possible to send value along the functions call due to the use of `delegatecall`.
+
+:::
+
+```solidity
+function batchCalls(bytes[] data) external nonpayable returns (bytes[] results);
+```
+
+_Executing the following batch of abi-encoded function calls on the contract: `data`._
+
+Allows a caller to batch different function calls in one call. Perform a `delegatecall` on self, to call different functions with preserving the context.
+
+#### Parameters
+
+| Name   |   Type    | Description                                                          |
+| ------ | :-------: | -------------------------------------------------------------------- |
+| `data` | `bytes[]` | An array of ABI encoded function calls to be called on the contract. |
+
+#### Returns
+
+| Name      |   Type    | Description                                                      |
+| --------- | :-------: | ---------------------------------------------------------------- |
+| `results` | `bytes[]` | An array of abi-encoded data returned by the functions executed. |
+
+<br/>
+
 ### getData
 
 :::note References
@@ -1626,6 +1665,33 @@ Reverts when trying to edit the data key `LSP4TokenSymbol` after the digital ass
 
 <br/>
 
+### LSP8BatchCallFailed
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8batchcallfailed)
+- Solidity implementation: [`LSP8CappedSupply.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol)
+- Error signature: `LSP8BatchCallFailed(uint256)`
+- Error hash: `0x234eb819`
+
+:::
+
+```solidity
+error LSP8BatchCallFailed(uint256 callIndex);
+```
+
+_Batch call failed._
+
+Reverts when a batch call failed.
+
+#### Parameters
+
+| Name        |   Type    | Description |
+| ----------- | :-------: | ----------- |
+| `callIndex` | `uint256` | -           |
+
+<br/>
+
 ### LSP8CannotSendToAddressZero
 
 :::note References
@@ -1981,6 +2047,8 @@ Reverts when trying to edit the data key `LSP8TokenIdType` after the identifiabl
 error LSP8TokenIdsDataEmptyArray();
 ```
 
+Reverts when empty arrays is passed to the function
+
 <br/>
 
 ### LSP8TokenIdsDataLengthMismatch
@@ -1997,6 +2065,8 @@ error LSP8TokenIdsDataEmptyArray();
 ```solidity
 error LSP8TokenIdsDataLengthMismatch();
 ```
+
+Reverts when the length of the token IDs data arrays is not equal
 
 <br/>
 

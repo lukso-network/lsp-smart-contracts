@@ -128,6 +128,7 @@ abstract contract LSP0ERC725AccountCore is
      *
      * @custom:events {UniversalReceiver} event when receiving native tokens and extension function selector is not found or not payable.
      */
+    // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {

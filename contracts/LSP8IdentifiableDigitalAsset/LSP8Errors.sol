@@ -88,6 +88,18 @@ error LSP8TokenContractCannotHoldValue();
  */
 error LSP8TokenIdTypeNotEditable();
 
+/**
+ * @dev Reverts when the length of the token IDs data arrays is not equal
+ */
 error LSP8TokenIdsDataLengthMismatch();
 
+/**
+ * @dev Reverts when empty arrays is passed to the function
+ */
 error LSP8TokenIdsDataEmptyArray();
+
+/**
+ * @dev Reverts when a batch call failed.
+ * @notice Batch call failed.
+ */
+error LSP8BatchCallFailed(uint256 callIndex);
