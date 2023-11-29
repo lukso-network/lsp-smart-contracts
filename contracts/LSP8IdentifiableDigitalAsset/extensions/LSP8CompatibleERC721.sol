@@ -65,22 +65,21 @@ abstract contract LSP8CompatibleERC721 is
      * @param symbol_ The symbol of the token.
      * @param newOwner_ The owner of the token contract.
      * @param lsp4TokenType_ The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection).
-     * @param lsp8TokenIdType_ The type of tokenIds (= NFTs) that this contract will create.
-     * Available options are: NUMBER = `0`; STRING = `1`; UNIQUE_ID = `2`; HASH = `3`; ADDRESS = `4`.
+     * @param lsp8TokenIdSchema_ The schema of tokenIds (= NFTs) that this contract will create.
      */
     constructor(
         string memory name_,
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        uint256 lsp8TokenIdType_
+        uint256 lsp8TokenIdSchema_
     )
         LSP8IdentifiableDigitalAsset(
             name_,
             symbol_,
             newOwner_,
             lsp4TokenType_,
-            lsp8TokenIdType_
+            lsp8TokenIdSchema_
         )
     {}
 

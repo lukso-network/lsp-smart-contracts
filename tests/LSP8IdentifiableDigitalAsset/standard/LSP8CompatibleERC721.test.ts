@@ -8,7 +8,7 @@ import {
   shouldInitializeLikeLSP8CompatibleERC721,
   LSP8CompatibleERC721TestContext,
 } from '../LSP8CompatibleERC721.behaviour';
-import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_TYPES } from '../../../constants';
+import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_SCHEMA } from '../../../constants';
 
 describe('LSP8CompatibleERC721 with constructor', () => {
   const buildTestContext = async (): Promise<LSP8CompatibleERC721TestContext> => {
@@ -27,7 +27,7 @@ describe('LSP8CompatibleERC721 with constructor', () => {
       symbol: 'NFT',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      lsp8TokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
+      lsp8TokenIdSchema: LSP8_TOKEN_ID_SCHEMA.NUMBER,
       lsp4MetadataValue,
     };
 
@@ -38,7 +38,7 @@ describe('LSP8CompatibleERC721 with constructor', () => {
       deployParams.symbol,
       deployParams.newOwner,
       deployParams.lsp4TokenType,
-      deployParams.lsp8TokenIdType,
+      deployParams.lsp8TokenIdSchema,
       deployParams.lsp4MetadataValue,
     );
 

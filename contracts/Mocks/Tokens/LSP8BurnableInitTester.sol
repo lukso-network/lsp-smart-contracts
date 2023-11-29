@@ -16,14 +16,14 @@ contract LSP8BurnableInitTester is LSP8BurnableInitAbstract {
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        uint256 lsp8TokenIdType_
+        uint256 lsp8TokenIdSchema_
     ) public virtual initializer {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
             lsp4TokenType_,
-            lsp8TokenIdType_
+            lsp8TokenIdSchema_
         );
     }
 }

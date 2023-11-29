@@ -48,7 +48,7 @@ type LSP8CompatibleERC721DeployParams = {
   symbol: string;
   newOwner: string;
   lsp4TokenType: number;
-  lsp8TokenIdType: number;
+  lsp8TokenIdSchema: number;
   lsp4MetadataValue: string;
 };
 
@@ -76,18 +76,18 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
   });
 
   describe('when setting data', () => {
-    it('should not allow to update the `LSP8TokenIdType` after deployment', async () => {
+    it('should not allow to update the `lsp8TokenIdSchema` after deployment', async () => {
       await expect(
-        context.lsp8CompatibleERC721.setData(ERC725YDataKeys.LSP8.LSP8TokenIdType, '0xdeadbeef'),
-      ).to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8TokenIdTypeNotEditable');
+        context.lsp8CompatibleERC721.setData(ERC725YDataKeys.LSP8.LSP8TokenIdSchema, '0xdeadbeef'),
+      ).to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8TokenIdSchemaNotEditable');
     });
   });
 
   describe('when setting data', () => {
-    it('should not allow to update the `LSP8TokenIdType` after deployment', async () => {
+    it('should not allow to update the `lsp8TokenIdSchema` after deployment', async () => {
       await expect(
-        context.lsp8CompatibleERC721.setData(ERC725YDataKeys.LSP8.LSP8TokenIdType, '0xdeadbeef'),
-      ).to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8TokenIdTypeNotEditable');
+        context.lsp8CompatibleERC721.setData(ERC725YDataKeys.LSP8.LSP8TokenIdSchema, '0xdeadbeef'),
+      ).to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8TokenIdSchemaNotEditable');
     });
   });
 

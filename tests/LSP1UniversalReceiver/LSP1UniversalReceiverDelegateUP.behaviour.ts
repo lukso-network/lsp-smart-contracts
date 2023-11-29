@@ -35,7 +35,7 @@ import {
   INTERFACE_IDS,
   OPERATION_TYPES,
   LSP1_TYPE_IDS,
-  LSP8_TOKEN_ID_TYPES,
+  LSP8_TOKEN_ID_SCHEMA,
   LSP4_TOKEN_TYPES,
 } from '../../constants';
 
@@ -1789,7 +1789,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         'TA',
         context.accounts.random.address,
         LSP4_TOKEN_TYPES.NFT,
-        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
+        LSP8_TOKEN_ID_SCHEMA.UNIQUE_ID,
       );
 
       lsp8TokenB = await new LSP8Tester__factory(context.accounts.random).deploy(
@@ -1797,7 +1797,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         'TB',
         context.accounts.random.address,
         LSP4_TOKEN_TYPES.NFT,
-        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
+        LSP8_TOKEN_ID_SCHEMA.UNIQUE_ID,
       );
 
       lsp8TokenC = await new LSP8Tester__factory(context.accounts.random).deploy(
@@ -1805,7 +1805,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         'TA',
         context.accounts.random.address,
         LSP4_TOKEN_TYPES.NFT,
-        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
+        LSP8_TOKEN_ID_SCHEMA.UNIQUE_ID,
       );
     });
 
@@ -3130,7 +3130,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           'MTK',
           context.universalProfile1.address,
           LSP4_TOKEN_TYPES.NFT,
-          LSP8_TOKEN_ID_TYPES.NUMBER,
+          LSP8_TOKEN_ID_SCHEMA.NUMBER,
         );
         // Mint token for UP1
         await LSP8.mint(context.universalProfile1.address, '0x' + '0'.repeat(64), true, '0x');

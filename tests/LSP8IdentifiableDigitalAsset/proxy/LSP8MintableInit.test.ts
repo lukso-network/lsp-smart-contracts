@@ -10,7 +10,7 @@ import {
 } from '../LSP8Mintable.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
-import { ERC725YDataKeys, LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_TYPES } from '../../../constants';
+import { ERC725YDataKeys, LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_SCHEMA } from '../../../constants';
 
 describe('LSP8MintableInit with proxy', () => {
   const buildTestContext = async () => {
@@ -20,7 +20,7 @@ describe('LSP8MintableInit with proxy', () => {
       symbol: 'MNTBL',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      lsp8TokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
+      lsp8TokenIdSchema: LSP8_TOKEN_ID_SCHEMA.NUMBER,
     };
 
     const LSP8MintableInit: LSP8MintableInit = await new LSP8MintableInit__factory(
@@ -39,7 +39,7 @@ describe('LSP8MintableInit with proxy', () => {
       context.deployParams.symbol,
       context.deployParams.newOwner,
       context.deployParams.lsp4TokenType,
-      context.deployParams.lsp8TokenIdType,
+      context.deployParams.lsp8TokenIdSchema,
     );
   };
 
@@ -53,7 +53,7 @@ describe('LSP8MintableInit with proxy', () => {
       expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenSymbol)).to.equal('0x');
       expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP4.LSP4Metadata)).to.equal('0x');
       expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenType)).to.equal('0x');
-      expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP8.LSP8TokenIdType)).to.equal('0x');
+      expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP8.LSP8TokenIdSchema)).to.equal('0x');
 
       expect(await lsp8MintableInit.owner()).to.equal(ethers.constants.AddressZero);
     });

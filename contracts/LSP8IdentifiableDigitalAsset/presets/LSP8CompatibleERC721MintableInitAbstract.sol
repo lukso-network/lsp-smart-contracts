@@ -20,14 +20,14 @@ contract LSP8CompatibleERC721MintableInitAbstract is
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        uint256 lsp8TokenIdType_
+        uint256 lsp8TokenIdSchema_
     ) internal virtual override onlyInitializing {
         LSP8CompatibleERC721InitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
             lsp4TokenType_,
-            lsp8TokenIdType_
+            lsp8TokenIdSchema_
         );
     }
 
