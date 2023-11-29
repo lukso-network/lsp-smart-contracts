@@ -1037,7 +1037,8 @@ mapping(bytes32 => bytes) _store
 function _setData(bytes32 dataKey, bytes dataValue) internal nonpayable;
 ```
 
-Save gas by emitting the [`DataChanged`](#datachanged) event with only the first 256 bytes of dataValue
+The ERC725Y data keys `LSP4TokenName` and `LSP4TokenSymbol` cannot be changed
+via this function once the digital asset contract has been deployed.
 
 <br/>
 

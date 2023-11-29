@@ -1044,22 +1044,27 @@ mapping(bytes32 => bytes) _store
 function _setData(bytes32 dataKey, bytes dataValue) internal nonpayable;
 ```
 
-This function overrides the [`ERC725YCore`](#erc725ycore) internal [`_setData`](#_setdata) function to optimize gas usage by emitting only the first 256 bytes of the `dataValue`.
+Write a `dataValue` to the underlying ERC725Y storage, represented as a mapping of
+`bytes32` data keys mapped to their `bytes` data values.
+
+```solidity
+mapping(bytes32 => bytes) _store
+```
 
 <blockquote>
 
 **Emitted events:**
 
-- [`DataChanged`](#datachanged) event with only the first 256 bytes of [`dataValue`](#datavalue).
+- [`DataChanged`](#datachanged) event emitted after a successful `setData` call.
 
 </blockquote>
 
 #### Parameters
 
-| Name        |   Type    | Description                            |
-| ----------- | :-------: | -------------------------------------- |
-| `dataKey`   | `bytes32` | The key to store the data value under. |
-| `dataValue` |  `bytes`  | The data value to be stored.           |
+| Name        |   Type    | Description                                                                     |
+| ----------- | :-------: | ------------------------------------------------------------------------------- |
+| `dataKey`   | `bytes32` | A bytes32 data key to write the associated `bytes` value to the store.          |
+| `dataValue` |  `bytes`  | The `bytes` value to associate with the given `dataKey` in the ERC725Y storage. |
 
 <br/>
 
