@@ -121,7 +121,7 @@ import {
   ImageMetadata,
   LinkMetadata,
   AssetMetadata,
-} from "@lukso/lsp-smart-contracts/constants";
+} from "@lukso/lsp-smart-contracts";
 ```
 
 ## Audits
