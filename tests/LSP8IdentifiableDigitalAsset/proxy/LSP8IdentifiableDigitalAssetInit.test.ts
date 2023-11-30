@@ -16,6 +16,7 @@ import {
 } from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
+import { LSP4_TOKEN_TYPES } from '../../../constants';
 
 describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
   const buildTestContext = async (nftType: number): Promise<LSP8TestContext> => {
@@ -24,7 +25,8 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
       name: 'LSP8 - deployed with constructor',
       symbol: 'NFT',
       newOwner: accounts.owner.address,
-      tokenIdType: nftType,
+      lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
+      lsp8TokenIdSchema: nftType,
     };
 
     const lsp8TesterInit = await new LSP8InitTester__factory(accounts.owner).deploy();
@@ -41,6 +43,7 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
 
       const deployParams = {
         owner: accounts[0],
+        lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       };
 
       return {
@@ -51,11 +54,12 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
     };
 
   const initializeProxy = async (context: LSP8TestContext) => {
-    return context.lsp8['initialize(string,string,address,uint256)'](
+    return context.lsp8['initialize(string,string,address,uint256,uint256)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
-      context.deployParams.tokenIdType,
+      context.deployParams.lsp4TokenType,
+      context.deployParams.lsp8TokenIdSchema,
     );
   };
 
@@ -68,11 +72,12 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
 
     it('should revert when initializing with address(0) as owner', async () => {
       await expect(
-        context.lsp8['initialize(string,string,address,uint256)'](
+        context.lsp8['initialize(string,string,address,uint256,uint256)'](
           context.deployParams.name,
           context.deployParams.symbol,
           ethers.constants.AddressZero,
           0,
+          context.deployParams.lsp4TokenType,
         ),
       ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCannotSetZeroAddressAsOwner');
     });
@@ -103,11 +108,12 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
     shouldBehaveLikeLSP4DigitalAssetMetadata(async () => {
       const lsp4Context = await buildLSP4DigitalAssetMetadataTestContext();
 
-      await lsp4Context.contract['initialize(string,string,address,uint256)'](
+      await lsp4Context.contract['initialize(string,string,address,uint256,uint256)'](
         'LSP8 - deployed with proxy',
         'NFT',
         lsp4Context.deployParams.owner.address,
         0,
+        lsp4Context.deployParams.lsp4TokenType,
       );
 
       return lsp4Context;

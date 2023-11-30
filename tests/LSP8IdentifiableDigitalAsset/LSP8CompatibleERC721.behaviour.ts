@@ -28,6 +28,7 @@ import { ERC725YDataKeys, INTERFACE_IDS, SupportedStandards } from '../../consta
 
 import type { BytesLike } from 'ethers';
 import type { TransactionResponse } from '@ethersproject/abstract-provider';
+import { abiCoder } from '../utils/helpers';
 
 export type LSP8CompatibleERC721TestAccounts = {
   owner: SignerWithAddress;
@@ -46,8 +47,9 @@ type LSP8CompatibleERC721DeployParams = {
   name: string;
   symbol: string;
   newOwner: string;
+  lsp4TokenType: number;
+  lsp8TokenIdSchema: number;
   lsp4MetadataValue: string;
-  tokenIdType: number;
 };
 
 export type LSP8CompatibleERC721TestContext = {
@@ -74,18 +76,18 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
   });
 
   describe('when setting data', () => {
-    it('should not allow to update the `LSP8TokenIdType` after deployment', async () => {
+    it('should not allow to update the `lsp8TokenIdSchema` after deployment', async () => {
       await expect(
-        context.lsp8CompatibleERC721.setData(ERC725YDataKeys.LSP8.LSP8TokenIdType, '0xdeadbeef'),
-      ).to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8TokenIdTypeNotEditable');
+        context.lsp8CompatibleERC721.setData(ERC725YDataKeys.LSP8.LSP8TokenIdSchema, '0xdeadbeef'),
+      ).to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8TokenIdSchemaNotEditable');
     });
   });
 
   describe('when setting data', () => {
-    it('should not allow to update the `LSP8TokenIdType` after deployment', async () => {
+    it('should not allow to update the `lsp8TokenIdSchema` after deployment', async () => {
       await expect(
-        context.lsp8CompatibleERC721.setData(ERC725YDataKeys.LSP8.LSP8TokenIdType, '0xdeadbeef'),
-      ).to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8TokenIdTypeNotEditable');
+        context.lsp8CompatibleERC721.setData(ERC725YDataKeys.LSP8.LSP8TokenIdSchema, '0xdeadbeef'),
+      ).to.be.revertedWithCustomError(context.lsp8CompatibleERC721, 'LSP8TokenIdSchemaNotEditable');
     });
   });
 
@@ -1290,6 +1292,18 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
         .to.emit(context.lsp8CompatibleERC721, 'DataChanged')
         .withArgs(symbolKey, expectedSymbolValue);
       expect(await context.lsp8CompatibleERC721.getData(symbolKey)).to.equal(expectedSymbolValue);
+
+      const tokenTypeKey = ERC725YDataKeys.LSP4['LSP4TokenType'];
+      const expectedTokenTypeValue = abiCoder.encode(
+        ['uint256'],
+        [context.deployParams.lsp4TokenType],
+      );
+      await expect(context.initializeTransaction)
+        .to.emit(context.lsp8CompatibleERC721, 'DataChanged')
+        .withArgs(tokenTypeKey, expectedTokenTypeValue);
+      expect(await context.lsp8CompatibleERC721.getData(tokenTypeKey)).to.equal(
+        expectedTokenTypeValue,
+      );
     });
 
     describe('when using the functions from IERC721Metadata', () => {

@@ -12,13 +12,20 @@ import {
 
 contract LSP7CappedSupplyInitTester is LSP7CappedSupplyInitAbstract {
     function initialize(
-        string memory name,
-        string memory symbol,
-        address newOwner,
-        uint256 tokenSupplyCap
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 lsp4TokenType_,
+        uint256 tokenSupplyCap_
     ) public virtual initializer {
-        LSP7DigitalAssetInitAbstract._initialize(name, symbol, newOwner, true);
-        LSP7CappedSupplyInitAbstract._initialize(tokenSupplyCap);
+        LSP7DigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            true
+        );
+        LSP7CappedSupplyInitAbstract._initialize(tokenSupplyCap_);
     }
 
     function mint(address to, uint256 amount) public {

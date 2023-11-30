@@ -27,6 +27,7 @@ import {
   PERMISSIONS,
   OPERATION_TYPES,
   CALLTYPE,
+  LSP4_TOKEN_TYPES,
 } from '../../../constants';
 
 // setup
@@ -882,6 +883,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         'LSP7 Token',
         'LSP7',
         context.accounts[0].address,
+        LSP4_TOKEN_TYPES.TOKEN,
         false,
       );
 
@@ -1064,6 +1066,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           'New LSP7 Token',
           'LSP7TKN',
           context.accounts[0].address,
+          LSP4_TOKEN_TYPES.TOKEN,
           false,
         );
 
@@ -1332,6 +1335,7 @@ export const shouldBehaveLikePermissionTransferValue = (
               'LSP7 Token',
               'LSP7',
               context.accounts[0].address,
+              LSP4_TOKEN_TYPES.TOKEN,
               false,
             );
 
@@ -1512,6 +1516,7 @@ export const shouldBehaveLikePermissionTransferValue = (
               'LSP7 Token',
               'LSP7',
               context.accounts[0].address,
+              LSP4_TOKEN_TYPES.TOKEN,
               false,
             );
 

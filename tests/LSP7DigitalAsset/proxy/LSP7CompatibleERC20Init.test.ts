@@ -14,6 +14,7 @@ import {
 } from '../LSP7CompatibleERC20.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
+import { LSP4_TOKEN_TYPES } from '../../../constants';
 
 describe('LSP7CompatibleERC20Init with proxy', () => {
   const buildTestContext = async (): Promise<LSP7CompatibleERC20TestContext> => {
@@ -23,6 +24,7 @@ describe('LSP7CompatibleERC20Init with proxy', () => {
       name: 'LSP7 - deployed with constructor',
       symbol: 'NFT',
       newOwner: accounts.owner.address,
+      lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
     };
 
     const lsp7CompatibilityForERC20TesterInit = await new LSP7CompatibleERC20InitTester__factory(
@@ -45,10 +47,11 @@ describe('LSP7CompatibleERC20Init with proxy', () => {
   };
 
   const initializeProxy = async (context: LSP7CompatibleERC20TestContext) => {
-    return context.lsp7CompatibleERC20['initialize(string,string,address)'](
+    return context.lsp7CompatibleERC20['initialize(string,string,address,uint256)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
+      context.deployParams.lsp4TokenType,
     );
   };
 
@@ -63,10 +66,11 @@ describe('LSP7CompatibleERC20Init with proxy', () => {
       const randomCaller = accounts[1];
 
       await expect(
-        lsp7CompatibilityForERC20TesterInit['initialize(string,string,address)'](
+        lsp7CompatibilityForERC20TesterInit['initialize(string,string,address,uint256)'](
           'XXXXXXXXXXX',
           'XXX',
           randomCaller.address,
+          12345,
         ),
       ).to.be.revertedWith('Initializable: contract is already initialized');
     });
@@ -81,10 +85,11 @@ describe('LSP7CompatibleERC20Init with proxy', () => {
       const randomCaller = accounts[1];
 
       await expect(
-        lsp7CompatibleERC20MintableInit['initialize(string,string,address)'](
+        lsp7CompatibleERC20MintableInit['initialize(string,string,address,uint256)'](
           'XXXXXXXXXXX',
           'XXX',
           randomCaller.address,
+          12345,
         ),
       ).to.be.revertedWith('Initializable: contract is already initialized');
     });

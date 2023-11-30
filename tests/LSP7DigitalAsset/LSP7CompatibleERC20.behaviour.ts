@@ -18,6 +18,7 @@ import {
   UniversalReceiverDelegateRevert__factory,
 } from '../../types';
 import { ERC725YDataKeys } from '../../constants';
+import { abiCoder } from '../utils/helpers';
 
 type LSP7CompatibleERC20TestAccounts = {
   owner: SignerWithAddress;
@@ -36,6 +37,7 @@ export type LSP7CompatibleERC20DeployParams = {
   name: string;
   symbol: string;
   newOwner: string;
+  lsp4TokenType: number;
 };
 
 export type LSP7CompatibleERC20TestContext = {
@@ -1286,6 +1288,15 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
         .to.emit(context.lsp7CompatibleERC20, 'DataChanged')
         .withArgs(symbolKey, expectedSymbolValue);
       expect(await context.lsp7CompatibleERC20.getData(symbolKey)).to.equal(expectedSymbolValue);
+
+      const tokenTypeKey = ERC725YDataKeys.LSP4['LSP4TokenType'];
+      const expectedTokenTypeValue = abiCoder.encode(
+        ['uint256'],
+        [context.deployParams.lsp4TokenType],
+      );
+      expect(await context.lsp7CompatibleERC20.getData(tokenTypeKey)).to.equal(
+        expectedTokenTypeValue,
+      );
     });
 
     describe('when using the functions from IERC20Metadata', () => {

@@ -15,10 +15,17 @@ contract LSP8CappedSupplyTester is LSP8CappedSupply {
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        uint256 tokenIdType_,
+        uint256 lsp4TokenType_,
+        uint256 lsp8TokenIdSchema_,
         uint256 tokenSupplyCap_
     )
-        LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, tokenIdType_)
+        LSP8IdentifiableDigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdSchema_
+        )
         LSP8CappedSupply(tokenSupplyCap_)
     {}
 

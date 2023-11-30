@@ -14,7 +14,7 @@ import {
 } from '../LSP8CompatibleERC721.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
-import { LSP8_TOKEN_ID_TYPES } from '../../../constants';
+import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_SCHEMA } from '../../../constants';
 
 describe('LSP8CompatibleERC721Init with proxy', () => {
   const buildTestContext = async (): Promise<LSP8CompatibleERC721TestContext> => {
@@ -32,7 +32,8 @@ describe('LSP8CompatibleERC721Init with proxy', () => {
       name: 'LSP8 - deployed with constructor',
       symbol: 'NFT',
       newOwner: accounts.owner.address,
-      tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
+      lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
+      lsp8TokenIdSchema: LSP8_TOKEN_ID_SCHEMA.NUMBER,
       lsp4MetadataValue,
     };
 
@@ -49,11 +50,12 @@ describe('LSP8CompatibleERC721Init with proxy', () => {
   };
 
   const initializeProxy = async (context: LSP8CompatibleERC721TestContext) => {
-    return context.lsp8CompatibleERC721['initialize(string,string,address,uint256,bytes)'](
+    return context.lsp8CompatibleERC721['initialize(string,string,address,uint256,uint256,bytes)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
-      context.deployParams.tokenIdType,
+      context.deployParams.lsp4TokenType,
+      context.deployParams.lsp8TokenIdSchema,
       context.deployParams.lsp4MetadataValue,
     );
   };
@@ -68,11 +70,12 @@ describe('LSP8CompatibleERC721Init with proxy', () => {
       const randomCaller = accounts[1];
 
       await expect(
-        lsp8CompatibilityForERC721TesterInit['initialize(string,string,address,uint256,bytes)'](
+        lsp8CompatibilityForERC721TesterInit.initialize(
           'XXXXXXXXXXX',
           'XXX',
           randomCaller.address,
-          0,
+          12345,
+          6789,
           '0x',
         ),
       ).to.be.revertedWith('Initializable: contract is already initialized');
@@ -88,7 +91,13 @@ describe('LSP8CompatibleERC721Init with proxy', () => {
       const randomCaller = accounts[1];
 
       await expect(
-        lsp8CompatibleERC721MintableInit.initialize('XXXXXXXXXXX', 'XXX', randomCaller.address, 0),
+        lsp8CompatibleERC721MintableInit.initialize(
+          'XXXXXXXXXXX',
+          'XXX',
+          randomCaller.address,
+          12345,
+          6789,
+        ),
       ).to.be.revertedWith('Initializable: contract is already initialized');
     });
   });
