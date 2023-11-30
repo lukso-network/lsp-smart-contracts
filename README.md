@@ -70,7 +70,7 @@ import {
   ERC725YDataKeys,
   PERMISSIONS,
   ALL_PERMISSIONS,
-  LSP8_TOKEN_ID_TYPES,
+  LSP8_TOKEN_ID_SCHEMA,
   LSP25_VERSION,
   ErrorSelectors,
   EventSigHashes,
@@ -121,7 +121,7 @@ import {
   ImageMetadata,
   LinkMetadata,
   AssetMetadata,
-} from "@lukso/lsp-smart-contracts/constants";
+} from "@lukso/lsp-smart-contracts";
 ```
 
 ## Audits

@@ -18,7 +18,8 @@ export type LSP8EnumerableDeployParams = {
   name: string;
   symbol: string;
   newOwner: string;
-  tokenIdType: number;
+  lsp4TokenType: number;
+  lsp8TokenIdSchema: number;
 };
 
 export type LSP8EnumerableTestContext = {

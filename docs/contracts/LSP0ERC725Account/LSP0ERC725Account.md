@@ -88,7 +88,7 @@ Set `initialOwner` as the contract owner.
 
 :::info
 
-Whenever the call is associated with native tokens, the function will delegate the handling of native tokens internally to the {universalReceiver} function
+Whenever the call is associated with native tokens, the function will delegate the handling of native tokens internally to the [`universalReceiver`](#universalreceiver) function
 passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and the calldata as received data, except when the native token will be sent directly to the extension.
 
 :::
@@ -138,7 +138,7 @@ This function is executed when:
 
 :::info
 
-This function internally delegates the handling of native tokens to the {universalReceiver} function
+This function internally delegates the handling of native tokens to the [`universalReceiver`](#universalreceiver) function
 passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and an empty bytes array as received data.
 
 :::
@@ -288,7 +288,7 @@ Transfer ownership of the contract from the current [`owner()`](#owner) to the [
 
 :::info
 
-It&#39;s not possible to send value along the functions call due to the use of `delegatecall`.
+It's not possible to send value along the functions call due to the use of `delegatecall`.
 
 :::
 
@@ -1115,22 +1115,27 @@ mapping(bytes32 => bytes) _store
 function _setData(bytes32 dataKey, bytes dataValue) internal nonpayable;
 ```
 
-This function overrides the [`ERC725YCore`](#erc725ycore) internal [`_setData`](#_setdata) function to optimize gas usage by emitting only the first 256 bytes of the `dataValue`.
+Write a `dataValue` to the underlying ERC725Y storage, represented as a mapping of
+`bytes32` data keys mapped to their `bytes` data values.
+
+```solidity
+mapping(bytes32 => bytes) _store
+```
 
 <blockquote>
 
 **Emitted events:**
 
-- [`DataChanged`](#datachanged) event with only the first 256 bytes of [`dataValue`](#datavalue).
+- [`DataChanged`](#datachanged) event emitted after a successful `setData` call.
 
 </blockquote>
 
 #### Parameters
 
-| Name        |   Type    | Description                            |
-| ----------- | :-------: | -------------------------------------- |
-| `dataKey`   | `bytes32` | The key to store the data value under. |
-| `dataValue` |  `bytes`  | The data value to be stored.           |
+| Name        |   Type    | Description                                                                     |
+| ----------- | :-------: | ------------------------------------------------------------------------------- |
+| `dataKey`   | `bytes32` | A bytes32 data key to write the associated `bytes` value to the store.          |
+| `dataValue` |  `bytes`  | The `bytes` value to associate with the given `dataKey` in the ERC725Y storage. |
 
 <br/>
 
@@ -1286,7 +1291,7 @@ function _revertWithLSP20DefaultError(
 :::
 
 ```solidity
-event ContractCreated(uint256 indexed operationType, address indexed contractAddress, uint256 indexed value, bytes32 salt);
+event ContractCreated(uint256 indexed operationType, address indexed contractAddress, uint256 value, bytes32 indexed salt);
 ```
 
 _Deployed new contract at address `contractAddress` and funded with `value` wei (deployed using opcode: `operationType`)._
@@ -1299,8 +1304,8 @@ Emitted when a new contract was created and deployed.
 | ------------------------------- | :-------: | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `operationType` **`indexed`**   | `uint256` | The opcode used to deploy the contract (`CREATE` or `CREATE2`).                                                                           |
 | `contractAddress` **`indexed`** | `address` | The created contract address.                                                                                                             |
-| `value` **`indexed`**           | `uint256` | The amount of native tokens (in Wei) sent to fund the created contract on deployment.                                                     |
-| `salt`                          | `bytes32` | The salt used to deterministically deploy the contract (`CREATE2` only). If `CREATE` opcode is used, the salt value will be `bytes32(0)`. |
+| `value`                         | `uint256` | The amount of native tokens (in Wei) sent to fund the created contract on deployment.                                                     |
+| `salt` **`indexed`**            | `bytes32` | The salt used to deterministically deploy the contract (`CREATE2` only). If `CREATE` opcode is used, the salt value will be `bytes32(0)`. |
 
 <br/>
 
@@ -1344,7 +1349,7 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 :::
 
 ```solidity
-event Executed(uint256 indexed operationType, address indexed target, uint256 indexed value, bytes4 selector);
+event Executed(uint256 indexed operationType, address indexed target, uint256 value, bytes4 indexed selector);
 ```
 
 _Called address `target` using `operationType` with `value` wei and `data`._
@@ -1357,8 +1362,8 @@ Emitted when calling an address `target` (EOA or contract) with `value`.
 | ----------------------------- | :-------: | ---------------------------------------------------------------------------------------------------- |
 | `operationType` **`indexed`** | `uint256` | The low-level call opcode used to call the `target` address (`CALL`, `STATICALL` or `DELEGATECALL`). |
 | `target` **`indexed`**        | `address` | The address to call. `target` will be unused if a contract is created (operation types 1 and 2).     |
-| `value` **`indexed`**         | `uint256` | The amount of native tokens transferred along the call (in Wei).                                     |
-| `selector`                    | `bytes4`  | The first 4 bytes (= function selector) of the data sent with the call.                              |
+| `value`                       | `uint256` | The amount of native tokens transferred along the call (in Wei).                                     |
+| `selector` **`indexed`**      | `bytes4`  | The first 4 bytes (= function selector) of the data sent with the call.                              |
 
 <br/>
 

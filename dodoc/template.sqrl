@@ -22,7 +22,9 @@
 
 
 {{@if (it.title)}}
-> {{it.title}}
+{{@createLocalLinks(it.title) => val}}
+> {{val}}
+{{/createLocalLinks}}
 {{/if}}
 
 
@@ -60,22 +62,22 @@ When marked as 'public', a method can be called both externally and internally, 
 
 
 {{@if (val['custom:info'])}}
-:::info{{'\n\n'}}{{_ val['custom:info'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+:::info{{'\n\n'}}{{ @formatCustomTags(val['custom:info']) /}}{{'\n\n'}}:::
 {{/if}}
 
 
 {{@if (val['custom:hint'])}}
-:::tip Hint{{'\n\n'}}{{_ val['custom:hint'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+:::tip Hint{{'\n\n'}}{{ @formatCustomTags(val['custom:hint']) /}}{{'\n\n'}}:::
 {{/if}}
 
 
 {{@if (val['custom:warning'])}}
-:::caution Warning{{'\n\n'}}{{_ val['custom:warning'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+:::caution Warning{{'\n\n'}}{{ @formatCustomTags(val['custom:warning']) /}}{{'\n\n'}}:::
 {{/if}}
 
 
 {{@if (val['custom:danger'])}}
-:::danger{{'\n\n'}}{{_ val['custom:danger'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+:::danger{{'\n\n'}}{{ @formatCustomTags(val['custom:danger']) /}}{{'\n\n'}}:::
 {{/if}}
 
 
@@ -152,22 +154,22 @@ Internal functions cannot be called externally, whether from other smart contrac
 ### {{key.split('(')[0]}}
 
 {{@if (val['custom:info'])}}
-:::info{{'\n\n'}}{{_ val['custom:info'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+:::info{{'\n\n'}}{{ @formatCustomTags(val['custom:info']) /}}{{'\n\n'}}:::
 {{/if}}
 
 
 {{@if (val['custom:hint'])}}
-:::tip Hint{{'\n\n'}}{{_ val['custom:hint'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+:::tip Hint{{'\n\n'}}{{ @formatCustomTags(val['custom:hint']) /}}{{'\n\n'}}:::
 {{/if}}
 
 
 {{@if (val['custom:warning'])}}
-:::caution Warning{{'\n\n'}}{{_ val['custom:warning'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+:::caution Warning{{'\n\n'}}{{ @formatCustomTags(val['custom:warning']) /}}{{'\n\n'}}:::
 {{/if}}
 
 
 {{@if (val['custom:danger'])}}
-:::danger{{'\n\n'}}{{_ val['custom:danger'].replaceAll(' - ', '\n- ') _}}{{'\n\n'}}:::
+:::danger{{'\n\n'}}{{ @formatCustomTags(val['custom:danger']) /}}{{'\n\n'}}:::
 {{/if}}
 
 

@@ -60,4 +60,20 @@ export const otherTestScenarios = (buildContext: () => Promise<LSP6TestContext>)
       ).to.be.revertedWithCustomError(context.universalProfile, 'ERC725X_UnknownOperationType');
     });
   });
+
+  describe('When interacting via `batchCalls(...)`', () => {
+    it('should to set data key properly when calldata is `setData(bytes32,bytes)`', async () => {
+      const dataKey = '0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe';
+      const dataValue = '0xbeefbeef';
+
+      const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
+        dataKey,
+        dataValue,
+      ]);
+
+      await context.universalProfile.batchCalls([setDataPayload]);
+
+      expect(await context.universalProfile.getData(dataKey)).to.equal(dataValue);
+    });
+  });
 };

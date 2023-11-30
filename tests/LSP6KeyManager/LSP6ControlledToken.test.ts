@@ -13,7 +13,13 @@ import {
   LSP0ERC725Account__factory,
 } from '../../types';
 
-import { ERC725YDataKeys, ALL_PERMISSIONS, PERMISSIONS, ERC1271_VALUES } from '../../constants';
+import {
+  ERC725YDataKeys,
+  ALL_PERMISSIONS,
+  PERMISSIONS,
+  ERC1271_VALUES,
+  LSP4_TOKEN_TYPES,
+} from '../../constants';
 import { ARRAY_LENGTH, encodeCompactBytesArray } from '../utils/helpers';
 
 export type LSP6ControlledToken = {
@@ -30,6 +36,7 @@ const buildContext = async () => {
     'name',
     'symbol',
     accounts[0].address,
+    LSP4_TOKEN_TYPES.TOKEN,
     true,
   );
 
@@ -597,6 +604,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
           'NewTokenName',
           'NewTokenSymbol',
           context.mainController.address,
+          LSP4_TOKEN_TYPES.TOKEN,
         );
         // creating a payload to mint tokens in the new contract
         const mintPayload = newTokenContract.interface.encodeFunctionData('mint', [

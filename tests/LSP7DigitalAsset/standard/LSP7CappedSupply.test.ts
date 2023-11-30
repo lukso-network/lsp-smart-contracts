@@ -8,6 +8,7 @@ import {
   LSP7CappedSupplyTestContext,
   getNamedAccounts,
 } from '../LSP7CappedSupply.behaviour';
+import { LSP4_TOKEN_TYPES } from '../../../constants';
 
 describe('LSP7CappedSupply with constructor', () => {
   const buildTestContext = async () => {
@@ -16,12 +17,15 @@ describe('LSP7CappedSupply with constructor', () => {
       name: 'LSP7 capped supply - deployed with constructor',
       symbol: 'CAP',
       newOwner: accounts.owner.address,
+      lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
       tokenSupplyCap: ethers.BigNumber.from('2'),
     };
+
     const lsp7CappedSupply = await new LSP7CappedSupplyTester__factory(accounts.owner).deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
+      deployParams.lsp4TokenType,
       deployParams.tokenSupplyCap,
     );
 

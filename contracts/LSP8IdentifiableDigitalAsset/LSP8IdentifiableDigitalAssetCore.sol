@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.12;
 
 // interfaces
 import {
@@ -8,6 +8,12 @@ import {
 import {
     ILSP8IdentifiableDigitalAsset
 } from "./ILSP8IdentifiableDigitalAsset.sol";
+
+// modules
+
+import {
+    LSP4DigitalAssetMetadataCore
+} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataCore.sol";
 
 // libraries
 import {
@@ -32,7 +38,10 @@ import {
     LSP8TokenIdAlreadyMinted,
     LSP8CannotSendToSelf,
     LSP8NotifyTokenReceiverContractMissingLSP1Interface,
-    LSP8NotifyTokenReceiverIsEOA
+    LSP8NotifyTokenReceiverIsEOA,
+    LSP8TokenIdsDataLengthMismatch,
+    LSP8TokenIdsDataEmptyArray,
+    LSP8BatchCallFailed
 } from "./LSP8Errors.sol";
 
 // constants
@@ -49,12 +58,11 @@ import {
  * @dev Core Implementation of a LSP8 compliant contract.
  */
 abstract contract LSP8IdentifiableDigitalAssetCore is
+    LSP4DigitalAssetMetadataCore,
     ILSP8IdentifiableDigitalAsset
 {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
-    using ERC165Checker for address;
-    using LSP1Utils for address;
 
     // --- Storage
 
@@ -115,6 +123,118 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         return _ownedTokens[tokenOwner].values();
     }
 
+    // --- TokenId Metadata functionality
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     */
+    function setTokenIdData(
+        bytes32 tokenId,
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) public virtual override onlyOwner {
+        _setTokenIdData(tokenId, dataKey, dataValue);
+    }
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     */
+    function setTokenIdDataBatch(
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys,
+        bytes[] memory dataValues
+    ) public virtual override onlyOwner {
+        if (
+            tokenIds.length != dataKeys.length ||
+            dataKeys.length != dataValues.length
+        ) {
+            revert LSP8TokenIdsDataLengthMismatch();
+        }
+
+        if (tokenIds.length == 0) {
+            revert LSP8TokenIdsDataEmptyArray();
+        }
+
+        for (uint256 i; i < tokenIds.length; ) {
+            _setTokenIdData(tokenIds[i], dataKeys[i], dataValues[i]);
+
+            // Increment the iterator in unchecked block to save gas
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
+    // --- General functionality
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     *
+     * @custom:info It's not possible to send value along the functions call due to the use of `delegatecall`.
+     */
+    function batchCalls(
+        bytes[] calldata data
+    ) public virtual override returns (bytes[] memory results) {
+        results = new bytes[](data.length);
+        for (uint256 i; i < data.length; ) {
+            (bool success, bytes memory result) = address(this).delegatecall(
+                data[i]
+            );
+
+            if (!success) {
+                // Look for revert reason and bubble it up if present
+                if (result.length != 0) {
+                    // The easiest way to bubble the revert reason is using memory via assembly
+                    // solhint-disable no-inline-assembly
+                    /// @solidity memory-safe-assembly
+                    assembly {
+                        let returndata_size := mload(result)
+                        revert(add(32, result), returndata_size)
+                    }
+                } else {
+                    revert LSP8BatchCallFailed({callIndex: i});
+                }
+            }
+
+            results[i] = result;
+
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     */
+    function getTokenIdData(
+        bytes32 tokenId,
+        bytes32 dataKey
+    ) public view virtual override returns (bytes memory dataValues) {
+        return _getTokenIdData(tokenId, dataKey);
+    }
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     */
+    function getTokenIdDataBatch(
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys
+    ) public view virtual override returns (bytes[] memory dataValues) {
+        dataValues = new bytes[](tokenIds.length);
+
+        for (uint256 i; i < tokenIds.length; ) {
+            dataValues[i] = _getTokenIdData(tokenIds[i], dataKeys[i]);
+
+            // Increment the iterator in unchecked block to save gas
+            unchecked {
+                ++i;
+            }
+        }
+
+        return dataValues;
+    }
+
     // --- Operator functionality
 
     /**
@@ -142,7 +262,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool isAdded = _operators[tokenId].add(operator);
         if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
 
-        emit AuthorizedOperator(
+        emit OperatorAuthorizationChanged(
             operator,
             tokenOwner,
             tokenId,
@@ -156,7 +276,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             operatorNotificationData
         );
 
-        operator.notifyUniversalReceiver(_TYPEID_LSP8_TOKENOPERATOR, lsp1Data);
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
@@ -198,10 +318,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 operatorNotificationData
             );
 
-            operator.notifyUniversalReceiver(
-                _TYPEID_LSP8_TOKENOPERATOR,
-                lsp1Data
-            );
+            _notifyTokenOperator(operator, lsp1Data);
         }
     }
 
@@ -301,7 +418,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool isRemoved = _operators[tokenId].remove(operator);
         if (!isRemoved) revert LSP8NonExistingOperator(operator, tokenId);
 
-        emit RevokedOperator(
+        emit OperatorRevoked(
             operator,
             tokenOwner,
             tokenId,
@@ -406,7 +523,13 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         _afterTokenTransfer(address(0), to, tokenId, data);
 
-        bytes memory lsp1Data = abi.encode(address(0), to, tokenId, data);
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            address(0),
+            to,
+            tokenId,
+            data
+        );
         _notifyTokenReceiver(to, force, lsp1Data);
     }
 
@@ -454,13 +577,14 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         _afterTokenTransfer(tokenOwner, address(0), tokenId, data);
 
         bytes memory lsp1Data = abi.encode(
+            msg.sender,
             tokenOwner,
             address(0),
             tokenId,
             data
         );
 
-        tokenOwner.notifyUniversalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
+        _notifyTokenSender(tokenOwner, lsp1Data);
     }
 
     /**
@@ -524,10 +648,41 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         _afterTokenTransfer(from, to, tokenId, data);
 
-        bytes memory lsp1Data = abi.encode(from, to, tokenId, data);
+        bytes memory lsp1Data = abi.encode(msg.sender, from, to, tokenId, data);
 
-        from.notifyUniversalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
+        _notifyTokenSender(from, lsp1Data);
         _notifyTokenReceiver(to, force, lsp1Data);
+    }
+
+    /**
+     * @dev Sets data for a specific `tokenId` and `dataKey` in the ERC725Y storage
+     * The ERC725Y data key is the hash of the `tokenId` and `dataKey` concatenated
+     * @param tokenId The unique identifier for a token.
+     * @param dataKey The key for the data to set.
+     * @param dataValue The value to set for the given data key.
+     * @custom:events {TokenIdDataChanged} event.
+     */
+    function _setTokenIdData(
+        bytes32 tokenId,
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) internal virtual {
+        _store[keccak256(bytes.concat(tokenId, dataKey))] = dataValue;
+        emit TokenIdDataChanged(tokenId, dataKey, dataValue);
+    }
+
+    /**
+     * @dev Retrieves data for a specific `tokenId` and `dataKey` from the ERC725Y storage
+     * The ERC725Y data key is the hash of the `tokenId` and `dataKey` concatenated
+     * @param tokenId The unique identifier for a token.
+     * @param dataKey The key for the data to retrieve.
+     * @return dataValues The data value associated with the given `tokenId` and `dataKey`.
+     */
+    function _getTokenIdData(
+        bytes32 tokenId,
+        bytes32 dataKey
+    ) internal view virtual returns (bytes memory dataValues) {
+        return _store[keccak256(bytes.concat(tokenId, dataKey))];
     }
 
     /**
@@ -563,17 +718,66 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     ) internal virtual {}
 
     /**
-     * @dev An attempt is made to notify the token receiver about the `tokenId` changing owners
-     * using LSP1 interface. When force is FALSE the token receiver MUST support LSP1.
+     * @dev Attempt to notify the operator `operator` about the `tokenId` being authorized.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
+     * If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+     
+     * @param operator The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+     * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
+     */
+    function _notifyTokenOperator(
+        address operator,
+        bytes memory lsp1Data
+    ) internal virtual {
+        LSP1Utils.notifyUniversalReceiver(
+            operator,
+            _TYPEID_LSP8_TOKENOPERATOR,
+            lsp1Data
+        );
+    }
+
+    /**
+     * @dev Attempt to notify the token sender `from` about the `tokenId` being transferred.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
+     * If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+     
+     * @param from The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+     * @param lsp1Data the data to be sent to the `from` address in the `universalReceiver` call.
+     */
+    function _notifyTokenSender(
+        address from,
+        bytes memory lsp1Data
+    ) internal virtual {
+        LSP1Utils.notifyUniversalReceiver(
+            from,
+            _TYPEID_LSP8_TOKENSSENDER,
+            lsp1Data
+        );
+    }
+
+    /**
+     * @dev Attempt to notify the token receiver `to` about the `tokenId` being received.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENSRECIPIENT` as typeId, if `to` is a contract that supports the LSP1 interface.
      *
-     * The receiver may revert when the token being sent is not wanted.
+     * If `to` is is an EOA or a contract that does not support the LSP1 interface, the behaviour will depend on the `force` boolean flag.
+     * - if `force` is set to `true`, nothing will happen and no notification will be sent.
+     * - if `force` is set to `false, the transaction will revert.
+     *
+     * @param to The address to call the {universalReceiver} function on.
+     * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
+     * @param lsp1Data The data to be sent to the `to` address in the `universalReceiver(...)` call.
      */
     function _notifyTokenReceiver(
         address to,
         bool force,
         bytes memory lsp1Data
     ) internal virtual {
-        if (to.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
+        if (
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                to,
+                _INTERFACEID_LSP1
+            )
+        ) {
             ILSP1(to).universalReceiver(_TYPEID_LSP8_TOKENSRECIPIENT, lsp1Data);
         } else if (!force) {
             if (to.code.length != 0) {

@@ -90,7 +90,7 @@ Reverts whenever someone tries to send native tokens to a LSP7 contract.
 
 :::danger
 
-To avoid front-running and Allowance Double-Spend Exploit when increasing or decreasing the authorized amount of an operator, it is advised to: 1. either call {revokeOperator} first, and then re-call {authorizeOperator} with the new amount. 2. or use the non-standard functions {increaseAllowance} or {decreaseAllowance}. For more information, see: https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
+To avoid front-running and Allowance Double-Spend Exploit when increasing or decreasing the authorized amount of an operator, it is advised to: 1. either call [`revokeOperator`](#revokeoperator) first, and then re-call [`authorizeOperator`](#authorizeoperator) with the new amount. 2. or use the non-standard functions [`increaseAllowance`](#increaseallowance) or [`decreaseAllowance`](#decreaseallowance). For more information, see: https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
 
 :::
 
@@ -177,6 +177,45 @@ Get the number of tokens owned by `tokenOwner`. If the token is divisible (the [
 | Name |   Type    | Description                                 |
 | ---- | :-------: | ------------------------------------------- |
 | `0`  | `uint256` | The amount of tokens owned by `tokenOwner`. |
+
+<br/>
+
+### batchCalls
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#batchcalls)
+- Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol)
+- Function signature: `batchCalls(bytes[])`
+- Function selector: `0x6963d438`
+
+:::
+
+:::info
+
+It's not possible to send value along the functions call due to the use of `delegatecall`.
+
+:::
+
+```solidity
+function batchCalls(bytes[] data) external nonpayable returns (bytes[] results);
+```
+
+_Executing the following batch of abi-encoded function calls on the contract: `data`._
+
+Allows a caller to batch different function calls in one call. Perform a `delegatecall` on self, to call different functions with preserving the context.
+
+#### Parameters
+
+| Name   |   Type    | Description                                                          |
+| ------ | :-------: | -------------------------------------------------------------------- |
+| `data` | `bytes[]` | An array of ABI encoded function calls to be called on the contract. |
+
+#### Returns
+
+| Name      |   Type    | Description                                                      |
+| --------- | :-------: | ---------------------------------------------------------------- |
+| `results` | `bytes[]` | An array of abi-encoded data returned by the functions executed. |
 
 <br/>
 
@@ -756,7 +795,8 @@ mapping(bytes32 => bytes) _store
 function _setData(bytes32 dataKey, bytes dataValue) internal nonpayable;
 ```
 
-Save gas by emitting the [`DataChanged`](#datachanged) event with only the first 256 bytes of dataValue
+The ERC725Y data keys `LSP4TokenName` and `LSP4TokenSymbol` cannot be changed
+via this function once the digital asset contract has been deployed.
 
 <br/>
 
@@ -794,9 +834,9 @@ If the amount is zero then the operator is being revoked, otherwise the operator
 
 Any logic in the:
 
-- {\_beforeTokenTransfer} function will run before updating the balances.
+- [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances.
 
-- {\_afterTokenTransfer} function will run after updating the balances, **but before notifying the recipient via LSP1**.
+- [`_afterTokenTransfer`](#_aftertokentransfer) function will run after updating the balances, **but before notifying the recipient via LSP1**.
 
 :::
 
@@ -836,9 +876,9 @@ Mints `amount` of tokens and transfers it to `to`.
 
 Any logic in the:
 
-- {\_beforeTokenTransfer} function will run before updating the balances.
+- [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances.
 
-- {\_afterTokenTransfer} function will run after updating the balances, **but before notifying the sender via LSP1**.
+- [`_afterTokenTransfer`](#_aftertokentransfer) function will run after updating the balances, **but before notifying the sender via LSP1**.
 
 :::
 
@@ -903,9 +943,9 @@ Spend `amountToSpend` from the `operator`'s authorized on behalf of the `tokenOw
 
 Any logic in the:
 
-- {\_beforeTokenTransfer} function will run before updating the balances.
+- [`_beforeTokenTransfer`](#_beforetokentransfer) function will run before updating the balances.
 
-- {\_afterTokenTransfer} function will run after updating the balances, **but before notifying the sender/recipient via LSP1**.
+- [`_afterTokenTransfer`](#_aftertokentransfer) function will run after updating the balances, **but before notifying the sender/recipient via LSP1**.
 
 :::
 
@@ -992,6 +1032,47 @@ Allows to run custom logic after updating balances, but **before notifiying send
 | `to`     | `address` | The recipient address                |
 | `amount` | `uint256` | The amount of token to transfer      |
 | `data`   |  `bytes`  | The data sent alongside the transfer |
+
+<br/>
+
+### \_notifyTokenOperator
+
+```solidity
+function _notifyTokenOperator(
+  address operator,
+  bytes lsp1Data
+) internal nonpayable;
+```
+
+Attempt to notify the operator `operator` about the `amount` tokens being authorized with.
+This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP7_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
+If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+
+#### Parameters
+
+| Name       |   Type    | Description                                                                    |
+| ---------- | :-------: | ------------------------------------------------------------------------------ |
+| `operator` | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on. |
+| `lsp1Data` |  `bytes`  | the data to be sent to the `operator` address in the `universalReceiver` call. |
+
+<br/>
+
+### \_notifyTokenSender
+
+```solidity
+function _notifyTokenSender(address from, bytes lsp1Data) internal nonpayable;
+```
+
+Attempt to notify the token sender `from` about the `amount` of tokens being transferred.
+This is done by calling its [`universalReceiver`](#universalreceiver) function with the `_TYPEID_LSP7_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
+If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+
+#### Parameters
+
+| Name       |   Type    | Description                                                                    |
+| ---------- | :-------: | ------------------------------------------------------------------------------ |
+| `from`     | `address` | The address to call the [`universalReceiver`](#universalreceiver) function on. |
+| `lsp1Data` |  `bytes`  | the data to be sent to the `from` address in the `universalReceiver` call.     |
 
 <br/>
 
@@ -1085,34 +1166,6 @@ CALL opcode, passing the [`msg.data`](#msg.data) appended with the 20 bytes of t
 
 ## Events
 
-### AuthorizedOperator
-
-:::note References
-
-- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#authorizedoperator)
-- Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol)
-- Event signature: `AuthorizedOperator(address,address,uint256,bytes)`
-- Event topic hash: `0x0744b3de98efaff36606a0e67662fb8697adb0ed49d90730bdb4bbf885f30597`
-
-:::
-
-```solidity
-event AuthorizedOperator(address indexed operator, address indexed tokenOwner, uint256 indexed amount, bytes operatorNotificationData);
-```
-
-Emitted when `tokenOwner` enables `operator` for `amount` tokens.
-
-#### Parameters
-
-| Name                       |   Type    | Description                                                             |
-| -------------------------- | :-------: | ----------------------------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address authorized as an operator                                   |
-| `tokenOwner` **`indexed`** | `address` | The token owner                                                         |
-| `amount` **`indexed`**     | `uint256` | The amount of tokens `operator` address has access to from `tokenOwner` |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                         |
-
-<br/>
-
 ### DataChanged
 
 :::note References
@@ -1141,6 +1194,62 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 
 <br/>
 
+### OperatorAuthorizationChanged
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#operatorauthorizationchanged)
+- Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol)
+- Event signature: `OperatorAuthorizationChanged(address,address,uint256,bytes)`
+- Event topic hash: `0xf772a43bfdf4729b196e3fb54a818b91a2ca6c49d10b2e16278752f9f515c25d`
+
+:::
+
+```solidity
+event OperatorAuthorizationChanged(address indexed operator, address indexed tokenOwner, uint256 indexed amount, bytes operatorNotificationData);
+```
+
+Emitted when `tokenOwner` enables `operator` for `amount` tokens.
+
+#### Parameters
+
+| Name                       |   Type    | Description                                                             |
+| -------------------------- | :-------: | ----------------------------------------------------------------------- |
+| `operator` **`indexed`**   | `address` | The address authorized as an operator                                   |
+| `tokenOwner` **`indexed`** | `address` | The token owner                                                         |
+| `amount` **`indexed`**     | `uint256` | The amount of tokens `operator` address has access to from `tokenOwner` |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.                         |
+
+<br/>
+
+### OperatorRevoked
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#operatorrevoked)
+- Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol)
+- Event signature: `OperatorRevoked(address,address,bool,bytes)`
+- Event topic hash: `0x0ebf5762d8855cbe012d2ca42fb33a81175e17c8a8751f8859931ba453bd4167`
+
+:::
+
+```solidity
+event OperatorRevoked(address indexed operator, address indexed tokenOwner, bool indexed notified, bytes operatorNotificationData);
+```
+
+Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`authorizedAmountFor(...)`](#`authorizedamountfor) to `0`.
+
+#### Parameters
+
+| Name                       |   Type    | Description                                                   |
+| -------------------------- | :-------: | ------------------------------------------------------------- |
+| `operator` **`indexed`**   | `address` | The address revoked from operating                            |
+| `tokenOwner` **`indexed`** | `address` | The token owner                                               |
+| `notified` **`indexed`**   |  `bool`   | Bool indicating whether the operator has been notified or not |
+| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.               |
+
+<br/>
+
 ### OwnershipTransferred
 
 :::note References
@@ -1162,34 +1271,6 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 | ----------------------------- | :-------: | ----------- |
 | `previousOwner` **`indexed`** | `address` | -           |
 | `newOwner` **`indexed`**      | `address` | -           |
-
-<br/>
-
-### RevokedOperator
-
-:::note References
-
-- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#revokedoperator)
-- Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol)
-- Event signature: `RevokedOperator(address,address,bool,bytes)`
-- Event topic hash: `0x66015c8835ee443e5bc280176609215a5035da4bae05bdef994596d7e43aae22`
-
-:::
-
-```solidity
-event RevokedOperator(address indexed operator, address indexed tokenOwner, bool notified, bytes operatorNotificationData);
-```
-
-Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`authorizedAmountFor(...)`](#`authorizedamountfor) to `0`.
-
-#### Parameters
-
-| Name                       |   Type    | Description                                                   |
-| -------------------------- | :-------: | ------------------------------------------------------------- |
-| `operator` **`indexed`**   | `address` | The address revoked from operating                            |
-| `tokenOwner` **`indexed`** | `address` | The token owner                                               |
-| `notified`                 |  `bool`   | Bool indicating whether the operator has been notified or not |
-| `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.               |
 
 <br/>
 
@@ -1347,7 +1428,7 @@ reverts when the contract is called with a function selector not valid (less tha
 error LSP4TokenNameNotEditable();
 ```
 
-Reverts when trying to edit the data key `LSP4TokenName` after the digital asset contract has been deployed. The `LSP4TokenName` data key is located inside the ERC725Y Data key-value store of the digital asset contract. It can be set only once inside the constructor/initializer when the digital asset contract is being deployed.
+Reverts when trying to edit the data key `LSP4TokenName` after the digital asset contract has been deployed / initialized. The `LSP4TokenName` data key is located inside the ERC725Y data key-value store of the digital asset contract. It can be set only once inside the constructor/initializer when the digital asset contract is being deployed / initialized.
 
 <br/>
 
@@ -1366,7 +1447,26 @@ Reverts when trying to edit the data key `LSP4TokenName` after the digital asset
 error LSP4TokenSymbolNotEditable();
 ```
 
-Reverts when trying to edit the data key `LSP4TokenSymbol` after the digital asset contract has been deployed. The `LSP4TokenSymbol` data key is located inside the ERC725Y Data key-value store of the digital asset contract. It can be set only once inside the constructor/initializer when the digital asset contract is being deployed.
+Reverts when trying to edit the data key `LSP4TokenSymbol` after the digital asset contract has been deployed / initialized. The `LSP4TokenSymbol` data key is located inside the ERC725Y data key-value store of the digital asset contract. It can be set only once inside the constructor/initializer when the digital asset contract is being deployed / initialized.
+
+<br/>
+
+### LSP4TokenTypeNotEditable
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#lsp4tokentypenoteditable)
+- Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol)
+- Error signature: `LSP4TokenTypeNotEditable()`
+- Error hash: `0x4ef6d7fb`
+
+:::
+
+```solidity
+error LSP4TokenTypeNotEditable();
+```
+
+Reverts when trying to edit the data key `LSP4TokenType` after the digital asset contract has been deployed / initialized. The `LSP4TokenType` data key is located inside the ERC725Y data key-value store of the digital asset contract. It can be set only once inside the constructor / initializer when the digital asset contract is being deployed / initialized.
 
 <br/>
 
@@ -1431,6 +1531,33 @@ reverts when sending an `amount` of tokens larger than the current `balance` of 
 | `balance`    | `uint256` | -           |
 | `tokenOwner` | `address` | -           |
 | `amount`     | `uint256` | -           |
+
+<br/>
+
+### LSP7BatchCallFailed
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#lsp7batchcallfailed)
+- Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol)
+- Error signature: `LSP7BatchCallFailed(uint256)`
+- Error hash: `0xb774c284`
+
+:::
+
+```solidity
+error LSP7BatchCallFailed(uint256 callIndex);
+```
+
+_Batch call failed._
+
+Reverts when a batch call failed.
+
+#### Parameters
+
+| Name        |   Type    | Description |
+| ----------- | :-------: | ----------- |
+| `callIndex` | `uint256` | -           |
 
 <br/>
 

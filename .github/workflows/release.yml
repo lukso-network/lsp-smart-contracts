@@ -21,6 +21,7 @@ jobs:
           bump-minor-pre-major: true
           default-branch: main
           changelog-types: '[{"type": "feat!","section":"BREAKING CHANGES","hidden": false},{"type": "refactor!","section":"BREAKING CHANGES","hidden": false},{"type": "build!","section":"BREAKING CHANGES","hidden": false},{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"chore","section":"Miscellaneous","hidden":false}]'
+          command: manifest
 
       # The logic below handles the npm publication.
       # The `if` statements ensure that a publication only occurs when

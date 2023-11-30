@@ -247,13 +247,13 @@ export const shouldBehaveLikeLSP3 = (
     });
 
     describe('when setting a data key with a value more than 256 bytes', () => {
-      it('should emit DataChanged event with only the first 256 bytes of the value', async () => {
+      it('should emit DataChanged event with the whole data value', async () => {
         const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
         const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
         await expect(context.universalProfile.setData(key, value))
           .to.emit(context.universalProfile, 'DataChanged')
-          .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+          .withArgs(key, value);
 
         const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);

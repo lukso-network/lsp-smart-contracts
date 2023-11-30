@@ -29,7 +29,7 @@ Internal functions cannot be called externally, whether from other smart contrac
 :::info
 
 If the raw value fetched from the ERC725Y storage of `target` is not 32 bytes long, this is considered
-like _&quot;no permissions are set&quot;_ and will return 32 x `0x00` bytes as `bytes32(0)`.
+like _"no permissions are set"_ and will return 32 x `0x00` bytes as `bytes32(0)`.
 
 :::
 

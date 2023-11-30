@@ -11,6 +11,7 @@ import {
 } from '../LSP7CappedSupply.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
+import { LSP4_TOKEN_TYPES } from '../../../constants';
 
 describe('LSP7CappedSupplyInit with proxy', () => {
   const buildTestContext = async () => {
@@ -19,6 +20,7 @@ describe('LSP7CappedSupplyInit with proxy', () => {
       name: 'LSP7 capped supply - deployed with proxy',
       symbol: 'CAP',
       newOwner: accounts.owner.address,
+      lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
       tokenSupplyCap: ethers.BigNumber.from('2'),
     };
     const lsp7CappedSupplyInit = await new LSP7CappedSupplyInitTester__factory(
@@ -31,10 +33,11 @@ describe('LSP7CappedSupplyInit with proxy', () => {
   };
 
   const initializeProxy = async (context: LSP7CappedSupplyTestContext) => {
-    return context.lsp7CappedSupply['initialize(string,string,address,uint256)'](
+    return context.lsp7CappedSupply['initialize(string,string,address,uint256,uint256)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
+      context.deployParams.lsp4TokenType,
       context.deployParams.tokenSupplyCap,
     );
   };

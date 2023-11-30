@@ -64,13 +64,24 @@ abstract contract LSP8CompatibleERC721 is
      * @param name_ The name of the token.
      * @param symbol_ The symbol of the token.
      * @param newOwner_ The owner of the token contract.
+     * @param lsp4TokenType_ The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection).
+     * @param lsp8TokenIdSchema_ The schema of tokenIds (= NFTs) that this contract will create.
      */
     constructor(
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        uint256 tokenIdType_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, tokenIdType_) {}
+        uint256 lsp4TokenType_,
+        uint256 lsp8TokenIdSchema_
+    )
+        LSP8IdentifiableDigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdSchema_
+        )
+    {}
 
     /**
      * @inheritdoc IERC721Metadata
@@ -316,7 +327,7 @@ abstract contract LSP8CompatibleERC721 is
      * @inheritdoc LSP8IdentifiableDigitalAssetCore
      *
      * @custom:events
-     * - LSP7 {AuthorizedOperator} event.
+     * - LSP7 {OperatorAuthorizationChanged} event.
      * - ERC721 {Approval} event.
      */
     function authorizeOperator(
@@ -344,7 +355,7 @@ abstract contract LSP8CompatibleERC721 is
         bool isAdded = _operators[tokenId].add(operator);
         if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
 
-        emit AuthorizedOperator(
+        emit OperatorAuthorizationChanged(
             operator,
             tokenOwner,
             tokenId,

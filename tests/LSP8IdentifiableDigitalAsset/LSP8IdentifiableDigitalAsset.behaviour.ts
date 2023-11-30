@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BytesLike } from 'ethers';
+import type { BytesLike, ContractTransaction } from 'ethers';
 import type { TransactionResponse } from '@ethersproject/abstract-provider';
 
 // types
@@ -24,6 +24,8 @@ import { abiCoder } from '../utils/helpers';
 
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } from '../../constants';
+import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
+import { AddressZero } from '../LSP17Extensions/helpers/utils';
 
 export type LSP8TestAccounts = {
   owner: SignerWithAddress;
@@ -42,7 +44,8 @@ export type LSP8DeployParams = {
   name: string;
   symbol: string;
   newOwner: string;
-  tokenIdType: number;
+  lsp4TokenType: number;
+  lsp8TokenIdSchema: number;
 };
 
 export type LSP8TestContext = {
@@ -70,18 +73,114 @@ export const shouldBehaveLikeLSP8 = (
   });
 
   describe('when setting data', () => {
-    it('should not allow to update the `LSP8TokenIdType` after deployment', async () => {
+    it('should not allow to update the `LSP8TokenIdSchema` after deployment', async () => {
       await expect(
-        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdType, '0xdeadbeef'),
-      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdTypeNotEditable');
+        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdSchema, '0xdeadbeef'),
+      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdSchemaNotEditable');
     });
   });
 
   describe('when setting data', () => {
-    it('should not allow to update the `LSP8TokenIdType` after deployment', async () => {
+    it('should not allow to update the `LSP8TokenIdSchema` after deployment', async () => {
       await expect(
-        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdType, '0xdeadbeef'),
-      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdTypeNotEditable');
+        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdSchema, '0xdeadbeef'),
+      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdSchemaNotEditable');
+    });
+  });
+
+  describe('when setting data for a tokenId', () => {
+    const tokenId = tokenIdAsBytes32(42);
+    const dataKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+    const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(256));
+
+    const tokenIds = [tokenIdAsBytes32(42), tokenIdAsBytes32(43), tokenIdAsBytes32(44)];
+
+    const dataKeys = [
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My First Key')),
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Second Key')),
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Third Key')),
+    ];
+
+    const dataValues = [
+      ethers.utils.hexlify(ethers.utils.randomBytes(256)),
+      ethers.utils.hexlify(ethers.utils.randomBytes(256)),
+      ethers.utils.hexlify(ethers.utils.randomBytes(256)),
+    ];
+
+    it('Token contract owner can set data', async () => {
+      await expect(
+        context.lsp8.connect(context.accounts.owner).setTokenIdData(tokenId, dataKey, dataValue),
+      ).to.not.be.reverted;
+
+      expect(await context.lsp8.getTokenIdData(tokenId, dataKey)).to.equal(dataValue);
+    });
+
+    it('Random address cannot set data', async () => {
+      await expect(
+        context.lsp8.connect(context.accounts.anyone).setTokenIdData(tokenId, dataKey, dataValue),
+      ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCallerNotTheOwner');
+    });
+
+    it('TokenIdDataChanged emitted when data is set for a specific tokenId', async () => {
+      await expect(
+        context.lsp8.connect(context.accounts.owner).setTokenIdData(tokenId, dataKey, dataValue),
+      )
+        .to.emit(context.lsp8, 'TokenIdDataChanged')
+        .withArgs(tokenId, dataKey, dataValue);
+    });
+
+    it('Token contract owner can set data for a specific tokenId and get data', async () => {
+      await context.lsp8
+        .connect(context.accounts.owner)
+        .setTokenIdData(tokenId, dataKey, dataValue);
+      expect(await context.lsp8.getTokenIdData(tokenId, dataKey)).to.equal(dataValue);
+    });
+
+    it('Token contract owner can set batch of data for a specific tokenId and get batch of data', async () => {
+      await context.lsp8
+        .connect(context.accounts.owner)
+        .setTokenIdDataBatch(tokenIds, dataKeys, dataValues);
+      expect(await context.lsp8.getTokenIdDataBatch(tokenIds, dataKeys)).to.deep.equal(dataValues);
+    });
+
+    it('Token contract owner cannot set inconsistent length of data', async () => {
+      await expect(
+        context.lsp8
+          .connect(context.accounts.owner)
+          .setTokenIdDataBatch(tokenIds, dataKeys, [dataValue]),
+      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdsDataLengthMismatch');
+    });
+
+    it('Token contract owner cannot set empty batch of data', async () => {
+      await expect(
+        context.lsp8.connect(context.accounts.owner).setTokenIdDataBatch([], [], []),
+      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdsDataEmptyArray');
+    });
+
+    it('Token contract owner can set and change data for a specific tokenId and get data', async () => {
+      await context.lsp8
+        .connect(context.accounts.owner)
+        .setTokenIdData(tokenId, dataKey, dataValue);
+      const anotherDataValue = ethers.utils.hexlify(ethers.utils.randomBytes(256));
+
+      await context.lsp8
+        .connect(context.accounts.owner)
+        .setTokenIdData(tokenId, dataKey, anotherDataValue);
+      expect(await context.lsp8.getTokenIdData(tokenId, dataKey)).to.equal(anotherDataValue);
+    });
+
+    it('TokenIdDataChanged emitted on each iteration when data is set for tokenIds', async () => {
+      await expect(
+        context.lsp8
+          .connect(context.accounts.owner)
+          .setTokenIdDataBatch(tokenIds, dataKeys, dataValues),
+      )
+        .to.emit(context.lsp8, 'TokenIdDataChanged')
+        .withArgs(tokenIds[0], dataKeys[0], dataValues[0])
+        .to.emit(context.lsp8, 'TokenIdDataChanged')
+        .withArgs(tokenIds[1], dataKeys[1], dataValues[1])
+        .to.emit(context.lsp8, 'TokenIdDataChanged')
+        .withArgs(tokenIds[2], dataKeys[2], dataValues[2]);
     });
   });
 
@@ -255,7 +354,7 @@ export const shouldBehaveLikeLSP8 = (
           const tx = await context.lsp8.authorizeOperator(operator, tokenId, '0x');
 
           await expect(tx)
-            .to.emit(context.lsp8, 'AuthorizedOperator')
+            .to.emit(context.lsp8, 'OperatorAuthorizationChanged')
             .withArgs(operator, tokenOwner, tokenId, '0x');
 
           expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.true;
@@ -303,7 +402,7 @@ export const shouldBehaveLikeLSP8 = (
             });
 
             await expect(tx)
-              .to.emit(context.lsp8, 'AuthorizedOperator')
+              .to.emit(context.lsp8, 'OperatorAuthorizationChanged')
               .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
 
             await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
@@ -321,7 +420,7 @@ export const shouldBehaveLikeLSP8 = (
             const tx = await context.lsp8.authorizeOperator(operator, tokenId, '0xaabbccdd');
 
             await expect(tx)
-              .to.emit(context.lsp8, 'AuthorizedOperator')
+              .to.emit(context.lsp8, 'OperatorAuthorizationChanged')
               .withArgs(operator, tokenOwner, tokenId, '0xaabbccdd');
 
             expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.true;
@@ -384,7 +483,7 @@ export const shouldBehaveLikeLSP8 = (
           // effects
           const tx = await context.lsp8.revokeOperator(operator, tokenId, false, '0x');
           await expect(tx)
-            .to.emit(context.lsp8, 'RevokedOperator')
+            .to.emit(context.lsp8, 'OperatorRevoked')
             .withArgs(operator, tokenOwner, tokenId, false, '0x');
 
           // post-conditions
@@ -437,7 +536,7 @@ export const shouldBehaveLikeLSP8 = (
           });
 
           await expect(tx)
-            .to.emit(context.lsp8, 'RevokedOperator')
+            .to.emit(context.lsp8, 'OperatorRevoked')
             .withArgs(operator, tokenOwner, tokenId, true, '0xaabbccdd');
 
           await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
@@ -678,11 +777,11 @@ export const shouldBehaveLikeLSP8 = (
           .withArgs(operator.address, from, to, tokenId, force, data);
 
         await expect(tx)
-          .to.emit(context.lsp8, 'RevokedOperator')
+          .to.emit(context.lsp8, 'OperatorRevoked')
           .withArgs(context.accounts.operator.address, from, tokenId, false, '0x');
 
         await expect(tx)
-          .to.emit(context.lsp8, 'RevokedOperator')
+          .to.emit(context.lsp8, 'OperatorRevoked')
           .withArgs(context.accounts.anotherOperator.address, from, tokenId, false, '0x');
 
         // post-conditions
@@ -775,8 +874,8 @@ export const shouldBehaveLikeLSP8 = (
 
                 const typeId = LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification;
                 const packedData = abiCoder.encode(
-                  ['address', 'address', 'bytes32', 'bytes'],
-                  [txParams.from, txParams.to, txParams.tokenId, txParams.data],
+                  ['address', 'address', 'address', 'bytes32', 'bytes'],
+                  [operator.address, txParams.from, txParams.to, txParams.tokenId, txParams.data],
                 );
 
                 await expect(tx)
@@ -874,8 +973,8 @@ export const shouldBehaveLikeLSP8 = (
 
                 const typeId = LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification;
                 const packedData = abiCoder.encode(
-                  ['address', 'address', 'bytes32', 'bytes'],
-                  [txParams.from, txParams.to, txParams.tokenId, txParams.data],
+                  ['address', 'address', 'address', 'bytes32', 'bytes'],
+                  [operator.address, txParams.from, txParams.to, txParams.tokenId, txParams.data],
                 );
 
                 await expect(tx)
@@ -1100,7 +1199,7 @@ export const shouldBehaveLikeLSP8 = (
                 data[index],
               );
             await expect(tx)
-              .to.emit(context.lsp8, 'RevokedOperator')
+              .to.emit(context.lsp8, 'OperatorRevoked')
               .withArgs(
                 context.accounts.operator.address,
                 from[index],
@@ -1109,7 +1208,7 @@ export const shouldBehaveLikeLSP8 = (
                 '0x',
               );
             await expect(tx)
-              .to.emit(context.lsp8, 'RevokedOperator')
+              .to.emit(context.lsp8, 'OperatorRevoked')
               .withArgs(
                 context.accounts.anotherOperator.address,
                 from[index],
@@ -1793,6 +1892,319 @@ export const shouldBehaveLikeLSP8 = (
       });
     });
   });
+
+  describe('batchCalls', () => {
+    describe('when using one function', () => {
+      describe('using `mint(...)`', () => {
+        it('should pass', async () => {
+          const mintCalldata = context.lsp8.interface.encodeFunctionData('mint', [
+            context.accounts.tokenReceiver.address,
+            keccak256(toUtf8Bytes('TestingBatchCalls')),
+            true,
+            '0x',
+          ]);
+
+          await expect(context.lsp8.connect(context.accounts.owner).batchCalls([mintCalldata]))
+            .to.emit(context.lsp8, 'Transfer')
+            .withArgs(
+              context.accounts.owner.address,
+              AddressZero,
+              context.accounts.tokenReceiver.address,
+              keccak256(toUtf8Bytes('TestingBatchCalls')),
+              true,
+              '0x',
+            );
+        });
+      });
+
+      describe('using `burn(...)`', () => {
+        it('should pass', async () => {
+          const burnCalldata = context.lsp8.interface.encodeFunctionData('burn', [
+            keccak256(toUtf8Bytes('TestingBatchCalls')),
+            '0x',
+          ]);
+
+          await expect(
+            context.lsp8.connect(context.accounts.tokenReceiver).batchCalls([burnCalldata]),
+          )
+            .to.emit(context.lsp8, 'Transfer')
+            .withArgs(
+              context.accounts.tokenReceiver.address,
+              context.accounts.tokenReceiver.address,
+              AddressZero,
+              keccak256(toUtf8Bytes('TestingBatchCalls')),
+              false,
+              '0x',
+            );
+        });
+      });
+
+      describe('using `transfer(...)`', () => {
+        it('should pass', async () => {
+          await context.lsp8
+            .connect(context.accounts.owner)
+            .mint(
+              context.accounts.tokenReceiver.address,
+              keccak256(toUtf8Bytes('TestingBatchCalls')),
+              true,
+              '0x',
+            );
+
+          const transferCalldata = context.lsp8.interface.encodeFunctionData('transfer', [
+            context.accounts.tokenReceiver.address,
+            context.accounts.anyone.address,
+            keccak256(toUtf8Bytes('TestingBatchCalls')),
+            true,
+            '0x',
+          ]);
+
+          await expect(
+            context.lsp8.connect(context.accounts.tokenReceiver).batchCalls([transferCalldata]),
+          )
+            .to.emit(context.lsp8, 'Transfer')
+            .withArgs(
+              context.accounts.tokenReceiver.address,
+              context.accounts.tokenReceiver.address,
+              context.accounts.anyone.address,
+              keccak256(toUtf8Bytes('TestingBatchCalls')),
+              true,
+              '0x',
+            );
+        });
+      });
+
+      describe('using authorizeOperator', () => {
+        it('should pass', async () => {
+          const authorizeOperatorCalldata = context.lsp8.interface.encodeFunctionData(
+            'authorizeOperator',
+            [
+              context.accounts.tokenReceiver.address,
+              keccak256(toUtf8Bytes('TestingBatchCalls')),
+              '0x',
+            ],
+          );
+
+          await expect(
+            context.lsp8.connect(context.accounts.anyone).batchCalls([authorizeOperatorCalldata]),
+          )
+            .to.emit(context.lsp8, 'OperatorAuthorizationChanged')
+            .withArgs(
+              context.accounts.tokenReceiver.address,
+              context.accounts.anyone.address,
+              keccak256(toUtf8Bytes('TestingBatchCalls')),
+              '0x',
+            );
+        });
+      });
+
+      describe('using revokeOperator', () => {
+        it('should pass', async () => {
+          const revokeOperatorCalldata = context.lsp8.interface.encodeFunctionData(
+            'revokeOperator',
+            [
+              context.accounts.tokenReceiver.address,
+              keccak256(toUtf8Bytes('TestingBatchCalls')),
+              true,
+              '0x',
+            ],
+          );
+
+          await expect(
+            context.lsp8.connect(context.accounts.anyone).batchCalls([revokeOperatorCalldata]),
+          )
+            .to.emit(context.lsp8, 'OperatorRevoked')
+            .withArgs(
+              context.accounts.tokenReceiver.address,
+              context.accounts.anyone.address,
+              keccak256(toUtf8Bytes('TestingBatchCalls')),
+              true,
+              '0x',
+            );
+        });
+      });
+    });
+
+    describe('when using multiple functions', () => {
+      describe('making 2x `transfer(...)`, 1x `authorizeOperator(...)` & `burn(...)`', () => {
+        let batchCallsTx: ContractTransaction;
+
+        before(async () => {
+          const firstMintCalldata = context.lsp8.interface.encodeFunctionData('mint', [
+            context.accounts.owner.address,
+            keccak256(toUtf8Bytes('FirstToken_TestingBatchCalls')),
+            true,
+            '0xbeef0001',
+          ]);
+
+          const secondMintCalldata = context.lsp8.interface.encodeFunctionData('mint', [
+            context.accounts.owner.address,
+            keccak256(toUtf8Bytes('SecondToken_TestingBatchCalls')),
+            true,
+            '0xbeef0002',
+          ]);
+
+          const thirdMintCalldata = context.lsp8.interface.encodeFunctionData('mint', [
+            context.accounts.owner.address,
+            keccak256(toUtf8Bytes('ThirdToken_TestingBatchCalls')),
+            true,
+            '0xbeef0003',
+          ]);
+
+          const fourthMintCalldata = context.lsp8.interface.encodeFunctionData('mint', [
+            context.accounts.owner.address,
+            keccak256(toUtf8Bytes('FourthToken_TestingBatchCalls')),
+            true,
+            '0xbeef0004',
+          ]);
+
+          const firstTransferCalldata = context.lsp8.interface.encodeFunctionData('transfer', [
+            context.accounts.owner.address,
+            context.accounts.tokenReceiver.address,
+            keccak256(toUtf8Bytes('FirstToken_TestingBatchCalls')),
+            true,
+            '0xcafe0001',
+          ]);
+
+          const secondTransferCalldata = context.lsp8.interface.encodeFunctionData('transfer', [
+            context.accounts.owner.address,
+            context.accounts.anyone.address,
+            keccak256(toUtf8Bytes('SecondToken_TestingBatchCalls')),
+            true,
+            '0xcafe0002',
+          ]);
+
+          const authorizeOperatorCalldata = context.lsp8.interface.encodeFunctionData(
+            'authorizeOperator',
+            [
+              context.accounts.anyone.address,
+              keccak256(toUtf8Bytes('ThirdToken_TestingBatchCalls')),
+              '0xfeed0001',
+            ],
+          );
+
+          const burnCalldata = context.lsp8.interface.encodeFunctionData('burn', [
+            keccak256(toUtf8Bytes('FourthToken_TestingBatchCalls')),
+            '0xdead0001',
+          ]);
+
+          batchCallsTx = await context.lsp8
+            .connect(context.accounts.owner)
+            .batchCalls([
+              firstMintCalldata,
+              secondMintCalldata,
+              thirdMintCalldata,
+              fourthMintCalldata,
+              firstTransferCalldata,
+              secondTransferCalldata,
+              authorizeOperatorCalldata,
+              burnCalldata,
+            ]);
+        });
+
+        it('should emit first mint Transfer event', async () => {
+          await expect(batchCallsTx)
+            .to.emit(context.lsp8, 'Transfer')
+            .withArgs(
+              context.accounts.owner.address,
+              AddressZero,
+              context.accounts.owner.address,
+              keccak256(toUtf8Bytes('FirstToken_TestingBatchCalls')),
+              true,
+              '0xbeef0001',
+            );
+        });
+
+        it('should emit second mint Transfer event', async () => {
+          await expect(batchCallsTx)
+            .to.emit(context.lsp8, 'Transfer')
+            .withArgs(
+              context.accounts.owner.address,
+              AddressZero,
+              context.accounts.owner.address,
+              keccak256(toUtf8Bytes('SecondToken_TestingBatchCalls')),
+              true,
+              '0xbeef0002',
+            );
+        });
+
+        it('should emit third mint Transfer event', async () => {
+          await expect(batchCallsTx)
+            .to.emit(context.lsp8, 'Transfer')
+            .withArgs(
+              context.accounts.owner.address,
+              AddressZero,
+              context.accounts.owner.address,
+              keccak256(toUtf8Bytes('ThirdToken_TestingBatchCalls')),
+              true,
+              '0xbeef0003',
+            );
+        });
+
+        it('should emit fourth mint Transfer event', async () => {
+          await expect(batchCallsTx)
+            .to.emit(context.lsp8, 'Transfer')
+            .withArgs(
+              context.accounts.owner.address,
+              AddressZero,
+              context.accounts.owner.address,
+              keccak256(toUtf8Bytes('FourthToken_TestingBatchCalls')),
+              true,
+              '0xbeef0004',
+            );
+        });
+
+        it('should emit first Transfer event', async () => {
+          await expect(batchCallsTx)
+            .to.emit(context.lsp8, 'Transfer')
+            .withArgs(
+              context.accounts.owner.address,
+              context.accounts.owner.address,
+              context.accounts.tokenReceiver.address,
+              keccak256(toUtf8Bytes('FirstToken_TestingBatchCalls')),
+              true,
+              '0xcafe0001',
+            );
+        });
+
+        it('should emit second Transfer event', async () => {
+          await expect(batchCallsTx)
+            .to.emit(context.lsp8, 'Transfer')
+            .withArgs(
+              context.accounts.owner.address,
+              context.accounts.owner.address,
+              context.accounts.anyone.address,
+              keccak256(toUtf8Bytes('SecondToken_TestingBatchCalls')),
+              true,
+              '0xcafe0002',
+            );
+        });
+
+        it('should emit AuthoriseOperator event', async () => {
+          await expect(batchCallsTx)
+            .to.emit(context.lsp8, 'OperatorAuthorizationChanged')
+            .withArgs(
+              context.accounts.anyone.address,
+              context.accounts.owner.address,
+              keccak256(toUtf8Bytes('ThirdToken_TestingBatchCalls')),
+              '0xfeed0001',
+            );
+        });
+
+        it('should emit burn Transfer event', async () => {
+          await expect(batchCallsTx)
+            .to.emit(context.lsp8, 'Transfer')
+            .withArgs(
+              context.accounts.owner.address,
+              context.accounts.owner.address,
+              AddressZero,
+              keccak256(toUtf8Bytes('FourthToken_TestingBatchCalls')),
+              false,
+              '0xdead0001',
+            );
+        });
+      });
+    });
+  });
 };
 
 export type LSP8InitializeTestContext = {
@@ -1856,15 +2268,27 @@ export const shouldInitializeLikeLSP8 = (
         .withArgs(symbolKey, expectedSymbolValue);
       expect(await context.lsp8.getData(symbolKey)).to.equal(expectedSymbolValue);
 
-      const lsp8TokenIdTypeDataKey = ERC725YDataKeys.LSP8['LSP8TokenIdType'];
-      const expectedTokenIdDataValue = abiCoder.encode(
+      const lsp4TokenTypeKey = ERC725YDataKeys.LSP4['LSP4TokenType'];
+      const expectedTokenTypeValue = abiCoder.encode(
         ['uint256'],
-        [context.deployParams.tokenIdType],
+        [context.deployParams.lsp4TokenType],
       );
       await expect(context.initializeTransaction)
         .to.emit(context.lsp8, 'DataChanged')
-        .withArgs(lsp8TokenIdTypeDataKey, expectedTokenIdDataValue);
-      expect(await context.lsp8.getData(lsp8TokenIdTypeDataKey)).to.equal(expectedTokenIdDataValue);
+        .withArgs(lsp4TokenTypeKey, expectedTokenTypeValue);
+      expect(await context.lsp8.getData(lsp4TokenTypeKey)).to.equal(expectedTokenTypeValue);
+
+      const lsp8TokenIdSchemaDataKey = ERC725YDataKeys.LSP8['LSP8TokenIdSchema'];
+      const expectedTokenIdDataValue = abiCoder.encode(
+        ['uint256'],
+        [context.deployParams.lsp8TokenIdSchema],
+      );
+      await expect(context.initializeTransaction)
+        .to.emit(context.lsp8, 'DataChanged')
+        .withArgs(lsp8TokenIdSchemaDataKey, expectedTokenIdDataValue);
+      expect(await context.lsp8.getData(lsp8TokenIdSchemaDataKey)).to.equal(
+        expectedTokenIdDataValue,
+      );
     });
   });
 };

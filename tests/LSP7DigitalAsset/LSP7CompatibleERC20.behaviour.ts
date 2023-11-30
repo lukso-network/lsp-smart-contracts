@@ -18,6 +18,7 @@ import {
   UniversalReceiverDelegateRevert__factory,
 } from '../../types';
 import { ERC725YDataKeys } from '../../constants';
+import { abiCoder } from '../utils/helpers';
 
 type LSP7CompatibleERC20TestAccounts = {
   owner: SignerWithAddress;
@@ -36,6 +37,7 @@ export type LSP7CompatibleERC20DeployParams = {
   name: string;
   symbol: string;
   newOwner: string;
+  lsp4TokenType: number;
 };
 
 export type LSP7CompatibleERC20TestContext = {
@@ -83,7 +85,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
         const tx = await context.lsp7CompatibleERC20.approve(operator, authorizedAmount);
 
         await expect(tx)
-          .to.emit(context.lsp7CompatibleERC20, 'AuthorizedOperator')
+          .to.emit(context.lsp7CompatibleERC20, 'OperatorAuthorizationChanged')
           .withArgs(operator, tokenOwner, authorizedAmount, '0x');
 
         await expect(tx)
@@ -107,7 +109,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           });
 
           await expect(tx)
-            .to.emit(context.lsp7CompatibleERC20, 'AuthorizedOperator')
+            .to.emit(context.lsp7CompatibleERC20, 'OperatorAuthorizationChanged')
             .withArgs(operator, tokenOwner, amount, '0x');
 
           await expect(tx).to.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
@@ -127,7 +129,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           const tx = await context.lsp7CompatibleERC20.approve(operator, amount);
 
           await expect(tx)
-            .to.emit(context.lsp7CompatibleERC20, 'AuthorizedOperator')
+            .to.emit(context.lsp7CompatibleERC20, 'OperatorAuthorizationChanged')
             .withArgs(operator, tokenOwner, amount, '0x');
 
           expect(
@@ -153,7 +155,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           const tx = await context.lsp7CompatibleERC20.approve(operator, authorizedAmount);
 
           await expect(tx)
-            .to.emit(context.lsp7CompatibleERC20, 'AuthorizedOperator')
+            .to.emit(context.lsp7CompatibleERC20, 'OperatorAuthorizationChanged')
             .withArgs(operator, tokenOwner, authorizedAmount, '0x');
 
           await expect(tx)
@@ -180,7 +182,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           const tx = await context.lsp7CompatibleERC20.approve(operator, authorizedAmount);
 
           await expect(tx)
-            .to.emit(context.lsp7CompatibleERC20, 'RevokedOperator')
+            .to.emit(context.lsp7CompatibleERC20, 'OperatorRevoked')
             .withArgs(operator, tokenOwner, false, '0x');
 
           await expect(tx)
@@ -203,7 +205,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             });
 
             await expect(tx)
-              .to.emit(context.lsp7CompatibleERC20, 'RevokedOperator')
+              .to.emit(context.lsp7CompatibleERC20, 'OperatorRevoked')
               .withArgs(operator, tokenOwner, false, '0x');
 
             expect(tx).to.not.emit(tokenReceiverWithLSP1, 'UniversalReceiver');
@@ -222,7 +224,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             const tx = await context.lsp7CompatibleERC20.approve(operator, 0);
 
             await expect(tx)
-              .to.emit(context.lsp7CompatibleERC20, 'RevokedOperator')
+              .to.emit(context.lsp7CompatibleERC20, 'OperatorRevoked')
               .withArgs(operator, tokenOwner, false, '0x');
 
             expect(
@@ -1286,6 +1288,15 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
         .to.emit(context.lsp7CompatibleERC20, 'DataChanged')
         .withArgs(symbolKey, expectedSymbolValue);
       expect(await context.lsp7CompatibleERC20.getData(symbolKey)).to.equal(expectedSymbolValue);
+
+      const tokenTypeKey = ERC725YDataKeys.LSP4['LSP4TokenType'];
+      const expectedTokenTypeValue = abiCoder.encode(
+        ['uint256'],
+        [context.deployParams.lsp4TokenType],
+      );
+      expect(await context.lsp7CompatibleERC20.getData(tokenTypeKey)).to.equal(
+        expectedTokenTypeValue,
+      );
     });
 
     describe('when using the functions from IERC20Metadata', () => {

@@ -131,6 +131,10 @@ export const dodocConfig = {
       helperName: 'formatParamType',
       helperFunc: (content: HelperContent) => formatParamType(content.params[0]),
     },
+    {
+      helperName: 'formatCustomTags',
+      helperFunc: (content: HelperContent) => formatCustomTags(content.params[0]),
+    },
   ],
 };
 
@@ -374,4 +378,8 @@ const formatParamType = (textToFormat: string) => {
   }
 
   return formatedText;
+};
+
+const formatCustomTags = (textToFormat: string) => {
+  return createLocalLinks(textToFormat.replaceAll(' - ', '\n- ').trim());
 };

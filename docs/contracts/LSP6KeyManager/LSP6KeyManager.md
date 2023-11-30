@@ -176,7 +176,7 @@ Same as [`execute`](#execute) but execute a batch of payloads (abi-encoded funct
 
 :::tip Hint
 
-If you are looking to learn how to sign and execute relay transactions via the Key Manager, see our Javascript step by step guide [_&quot;Execute Relay Transactions&quot;_](../../../guides/key-manager/execute-relay-transactions.md). See the LSP6 Standard page for more details on how to [generate a valid signature for Execute Relay Call](../../../standards/universal-profile/lsp6-key-manager.md#how-to-sign-relay-transactions).
+If you are looking to learn how to sign and execute relay transactions via the Key Manager, see our Javascript step by step guide [_"Execute Relay Transactions"_](../../../learn/expert-guides/key-manager/execute-relay-transactions.md). See the LSP6 Standard page for more details on how to [generate a valid signature for Execute Relay Call](../../../standards/universal-profile/lsp6-key-manager.md#how-to-sign-relay-transactions).
 
 :::
 
@@ -286,7 +286,7 @@ Same as [`executeRelayCall`](#executerelaycall) but execute a batch of signed ca
 A signer can choose its channel number arbitrarily. The recommended practice is to:
 
 - use `channelId == 0` for transactions for which the ordering of execution matters.abi _Example: you have two transactions A and B, and transaction A must be executed first and complete successfully before transaction B should be executed)._
-- use any other `channelId` number for transactions that you want to be order independant (out-of-order execution, execution _&quot;in parallel&quot;_). \_Example: you have two transactions A and B. You want transaction B to be executed a) without having to wait for transaction A to complete, or b) regardless if transaction A completed successfully or not.
+- use any other `channelId` number for transactions that you want to be order independant (out-of-order execution, execution _"in parallel"_). \_Example: you have two transactions A and B. You want transaction B to be executed a) without having to wait for transaction A to complete, or b) regardless if transaction A completed successfully or not.
 
 :::
 
@@ -370,7 +370,7 @@ Checks if a signature was signed by a controller that has the permission `SIGN`.
 
 :::tip Hint
 
-This function can call by any other address than the {`target`}. This allows to verify permissions in a _&quot;read-only&quot;_ manner. Anyone can call this function to verify if the `caller` has the right permissions to perform the abi-encoded function call `data` on the {`target`} contract (while sending `msgValue` alongside the call). If the permissions have been verified successfully and `caller` is authorized, one of the following two LSP20 success value will be returned:
+This function can call by any other address than the [`target`](#`target`). This allows to verify permissions in a _"read-only"_ manner. Anyone can call this function to verify if the `caller` has the right permissions to perform the abi-encoded function call `data` on the [`target`](#`target`) contract (while sending `msgValue` alongside the call). If the permissions have been verified successfully and `caller` is authorized, one of the following two LSP20 success value will be returned:
 
 - `0x1a238000`: LSP20 success value **without** post verification (last byte is `0x00`).
 - `0x1a238001`: LSP20 success value **with** post-verification (last byte is `0x01`).
@@ -1137,7 +1137,7 @@ function _execute(
 
 Be aware that this function can also throw an error if the `callData` was signed incorrectly (not conforming to the signature format defined in the LSP25 standard).
 This is because the contract cannot distinguish if the data is signed correctly or not. Instead, it will recover an incorrect signer address from the signature
-and throw an {InvalidRelayNonce} error with the incorrect signer address as the first parameter.
+and throw an [`InvalidRelayNonce`](#invalidrelaynonce) error with the incorrect signer address as the first parameter.
 
 :::
 

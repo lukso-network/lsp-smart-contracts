@@ -103,7 +103,7 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 :::caution Warning
 
-When the data stored in the ERC725Y storage of the LSP0 contract is corrupted (\_e.g: ([LSP-5-ReceivedAssets]&#39;s Array length not 16 bytes long, the token received is already registered in `LSP5ReceivetAssets[]`, the token being sent is not sent as full balance, etc...), the function call will still pass and return (**not revert!**) and not modify any data key on the storage of the [LSP-0-ERC725Account].
+When the data stored in the ERC725Y storage of the LSP0 contract is corrupted (\_e.g: ([LSP-5-ReceivedAssets]'s Array length not 16 bytes long, the token received is already registered in `LSP5ReceivetAssets[]`, the token being sent is not sent as full balance, etc...), the function call will still pass and return (**not revert!**) and not modify any data key on the storage of the [LSP-0-ERC725Account].
 
 :::
 

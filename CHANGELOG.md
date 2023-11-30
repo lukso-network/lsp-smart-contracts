@@ -4,38 +4,36 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [0.12.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.12.0...v0.12.1) (2023-11-07)
 
-
 ### Bug Fixes
 
-* [L-01] Return `bytes` directly in LSP6 `_executePayload`, to prevent data loss ([#784](https://github.com/lukso-network/lsp-smart-contracts/issues/784)) ([fd23a24](https://github.com/lukso-network/lsp-smart-contracts/commit/fd23a24859f72e3ea9312ae1761ab98709db0142))
-* [M-02] reset `_renounceOwnershipStartedAt` on `acceptOwnership(..)` in LSP14 ([#775](https://github.com/lukso-network/lsp-smart-contracts/issues/775)) ([5d8a7af](https://github.com/lukso-network/lsp-smart-contracts/commit/5d8a7af60dc548730688c0895eeb27d402ec5cc5))
-* [M-03] allow setting 21 bytes under LSP17Extension data key in LSP6KeyManager ([#777](https://github.com/lukso-network/lsp-smart-contracts/issues/777)) ([8f1fb95](https://github.com/lukso-network/lsp-smart-contracts/commit/8f1fb959f0b9267bc099f774ca9a98fdd8921b97))
-* [M-04 + L-02] improve empty call type checks for selector `0x00000000` ([#776](https://github.com/lukso-network/lsp-smart-contracts/issues/776)) ([78bb1e7](https://github.com/lukso-network/lsp-smart-contracts/commit/78bb1e7e32ae8c6ce1decdbfa26fafa72c4c5387))
-* Adjust missing verificationData and verificationFunction ([#788](https://github.com/lukso-network/lsp-smart-contracts/issues/788)) ([bff93e7](https://github.com/lukso-network/lsp-smart-contracts/commit/bff93e7878848ac798c60f6c274e64dcb26b2a30))
-
+- [L-01] Return `bytes` directly in LSP6 `_executePayload`, to prevent data loss ([#784](https://github.com/lukso-network/lsp-smart-contracts/issues/784)) ([fd23a24](https://github.com/lukso-network/lsp-smart-contracts/commit/fd23a24859f72e3ea9312ae1761ab98709db0142))
+- [M-02] reset `_renounceOwnershipStartedAt` on `acceptOwnership(..)` in LSP14 ([#775](https://github.com/lukso-network/lsp-smart-contracts/issues/775)) ([5d8a7af](https://github.com/lukso-network/lsp-smart-contracts/commit/5d8a7af60dc548730688c0895eeb27d402ec5cc5))
+- [M-03] allow setting 21 bytes under LSP17Extension data key in LSP6KeyManager ([#777](https://github.com/lukso-network/lsp-smart-contracts/issues/777)) ([8f1fb95](https://github.com/lukso-network/lsp-smart-contracts/commit/8f1fb959f0b9267bc099f774ca9a98fdd8921b97))
+- [M-04 + L-02] improve empty call type checks for selector `0x00000000` ([#776](https://github.com/lukso-network/lsp-smart-contracts/issues/776)) ([78bb1e7](https://github.com/lukso-network/lsp-smart-contracts/commit/78bb1e7e32ae8c6ce1decdbfa26fafa72c4c5387))
+- Adjust missing verificationData and verificationFunction ([#788](https://github.com/lukso-network/lsp-smart-contracts/issues/788)) ([bff93e7](https://github.com/lukso-network/lsp-smart-contracts/commit/bff93e7878848ac798c60f6c274e64dcb26b2a30))
 
 ### Miscellaneous
 
-* add notice in Natspec for `isValidSignature` ([#787](https://github.com/lukso-network/lsp-smart-contracts/issues/787)) ([c1574a8](https://github.com/lukso-network/lsp-smart-contracts/commit/c1574a8b58ef78a64f3edf086c652ac4ad4a2931))
-* adjust Natspec comments + use mixedCase name for `modifier` ([#786](https://github.com/lukso-network/lsp-smart-contracts/issues/786)) ([e7ef125](https://github.com/lukso-network/lsp-smart-contracts/commit/e7ef125a1b77d5b3feb85a2b4133dec314ff917a))
-* bootstrap releases for path: . + add `Version.sol` in file to update version for ([#785](https://github.com/lukso-network/lsp-smart-contracts/issues/785)) ([c0090c6](https://github.com/lukso-network/lsp-smart-contracts/commit/c0090c6a6d7e3473702cd85549a1fa2670b00bff))
-* Refactor verification ([4ff7b6f](https://github.com/lukso-network/lsp-smart-contracts/commit/4ff7b6fe161f39d579d5a6437fa2ddc580cd7570))
+- add notice in Natspec for `isValidSignature` ([#787](https://github.com/lukso-network/lsp-smart-contracts/issues/787)) ([c1574a8](https://github.com/lukso-network/lsp-smart-contracts/commit/c1574a8b58ef78a64f3edf086c652ac4ad4a2931))
+- adjust Natspec comments + use mixedCase name for `modifier` ([#786](https://github.com/lukso-network/lsp-smart-contracts/issues/786)) ([e7ef125](https://github.com/lukso-network/lsp-smart-contracts/commit/e7ef125a1b77d5b3feb85a2b4133dec314ff917a))
+- bootstrap releases for path: . + add `Version.sol` in file to update version for ([#785](https://github.com/lukso-network/lsp-smart-contracts/issues/785)) ([c0090c6](https://github.com/lukso-network/lsp-smart-contracts/commit/c0090c6a6d7e3473702cd85549a1fa2670b00bff))
+- Refactor verification ([4ff7b6f](https://github.com/lukso-network/lsp-smart-contracts/commit/4ff7b6fe161f39d579d5a6437fa2ddc580cd7570))
 
 ## [0.12.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.12.0-rc.0...v0.12.0) (2023-10-30)
 
 ### ⚠ BREAKING CHANGES
 
-- Optional LSP1 Notification on `revokeOperator(..)` #2 ([#767](https://github.com/lukso-network/lsp-smart-contracts/issues/767))
+- Optional LSP1 Notification on `revokeOperator(..)` #2 ([#767](https://github.com/lukso-network/lsp-smart-contracts/issues/767))
 - replace `ValueReceived` with `UniversalReceiver` ([#759](https://github.com/lukso-network/lsp-smart-contracts/issues/759))
 - Allows `ERC725X.executeBatch` path in LSP6 Key Manager ([#760](https://github.com/lukso-network/lsp-smart-contracts/issues/760))
 - update LS8 Metadata keys to new LSP8 standard specs ([#762](https://github.com/lukso-network/lsp-smart-contracts/issues/762))
 - create `Version` contract and inherit it ([#764](https://github.com/lukso-network/lsp-smart-contracts/issues/764))
-- Optional LSP1 Notification on `revokeOperator(..)` ([#763](https://github.com/lukso-network/lsp-smart-contracts/issues/763))
+- Optional LSP1 Notification on `revokeOperator(..)` ([#763](https://github.com/lukso-network/lsp-smart-contracts/issues/763))
 
 ### Refactor
 
-- Optional LSP1 Notification on `revokeOperator(..)` ([#763](https://github.com/lukso-network/lsp-smart-contracts/issues/763)) ([63c1a0f](https://github.com/lukso-network/lsp-smart-contracts/commit/63c1a0fb68502e11d58f7582e4e849d2f24c4924))
-- Optional LSP1 Notification on `revokeOperator(..)` [#2](https://github.com/lukso-network/lsp-smart-contracts/issues/2) ([#767](https://github.com/lukso-network/lsp-smart-contracts/issues/767)) ([1f92ca5](https://github.com/lukso-network/lsp-smart-contracts/commit/1f92ca530fb56cf2b626b0feae311d6c4737b8a0))
+- Optional LSP1 Notification on `revokeOperator(..)` ([#763](https://github.com/lukso-network/lsp-smart-contracts/issues/763)) ([63c1a0f](https://github.com/lukso-network/lsp-smart-contracts/commit/63c1a0fb68502e11d58f7582e4e849d2f24c4924))
+- Optional LSP1 Notification on `revokeOperator(..)` [#2](https://github.com/lukso-network/lsp-smart-contracts/issues/2) ([#767](https://github.com/lukso-network/lsp-smart-contracts/issues/767)) ([1f92ca5](https://github.com/lukso-network/lsp-smart-contracts/commit/1f92ca530fb56cf2b626b0feae311d6c4737b8a0))
 - replace `ValueReceived` with `UniversalReceiver` ([#759](https://github.com/lukso-network/lsp-smart-contracts/issues/759)) ([0c17386](https://github.com/lukso-network/lsp-smart-contracts/commit/0c1738619818bcf2e01636f31782886b26fb91d7))
 - update LS8 Metadata keys to new LSP8 standard specs ([#762](https://github.com/lukso-network/lsp-smart-contracts/issues/762)) ([a909926](https://github.com/lukso-network/lsp-smart-contracts/commit/a9099268f63b7a8f60e4304d61098b496ed03de0))
 
