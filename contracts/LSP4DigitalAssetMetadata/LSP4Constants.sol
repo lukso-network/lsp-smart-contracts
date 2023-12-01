@@ -2,7 +2,6 @@
 pragma solidity ^0.8.4;
 
 // Token types
-
 uint256 constant _LSP4_TOKEN_TYPE_TOKEN = 0;
 uint256 constant _LSP4_TOKEN_TYPE_NFT = 1;
 uint256 constant _LSP4_TOKEN_TYPE_COLLECTION = 2;

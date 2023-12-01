@@ -49,7 +49,7 @@ _Deploying a `LSP8CompatibleERC721Mintable` token contract with: token name = `n
 | `name_`              | `string`  | The name of the token.                                                                               |
 | `symbol_`            | `string`  | The symbol of the token.                                                                             |
 | `newOwner_`          | `address` | The owner of the token contract.                                                                     |
-| `lsp4TokenType_`     | `uint256` | The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection). |
+| `lsp4TokenType_`     | `uint256` | The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection). |
 | `lsp8TokenIdSchema_` | `uint256` | The schema of tokenIds (= NFTs) that this contract will create.                                      |
 
 <br/>
