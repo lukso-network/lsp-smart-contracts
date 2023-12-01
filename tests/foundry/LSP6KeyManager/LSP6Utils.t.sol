@@ -191,7 +191,7 @@ contract LSP6UtilsTests is Test {
     function testIsCBAOfAllowedERC725YDataKeysWithInvalidShorterCBAAtTheBeginning(
         uint16 elementLength
     ) public view {
-        uint8 numberBetween1and32 = uint8((elementLength % 32) + 1); // +1 to avoid having 0
+        uint8 numberBetween1and32 = uint8((elementLength & (32 - 1)) + 1); // +1 to avoid having 0
         bytes memory invalidAllowedKey = _generateElementCBA(
             numberBetween1and32,
             numberBetween1and32 - 1
@@ -212,7 +212,7 @@ contract LSP6UtilsTests is Test {
     function testIsCBAOfAllowedERC725YDataKeysWithInvalidShorterCBAInTheMiddle(
         uint16 elementLength
     ) public view {
-        uint8 numberBetween1and32 = uint8((elementLength % 32) + 1); // +1 to avoid having 0
+        uint8 numberBetween1and32 = uint8((elementLength & (32 - 1)) + 1); // +1 to avoid having 0
         bytes memory validAllowedKeysBefore = _generateElementCBA(
             numberBetween1and32,
             numberBetween1and32
@@ -238,7 +238,7 @@ contract LSP6UtilsTests is Test {
     function testIsCBAOfAllowedERC725YDataKeysWithInvalidShorterCBAAtTheEnd(
         uint16 elementLength
     ) public view {
-        uint8 numberBetween1and32 = uint8((elementLength % 32) + 1); // +1 to avoid having 0
+        uint8 numberBetween1and32 = uint8((elementLength & (32 - 1)) + 1); // +1 to avoid having 0
         bytes memory validAllowedKeys = _generateElementCBA(
             numberBetween1and32,
             numberBetween1and32
