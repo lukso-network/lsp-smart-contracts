@@ -61,9 +61,9 @@ abstract contract LSP8IdentifiableDigitalAsset is
 {
     /**
      * @notice Deploying a LSP8IdentifiableDigitalAsset with name `name_`, symbol `symbol_`, owned by address `newOwner_`
-     * with tokenId schema `lsp8TokenIdFormat_`.
+     * with tokenId format `lsp8TokenIdFormat_`.
      *
-     * @dev Deploy a `LSP8IdentifiableDigitalAsset` contract and set the tokenId schema inside the ERC725Y storage of the contract.
+     * @dev Deploy a `LSP8IdentifiableDigitalAsset` contract and set the tokenId format inside the ERC725Y storage of the contract.
      * This will also set the token `name_` and `symbol_` under the ERC725Y data keys `LSP4TokenName` and `LSP4TokenSymbol`.
      *
      * @param name_ The name of the token
@@ -72,7 +72,7 @@ abstract contract LSP8IdentifiableDigitalAsset is
      * @param lsp4TokenType_ The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection).
      * @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
      *
-     * @custom:warning Make sure the tokenId schema provided on deployment is correct, as it can only be set once
+     * @custom:warning Make sure the tokenId format provided on deployment is correct, as it can only be set once
      * and cannot be changed in the ERC725Y storage after the contract has been deployed.
      */
     constructor(
