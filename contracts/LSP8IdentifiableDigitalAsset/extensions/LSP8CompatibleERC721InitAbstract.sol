@@ -65,7 +65,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
      * @param symbol_ The symbol of the token.
      * @param newOwner_ The owner of the token contract.
      * @param lsp4TokenType_ The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection).
-     * @param lsp8TokenIdSchema_ The schema of tokenIds (= NFTs) that this contract will create.
+     * @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
      */
 
     function _initialize(
@@ -73,14 +73,14 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        uint256 lsp8TokenIdSchema_
+        uint256 lsp8TokenIdFormat_
     ) internal virtual override onlyInitializing {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
             lsp4TokenType_,
-            lsp8TokenIdSchema_
+            lsp8TokenIdFormat_
         );
     }
 

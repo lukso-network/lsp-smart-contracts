@@ -236,7 +236,7 @@ export const ERC725YDataKeys = {
     'AddressPermissions:AllowedCalls': '0x4b80742de2bf393a64c70000',
   },
   LSP8: {
-    LSP8TokenIdSchema: '0x341bc44e55234544c70af9d37b2cb8cc7ba74685b58526221de2cc977f469924',
+    LSP8TokenIdFormat: '0xf675e9361af1c1664c1868cfa3eb97672d6b1a513aa5b81dec34c9ee330e818d',
     LSP8TokenMetadataBaseURI: '0x1a7628600c3bac7101f53697f48df381ddc36b9015e7d7c9c5633d1252aa2843',
     LSP8ReferenceContract: '0x708e7b881795f2e6b6c2752108c177ec89248458de3bf69d0d43480b3e5034e6',
   },
@@ -410,7 +410,7 @@ export const LSP4_TOKEN_TYPES = {
 
 /**
  * @dev list of LSP8 Token ID Schemas that can be used to create different types of NFTs and represent each NFT identifiers differently.
- * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidschema
+ * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidformat
  */
 export const LSP8_TOKEN_ID_SCHEMA = {
   NUMBER: 0,

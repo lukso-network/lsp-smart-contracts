@@ -27,7 +27,7 @@ describe('LSP8CompatibleERC721 with constructor', () => {
       symbol: 'NFT',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      lsp8TokenIdSchema: LSP8_TOKEN_ID_SCHEMA.NUMBER,
+      lsp8TokenIdFormat: LSP8_TOKEN_ID_SCHEMA.NUMBER,
       lsp4MetadataValue,
     };
 
@@ -38,7 +38,7 @@ describe('LSP8CompatibleERC721 with constructor', () => {
       deployParams.symbol,
       deployParams.newOwner,
       deployParams.lsp4TokenType,
-      deployParams.lsp8TokenIdSchema,
+      deployParams.lsp8TokenIdFormat,
       deployParams.lsp4MetadataValue,
     );
 

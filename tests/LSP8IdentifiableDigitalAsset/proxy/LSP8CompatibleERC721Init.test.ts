@@ -33,7 +33,7 @@ describe('LSP8CompatibleERC721Init with proxy', () => {
       symbol: 'NFT',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      lsp8TokenIdSchema: LSP8_TOKEN_ID_SCHEMA.NUMBER,
+      lsp8TokenIdFormat: LSP8_TOKEN_ID_SCHEMA.NUMBER,
       lsp4MetadataValue,
     };
 
@@ -55,7 +55,7 @@ describe('LSP8CompatibleERC721Init with proxy', () => {
       context.deployParams.symbol,
       context.deployParams.newOwner,
       context.deployParams.lsp4TokenType,
-      context.deployParams.lsp8TokenIdSchema,
+      context.deployParams.lsp8TokenIdFormat,
       context.deployParams.lsp4MetadataValue,
     );
   };

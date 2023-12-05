@@ -17,7 +17,7 @@ describe('LSP8Enumerable with constructor', () => {
       symbol: 'LSP8 NMRBL',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      lsp8TokenIdSchema: LSP8_TOKEN_ID_SCHEMA.NUMBER,
+      lsp8TokenIdFormat: LSP8_TOKEN_ID_SCHEMA.NUMBER,
     };
 
     const lsp8Enumerable: LSP8EnumerableTester = await new LSP8EnumerableTester__factory(
@@ -27,7 +27,7 @@ describe('LSP8Enumerable with constructor', () => {
       deployParams.symbol,
       deployParams.newOwner,
       deployParams.lsp4TokenType,
-      deployParams.lsp8TokenIdSchema,
+      deployParams.lsp8TokenIdFormat,
     );
 
     return { accounts, lsp8Enumerable, deployParams };

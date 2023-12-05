@@ -23,12 +23,12 @@ import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
-import {_INTERFACEID_LSP8, _LSP8_TOKENID_SCHEMA_KEY} from "./LSP8Constants.sol";
+import {_INTERFACEID_LSP8, _LSP8_TOKENID_FORMAT_KEY} from "./LSP8Constants.sol";
 
 // errors
 import {
     LSP8TokenContractCannotHoldValue,
-    LSP8TokenIdSchemaNotEditable
+    LSP8TokenIdFormatNotEditable
 } from "./LSP8Errors.sol";
 
 import {
@@ -67,7 +67,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
      * @param symbol_ The symbol of the token
      * @param newOwner_ The owner of the the token-Metadata
      * @param lsp4TokenType_ The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection).
-     * @param lsp8TokenIdSchema_ The schema of tokenIds (= NFTs) that this contract will create.
+     * @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
      *
      * @custom:warning Make sure the tokenId schema provided on deployment is correct, as it can only be set once
      * and cannot be changed in the ERC725Y storage after the contract has been initialized.
@@ -77,7 +77,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        uint256 lsp8TokenIdSchema_
+        uint256 lsp8TokenIdFormat_
     ) internal virtual onlyInitializing {
         LSP4DigitalAssetMetadataInitAbstract._initialize(
             name_,
@@ -87,8 +87,8 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         );
 
         LSP4DigitalAssetMetadataInitAbstract._setData(
-            _LSP8_TOKENID_SCHEMA_KEY,
-            abi.encode(lsp8TokenIdSchema_)
+            _LSP8_TOKENID_FORMAT_KEY,
+            abi.encode(lsp8TokenIdFormat_)
         );
     }
 
@@ -224,7 +224,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
 
     /**
      * @inheritdoc LSP4DigitalAssetMetadataInitAbstract
-     * @dev The ERC725Y data key `_LSP8_TOKENID_SCHEMA_KEY` cannot be changed
+     * @dev The ERC725Y data key `_LSP8_TOKENID_FORMAT_KEY` cannot be changed
      * once the identifiable digital asset contract has been deployed.
      */
     function _setData(
@@ -238,8 +238,8 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
             LSP4DigitalAssetMetadataCore
         )
     {
-        if (dataKey == _LSP8_TOKENID_SCHEMA_KEY) {
-            revert LSP8TokenIdSchemaNotEditable();
+        if (dataKey == _LSP8_TOKENID_FORMAT_KEY) {
+            revert LSP8TokenIdFormatNotEditable();
         }
         LSP4DigitalAssetMetadataInitAbstract._setData(dataKey, dataValue);
     }

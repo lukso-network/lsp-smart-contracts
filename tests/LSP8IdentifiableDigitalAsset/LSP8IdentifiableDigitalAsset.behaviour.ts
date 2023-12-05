@@ -45,7 +45,7 @@ export type LSP8DeployParams = {
   symbol: string;
   newOwner: string;
   lsp4TokenType: number;
-  lsp8TokenIdSchema: number;
+  lsp8TokenIdFormat: number;
 };
 
 export type LSP8TestContext = {
@@ -73,18 +73,18 @@ export const shouldBehaveLikeLSP8 = (
   });
 
   describe('when setting data', () => {
-    it('should not allow to update the `LSP8TokenIdSchema` after deployment', async () => {
+    it('should not allow to update the `LSP8TokenIdFormat` after deployment', async () => {
       await expect(
-        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdSchema, '0xdeadbeef'),
-      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdSchemaNotEditable');
+        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdFormat, '0xdeadbeef'),
+      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdFormatNotEditable');
     });
   });
 
   describe('when setting data', () => {
-    it('should not allow to update the `LSP8TokenIdSchema` after deployment', async () => {
+    it('should not allow to update the `LSP8TokenIdFormat` after deployment', async () => {
       await expect(
-        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdSchema, '0xdeadbeef'),
-      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdSchemaNotEditable');
+        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdFormat, '0xdeadbeef'),
+      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdFormatNotEditable');
     });
   });
 
@@ -2278,15 +2278,15 @@ export const shouldInitializeLikeLSP8 = (
         .withArgs(lsp4TokenTypeKey, expectedTokenTypeValue);
       expect(await context.lsp8.getData(lsp4TokenTypeKey)).to.equal(expectedTokenTypeValue);
 
-      const lsp8TokenIdSchemaDataKey = ERC725YDataKeys.LSP8['LSP8TokenIdSchema'];
+      const lsp8TokenIdFormatDataKey = ERC725YDataKeys.LSP8['LSP8TokenIdFormat'];
       const expectedTokenIdDataValue = abiCoder.encode(
         ['uint256'],
-        [context.deployParams.lsp8TokenIdSchema],
+        [context.deployParams.lsp8TokenIdFormat],
       );
       await expect(context.initializeTransaction)
         .to.emit(context.lsp8, 'DataChanged')
-        .withArgs(lsp8TokenIdSchemaDataKey, expectedTokenIdDataValue);
-      expect(await context.lsp8.getData(lsp8TokenIdSchemaDataKey)).to.equal(
+        .withArgs(lsp8TokenIdFormatDataKey, expectedTokenIdDataValue);
+      expect(await context.lsp8.getData(lsp8TokenIdFormatDataKey)).to.equal(
         expectedTokenIdDataValue,
       );
     });
