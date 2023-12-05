@@ -117,7 +117,9 @@ export const shouldBehaveLikeLSP8 = (
 
     it('Random address cannot set data', async () => {
       await expect(
-        context.lsp8.connect(context.accounts.anyone).setDataForTokenId(tokenId, dataKey, dataValue),
+        context.lsp8
+          .connect(context.accounts.anyone)
+          .setDataForTokenId(tokenId, dataKey, dataValue),
       ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCallerNotTheOwner');
     });
 
@@ -140,7 +142,9 @@ export const shouldBehaveLikeLSP8 = (
       await context.lsp8
         .connect(context.accounts.owner)
         .setDataBatchForTokenIds(tokenIds, dataKeys, dataValues);
-      expect(await context.lsp8.getDataBatchForTokenIds(tokenIds, dataKeys)).to.deep.equal(dataValues);
+      expect(await context.lsp8.getDataBatchForTokenIds(tokenIds, dataKeys)).to.deep.equal(
+        dataValues,
+      );
     });
 
     it('Token contract owner cannot set inconsistent length of data', async () => {
