@@ -109,21 +109,21 @@ export const shouldBehaveLikeLSP8 = (
 
     it('Token contract owner can set data', async () => {
       await expect(
-        context.lsp8.connect(context.accounts.owner).setTokenIdData(tokenId, dataKey, dataValue),
+        context.lsp8.connect(context.accounts.owner).setDataForTokenId(tokenId, dataKey, dataValue),
       ).to.not.be.reverted;
 
-      expect(await context.lsp8.getTokenIdData(tokenId, dataKey)).to.equal(dataValue);
+      expect(await context.lsp8.getDataForTokenId(tokenId, dataKey)).to.equal(dataValue);
     });
 
     it('Random address cannot set data', async () => {
       await expect(
-        context.lsp8.connect(context.accounts.anyone).setTokenIdData(tokenId, dataKey, dataValue),
+        context.lsp8.connect(context.accounts.anyone).setDataForTokenId(tokenId, dataKey, dataValue),
       ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCallerNotTheOwner');
     });
 
     it('TokenIdDataChanged emitted when data is set for a specific tokenId', async () => {
       await expect(
-        context.lsp8.connect(context.accounts.owner).setTokenIdData(tokenId, dataKey, dataValue),
+        context.lsp8.connect(context.accounts.owner).setDataForTokenId(tokenId, dataKey, dataValue),
       )
         .to.emit(context.lsp8, 'TokenIdDataChanged')
         .withArgs(tokenId, dataKey, dataValue);
@@ -132,48 +132,48 @@ export const shouldBehaveLikeLSP8 = (
     it('Token contract owner can set data for a specific tokenId and get data', async () => {
       await context.lsp8
         .connect(context.accounts.owner)
-        .setTokenIdData(tokenId, dataKey, dataValue);
-      expect(await context.lsp8.getTokenIdData(tokenId, dataKey)).to.equal(dataValue);
+        .setDataForTokenId(tokenId, dataKey, dataValue);
+      expect(await context.lsp8.getDataForTokenId(tokenId, dataKey)).to.equal(dataValue);
     });
 
     it('Token contract owner can set batch of data for a specific tokenId and get batch of data', async () => {
       await context.lsp8
         .connect(context.accounts.owner)
-        .setTokenIdDataBatch(tokenIds, dataKeys, dataValues);
-      expect(await context.lsp8.getTokenIdDataBatch(tokenIds, dataKeys)).to.deep.equal(dataValues);
+        .setDataBatchForTokenIds(tokenIds, dataKeys, dataValues);
+      expect(await context.lsp8.getDataBatchForTokenIds(tokenIds, dataKeys)).to.deep.equal(dataValues);
     });
 
     it('Token contract owner cannot set inconsistent length of data', async () => {
       await expect(
         context.lsp8
           .connect(context.accounts.owner)
-          .setTokenIdDataBatch(tokenIds, dataKeys, [dataValue]),
+          .setDataBatchForTokenIds(tokenIds, dataKeys, [dataValue]),
       ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdsDataLengthMismatch');
     });
 
     it('Token contract owner cannot set empty batch of data', async () => {
       await expect(
-        context.lsp8.connect(context.accounts.owner).setTokenIdDataBatch([], [], []),
+        context.lsp8.connect(context.accounts.owner).setDataBatchForTokenIds([], [], []),
       ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdsDataEmptyArray');
     });
 
     it('Token contract owner can set and change data for a specific tokenId and get data', async () => {
       await context.lsp8
         .connect(context.accounts.owner)
-        .setTokenIdData(tokenId, dataKey, dataValue);
+        .setDataForTokenId(tokenId, dataKey, dataValue);
       const anotherDataValue = ethers.utils.hexlify(ethers.utils.randomBytes(256));
 
       await context.lsp8
         .connect(context.accounts.owner)
-        .setTokenIdData(tokenId, dataKey, anotherDataValue);
-      expect(await context.lsp8.getTokenIdData(tokenId, dataKey)).to.equal(anotherDataValue);
+        .setDataForTokenId(tokenId, dataKey, anotherDataValue);
+      expect(await context.lsp8.getDataForTokenId(tokenId, dataKey)).to.equal(anotherDataValue);
     });
 
     it('TokenIdDataChanged emitted on each iteration when data is set for tokenIds', async () => {
       await expect(
         context.lsp8
           .connect(context.accounts.owner)
-          .setTokenIdDataBatch(tokenIds, dataKeys, dataValues),
+          .setDataBatchForTokenIds(tokenIds, dataKeys, dataValues),
       )
         .to.emit(context.lsp8, 'TokenIdDataChanged')
         .withArgs(tokenIds[0], dataKeys[0], dataValues[0])

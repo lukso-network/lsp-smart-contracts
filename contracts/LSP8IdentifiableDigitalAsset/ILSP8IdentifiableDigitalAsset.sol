@@ -121,7 +121,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param dataValue The value to set for the given data key.
      * @custom:events {TokenIdDataChanged} event.
      */
-    function setTokenIdData(
+    function setDataForTokenId(
         bytes32 tokenId,
         bytes32 dataKey,
         bytes memory dataValue
@@ -134,7 +134,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param dataValue An array of values to set for the given data keys.
      * @custom:events {TokenIdDataChanged} event for each pair.
      */
-    function setTokenIdDataBatch(
+    function setDataBatchForTokenIds(
         bytes32[] memory tokenId,
         bytes32[] memory dataKey,
         bytes[] memory dataValue
@@ -146,7 +146,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param dataKey The key for the data to retrieve.
      * @return dataValues The data value associated with the given `tokenId` and `dataKey`.
      */
-    function getTokenIdData(
+    function getDataForTokenId(
         bytes32 tokenId,
         bytes32 dataKey
     ) external returns (bytes memory dataValues);
@@ -157,7 +157,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param dataKey An array of data keys corresponding to the token IDs.
      * @return dataValues An array of data values for each pair of `tokenId` and `dataKey`.
      */
-    function getTokenIdDataBatch(
+    function getDataBatchForTokenIds(
         bytes32[] memory tokenId,
         bytes32[] memory dataKey
     ) external returns (bytes[] memory dataValues);
