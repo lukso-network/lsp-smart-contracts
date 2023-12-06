@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 pragma solidity ^0.8.4;
 
 // interfaces
@@ -115,13 +114,35 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     // --- TokenId Metadata functionality
 
     /**
+     * @notice Retrieves data for a specific `tokenId` and `dataKey`.
+     * @param tokenId The unique identifier for a token.
+     * @param dataKey The key for the data to retrieve.
+     * @return dataValues The data value associated with the given `tokenId` and `dataKey`.
+     */
+    function getDataForTokenId(
+        bytes32 tokenId,
+        bytes32 dataKey
+    ) external returns (bytes memory dataValues);
+
+    /**
+     * @notice Retrieves data in batch for multiple `tokenId` and `dataKey` pairs.
+     * @param tokenIds An array of token IDs.
+     * @param dataKeys An array of data keys corresponding to the token IDs.
+     * @return dataValues An array of data values for each pair of `tokenId` and `dataKey`.
+     */
+    function getDataBatchForTokenIds(
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys
+    ) external returns (bytes[] memory dataValues);
+
+    /**
      * @notice Sets data for a specific `tokenId` and `dataKey`.
      * @param tokenId The unique identifier for a token.
      * @param dataKey The key for the data to set.
      * @param dataValue The value to set for the given data key.
      * @custom:events {TokenIdDataChanged} event.
      */
-    function setTokenIdData(
+    function setDataForTokenId(
         bytes32 tokenId,
         bytes32 dataKey,
         bytes memory dataValue
@@ -129,38 +150,16 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
 
     /**
      * @notice Sets data in batch for multiple `tokenId` and `dataKey` pairs.
-     * @param tokenId An array of token IDs.
-     * @param dataKey An array of data keys corresponding to the token IDs.
-     * @param dataValue An array of values to set for the given data keys.
+     * @param tokenIds An array of token IDs.
+     * @param dataKeys An array of data keys corresponding to the token IDs.
+     * @param dataValues An array of values to set for the given data keys.
      * @custom:events {TokenIdDataChanged} event for each pair.
      */
-    function setTokenIdDataBatch(
-        bytes32[] memory tokenId,
-        bytes32[] memory dataKey,
-        bytes[] memory dataValue
+    function setDataBatchForTokenIds(
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys,
+        bytes[] memory dataValues
     ) external;
-
-    /**
-     * @notice Retrieves data for a specific `tokenId` and `dataKey`.
-     * @param tokenId The unique identifier for a token.
-     * @param dataKey The key for the data to retrieve.
-     * @return dataValues The data value associated with the given `tokenId` and `dataKey`.
-     */
-    function getTokenIdData(
-        bytes32 tokenId,
-        bytes32 dataKey
-    ) external returns (bytes memory dataValues);
-
-    /**
-     * @notice Retrieves data in batch for multiple `tokenId` and `dataKey` pairs.
-     * @param tokenId An array of token IDs.
-     * @param dataKey An array of data keys corresponding to the token IDs.
-     * @return dataValues An array of data values for each pair of `tokenId` and `dataKey`.
-     */
-    function getTokenIdDataBatch(
-        bytes32[] memory tokenId,
-        bytes32[] memory dataKey
-    ) external returns (bytes[] memory dataValues);
 
     // --- Operator functionality
 

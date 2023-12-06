@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.12;
 
 // modules
 import {LSP8MintableInitAbstract} from "./LSP8MintableInitAbstract.sol";
@@ -24,21 +23,21 @@ contract LSP8MintableInit is LSP8MintableInitAbstract {
      * @param symbol_ The symbol of the token.
      * @param newOwner_ The owner of the token contract.
      * @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
-     * @param lsp8TokenIdSchema_ The schema of tokenIds (= NFTs) that this contract will create.
+     * @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
      */
     function initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        uint256 lsp8TokenIdSchema_
+        uint256 lsp8TokenIdFormat_
     ) external virtual initializer {
         LSP8MintableInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
             lsp4TokenType_,
-            lsp8TokenIdSchema_
+            lsp8TokenIdFormat_
         );
     }
 }

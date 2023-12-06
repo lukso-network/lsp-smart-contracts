@@ -128,18 +128,49 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function setTokenIdData(
+    function getDataForTokenId(
         bytes32 tokenId,
-        bytes32 dataKey,
-        bytes memory dataValue
-    ) public virtual override onlyOwner {
-        _setTokenIdData(tokenId, dataKey, dataValue);
+        bytes32 dataKey
+    ) public view virtual override returns (bytes memory dataValue) {
+        return _getDataForTokenId(tokenId, dataKey);
     }
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function setTokenIdDataBatch(
+    function getDataBatchForTokenIds(
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys
+    ) public view virtual override returns (bytes[] memory dataValues) {
+        dataValues = new bytes[](tokenIds.length);
+
+        for (uint256 i; i < tokenIds.length; ) {
+            dataValues[i] = _getDataForTokenId(tokenIds[i], dataKeys[i]);
+
+            // Increment the iterator in unchecked block to save gas
+            unchecked {
+                ++i;
+            }
+        }
+
+        return dataValues;
+    }
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     */
+    function setDataForTokenId(
+        bytes32 tokenId,
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) public virtual override onlyOwner {
+        _setDataForTokenId(tokenId, dataKey, dataValue);
+    }
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     */
+    function setDataBatchForTokenIds(
         bytes32[] memory tokenIds,
         bytes32[] memory dataKeys,
         bytes[] memory dataValues
@@ -156,7 +187,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         }
 
         for (uint256 i; i < tokenIds.length; ) {
-            _setTokenIdData(tokenIds[i], dataKeys[i], dataValues[i]);
+            _setDataForTokenId(tokenIds[i], dataKeys[i], dataValues[i]);
 
             // Increment the iterator in unchecked block to save gas
             unchecked {
@@ -202,37 +233,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 ++i;
             }
         }
-    }
-
-    /**
-     * @inheritdoc ILSP8IdentifiableDigitalAsset
-     */
-    function getTokenIdData(
-        bytes32 tokenId,
-        bytes32 dataKey
-    ) public view virtual override returns (bytes memory dataValues) {
-        return _getTokenIdData(tokenId, dataKey);
-    }
-
-    /**
-     * @inheritdoc ILSP8IdentifiableDigitalAsset
-     */
-    function getTokenIdDataBatch(
-        bytes32[] memory tokenIds,
-        bytes32[] memory dataKeys
-    ) public view virtual override returns (bytes[] memory dataValues) {
-        dataValues = new bytes[](tokenIds.length);
-
-        for (uint256 i; i < tokenIds.length; ) {
-            dataValues[i] = _getTokenIdData(tokenIds[i], dataKeys[i]);
-
-            // Increment the iterator in unchecked block to save gas
-            unchecked {
-                ++i;
-            }
-        }
-
-        return dataValues;
     }
 
     // --- Operator functionality
@@ -662,7 +662,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      * @param dataValue The value to set for the given data key.
      * @custom:events {TokenIdDataChanged} event.
      */
-    function _setTokenIdData(
+    function _setDataForTokenId(
         bytes32 tokenId,
         bytes32 dataKey,
         bytes memory dataValue
@@ -678,7 +678,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      * @param dataKey The key for the data to retrieve.
      * @return dataValues The data value associated with the given `tokenId` and `dataKey`.
      */
-    function _getTokenIdData(
+    function _getDataForTokenId(
         bytes32 tokenId,
         bytes32 dataKey
     ) internal view virtual returns (bytes memory dataValues) {

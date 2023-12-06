@@ -29,7 +29,7 @@ export type LSP8MintableDeployParams = {
   symbol: string;
   newOwner: string;
   lsp4TokenType: number;
-  lsp8TokenIdSchema: number;
+  lsp8TokenIdFormat: number;
 };
 
 export type LSP8MintableTestContext = {
