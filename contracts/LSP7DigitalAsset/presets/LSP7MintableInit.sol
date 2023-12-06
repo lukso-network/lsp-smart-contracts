@@ -23,7 +23,7 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
      * @param name_ The name of the token.
      * @param symbol_ The symbol of the token.
      * @param newOwner_ The owner of the token contract.
-     * @param lsp4TokenType_ The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection).
+     * @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
      * @param isNonDivisible_ Specify if the LSP7 token is a fungible or non-fungible token.
      */
     function initialize(

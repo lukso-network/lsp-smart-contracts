@@ -49,7 +49,7 @@ _Deploying a `LSP8CompatibleERC721Mintable` token contract with: token name = `n
 | `name_`              | `string`  | The name of the token.                                                                               |
 | `symbol_`            | `string`  | The symbol of the token.                                                                             |
 | `newOwner_`          | `address` | The owner of the token contract.                                                                     |
-| `lsp4TokenType_`     | `uint256` | The type of token this digital asset contract represents (`1` = Token, `2` = NFT, `3` = Collection). |
+| `lsp4TokenType_`     | `uint256` | The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection). |
 | `lsp8TokenIdFormat_` | `uint256` | The format of tokenIds (= NFTs) that this contract will create.                                      |
 
 <br/>
@@ -1721,7 +1721,7 @@ Approve `operator` to operate on all tokens of `tokensOwner`.
 event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
 ```
 
-Emitted when `owner` enables `approved` to manage the `tokenId` token.
+Emitted when the allowance of a `spender` for an `owner` is set by a call to [`approve`](#approve). `value` is the new allowance.
 
 #### Parameters
 
@@ -1748,7 +1748,7 @@ Emitted when `owner` enables `approved` to manage the `tokenId` token.
 event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 ```
 
-Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
+Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to `approved`.
 
 #### Parameters
 
@@ -1941,7 +1941,7 @@ Emitted when `tokenId` token is transferred from the `from` to the `to` address.
 event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 ```
 
-Emitted when `tokenId` token is transferred from `from` to `to`.
+Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.
 
 #### Parameters
 
