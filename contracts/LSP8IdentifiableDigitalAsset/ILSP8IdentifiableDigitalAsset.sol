@@ -129,15 +129,15 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
 
     /**
      * @notice Sets data in batch for multiple `tokenId` and `dataKey` pairs.
-     * @param tokenId An array of token IDs.
-     * @param dataKey An array of data keys corresponding to the token IDs.
-     * @param dataValue An array of values to set for the given data keys.
+     * @param tokenIds An array of token IDs.
+     * @param dataKeys An array of data keys corresponding to the token IDs.
+     * @param dataValues An array of values to set for the given data keys.
      * @custom:events {TokenIdDataChanged} event for each pair.
      */
     function setDataBatchForTokenIds(
-        bytes32[] memory tokenId,
-        bytes32[] memory dataKey,
-        bytes[] memory dataValue
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys,
+        bytes[] memory dataValues
     ) external;
 
     /**
@@ -153,13 +153,13 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
 
     /**
      * @notice Retrieves data in batch for multiple `tokenId` and `dataKey` pairs.
-     * @param tokenId An array of token IDs.
-     * @param dataKey An array of data keys corresponding to the token IDs.
+     * @param tokenIds An array of token IDs.
+     * @param dataKeys An array of data keys corresponding to the token IDs.
      * @return dataValues An array of data values for each pair of `tokenId` and `dataKey`.
      */
     function getDataBatchForTokenIds(
-        bytes32[] memory tokenId,
-        bytes32[] memory dataKey
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys
     ) external returns (bytes[] memory dataValues);
 
     // --- Operator functionality

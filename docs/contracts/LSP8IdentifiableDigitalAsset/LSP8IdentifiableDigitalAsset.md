@@ -268,10 +268,10 @@ _Retrieves data in batch for multiple `tokenId` and `dataKey` pairs._
 
 #### Parameters
 
-| Name       |    Type     | Description |
-| ---------- | :---------: | ----------- |
-| `tokenIds` | `bytes32[]` | -           |
-| `dataKeys` | `bytes32[]` | -           |
+| Name       |    Type     | Description                                           |
+| ---------- | :---------: | ----------------------------------------------------- |
+| `tokenIds` | `bytes32[]` | An array of token IDs.                                |
+| `dataKeys` | `bytes32[]` | An array of data keys corresponding to the token IDs. |
 
 #### Returns
 
@@ -296,7 +296,7 @@ _Retrieves data in batch for multiple `tokenId` and `dataKey` pairs._
 function getDataForTokenId(
   bytes32 tokenId,
   bytes32 dataKey
-) external view returns (bytes dataValues);
+) external view returns (bytes dataValue);
 ```
 
 _Retrieves data for a specific `tokenId` and `dataKey`._
@@ -310,9 +310,9 @@ _Retrieves data for a specific `tokenId` and `dataKey`._
 
 #### Returns
 
-| Name         |  Type   | Description                                                       |
-| ------------ | :-----: | ----------------------------------------------------------------- |
-| `dataValues` | `bytes` | The data value associated with the given `tokenId` and `dataKey`. |
+| Name        |  Type   | Description                                                       |
+| ----------- | :-----: | ----------------------------------------------------------------- |
+| `dataValue` | `bytes` | The data value associated with the given `tokenId` and `dataKey`. |
 
 <br/>
 
@@ -582,11 +582,11 @@ _Sets data in batch for multiple `tokenId` and `dataKey` pairs._
 
 #### Parameters
 
-| Name         |    Type     | Description |
-| ------------ | :---------: | ----------- |
-| `tokenIds`   | `bytes32[]` | -           |
-| `dataKeys`   | `bytes32[]` | -           |
-| `dataValues` |  `bytes[]`  | -           |
+| Name         |    Type     | Description                                           |
+| ------------ | :---------: | ----------------------------------------------------- |
+| `tokenIds`   | `bytes32[]` | An array of token IDs.                                |
+| `dataKeys`   | `bytes32[]` | An array of data keys corresponding to the token IDs. |
+| `dataValues` |  `bytes[]`  | An array of values to set for the given data keys.    |
 
 <br/>
 

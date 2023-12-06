@@ -345,10 +345,10 @@ _Retrieves data in batch for multiple `tokenId` and `dataKey` pairs._
 
 #### Parameters
 
-| Name       |    Type     | Description |
-| ---------- | :---------: | ----------- |
-| `tokenIds` | `bytes32[]` | -           |
-| `dataKeys` | `bytes32[]` | -           |
+| Name       |    Type     | Description                                           |
+| ---------- | :---------: | ----------------------------------------------------- |
+| `tokenIds` | `bytes32[]` | An array of token IDs.                                |
+| `dataKeys` | `bytes32[]` | An array of data keys corresponding to the token IDs. |
 
 #### Returns
 
@@ -373,7 +373,7 @@ _Retrieves data in batch for multiple `tokenId` and `dataKey` pairs._
 function getDataForTokenId(
   bytes32 tokenId,
   bytes32 dataKey
-) external view returns (bytes dataValues);
+) external view returns (bytes dataValue);
 ```
 
 _Retrieves data for a specific `tokenId` and `dataKey`._
@@ -387,9 +387,9 @@ _Retrieves data for a specific `tokenId` and `dataKey`._
 
 #### Returns
 
-| Name         |  Type   | Description                                                       |
-| ------------ | :-----: | ----------------------------------------------------------------- |
-| `dataValues` | `bytes` | The data value associated with the given `tokenId` and `dataKey`. |
+| Name        |  Type   | Description                                                       |
+| ----------- | :-----: | ----------------------------------------------------------------- |
+| `dataValue` | `bytes` | The data value associated with the given `tokenId` and `dataKey`. |
 
 <br/>
 
@@ -905,11 +905,11 @@ _Sets data in batch for multiple `tokenId` and `dataKey` pairs._
 
 #### Parameters
 
-| Name         |    Type     | Description |
-| ------------ | :---------: | ----------- |
-| `tokenIds`   | `bytes32[]` | -           |
-| `dataKeys`   | `bytes32[]` | -           |
-| `dataValues` |  `bytes[]`  | -           |
+| Name         |    Type     | Description                                           |
+| ------------ | :---------: | ----------------------------------------------------- |
+| `tokenIds`   | `bytes32[]` | An array of token IDs.                                |
+| `dataKeys`   | `bytes32[]` | An array of data keys corresponding to the token IDs. |
+| `dataValues` |  `bytes[]`  | An array of values to set for the given data keys.    |
 
 <br/>
 
@@ -1721,7 +1721,7 @@ Approve `operator` to operate on all tokens of `tokensOwner`.
 event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
 ```
 
-Emitted when the allowance of a `spender` for an `owner` is set by a call to [`approve`](#approve). `value` is the new allowance.
+Emitted when `owner` enables `approved` to manage the `tokenId` token.
 
 #### Parameters
 
@@ -1748,7 +1748,7 @@ Emitted when the allowance of a `spender` for an `owner` is set by a call to [`a
 event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 ```
 
-Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to `approved`.
+Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
 
 #### Parameters
 
@@ -1941,7 +1941,7 @@ Emitted when `tokenId` token is transferred from the `from` to the `to` address.
 event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 ```
 
-Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.
+Emitted when `tokenId` token is transferred from `from` to `to`.
 
 #### Parameters
 

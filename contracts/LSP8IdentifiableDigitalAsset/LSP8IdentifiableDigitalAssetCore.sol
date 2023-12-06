@@ -210,7 +210,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     function getDataForTokenId(
         bytes32 tokenId,
         bytes32 dataKey
-    ) public view virtual override returns (bytes memory dataValues) {
+    ) public view virtual override returns (bytes memory dataValue) {
         return _getDataForTokenId(tokenId, dataKey);
     }
 
