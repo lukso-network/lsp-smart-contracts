@@ -26,7 +26,7 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
       symbol: 'NFT',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      lsp8TokenIdSchema: nftType,
+      lsp8TokenIdFormat: nftType,
     };
 
     const lsp8TesterInit = await new LSP8InitTester__factory(accounts.owner).deploy();
@@ -59,7 +59,7 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
       context.deployParams.symbol,
       context.deployParams.newOwner,
       context.deployParams.lsp4TokenType,
-      context.deployParams.lsp8TokenIdSchema,
+      context.deployParams.lsp8TokenIdFormat,
     );
   };
 

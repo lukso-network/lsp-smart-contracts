@@ -24,7 +24,7 @@ import {
     _PERMISSION_TRANSFERVALUE
 } from "../../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 import {
-    _LSP8_TOKENID_SCHEMA_NUMBER
+    _LSP8_TOKENID_FORMAT_NUMBER
 } from "../../../../contracts/LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 import "../UniversalProfileTestsHelper.sol";
 
@@ -447,7 +447,7 @@ contract ExecuteRestrictedController is UniversalProfileTestsHelper {
             "TSTLSP8",
             digitalAssetsOwner,
             _LSP4_TOKEN_TYPE_NFT,
-            _LSP8_TOKENID_SCHEMA_NUMBER
+            _LSP8_TOKENID_FORMAT_NUMBER
         );
 
         bytes32 tokenID = bytes32(uint256(1));

@@ -16,14 +16,14 @@ contract LSP8EnumerableInitTester is LSP8EnumerableInitAbstract {
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        uint256 lsp8TokenIdSchema_
+        uint256 lsp8TokenIdFormat_
     ) public virtual initializer {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
             lsp4TokenType_,
-            lsp8TokenIdSchema_
+            lsp8TokenIdFormat_
         );
     }
 

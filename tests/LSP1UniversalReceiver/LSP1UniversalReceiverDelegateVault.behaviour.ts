@@ -24,7 +24,7 @@ import {
   INTERFACE_IDS,
   OPERATION_TYPES,
   LSP1_TYPE_IDS,
-  LSP8_TOKEN_ID_SCHEMA,
+  LSP8_TOKEN_ID_FORMAT,
   LSP4_TOKEN_TYPES,
 } from '../../constants';
 import { callPayload, getLSP5MapAndArrayKeysValue } from '../utils/fixtures';
@@ -1175,7 +1175,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         'TA',
         context.accounts.random.address,
         LSP4_TOKEN_TYPES.NFT,
-        LSP8_TOKEN_ID_SCHEMA.UNIQUE_ID,
+        LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
       );
 
       lsp8TokenB = await new LSP8Tester__factory(context.accounts.random).deploy(
@@ -1183,7 +1183,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         'TB',
         context.accounts.random.address,
         LSP4_TOKEN_TYPES.NFT,
-        LSP8_TOKEN_ID_SCHEMA.UNIQUE_ID,
+        LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
       );
 
       lsp8TokenC = await new LSP8Tester__factory(context.accounts.random).deploy(
@@ -1191,7 +1191,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         'TA',
         context.accounts.random.address,
         LSP4_TOKEN_TYPES.NFT,
-        LSP8_TOKEN_ID_SCHEMA.UNIQUE_ID,
+        LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
       );
     });
 
@@ -1776,7 +1776,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
           'MTK',
           context.lsp9Vault1.address,
           LSP4_TOKEN_TYPES.NFT,
-          LSP8_TOKEN_ID_SCHEMA.NUMBER,
+          LSP8_TOKEN_ID_FORMAT.NUMBER,
         );
         await LSP8.mint(context.lsp9Vault1.address, '0x' + '0'.repeat(64), false, '0x');
 
