@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.14.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.13.0...lsp-smart-contracts-v0.14.0) (2023-12-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* change set/get TokenId function name in LSP8 and `LSP8TokenIdSchema` to `LSP8TokenIdFormat` ([#822](https://github.com/lukso-network/lsp-smart-contracts/issues/822))
+
+### Code Refactoring
+
+* change LSP4 Mapping data key from `bytes12` to `bytes10` ([#824](https://github.com/lukso-network/lsp-smart-contracts/pull/824))
+* change set/get TokenId function name in LSP8 and `LSP8TokenIdSchema` to `LSP8TokenIdFormat` ([#822](https://github.com/lukso-network/lsp-smart-contracts/issues/822)) ([2bf84f6](https://github.com/lukso-network/lsp-smart-contracts/commit/2bf84f638926a9969385ce12f98f389b26ca0173))
+
 ## [0.13.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.13.0...lsp-smart-contracts-v0.12.1) (2023-11-30)
 
 ### ⚠ BREAKING CHANGES
