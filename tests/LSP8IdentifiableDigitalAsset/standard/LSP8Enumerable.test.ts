@@ -6,7 +6,7 @@ import {
   LSP8EnumerableTestContext,
   getNamedAccounts,
 } from '../LSP8Enumerable.behaviour';
-import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_SCHEMA } from '../../../constants';
+import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_FORMAT } from '../../../constants';
 
 describe('LSP8Enumerable with constructor', () => {
   const buildTestContext = async () => {
@@ -17,7 +17,7 @@ describe('LSP8Enumerable with constructor', () => {
       symbol: 'LSP8 NMRBL',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      lsp8TokenIdFormat: LSP8_TOKEN_ID_SCHEMA.NUMBER,
+      lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
     };
 
     const lsp8Enumerable: LSP8EnumerableTester = await new LSP8EnumerableTester__factory(

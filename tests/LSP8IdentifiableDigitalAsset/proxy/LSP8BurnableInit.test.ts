@@ -7,7 +7,7 @@ import { LSP8BurnableInitTester, LSP8BurnableInitTester__factory } from '../../.
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
-import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_SCHEMA } from '../../../constants';
+import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_FORMAT } from '../../../constants';
 
 type LSP8BurnableInitTestContext = {
   accounts: SignerWithAddress[];
@@ -29,7 +29,7 @@ describe('LSP8BurnableInit with proxy', () => {
       symbol: 'BRN',
       newOwner: accounts[0].address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      lsp8TokenIdFormat: LSP8_TOKEN_ID_SCHEMA.NUMBER,
+      lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
     };
 
     const lsp8BurnableImplementation = await new LSP8BurnableInitTester__factory(

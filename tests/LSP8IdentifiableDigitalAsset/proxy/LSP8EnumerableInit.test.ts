@@ -9,7 +9,7 @@ import {
 } from '../LSP8Enumerable.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
-import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_SCHEMA } from '../../../constants';
+import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_FORMAT } from '../../../constants';
 
 describe('LSP8EnumerableInit with proxy', () => {
   const buildTestContext = async () => {
@@ -19,7 +19,7 @@ describe('LSP8EnumerableInit with proxy', () => {
       symbol: 'LSP8 NMRBL',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      lsp8TokenIdFormat: LSP8_TOKEN_ID_SCHEMA.NUMBER,
+      lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
     };
 
     const LSP8EnumerableInit: LSP8EnumerableInitTester =

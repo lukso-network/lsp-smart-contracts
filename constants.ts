@@ -396,7 +396,7 @@ export const LSP1_TYPE_IDS = {
 // ----------
 
 /**
- * @dev list of LSP4 Token types to describe the type of token a digital asset contract represents.
+ * @dev List of LSP4 Token types to describe the type of token a digital asset contract represents.
  * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-4-DigitalAsset-Metadata.md#lsp4tokentype
  */
 export const LSP4_TOKEN_TYPES = {
@@ -409,10 +409,10 @@ export const LSP4_TOKEN_TYPES = {
 // ----------
 
 /**
- * @dev list of LSP8 Token ID Schemas that can be used to create different types of NFTs and represent each NFT identifiers differently.
- * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidformat
+ * @dev List of LSP8 Token ID Formats that can be used to create different types of NFTs and represent each NFT identifiers (= tokenIds) differently.
+ * @see For details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidformat
  */
-export const LSP8_TOKEN_ID_SCHEMA = {
+export const LSP8_TOKEN_ID_FORMAT = {
   NUMBER: 0,
   STRING: 1,
   ADDRESS: 2,

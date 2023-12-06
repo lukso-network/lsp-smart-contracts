@@ -10,7 +10,7 @@ import {
 } from '../LSP8Mintable.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
-import { ERC725YDataKeys, LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_SCHEMA } from '../../../constants';
+import { ERC725YDataKeys, LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_FORMAT } from '../../../constants';
 
 describe('LSP8MintableInit with proxy', () => {
   const buildTestContext = async () => {
@@ -20,7 +20,7 @@ describe('LSP8MintableInit with proxy', () => {
       symbol: 'MNTBL',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
-      lsp8TokenIdFormat: LSP8_TOKEN_ID_SCHEMA.NUMBER,
+      lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
     };
 
     const LSP8MintableInit: LSP8MintableInit = await new LSP8MintableInit__factory(
