@@ -30,7 +30,7 @@ export const INTERFACE_IDS = {
   LSP1UniversalReceiverDelegate: '0xa245bbda',
   LSP6KeyManager: '0x23f34c62',
   LSP7DigitalAsset: '0xb3c4928f',
-  LSP8IdentifiableDigitalAsset: '0xecad9f75',
+  LSP8IdentifiableDigitalAsset: '0x3a271706',
   LSP9Vault: '0x28af17e6',
   LSP11BasicSocialRecovery: '0x049a28f1',
   LSP14Ownable2Step: '0x94be5999',
@@ -236,7 +236,7 @@ export const ERC725YDataKeys = {
     'AddressPermissions:AllowedCalls': '0x4b80742de2bf393a64c70000',
   },
   LSP8: {
-    LSP8TokenIdSchema: '0x341bc44e55234544c70af9d37b2cb8cc7ba74685b58526221de2cc977f469924',
+    LSP8TokenIdFormat: '0xf675e9361af1c1664c1868cfa3eb97672d6b1a513aa5b81dec34c9ee330e818d',
     LSP8TokenMetadataBaseURI: '0x1a7628600c3bac7101f53697f48df381ddc36b9015e7d7c9c5633d1252aa2843',
     LSP8ReferenceContract: '0x708e7b881795f2e6b6c2752108c177ec89248458de3bf69d0d43480b3e5034e6',
   },
@@ -396,7 +396,7 @@ export const LSP1_TYPE_IDS = {
 // ----------
 
 /**
- * @dev list of LSP4 Token types to describe the type of token a digital asset contract represents.
+ * @dev List of LSP4 Token types to describe the type of token a digital asset contract represents.
  * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-4-DigitalAsset-Metadata.md#lsp4tokentype
  */
 export const LSP4_TOKEN_TYPES = {
@@ -409,10 +409,10 @@ export const LSP4_TOKEN_TYPES = {
 // ----------
 
 /**
- * @dev list of LSP8 Token ID Schemas that can be used to create different types of NFTs and represent each NFT identifiers differently.
- * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidschema
+ * @dev List of LSP8 Token ID Formats that can be used to create different types of NFTs and represent each NFT identifiers (= tokenIds) differently.
+ * @see For details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenidformat
  */
-export const LSP8_TOKEN_ID_SCHEMA = {
+export const LSP8_TOKEN_ID_FORMAT = {
   NUMBER: 0,
   STRING: 1,
   ADDRESS: 2,

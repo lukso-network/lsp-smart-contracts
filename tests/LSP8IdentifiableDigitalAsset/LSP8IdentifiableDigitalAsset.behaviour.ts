@@ -45,7 +45,7 @@ export type LSP8DeployParams = {
   symbol: string;
   newOwner: string;
   lsp4TokenType: number;
-  lsp8TokenIdSchema: number;
+  lsp8TokenIdFormat: number;
 };
 
 export type LSP8TestContext = {
@@ -73,18 +73,18 @@ export const shouldBehaveLikeLSP8 = (
   });
 
   describe('when setting data', () => {
-    it('should not allow to update the `LSP8TokenIdSchema` after deployment', async () => {
+    it('should not allow to update the `LSP8TokenIdFormat` after deployment', async () => {
       await expect(
-        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdSchema, '0xdeadbeef'),
-      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdSchemaNotEditable');
+        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdFormat, '0xdeadbeef'),
+      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdFormatNotEditable');
     });
   });
 
   describe('when setting data', () => {
-    it('should not allow to update the `LSP8TokenIdSchema` after deployment', async () => {
+    it('should not allow to update the `LSP8TokenIdFormat` after deployment', async () => {
       await expect(
-        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdSchema, '0xdeadbeef'),
-      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdSchemaNotEditable');
+        context.lsp8.setData(ERC725YDataKeys.LSP8.LSP8TokenIdFormat, '0xdeadbeef'),
+      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdFormatNotEditable');
     });
   });
 
@@ -109,21 +109,23 @@ export const shouldBehaveLikeLSP8 = (
 
     it('Token contract owner can set data', async () => {
       await expect(
-        context.lsp8.connect(context.accounts.owner).setTokenIdData(tokenId, dataKey, dataValue),
+        context.lsp8.connect(context.accounts.owner).setDataForTokenId(tokenId, dataKey, dataValue),
       ).to.not.be.reverted;
 
-      expect(await context.lsp8.getTokenIdData(tokenId, dataKey)).to.equal(dataValue);
+      expect(await context.lsp8.getDataForTokenId(tokenId, dataKey)).to.equal(dataValue);
     });
 
     it('Random address cannot set data', async () => {
       await expect(
-        context.lsp8.connect(context.accounts.anyone).setTokenIdData(tokenId, dataKey, dataValue),
+        context.lsp8
+          .connect(context.accounts.anyone)
+          .setDataForTokenId(tokenId, dataKey, dataValue),
       ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCallerNotTheOwner');
     });
 
     it('TokenIdDataChanged emitted when data is set for a specific tokenId', async () => {
       await expect(
-        context.lsp8.connect(context.accounts.owner).setTokenIdData(tokenId, dataKey, dataValue),
+        context.lsp8.connect(context.accounts.owner).setDataForTokenId(tokenId, dataKey, dataValue),
       )
         .to.emit(context.lsp8, 'TokenIdDataChanged')
         .withArgs(tokenId, dataKey, dataValue);
@@ -132,48 +134,50 @@ export const shouldBehaveLikeLSP8 = (
     it('Token contract owner can set data for a specific tokenId and get data', async () => {
       await context.lsp8
         .connect(context.accounts.owner)
-        .setTokenIdData(tokenId, dataKey, dataValue);
-      expect(await context.lsp8.getTokenIdData(tokenId, dataKey)).to.equal(dataValue);
+        .setDataForTokenId(tokenId, dataKey, dataValue);
+      expect(await context.lsp8.getDataForTokenId(tokenId, dataKey)).to.equal(dataValue);
     });
 
     it('Token contract owner can set batch of data for a specific tokenId and get batch of data', async () => {
       await context.lsp8
         .connect(context.accounts.owner)
-        .setTokenIdDataBatch(tokenIds, dataKeys, dataValues);
-      expect(await context.lsp8.getTokenIdDataBatch(tokenIds, dataKeys)).to.deep.equal(dataValues);
+        .setDataBatchForTokenIds(tokenIds, dataKeys, dataValues);
+      expect(await context.lsp8.getDataBatchForTokenIds(tokenIds, dataKeys)).to.deep.equal(
+        dataValues,
+      );
     });
 
     it('Token contract owner cannot set inconsistent length of data', async () => {
       await expect(
         context.lsp8
           .connect(context.accounts.owner)
-          .setTokenIdDataBatch(tokenIds, dataKeys, [dataValue]),
+          .setDataBatchForTokenIds(tokenIds, dataKeys, [dataValue]),
       ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdsDataLengthMismatch');
     });
 
     it('Token contract owner cannot set empty batch of data', async () => {
       await expect(
-        context.lsp8.connect(context.accounts.owner).setTokenIdDataBatch([], [], []),
+        context.lsp8.connect(context.accounts.owner).setDataBatchForTokenIds([], [], []),
       ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdsDataEmptyArray');
     });
 
     it('Token contract owner can set and change data for a specific tokenId and get data', async () => {
       await context.lsp8
         .connect(context.accounts.owner)
-        .setTokenIdData(tokenId, dataKey, dataValue);
+        .setDataForTokenId(tokenId, dataKey, dataValue);
       const anotherDataValue = ethers.utils.hexlify(ethers.utils.randomBytes(256));
 
       await context.lsp8
         .connect(context.accounts.owner)
-        .setTokenIdData(tokenId, dataKey, anotherDataValue);
-      expect(await context.lsp8.getTokenIdData(tokenId, dataKey)).to.equal(anotherDataValue);
+        .setDataForTokenId(tokenId, dataKey, anotherDataValue);
+      expect(await context.lsp8.getDataForTokenId(tokenId, dataKey)).to.equal(anotherDataValue);
     });
 
     it('TokenIdDataChanged emitted on each iteration when data is set for tokenIds', async () => {
       await expect(
         context.lsp8
           .connect(context.accounts.owner)
-          .setTokenIdDataBatch(tokenIds, dataKeys, dataValues),
+          .setDataBatchForTokenIds(tokenIds, dataKeys, dataValues),
       )
         .to.emit(context.lsp8, 'TokenIdDataChanged')
         .withArgs(tokenIds[0], dataKeys[0], dataValues[0])
@@ -2278,15 +2282,15 @@ export const shouldInitializeLikeLSP8 = (
         .withArgs(lsp4TokenTypeKey, expectedTokenTypeValue);
       expect(await context.lsp8.getData(lsp4TokenTypeKey)).to.equal(expectedTokenTypeValue);
 
-      const lsp8TokenIdSchemaDataKey = ERC725YDataKeys.LSP8['LSP8TokenIdSchema'];
+      const lsp8TokenIdFormatDataKey = ERC725YDataKeys.LSP8['LSP8TokenIdFormat'];
       const expectedTokenIdDataValue = abiCoder.encode(
         ['uint256'],
-        [context.deployParams.lsp8TokenIdSchema],
+        [context.deployParams.lsp8TokenIdFormat],
       );
       await expect(context.initializeTransaction)
         .to.emit(context.lsp8, 'DataChanged')
-        .withArgs(lsp8TokenIdSchemaDataKey, expectedTokenIdDataValue);
-      expect(await context.lsp8.getData(lsp8TokenIdSchemaDataKey)).to.equal(
+        .withArgs(lsp8TokenIdFormatDataKey, expectedTokenIdDataValue);
+      expect(await context.lsp8.getData(lsp8TokenIdFormatDataKey)).to.equal(
         expectedTokenIdDataValue,
       );
     });

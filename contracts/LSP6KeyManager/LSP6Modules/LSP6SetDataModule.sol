@@ -278,9 +278,9 @@ abstract contract LSP6SetDataModule {
                  * @dev more permissions types starting with `AddressPermissions:...` can be implemented by overriding this function.
                  *
                  *      // AddressPermissions:MyCustomPermissions:<address>
-                 *      bytes12 CUSTOM_PERMISSION_PREFIX = 0x4b80742de2bf9e659ba40000
+                 *      bytes10 CUSTOM_PERMISSION_PREFIX = 0x4b80742de2bf9e659ba4
                  *
-                 *      if (bytes12(dataKey) == CUSTOM_PERMISSION_PREFIX) {
+                 *      if (bytes10(dataKey) == CUSTOM_PERMISSION_PREFIX) {
                  *          // custom logic
                  *      }
                  *

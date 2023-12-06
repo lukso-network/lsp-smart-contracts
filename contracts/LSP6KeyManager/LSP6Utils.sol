@@ -41,7 +41,7 @@ import {
  * Based on the LSP6 Key Manager standard.
  */
 library LSP6Utils {
-    using LSP2Utils for bytes12;
+    using LSP2Utils for bytes10;
 
     /**
      * @dev Read the permissions of a `caller` on an ERC725Y `target` contract.

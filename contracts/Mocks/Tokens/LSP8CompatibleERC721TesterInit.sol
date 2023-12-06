@@ -25,7 +25,7 @@ contract LSP8CompatibleERC721InitTester is LSP8CompatibleERC721InitAbstract {
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        uint256 lsp8TokenIdSchema_,
+        uint256 lsp8TokenIdFormat_,
         bytes memory tokenURIValue_
     ) public virtual initializer {
         LSP8CompatibleERC721InitAbstract._initialize(
@@ -33,7 +33,7 @@ contract LSP8CompatibleERC721InitTester is LSP8CompatibleERC721InitAbstract {
             symbol_,
             newOwner_,
             lsp4TokenType_,
-            lsp8TokenIdSchema_
+            lsp8TokenIdFormat_
         );
 
         _setData(_LSP4_METADATA_KEY, tokenURIValue_);
