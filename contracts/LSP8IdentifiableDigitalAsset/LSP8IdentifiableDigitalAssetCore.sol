@@ -77,8 +77,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     // Mapping a `tokenId` to its authorized operator addresses.
     mapping(bytes32 => EnumerableSet.AddressSet) internal _operators;
 
-    mapping(address => EnumerableSet.Bytes32Set) internal _tokenIdsForOperator;
-
     // --- Token queries
 
     /**
