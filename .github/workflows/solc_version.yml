@@ -1,22 +1,19 @@
-# This workflow ensure that the smart contracts can be compiled
-# with different Solidity 0.8.x versions
+# This workflow ensure that the smart contracts can be compiled with different Solidity 0.8.x versions
+# It checks if the `pragma solidity ^0.8.x` statement for `.sol` files satisfy the minimum version
+# require by the Solidity language features used in this file.
 name: Solidity Compiler Versions
 
 on:
   workflow_dispatch:
-
-  # Used to check pragma settings for `.sol` files are correct before releasing
   push:
+    # Used to check before releasing
     branches:
       - "develop"
-    # compare gas diff only when editing Solidity smart contract code
+    # Only run when `.sol` files have been changed
     paths:
       - "contracts/**/*.sol"
 
   pull_request:
-    types: [opened]
-
-    # compare gas diff only when editing Solidity smart contract code
     paths:
       - "contracts/**/*.sol"
 
@@ -71,11 +68,14 @@ jobs:
           version: ${{ matrix.solc }}
           compare-to: 0.8.12
 
+      # In the pattern matching of the `grep` command below, we use a path for LSP8 contracts with `pragma solidity ^0.8.12`
+      # instead of just the word "LSP8IdentifiableDigitalAsset" to prevent the whole `contracts/LSP8IdentifiableDigitalAsset/**/*.sol` folder from being discarded.
       - name: Compile Smart Contracts
         run: |
           if [[ "<" == "${{ steps.comparison.outputs.comparison-result }}" ]]
           then 
-            solc $(ls contracts/**/*.sol | grep -v "Compatible" | grep -v "Extension4337") --allow-paths $(pwd)/node_modules/ \
+            solc $(ls contracts/**/*.sol | grep -v "Compatible\|Extension4337\|contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset") \
+              --allow-paths $(pwd)/node_modules/ \
               @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
               ../=$(pwd)/contracts/
