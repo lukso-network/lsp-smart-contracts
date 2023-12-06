@@ -115,6 +115,28 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     // --- TokenId Metadata functionality
 
     /**
+     * @notice Retrieves data for a specific `tokenId` and `dataKey`.
+     * @param tokenId The unique identifier for a token.
+     * @param dataKey The key for the data to retrieve.
+     * @return dataValues The data value associated with the given `tokenId` and `dataKey`.
+     */
+    function getDataForTokenId(
+        bytes32 tokenId,
+        bytes32 dataKey
+    ) external returns (bytes memory dataValues);
+
+    /**
+     * @notice Retrieves data in batch for multiple `tokenId` and `dataKey` pairs.
+     * @param tokenIds An array of token IDs.
+     * @param dataKeys An array of data keys corresponding to the token IDs.
+     * @return dataValues An array of data values for each pair of `tokenId` and `dataKey`.
+     */
+    function getDataBatchForTokenIds(
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys
+    ) external returns (bytes[] memory dataValues);
+
+    /**
      * @notice Sets data for a specific `tokenId` and `dataKey`.
      * @param tokenId The unique identifier for a token.
      * @param dataKey The key for the data to set.
@@ -139,28 +161,6 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
         bytes32[] memory dataKeys,
         bytes[] memory dataValues
     ) external;
-
-    /**
-     * @notice Retrieves data for a specific `tokenId` and `dataKey`.
-     * @param tokenId The unique identifier for a token.
-     * @param dataKey The key for the data to retrieve.
-     * @return dataValues The data value associated with the given `tokenId` and `dataKey`.
-     */
-    function getDataForTokenId(
-        bytes32 tokenId,
-        bytes32 dataKey
-    ) external returns (bytes memory dataValues);
-
-    /**
-     * @notice Retrieves data in batch for multiple `tokenId` and `dataKey` pairs.
-     * @param tokenIds An array of token IDs.
-     * @param dataKeys An array of data keys corresponding to the token IDs.
-     * @return dataValues An array of data values for each pair of `tokenId` and `dataKey`.
-     */
-    function getDataBatchForTokenIds(
-        bytes32[] memory tokenIds,
-        bytes32[] memory dataKeys
-    ) external returns (bytes[] memory dataValues);
 
     // --- Operator functionality
 

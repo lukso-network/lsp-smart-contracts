@@ -128,6 +128,37 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
+    function getDataForTokenId(
+        bytes32 tokenId,
+        bytes32 dataKey
+    ) public view virtual override returns (bytes memory dataValue) {
+        return _getDataForTokenId(tokenId, dataKey);
+    }
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     */
+    function getDataBatchForTokenIds(
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys
+    ) public view virtual override returns (bytes[] memory dataValues) {
+        dataValues = new bytes[](tokenIds.length);
+
+        for (uint256 i; i < tokenIds.length; ) {
+            dataValues[i] = _getDataForTokenId(tokenIds[i], dataKeys[i]);
+
+            // Increment the iterator in unchecked block to save gas
+            unchecked {
+                ++i;
+            }
+        }
+
+        return dataValues;
+    }
+
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     */
     function setDataForTokenId(
         bytes32 tokenId,
         bytes32 dataKey,
@@ -202,37 +233,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 ++i;
             }
         }
-    }
-
-    /**
-     * @inheritdoc ILSP8IdentifiableDigitalAsset
-     */
-    function getDataForTokenId(
-        bytes32 tokenId,
-        bytes32 dataKey
-    ) public view virtual override returns (bytes memory dataValue) {
-        return _getDataForTokenId(tokenId, dataKey);
-    }
-
-    /**
-     * @inheritdoc ILSP8IdentifiableDigitalAsset
-     */
-    function getDataBatchForTokenIds(
-        bytes32[] memory tokenIds,
-        bytes32[] memory dataKeys
-    ) public view virtual override returns (bytes[] memory dataValues) {
-        dataValues = new bytes[](tokenIds.length);
-
-        for (uint256 i; i < tokenIds.length; ) {
-            dataValues[i] = _getDataForTokenId(tokenIds[i], dataKeys[i]);
-
-            // Increment the iterator in unchecked block to save gas
-            unchecked {
-                ++i;
-            }
-        }
-
-        return dataValues;
     }
 
     // --- Operator functionality
