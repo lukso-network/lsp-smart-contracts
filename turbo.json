@@ -13,7 +13,8 @@
     "lint:solidity": {},
     "clean": {},
     "test": {
-      "cache": true
+      "cache": true,
+      "env": ["COVERAGE"]
     },
     "test:coverage": {
       "dependsOn": ["test"],
