@@ -12,16 +12,18 @@ import {
 
 contract LSP8EnumerableInitTester is LSP8EnumerableInitAbstract {
     function initialize(
-        string memory name,
-        string memory symbol,
-        address newOwner,
-        uint256 tokenIdType
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 lsp4TokenType_,
+        uint256 lsp8TokenIdFormat_
     ) public virtual initializer {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
-            name,
-            symbol,
-            newOwner,
-            tokenIdType
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
         );
     }
 

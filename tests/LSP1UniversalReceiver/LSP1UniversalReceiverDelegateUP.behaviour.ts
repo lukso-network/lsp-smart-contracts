@@ -35,7 +35,8 @@ import {
   INTERFACE_IDS,
   OPERATION_TYPES,
   LSP1_TYPE_IDS,
-  LSP8_TOKEN_ID_TYPES,
+  LSP8_TOKEN_ID_FORMAT,
+  LSP4_TOKEN_TYPES,
 } from '../../constants';
 
 // fixtures
@@ -245,18 +246,21 @@ export const shouldBehaveLikeLSP1Delegate = (
         'TokenAlpha',
         'TA',
         context.accounts.random.address,
+        LSP4_TOKEN_TYPES.TOKEN,
       );
 
       lsp7TokenB = await new LSP7Tester__factory(context.accounts.random).deploy(
         'TokenBeta',
         'TB',
         context.accounts.random.address,
+        LSP4_TOKEN_TYPES.TOKEN,
       );
 
       lsp7TokenC = await new LSP7Tester__factory(context.accounts.random).deploy(
         'TokenGamma',
         'TA',
         context.accounts.random.address,
+        LSP4_TOKEN_TYPES.TOKEN,
       );
     });
 
@@ -269,6 +273,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             'LSP7 Token',
             'TKN',
             context.universalProfile1.address,
+            LSP4_TOKEN_TYPES.TOKEN,
           );
         });
 
@@ -931,6 +936,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           'Example LSP7 token',
           'EL7T',
           context.accounts.random.address,
+          LSP4_TOKEN_TYPES.TOKEN,
         );
       });
 
@@ -973,8 +979,14 @@ export const shouldBehaveLikeLSP1Delegate = (
         // the call to the universalReceiver(...) in LSP7 sends the transfer details as `data` argument
         // all the params are packed/concatenated together.
         const expectedReceivedData = abiCoder.encode(
-          ['address', 'address', 'uint256', 'bytes'],
-          [txParams.from, txParams.to, txParams.amount, txParams.data],
+          ['address', 'address', 'address', 'uint256', 'bytes'],
+          [
+            context.universalProfile1.address,
+            txParams.from,
+            txParams.to,
+            txParams.amount,
+            txParams.data,
+          ],
         );
 
         // TODO: debug the 4th argument for the receivedData: why is it not empty?
@@ -1118,6 +1130,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         'Example LSP7 token',
         'EL7T',
         context.accounts.random.address,
+        LSP4_TOKEN_TYPES.TOKEN,
       );
 
       arrayKey = ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length;
@@ -1155,8 +1168,14 @@ export const shouldBehaveLikeLSP1Delegate = (
             0,
             LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification,
             abiCoder.encode(
-              ['address', 'address', 'uint256', 'bytes'],
-              [ethers.constants.AddressZero, context.universalProfile1.address, 10_000, '0x'],
+              ['address', 'address', 'address', 'uint256', 'bytes'],
+              [
+                context.accounts.random.address,
+                ethers.constants.AddressZero,
+                context.universalProfile1.address,
+                10_000,
+                '0x',
+              ],
             ),
             abiCoder.encode(
               ['bytes', 'bytes'],
@@ -1290,8 +1309,9 @@ export const shouldBehaveLikeLSP1Delegate = (
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(balance.toHexString(), 32);
 
         const tokenTransferData = abiCoder.encode(
-          ['address', 'address', 'uint256', 'bytes'],
+          ['address', 'address', 'address', 'uint256', 'bytes'],
           [
+            context.universalProfile1.address,
             context.universalProfile1.address,
             context.accounts.owner1.address,
             tokensSentBytes32Value,
@@ -1339,7 +1359,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           .connect(context.accounts.owner1)
           .setData(
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap + token.address.substring(2),
-            '0xdaa746b700000000000000000000000000000000cafecafe',
+            '0xb3c4928f00000000000000000000000000000000cafecafe',
           );
 
         expect(
@@ -1347,7 +1367,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         ).to.deep.equal([
           '0x' + '00'.repeat(15) + '01',
           token.address.toLowerCase(),
-          '0xdaa746b700000000000000000000000000000000cafecafe',
+          '0xb3c4928f00000000000000000000000000000000cafecafe',
         ]);
 
         balance = await token.balanceOf(context.universalProfile1.address);
@@ -1373,8 +1393,9 @@ export const shouldBehaveLikeLSP1Delegate = (
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(balance.toHexString(), 32);
 
         const tokenTransferData = abiCoder.encode(
-          ['address', 'address', 'uint256', 'bytes'],
+          ['address', 'address', 'address', 'uint256', 'bytes'],
           [
+            context.universalProfile1.address,
             context.universalProfile1.address,
             context.accounts.owner1.address,
             tokensSentBytes32Value,
@@ -1408,7 +1429,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         ).to.deep.equal([
           '0x' + '00'.repeat(15) + '01',
           token.address.toLowerCase(),
-          '0xdaa746b700000000000000000000000000000000cafecafe',
+          '0xb3c4928f00000000000000000000000000000000cafecafe',
         ]);
       });
     });
@@ -1460,8 +1481,9 @@ export const shouldBehaveLikeLSP1Delegate = (
         const tokensSentBytes32Value = ethers.utils.hexZeroPad(balance.toHexString(), 32);
 
         const tokenTransferData = abiCoder.encode(
-          ['address', 'address', 'uint256', 'bytes'],
+          ['address', 'address', 'address', 'uint256', 'bytes'],
           [
+            context.universalProfile1.address,
             context.universalProfile1.address,
             context.accounts.owner1.address,
             tokensSentBytes32Value,
@@ -1766,21 +1788,24 @@ export const shouldBehaveLikeLSP1Delegate = (
         'TokenAlpha',
         'TA',
         context.accounts.random.address,
-        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
+        LSP4_TOKEN_TYPES.NFT,
+        LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
       );
 
       lsp8TokenB = await new LSP8Tester__factory(context.accounts.random).deploy(
         'TokenBeta',
         'TB',
         context.accounts.random.address,
-        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
+        LSP4_TOKEN_TYPES.NFT,
+        LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
       );
 
       lsp8TokenC = await new LSP8Tester__factory(context.accounts.random).deploy(
         'TokenGamma',
         'TA',
         context.accounts.random.address,
-        LSP8_TOKEN_ID_TYPES.UNIQUE_ID,
+        LSP4_TOKEN_TYPES.NFT,
+        LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
       );
     });
 
@@ -3072,6 +3097,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           'MyToken',
           'MTK',
           context.universalProfile1.address,
+          LSP4_TOKEN_TYPES.TOKEN,
         );
 
         expect(await LSP7.balanceOf(context.universalProfile1.address)).to.equal(1000);
@@ -3103,7 +3129,8 @@ export const shouldBehaveLikeLSP1Delegate = (
           'MyToken',
           'MTK',
           context.universalProfile1.address,
-          LSP8_TOKEN_ID_TYPES.NUMBER,
+          LSP4_TOKEN_TYPES.NFT,
+          LSP8_TOKEN_ID_FORMAT.NUMBER,
         );
         // Mint token for UP1
         await LSP8.mint(context.universalProfile1.address, '0x' + '0'.repeat(64), true, '0x');

@@ -439,7 +439,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
 
           await expect(newUniversalProfile.connect(context.accounts[3]).setData(key, value))
             .to.emit(newUniversalProfile, 'DataChanged')
-            .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+            .withArgs(key, value);
 
           const result = await newUniversalProfile.getData(key);
           expect(result).to.equal(value);
@@ -472,7 +472,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
             newUniversalProfile.connect(context.accounts[3])['setData(bytes32,bytes)'](key, value),
           )
             .to.emit(newUniversalProfile, 'DataChanged')
-            .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+            .withArgs(key, value);
 
           const result = await newUniversalProfile['getData(bytes32)'](key);
           expect(result).to.equal(value);
@@ -503,7 +503,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
 
           await expect(newUniversalProfile.connect(context.accounts[3]).setData(key, value))
             .to.emit(newUniversalProfile, 'DataChanged')
-            .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+            .withArgs(key, value);
 
           const result = await newUniversalProfile.getData(key);
           expect(result).to.equal(value);
@@ -542,7 +542,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
             newUniversalProfile.connect(context.accounts[3])['setData(bytes32,bytes)'](key, value),
           )
             .to.emit(newUniversalProfile, 'DataChanged')
-            .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+            .withArgs(key, value);
 
           const result = await newUniversalProfile['getData(bytes32)'](key);
           expect(result).to.equal(value);
@@ -602,7 +602,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
 
           await expect(newUniversalProfile.connect(context.accounts[3]).setData(key, value))
             .to.emit(newUniversalProfile, 'DataChanged')
-            .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+            .withArgs(key, value);
 
           const result = await newUniversalProfile.getData(key);
           expect(result).to.equal(value);

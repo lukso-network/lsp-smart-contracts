@@ -2,15 +2,12 @@
 pragma solidity ^0.8.4;
 
 // --- ERC165 interface ids
-bytes4 constant _INTERFACEID_LSP8 = 0x30dc5278;
+bytes4 constant _INTERFACEID_LSP8 = 0x3a271706;
 
 // --- ERC725Y Data Keys
 
-// keccak256('LSP8TokenIdType')
-bytes32 constant _LSP8_TOKENID_TYPE_KEY = 0x715f248956de7ce65e94d9d836bfead479f7e70d69b718d47bfe7b00e05b4fe4;
-
-// bytes10(keccak256('LSP8MetadataTokenURI')) + bytes2(0)
-bytes12 constant _LSP8_METADATA_TOKEN_URI_PREFIX = 0x1339e76a390b7b9ec9010000;
+// keccak256('LSP8TokenIdFormat')
+bytes32 constant _LSP8_TOKENID_FORMAT_KEY = 0xf675e9361af1c1664c1868cfa3eb97672d6b1a513aa5b81dec34c9ee330e818d;
 
 // keccak256('LSP8TokenMetadataBaseURI')
 bytes32 constant _LSP8_TOKEN_METADATA_BASE_URI = 0x1a7628600c3bac7101f53697f48df381ddc36b9015e7d7c9c5633d1252aa2843;
@@ -29,10 +26,16 @@ bytes32 constant _TYPEID_LSP8_TOKENSRECIPIENT = 0x0b084a55ebf70fd3c06fd755269dac
 // keccak256('LSP8Tokens_OperatorNotification')
 bytes32 constant _TYPEID_LSP8_TOKENOPERATOR = 0x8a1c15a8799f71b547e08e2bcb2e85257e81b0a07eee2ce6712549eef1f00970;
 
-// --- Types of token IDs
+// --- Token IDs Format
 
-uint256 constant _LSP8_TOKENID_TYPE_NUMBER = 0;
-uint256 constant _LSP8_TOKENID_TYPE_STRING = 1;
-uint256 constant _LSP8_TOKENID_TYPE_UNIQUE_ID = 2;
-uint256 constant _LSP8_TOKENID_TYPE_HASH = 3;
-uint256 constant _LSP8_TOKENID_TYPE_ADDRESS = 4;
+uint256 constant _LSP8_TOKENID_FORMAT_NUMBER = 0;
+uint256 constant _LSP8_TOKENID_FORMAT_STRING = 1;
+uint256 constant _LSP8_TOKENID_FORMAT_ADDRESS = 2;
+uint256 constant _LSP8_TOKENID_FORMAT_UNIQUE_ID = 3;
+uint256 constant _LSP8_TOKENID_FORMAT_HASH = 4;
+
+uint256 constant _LSP8_TOKENID_FORMAT_MIXED_DEFAULT_NUMBER = 100;
+uint256 constant _LSP8_TOKENID_FORMAT_MIXED_DEFAULT_STRING = 101;
+uint256 constant _LSP8_TOKENID_FORMAT_MIXED_DEFAULT_ADDRESS = 102;
+uint256 constant _LSP8_TOKENID_FORMAT_MIXED_DEFAULT_UNIQUE_ID = 103;
+uint256 constant _LSP8_TOKENID_FORMAT_MIXED_DEFAULT_HASH = 104;

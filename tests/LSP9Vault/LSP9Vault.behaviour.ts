@@ -418,13 +418,13 @@ export const shouldBehaveLikeLSP9 = (
     });
 
     describe('when setting a data key with a value more than 256 bytes', () => {
-      it('should emit DataChanged event with only the first 256 bytes of the value', async () => {
+      it('should emit DataChanged event with the whole data value', async () => {
         const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
         const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
         await expect(context.lsp9Vault.setData(key, value))
           .to.emit(context.lsp9Vault, 'DataChanged')
-          .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+          .withArgs(key, value);
 
         const result = await context.lsp9Vault.getData(key);
         expect(result).to.equal(value);

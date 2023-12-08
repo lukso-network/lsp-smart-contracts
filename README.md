@@ -70,7 +70,7 @@ import {
   ERC725YDataKeys,
   PERMISSIONS,
   ALL_PERMISSIONS,
-  LSP8_TOKEN_ID_TYPES,
+  LSP8_TOKEN_ID_SCHEMA,
   LSP25_VERSION,
   ErrorSelectors,
   EventSigHashes,
@@ -121,7 +121,7 @@ import {
   ImageMetadata,
   LinkMetadata,
   AssetMetadata,
-} from "@lukso/lsp-smart-contracts/constants";
+} from "@lukso/lsp-smart-contracts";
 ```
 
 ## Audits
@@ -138,6 +138,7 @@ The following audits and formal verification were conducted. All high-level issu
 - Trust Audit, 2023-04-13, Final Result: [Trust_audit_2023_04_13.pdf](./audits/Trust_audit_2023_04_13.pdf)
 - Watchpug Audit, 2023-04-21, Final Result: [Watchpug_audit_2023_04_21.pdf](./audits/Watchpug_audit_2023_04_21.pdf)
 - Code4Rena Audit Contest, 2023-06-30 to 2023-07-14, Final Result: [See Code4Rena audit report on Code4rena.com website](https://code4rena.com/reports/2023-06-lukso)
+- MiloTruck, 2023-11-31, Final Result: [MiloTruck_audit_2023_11_31.pdf](./audits/MiloTruck_audit_2023_11_31.pdf)
 
 ## Contributors ✨
 

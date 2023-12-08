@@ -18,9 +18,15 @@ contract LSP7CompatibleERC20InitTester is LSP7CompatibleERC20InitAbstract {
     function initialize(
         string memory name_,
         string memory symbol_,
-        address newOwner_
+        address newOwner_,
+        uint256 lsp4TokenType_
     ) public initializer {
-        LSP7CompatibleERC20InitAbstract._initialize(name_, symbol_, newOwner_);
+        LSP7CompatibleERC20InitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_
+        );
     }
 
     function mint(address to, uint256 amount, bytes calldata data) public {

@@ -14,13 +14,24 @@ contract LSP8CompatibleERC721Mintable is LSP8CompatibleERC721 {
      * @param name_ The name of the token.
      * @param symbol_ The symbol of the token.
      * @param newOwner_ The owner of the token contract.
+     * @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
+     * @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
      */
     constructor(
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        uint256 tokenIdType_
-    ) LSP8CompatibleERC721(name_, symbol_, newOwner_, tokenIdType_) {}
+        uint256 lsp4TokenType_,
+        uint256 lsp8TokenIdFormat_
+    )
+        LSP8CompatibleERC721(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
+        )
+    {}
 
     /**
      * @notice Minting tokenId `tokenId` for address `to` with the additional data `data` (Note: allow non-LSP1 recipient is set to `force`).

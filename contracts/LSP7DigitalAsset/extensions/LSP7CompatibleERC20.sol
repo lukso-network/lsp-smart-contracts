@@ -27,12 +27,14 @@ abstract contract LSP7CompatibleERC20 is IERC20Metadata, LSP7DigitalAsset {
      * @param name_ The name of the token.
      * @param symbol_ The symbol of the token.
      * @param newOwner_ The owner of the token contract.
+     * @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
      */
     constructor(
         string memory name_,
         string memory symbol_,
-        address newOwner_
-    ) LSP7DigitalAsset(name_, symbol_, newOwner_, false) {}
+        address newOwner_,
+        uint256 lsp4TokenType_
+    ) LSP7DigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, false) {}
 
     /**
      * @inheritdoc IERC20Metadata

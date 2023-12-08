@@ -1,3 +1,4 @@
+import { LSP4_TOKEN_TYPES } from '../../../constants';
 import { LSP7Mintable, LSP7Mintable__factory } from '../../../types';
 
 import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour';
@@ -17,12 +18,14 @@ describe('LSP7Mintable with constructor', () => {
       symbol: 'LSP7MNT',
       newOwner: accounts.owner.address,
       isNFT: false,
+      lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
     };
 
     const lsp7Mintable: LSP7Mintable = await new LSP7Mintable__factory(accounts.owner).deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
+      deployParams.lsp4TokenType,
       deployParams.isNFT,
     );
 

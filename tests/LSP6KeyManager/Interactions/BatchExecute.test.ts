@@ -3,7 +3,12 @@ import { ethers } from 'hardhat';
 import { BigNumber } from 'ethers';
 
 // constants
-import { ALL_PERMISSIONS, ERC725YDataKeys, OPERATION_TYPES } from '../../../constants';
+import {
+  ALL_PERMISSIONS,
+  ERC725YDataKeys,
+  LSP4_TOKEN_TYPES,
+  OPERATION_TYPES,
+} from '../../../constants';
 
 // setup
 import { LSP6TestContext } from '../../utils/context';
@@ -41,6 +46,7 @@ export const shouldBehaveLikeBatchExecute = (
       'LYX DAI Invented Token',
       'LYXDAI',
       context.accounts[0].address,
+      LSP4_TOKEN_TYPES.TOKEN,
       false,
     );
 
@@ -48,6 +54,7 @@ export const shouldBehaveLikeBatchExecute = (
       'Meta Coin',
       'MTC',
       context.accounts[0].address,
+      LSP4_TOKEN_TYPES.TOKEN,
       false,
     );
 
@@ -55,6 +62,7 @@ export const shouldBehaveLikeBatchExecute = (
       'LUKSO Relay Token',
       'rLYX',
       context.accounts[0].address,
+      LSP4_TOKEN_TYPES.TOKEN,
       false,
     );
 
@@ -226,6 +234,7 @@ export const shouldBehaveLikeBatchExecute = (
         'My LSP7 UP Token',
         'UPLSP7',
         context.universalProfile.address,
+        LSP4_TOKEN_TYPES.TOKEN,
         false,
       ]);
 
@@ -290,8 +299,14 @@ export const shouldBehaveLikeBatchExecute = (
     it('should 1) deploy a LSP7 token, 2) mint some tokens, 3) `transferBatch(...)` to multiple recipients', async () => {
       // step 1 - deploy token contract
       const lsp7ConstructorArguments = abiCoder.encode(
-        ['string', 'string', 'address', 'bool'],
-        ['My UP LSP7 Token', 'UPLSP7', context.universalProfile.address, false],
+        ['string', 'string', 'address', 'uint256', 'bool'],
+        [
+          'My UP LSP7 Token',
+          'UPLSP7',
+          context.universalProfile.address,
+          LSP4_TOKEN_TYPES.TOKEN,
+          false,
+        ],
       );
 
       const lsp7DeploymentPayload = context.universalProfile.interface.encodeFunctionData(

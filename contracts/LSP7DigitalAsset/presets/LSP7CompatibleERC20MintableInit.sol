@@ -26,16 +26,19 @@ contract LSP7CompatibleERC20MintableInit is
      * @param name_ The name of the token.
      * @param symbol_ The symbol of the token.
      * @param newOwner_ The owner of the token contract.
+     * @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
      */
     function initialize(
         string memory name_,
         string memory symbol_,
-        address newOwner_
+        address newOwner_,
+        uint256 lsp4TokenType_
     ) external virtual initializer {
         LSP7CompatibleERC20MintableInitAbstract._initialize(
             name_,
             symbol_,
-            newOwner_
+            newOwner_,
+            lsp4TokenType_
         );
     }
 }

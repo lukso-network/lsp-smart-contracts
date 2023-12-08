@@ -10,7 +10,7 @@ import {
 } from '../LSP8CappedSupply.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
-import { LSP8_TOKEN_ID_TYPES } from '../../../constants';
+import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_FORMAT } from '../../../constants';
 
 describe('LSP8CappedSupplyInit with proxy', () => {
   const buildTestContext = async () => {
@@ -19,7 +19,8 @@ describe('LSP8CappedSupplyInit with proxy', () => {
       name: 'LSP8 capped supply - deployed with proxy',
       symbol: 'CAP',
       newOwner: accounts.owner.address,
-      tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
+      lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
+      lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
       tokenSupplyCap: ethers.BigNumber.from('2'),
     };
     const lsp8CappedSupplyInit = await new LSP8CappedSupplyInitTester__factory(
@@ -32,11 +33,12 @@ describe('LSP8CappedSupplyInit with proxy', () => {
   };
 
   const initializeProxy = async (context: LSP8CappedSupplyTestContext) => {
-    return context.lsp8CappedSupply['initialize(string,string,address,uint256,uint256)'](
+    return context.lsp8CappedSupply['initialize(string,string,address,uint256,uint256,uint256)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
-      context.deployParams.tokenIdType,
+      context.deployParams.lsp4TokenType,
+      context.deployParams.lsp8TokenIdFormat,
       context.deployParams.tokenSupplyCap,
     );
   };
