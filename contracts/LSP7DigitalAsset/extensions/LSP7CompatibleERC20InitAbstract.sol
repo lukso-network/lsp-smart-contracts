@@ -30,19 +30,22 @@ abstract contract LSP7CompatibleERC20InitAbstract is
      * @notice Initializing a `LSP7CompatibleERC20` token contract with: token name = `name_`, token symbol = `symbol_`, and
      * address `newOwner_` as the token contract owner.
      *
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the token
+     * @param name_ The name of the token.
+     * @param symbol_ The symbol of the token.
+     * @param newOwner_ The owner of the token.
+     * @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
      */
     function _initialize(
         string memory name_,
         string memory symbol_,
-        address newOwner_
+        address newOwner_,
+        uint256 lsp4TokenType_
     ) internal virtual override onlyInitializing {
         LSP7DigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
+            lsp4TokenType_,
             false
         );
     }

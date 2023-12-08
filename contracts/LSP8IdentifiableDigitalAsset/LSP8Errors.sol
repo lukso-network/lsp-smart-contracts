@@ -82,8 +82,24 @@ error LSP8TokenOwnerCannotBeOperator();
 error LSP8TokenContractCannotHoldValue();
 
 /**
- * @dev Reverts when trying to edit the data key `LSP8TokenIdType` after the identifiable digital asset contract has been deployed.
- * The `LSP8TokenIdType` data key is located inside the ERC725Y Data key-value store of the identifiable digital asset contract.
+ * @dev Reverts when trying to edit the data key `LSP8TokenIdFormat` after the identifiable digital asset contract has been deployed.
+ * The `LSP8TokenIdFormat` data key is located inside the ERC725Y Data key-value store of the identifiable digital asset contract.
  * It can be set only once inside the constructor/initializer when the identifiable digital asset contract is being deployed.
  */
-error LSP8TokenIdTypeNotEditable();
+error LSP8TokenIdFormatNotEditable();
+
+/**
+ * @dev Reverts when the length of the token IDs data arrays is not equal
+ */
+error LSP8TokenIdsDataLengthMismatch();
+
+/**
+ * @dev Reverts when empty arrays is passed to the function
+ */
+error LSP8TokenIdsDataEmptyArray();
+
+/**
+ * @dev Reverts when a batch call failed.
+ * @notice Batch call failed.
+ */
+error LSP8BatchCallFailed(uint256 callIndex);

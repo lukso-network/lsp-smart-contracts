@@ -82,3 +82,9 @@ error LSP7TokenContractCannotHoldValue();
  * @dev Reverts when token owner call {increaseAllowance} for an operator that does not have any allowance
  */
 error OperatorAllowanceCannotBeIncreasedFromZero(address operator);
+
+/**
+ * @dev Reverts when a batch call failed.
+ * @notice Batch call failed.
+ */
+error LSP7BatchCallFailed(uint256 callIndex);

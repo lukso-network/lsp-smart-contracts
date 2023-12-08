@@ -30,7 +30,8 @@ import {
     LSP7CannotSendWithAddressZero,
     LSP7NotifyTokenReceiverContractMissingLSP1Interface,
     LSP7NotifyTokenReceiverIsEOA,
-    OperatorAllowanceCannotBeIncreasedFromZero
+    OperatorAllowanceCannotBeIncreasedFromZero,
+    LSP7BatchCallFailed
 } from "./LSP7Errors.sol";
 
 // constants
@@ -53,8 +54,6 @@ import {
  */
 abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     using EnumerableSet for EnumerableSet.AddressSet;
-    using ERC165Checker for address;
-    using LSP1Utils for address;
 
     // --- Storage
 
@@ -99,6 +98,45 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         return _tokenOwnerBalances[tokenOwner];
     }
 
+    // --- General functionality
+
+    /**
+     * @inheritdoc ILSP7DigitalAsset
+     *
+     * @custom:info It's not possible to send value along the functions call due to the use of `delegatecall`.
+     */
+    function batchCalls(
+        bytes[] calldata data
+    ) public virtual override returns (bytes[] memory results) {
+        results = new bytes[](data.length);
+        for (uint256 i; i < data.length; ) {
+            (bool success, bytes memory result) = address(this).delegatecall(
+                data[i]
+            );
+
+            if (!success) {
+                // Look for revert reason and bubble it up if present
+                if (result.length != 0) {
+                    // The easiest way to bubble the revert reason is using memory via assembly
+                    // solhint-disable no-inline-assembly
+                    /// @solidity memory-safe-assembly
+                    assembly {
+                        let returndata_size := mload(result)
+                        revert(add(32, result), returndata_size)
+                    }
+                } else {
+                    revert LSP7BatchCallFailed({callIndex: i});
+                }
+            }
+
+            results[i] = result;
+
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
     // --- Operator functionality
 
     /**
@@ -132,7 +170,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             operatorNotificationData
         );
 
-        operator.notifyUniversalReceiver(_TYPEID_LSP7_TOKENOPERATOR, lsp1Data);
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
@@ -158,10 +196,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
                 operatorNotificationData
             );
 
-            operator.notifyUniversalReceiver(
-                _TYPEID_LSP7_TOKENOPERATOR,
-                lsp1Data
-            );
+            _notifyTokenOperator(operator, lsp1Data);
         }
     }
 
@@ -216,7 +251,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             operatorNotificationData
         );
 
-        operator.notifyUniversalReceiver(_TYPEID_LSP7_TOKENOPERATOR, lsp1Data);
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     /**
@@ -250,7 +285,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             operatorNotificationData
         );
 
-        operator.notifyUniversalReceiver(_TYPEID_LSP7_TOKENOPERATOR, lsp1Data);
+        _notifyTokenOperator(operator, lsp1Data);
     }
 
     // --- Transfer functionality
@@ -320,8 +355,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @param operatorNotificationData The data to send to the universalReceiver function of the operator in case of notifying
      *
      * @custom:events
-     * - {RevokedOperator} event when operator's allowance is set to `0`.
-     * - {AuthorizedOperator} event when operator's allowance is set to any other amount.
+     * - {OperatorRevoked} event when operator's allowance is set to `0`.
+     * - {OperatorAuthorizationChanged} event when operator's allowance is set to any other amount.
      *
      * @custom:requirements
      * - `operator` cannot be the zero address.
@@ -346,7 +381,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         if (allowance != 0) {
             _operators[tokenOwner].add(operator);
-            emit AuthorizedOperator(
+            emit OperatorAuthorizationChanged(
                 operator,
                 tokenOwner,
                 allowance,
@@ -354,7 +389,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             );
         } else {
             _operators[tokenOwner].remove(operator);
-            emit RevokedOperator(
+            emit OperatorRevoked(
                 operator,
                 tokenOwner,
                 notified,
@@ -397,11 +432,24 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         _tokenOwnerBalances[to] += amount;
 
-        emit Transfer(msg.sender, address(0), to, amount, force, data);
+        emit Transfer({
+            operator: msg.sender,
+            from: address(0),
+            to: to,
+            amount: amount,
+            force: force,
+            data: data
+        });
 
         _afterTokenTransfer(address(0), to, amount, data);
 
-        bytes memory lsp1Data = abi.encode(address(0), to, amount, data);
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            address(0),
+            to,
+            amount,
+            data
+        );
         _notifyTokenReceiver(to, force, lsp1Data);
     }
 
@@ -451,7 +499,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         _tokenOwnerBalances[from] -= amount;
 
-        emit Transfer(msg.sender, from, address(0), amount, false, data);
         emit Transfer({
             operator: msg.sender,
             from: from,
@@ -463,8 +510,14 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         _afterTokenTransfer(from, address(0), amount, data);
 
-        bytes memory lsp1Data = abi.encode(from, address(0), amount, data);
-        from.notifyUniversalReceiver(_TYPEID_LSP7_TOKENSSENDER, lsp1Data);
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            from,
+            address(0),
+            amount,
+            data
+        );
+        _notifyTokenSender(from, lsp1Data);
     }
 
     /**
@@ -475,8 +528,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @param amountToSpend The amount of tokens to substract in allowance of `operator`.
      *
      * @custom:events
-     * - {RevokedOperator} event when operator's allowance is set to `0`.
-     * - {AuthorizedOperator} event when operator's allowance is set to any other amount.
+     * - {OperatorRevoked} event when operator's allowance is set to `0`.
+     * - {OperatorAuthorizationChanged} event when operator's allowance is set to any other amount.
      *
      * @custom:requirements
      * - The `amountToSpend` MUST be at least the allowance granted to `operator` (accessible via {`authorizedAmountFor}`)
@@ -556,13 +609,20 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         _tokenOwnerBalances[from] -= amount;
         _tokenOwnerBalances[to] += amount;
 
-        emit Transfer(msg.sender, from, to, amount, force, data);
+        emit Transfer({
+            operator: msg.sender,
+            from: from,
+            to: to,
+            amount: amount,
+            force: force,
+            data: data
+        });
 
         _afterTokenTransfer(from, to, amount, data);
 
-        bytes memory lsp1Data = abi.encode(from, to, amount, data);
+        bytes memory lsp1Data = abi.encode(msg.sender, from, to, amount, data);
 
-        from.notifyUniversalReceiver(_TYPEID_LSP7_TOKENSSENDER, lsp1Data);
+        _notifyTokenSender(from, lsp1Data);
         _notifyTokenReceiver(to, force, lsp1Data);
     }
 
@@ -599,6 +659,44 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     ) internal virtual {}
 
     /**
+     * @dev Attempt to notify the operator `operator` about the `amount` tokens being authorized with.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
+     * If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+     
+     * @param operator The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+     * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
+     */
+    function _notifyTokenOperator(
+        address operator,
+        bytes memory lsp1Data
+    ) internal virtual {
+        LSP1Utils.notifyUniversalReceiver(
+            operator,
+            _TYPEID_LSP7_TOKENOPERATOR,
+            lsp1Data
+        );
+    }
+
+    /**
+     * @dev Attempt to notify the token sender `from` about the `amount` of tokens being transferred.
+     * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
+     * If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
+     
+     * @param from The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+     * @param lsp1Data the data to be sent to the `from` address in the `universalReceiver` call.
+     */
+    function _notifyTokenSender(
+        address from,
+        bytes memory lsp1Data
+    ) internal virtual {
+        LSP1Utils.notifyUniversalReceiver(
+            from,
+            _TYPEID_LSP7_TOKENSSENDER,
+            lsp1Data
+        );
+    }
+
+    /**
      * @dev Attempt to notify the token receiver `to` about the `amount` tokens being received.
      * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENSRECIPIENT` as typeId, if `to` is a contract that supports the LSP1 interface.
      *
@@ -615,7 +713,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         bool force,
         bytes memory lsp1Data
     ) internal virtual {
-        if (to.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
+        if (
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                to,
+                _INTERFACEID_LSP1
+            )
+        ) {
             ILSP1(to).universalReceiver(_TYPEID_LSP7_TOKENSRECIPIENT, lsp1Data);
         } else if (!force) {
             if (to.code.length != 0) {

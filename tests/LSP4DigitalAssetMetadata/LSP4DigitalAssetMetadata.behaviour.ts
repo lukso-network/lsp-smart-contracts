@@ -7,11 +7,12 @@ import { LSP7DigitalAsset, LSP8IdentifiableDigitalAsset, LSP9Vault } from '../..
 
 // constants
 import { ERC725YDataKeys } from '../../constants';
+import { abiCoder } from '../utils/helpers';
 
 export type LS4DigitalAssetMetadataTestContext = {
   accounts: SignerWithAddress[];
   contract: LSP7DigitalAsset | LSP8IdentifiableDigitalAsset | LSP9Vault;
-  deployParams: { owner: SignerWithAddress };
+  deployParams: { owner: SignerWithAddress; lsp4TokenType: number };
 };
 
 export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
@@ -68,6 +69,15 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
       ).to.be.revertedWithCustomError(context.contract, 'LSP4TokenSymbolNotEditable');
     });
 
+    it('should revert when trying to edit Token Type', async () => {
+      const key = ERC725YDataKeys.LSP4['LSP4TokenType'];
+      const value = abiCoder.encode(['uint256'], [12345]);
+
+      expect(
+        context.contract.connect(context.deployParams.owner).setData(key, value),
+      ).to.be.revertedWithCustomError(context.contract, 'LSP4TokenTypeNotEditable');
+    });
+
     describe('when setting a data key with a value less than 256 bytes', () => {
       it('should emit DataChanged event with the whole data value', async () => {
         const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
@@ -83,13 +93,13 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
     });
 
     describe('when setting a data key with a value more than 256 bytes', () => {
-      it('should emit DataChanged event with only the first 256 bytes of the value', async () => {
+      it('should emit DataChanged event with the whole data value', async () => {
         const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
         const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
         await expect(context.contract.connect(context.deployParams.owner).setData(key, value))
           .to.emit(context.contract, 'DataChanged')
-          .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+          .withArgs(key, value);
 
         const result = await context.contract.getData(key);
         expect(result).to.equal(value);

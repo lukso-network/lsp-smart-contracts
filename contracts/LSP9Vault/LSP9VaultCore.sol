@@ -12,7 +12,6 @@ import {
 import {ILSP9Vault} from "./ILSP9Vault.sol";
 
 // libraries
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
@@ -638,27 +637,6 @@ contract LSP9VaultCore is
             );
             isURD = true;
         }
-    }
-
-    /**
-     * @dev This function overrides the {ERC725YCore} internal {_setData} function to optimize gas usage by emitting only the first 256 bytes of the `dataValue`.
-     *
-     * @custom:events {DataChanged} event with only the first 256 bytes of {dataValue}.
-     *
-     * @param dataKey The key to store the data value under.
-     * @param dataValue The data value to be stored.
-     */
-    function _setData(
-        bytes32 dataKey,
-        bytes memory dataValue
-    ) internal virtual override {
-        _store[dataKey] = dataValue;
-        emit DataChanged(
-            dataKey,
-            dataValue.length <= 256
-                ? dataValue
-                : BytesLib.slice(dataValue, 0, 256)
-        );
     }
 
     /**

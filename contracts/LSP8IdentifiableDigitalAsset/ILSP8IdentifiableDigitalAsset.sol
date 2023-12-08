@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 pragma solidity ^0.8.4;
 
 // interfaces
@@ -39,7 +38,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param tokenId The tokenId `operator` address has access on behalf of `tokenOwner`.
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
-    event AuthorizedOperator(
+    event OperatorAuthorizationChanged(
         address indexed operator,
         address indexed tokenOwner,
         bytes32 indexed tokenId,
@@ -54,12 +53,24 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param notified Bool indicating whether the operator has been notified or not
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
-    event RevokedOperator(
+    event OperatorRevoked(
         address indexed operator,
         address indexed tokenOwner,
         bytes32 indexed tokenId,
         bool notified,
         bytes operatorNotificationData
+    );
+
+    /**
+     * @dev Emitted when setting data for `tokenId`.
+     * @param tokenId The tokenId which data is set for.
+     * @param dataKey The data key for which a bytes value is set.
+     * @param dataValue The value to set for the given data key.
+     */
+    event TokenIdDataChanged(
+        bytes32 indexed tokenId,
+        bytes32 indexed dataKey,
+        bytes dataValue
     );
 
     // --- Token queries
@@ -100,6 +111,56 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
         address tokenOwner
     ) external view returns (bytes32[] memory);
 
+    // --- TokenId Metadata functionality
+
+    /**
+     * @notice Retrieves data for a specific `tokenId` and `dataKey`.
+     * @param tokenId The unique identifier for a token.
+     * @param dataKey The key for the data to retrieve.
+     * @return dataValues The data value associated with the given `tokenId` and `dataKey`.
+     */
+    function getDataForTokenId(
+        bytes32 tokenId,
+        bytes32 dataKey
+    ) external returns (bytes memory dataValues);
+
+    /**
+     * @notice Retrieves data in batch for multiple `tokenId` and `dataKey` pairs.
+     * @param tokenIds An array of token IDs.
+     * @param dataKeys An array of data keys corresponding to the token IDs.
+     * @return dataValues An array of data values for each pair of `tokenId` and `dataKey`.
+     */
+    function getDataBatchForTokenIds(
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys
+    ) external returns (bytes[] memory dataValues);
+
+    /**
+     * @notice Sets data for a specific `tokenId` and `dataKey`.
+     * @param tokenId The unique identifier for a token.
+     * @param dataKey The key for the data to set.
+     * @param dataValue The value to set for the given data key.
+     * @custom:events {TokenIdDataChanged} event.
+     */
+    function setDataForTokenId(
+        bytes32 tokenId,
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) external;
+
+    /**
+     * @notice Sets data in batch for multiple `tokenId` and `dataKey` pairs.
+     * @param tokenIds An array of token IDs.
+     * @param dataKeys An array of data keys corresponding to the token IDs.
+     * @param dataValues An array of values to set for the given data keys.
+     * @custom:events {TokenIdDataChanged} event for each pair.
+     */
+    function setDataBatchForTokenIds(
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys,
+        bytes[] memory dataValues
+    ) external;
+
     // --- Operator functionality
 
     /**
@@ -116,7 +177,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * - the owner of a `tokenId` cannot grant itself as an `operator` (`operator` cannot be the calling address).
      * - `operator` cannot be the zero address.
      *
-     * @custom:events {AuthorizedOperator} event.
+     * @custom:events {OperatorAuthorizationChanged} event.
      */
     function authorizeOperator(
         address operator,
@@ -139,7 +200,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * - the owner of a `tokenId` cannot grant revoke itself as an `operator` (`operator` cannot be the calling address).
      * - `operator` cannot be the zero address.
      *
-     * @custom:events {RevokedOperator} event with address of the operator being revoked for the caller (token owner)..
+     * @custom:events {OperatorRevoked} event with address of the operator being revoked for the caller (token owner)..
      */
     function revokeOperator(
         address operator,
@@ -253,4 +314,15 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
         bool[] memory force,
         bytes[] memory data
     ) external;
+
+    /**
+     * @notice Executing the following batch of abi-encoded function calls on the contract: `data`.
+     *
+     * @dev Allows a caller to batch different function calls in one call. Perform a `delegatecall` on self, to call different functions with preserving the context.
+     * @param data An array of ABI encoded function calls to be called on the contract.
+     * @return results An array of abi-encoded data returned by the functions executed.
+     */
+    function batchCalls(
+        bytes[] calldata data
+    ) external returns (bytes[] memory results);
 }

@@ -39,7 +39,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param amount The amount of tokens `operator` address has access to from `tokenOwner`
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
-    event AuthorizedOperator(
+    event OperatorAuthorizationChanged(
         address indexed operator,
         address indexed tokenOwner,
         uint256 indexed amount,
@@ -53,10 +53,10 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param notified Bool indicating whether the operator has been notified or not
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
-    event RevokedOperator(
+    event OperatorRevoked(
         address indexed operator,
         address indexed tokenOwner,
-        bool notified,
+        bool indexed notified,
         bytes operatorNotificationData
     );
 
@@ -112,7 +112,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @custom:requirements
      * - `operator` cannot be the zero address.
      *
-     * @custom:events {AuthorizedOperator} when allowance is given to a new operator or
+     * @custom:events {OperatorAuthorizationChanged} when allowance is given to a new operator or
      * an existing operator's allowance is updated.
      */
     function authorizeOperator(
@@ -133,7 +133,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * - `operator` cannot be calling address.
      * - `operator` cannot be the zero address.
      *
-     * @custom:events {RevokedOperator} event with address of the operator being revoked for the caller (token holder).
+     * @custom:events {OperatorRevoked} event with address of the operator being revoked for the caller (token holder).
      */
     function revokeOperator(
         address operator,
@@ -159,7 +159,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      *  - `operator` cannot be the same address as `msg.sender`
      *  - `operator` cannot be the zero address.
      *
-     * @custom:events {AuthorizedOperator} indicating the updated allowance
+     * @custom:events {OperatorAuthorizationChanged} indicating the updated allowance
      */
     function increaseAllowance(
         address operator,
@@ -179,8 +179,8 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * Notify the operator based on the LSP1-UniversalReceiver standard
      *
      * @custom:events
-     *  - {AuthorizedOperator} event indicating the updated allowance after decreasing it.
-     *  - {RevokeOperator} event if `subtractedAmount` is the full allowance,
+     *  - {OperatorAuthorizationChanged} event indicating the updated allowance after decreasing it.
+     *  - {OperatorRevoked} event if `subtractedAmount` is the full allowance,
      *    indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
      *
      * @param operator The operator to decrease allowance for `msg.sender`
@@ -245,7 +245,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      *
      * @custom:events
      * - {Transfer} event when tokens get successfully transferred.
-     * - if the transfer is triggered by an operator, either the {AuthorizedOperator} event will be emitted with the updated allowance or the {RevokedOperator}
+     * - if the transfer is triggered by an operator, either the {OperatorAuthorizationChanged} event will be emitted with the updated allowance or the {OperatorRevoked}
      * event will be emitted if the operator has no more allowance left.
      *
      * @custom:hint The `force` parameter **MUST be set to `true`** to transfer tokens to Externally Owned Accounts (EOAs)
@@ -291,4 +291,15 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
         bool[] memory force,
         bytes[] memory data
     ) external;
+
+    /**
+     * @notice Executing the following batch of abi-encoded function calls on the contract: `data`.
+     *
+     * @dev Allows a caller to batch different function calls in one call. Perform a `delegatecall` on self, to call different functions with preserving the context.
+     * @param data An array of ABI encoded function calls to be called on the contract.
+     * @return results An array of abi-encoded data returned by the functions executed.
+     */
+    function batchCalls(
+        bytes[] calldata data
+    ) external returns (bytes[] memory results);
 }

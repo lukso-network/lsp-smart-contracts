@@ -4,7 +4,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { LSP8BurnableTester, LSP8BurnableTester__factory } from '../../../types';
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
-import { LSP8_TOKEN_ID_TYPES } from '../../../constants';
+import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_FORMAT } from '../../../constants';
 
 type LSP8BurnableTestContext = {
   accounts: SignerWithAddress[];
@@ -13,7 +13,8 @@ type LSP8BurnableTestContext = {
     name: string;
     symbol: string;
     newOwner: string;
-    tokenIdType: number;
+    lsp4TokenType: number;
+    lsp8TokenIdFormat: number;
   };
 };
 
@@ -24,14 +25,16 @@ describe('LSP8Burnable with constructor', () => {
       name: 'LSP8 Burnable - deployed with constructor',
       symbol: 'BRN',
       newOwner: accounts[0].address,
-      tokenIdType: LSP8_TOKEN_ID_TYPES.NUMBER,
+      lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
+      lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
     };
 
     const lsp8Burnable = await new LSP8BurnableTester__factory(accounts[0]).deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
-      deployParams.tokenIdType,
+      deployParams.lsp4TokenType,
+      deployParams.lsp8TokenIdFormat,
     );
 
     return { accounts, lsp8Burnable, deployParams };
