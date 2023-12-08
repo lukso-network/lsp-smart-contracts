@@ -109,4 +109,3 @@ error LSP8BatchCallFailed(uint256 callIndex);
  * actual LP8 collection contract address.
  */
 error InvalidReferenceAddress(address referenceAddress);
-
