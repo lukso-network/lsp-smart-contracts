@@ -8,6 +8,12 @@ It is based on Hardhat.
 
 1. Copy the `template/` folder and paste it under the `packages/` folder. Then rename this `template/` folder that you copied with the LSP name.
 
+You can do so either:
+
+- manually, by copying the folder and pasting it inside `packages` and then renaming it.
+  or
+- by running the following command from the root of the repository.
+
 ```bash
 cp -r template packages/lsp-name
 ```

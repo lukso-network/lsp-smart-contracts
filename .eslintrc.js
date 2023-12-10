@@ -1,10 +1,9 @@
 module.exports = {
-  root: true,
-  // This tells ESLint to load the config from the package `eslint-config-custom`
-  extends: ['custom'],
-  settings: {
-    next: {
-      rootDir: ['apps/*/'],
-    },
+  ignorePatterns: ['artifacts/', 'cache/', 'dist/', 'types/', 'contracts.ts'],
+  extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'prettier'],
+  rules: {
+    'prettier/prettier': 'error',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 };
