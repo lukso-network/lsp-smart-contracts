@@ -95,7 +95,7 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:info This function internally delegates the handling of native tokens to the {universalReceiver} function
      * passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and an empty bytes array as received data.
      *
-     * @custom:events Emits a {UniversalReceiver} event when the `universalReceiver` logic is executed upon receiving native tokens.
+     * @custom:events Emits a {UniversalReceiver} event with typeId {`LSP0ValueReceived`} when the `universalReceiver` logic is executed upon receiving native tokens.
      */
     receive() external payable virtual {
         if (msg.value != 0) {
@@ -125,7 +125,7 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:info Whenever the call is associated with native tokens, the function will delegate the handling of native tokens internally to the {universalReceiver} function
      * passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and the calldata as received data, except when the native token will be sent directly to the extension.
      *
-     * @custom:events {UniversalReceiver} event when receiving native tokens and extension function selector is not found or not payable.
+     * @custom:events {UniversalReceiver} event with typeId {`LSP0ValueReceived`} when receiving native tokens and extension function selector is not found or not payable.
      */
     // solhint-disable-next-line no-complex-fallback
     fallback(
@@ -191,7 +191,7 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:events
      * - {Executed} event for each call that uses under `operationType`: `CALL` (0), `STATICCALL` (3) and `DELEGATECALL` (4).
      * - {ContractCreated} event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2).
-     * - {UniversalReceiver} event when receiving native tokens.
+     * - {UniversalReceiver} event with typeId {`LSP0ValueReceived`} when receiving native tokens.
      */
     function execute(
         uint256 operationType,
@@ -255,7 +255,7 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:events
      * - {Executed} event for each call that uses under `operationType`: `CALL` (0), `STATICCALL` (3) and `DELEGATECALL` (4). (each iteration)
      * - {ContractCreated} event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2) (each iteration)
-     * - {UniversalReceiver} event when receiving native tokens.
+     * - {UniversalReceiver} event with typeId {`LSP0ValueReceived`} when receiving native tokens.
      */
     function executeBatch(
         uint256[] memory operationsType,
@@ -315,7 +315,7 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
      * @custom:events
-     * - {UniversalReceiver} event when receiving native tokens.
+     * - {UniversalReceiver} event with typeId {`LSP0ValueReceived`} when receiving native tokens.
      * - {DataChanged} event.
      */
     function setData(
@@ -358,7 +358,7 @@ abstract contract LSP0ERC725AccountCore is
      * @custom:requirements Can be only called by the {owner} or by an authorised address that pass the verification check performed on the owner.
      *
      * @custom:events
-     * - {UniversalReceiver} event when receiving native tokens.
+     * - {UniversalReceiver} event with typeId {`LSP0ValueReceived`} when receiving native tokens.
      * - {DataChanged} event. (on each iteration of setting data)
      */
     function setDataBatch(
@@ -446,7 +446,7 @@ abstract contract LSP0ERC725AccountCore is
      * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call and the LSP1TypeIdDelegate call.
      *
      * @custom:events
-     * - {UniversalReceiver} when receiving native tokens.
+     * - {UniversalReceiver} with typeId {`LSP0ValueReceived`} when receiving native tokens.
      * - {UniversalReceiver} event with the function parameters, call options, and the response of the UniversalReceiverDelegates (URD) contract that was called.
      */
     function universalReceiver(

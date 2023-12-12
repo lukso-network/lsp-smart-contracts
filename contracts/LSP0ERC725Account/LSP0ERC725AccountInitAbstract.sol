@@ -32,7 +32,7 @@ abstract contract LSP0ERC725AccountInitAbstract is
      * If you decide to add non-zero initial state to any of those contracts, you MUST initialize them here.
      *
      * @custom:events
-     * - {UniversalReceiver} event when funding the contract on deployment.
+     * - {UniversalReceiver} event with typeId `LSP0ValueReceived` when funding the contract on deployment.
      * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
      */
     function _initialize(

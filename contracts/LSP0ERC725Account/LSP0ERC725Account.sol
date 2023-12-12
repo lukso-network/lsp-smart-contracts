@@ -37,7 +37,7 @@ contract LSP0ERC725Account is LSP0ERC725AccountCore, Version {
      * @param initialOwner The owner of the contract.
      *
      * @custom:events
-     * - {UniversalReceiver} event when funding the contract on deployment.
+     * - {UniversalReceiver} event with typeId {`LSP0ValueReceived`} when when funding the contract on deployment.
      * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
      */
     constructor(address initialOwner) payable {

@@ -39,7 +39,7 @@ contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract, Version {
      * @param initialOwner The owner of the contract.
      *
      * @custom:events
-     * - {UniversalReceiver} event when funding the contract on deployment.
+     * - {UniversalReceiver} event with typeId `LSP0ValueReceived` when funding the contract on deployment.
      * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
      */
     function initialize(
