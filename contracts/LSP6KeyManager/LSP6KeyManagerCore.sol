@@ -125,6 +125,8 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP25
      *
+     * @custom:info For more details, see the internal function {`_getNonce`}.
+     *
      * @custom:hint A signer can choose its channel number arbitrarily. The recommended practice is to:
      * - use `channelId == 0` for transactions for which the ordering of execution matters.abi
      *
