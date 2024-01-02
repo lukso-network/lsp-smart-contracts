@@ -90,7 +90,7 @@ Reverts whenever someone tries to send native tokens to a LSP7 contract.
 
 :::danger
 
-To avoid front-running and Allowance Double-Spend Exploit when increasing or decreasing the authorized amount of an operator, it is advised to: 1. either call [`revokeOperator`](#revokeoperator) first, and then re-call [`authorizeOperator`](#authorizeoperator) with the new amount. 2. or use the non-standard functions [`increaseAllowance`](#increaseallowance) or [`decreaseAllowance`](#decreaseallowance). For more information, see: https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
+To avoid front-running and Allowance Double-Spend Exploit when increasing or decreasing the authorized amount of an operator, it is advised to use the [`increaseAllowance`](#increaseallowance) or [`decreaseAllowance`](#decreaseallowance) function. For more information, see: https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
 
 :::
 
