@@ -327,8 +327,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address operator,
         bytes32 tokenId
     ) public view virtual override returns (bool) {
-        _existsOrError(tokenId);
-
         return _isOperatorOrOwner(operator, tokenId);
     }
 
