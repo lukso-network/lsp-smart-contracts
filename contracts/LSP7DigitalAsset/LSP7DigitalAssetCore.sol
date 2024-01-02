@@ -48,9 +48,6 @@ import {
  * @dev Core Implementation of a LSP7 compliant contract.
  *
  * This contract implement the core logic of the functions for the {ILSP7DigitalAsset} interface.
- *
- * Similar to ERC20, the non-standard {increaseAllowance} and {decreaseAllowance} functions
- * have been added to mitigate the well-known issues around setting allowances.
  */
 abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -143,10 +140,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @inheritdoc ILSP7DigitalAsset
      *
      * @custom:danger To avoid front-running and Allowance Double-Spend Exploit when
-     * increasing or decreasing the authorized amount of an operator, it is advised to:
-     *
-     *     1. either call {revokeOperator} first, and then re-call {authorizeOperator} with the new amount.
-     *     2. or use the non-standard functions {increaseAllowance} or {decreaseAllowance}.
+     * increasing or decreasing the authorized amount of an operator, it is advised to
+     * use the {increaseAllowance} or {decreaseAllowance} function.
      *
      * For more information, see:
      * https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
