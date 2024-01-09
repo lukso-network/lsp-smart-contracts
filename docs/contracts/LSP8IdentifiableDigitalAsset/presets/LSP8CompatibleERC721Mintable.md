@@ -1718,7 +1718,11 @@ Approve `operator` to operate on all tokens of `tokensOwner`.
 :::
 
 ```solidity
-event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+event Approval(
+  address indexed owner,
+  address indexed approved,
+  uint256 indexed tokenId
+);
 ```
 
 Emitted when the allowance of a `spender` for an `owner` is set by a call to [`approve`](#approve). `value` is the new allowance.
@@ -1745,7 +1749,11 @@ Emitted when the allowance of a `spender` for an `owner` is set by a call to [`a
 :::
 
 ```solidity
-event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+event ApprovalForAll(
+  address indexed owner,
+  address indexed operator,
+  bool approved
+);
 ```
 
 Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to `approved`.
@@ -1800,7 +1808,12 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 :::
 
 ```solidity
-event OperatorAuthorizationChanged(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bytes operatorNotificationData);
+event OperatorAuthorizationChanged(
+  address indexed operator,
+  address indexed tokenOwner,
+  bytes32 indexed tokenId,
+  bytes operatorNotificationData
+);
 ```
 
 Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
@@ -1828,7 +1841,13 @@ Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
 :::
 
 ```solidity
-event OperatorRevoked(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bool notified, bytes operatorNotificationData);
+event OperatorRevoked(
+  address indexed operator,
+  address indexed tokenOwner,
+  bytes32 indexed tokenId,
+  bool notified,
+  bytes operatorNotificationData
+);
 ```
 
 Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on its behalf.
@@ -1857,7 +1876,10 @@ Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on i
 :::
 
 ```solidity
-event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+event OwnershipTransferred(
+  address indexed previousOwner,
+  address indexed newOwner
+);
 ```
 
 #### Parameters
@@ -1881,7 +1903,11 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 :::
 
 ```solidity
-event TokenIdDataChanged(bytes32 indexed tokenId, bytes32 indexed dataKey, bytes dataValue);
+event TokenIdDataChanged(
+  bytes32 indexed tokenId,
+  bytes32 indexed dataKey,
+  bytes dataValue
+);
 ```
 
 Emitted when setting data for `tokenId`.
@@ -1908,7 +1934,14 @@ Emitted when setting data for `tokenId`.
 :::
 
 ```solidity
-event Transfer(address operator, address indexed from, address indexed to, bytes32 indexed tokenId, bool force, bytes data);
+event Transfer(
+  address operator,
+  address indexed from,
+  address indexed to,
+  bytes32 indexed tokenId,
+  bool force,
+  bytes data
+);
 ```
 
 Emitted when `tokenId` token is transferred from the `from` to the `to` address.
@@ -1938,7 +1971,11 @@ Emitted when `tokenId` token is transferred from the `from` to the `to` address.
 :::
 
 ```solidity
-event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+event Transfer(
+  address indexed from,
+  address indexed to,
+  uint256 indexed tokenId
+);
 ```
 
 Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.

@@ -653,7 +653,10 @@ _Emitted when changing the guardian threshold_
 :::
 
 ```solidity
-event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+event OwnershipTransferred(
+  address indexed previousOwner,
+  address indexed newOwner
+);
 ```
 
 #### Parameters
@@ -677,7 +680,12 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 :::
 
 ```solidity
-event RecoveryProcessSuccessful(uint256 indexed recoveryCounter, address indexed newController, bytes32 indexed newSecretHash, address[] guardians);
+event RecoveryProcessSuccessful(
+  uint256 indexed recoveryCounter,
+  address indexed newController,
+  bytes32 indexed newSecretHash,
+  address[] guardians
+);
 ```
 
 _Emitted when the recovery process is finished by the controller who reached the guardian threshold and submitted the string that produce the secretHash_
@@ -730,7 +738,11 @@ _Emitted when changing the secret hash_
 :::
 
 ```solidity
-event SelectedNewController(uint256 indexed recoveryCounter, address indexed guardian, address indexed addressSelected);
+event SelectedNewController(
+  uint256 indexed recoveryCounter,
+  address indexed guardian,
+  address indexed addressSelected
+);
 ```
 
 _Emitted when a guardian select a new potentiel controller address for the target_

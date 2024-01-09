@@ -1361,7 +1361,12 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 :::
 
 ```solidity
-event OperatorAuthorizationChanged(address indexed operator, address indexed tokenOwner, uint256 indexed amount, bytes operatorNotificationData);
+event OperatorAuthorizationChanged(
+  address indexed operator,
+  address indexed tokenOwner,
+  uint256 indexed amount,
+  bytes operatorNotificationData
+);
 ```
 
 Emitted when `tokenOwner` enables `operator` for `amount` tokens.
@@ -1389,7 +1394,12 @@ Emitted when `tokenOwner` enables `operator` for `amount` tokens.
 :::
 
 ```solidity
-event OperatorRevoked(address indexed operator, address indexed tokenOwner, bool indexed notified, bytes operatorNotificationData);
+event OperatorRevoked(
+  address indexed operator,
+  address indexed tokenOwner,
+  bool indexed notified,
+  bytes operatorNotificationData
+);
 ```
 
 Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`authorizedAmountFor(...)`](#`authorizedamountfor) to `0`.
@@ -1417,7 +1427,10 @@ Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`
 :::
 
 ```solidity
-event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+event OwnershipTransferred(
+  address indexed previousOwner,
+  address indexed newOwner
+);
 ```
 
 #### Parameters
@@ -1441,7 +1454,14 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 :::
 
 ```solidity
-event Transfer(address indexed operator, address indexed from, address indexed to, uint256 amount, bool force, bytes data);
+event Transfer(
+  address indexed operator,
+  address indexed from,
+  address indexed to,
+  uint256 amount,
+  bool force,
+  bytes data
+);
 ```
 
 Emitted when the `from` transferred successfully `amount` of tokens to `to`.
