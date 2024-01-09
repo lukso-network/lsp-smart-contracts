@@ -398,7 +398,10 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 :::
 
 ```solidity
-event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+event OwnershipTransferred(
+  address indexed previousOwner,
+  address indexed newOwner
+);
 ```
 
 #### Parameters

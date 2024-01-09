@@ -340,7 +340,10 @@ Emitted when the ownership of the contract has been renounced.
 :::
 
 ```solidity
-event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
+event OwnershipTransferStarted(
+  address indexed previousOwner,
+  address indexed newOwner
+);
 ```
 
 _The transfer of ownership of the contract was initiated. Pending new owner set to: `newOwner`._
@@ -368,7 +371,10 @@ Emitted when [`transferOwnership(..)`](#transferownership) was called and the fi
 :::
 
 ```solidity
-event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+event OwnershipTransferred(
+  address indexed previousOwner,
+  address indexed newOwner
+);
 ```
 
 #### Parameters

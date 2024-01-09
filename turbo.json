@@ -1,0 +1,24 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDotEnv": ["**/.env.local"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["**/artifacts/**", "types/**", "**/types/**"],
+      "cache": true
+    },
+    "lint": {
+      "env": ["CONTRACT_VERIFICATION_TESTNET_PK"]
+    },
+    "lint:solidity": {},
+    "clean": {},
+    "test": {
+      "cache": true,
+      "env": ["COVERAGE"]
+    },
+    "test:coverage": {
+      "dependsOn": ["test"],
+      "cache": false
+    }
+  }
+}

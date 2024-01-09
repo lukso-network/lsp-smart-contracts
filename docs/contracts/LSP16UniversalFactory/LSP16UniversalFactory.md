@@ -367,7 +367,13 @@ Bubble the revert reason if present, revert with `ContractInitializationFailed` 
 :::
 
 ```solidity
-event ContractCreated(address indexed createdContract, bytes32 indexed providedSalt, bytes32 generatedSalt, bool indexed initialized, bytes initializeCalldata);
+event ContractCreated(
+  address indexed createdContract,
+  bytes32 indexed providedSalt,
+  bytes32 generatedSalt,
+  bool indexed initialized,
+  bytes initializeCalldata
+);
 ```
 
 _Contract created. Contract address: `createdContract`._

@@ -1458,7 +1458,12 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 :::
 
 ```solidity
-event OperatorAuthorizationChanged(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bytes operatorNotificationData);
+event OperatorAuthorizationChanged(
+  address indexed operator,
+  address indexed tokenOwner,
+  bytes32 indexed tokenId,
+  bytes operatorNotificationData
+);
 ```
 
 Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
@@ -1486,7 +1491,13 @@ Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
 :::
 
 ```solidity
-event OperatorRevoked(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bool notified, bytes operatorNotificationData);
+event OperatorRevoked(
+  address indexed operator,
+  address indexed tokenOwner,
+  bytes32 indexed tokenId,
+  bool notified,
+  bytes operatorNotificationData
+);
 ```
 
 Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on its behalf.
@@ -1515,7 +1526,10 @@ Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on i
 :::
 
 ```solidity
-event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+event OwnershipTransferred(
+  address indexed previousOwner,
+  address indexed newOwner
+);
 ```
 
 #### Parameters
@@ -1539,7 +1553,11 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 :::
 
 ```solidity
-event TokenIdDataChanged(bytes32 indexed tokenId, bytes32 indexed dataKey, bytes dataValue);
+event TokenIdDataChanged(
+  bytes32 indexed tokenId,
+  bytes32 indexed dataKey,
+  bytes dataValue
+);
 ```
 
 Emitted when setting data for `tokenId`.
@@ -1566,7 +1584,14 @@ Emitted when setting data for `tokenId`.
 :::
 
 ```solidity
-event Transfer(address operator, address indexed from, address indexed to, bytes32 indexed tokenId, bool force, bytes data);
+event Transfer(
+  address operator,
+  address indexed from,
+  address indexed to,
+  bytes32 indexed tokenId,
+  bool force,
+  bytes data
+);
 ```
 
 Emitted when `tokenId` token is transferred from the `from` to the `to` address.
