@@ -79,7 +79,7 @@ contract LSP16UniversalFactory {
     );
 
     /**
-     * @notice Contract deployed. Salt, `providedSalt`, used.
+     * @notice Contract deployed. Salt, `providedSalt`, are used.
      *
      * @dev Deploys a contract using the CREATE2 opcode. The address where the contract will be deployed can be known in advance via the {computeAddress} function.
      *
@@ -118,7 +118,7 @@ contract LSP16UniversalFactory {
     }
 
     /**
-     * @notice Contract deployed. Salt, `providedSalt`, used.
+     * @notice Contract deployed. Salt, `providedSalt`, are used.
      *
      * @dev Deploys a contract using the CREATE2 opcode. The address where the contract will be deployed can be known in advance via the {computeAddress} function.
      *
@@ -177,15 +177,13 @@ contract LSP16UniversalFactory {
     }
 
     /**
-     * @notice Proxy deployed. Salt, `providedSalt`, used.
+     * @notice Proxy deployed. Salt, `providedSalt`, are used.
      *
      * @dev Deploys an ERC1167 minimal proxy contract using the CREATE2 opcode. The address where the contract will be deployed can be known in advance via the {computeERC1167Address} function.
      *
      * This function deploys contracts without initialization (external call after deployment).
      *
      * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with keccak256: `keccak256(abi.encodePacked(false, providedSalt))`. See {generateSalt} function for more details.
-     *
-     * See {generateSalt} function for more details.
      *
      * Using the same `implementationContract` and `providedSalt` multiple times will revert, as the contract cannot be deployed twice at the same address.
      *
@@ -218,7 +216,7 @@ contract LSP16UniversalFactory {
     }
 
     /**
-     * @notice Proxy deployed & initialized. Salt, `providedSalt`, used.
+     * @notice Proxy deployed & initialized. Salt, `providedSalt`, are used.
      *
      * @dev Deploys an ERC1167 minimal proxy contract using the CREATE2 opcode. The address where the contract will be deployed
      * can be known in advance via the {computeERC1167Address} function.

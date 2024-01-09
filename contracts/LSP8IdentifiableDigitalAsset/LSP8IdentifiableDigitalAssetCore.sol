@@ -140,6 +140,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bytes32[] memory tokenIds,
         bytes32[] memory dataKeys
     ) public view virtual override returns (bytes[] memory dataValues) {
+        if (tokenIds.length != dataKeys.length) {
+            revert LSP8TokenIdsDataLengthMismatch();
+        }
+
         dataValues = new bytes[](tokenIds.length);
 
         for (uint256 i; i < tokenIds.length; ) {
