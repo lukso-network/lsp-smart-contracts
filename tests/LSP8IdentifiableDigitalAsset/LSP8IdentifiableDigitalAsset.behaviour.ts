@@ -188,6 +188,23 @@ export const shouldBehaveLikeLSP8 = (
     });
   });
 
+  describe('when getting data for a tokenId', () => {
+    const tokenIdsLength3 = [tokenIdAsBytes32(42), tokenIdAsBytes32(43), tokenIdAsBytes32(44)];
+
+    const dataKeysLength2 = [
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My First Key')),
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Second Key')),
+    ];
+
+    it('should revert when providing arrays of tokenIds and data keys of different length', async () => {
+      await expect(
+        context.lsp8
+          .connect(context.accounts.owner)
+          .getDataBatchForTokenIds(tokenIdsLength3, dataKeysLength2),
+      ).to.be.revertedWithCustomError(context.lsp8, 'LSP8TokenIdsDataLengthMismatch');
+    });
+  });
+
   describe('when minting tokens', () => {
     before(async () => {
       await context.lsp8.mint(
