@@ -6,7 +6,7 @@ According to [LSP16-UniversalFactory](https://github.com/lukso-network/LIPs/blob
 
 ## Bytecode Stability
 
-It is crucial to note that the bytecode of this factory must remain unchanged. Therefore, any modifications to the contract's code are not permitted. While contributions in the form of new features, ideas, or adjustments to the Natspec documentation are appreciated, such changes are unfortunately not feasible. This is because any alteration to the contract would result in a new bytecode, which contradicts the contract's fundamental design principle.
+**It is crucial to note that the bytecode of this factory must remain unchanged. Therefore, any modifications to the contract's code are not permitted.** While contributions in the form of new features, ideas, or adjustments to the Natspec documentation are appreciated, such changes are unfortunately not feasible. This is because any alteration to the contract would result in a new bytecode, which contradicts the contract's fundamental design principle.
 
 ## Deployment Guidelines
 
