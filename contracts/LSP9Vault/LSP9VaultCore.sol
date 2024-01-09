@@ -98,7 +98,7 @@ contract LSP9VaultCore is
      */
     receive() external payable virtual {
         if (msg.value != 0) {
-            universalReceiver(_TYPEID_LSP9_VALUE_RECEIVED, "");
+            universalReceiver(_TYPEID_LSP9_VALUE_RECEIVED, "0x");
         }
     }
 
