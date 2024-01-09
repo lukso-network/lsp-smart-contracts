@@ -27,7 +27,7 @@ error InvalidValueSum();
  * The UniversalFactory will be deployed using Nick's Factory (0x4e59b44847b379578588920ca78fbf26c0b4956c)
  *
  * The deployed address can be found in the LSP16 specification.
- * Please refer to the LSP16 Specification to obtain the exact bytecode and salt that
+ * Please refer to the LSP16 Specification to obtain the exact creation bytecode and salt that
  * should be used to produce the address of the UniversalFactory on different chains.
  *
  * This factory contract is designed to deploy contracts at the same address on multiple chains.
@@ -79,7 +79,7 @@ contract LSP16UniversalFactory {
     );
 
     /**
-     * @notice Contract deployed. Salt, `providedSalt`, are used.
+     * @notice Deploys a smart contract.
      *
      * @dev Deploys a contract using the CREATE2 opcode. The address where the contract will be deployed can be known in advance via the {computeAddress} function.
      *
@@ -87,24 +87,24 @@ contract LSP16UniversalFactory {
      *
      * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with keccak256: `keccak256(abi.encodePacked(false, providedSalt))`. See {generateSalt} function for more details.
      *
-     * Using the same `byteCode` and `providedSalt` multiple times will revert, as the contract cannot be deployed twice at the same address.
+     * Using the same `creationBytecode` and `providedSalt` multiple times will revert, as the contract cannot be deployed twice at the same address.
      *
      * If the constructor of the contract to deploy is payable, value can be sent to this function to fund the created contract. However, sending value to this function while the constructor is not payable will result in a revert.
      *
-     * @param byteCode The bytecode of the contract to be deployed
+     * @param creationBytecode The creation bytecode of the contract to be deployed
      * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt that will be used by the `CREATE2` opcode for contract deployment
      *
      * @return The address of the deployed contract
      */
     function deployCreate2(
-        bytes calldata byteCode,
+        bytes calldata creationBytecode,
         bytes32 providedSalt
     ) public payable virtual returns (address) {
         bytes32 generatedSalt = generateSalt(providedSalt, false, _EMPTY_BYTE);
         address contractCreated = Create2.deploy(
             msg.value,
             generatedSalt,
-            byteCode
+            creationBytecode
         );
         emit ContractCreated(
             contractCreated,
@@ -118,7 +118,7 @@ contract LSP16UniversalFactory {
     }
 
     /**
-     * @notice Contract deployed. Salt, `providedSalt`, are used.
+     * @notice Deploys a smart contract and initializes it.
      *
      * @dev Deploys a contract using the CREATE2 opcode. The address where the contract will be deployed can be known in advance via the {computeAddress} function.
      *
@@ -126,13 +126,13 @@ contract LSP16UniversalFactory {
      *
      * The `providedSalt` parameter is not used directly as the salt by the CREATE2 opcode. Instead, it is hashed with keccak256: `keccak256(abi.encodePacked(true, initializeCalldata, providedSalt))`. See {generateSalt} function for more details.
      *
-     * Using the same `byteCode`, `providedSalt` and `initializeCalldata` multiple times will revert, as the contract cannot be deployed twice at the same address.
+     * Using the same `creationBytecode`, `providedSalt` and `initializeCalldata` multiple times will revert, as the contract cannot be deployed twice at the same address.
      *
      * If the constructor or the initialize function of the contract to deploy is payable, value can be sent along with the deployment/initialization to fund the created contract. However, sending value to this function while the constructor/initialize function is not payable will result in a revert.
      *
      * Will revert if the `msg.value` sent to the function is not equal to the sum of `constructorMsgValue` and `initializeCalldataMsgValue`.
      *
-     * @param byteCode The bytecode of the contract to be deployed
+     * @param creationBytecode The creation bytecode of the contract to be deployed
      * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt that will be used by the `CREATE2` opcode for contract deployment
      * @param initializeCalldata The calldata to be executed on the created contract
      * @param constructorMsgValue The value sent to the contract during deployment
@@ -141,7 +141,7 @@ contract LSP16UniversalFactory {
      * @return The address of the deployed contract
      */
     function deployCreate2AndInitialize(
-        bytes calldata byteCode,
+        bytes calldata creationBytecode,
         bytes32 providedSalt,
         bytes calldata initializeCalldata,
         uint256 constructorMsgValue,
@@ -158,7 +158,7 @@ contract LSP16UniversalFactory {
         address contractCreated = Create2.deploy(
             constructorMsgValue,
             generatedSalt,
-            byteCode
+            creationBytecode
         );
         emit ContractCreated(
             contractCreated,
@@ -177,7 +177,7 @@ contract LSP16UniversalFactory {
     }
 
     /**
-     * @notice Proxy deployed. Salt, `providedSalt`, are used.
+     * @notice Deploys a proxy smart contract.
      *
      * @dev Deploys an ERC1167 minimal proxy contract using the CREATE2 opcode. The address where the contract will be deployed can be known in advance via the {computeERC1167Address} function.
      *
@@ -216,7 +216,7 @@ contract LSP16UniversalFactory {
     }
 
     /**
-     * @notice Proxy deployed & initialized. Salt, `providedSalt`, are used.
+     * @notice Deploys a proxy smart contract and initializes it.
      *
      * @dev Deploys an ERC1167 minimal proxy contract using the CREATE2 opcode. The address where the contract will be deployed
      * can be known in advance via the {computeERC1167Address} function.
@@ -272,7 +272,7 @@ contract LSP16UniversalFactory {
      *
      * Any change in one of these parameters will result in a different address. When the `initializable` boolean is set to `false`, `initializeCalldata` will not affect the function output.
      *
-     * @param byteCodeHash The keccak256 hash of the bytecode to be deployed
+     * @param creationBytecodeHash The keccak256 hash of the creation bytecode to be deployed
      * @param providedSalt The salt provided by the deployer, which will be used to generate the final salt that will be used by the `CREATE2` opcode for contract deployment
      * @param initializable A boolean that indicates whether an external call should be made to initialize the contract after deployment
      * @param initializeCalldata The calldata to be executed on the created contract if `initializable` is set to `true`
@@ -280,7 +280,7 @@ contract LSP16UniversalFactory {
      * @return The address where the contract will be deployed
      */
     function computeAddress(
-        bytes32 byteCodeHash,
+        bytes32 creationBytecodeHash,
         bytes32 providedSalt,
         bool initializable,
         bytes calldata initializeCalldata
@@ -290,7 +290,7 @@ contract LSP16UniversalFactory {
             initializable,
             initializeCalldata
         );
-        return Create2.computeAddress(generatedSalt, byteCodeHash);
+        return Create2.computeAddress(generatedSalt, creationBytecodeHash);
     }
 
     /**
@@ -347,16 +347,16 @@ contract LSP16UniversalFactory {
      * at the same address.
      *
      * - However, for non-initializable contracts, if the constructor has arguments that specify the deployment behavior, they
-     * will be included in the bytecode. Any change in the constructor arguments will lead to a different contract's bytecode
+     * will be included in the creation bytecode. Any change in the constructor arguments will lead to a different contract's creation bytecode
      * which will result in a different address on other chains.
      *
      * 2. Example (for non-initializable contracts)
      *
-     * - If a contract is deployed with specific constructor arguments on chain 1, these arguments are embedded within the bytecode.
+     * - If a contract is deployed with specific constructor arguments on chain 1, these arguments are embedded within the creation bytecode.
      * For instance, if contract B is deployed with a specific `tokenName` and `tokenSymbol` on chain 1, and a user wants to deploy
      * the same contract with the same `tokenName` and `tokenSymbol` on chain 2, they must use the same constructor arguments to
-     * produce the same bytecode. This ensures that the same deployment behaviour is maintained across different chains,
-     * as long as the same bytecode is used.
+     * produce the same creation bytecode. This ensures that the same deployment behaviour is maintained across different chains,
+     * as long as the same creation bytecode is used.
      *
      * - If another user Z, tries to deploy the same contract B at the same address on chain 2 using the same `providedSalt`
      * but different constructor arguments (a different `tokenName` and/or `tokenSymbol`), the generated address will be different.
