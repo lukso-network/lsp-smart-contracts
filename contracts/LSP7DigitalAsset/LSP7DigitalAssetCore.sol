@@ -141,7 +141,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      *
      * @custom:danger To avoid front-running and Allowance Double-Spend Exploit when
      * increasing or decreasing the authorized amount of an operator, it is advised to
-     * use the {increaseAllowance} or {decreaseAllowance} function.
+     * use the {increaseAllowance} and {decreaseAllowance} functions.
      *
      * For more information, see:
      * https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
