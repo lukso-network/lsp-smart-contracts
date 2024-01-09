@@ -8,14 +8,14 @@ GREEN="\033[32m"
 YELLOW="\033[33m"
 ENDCOLOR="\033[0m"
 
-if [ ! -f './dist/constants.cjs.js' ]
+if [ ! -f './dist/constants.cjs' ]
 then
-  echo -e "${RED}Fail: No constants.cjs.js found${ENDCOLOR}"
+  echo -e "${RED}Fail: No constants.cjs found${ENDCOLOR}"
   exit 1
 fi
-if [ ! -f './dist/constants.es.js' ]
+if [ ! -f './dist/constants.mjs' ]
 then
-  echo -e "${RED}Fail: No constants.es.js found${ENDCOLOR}"
+  echo -e "${RED}Fail: No constants.mjs found${ENDCOLOR}"
   exit 1
 fi
 if [ ! -f './package.json' ]
