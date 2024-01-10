@@ -41,7 +41,8 @@ import {
     LSP8NotifyTokenReceiverIsEOA,
     LSP8TokenIdsDataLengthMismatch,
     LSP8TokenIdsDataEmptyArray,
-    LSP8BatchCallFailed
+    LSP8BatchCallFailed,
+    LSP8TokenOwnerChanged
 } from "./LSP8Errors.sol";
 
 // constants
@@ -634,9 +635,15 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         _beforeTokenTransfer(from, to, tokenId, data);
 
-        // Re-fetch and update `tokenOwner` in case `tokenId`
-        // was transferred inside the `_beforeTokenTransfer` hook
-        tokenOwner = tokenOwnerOf(tokenId);
+        // Check that `tokenId`'s owner was not changed inside the `_beforeTokenTransfer` hook
+        address currentTokenOwner = tokenOwnerOf(tokenId);
+        if (tokenOwner != currentTokenOwner) {
+            revert LSP8TokenOwnerChanged(
+                tokenId,
+                tokenOwner,
+                currentTokenOwner
+            );
+        }
 
         _clearOperators(from, tokenId);
 
@@ -721,8 +728,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      * @dev Attempt to notify the operator `operator` about the `tokenId` being authorized.
      * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
      * If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
-     
-     * @param operator The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+
+     * @param operator The address to call the {universalReceiver} function on.
      * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
      */
     function _notifyTokenOperator(
@@ -740,8 +747,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
      * @dev Attempt to notify the token sender `from` about the `tokenId` being transferred.
      * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
      * If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
-     
-     * @param from The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+
+     * @param from The address to call the {universalReceiver} function on.
      * @param lsp1Data the data to be sent to the `from` address in the `universalReceiver` call.
      */
     function _notifyTokenSender(

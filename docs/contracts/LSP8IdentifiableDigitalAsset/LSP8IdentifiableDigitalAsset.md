@@ -2066,6 +2066,37 @@ Reverts when trying to authorize or revoke the token's owner as an operator.
 
 <br/>
 
+### LSP8TokenOwnerChanged
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenownerchanged)
+- Solidity implementation: [`LSP8IdentifiableDigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol)
+- Error signature: `LSP8TokenOwnerChanged(bytes32,address,address)`
+- Error hash: `0x5a9c31d3`
+
+:::
+
+```solidity
+error LSP8TokenOwnerChanged(
+  bytes32 tokenId,
+  address oldOwner,
+  address newOwner
+);
+```
+
+Reverts when the token owner changed inside the [`_beforeTokenTransfer`](#_beforetokentransfer) hook.
+
+#### Parameters
+
+| Name       |   Type    | Description |
+| ---------- | :-------: | ----------- |
+| `tokenId`  | `bytes32` | -           |
+| `oldOwner` | `address` | -           |
+| `newOwner` | `address` | -           |
+
+<br/>
+
 ### NoExtensionFoundForFunctionSelector
 
 :::note References

@@ -1677,7 +1677,7 @@ Approve `operator` to operate on all tokens of `tokensOwner`.
 event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
 ```
 
-Emitted when the allowance of a `spender` for an `owner` is set by a call to [`approve`](#approve). `value` is the new allowance.
+Emitted when `owner` enables `approved` to manage the `tokenId` token.
 
 #### Parameters
 
@@ -1704,7 +1704,7 @@ Emitted when the allowance of a `spender` for an `owner` is set by a call to [`a
 event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 ```
 
-Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to `approved`.
+Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
 
 #### Parameters
 
@@ -1897,7 +1897,7 @@ Emitted when `tokenId` token is transferred from the `from` to the `to` address.
 event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 ```
 
-Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.
+Emitted when `tokenId` token is transferred from `from` to `to`.
 
 #### Parameters
 
@@ -2454,6 +2454,37 @@ error LSP8TokenOwnerCannotBeOperator();
 ```
 
 Reverts when trying to authorize or revoke the token's owner as an operator.
+
+<br/>
+
+### LSP8TokenOwnerChanged
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenownerchanged)
+- Solidity implementation: [`LSP8CompatibleERC721.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721.sol)
+- Error signature: `LSP8TokenOwnerChanged(bytes32,address,address)`
+- Error hash: `0x5a9c31d3`
+
+:::
+
+```solidity
+error LSP8TokenOwnerChanged(
+  bytes32 tokenId,
+  address oldOwner,
+  address newOwner
+);
+```
+
+Reverts when the token owner changed inside the [`_beforeTokenTransfer`](#_beforetokentransfer) hook.
+
+#### Parameters
+
+| Name       |   Type    | Description |
+| ---------- | :-------: | ----------- |
+| `tokenId`  | `bytes32` | -           |
+| `oldOwner` | `address` | -           |
+| `newOwner` | `address` | -           |
 
 <br/>
 
