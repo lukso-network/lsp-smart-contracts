@@ -179,7 +179,7 @@ export const shouldBehaveLikeLSP8Mintable = (
         0, // token id format
       )) as LSP8TransferOwnerChange;
 
-      const randomTokenId = ethers.utils.randomBytes(32);
+      const randomTokenId = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
       // // mint a token tokenReceiver
       await lsp8TransferOwnerChange.connect(context.accounts.owner).mint(
