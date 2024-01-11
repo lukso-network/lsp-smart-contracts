@@ -1677,7 +1677,7 @@ Approve `operator` to operate on all tokens of `tokensOwner`.
 event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
 ```
 
-Emitted when `owner` enables `approved` to manage the `tokenId` token.
+Emitted when the allowance of a `spender` for an `owner` is set by a call to [`approve`](#approve). `value` is the new allowance.
 
 #### Parameters
 
@@ -1897,7 +1897,7 @@ Emitted when `tokenId` token is transferred from the `from` to the `to` address.
 event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 ```
 
-Emitted when `tokenId` token is transferred from `from` to `to`.
+Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.
 
 #### Parameters
 
