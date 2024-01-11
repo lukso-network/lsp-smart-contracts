@@ -3,6 +3,7 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import {
   LSP8Mintable,
+  LSP8TransferOwnerChange,
   UniversalProfile,
   LSP6KeyManager,
   UniversalReceiverDelegateTokenReentrant__factory,
@@ -164,6 +165,48 @@ export const shouldBehaveLikeLSP8Mintable = (
       expect(balanceOfUP).to.equal(2);
       expect(tokenIdsOfUP[0]).to.equal(ethers.utils.hexlify(randomTokenId));
       expect(tokenIdsOfUP[1]).to.equal(ethers.utils.hexlify(secondRandomTokenId));
+    });
+  });
+  describe('when there is an owner change in the _beforeTokenTransfer hook', () => {
+    it('should revert', async () => {
+      // deploy LSP8TransferOwnerChange contract
+      const LSP8TransferOwnerChange = await ethers.getContractFactory('LSP8TransferOwnerChange');
+      const lsp8TransferOwnerChange = (await LSP8TransferOwnerChange.deploy(
+        'RandomName',
+        'RandomSymbol',
+        context.accounts.owner.address,
+        0, // token type
+        0, // token id format
+      )) as LSP8TransferOwnerChange;
+
+      const randomTokenId = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+
+      // // mint a token tokenReceiver
+      await lsp8TransferOwnerChange.connect(context.accounts.owner).mint(
+        context.accounts.tokenReceiver.address,
+        randomTokenId,
+        true, // beneficiary is an EOA, so we need to force minting
+        '0x',
+      );
+
+      // transfer ownership to lsp8TransferOwnerChange
+      await expect(
+        lsp8TransferOwnerChange
+          .connect(context.accounts.tokenReceiver)
+          .transfer(
+            context.accounts.tokenReceiver.address,
+            context.accounts.owner.address,
+            randomTokenId,
+            true,
+            '0x',
+          ),
+      )
+        .to.be.revertedWithCustomError(lsp8TransferOwnerChange, 'LSP8TokenOwnerChanged')
+        .withArgs(
+          randomTokenId,
+          context.accounts.tokenReceiver.address,
+          lsp8TransferOwnerChange.address,
+        );
     });
   });
 };

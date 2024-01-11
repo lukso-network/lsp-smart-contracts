@@ -41,7 +41,8 @@ import {
     LSP8NotifyTokenReceiverIsEOA,
     LSP8TokenIdsDataLengthMismatch,
     LSP8TokenIdsDataEmptyArray,
-    LSP8BatchCallFailed
+    LSP8BatchCallFailed,
+    LSP8TokenOwnerChanged
 } from "./LSP8Errors.sol";
 
 // constants
@@ -639,9 +640,15 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         _beforeTokenTransfer(from, to, tokenId, data);
 
-        // Re-fetch and update `tokenOwner` in case `tokenId`
-        // was transferred inside the `_beforeTokenTransfer` hook
-        tokenOwner = tokenOwnerOf(tokenId);
+        // Check that `tokenId`'s owner was not changed inside the `_beforeTokenTransfer` hook
+        address currentTokenOwner = tokenOwnerOf(tokenId);
+        if (tokenOwner != currentTokenOwner) {
+            revert LSP8TokenOwnerChanged(
+                tokenId,
+                tokenOwner,
+                currentTokenOwner
+            );
+        }
 
         _clearOperators(from, tokenId);
 

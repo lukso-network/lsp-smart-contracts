@@ -103,3 +103,12 @@ error LSP8TokenIdsDataEmptyArray();
  * @notice Batch call failed.
  */
 error LSP8BatchCallFailed(uint256 callIndex);
+
+/**
+ * @dev Reverts when the token owner changed inside the {_beforeTokenTransfer} hook.
+ */
+error LSP8TokenOwnerChanged(
+    bytes32 tokenId,
+    address oldOwner,
+    address newOwner
+);
