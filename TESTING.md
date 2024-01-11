@@ -22,10 +22,6 @@ npm run build
 
 To run the tests, use the `npm run test:{lsp}` command. Replace `{lsp}` with the specific test script you want to execute. Here are the available test script options with their descriptions:
 
-## Running Tests
-
-To run the tests, use the `npm run test:{lsp}` command. Replace `{lsp}` with the specific test script you want to execute. Here are the available test script options with their descriptions:
-
 - `test`: Runs all tests in order.
 - `test:benchmark`: Executes benchmark tests related to gas cost.
 - `test:parallel`: Runs the tests in parallel, allowing for simultaneous execution.
