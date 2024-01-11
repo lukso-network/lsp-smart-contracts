@@ -482,13 +482,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7CannotSendWithAddressZero();
         }
 
+        _beforeTokenTransfer(from, address(0), amount, data);
+
         uint256 balance = _tokenOwnerBalances[from];
         if (amount > balance) {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
-
-        _beforeTokenTransfer(from, address(0), amount, data);
-
         // tokens being burnt
         _existingTokens -= amount;
 
@@ -594,12 +593,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7CannotSendWithAddressZero();
         }
 
+        _beforeTokenTransfer(from, to, amount, data);
+
         uint256 balance = _tokenOwnerBalances[from];
         if (amount > balance) {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
-
-        _beforeTokenTransfer(from, to, amount, data);
 
         _tokenOwnerBalances[from] -= amount;
         _tokenOwnerBalances[to] += amount;
@@ -657,8 +656,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @dev Attempt to notify the operator `operator` about the `amount` tokens being authorized with.
      * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
      * If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
-     
-     * @param operator The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+
+     * @param operator The address to call the {universalReceiver} function on.
      * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
      */
     function _notifyTokenOperator(
@@ -676,8 +675,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @dev Attempt to notify the token sender `from` about the `amount` of tokens being transferred.
      * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
      * If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
-     
-     * @param from The address to call the {universalReceiver} function on.                                                                                                                                                                                   
+
+     * @param from The address to call the {universalReceiver} function on.
      * @param lsp1Data the data to be sent to the `from` address in the `universalReceiver` call.
      */
     function _notifyTokenSender(
