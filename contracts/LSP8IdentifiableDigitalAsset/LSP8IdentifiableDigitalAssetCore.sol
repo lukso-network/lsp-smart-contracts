@@ -507,6 +507,11 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
             revert LSP8CannotSendToAddressZero();
         }
 
+        // Check that `tokenId` is not already minted
+        if (_exists(tokenId)) {
+            revert LSP8TokenIdAlreadyMinted(tokenId);
+        }
+
         _beforeTokenTransfer(address(0), to, tokenId, data);
 
         // Check that `tokenId` was not minted inside the `_beforeTokenTransfer` hook
