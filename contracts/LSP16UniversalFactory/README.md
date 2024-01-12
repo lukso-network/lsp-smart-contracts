@@ -14,7 +14,7 @@ The factory should not be deployed directly from a floating branch in the reposi
 
 - Openzeppelin package version: `"@openzeppelin/contracts": "^4.9.2"`
 - The source code is generated with `0.8.17` compiler version and with `9999999` optimization runs.
-- Checkout to `PLACE_HOLDER` commit in the [lsp-smart-contract](https://github.com/lukso-network/lsp-smart-contracts) repo to obtain the exact copy of the code, change the compiler settings in `hardhat.config.ts` and compile to produce the same bytecode.
+- Checkout to `9e1519f94293b96efa2ebc8f459fde65cc43fecd` commit in the [lsp-smart-contract](https://github.com/lukso-network/lsp-smart-contracts) repo to obtain the exact copy of the code, change the compiler settings in `hardhat.config.ts` and compile to produce the same bytecode.
 
 [CREATE2]: https://eips.ethereum.org/EIPS/eip-1014
 [Nick Factory]: https://github.com/Arachnid/deterministic-deployment-proxy
