@@ -28,16 +28,12 @@ analyze:
     - contracts/LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol
     - contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol
     - contracts/LSP7DigitalAsset/presets/LSP7Mintable.sol
-    - contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol
     - contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol
     - contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply.sol
-    - contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol
     - contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol
     - contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol
-    - contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol
     - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol
     - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol
-    - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721.sol
     - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol
     # - Vault & Social Recovery
     - contracts/LSP9Vault/LSP9Vault.sol
@@ -52,13 +48,9 @@ analyze:
     # - Tokens & NFTs
     - contracts/LSP7DigitalAsset/LSP7DigitalAssetInitAbstract.sol
     - contracts/LSP7DigitalAsset/presets/LSP7MintableInit.sol
-    - contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20MintableInit.sol
-    - contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20InitAbstract.sol
     - contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInitAbstract.sol
     - contracts/LSP8IdentifiableDigitalAsset/presets/LSP8MintableInit.sol
-    - contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721MintableInit.sol
     - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupplyInitAbstract.sol
-    - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721InitAbstract.sol
     - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8EnumerableInitAbstract.sol
     # - Vault & Social Recovery
     - contracts/LSP9Vault/LSP9VaultInit.sol
