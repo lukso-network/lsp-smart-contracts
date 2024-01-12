@@ -149,16 +149,6 @@ const config: HardhatUserConfig = {
       'LSP8MintableInit',
       'LSP9VaultInit',
       'LSP11BasicSocialRecoveryInit',
-      // ERC Compatible tokens
-      // ------------------
-      'LSP7CompatibleERC20',
-      'LSP7CompatibleERC20InitAbstract',
-      'LSP7CompatibleERC20Mintable',
-      'LSP7CompatibleERC20MintableInit',
-      'LSP8CompatibleERC721',
-      'LSP8CompatibleERC721InitAbstract',
-      'LSP8CompatibleERC721Mintable',
-      'LSP8CompatibleERC721MintableInit',
       // Legacy L14
       // ------------------
       'UniversalReceiverAddressStore',
