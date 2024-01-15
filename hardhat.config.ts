@@ -50,6 +50,21 @@ function getTestnetChainConfig(): NetworkUserConfig {
   return config;
 }
 
+function getMainnetChainConfig(): NetworkUserConfig {
+  const config: NetworkUserConfig = {
+    live: true,
+    url: 'https://rpc.lukso.gateway.fm',
+    chainId: 42,
+    saveDeployments: true,
+  };
+
+  if (process.env.CONTRACT_VERIFICATION_MAINNET_PK !== undefined) {
+    config['accounts'] = [process.env.CONTRACT_VERIFICATION_MAINNET_PK];
+  }
+
+  return config;
+}
+
 const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
   networks: {
@@ -59,6 +74,7 @@ const config: HardhatUserConfig = {
       allowBlocksWithSameTimestamp: true,
     },
     luksoTestnet: getTestnetChainConfig(),
+    luksoMainnet: getMainnetChainConfig(),
   },
   namedAccounts: {
     owner: 0,
