@@ -27,6 +27,10 @@ $ cd ./lsp-smart-contracts
 $ npm install
 ```
 
+## Testing
+
+For detailed instructions on how to run tests, please refer to our [Testing Guide](./tests/README.md).
+
 ## Usage
 
 ### in Javascript
