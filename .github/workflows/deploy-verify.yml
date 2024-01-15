@@ -28,7 +28,7 @@ jobs:
 
       # This will also generate the Typechain types used by the Chai tests
       - name: Build contract artifacts
-        run: npx hardhat compile
+        run: npm run build
 
       - name: cache dependencies + build
         uses: actions/cache@v2
@@ -88,7 +88,7 @@ jobs:
         run: npm ci
 
       - name: Verify Deployer Balance
-        run: npx ts-node ./scripts/ci/check-deployer-balance.ts
+        run: npx hardhat verify-balance --network luksoTestnet
 
       - name: Deploy + Verify ${{ matrix.contracts }} on Testnet
         run: sh ./scripts/ci/deploy-verify.sh -n luksoTestnet -c ${{ matrix.contracts }}
