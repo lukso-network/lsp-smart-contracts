@@ -25,7 +25,7 @@ To run the tests, use the `npm run test:{lsp}` command. Replace `{lsp}` with the
 - `test`: Runs all tests in order.
 - `test:benchmark`: Executes benchmark tests related to gas cost.
 - `test:parallel`: Runs the tests in parallel, allowing for simultaneous execution.
-- `test:mocks`: Executes tests for mock contracts, typically used for testing purposes.
+- `test:mocks`: Executes tests for mock contracts (typically used for testing purposes), **ERC165 interface IDs and constants from `constants.ts` checks**.
 - `test:up`: Runs tests for the UniversalProfile contract.
 - `test:upinit`: Executes tests for the initializable version of the UniversalProfile contract.
 - `test:lsp1`: Runs tests for the LSP1UniversalReceiver contracts.
