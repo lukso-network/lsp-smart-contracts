@@ -76,7 +76,7 @@ jobs:
         run: |
           if [[ "<" == "${{ steps.comparison.outputs.comparison-result }}" ]]
           then 
-            solc $(ls contracts/**/*.sol | grep -v "Compatible\|Extension4337\|contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset") \
+            solc $(ls contracts/**/*.sol | grep -v "Extension4337\|contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset") \
               --allow-paths $(pwd)/node_modules/ \
               @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
