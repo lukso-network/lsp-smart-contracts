@@ -11,11 +11,18 @@ task(
 ).setAction(async (taskArgs, hre) => {
   const { ethers } = hre;
 
+  let wallet;
+
+  if (hre.network.name === 'luksoMainnet') {
+    wallet = new ethers.Wallet(process.env.CONTRACT_VERIFICATION_MAINNET_PK);
+  } else {
+    wallet = new ethers.Wallet(process.env.CONTRACT_VERIFICATION_TESTNET_PK);
+  }
+
   // the CI deploys all the contracts, so we need to make sure that the deployer has enough balance
   // each contract to deploy costs around 0.02 - 0.03 LYXe
   const MINIMUM_DEPLOYER_BALANCE = ethers.utils.parseUnits('0.1', 'ether');
 
-  const wallet = new ethers.Wallet(process.env.CONTRACT_VERIFICATION_TESTNET_PK);
   const deployerAddress = wallet.address;
 
   // Grab network testnet vs mainnet from hardhat config at runtime

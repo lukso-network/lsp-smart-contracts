@@ -1,6 +1,10 @@
 # This workflow deploys + verify the base smart contracts on the LUKSO Mainnet chain
 name: Deploy + Verify on Mainnet
 
+env:
+  CONTRACT_VERIFICATION_MAINNET_PK: ${{ secrets.CONTRACT_VERIFICATION_MAINNET_PK }}
+  DEPLOYER_ADDRESS: "0xF0efeD8d49c0FA6CFC861Bf0311b6B3a4414e4b7"
+
 on:
   workflow_dispatch:
   push:
@@ -33,10 +37,4 @@ jobs:
 
       # Loop through deployment files and recover address of deployed contracts to verify
       - name: Verify deployed contracts on mainnet
-        run: |
-          for jsonFile in deployments/luksoMainnet/*.json; do
-            if [ -f "$jsonFile" ]; then
-              CONTRACT_ADDRESS=$(cat $jsonFile | jq -r '.address')
-              npx hardhat verify $CONTRACT_ADDRESS --network luksoMainnet
-            fi
-          done;
+        run: sh ./scripts/ci/verify-base-contracts-mainnet.sh
