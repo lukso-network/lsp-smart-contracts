@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
-import {
-    LSP25MultiChannelNonce
-} from "../LSP25ExecuteRelayCall/LSP25MultiChannelNonce.sol";
+import {LSP25MultiChannelNonce} from "../LSP25MultiChannelNonce.sol";
 
 /**
  * @dev This contract is used only for testing the internal functions.

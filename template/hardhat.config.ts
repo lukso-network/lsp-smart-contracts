@@ -124,3 +124,5 @@ const config: HardhatUserConfig = {
     timeout: 10000000,
   },
 };
+
+export default config;
