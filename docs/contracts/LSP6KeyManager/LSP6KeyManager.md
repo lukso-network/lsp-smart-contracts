@@ -1262,7 +1262,11 @@ Used at the end of the [`lsp20VerifyCall`](#`lsp20verifycall`), [`_execute`](#`_
 :::
 
 ```solidity
-event PermissionsVerified(address indexed signer, uint256 indexed value, bytes4 indexed selector);
+event PermissionsVerified(
+  address indexed signer,
+  uint256 indexed value,
+  bytes4 indexed selector
+);
 ```
 
 _Verified the permissions of `signer` for calling function `selector` on the linked account and sending `value` of native token._

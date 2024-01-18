@@ -22,14 +22,20 @@ jobs:
         run: npm ci
 
       - name: 🔍 Run Solidity Linter
-        run: npm run lint:solidity
+        run: |
+          npm run lint:solidity
+          npm run lint:turbo:solidity
 
       - name: 🎨 Run ESLint on JS/TS files
-        run: npm run lint
+        run: |
+          npm run lint
+          npm run lint:turbo
 
       # This will also generate the Typechain types used by the Chai tests
       - name: 🏗️ Build contract artifacts
-        run: npx hardhat compile
+        run: |
+          npm run build
+          npm run build:turbo
 
       - name: 📤 cache dependencies + build
         uses: actions/cache@v2
@@ -54,6 +60,9 @@ jobs:
             echo "Error: Please generate ABI docs after making changes to Solidity code and Natspec comments!"
             exit 1
           fi
+
+      - name: 🧪 Run Turbo tests
+        run: npm run test:turbo
 
   test-suites:
     strategy:
