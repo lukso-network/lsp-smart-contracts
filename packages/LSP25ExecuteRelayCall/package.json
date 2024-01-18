@@ -1,7 +1,7 @@
 {
-  "name": "lsp25",
+  "name": "lspN",
   "version": "0.12.1",
-  "description": "Package for the LSP25 Execute Relay Call standard",
+  "description": "Package for the LSPN <write the standard name here> standard",
   "license": "Apache-2.0",
   "author": "",
   "keywords": [
@@ -39,7 +39,7 @@
     "hardhat-deploy": "^0.11.25",
     "hardhat-gas-reporter": "^1.0.9",
     "hardhat-packager": "^1.4.2",
-    "solhint": "^3.3.6",
+    "solhint": "^3.6.2",
     "ts-node": "^10.2.0",
     "tsconfig": "*",
     "typechain": "^8.0.0",
