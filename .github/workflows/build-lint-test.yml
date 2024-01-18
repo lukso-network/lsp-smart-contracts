@@ -72,7 +72,6 @@ jobs:
             "up",
             "upinit",
             "lsp1",
-            "lsp2",
             "lsp6",
             "lsp6init",
             "lsp7",
