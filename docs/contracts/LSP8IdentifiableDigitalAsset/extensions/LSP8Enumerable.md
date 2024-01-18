@@ -1420,7 +1420,12 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 :::
 
 ```solidity
-event OperatorAuthorizationChanged(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bytes operatorNotificationData);
+event OperatorAuthorizationChanged(
+  address indexed operator,
+  address indexed tokenOwner,
+  bytes32 indexed tokenId,
+  bytes operatorNotificationData
+);
 ```
 
 Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
@@ -1448,7 +1453,13 @@ Emitted when `tokenOwner` enables `operator` to transfer or burn the `tokenId`.
 :::
 
 ```solidity
-event OperatorRevoked(address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bool notified, bytes operatorNotificationData);
+event OperatorRevoked(
+  address indexed operator,
+  address indexed tokenOwner,
+  bytes32 indexed tokenId,
+  bool notified,
+  bytes operatorNotificationData
+);
 ```
 
 Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on its behalf.
@@ -1477,7 +1488,10 @@ Emitted when `tokenOwner` disables `operator` to transfer or burn `tokenId` on i
 :::
 
 ```solidity
-event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+event OwnershipTransferred(
+  address indexed previousOwner,
+  address indexed newOwner
+);
 ```
 
 #### Parameters
@@ -1501,7 +1515,11 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 :::
 
 ```solidity
-event TokenIdDataChanged(bytes32 indexed tokenId, bytes32 indexed dataKey, bytes dataValue);
+event TokenIdDataChanged(
+  bytes32 indexed tokenId,
+  bytes32 indexed dataKey,
+  bytes dataValue
+);
 ```
 
 Emitted when setting data for `tokenId`.
@@ -1528,7 +1546,14 @@ Emitted when setting data for `tokenId`.
 :::
 
 ```solidity
-event Transfer(address operator, address indexed from, address indexed to, bytes32 indexed tokenId, bool force, bytes data);
+event Transfer(
+  address operator,
+  address indexed from,
+  address indexed to,
+  bytes32 indexed tokenId,
+  bool force,
+  bytes data
+);
 ```
 
 Emitted when `tokenId` token is transferred from the `from` to the `to` address.
@@ -2091,37 +2116,6 @@ error LSP8TokenOwnerCannotBeOperator();
 ```
 
 Reverts when trying to authorize or revoke the token's owner as an operator.
-
-<br/>
-
-### LSP8TokenOwnerChanged
-
-:::note References
-
-- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8tokenownerchanged)
-- Solidity implementation: [`LSP8Enumerable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol)
-- Error signature: `LSP8TokenOwnerChanged(bytes32,address,address)`
-- Error hash: `0x5a9c31d3`
-
-:::
-
-```solidity
-error LSP8TokenOwnerChanged(
-  bytes32 tokenId,
-  address oldOwner,
-  address newOwner
-);
-```
-
-Reverts when the token owner changed inside the [`_beforeTokenTransfer`](#_beforetokentransfer) hook.
-
-#### Parameters
-
-| Name       |   Type    | Description |
-| ---------- | :-------: | ----------- |
-| `tokenId`  | `bytes32` | -           |
-| `oldOwner` | `address` | -           |
-| `newOwner` | `address` | -           |
 
 <br/>
 

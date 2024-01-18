@@ -88,7 +88,7 @@ Reverts whenever someone tries to send native tokens to a LSP7 contract.
 
 :::danger
 
-To avoid front-running and Allowance Double-Spend Exploit when increasing or decreasing the authorized amount of an operator, it is advised to use the [`increaseAllowance`](#increaseallowance) and [`decreaseAllowance`](#decreaseallowance) functions. For more information, see: https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
+To avoid front-running and Allowance Double-Spend Exploit when increasing or decreasing the authorized amount of an operator, it is advised to: 1. either call [`revokeOperator`](#revokeoperator) first, and then re-call [`authorizeOperator`](#authorizeoperator) with the new amount. 2. or use the non-standard functions [`increaseAllowance`](#increaseallowance) or [`decreaseAllowance`](#decreaseallowance). For more information, see: https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
 
 :::
 
@@ -1205,7 +1205,12 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 :::
 
 ```solidity
-event OperatorAuthorizationChanged(address indexed operator, address indexed tokenOwner, uint256 indexed amount, bytes operatorNotificationData);
+event OperatorAuthorizationChanged(
+  address indexed operator,
+  address indexed tokenOwner,
+  uint256 indexed amount,
+  bytes operatorNotificationData
+);
 ```
 
 Emitted when `tokenOwner` enables `operator` for `amount` tokens.
@@ -1233,7 +1238,12 @@ Emitted when `tokenOwner` enables `operator` for `amount` tokens.
 :::
 
 ```solidity
-event OperatorRevoked(address indexed operator, address indexed tokenOwner, bool indexed notified, bytes operatorNotificationData);
+event OperatorRevoked(
+  address indexed operator,
+  address indexed tokenOwner,
+  bool indexed notified,
+  bytes operatorNotificationData
+);
 ```
 
 Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`authorizedAmountFor(...)`](#`authorizedamountfor) to `0`.
@@ -1261,7 +1271,10 @@ Emitted when `tokenOwner` disables `operator` for `amount` tokens and set its [`
 :::
 
 ```solidity
-event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+event OwnershipTransferred(
+  address indexed previousOwner,
+  address indexed newOwner
+);
 ```
 
 #### Parameters
@@ -1285,7 +1298,14 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 :::
 
 ```solidity
-event Transfer(address indexed operator, address indexed from, address indexed to, uint256 amount, bool force, bytes data);
+event Transfer(
+  address indexed operator,
+  address indexed from,
+  address indexed to,
+  uint256 amount,
+  bool force,
+  bytes data
+);
 ```
 
 Emitted when the `from` transferred successfully `amount` of tokens to `to`.

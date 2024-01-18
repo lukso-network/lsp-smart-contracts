@@ -11,6 +11,4 @@ import {LSP17Extension} from "../LSP17ContractExtension/LSP17Extension.sol";
  * to allow it to receive ERC721 tokens via `safeTransferFrom`.
  */
 // solhint-disable-next-line no-empty-blocks
-contract OnERC721ReceivedExtension is ERC721Holder, LSP17Extension {
-
-}
+contract OnERC721ReceivedExtension is ERC721Holder, LSP17Extension {}

@@ -263,7 +263,14 @@ function _generatePrimaryContractProxySalt(struct ILSP23LinkedContractsFactory.P
 :::
 
 ```solidity
-event DeployedContracts(address indexed primaryContract, address indexed secondaryContract, ILSP23LinkedContractsFactory.PrimaryContractDeployment primaryContractDeployment, ILSP23LinkedContractsFactory.SecondaryContractDeployment secondaryContractDeployment, address postDeploymentModule, bytes postDeploymentModuleCalldata);
+event DeployedContracts(
+  address indexed primaryContract,
+  address indexed secondaryContract,
+  ILSP23LinkedContractsFactory.PrimaryContractDeployment primaryContractDeployment,
+  ILSP23LinkedContractsFactory.SecondaryContractDeployment secondaryContractDeployment,
+  address postDeploymentModule,
+  bytes postDeploymentModuleCalldata
+);
 ```
 
 Emitted when a primary and secondary contract are deployed.
@@ -293,7 +300,14 @@ Emitted when a primary and secondary contract are deployed.
 :::
 
 ```solidity
-event DeployedERC1167Proxies(address indexed primaryContract, address indexed secondaryContract, ILSP23LinkedContractsFactory.PrimaryContractDeploymentInit primaryContractDeploymentInit, ILSP23LinkedContractsFactory.SecondaryContractDeploymentInit secondaryContractDeploymentInit, address postDeploymentModule, bytes postDeploymentModuleCalldata);
+event DeployedERC1167Proxies(
+  address indexed primaryContract,
+  address indexed secondaryContract,
+  ILSP23LinkedContractsFactory.PrimaryContractDeploymentInit primaryContractDeploymentInit,
+  ILSP23LinkedContractsFactory.SecondaryContractDeploymentInit secondaryContractDeploymentInit,
+  address postDeploymentModule,
+  bytes postDeploymentModuleCalldata
+);
 ```
 
 Emitted when proxies of a primary and secondary contract are deployed.
