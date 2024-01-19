@@ -40,7 +40,7 @@ export const dodocConfig = {
 
     // libraries --------------------
     'contracts/LSP1UniversalReceiver/LSP1Utils.sol',
-    'contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol',
+    'packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol',
     'contracts/LSP5ReceivedAssets/LSP5Utils.sol',
     'contracts/LSP6KeyManager/LSP6Utils.sol',
     'contracts/LSP10ReceivedVaults/LSP10Utils.sol',

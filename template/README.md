@@ -47,3 +47,5 @@ turbo lint:solidity
 turbo test
 turbo test:foundry
 ```
+
+6. Finally update the relevant information in the `README.md` file in the folder of the newly created package, such as the title at the top, some description, etc...

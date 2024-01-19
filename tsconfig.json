@@ -10,6 +10,11 @@
     "skipLibCheck": true,
     "lib": ["ES2019", "es2019.array", "ES2021.String"]
   },
-  "include": ["./tests", "./deploy", "hardhat"],
+  "include": [
+    "./tests",
+    "./deploy",
+    "hardhat",
+    "packages/LSP2ERC725YJSONSchema/tests/LSP2UtilsLibrary.test.ts"
+  ],
   "files": ["./hardhat.config.ts"]
 }

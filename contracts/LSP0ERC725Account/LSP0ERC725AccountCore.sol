@@ -19,7 +19,9 @@ import {
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
-import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
+import {
+    LSP2Utils
+} from "../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
 
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";

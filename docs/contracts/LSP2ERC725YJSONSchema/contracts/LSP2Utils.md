@@ -10,7 +10,7 @@
 :::
 :::info Solidity implementation
 
-[`LSP2Utils.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol)
+[`LSP2Utils.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol)
 
 :::
 
