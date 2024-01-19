@@ -20,7 +20,9 @@ import {
 import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 
 // libraries
-import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
+import {
+    LSP2Utils
+} from "../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
 
 // constants
 import {_INTERFACEID_LSP8, _LSP8_TOKENID_FORMAT_KEY} from "./LSP8Constants.sol";

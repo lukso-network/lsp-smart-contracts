@@ -16,6 +16,9 @@
       "cache": true,
       "env": ["COVERAGE"]
     },
+    "test:foundry": {
+      "cache": true
+    },
     "test:coverage": {
       "dependsOn": ["test"],
       "cache": false

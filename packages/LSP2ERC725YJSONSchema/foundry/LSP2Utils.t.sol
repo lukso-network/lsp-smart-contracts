@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
-import "../../../contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol";
+import "../contracts/LSP2Utils.sol";
 
 contract LSP2UtilsTests is Test {
     function testRevertsOnWrongLastBracket(string memory x) public {
