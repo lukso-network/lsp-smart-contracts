@@ -9,9 +9,7 @@ import "../../../contracts/LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-import {
-    LSP2Utils
-} from "../../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
 import {LSP6Utils} from "../../../contracts/LSP6KeyManager/LSP6Utils.sol";
 
 import "../../../contracts/LSP1UniversalReceiver/LSP1Constants.sol";

@@ -14,9 +14,7 @@ import {LSP7DigitalAssetCore} from "./LSP7DigitalAssetCore.sol";
 import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 
 // libraries
-import {
-    LSP2Utils
-} from "../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
 
 // constants
 import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";

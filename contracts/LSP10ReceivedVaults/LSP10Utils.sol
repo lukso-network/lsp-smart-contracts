@@ -7,9 +7,7 @@ import {
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 // libraries
-import {
-    LSP2Utils
-} from "../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
 
 // constants
 import {_INTERFACEID_LSP9} from "../LSP9Vault/LSP9Constants.sol";

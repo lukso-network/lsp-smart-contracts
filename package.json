@@ -114,6 +114,7 @@
     "solidity-bytes-utils": "0.8.0",
     "lsp2": "*",
     "lsp4": "*",
+    "lsp5": "*",
     "lsp20": "*",
     "lsp25": "*"
   },
