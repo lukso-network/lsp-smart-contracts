@@ -4,10 +4,7 @@ import { LSP25_VERSION } from '../../../constants';
 import { LOCAL_PRIVATE_KEYS } from '../../../tests/utils/helpers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import {
-  LSP25MultiChannelNonceTester,
-  LSP25MultiChannelNonceTester__factory,
-} from '../../../types';
+import { LSP25MultiChannelNonceTester, LSP25MultiChannelNonceTester__factory } from '../types';
 
 describe('LSP25MultiChannelNonce', () => {
   let contract: LSP25MultiChannelNonceTester;

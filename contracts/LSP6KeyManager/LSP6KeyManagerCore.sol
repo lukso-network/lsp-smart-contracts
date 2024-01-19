@@ -15,7 +15,7 @@ import {
 } from "../LSP20CallVerification/ILSP20CallVerifier.sol";
 import {
     ILSP25ExecuteRelayCall as ILSP25
-} from "../../packages/LSP25ExecuteRelayCall/contracts/ILSP25ExecuteRelayCall.sol";
+} from "lsp25/contracts/ILSP25ExecuteRelayCall.sol";
 
 // modules
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
@@ -29,7 +29,7 @@ import {
 import {LSP6OwnershipModule} from "./LSP6Modules/LSP6OwnershipModule.sol";
 import {
     LSP25MultiChannelNonce
-} from "../../packages/LSP25ExecuteRelayCall/contracts/LSP25MultiChannelNonce.sol";
+} from "lsp25/contracts/LSP25MultiChannelNonce.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -69,9 +69,7 @@ import {
     _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITH_POST_VERIFICATION,
     _LSP20_VERIFY_CALL_RESULT_SUCCESS_VALUE
 } from "../LSP20CallVerification/LSP20Constants.sol";
-import {
-    _INTERFACEID_LSP25
-} from "../../packages/LSP25ExecuteRelayCall/contracts/LSP25Constants.sol";
+import {_INTERFACEID_LSP25} from "lsp25/contracts/LSP25Constants.sol";
 
 /**
  * @title Core implementation of the LSP6 Key Manager standard.

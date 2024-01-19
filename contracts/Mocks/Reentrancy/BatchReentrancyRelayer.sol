@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 // interfaces
 import {
     ILSP25ExecuteRelayCall
-} from "../../../packages/LSP25ExecuteRelayCall/contracts/ILSP25ExecuteRelayCall.sol";
+} from "lsp25/contracts/ILSP25ExecuteRelayCall.sol";
 
 contract BatchReentrancyRelayer {
     bytes[] private _signatures;

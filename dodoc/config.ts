@@ -20,7 +20,7 @@ export const dodocConfig = {
     'contracts/LSP20CallVerification/LSP20CallVerification.sol',
     'contracts/LSP23LinkedContractsFactory/LSP23LinkedContractsFactory.sol',
     'contracts/LSP23LinkedContractsFactory/IPostDeploymentModule.sol',
-    'contracts/LSP25ExecuteRelayCall/LSP25MultiChannelNonce.sol',
+    'packages/LSP25ExecuteRelayCall/contracts/LSP25MultiChannelNonce.sol',
 
     // tokens
     'contracts/LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol',

@@ -1,7 +1,7 @@
 {
-  "name": "lsp25",
+  "name": "lspN",
   "version": "0.12.1",
-  "description": "Package for the LSP25 Execute Relay Call standard",
+  "description": "Package for the LSPN <write the standard name here> standard",
   "license": "Apache-2.0",
   "author": "",
   "keywords": [

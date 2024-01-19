@@ -57,7 +57,7 @@ import {
 } from "../LSP20CallVerification/ILSP20CallVerifier.sol";
 import {
     ILSP25ExecuteRelayCall as ILSP25
-} from "../../packages/LSP25ExecuteRelayCall/contracts/ILSP25ExecuteRelayCall.sol";
+} from "lsp25/contracts/ILSP25ExecuteRelayCall.sol";
 
 // constants
 import {_INTERFACEID_LSP0} from "../LSP0ERC725Account/LSP0Constants.sol";
@@ -83,9 +83,7 @@ import {
     _INTERFACEID_LSP20_CALL_VERIFICATION,
     _INTERFACEID_LSP20_CALL_VERIFIER
 } from "../LSP20CallVerification/LSP20Constants.sol";
-import {
-    _INTERFACEID_LSP25
-} from "../../packages/LSP25ExecuteRelayCall/contracts/LSP25Constants.sol";
+import {_INTERFACEID_LSP25} from "lsp25/contracts/LSP25Constants.sol";
 
 // libraries
 import {
