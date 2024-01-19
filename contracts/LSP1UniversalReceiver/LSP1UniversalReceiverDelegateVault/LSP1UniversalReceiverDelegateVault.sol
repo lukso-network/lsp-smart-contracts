@@ -15,7 +15,7 @@ import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {Version} from "../../Version.sol";
 
 // libraries
-import {LSP5Utils} from "../../LSP5ReceivedAssets/LSP5Utils.sol";
+import {LSP5Utils} from "lsp5/contracts/LSP5Utils.sol";
 
 // constants
 import {_INTERFACEID_LSP1_DELEGATE} from "../LSP1Constants.sol";

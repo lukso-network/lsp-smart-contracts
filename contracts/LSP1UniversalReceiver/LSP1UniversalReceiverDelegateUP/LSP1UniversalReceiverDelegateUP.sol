@@ -18,7 +18,7 @@ import {Version} from "../../Version.sol";
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import {LSP5Utils} from "../../LSP5ReceivedAssets/LSP5Utils.sol";
+import {LSP5Utils} from "lsp5/contracts/LSP5Utils.sol";
 import {LSP10Utils} from "../../LSP10ReceivedVaults/LSP10Utils.sol";
 
 // constants

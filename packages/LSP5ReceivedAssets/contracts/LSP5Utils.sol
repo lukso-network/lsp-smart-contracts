@@ -7,15 +7,13 @@ import {
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 // libraries
-import {
-    LSP2Utils
-} from "../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
 
 // constants
 import {
     _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX,
     _LSP5_RECEIVED_ASSETS_ARRAY_KEY
-} from "../LSP5ReceivedAssets/LSP5Constants.sol";
+} from "./LSP5Constants.sol";
 
 /**
  * @title LSP5 Utility library.
