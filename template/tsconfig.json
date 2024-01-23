@@ -2,8 +2,3 @@
   "extends": "tsconfig/contracts.json",
   "include": ["**/*.ts"]
 }
-
-{
-  "extends": "tsconfig/contracts.json",
-  "include": ["**/*.ts"]
-}
