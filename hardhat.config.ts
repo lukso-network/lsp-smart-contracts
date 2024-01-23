@@ -23,6 +23,7 @@ import 'hardhat-deploy';
 import './scripts/ci/docs-generate';
 import './scripts/ci/gas_benchmark';
 import './scripts/ci/check-deployer-balance';
+import './scripts/ci/verify-all-contracts';
 
 // Typescript types for web3.js
 import '@nomiclabs/hardhat-web3';
@@ -98,6 +99,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: 'https://api.explorer.execution.testnet.lukso.network/api',
           browserURL: 'https://explorer.execution.testnet.lukso.network/',
+        },
+      },
+      {
+        network: 'luksoMainnet',
+        chainId: 42,
+        urls: {
+          apiURL: 'https://api.explorer.execution.mainnet.lukso.network/api',
+          browserURL: 'https://explorer.execution.mainnet.lukso.network/',
         },
       },
     ],
