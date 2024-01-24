@@ -21,4 +21,4 @@ const deployUniversalReceiverDelegateUPDeterministic: DeployFunction = async ({
 };
 
 export default deployUniversalReceiverDelegateUPDeterministic;
-deployUniversalReceiverDelegateUPDeterministic.tags = ['LSP1UniversalReceiverDelegateUP'];
+deployUniversalReceiverDelegateUPDeterministic.tags = ['LSP1UniversalReceiverDelegateUP', 'base'];

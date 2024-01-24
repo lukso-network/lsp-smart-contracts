@@ -21,4 +21,4 @@ const deployBaseVaultDeterministic: DeployFunction = async ({
 };
 
 export default deployBaseVaultDeterministic;
-deployBaseVaultDeterministic.tags = ['LSP9VaultInit', 'base'];
+deployBaseVaultDeterministic.tags = ['LSP9VaultInit'];
