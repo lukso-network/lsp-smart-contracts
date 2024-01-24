@@ -12,7 +12,7 @@ export const dodocConfig = {
     'contracts/LSP9Vault/LSP9Vault.sol',
     'contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol',
     'contracts/LSP14Ownable2Step/LSP14Ownable2Step.sol',
-    'contracts/LSP16UniversalFactory/LSP16UniversalFactory.sol',
+    'packages/LSP16UniversalFactory/contracts/LSP16UniversalFactory.sol',
     'contracts/LSP17ContractExtension/LSP17Extendable.sol',
     'contracts/LSP17ContractExtension/LSP17Extension.sol',
     'contracts/LSP17Extensions/Extension4337.sol',
