@@ -12,7 +12,9 @@ import {
 
 // modules
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
-import {LSP17Extension} from "../LSP17ContractExtension/LSP17Extension.sol";
+import {
+    LSP17Extension
+} from "lsp17contractextension/contracts/LSP17Extension.sol";
 
 // librairies
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
