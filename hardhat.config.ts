@@ -181,7 +181,6 @@ const config: HardhatUserConfig = {
       // Tools
       // ------------------
       'Create2Factory',
-      'LSP16UniversalFactory',
       'LSP23LinkedContractsFactory',
     ],
     // Whether to include the TypeChain factories or not.

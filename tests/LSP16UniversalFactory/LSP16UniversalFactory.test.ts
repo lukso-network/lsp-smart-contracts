@@ -4,8 +4,6 @@ import { FakeContract, smock } from '@defi-wonderland/smock';
 
 import {
   LSP1UniversalReceiverDelegateUP__factory,
-  LSP16UniversalFactory,
-  LSP16UniversalFactory__factory,
   UniversalProfileInit,
   UniversalProfileInit__factory,
   LSP1UniversalReceiverDelegateUP,
@@ -19,6 +17,11 @@ import {
   FallbackInitializer__factory,
   LSP6KeyManager__factory,
 } from '../../types';
+
+import {
+  LSP16UniversalFactory,
+  LSP16UniversalFactory__factory,
+} from '../../packages/LSP16UniversalFactory/types';
 
 import web3 from 'web3';
 
