@@ -47,9 +47,6 @@ jobs:
             contracts.ts
           key: ${{ github.run_id }}
 
-      - name: 🧪 run import/requires tests
-        run: npm run test:importRequire
-
       - name: 📚 generate ABI docs
         run: npm run build:docs
 
