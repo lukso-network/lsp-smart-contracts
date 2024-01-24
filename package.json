@@ -104,7 +104,6 @@
     "test:reentrancy": "hardhat test --no-compile tests/Reentrancy/Reentrancy.test.ts",
     "test:reentrancyinit": "hardhat test --no-compile tests/Reentrancy/ReentrancyInit.test.ts",
     "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
-    "test:importRequire": "npm run build:js && ./tests/importRequire.sh",
     "test:turbo": "turbo test"
   },
   "dependencies": {
