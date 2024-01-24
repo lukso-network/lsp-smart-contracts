@@ -59,7 +59,7 @@ Available `--tags <options>` are:
 
 - `base`: deploy the 4 base contract above (for proxy use) at deterministic addresses.
 
-> **Note:** all the contracts marked as `base` or `Init` are deployed at deterministic addresses, so that they can be used as implementation behind proxies. If the contract is already deployed on the network, the address where the contract exists already will be returned.
+> **Note:** all the contracts marked as `base` or for which their name finish with `Init` are deployed at deterministic addresses, so that they can be used as implementation behind proxies. If the contract is already deployed on the network, the address where the contract exists already will be returned.
 > Moreover, **these contracts use `bytes32(0)` as their `salt` to deploy with CREATE2.**
 
 &nbsp;
@@ -67,11 +67,19 @@ Available `--tags <options>` are:
 **Examples**
 
 ```
-// Deploy the 3 contracts
+// Deploy the following 4 contracts:
+// - `UniversalProfile`
+// - `LSP6KeyManager`
+// - `LSP7Mintable`
+// - `LSP8Mintable`
 npx hardhat deploy --network luksoTestnet --tags standard --reset
 
 
-// Deploy the 3 contracts as base contracts (to be used behind proxies)
+// Deploy the following 4 contracts as base contracts (to be used behind proxies)
+// - `UniversalProfile`
+// - `LSP6KeyManager`
+// - `LSP7Mintable`
+// - `LSP8Mintable`
 npx hardhat deploy --network luksoTestnet --tags base --reset
 
 // Deploy a specific contract
@@ -141,3 +149,21 @@ module.exports = [
   false, // isNonDivisible_ (true or false)
 ];
 ```
+
+## Alternative: verify all deployed contracts
+
+A custom Hardhat task [`hardhat verify-all`](./scripts/ci/verify-all-contracts.ts) is available in this repository. It allows to verify all the contracts deployed and listed under the `deployments/` folder with a single command.
+
+For instance, if you have deployed all your contracts using a `--tag` (_e.g: all the `base` or `standard` contracts_) and set the flag `--write true` with `hardhat deploy`, all the infos of these contracts and their deployed addresses will be saved under the `deployments/` folder.
+
+You can then verify all of these deployed contracts in one go using the following command below for instance
+
+```bash
+# Deploy all the base contracts
+npx hardhat deploy --network luksoTestnet --tags base --write true
+
+# Verify all the base contracts at addresses mentioned under the `deployments/` folder
+npx hardhat verify-all --network luksoTestnet
+```
+
+For more details, see the [official Github repository of the Hardhat deploy plugin](https://github.com/wighawag/hardhat-deploy).

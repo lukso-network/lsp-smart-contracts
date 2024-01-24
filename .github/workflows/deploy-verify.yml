@@ -2,8 +2,10 @@
 name: Deploy + Verify Contracts on Testnet
 
 env:
+  # 0x983aBC616f2442bAB7a917E6bb8660Df8b01F3bF
   CONTRACT_VERIFICATION_TESTNET_PK: ${{ secrets.CONTRACT_VERIFICATION_TESTNET_PK }}
-  DEPLOYER_ADDRESS: "0x983aBC616f2442bAB7a917E6bb8660Df8b01F3bF"
+  # 0xF0efeD8d49c0FA6CFC861Bf0311b6B3a4414e4b7
+  CONTRACT_VERIFICATION_MAINNET_PK: ${{ secrets.CONTRACT_VERIFICATION_MAINNET_PK }}
 
 on:
   workflow_dispatch:
@@ -12,83 +14,45 @@ on:
       - "main"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js '16.15.0'
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16.x"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      # This will also generate the Typechain types used by the Chai tests
-      - name: Build contract artifacts
-        run: npx hardhat compile
-
-      - name: cache dependencies + build
-        uses: actions/cache@v2
-        with:
-          path: |
-            artifacts
-            node_modules 
-            types
-            contracts.ts
-          key: ${{ github.run_id }}
-
   deploy-verify:
-    runs-on: ubuntu-latest
-    needs: [build]
     strategy:
-      # run each base contract verification one after the other to prevent submitting multiple transactions at the same time with the same nonce.
-      max-parallel: 1
       matrix:
-        contracts: [
-            # Standard contracts
-            "UniversalProfile",
-            "LSP6KeyManager",
-            "LSP1UniversalReceiverDelegateUP",
-            "LSP1UniversalReceiverDelegateVault",
-            "LSP7Mintable",
-            "LSP8Mintable",
-            "LSP9Vault",
-            # Base contracts (for proxies)
-            "UniversalProfileInit",
-            "LSP6KeyManagerInit",
-            "LSP7MintableInit",
-            "LSP8MintableInit",
-            "LSP9VaultInit",
-          ]
+        network: ["luksoTestnet", "luksoMainnet"]
+
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: restore cache
-        uses: actions/cache@v2
-        id: "build-cache"
-        with:
-          path: |
-            artifacts
-            node_modules 
-            types
-            contracts.ts
-          key: ${{ github.run_id }}
-
-      - name: Use Node.js v16
+      - name: Use Node.js v20
         uses: actions/setup-node@v3
         with:
-          node-version: "16.x"
+          node-version: "20.x"
           cache: "npm"
 
       - name: Install dependencies
-        if: steps.build-cache.outputs.cache-hit != 'true'
         run: npm ci
+
+      - name: Build contract artifacts
+        run: npm run build
 
       - name: Verify Deployer Balance
-        run: npx ts-node ./scripts/ci/check-deployer-balance.ts
+        run: npx hardhat verify-balance --network ${{ matrix.network }}
 
-      - name: Deploy + Verify ${{ matrix.contracts }} on Testnet
-        run: sh ./scripts/ci/deploy-verify.sh -n luksoTestnet -c ${{ matrix.contracts }}
+      # We do not deploy the standard contracts on mainnet for the following reasons:
+      # 1) standard contracts are expensive to deploy on mainnet
+      # 2) user's universal profiles use the minimal proxy pattern,
+      #
+      # therefore we only need the base contracts to be deployed on mainnet.
+      - name: Select tags based on network to deploy
+        run: |
+          TAGS="base"
+          if [[ ${{ matrix.network }} == "luksoTestnet"]]; then
+            TAGS+=",standard"
+          fi
+
+      - name: Deploy contracts on network
+        run: npx hardhat deploy --network ${{ matrix.network }} --tags $TAGS --write true
+
+      # Loop through deployment files and recover address of deployed contracts to verify
+      - name: Verify deployed contracts on mainnet
+        run: npx hardhat verify-all --network ${{ matrix.network }}
