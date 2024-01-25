@@ -20,7 +20,7 @@ export const dodocConfig = {
     'contracts/LSP20CallVerification/LSP20CallVerification.sol',
     'contracts/LSP23LinkedContractsFactory/LSP23LinkedContractsFactory.sol',
     'contracts/LSP23LinkedContractsFactory/IPostDeploymentModule.sol',
-    'packages/LSP25ExecuteRelayCall/contracts/LSP25MultiChannelNonce.sol',
+    'lsp25/contracts/LSP25MultiChannelNonce.sol',
 
     // tokens
     'contracts/LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol',
@@ -48,6 +48,8 @@ export const dodocConfig = {
 
     // external --------------------
     '@erc725/smart-contracts/contracts/ERC725.sol',
+    // 'solidity-bytes-utils/contracts/BytesLib.sol',
+    '@openzeppelin/contracts/token/ERC20/ERC20.sol',
   ],
   libraries: [
     'contracts/LSP1UniversalReceiver/LSP1Utils.sol',
@@ -335,13 +337,14 @@ const generateContractSpecsDetails = (contractName: string) => {
     if (value.endsWith(`${contractName}.sol`)) return value;
   })[0];
 
-  const specs = contractPath.split('/')[1];
+  const specsIndex = contractPath.startsWith('lsp') ? 2 : 1;
+  const specs = contractPath.split('/')[specsIndex];
 
-  const specsName = `LSP-${specs.match(/\d+/)[0]}-${specs.split(/LSP\d+/)[1]}`;
+  const lspNumber = specs.match(/\d+/)[0];
+  const lspName = specs.split(/LSP\d+/)[1];
 
-  const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${specs.match(/\d+/)[0]}-${
-    specs.split(/LSP\d+/)[1]
-  }.md`;
+  const specsName = `LSP-${lspNumber}-${lspName}`;
+  const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${lspNumber}-${lspName}.md`;
 
   return { specsName, specsLink };
 };
