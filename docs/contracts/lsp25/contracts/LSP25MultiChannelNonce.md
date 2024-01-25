@@ -5,12 +5,12 @@
 
 :::info Standard Specifications
 
-[`LSP-25-ExecuteRelayCall`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-25-ExecuteRelayCall.md)
+[`LSP-25-MultiChannelNonce.sol`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-25-MultiChannelNonce.sol.md)
 
 :::
 :::info Solidity implementation
 
-[`LSP25MultiChannelNonce.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP25ExecuteRelayCall/LSP25MultiChannelNonce.sol)
+[`LSP25MultiChannelNonce.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/lsp25/contracts/LSP25MultiChannelNonce.sol)
 
 :::
 
