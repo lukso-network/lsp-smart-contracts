@@ -80,9 +80,11 @@ jobs:
               --allow-paths $(pwd)/node_modules/,$(pwd)/packages/ \
               @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
-              ../=$(pwd)/contracts/
+              ../=$(pwd)/contracts/ \
+              lsp25/=packages/LSP25ExecuteRelayCall/
           else
             solc contracts/**/*.sol \
               @=node_modules/@ \
-              solidity-bytes-utils/=node_modules/solidity-bytes-utils/
+              solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
+              lsp25/=packages/LSP25ExecuteRelayCall/
           fi;
