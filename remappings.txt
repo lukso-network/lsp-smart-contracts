@@ -7,5 +7,7 @@ hardhat-deploy/=node_modules/hardhat-deploy/
 hardhat/=node_modules/hardhat/
 solidity-bytes-utils/=node_modules/solidity-bytes-utils/
 ds-test/=lib/forge-std/lib/ds-test/src/
+lsp2/=packages/LSP2ERC725YJSONSchema/
+lsp4/=packages/LSP4DigitalAssetMetadata/
 lsp20/=packages/LSP20CallVerification/
 lsp25/=packages/LSP25ExecuteRelayCall/
