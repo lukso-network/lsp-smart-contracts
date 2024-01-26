@@ -104,7 +104,6 @@
     "test:reentrancy": "hardhat test --no-compile tests/Reentrancy/Reentrancy.test.ts",
     "test:reentrancyinit": "hardhat test --no-compile tests/Reentrancy/ReentrancyInit.test.ts",
     "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
-    "test:importRequire": "npm run build:js && ./tests/importRequire.sh",
     "test:turbo": "turbo test"
   },
   "dependencies": {
@@ -113,10 +112,11 @@
     "@openzeppelin/contracts": "^4.9.2",
     "@openzeppelin/contracts-upgradeable": "^4.9.2",
     "solidity-bytes-utils": "0.8.0",
-    "lsp17contractextension": "*"
+    "lsp17contractextension": "*",
+    "lsp25": "*"
   },
   "devDependencies": {
-    "@b00ste/hardhat-dodoc": "^0.3.15",
+    "@b00ste/hardhat-dodoc": "^0.3.16",
     "@defi-wonderland/smock": "^2.3.4",
     "@erc725/erc725.js": "0.17.2",
     "@lukso/eip191-signer.js": "^0.2.2",

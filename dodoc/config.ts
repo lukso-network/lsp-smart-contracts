@@ -13,14 +13,14 @@ export const dodocConfig = {
     'contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol',
     'contracts/LSP14Ownable2Step/LSP14Ownable2Step.sol',
     'contracts/LSP16UniversalFactory/LSP16UniversalFactory.sol',
-    'packages/LSP17ContractExtension/contracts/LSP17Extendable.sol',
-    'packages/LSP17ContractExtension/contracts/LSP17Extension.sol',
+    'lsp17contractextension/contracts/LSP17Extendable.sol',
+    'lsp17contractextension/contracts/LSP17Extension.sol',
     'contracts/LSP17Extensions/Extension4337.sol',
     'contracts/LSP17Extensions/OnERC721ReceivedExtension.sol',
     'contracts/LSP20CallVerification/LSP20CallVerification.sol',
     'contracts/LSP23LinkedContractsFactory/LSP23LinkedContractsFactory.sol',
     'contracts/LSP23LinkedContractsFactory/IPostDeploymentModule.sol',
-    'contracts/LSP25ExecuteRelayCall/LSP25MultiChannelNonce.sol',
+    'lsp25/contracts/LSP25MultiChannelNonce.sol',
 
     // tokens
     'contracts/LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol',
@@ -44,10 +44,12 @@ export const dodocConfig = {
     'contracts/LSP5ReceivedAssets/LSP5Utils.sol',
     'contracts/LSP6KeyManager/LSP6Utils.sol',
     'contracts/LSP10ReceivedVaults/LSP10Utils.sol',
-    'packages/LSP17ContractExtension/contracts/LSP17Utils.sol',
+    'lsp17contractextension/contracts/LSP17Utils.sol',
 
     // external --------------------
     '@erc725/smart-contracts/contracts/ERC725.sol',
+    // 'solidity-bytes-utils/contracts/BytesLib.sol',
+    '@openzeppelin/contracts/token/ERC20/ERC20.sol',
   ],
   libraries: [
     'contracts/LSP1UniversalReceiver/LSP1Utils.sol',
@@ -55,7 +57,7 @@ export const dodocConfig = {
     'contracts/LSP5ReceivedAssets/LSP5Utils.sol',
     'contracts/LSP6KeyManager/LSP6Utils.sol',
     'contracts/LSP10ReceivedVaults/LSP10Utils.sol',
-    'packages/LSP17ContractExtension/contracts/LSP17Utils.sol',
+    'lsp17contractextension/contracts/LSP17Utils.sol',
   ],
   templatePath: './dodoc/template.sqrl',
   helpers: [
@@ -335,13 +337,14 @@ const generateContractSpecsDetails = (contractName: string) => {
     if (value.endsWith(`${contractName}.sol`)) return value;
   })[0];
 
-  const specs = contractPath.split('/')[1];
+  const specsIndex = contractPath.startsWith('lsp') ? 2 : 1;
+  const specs = contractPath.split('/')[specsIndex];
 
-  const specsName = `LSP-${specs.match(/\d+/)[0]}-${specs.split(/LSP\d+/)[1]}`;
+  const lspNumber = specs.match(/\d+/)[0];
+  const lspName = specs.split(/LSP\d+/)[1];
 
-  const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${specs.match(/\d+/)[0]}-${
-    specs.split(/LSP\d+/)[1]
-  }.md`;
+  const specsName = `LSP-${lspNumber}-${lspName}`;
+  const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${lspNumber}-${lspName}.md`;
 
   return { specsName, specsLink };
 };
