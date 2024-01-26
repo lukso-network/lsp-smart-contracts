@@ -1,6 +1,7 @@
 <!-- This file is auto-generated. Do not edit! -->
 <!-- Check `@lukso-network/lsp-smart-contracts/CONTRIBUTING.md#solidity-code-comments` for more information. -->
 
+
 # LSP11BasicSocialRecovery
 
 :::info Standard Specifications
@@ -14,14 +15,21 @@
 
 :::
 
+
 > Implementation of LSP11 - Basic Social Recovery standard
+
+
 
 Sets permission for a controller address after a recovery process to interact with an ERC725 contract via the LSP6KeyManager
 
+
+
 ## Public Methods
+
 
 Public methods are accessible externally from users, allowing interaction with this function from dApps or other smart contracts.
 When marked as 'public', a method can be called both externally and internally, on the other hand, when marked as 'external', a method can only be called externally.
+
 
 ### constructor
 
@@ -30,22 +38,42 @@ When marked as 'public', a method can be called both externally and internally, 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-11-BasicSocialRecovery.md#constructor)
 - Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
 
+
 :::
+
+
+
+
+
+
+
+
+
 
 ```solidity
 constructor(address _owner, address target_);
 ```
 
-_Sets the target and the owner addresses_
+
+*Sets the target and the owner addresses*
+
+
+
+
+
+
+
 
 #### Parameters
 
-| Name      |   Type    | Description                                  |
-| --------- | :-------: | -------------------------------------------- |
-| `_owner`  | `address` | The owner of the LSP11 contract              |
+| Name | Type | Description |
+|---|:-:|---|
+| `_owner` | `address` | The owner of the LSP11 contract |
 | `target_` | `address` | The address of the ER725 contract to recover |
 
+
 <br/>
+
 
 ### addGuardian
 
@@ -58,19 +86,37 @@ _Sets the target and the owner addresses_
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function addGuardian(address newGuardian) external nonpayable;
 ```
 
+
+
+
 Adds a guardian of the targetCan be called only by the owner
+
+
+
+
 
 #### Parameters
 
-| Name          |   Type    | Description                      |
-| ------------- | :-------: | -------------------------------- |
+| Name | Type | Description |
+|---|:-:|---|
 | `newGuardian` | `address` | The address to add as a guardian |
 
+
 <br/>
+
 
 ### getGuardianChoice
 
@@ -83,25 +129,42 @@ Adds a guardian of the targetCan be called only by the owner
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function getGuardianChoice(address guardian) external view returns (address);
 ```
 
+
+
+
 Returns the address of a controller that a `guardian` selected for in order to recover the target
+
+
+
+
 
 #### Parameters
 
-| Name       |   Type    | Description                                      |
-| ---------- | :-------: | ------------------------------------------------ |
+| Name | Type | Description |
+|---|:-:|---|
 | `guardian` | `address` | the address of a guardian to query his selection |
+
 
 #### Returns
 
-| Name |   Type    | Description                          |
-| ---- | :-------: | ------------------------------------ |
-| `0`  | `address` | the address that `guardian` selected |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `address` | the address that `guardian` selected |
 <br/>
+
 
 ### getGuardians
 
@@ -114,19 +177,37 @@ Returns the address of a controller that a `guardian` selected for in order to r
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function getGuardians() external view returns (address[]);
 ```
 
+
+
+
 Returns the addresses of all guardians The guardians will select an address to be added as a controller key for the linked `target` if he reaches the guardian threshold and provide the correct string that produce the secretHash
+
+
+
+
+
+
 
 #### Returns
 
-| Name |    Type     | Description |
-| ---- | :---------: | ----------- |
-| `0`  | `address[]` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `address[]` | - |
 <br/>
+
 
 ### getGuardiansThreshold
 
@@ -139,19 +220,37 @@ Returns the addresses of all guardians The guardians will select an address to b
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function getGuardiansThreshold() external view returns (uint256);
 ```
 
+
+
+
 Returns the guardian threshold The guardian threshold represents the minimum number of selection by guardians required for an address to start a recovery process
+
+
+
+
+
+
 
 #### Returns
 
-| Name |   Type    | Description |
-| ---- | :-------: | ----------- |
-| `0`  | `uint256` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `uint256` | - |
 <br/>
+
 
 ### getRecoveryCounter
 
@@ -164,19 +263,37 @@ Returns the guardian threshold The guardian threshold represents the minimum num
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function getRecoveryCounter() external view returns (uint256);
 ```
 
+
+
+
 Returns the current recovery counter When a recovery process is successfully finished the recovery counter is incremented
+
+
+
+
+
+
 
 #### Returns
 
-| Name |   Type    | Description |
-| ---- | :-------: | ----------- |
-| `0`  | `uint256` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `uint256` | - |
 <br/>
+
 
 ### getRecoverySecretHash
 
@@ -189,19 +306,37 @@ Returns the current recovery counter When a recovery process is successfully fin
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function getRecoverySecretHash() external view returns (bytes32);
 ```
 
+
+
+
 Returns the recovery secret hash
+
+
+
+
+
+
 
 #### Returns
 
-| Name |   Type    | Description |
-| ---- | :-------: | ----------- |
-| `0`  | `bytes32` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `bytes32` | - |
 <br/>
+
 
 ### isGuardian
 
@@ -214,25 +349,42 @@ Returns the recovery secret hash
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function isGuardian(address _address) external view returns (bool);
 ```
 
+
+
+
 Returns TRUE if the address provided is a guardian, FALSE otherwise
+
+
+
+
 
 #### Parameters
 
-| Name       |   Type    | Description          |
-| ---------- | :-------: | -------------------- |
+| Name | Type | Description |
+|---|:-:|---|
 | `_address` | `address` | The address to query |
+
 
 #### Returns
 
-| Name |  Type  | Description |
-| ---- | :----: | ----------- |
-| `0`  | `bool` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `bool` | - |
 <br/>
+
 
 ### owner
 
@@ -245,19 +397,37 @@ Returns TRUE if the address provided is a guardian, FALSE otherwise
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function owner() external view returns (address);
 ```
 
+
+
+
 Returns the address of the current owner.
+
+
+
+
+
+
 
 #### Returns
 
-| Name |   Type    | Description |
-| ---- | :-------: | ----------- |
-| `0`  | `address` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `address` | - |
 <br/>
+
 
 ### recoverOwnership
 
@@ -270,13 +440,21 @@ Returns the address of the current owner.
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
-function recoverOwnership(
-  address recoverer,
-  string plainSecret,
-  bytes32 newSecretHash
-) external nonpayable;
+function recoverOwnership(address recoverer, string plainSecret, bytes32 newSecretHash) external nonpayable;
 ```
+
+
+
 
 Recovers the ownership permissions of an address in the linked target and increment the recover counter Requirements
 
@@ -284,15 +462,21 @@ Recovers the ownership permissions of an address in the linked target and increm
 
 - must have provided the right `plainSecret` that produces the secret Hash
 
+
+
+
+
 #### Parameters
 
-| Name            |   Type    | Description                                  |
-| --------------- | :-------: | -------------------------------------------- |
-| `recoverer`     | `address` | The address of the recoverer                 |
-| `plainSecret`   | `string`  | The secret word that produce the secret Hash |
-| `newSecretHash` | `bytes32` | -                                            |
+| Name | Type | Description |
+|---|:-:|---|
+| `recoverer` | `address` | The address of the recoverer |
+| `plainSecret` | `string` | The secret word that produce the secret Hash |
+| `newSecretHash` | `bytes32` | - |
+
 
 <br/>
+
 
 ### removeGuardian
 
@@ -305,19 +489,37 @@ Recovers the ownership permissions of an address in the linked target and increm
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function removeGuardian(address existingGuardian) external nonpayable;
 ```
 
+
+
+
 Removes a guardian of the targetCan be called only by the owner
+
+
+
+
 
 #### Parameters
 
-| Name               |   Type    | Description |
-| ------------------ | :-------: | ----------- |
-| `existingGuardian` | `address` | -           |
+| Name | Type | Description |
+|---|:-:|---|
+| `existingGuardian` | `address` | - |
+
 
 <br/>
+
 
 ### renounceOwnership
 
@@ -330,13 +532,32 @@ Removes a guardian of the targetCan be called only by the owner
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function renounceOwnership() external nonpayable;
 ```
 
+
+
+
 Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
 
+
+
+
+
+
+
 <br/>
+
 
 ### selectNewController
 
@@ -349,21 +570,39 @@ Leaves the contract without owner. It will not be possible to call `onlyOwner` f
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function selectNewController(address addressSelected) external nonpayable;
 ```
+
+
+
 
 select an address to be a potentiel controller address if he reaches the guardian threshold and provide the correct secret string Requirements:
 
 - only guardians can select an address
 
+
+
+
+
 #### Parameters
 
-| Name              |   Type    | Description                          |
-| ----------------- | :-------: | ------------------------------------ |
+| Name | Type | Description |
+|---|:-:|---|
 | `addressSelected` | `address` | The address selected by the guardian |
 
+
 <br/>
+
 
 ### setGuardiansThreshold
 
@@ -376,19 +615,37 @@ select an address to be a potentiel controller address if he reaches the guardia
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function setGuardiansThreshold(uint256 newThreshold) external nonpayable;
 ```
 
+
+
+
 Sets the minimum number of selection by the guardians required so that an address can recover ownershipCan be called only by the owner
+
+
+
+
 
 #### Parameters
 
-| Name           |   Type    | Description |
-| -------------- | :-------: | ----------- |
-| `newThreshold` | `uint256` | -           |
+| Name | Type | Description |
+|---|:-:|---|
+| `newThreshold` | `uint256` | - |
+
 
 <br/>
+
 
 ### setRecoverySecretHash
 
@@ -401,21 +658,37 @@ Sets the minimum number of selection by the guardians required so that an addres
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
-function setRecoverySecretHash(
-  bytes32 newRecoverSecretHash
-) external nonpayable;
+function setRecoverySecretHash(bytes32 newRecoverSecretHash) external nonpayable;
 ```
+
+
+
 
 Throws if hash provided is bytes32(0)
 
+
+
+
+
 #### Parameters
 
-| Name                   |   Type    | Description                                                                     |
-| ---------------------- | :-------: | ------------------------------------------------------------------------------- |
+| Name | Type | Description |
+|---|:-:|---|
 | `newRecoverSecretHash` | `bytes32` | The hash of the secret string Requirements: - `secretHash` cannot be bytes32(0) |
 
+
 <br/>
+
 
 ### supportsInterface
 
@@ -428,25 +701,42 @@ Throws if hash provided is bytes32(0)
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function supportsInterface(bytes4 _interfaceId) external view returns (bool);
 ```
 
+
+
+
 See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
+
+
+
+
 
 #### Parameters
 
-| Name           |   Type   | Description |
-| -------------- | :------: | ----------- |
-| `_interfaceId` | `bytes4` | -           |
+| Name | Type | Description |
+|---|:-:|---|
+| `_interfaceId` | `bytes4` | - |
+
 
 #### Returns
 
-| Name |  Type  | Description |
-| ---- | :----: | ----------- |
-| `0`  | `bool` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `bool` | - |
 <br/>
+
 
 ### target
 
@@ -459,19 +749,37 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function target() external view returns (address);
 ```
 
+
+
+
 The address of an ERC725 contract where we want to recover and set permissions for a controller address
+
+
+
+
+
+
 
 #### Returns
 
-| Name |   Type    | Description |
-| ---- | :-------: | ----------- |
-| `0`  | `address` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `address` | - |
 <br/>
+
 
 ### transferOwnership
 
@@ -484,19 +792,42 @@ The address of an ERC725 contract where we want to recover and set permissions f
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function transferOwnership(address newOwner) external nonpayable;
 ```
 
+
+
+
 Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
+
+
+
+
 
 #### Parameters
 
-| Name       |   Type    | Description |
-| ---------- | :-------: | ----------- |
-| `newOwner` | `address` | -           |
+| Name | Type | Description |
+|---|:-:|---|
+| `newOwner` | `address` | - |
+
 
 <br/>
+
+
+
+
+
+
 
 ## Internal Methods
 
@@ -504,67 +835,130 @@ Any method labeled as `internal` serves as utility function within the contract.
 
 Internal functions cannot be called externally, whether from other smart contracts, dApp interfaces, or backend services. Their restricted accessibility ensures that they remain exclusively available within the context of the current contract, promoting controlled and encapsulated usage of these internal utilities.
 
-### \_checkOwner
+
+### _checkOwner
+
+
+
+
+
+
+
 
 ```solidity
 function _checkOwner() internal view;
 ```
 
+
+
+
 Throws if the sender is not the owner.
+
+
+
+
+
+
 
 <br/>
 
-### \_setOwner
+### _setOwner
+
+
+
+
+
+
+
 
 ```solidity
 function _setOwner(address newOwner) internal nonpayable;
 ```
 
+
+
+
 Changes the owner if `newOwner` and oldOwner are different
-This pattern is useful in inheritance.
+ This pattern is useful in inheritance.
+
+
+
+
+
+
 
 <br/>
 
-### \_validateRequirements
+### _validateRequirements
+
+
+
+
+
+
+
 
 ```solidity
-function _validateRequirements(
-  address recoverer,
-  uint256 currentRecoveryCounter,
-  string plainSecret,
-  bytes32 newHash,
-  address[] guardians
-) internal view;
+function _validateRequirements(address recoverer, uint256 currentRecoveryCounter, string plainSecret, bytes32 newHash, address[] guardians) internal view;
 ```
 
+
+
+
 The number of guardians should be reasonable, as the validation method
-is using a loop to check the selection of each guardian
-Throws if:
+ is using a loop to check the selection of each guardian
+ Throws if:
+
 
 - The address trying to recover didn't reach the guardiansThreshold
 
+
 - The new hash being set is bytes32(0)
+
 
 - The secret word provided is incorrect
 
+
+
+
+
+
+
 <br/>
 
-### \_cleanStorage
+### _cleanStorage
+
+
+
+
+
+
+
 
 ```solidity
-function _cleanStorage(
-  uint256 recoveryCounter,
-  uint256 guardiansLength,
-  address[] guardians
-) internal nonpayable;
+function _cleanStorage(uint256 recoveryCounter, uint256 guardiansLength, address[] guardians) internal nonpayable;
 ```
 
+
+
+
 Remove the guardians choice after a successfull recovery process
-To avoid keeping unnecessary state
+ To avoid keeping unnecessary state
+
+
+
+
+
+
 
 <br/>
 
+
+
+
+
 ## Events
+
 
 ### GuardianAdded
 
@@ -577,18 +971,23 @@ To avoid keeping unnecessary state
 
 :::
 
+
 ```solidity
 event GuardianAdded(address indexed newGuardian);
 ```
 
-_Emitted when setting a new guardian for the target_
+
+*Emitted when setting a new guardian for the target*
+
+
+
 
 #### Parameters
 
-| Name                        |   Type    | Description                       |
-| --------------------------- | :-------: | --------------------------------- |
-| `newGuardian` **`indexed`** | `address` | The address of the added guardian |
 
+| Name | Type | Description |
+|---|:-:|---|
+| `newGuardian` **`indexed`** | `address` | The address of the added guardian |
 <br/>
 
 ### GuardianRemoved
@@ -602,18 +1001,23 @@ _Emitted when setting a new guardian for the target_
 
 :::
 
+
 ```solidity
 event GuardianRemoved(address indexed removedGuardian);
 ```
 
-_Emitted when removing an existing guardian for the target_
+
+*Emitted when removing an existing guardian for the target*
+
+
+
 
 #### Parameters
 
-| Name                            |   Type    | Description                         |
-| ------------------------------- | :-------: | ----------------------------------- |
-| `removedGuardian` **`indexed`** | `address` | The address of the guardian removed |
 
+| Name | Type | Description |
+|---|:-:|---|
+| `removedGuardian` **`indexed`** | `address` | The address of the guardian removed |
 <br/>
 
 ### GuardiansThresholdChanged
@@ -627,18 +1031,23 @@ _Emitted when removing an existing guardian for the target_
 
 :::
 
+
 ```solidity
 event GuardiansThresholdChanged(uint256 indexed guardianThreshold);
 ```
 
-_Emitted when changing the guardian threshold_
+
+*Emitted when changing the guardian threshold*
+
+
+
 
 #### Parameters
 
-| Name                              |   Type    | Description                                                                                     |
-| --------------------------------- | :-------: | ----------------------------------------------------------------------------------------------- |
-| `guardianThreshold` **`indexed`** | `uint256` | The minimum number of selection by guardians needed by a controller to start a recovery process |
 
+| Name | Type | Description |
+|---|:-:|---|
+| `guardianThreshold` **`indexed`** | `uint256` | The minimum number of selection by guardians needed by a controller to start a recovery process |
 <br/>
 
 ### OwnershipTransferred
@@ -652,20 +1061,23 @@ _Emitted when changing the guardian threshold_
 
 :::
 
+
 ```solidity
-event OwnershipTransferred(
-  address indexed previousOwner,
-  address indexed newOwner
-);
+event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 ```
+
+
+
+
+
 
 #### Parameters
 
-| Name                          |   Type    | Description |
-| ----------------------------- | :-------: | ----------- |
-| `previousOwner` **`indexed`** | `address` | -           |
-| `newOwner` **`indexed`**      | `address` | -           |
 
+| Name | Type | Description |
+|---|:-:|---|
+| `previousOwner` **`indexed`** | `address` | - |
+| `newOwner` **`indexed`** | `address` | - |
 <br/>
 
 ### RecoveryProcessSuccessful
@@ -679,26 +1091,26 @@ event OwnershipTransferred(
 
 :::
 
+
 ```solidity
-event RecoveryProcessSuccessful(
-  uint256 indexed recoveryCounter,
-  address indexed newController,
-  bytes32 indexed newSecretHash,
-  address[] guardians
-);
+event RecoveryProcessSuccessful(uint256 indexed recoveryCounter, address indexed newController, bytes32 indexed newSecretHash, address[] guardians);
 ```
 
-_Emitted when the recovery process is finished by the controller who reached the guardian threshold and submitted the string that produce the secretHash_
+
+*Emitted when the recovery process is finished by the controller who reached the guardian threshold and submitted the string that produce the secretHash*
+
+
+
 
 #### Parameters
 
-| Name                            |    Type     | Description                                                                |
-| ------------------------------- | :---------: | -------------------------------------------------------------------------- |
-| `recoveryCounter` **`indexed`** |  `uint256`  | The current recovery process                                               |
-| `newController` **`indexed`**   |  `address`  | The address of the new controller controlling the target by the KeyManager |
-| `newSecretHash` **`indexed`**   |  `bytes32`  | -                                                                          |
-| `guardians`                     | `address[]` | The array of addresses containing the guardians of the target              |
 
+| Name | Type | Description |
+|---|:-:|---|
+| `recoveryCounter` **`indexed`** | `uint256` | The current recovery process |
+| `newController` **`indexed`** | `address` | The address of the new controller controlling the target by the KeyManager |
+| `newSecretHash` **`indexed`** | `bytes32` | - |
+| `guardians`  | `address[]` | The array of addresses containing the guardians of the target |
 <br/>
 
 ### SecretHashChanged
@@ -712,18 +1124,23 @@ _Emitted when the recovery process is finished by the controller who reached the
 
 :::
 
+
 ```solidity
 event SecretHashChanged(bytes32 indexed secretHash);
 ```
 
-_Emitted when changing the secret hash_
+
+*Emitted when changing the secret hash*
+
+
+
 
 #### Parameters
 
-| Name                       |   Type    | Description                                         |
-| -------------------------- | :-------: | --------------------------------------------------- |
-| `secretHash` **`indexed`** | `bytes32` | The secret hash used to finish the recovery process |
 
+| Name | Type | Description |
+|---|:-:|---|
+| `secretHash` **`indexed`** | `bytes32` | The secret hash used to finish the recovery process |
 <br/>
 
 ### SelectedNewController
@@ -737,27 +1154,31 @@ _Emitted when changing the secret hash_
 
 :::
 
+
 ```solidity
-event SelectedNewController(
-  uint256 indexed recoveryCounter,
-  address indexed guardian,
-  address indexed addressSelected
-);
+event SelectedNewController(uint256 indexed recoveryCounter, address indexed guardian, address indexed addressSelected);
 ```
 
-_Emitted when a guardian select a new potentiel controller address for the target_
+
+*Emitted when a guardian select a new potentiel controller address for the target*
+
+
+
 
 #### Parameters
 
-| Name                            |   Type    | Description                          |
-| ------------------------------- | :-------: | ------------------------------------ |
-| `recoveryCounter` **`indexed`** | `uint256` | The current recovery process counter |
-| `guardian` **`indexed`**        | `address` | The address of the guardian          |
-| `addressSelected` **`indexed`** | `address` | The address selected by the guardian |
 
+| Name | Type | Description |
+|---|:-:|---|
+| `recoveryCounter` **`indexed`** | `uint256` | The current recovery process counter |
+| `guardian` **`indexed`** | `address` | The address of the guardian |
+| `addressSelected` **`indexed`** | `address` | The address selected by the guardian |
 <br/>
 
+
+
 ## Errors
+
 
 ### AddressZeroNotAllowed
 
@@ -770,9 +1191,13 @@ _Emitted when a guardian select a new potentiel controller address for the targe
 
 :::
 
+
 ```solidity
 error AddressZeroNotAllowed();
 ```
+
+
+
 
 reverts when the address zero calls `recoverOwnership(..)` function
 
@@ -789,18 +1214,21 @@ reverts when the address zero calls `recoverOwnership(..)` function
 
 :::
 
+
 ```solidity
 error CallerIsNotGuardian(address caller);
 ```
+
+
+
 
 reverts when the caller is not a guardian
 
 #### Parameters
 
-| Name     |   Type    | Description |
-| -------- | :-------: | ----------- |
-| `caller` | `address` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `caller` | `address` | - |
 <br/>
 
 ### GuardianAlreadyExist
@@ -814,18 +1242,21 @@ reverts when the caller is not a guardian
 
 :::
 
+
 ```solidity
 error GuardianAlreadyExist(address addressToAdd);
 ```
+
+
+
 
 reverts when adding an already existing guardian
 
 #### Parameters
 
-| Name           |   Type    | Description |
-| -------------- | :-------: | ----------- |
-| `addressToAdd` | `address` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `addressToAdd` | `address` | - |
 <br/>
 
 ### GuardianDoNotExist
@@ -839,18 +1270,21 @@ reverts when adding an already existing guardian
 
 :::
 
+
 ```solidity
 error GuardianDoNotExist(address addressToRemove);
 ```
+
+
+
 
 reverts when removing a non-existing guardian
 
 #### Parameters
 
-| Name              |   Type    | Description |
-| ----------------- | :-------: | ----------- |
-| `addressToRemove` | `address` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `addressToRemove` | `address` | - |
 <br/>
 
 ### GuardiansNumberCannotGoBelowThreshold
@@ -864,18 +1298,21 @@ reverts when removing a non-existing guardian
 
 :::
 
+
 ```solidity
 error GuardiansNumberCannotGoBelowThreshold(uint256 guardianThreshold);
 ```
+
+
+
 
 reverts when removing a guardian and the threshold is equal to the number of guardians
 
 #### Parameters
 
-| Name                |   Type    | Description |
-| ------------------- | :-------: | ----------- |
-| `guardianThreshold` | `uint256` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `guardianThreshold` | `uint256` | - |
 <br/>
 
 ### OwnableCallerNotTheOwner
@@ -889,18 +1326,21 @@ reverts when removing a guardian and the threshold is equal to the number of gua
 
 :::
 
+
 ```solidity
 error OwnableCallerNotTheOwner(address callerAddress);
 ```
+
+
+
 
 Reverts when only the owner is allowed to call the function.
 
 #### Parameters
 
-| Name            |   Type    | Description                              |
-| --------------- | :-------: | ---------------------------------------- |
+| Name | Type | Description |
+|---|:-:|---|
 | `callerAddress` | `address` | The address that tried to make the call. |
-
 <br/>
 
 ### OwnableCannotSetZeroAddressAsOwner
@@ -914,9 +1354,13 @@ Reverts when only the owner is allowed to call the function.
 
 :::
 
+
 ```solidity
 error OwnableCannotSetZeroAddressAsOwner();
 ```
+
+
+
 
 Reverts when trying to set `address(0)` as the contract owner when deploying the contract, initializing it or transferring ownership of the contract.
 
@@ -933,9 +1377,13 @@ Reverts when trying to set `address(0)` as the contract owner when deploying the
 
 :::
 
+
 ```solidity
 error SecretHashCannotBeZero();
 ```
+
+
+
 
 reverts when the secret hash provided is equal to bytes32(0)
 
@@ -952,22 +1400,22 @@ reverts when the secret hash provided is equal to bytes32(0)
 
 :::
 
+
 ```solidity
-error ThresholdCannotBeHigherThanGuardiansNumber(
-  uint256 thresholdGiven,
-  uint256 guardianNumber
-);
+error ThresholdCannotBeHigherThanGuardiansNumber(uint256 thresholdGiven, uint256 guardianNumber);
 ```
+
+
+
 
 reverts when setting the guardians threshold to a number higher than the guardians number
 
 #### Parameters
 
-| Name             |   Type    | Description |
-| ---------------- | :-------: | ----------- |
-| `thresholdGiven` | `uint256` | -           |
-| `guardianNumber` | `uint256` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `thresholdGiven` | `uint256` | - |
+| `guardianNumber` | `uint256` | - |
 <br/>
 
 ### ThresholdNotReachedForRecoverer
@@ -981,24 +1429,23 @@ reverts when setting the guardians threshold to a number higher than the guardia
 
 :::
 
+
 ```solidity
-error ThresholdNotReachedForRecoverer(
-  address recoverer,
-  uint256 selections,
-  uint256 guardiansThreshold
-);
+error ThresholdNotReachedForRecoverer(address recoverer, uint256 selections, uint256 guardiansThreshold);
 ```
+
+
+
 
 reverts when `recoverOwnership(..)` is called with a recoverer that didn't reach the guardians threshold
 
 #### Parameters
 
-| Name                 |   Type    | Description                                      |
-| -------------------- | :-------: | ------------------------------------------------ |
-| `recoverer`          | `address` | The address of the recoverer                     |
-| `selections`         | `uint256` | The number of selections that the recoverer have |
-| `guardiansThreshold` | `uint256` | The minimum number of selection needed           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `recoverer` | `address` | The address of the recoverer |
+| `selections` | `uint256` | The number of selections that the recoverer have |
+| `guardiansThreshold` | `uint256` | The minimum number of selection needed |
 <br/>
 
 ### WrongPlainSecret
@@ -1012,10 +1459,15 @@ reverts when `recoverOwnership(..)` is called with a recoverer that didn't reach
 
 :::
 
+
 ```solidity
 error WrongPlainSecret();
 ```
 
+
+
+
 reverts when the plain secret produce a different hash than the secret hash originally set
 
 <br/>
+

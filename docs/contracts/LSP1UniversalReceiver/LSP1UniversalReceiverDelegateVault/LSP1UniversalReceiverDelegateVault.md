@@ -1,6 +1,7 @@
 <!-- This file is auto-generated. Do not edit! -->
 <!-- Check `@lukso-network/lsp-smart-contracts/CONTRIBUTING.md#solidity-code-comments` for more information. -->
 
+
 # LSP1UniversalReceiverDelegateVault
 
 :::info Standard Specifications
@@ -14,16 +15,23 @@
 
 :::
 
+
 > Implementation of a UniversalReceiverDelegate for the [LSP9Vault]
+
+
 
 The [`LSP1UniversalReceiverDelegateVault`](#lsp1universalreceiverdelegatevault) follows the [LSP-1-UniversalReceiver] standard and is designed for [LSP9Vault] contracts. The [`LSP1UniversalReceiverDelegateVault`](#lsp1universalreceiverdelegatevault) is a contract called by the [`universalReceiver(...)`](#universalreceiver) function of the [LSP-9-Vault] contract that:
 
 - Writes the data keys representing assets received from type [LSP-7-DigitalAsset] and [LSP-8-IdentifiableDigitalAsset] into the account storage, and removes them when the balance is zero according to the [LSP-5-ReceivedAssets] Standard.
 
+
+
 ## Public Methods
+
 
 Public methods are accessible externally from users, allowing interaction with this function from dApps or other smart contracts.
 When marked as 'public', a method can be called both externally and internally, on the other hand, when marked as 'external', a method can only be called externally.
+
 
 ### VERSION
 
@@ -36,19 +44,38 @@ When marked as 'public', a method can be called both externally and internally, 
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function VERSION() external view returns (string);
 ```
 
-_Contract version._
+
+*Contract version.*
+
+
+
+
+
+
+
+
+
 
 #### Returns
 
-| Name |   Type   | Description |
-| ---- | :------: | ----------- |
-| `0`  | `string` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `string` | - |
 <br/>
+
 
 ### supportsInterface
 
@@ -61,25 +88,42 @@ _Contract version._
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function supportsInterface(bytes4 interfaceId) external view returns (bool);
 ```
 
+
+
+
 See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
+
+
+
+
 
 #### Parameters
 
-| Name          |   Type   | Description |
-| ------------- | :------: | ----------- |
-| `interfaceId` | `bytes4` | -           |
+| Name | Type | Description |
+|---|:-:|---|
+| `interfaceId` | `bytes4` | - |
+
 
 #### Returns
 
-| Name |  Type  | Description |
-| ---- | :----: | ----------- |
-| `0`  | `bool` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `bool` | - |
 <br/>
+
 
 ### universalReceiverDelegate
 
@@ -92,6 +136,7 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 :::
 
+
 :::info
 
 - If some issues occured with generating the `dataKeys` or `dataValues` the `returnedMessage` will be an error message, otherwise it will be empty.
@@ -99,16 +144,20 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 :::
 
+
+
+
+
+
+
+
 ```solidity
-function universalReceiverDelegate(
-  address notifier,
-  uint256,
-  bytes32 typeId,
-  bytes
-) external nonpayable returns (bytes);
+function universalReceiverDelegate(address notifier, uint256, bytes32 typeId, bytes) external nonpayable returns (bytes);
 ```
 
-_Reacted on received notification with `typeId`._
+
+*Reacted on received notification with `typeId`.*
+
 
 Handles two cases: Writes the received [LSP-7-DigitalAsset] or [LSP-8-IdentifiableDigitalAsset] assets into the vault storage according to the [LSP-5-ReceivedAssets] standard.
 
@@ -118,24 +167,34 @@ Handles two cases: Writes the received [LSP-7-DigitalAsset] or [LSP-8-Identifiab
 
 - Cannot accept native tokens.
 
+
 </blockquote>
+
+
+
 
 #### Parameters
 
-| Name       |   Type    | Description                                    |
-| ---------- | :-------: | ---------------------------------------------- |
-| `notifier` | `address` | -                                              |
-| `_1`       | `uint256` | -                                              |
-| `typeId`   | `bytes32` | Unique identifier for a specific notification. |
-| `_3`       |  `bytes`  | -                                              |
+| Name | Type | Description |
+|---|:-:|---|
+| `notifier` | `address` | - |
+| `_1` | `uint256` | - |
+| `typeId` | `bytes32` | Unique identifier for a specific notification. |
+| `_3` | `bytes` | - |
+
 
 #### Returns
 
-| Name |  Type   | Description                              |
-| ---- | :-----: | ---------------------------------------- |
-| `0`  | `bytes` | The result of the reaction for `typeId`. |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `bytes` | The result of the reaction for `typeId`. |
 <br/>
+
+
+
+
+
+
 
 ## Internal Methods
 
@@ -143,69 +202,115 @@ Any method labeled as `internal` serves as utility function within the contract.
 
 Internal functions cannot be called externally, whether from other smart contracts, dApp interfaces, or backend services. Their restricted accessibility ensures that they remain exclusively available within the context of the current contract, promoting controlled and encapsulated usage of these internal utilities.
 
-### \_tokenSender
+
+### _tokenSender
+
+
+
+
+
+
+
 
 ```solidity
 function _tokenSender(address notifier) internal nonpayable returns (bytes);
 ```
 
+
+
+
 Handler for LSP7 and LSP8 token sender type id.
+
+
+
+
 
 #### Parameters
 
-| Name       |   Type    | Description                     |
-| ---------- | :-------: | ------------------------------- |
+| Name | Type | Description |
+|---|:-:|---|
 | `notifier` | `address` | The LSP7 or LSP8 token address. |
+
 
 <br/>
 
-### \_tokenRecipient
+### _tokenRecipient
+
+
+
+
+
+
+
 
 ```solidity
-function _tokenRecipient(
-  address notifier,
-  bytes4 interfaceId
-) internal nonpayable returns (bytes);
+function _tokenRecipient(address notifier, bytes4 interfaceId) internal nonpayable returns (bytes);
 ```
+
+
+
 
 Handler for LSP7 and LSP8 token recipient type id.
 
+
+
+
+
 #### Parameters
 
-| Name          |   Type    | Description                     |
-| ------------- | :-------: | ------------------------------- |
-| `notifier`    | `address` | The LSP7 or LSP8 token address. |
-| `interfaceId` | `bytes4`  | The LSP7 or LSP8 interface id.  |
+| Name | Type | Description |
+|---|:-:|---|
+| `notifier` | `address` | The LSP7 or LSP8 token address. |
+| `interfaceId` | `bytes4` | The LSP7 or LSP8 interface id. |
+
 
 <br/>
 
-### \_setDataBatchWithoutReverting
-
+### _setDataBatchWithoutReverting
 :::info
 
 If an the low-level transaction revert, the returned data will be forwarded. Th contract that uses this function can use the `Address` library to revert with the revert reason.
 
 :::
 
+
+
+
+
+
+
+
 ```solidity
-function _setDataBatchWithoutReverting(
-  bytes32[] dataKeys,
-  bytes[] dataValues
-) internal nonpayable returns (bytes);
+function _setDataBatchWithoutReverting(bytes32[] dataKeys, bytes[] dataValues) internal nonpayable returns (bytes);
 ```
+
+
+
 
 Calls `bytes4(keccak256(setDataBatch(bytes32[],bytes[])))` without checking for `bool succes`, but it returns all the data back.
 
+
+
+
+
 #### Parameters
 
-| Name         |    Type     | Description            |
-| ------------ | :---------: | ---------------------- |
-| `dataKeys`   | `bytes32[]` | Data Keys to be set.   |
-| `dataValues` |  `bytes[]`  | Data Values to be set. |
+| Name | Type | Description |
+|---|:-:|---|
+| `dataKeys` | `bytes32[]` | Data Keys to be set. |
+| `dataValues` | `bytes[]` | Data Values to be set. |
+
 
 <br/>
 
+
+
+
+
+
+
 ## Errors
+
 
 ### CannotRegisterEOAsAsAssets
 
@@ -218,18 +323,21 @@ Calls `bytes4(keccak256(setDataBatch(bytes32[],bytes[])))` without checking for 
 
 :::
 
+
 ```solidity
 error CannotRegisterEOAsAsAssets(address caller);
 ```
 
-_EOA: `caller` cannot be registered as an asset._
+
+*EOA: `caller` cannot be registered as an asset.*
+
 
 Reverts when EOA calls the [`universalReceiver(..)`](#universalreceiver) function with an asset/vault typeId.
 
 #### Parameters
 
-| Name     |   Type    | Description            |
-| -------- | :-------: | ---------------------- |
+| Name | Type | Description |
+|---|:-:|---|
 | `caller` | `address` | The address of the EOA |
-
 <br/>
+

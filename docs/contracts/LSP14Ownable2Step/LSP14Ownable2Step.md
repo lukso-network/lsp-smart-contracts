@@ -1,6 +1,7 @@
 <!-- This file is auto-generated. Do not edit! -->
 <!-- Check `@lukso-network/lsp-smart-contracts/CONTRIBUTING.md#solidity-code-comments` for more information. -->
 
+
 # LSP14Ownable2Step
 
 :::info Standard Specifications
@@ -14,14 +15,21 @@
 
 :::
 
+
 > LSP14Ownable2Step
+
+
 
 This contract is a modified version of the [`OwnableUnset.sol`] implementation, where transferring and renouncing ownership works as a 2-step process. This can be used as a confirmation mechanism to prevent potential mistakes when transferring ownership of the contract, where the control of the contract could be lost forever. (_e.g: providing the wrong address as a parameter to the function, transferring ownership to an EOA for which the user lost its private key, etc..._)
 
+
+
 ## Public Methods
+
 
 Public methods are accessible externally from users, allowing interaction with this function from dApps or other smart contracts.
 When marked as 'public', a method can be called both externally and internally, on the other hand, when marked as 'external', a method can only be called externally.
+
 
 ### RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY
 
@@ -34,22 +42,37 @@ When marked as 'public', a method can be called both externally and internally, 
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
-function RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY()
-  external
-  view
-  returns (uint256);
+function RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY() external view returns (uint256);
 ```
+
+
+
 
 The number of block that MUST pass before one is able to confirm renouncing ownership.
 
+
+
+
+
+
+
 #### Returns
 
-| Name |   Type    | Description       |
-| ---- | :-------: | ----------------- |
-| `0`  | `uint256` | Number of blocks. |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `uint256` | Number of blocks. |
 <br/>
+
 
 ### RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD
 
@@ -62,22 +85,37 @@ The number of block that MUST pass before one is able to confirm renouncing owne
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
-function RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD()
-  external
-  view
-  returns (uint256);
+function RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD() external view returns (uint256);
 ```
+
+
+
 
 The number of blocks during which one can renounce ownership.
 
+
+
+
+
+
+
 #### Returns
 
-| Name |   Type    | Description       |
-| ---- | :-------: | ----------------- |
-| `0`  | `uint256` | Number of blocks. |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `uint256` | Number of blocks. |
 <br/>
+
 
 ### acceptOwnership
 
@@ -90,11 +128,22 @@ The number of blocks during which one can renounce ownership.
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function acceptOwnership() external nonpayable;
 ```
 
-_`msg.sender` is accepting ownership of contract: `address(this)`._
+
+*`msg.sender` is accepting ownership of contract: `address(this)`.*
+
 
 Transfer ownership of the contract from the current [`owner()`](#owner) to the [`pendingOwner()`](#pendingowner). Once this function is called:
 
@@ -108,9 +157,16 @@ Transfer ownership of the contract from the current [`owner()`](#owner) to the [
 
 - This function can only be called by the [`pendingOwner()`](#pendingowner).
 
+
 </blockquote>
 
+
+
+
+
+
 <br/>
+
 
 ### owner
 
@@ -123,19 +179,37 @@ Transfer ownership of the contract from the current [`owner()`](#owner) to the [
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function owner() external view returns (address);
 ```
 
+
+
+
 Returns the address of the current owner.
+
+
+
+
+
+
 
 #### Returns
 
-| Name |   Type    | Description |
-| ---- | :-------: | ----------- |
-| `0`  | `address` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `address` | - |
 <br/>
+
 
 ### pendingOwner
 
@@ -148,25 +222,42 @@ Returns the address of the current owner.
 
 :::
 
+
 :::info
 
 If no ownership transfer is in progress, the pendingOwner will be `address(0).`.
 
 :::
 
+
+
+
+
+
+
+
 ```solidity
 function pendingOwner() external view returns (address);
 ```
 
+
+
+
 The address that ownership of the contract is transferred to. This address may use [`acceptOwnership()`](#acceptownership) to gain ownership of the contract.
+
+
+
+
+
+
 
 #### Returns
 
-| Name |   Type    | Description |
-| ---- | :-------: | ----------- |
-| `0`  | `address` | -           |
-
+| Name | Type | Description |
+|---|:-:|---|
+| `0` | `address` | - |
 <br/>
+
 
 ### renounceOwnership
 
@@ -179,17 +270,27 @@ The address that ownership of the contract is transferred to. This address may u
 
 :::
 
+
+
+
+
+
+
+
 :::danger
 
 Leaves the contract without an owner. Once ownership of the contract has been renounced, any function that is restricted to be called only by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
 
 :::
 
+
 ```solidity
 function renounceOwnership() external nonpayable;
 ```
 
-_`msg.sender` is renouncing ownership of contract `address(this)`._
+
+*`msg.sender` is renouncing ownership of contract `address(this)`.*
+
 
 Renounce ownership of the contract in a 2-step process.
 
@@ -197,7 +298,14 @@ Renounce ownership of the contract in a 2-step process.
 
 2. The second call is used as a confirmation and will leave the contract without an owner.
 
+
+
+
+
+
+
 <br/>
+
 
 ### transferOwnership
 
@@ -210,11 +318,22 @@ Renounce ownership of the contract in a 2-step process.
 
 :::
 
+
+
+
+
+
+
+
+
+
 ```solidity
 function transferOwnership(address newOwner) external nonpayable;
 ```
 
-_Transfer ownership initiated by `newOwner`._
+
+*Transfer ownership initiated by `newOwner`.*
+
 
 Initiate the process of transferring ownership of the contract by setting the new owner as the pending owner. If the new owner is a contract that supports + implements LSP1, this will also attempt to notify the new owner that ownership has been transferred to them by calling the [`universalReceiver()`](#universalreceiver) function on the `newOwner` contract.
 
@@ -224,15 +343,26 @@ Initiate the process of transferring ownership of the contract by setting the ne
 
 - `newOwner` cannot accept ownership of the contract in the same transaction. (For instance, via a callback from its [`universalReceiver(...)`](#universalreceiver) function).
 
+
 </blockquote>
+
+
+
 
 #### Parameters
 
-| Name       |   Type    | Description                   |
-| ---------- | :-------: | ----------------------------- |
+| Name | Type | Description |
+|---|:-:|---|
 | `newOwner` | `address` | The address of the new owner. |
 
+
 <br/>
+
+
+
+
+
+
 
 ## Internal Methods
 
@@ -240,32 +370,75 @@ Any method labeled as `internal` serves as utility function within the contract.
 
 Internal functions cannot be called externally, whether from other smart contracts, dApp interfaces, or backend services. Their restricted accessibility ensures that they remain exclusively available within the context of the current contract, promoting controlled and encapsulated usage of these internal utilities.
 
-### \_checkOwner
+
+### _checkOwner
+
+
+
+
+
+
+
 
 ```solidity
 function _checkOwner() internal view;
 ```
 
+
+
+
 Throws if the sender is not the owner.
+
+
+
+
+
+
 
 <br/>
 
-### \_setOwner
+### _setOwner
+
+
+
+
+
+
+
 
 ```solidity
 function _setOwner(address newOwner) internal nonpayable;
 ```
 
+
+
+
 Changes the owner if `newOwner` and oldOwner are different
-This pattern is useful in inheritance.
+ This pattern is useful in inheritance.
+
+
+
+
+
+
 
 <br/>
 
-### \_transferOwnership
+### _transferOwnership
+
+
+
+
+
+
+
 
 ```solidity
 function _transferOwnership(address newOwner) internal nonpayable;
 ```
+
+
+
 
 Set the pending owner of the contract and cancel any renounce ownership process that was previously started.
 
@@ -275,37 +448,79 @@ Set the pending owner of the contract and cancel any renounce ownership process 
 
 - `newOwner` cannot be the address of the contract itself.
 
+
 </blockquote>
+
+
+
 
 #### Parameters
 
-| Name       |   Type    | Description                           |
-| ---------- | :-------: | ------------------------------------- |
+| Name | Type | Description |
+|---|:-:|---|
 | `newOwner` | `address` | The address of the new pending owner. |
+
 
 <br/>
 
-### \_acceptOwnership
+### _acceptOwnership
+
+
+
+
+
+
+
 
 ```solidity
 function _acceptOwnership() internal nonpayable;
 ```
 
+
+
+
 Set the pending owner of the contract as the new owner.
+
+
+
+
+
+
 
 <br/>
 
-### \_renounceOwnership
+### _renounceOwnership
+
+
+
+
+
+
+
 
 ```solidity
 function _renounceOwnership() internal nonpayable;
 ```
 
+
+
+
 Initiate or confirm the process of renouncing ownership after a specific delay of blocks have passed.
+
+
+
+
+
+
 
 <br/>
 
+
+
+
+
 ## Events
+
 
 ### OwnershipRenounced
 
@@ -318,11 +533,14 @@ Initiate or confirm the process of renouncing ownership after a specific delay o
 
 :::
 
+
 ```solidity
 event OwnershipRenounced();
 ```
 
-_Successfully renounced ownership of the contract. This contract is now owned by anyone, it's owner is `address(0)`._
+
+*Successfully renounced ownership of the contract. This contract is now owned by anyone, it's owner is `address(0)`.*
+
 
 Emitted when the ownership of the contract has been renounced.
 
@@ -339,24 +557,24 @@ Emitted when the ownership of the contract has been renounced.
 
 :::
 
+
 ```solidity
-event OwnershipTransferStarted(
-  address indexed previousOwner,
-  address indexed newOwner
-);
+event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
 ```
 
-_The transfer of ownership of the contract was initiated. Pending new owner set to: `newOwner`._
+
+*The transfer of ownership of the contract was initiated. Pending new owner set to: `newOwner`.*
+
 
 Emitted when [`transferOwnership(..)`](#transferownership) was called and the first step of transferring ownership completed successfully which leads to [`pendingOwner`](#pendingowner) being updated.
 
 #### Parameters
 
-| Name                          |   Type    | Description                        |
-| ----------------------------- | :-------: | ---------------------------------- |
-| `previousOwner` **`indexed`** | `address` | The address of the previous owner. |
-| `newOwner` **`indexed`**      | `address` | The address of the new owner.      |
 
+| Name | Type | Description |
+|---|:-:|---|
+| `previousOwner` **`indexed`** | `address` | The address of the previous owner. |
+| `newOwner` **`indexed`** | `address` | The address of the new owner. |
 <br/>
 
 ### OwnershipTransferred
@@ -370,20 +588,23 @@ Emitted when [`transferOwnership(..)`](#transferownership) was called and the fi
 
 :::
 
+
 ```solidity
-event OwnershipTransferred(
-  address indexed previousOwner,
-  address indexed newOwner
-);
+event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 ```
+
+
+
+
+
 
 #### Parameters
 
-| Name                          |   Type    | Description |
-| ----------------------------- | :-------: | ----------- |
-| `previousOwner` **`indexed`** | `address` | -           |
-| `newOwner` **`indexed`**      | `address` | -           |
 
+| Name | Type | Description |
+|---|:-:|---|
+| `previousOwner` **`indexed`** | `address` | - |
+| `newOwner` **`indexed`** | `address` | - |
 <br/>
 
 ### RenounceOwnershipStarted
@@ -397,17 +618,23 @@ event OwnershipTransferred(
 
 :::
 
+
 ```solidity
 event RenounceOwnershipStarted();
 ```
 
-_Ownership renouncement initiated._
+
+*Ownership renouncement initiated.*
+
 
 Emitted when starting the [`renounceOwnership(..)`](#renounceownership) 2-step process.
 
 <br/>
 
+
+
 ## Errors
+
 
 ### LSP14CallerNotPendingOwner
 
@@ -420,18 +647,21 @@ Emitted when starting the [`renounceOwnership(..)`](#renounceownership) 2-step p
 
 :::
 
+
 ```solidity
 error LSP14CallerNotPendingOwner(address caller);
 ```
+
+
+
 
 Reverts when the `caller` that is trying to accept ownership of the contract is not the pending owner.
 
 #### Parameters
 
-| Name     |   Type    | Description                                 |
-| -------- | :-------: | ------------------------------------------- |
+| Name | Type | Description |
+|---|:-:|---|
 | `caller` | `address` | The address that tried to accept ownership. |
-
 <br/>
 
 ### LSP14CannotTransferOwnershipToSelf
@@ -445,11 +675,14 @@ Reverts when the `caller` that is trying to accept ownership of the contract is 
 
 :::
 
+
 ```solidity
 error LSP14CannotTransferOwnershipToSelf();
 ```
 
-_Cannot transfer ownership to the address of the contract itself._
+
+*Cannot transfer ownership to the address of the contract itself.*
+
 
 Reverts when trying to transfer ownership to the `address(this)`.
 
@@ -466,11 +699,14 @@ Reverts when trying to transfer ownership to the `address(this)`.
 
 :::
 
+
 ```solidity
 error LSP14MustAcceptOwnershipInSeparateTransaction();
 ```
 
-_Cannot accept ownership in the same transaction with [`transferOwnership(...)`](#transferownership)._
+
+*Cannot accept ownership in the same transaction with [`transferOwnership(...)`](#transferownership).*
+
 
 Reverts when pending owner accept ownership in the same transaction of transferring ownership.
 
@@ -487,24 +723,23 @@ Reverts when pending owner accept ownership in the same transaction of transferr
 
 :::
 
+
 ```solidity
-error LSP14NotInRenounceOwnershipInterval(
-  uint256 renounceOwnershipStart,
-  uint256 renounceOwnershipEnd
-);
+error LSP14NotInRenounceOwnershipInterval(uint256 renounceOwnershipStart, uint256 renounceOwnershipEnd);
 ```
 
-_Cannot confirm ownership renouncement yet. The ownership renouncement is allowed from: `renounceOwnershipStart` until: `renounceOwnershipEnd`._
+
+*Cannot confirm ownership renouncement yet. The ownership renouncement is allowed from: `renounceOwnershipStart` until: `renounceOwnershipEnd`.*
+
 
 Reverts when trying to renounce ownership before the initial confirmation delay.
 
 #### Parameters
 
-| Name                     |   Type    | Description                                                             |
-| ------------------------ | :-------: | ----------------------------------------------------------------------- |
+| Name | Type | Description |
+|---|:-:|---|
 | `renounceOwnershipStart` | `uint256` | The start timestamp when one can confirm the renouncement of ownership. |
-| `renounceOwnershipEnd`   | `uint256` | The end timestamp when one can confirm the renouncement of ownership.   |
-
+| `renounceOwnershipEnd` | `uint256` | The end timestamp when one can confirm the renouncement of ownership. |
 <br/>
 
 ### OwnableCallerNotTheOwner
@@ -518,16 +753,20 @@ Reverts when trying to renounce ownership before the initial confirmation delay.
 
 :::
 
+
 ```solidity
 error OwnableCallerNotTheOwner(address callerAddress);
 ```
+
+
+
 
 Reverts when only the owner is allowed to call the function.
 
 #### Parameters
 
-| Name            |   Type    | Description                              |
-| --------------- | :-------: | ---------------------------------------- |
+| Name | Type | Description |
+|---|:-:|---|
 | `callerAddress` | `address` | The address that tried to make the call. |
-
 <br/>
+
