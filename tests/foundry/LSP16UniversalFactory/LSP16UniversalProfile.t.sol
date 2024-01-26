@@ -6,7 +6,7 @@ import "forge-std/console.sol";
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
-import "../../../packages/LSP16UniversalFactory/contracts/LSP16UniversalFactory.sol";
+import "lsp16/contracts/LSP16UniversalFactory.sol";
 import "../../../contracts/Mocks/NonPayableFallback.sol";
 import "../../../contracts/Mocks/FallbackInitializer.sol";
 import "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";

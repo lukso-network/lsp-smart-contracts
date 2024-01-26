@@ -12,7 +12,7 @@ export const dodocConfig = {
     'contracts/LSP9Vault/LSP9Vault.sol',
     'contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol',
     'contracts/LSP14Ownable2Step/LSP14Ownable2Step.sol',
-    'packages/LSP16UniversalFactory/contracts/LSP16UniversalFactory.sol',
+    'lsp16/contracts/LSP16UniversalFactory.sol',
     'contracts/LSP17ContractExtension/LSP17Extendable.sol',
     'contracts/LSP17ContractExtension/LSP17Extension.sol',
     'contracts/LSP17Extensions/Extension4337.sol',
@@ -48,8 +48,6 @@ export const dodocConfig = {
 
     // external --------------------
     '@erc725/smart-contracts/contracts/ERC725.sol',
-    // 'solidity-bytes-utils/contracts/BytesLib.sol',
-    '@openzeppelin/contracts/token/ERC20/ERC20.sol',
   ],
   libraries: [
     'contracts/LSP1UniversalReceiver/LSP1Utils.sol',
