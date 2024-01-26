@@ -9,13 +9,11 @@ import {
     ILSP14Ownable2Step
 } from "../../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 
-import {
-    ILSP20CallVerifier
-} from "../../LSP20CallVerification/ILSP20CallVerifier.sol";
+import {ILSP20CallVerifier} from "lsp20/contracts/ILSP20CallVerifier.sol";
 import {
     _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITH_POST_VERIFICATION,
     _LSP20_VERIFY_CALL_RESULT_SUCCESS_VALUE
-} from "../../LSP20CallVerification/LSP20Constants.sol";
+} from "lsp20/contracts/LSP20Constants.sol";
 
 contract OwnerWithURD is ILSP20CallVerifier, ILSP1UniversalReceiver {
     address private immutable _OWNED_CONTRACT;
