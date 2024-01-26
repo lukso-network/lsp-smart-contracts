@@ -8,7 +8,7 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {
     LSP4DigitalAssetMetadata
-} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol";
+} from "lsp4/contracts/LSP4DigitalAssetMetadata.sol";
 import {LSP7DigitalAssetCore} from "./LSP7DigitalAssetCore.sol";
 import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 

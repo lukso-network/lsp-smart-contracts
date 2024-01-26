@@ -23,7 +23,7 @@ export const dodocConfig = {
     'lsp25/contracts/LSP25MultiChannelNonce.sol',
 
     // tokens
-    'contracts/LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol',
+    'lsp4/contracts/LSP4DigitalAssetMetadata.sol',
     'contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol',
     'contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol',
     'contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply.sol',
@@ -40,7 +40,7 @@ export const dodocConfig = {
 
     // libraries --------------------
     'contracts/LSP1UniversalReceiver/LSP1Utils.sol',
-    'packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol',
+    'lsp2/contracts/LSP2Utils.sol',
     'contracts/LSP5ReceivedAssets/LSP5Utils.sol',
     'contracts/LSP6KeyManager/LSP6Utils.sol',
     'contracts/LSP10ReceivedVaults/LSP10Utils.sol',
@@ -51,7 +51,7 @@ export const dodocConfig = {
   ],
   libraries: [
     'contracts/LSP1UniversalReceiver/LSP1Utils.sol',
-    'contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol',
+    'lsp2/contracts/LSP2Utils.sol',
     'contracts/LSP5ReceivedAssets/LSP5Utils.sol',
     'contracts/LSP6KeyManager/LSP6Utils.sol',
     'contracts/LSP10ReceivedVaults/LSP10Utils.sol',
