@@ -22,6 +22,8 @@ import 'hardhat-deploy';
 // custom built hardhat plugins for CI
 import './scripts/ci/docs-generate';
 import './scripts/ci/gas_benchmark';
+import './scripts/ci/check-deployer-balance';
+import './scripts/ci/verify-all-contracts';
 
 // Typescript types for web3.js
 import '@nomiclabs/hardhat-web3';
@@ -49,6 +51,21 @@ function getTestnetChainConfig(): NetworkUserConfig {
   return config;
 }
 
+function getMainnetChainConfig(): NetworkUserConfig {
+  const config: NetworkUserConfig = {
+    live: true,
+    url: 'https://rpc.lukso.gateway.fm',
+    chainId: 42,
+    saveDeployments: true,
+  };
+
+  if (process.env.CONTRACT_VERIFICATION_MAINNET_PK !== undefined) {
+    config['accounts'] = [process.env.CONTRACT_VERIFICATION_MAINNET_PK];
+  }
+
+  return config;
+}
+
 const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
   networks: {
@@ -58,6 +75,7 @@ const config: HardhatUserConfig = {
       allowBlocksWithSameTimestamp: true,
     },
     luksoTestnet: getTestnetChainConfig(),
+    luksoMainnet: getMainnetChainConfig(),
   },
   namedAccounts: {
     owner: 0,
@@ -81,6 +99,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: 'https://api.explorer.execution.testnet.lukso.network/api',
           browserURL: 'https://explorer.execution.testnet.lukso.network/',
+        },
+      },
+      {
+        network: 'luksoMainnet',
+        chainId: 42,
+        urls: {
+          apiURL: 'https://api.explorer.execution.mainnet.lukso.network/api',
+          browserURL: 'https://explorer.execution.mainnet.lukso.network/',
         },
       },
     ],
