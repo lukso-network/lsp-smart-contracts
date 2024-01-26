@@ -11,11 +11,11 @@ import {
 } from "./LSP8IdentifiableDigitalAssetCore.sol";
 import {
     LSP4DigitalAssetMetadata
-} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol";
+} from "lsp4/contracts/LSP4DigitalAssetMetadata.sol";
 
 import {
     LSP4DigitalAssetMetadataCore
-} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataCore.sol";
+} from "lsp4/contracts/LSP4DigitalAssetMetadataCore.sol";
 
 import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 
