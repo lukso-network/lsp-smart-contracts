@@ -1,7 +1,6 @@
 <!-- This file is auto-generated. Do not edit! -->
 <!-- Check `@lukso-network/lsp-smart-contracts/CONTRIBUTING.md#solidity-code-comments` for more information. -->
 
-
 # LSP4DigitalAssetMetadata
 
 :::info Standard Specifications
@@ -15,21 +14,14 @@
 
 :::
 
-
 > Implementation of a LSP4DigitalAssetMetadata contract that stores the **Token-Metadata** (`LSP4TokenName` and `LSP4TokenSymbol`) in its ERC725Y data store.
-
-
 
 Standard Implementation of the LSP4 standard.
 
-
-
 ## Public Methods
-
 
 Public methods are accessible externally from users, allowing interaction with this function from dApps or other smart contracts.
 When marked as 'public', a method can be called both externally and internally, on the other hand, when marked as 'external', a method can only be called externally.
-
 
 ### getData
 
@@ -42,43 +34,27 @@ When marked as 'public', a method can be called both externally and internally, 
 
 :::
 
-
-
-
-
-
-
-
-
-
 ```solidity
 function getData(bytes32 dataKey) external view returns (bytes dataValue);
 ```
 
-
-*Reading the ERC725Y storage for data key `dataKey` returned the following value: `dataValue`.*
-
+_Reading the ERC725Y storage for data key `dataKey` returned the following value: `dataValue`._
 
 Get in the ERC725Y storage the bytes data stored at a specific data key `dataKey`.
 
-
-
-
-
 #### Parameters
 
-| Name | Type | Description |
-|---|:-:|---|
+| Name      |   Type    | Description                                   |
+| --------- | :-------: | --------------------------------------------- |
 | `dataKey` | `bytes32` | The data key for which to retrieve the value. |
-
 
 #### Returns
 
-| Name | Type | Description |
-|---|:-:|---|
+| Name        |  Type   | Description                                          |
+| ----------- | :-----: | ---------------------------------------------------- |
 | `dataValue` | `bytes` | The bytes value stored under the specified data key. |
-<br/>
 
+<br/>
 
 ### getDataBatch
 
@@ -91,43 +67,29 @@ Get in the ERC725Y storage the bytes data stored at a specific data key `dataKey
 
 :::
 
-
-
-
-
-
-
-
-
-
 ```solidity
-function getDataBatch(bytes32[] dataKeys) external view returns (bytes[] dataValues);
+function getDataBatch(
+  bytes32[] dataKeys
+) external view returns (bytes[] dataValues);
 ```
 
-
-*Reading the ERC725Y storage for data keys `dataKeys` returned the following values: `dataValues`.*
-
+_Reading the ERC725Y storage for data keys `dataKeys` returned the following values: `dataValues`._
 
 Get in the ERC725Y storage the bytes data stored at multiple data keys `dataKeys`.
 
-
-
-
-
 #### Parameters
 
-| Name | Type | Description |
-|---|:-:|---|
+| Name       |    Type     | Description                                |
+| ---------- | :---------: | ------------------------------------------ |
 | `dataKeys` | `bytes32[]` | The array of keys which values to retrieve |
-
 
 #### Returns
 
-| Name | Type | Description |
-|---|:-:|---|
+| Name         |   Type    | Description                               |
+| ------------ | :-------: | ----------------------------------------- |
 | `dataValues` | `bytes[]` | The array of data stored at multiple keys |
-<br/>
 
+<br/>
 
 ### owner
 
@@ -140,37 +102,19 @@ Get in the ERC725Y storage the bytes data stored at multiple data keys `dataKeys
 
 :::
 
-
-
-
-
-
-
-
-
-
 ```solidity
 function owner() external view returns (address);
 ```
 
-
-
-
 Returns the address of the current owner.
-
-
-
-
-
-
 
 #### Returns
 
-| Name | Type | Description |
-|---|:-:|---|
-| `0` | `address` | - |
-<br/>
+| Name |   Type    | Description |
+| ---- | :-------: | ----------- |
+| `0`  | `address` | -           |
 
+<br/>
 
 ### renounceOwnership
 
@@ -183,32 +127,13 @@ Returns the address of the current owner.
 
 :::
 
-
-
-
-
-
-
-
-
-
 ```solidity
 function renounceOwnership() external nonpayable;
 ```
 
-
-
-
 Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
 
-
-
-
-
-
-
 <br/>
-
 
 ### setData
 
@@ -221,27 +146,17 @@ Leaves the contract without owner. It will not be possible to call `onlyOwner` f
 
 :::
 
-
-
-
-
-
 :::caution Warning
 
 **Note for developers:** despite the fact that this function is set as `payable`, if the function is not intended to receive value (= native tokens), **an additional check should be implemented to ensure that `msg.value` sent was equal to 0**.
 
 :::
 
-
-
-
 ```solidity
 function setData(bytes32 dataKey, bytes dataValue) external payable;
 ```
 
-
-*Setting the following data key value pair in the ERC725Y storage. Data key: `dataKey`, data value: `dataValue`.*
-
+_Setting the following data key value pair in the ERC725Y storage. Data key: `dataKey`, data value: `dataValue`._
 
 Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data key `dataKey`. The function is marked as payable to enable flexibility on child contracts. For instance to implement a fee mechanism for setting specific data.
 
@@ -251,9 +166,7 @@ Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data
 
 - SHOULD only be callable by the [`owner`](#owner).
 
-
 </blockquote>
-
 
 <blockquote>
 
@@ -261,20 +174,16 @@ Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data
 
 - [`DataChanged`](#datachanged) event.
 
-
 </blockquote>
-
 
 #### Parameters
 
-| Name | Type | Description |
-|---|:-:|---|
-| `dataKey` | `bytes32` | The data key for which to set a new value. |
-| `dataValue` | `bytes` | The new bytes value to set. |
-
+| Name        |   Type    | Description                                |
+| ----------- | :-------: | ------------------------------------------ |
+| `dataKey`   | `bytes32` | The data key for which to set a new value. |
+| `dataValue` |  `bytes`  | The new bytes value to set.                |
 
 <br/>
-
 
 ### setDataBatch
 
@@ -287,27 +196,17 @@ Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data
 
 :::
 
-
-
-
-
-
 :::caution Warning
 
 **Note for developers:** despite the fact that this function is set as `payable`, if the function is not intended to receive value (= native tokens), **an additional check should be implemented to ensure that `msg.value` sent was equal to 0**.
 
 :::
 
-
-
-
 ```solidity
 function setDataBatch(bytes32[] dataKeys, bytes[] dataValues) external payable;
 ```
 
-
-*Setting the following data key value pairs in the ERC725Y storage. Data keys: `dataKeys`, data values: `dataValues`.*
-
+_Setting the following data key value pairs in the ERC725Y storage. Data keys: `dataKeys`, data values: `dataValues`._
 
 Batch data setting function that behaves the same as [`setData`](#setdata) but allowing to set multiple data key/value pairs in the ERC725Y storage in the same transaction.
 
@@ -317,9 +216,7 @@ Batch data setting function that behaves the same as [`setData`](#setdata) but a
 
 - SHOULD only be callable by the [`owner`](#owner) of the contract.
 
-
 </blockquote>
-
 
 <blockquote>
 
@@ -327,20 +224,16 @@ Batch data setting function that behaves the same as [`setData`](#setdata) but a
 
 - [`DataChanged`](#datachanged) event **for each data key/value pair set**.
 
-
 </blockquote>
-
 
 #### Parameters
 
-| Name | Type | Description |
-|---|:-:|---|
-| `dataKeys` | `bytes32[]` | An array of data keys to set bytes values for. |
-| `dataValues` | `bytes[]` | An array of bytes values to set for each `dataKeys`. |
-
+| Name         |    Type     | Description                                          |
+| ------------ | :---------: | ---------------------------------------------------- |
+| `dataKeys`   | `bytes32[]` | An array of data keys to set bytes values for.       |
+| `dataValues` |  `bytes[]`  | An array of bytes values to set for each `dataKeys`. |
 
 <br/>
-
 
 ### supportsInterface
 
@@ -353,42 +246,25 @@ Batch data setting function that behaves the same as [`setData`](#setdata) but a
 
 :::
 
-
-
-
-
-
-
-
-
-
 ```solidity
 function supportsInterface(bytes4 interfaceId) external view returns (bool);
 ```
 
-
-
-
 See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
-
-
-
-
 
 #### Parameters
 
-| Name | Type | Description |
-|---|:-:|---|
-| `interfaceId` | `bytes4` | - |
-
+| Name          |   Type   | Description |
+| ------------- | :------: | ----------- |
+| `interfaceId` | `bytes4` | -           |
 
 #### Returns
 
-| Name | Type | Description |
-|---|:-:|---|
-| `0` | `bool` | - |
-<br/>
+| Name |  Type  | Description |
+| ---- | :----: | ----------- |
+| `0`  | `bool` | -           |
 
+<br/>
 
 ### transferOwnership
 
@@ -401,42 +277,19 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 :::
 
-
-
-
-
-
-
-
-
-
 ```solidity
 function transferOwnership(address newOwner) external nonpayable;
 ```
 
-
-
-
 Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
-
-
-
-
 
 #### Parameters
 
-| Name | Type | Description |
-|---|:-:|---|
-| `newOwner` | `address` | - |
-
+| Name       |   Type    | Description |
+| ---------- | :-------: | ----------- |
+| `newOwner` | `address` | -           |
 
 <br/>
-
-
-
-
-
-
 
 ## Internal Methods
 
@@ -444,133 +297,66 @@ Any method labeled as `internal` serves as utility function within the contract.
 
 Internal functions cannot be called externally, whether from other smart contracts, dApp interfaces, or backend services. Their restricted accessibility ensures that they remain exclusively available within the context of the current contract, promoting controlled and encapsulated usage of these internal utilities.
 
-
-### _checkOwner
-
-
-
-
-
-
-
+### \_checkOwner
 
 ```solidity
 function _checkOwner() internal view;
 ```
 
-
-
-
 Throws if the sender is not the owner.
-
-
-
-
-
-
 
 <br/>
 
-### _setOwner
-
-
-
-
-
-
-
+### \_setOwner
 
 ```solidity
 function _setOwner(address newOwner) internal nonpayable;
 ```
 
-
-
-
 Changes the owner if `newOwner` and oldOwner are different
- This pattern is useful in inheritance.
-
-
-
-
-
-
+This pattern is useful in inheritance.
 
 <br/>
 
-### _getData
-
-
-
-
-
-
-
+### \_getData
 
 ```solidity
 function _getData(bytes32 dataKey) internal view returns (bytes dataValue);
 ```
 
-
-
-
 Read the value stored under a specific `dataKey` inside the underlying ERC725Y storage,
-  represented as a mapping of `bytes32` data keys mapped to their `bytes` data values.
- ```solidity
- mapping(bytes32 => bytes) _store
- ```
+represented as a mapping of `bytes32` data keys mapped to their `bytes` data values.
 
-
-
-
+```solidity
+mapping(bytes32 => bytes) _store
+```
 
 #### Parameters
 
-| Name | Type | Description |
-|---|:-:|---|
+| Name      |   Type    | Description                                                             |
+| --------- | :-------: | ----------------------------------------------------------------------- |
 | `dataKey` | `bytes32` | A bytes32 data key to read the associated `bytes` value from the store. |
-
 
 #### Returns
 
-| Name | Type | Description |
-|---|:-:|---|
+| Name        |  Type   | Description                                                                   |
+| ----------- | :-----: | ----------------------------------------------------------------------------- |
 | `dataValue` | `bytes` | The `bytes` value associated with the given `dataKey` in the ERC725Y storage. |
+
 <br/>
 
-### _setData
-
-
-
-
-
-
-
+### \_setData
 
 ```solidity
 function _setData(bytes32 dataKey, bytes dataValue) internal nonpayable;
 ```
 
-
-
-
 The ERC725Y data keys `LSP4TokenName` and `LSP4TokenSymbol` cannot be changed
- via this function once the digital asset contract has been deployed.
-
-
-
-
-
-
+via this function once the digital asset contract has been deployed.
 
 <br/>
 
-
-
-
-
 ## Events
-
 
 ### DataChanged
 
@@ -583,24 +369,21 @@ The ERC725Y data keys `LSP4TokenName` and `LSP4TokenSymbol` cannot be changed
 
 :::
 
-
 ```solidity
 event DataChanged(bytes32 indexed dataKey, bytes dataValue);
 ```
 
-
-*The following data key/value pair has been changed in the ERC725Y storage: Data key: `dataKey`, data value: `dataValue`.*
-
+_The following data key/value pair has been changed in the ERC725Y storage: Data key: `dataKey`, data value: `dataValue`._
 
 Emitted when data at a specific `dataKey` was changed to a new value `dataValue`.
 
 #### Parameters
 
-
-| Name | Type | Description |
-|---|:-:|---|
+| Name                    |   Type    | Description                                  |
+| ----------------------- | :-------: | -------------------------------------------- |
 | `dataKey` **`indexed`** | `bytes32` | The data key for which a bytes value is set. |
-| `dataValue`  | `bytes` | The value to set for the given data key. |
+| `dataValue`             |  `bytes`  | The value to set for the given data key.     |
+
 <br/>
 
 ### OwnershipTransferred
@@ -614,29 +397,23 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 
 :::
 
-
 ```solidity
-event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+event OwnershipTransferred(
+  address indexed previousOwner,
+  address indexed newOwner
+);
 ```
-
-
-
-
-
 
 #### Parameters
 
+| Name                          |   Type    | Description |
+| ----------------------------- | :-------: | ----------- |
+| `previousOwner` **`indexed`** | `address` | -           |
+| `newOwner` **`indexed`**      | `address` | -           |
 
-| Name | Type | Description |
-|---|:-:|---|
-| `previousOwner` **`indexed`** | `address` | - |
-| `newOwner` **`indexed`** | `address` | - |
 <br/>
 
-
-
 ## Errors
-
 
 ### ERC725Y_DataKeysValuesEmptyArray
 
@@ -649,13 +426,9 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 
 :::
 
-
 ```solidity
 error ERC725Y_DataKeysValuesEmptyArray();
 ```
-
-
-
 
 Reverts when one of the array parameter provided to [`setDataBatch`](#setdatabatch) function is an empty array.
 
@@ -672,13 +445,9 @@ Reverts when one of the array parameter provided to [`setDataBatch`](#setdatabat
 
 :::
 
-
 ```solidity
 error ERC725Y_DataKeysValuesLengthMismatch();
 ```
-
-
-
 
 Reverts when there is not the same number of elements in the `datakeys` and `dataValues` array parameters provided when calling the [`setDataBatch`](#setdatabatch) function.
 
@@ -695,13 +464,9 @@ Reverts when there is not the same number of elements in the `datakeys` and `dat
 
 :::
 
-
 ```solidity
 error ERC725Y_MsgValueDisallowed();
 ```
-
-
-
 
 Reverts when sending value to the [`setData`](#setdata) or [`setDataBatch`](#setdatabatch) function.
 
@@ -718,13 +483,9 @@ Reverts when sending value to the [`setData`](#setdata) or [`setDataBatch`](#set
 
 :::
 
-
 ```solidity
 error LSP4TokenNameNotEditable();
 ```
-
-
-
 
 Reverts when trying to edit the data key `LSP4TokenName` after the digital asset contract has been deployed / initialized. The `LSP4TokenName` data key is located inside the ERC725Y data key-value store of the digital asset contract. It can be set only once inside the constructor/initializer when the digital asset contract is being deployed / initialized.
 
@@ -741,13 +502,9 @@ Reverts when trying to edit the data key `LSP4TokenName` after the digital asset
 
 :::
 
-
 ```solidity
 error LSP4TokenSymbolNotEditable();
 ```
-
-
-
 
 Reverts when trying to edit the data key `LSP4TokenSymbol` after the digital asset contract has been deployed / initialized. The `LSP4TokenSymbol` data key is located inside the ERC725Y data key-value store of the digital asset contract. It can be set only once inside the constructor/initializer when the digital asset contract is being deployed / initialized.
 
@@ -764,13 +521,9 @@ Reverts when trying to edit the data key `LSP4TokenSymbol` after the digital ass
 
 :::
 
-
 ```solidity
 error LSP4TokenTypeNotEditable();
 ```
-
-
-
 
 Reverts when trying to edit the data key `LSP4TokenType` after the digital asset contract has been deployed / initialized. The `LSP4TokenType` data key is located inside the ERC725Y data key-value store of the digital asset contract. It can be set only once inside the constructor / initializer when the digital asset contract is being deployed / initialized.
 
@@ -787,21 +540,18 @@ Reverts when trying to edit the data key `LSP4TokenType` after the digital asset
 
 :::
 
-
 ```solidity
 error OwnableCallerNotTheOwner(address callerAddress);
 ```
-
-
-
 
 Reverts when only the owner is allowed to call the function.
 
 #### Parameters
 
-| Name | Type | Description |
-|---|:-:|---|
+| Name            |   Type    | Description                              |
+| --------------- | :-------: | ---------------------------------------- |
 | `callerAddress` | `address` | The address that tried to make the call. |
+
 <br/>
 
 ### OwnableCannotSetZeroAddressAsOwner
@@ -815,15 +565,10 @@ Reverts when only the owner is allowed to call the function.
 
 :::
 
-
 ```solidity
 error OwnableCannotSetZeroAddressAsOwner();
 ```
 
-
-
-
 Reverts when trying to set `address(0)` as the contract owner when deploying the contract, initializing it or transferring ownership of the contract.
 
 <br/>
-

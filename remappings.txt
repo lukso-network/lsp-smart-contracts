@@ -8,3 +8,4 @@ hardhat/=node_modules/hardhat/
 solidity-bytes-utils/=node_modules/solidity-bytes-utils/
 ds-test/=lib/forge-std/lib/ds-test/src/
 lsp25/=packages/LSP25ExecuteRelayCall/
+lsp17contractextension/=packages/LSP17ContractExtension/

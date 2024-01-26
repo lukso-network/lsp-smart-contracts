@@ -75,16 +75,18 @@ jobs:
       - name: Compile Smart Contracts
         run: |
           if [[ "<" == "${{ steps.comparison.outputs.comparison-result }}" ]]
-          then 
+          then
             solc $(ls contracts/**/*.sol | grep -v "Extension4337\|contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset") \
               --allow-paths $(pwd)/node_modules/,$(pwd)/packages/ \
               @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
               ../=$(pwd)/contracts/ \
-              lsp25/=packages/LSP25ExecuteRelayCall/
+              lsp25/=packages/LSP25ExecuteRelayCall/  \
+              lsp17contractextension/=packages/LSP17ContractExtension/
           else
             solc contracts/**/*.sol \
               @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
-              lsp25/=packages/LSP25ExecuteRelayCall/
+              lsp25/=packages/LSP25ExecuteRelayCall/ \
+              lsp17contractextension/=packages/LSP17ContractExtension/
           fi;
