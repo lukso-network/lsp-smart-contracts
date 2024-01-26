@@ -65,7 +65,7 @@
   "scripts": {
     "build": "hardhat compile",
     "build:turbo": "turbo build",
-    "build:docs": "hardhat dodoc && ts-node scripts/interfaceIds.ts && prettier -w ./docs",
+    "build:docs": "hardhat dodoc && prettier -w ./docs",
     "build:js": "unbuild",
     "clean": "hardhat clean && rm -rf module common",
     "format": "prettier --write .",
