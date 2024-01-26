@@ -59,8 +59,8 @@ async function main() {
         folder = contract;
       }
 
-      const source = `contracts/${folder}/${lspInterface}.sol:${lspInterface}`;
-      const build = await hre.artifacts.getBuildInfo(source);
+      let source = `contracts/${folder}/${lspInterface}.sol:${lspInterface}`;
+      let build = await hre.artifacts.getBuildInfo(source);
 
       const [path] = source.split(':');
 
@@ -68,15 +68,29 @@ async function main() {
 
       if (!devdoc) {
         // search in the first implementation contract
-        const source = `contracts/${folder}/${contract}.sol:${contract}`;
-        const build = await hre.artifacts.getBuildInfo(source);
+        source = `contracts/${folder}/${contract}.sol:${contract}`;
+        build = await hre.artifacts.getBuildInfo(source);
 
-        const [path] = source.split(':');
+        let contractDevDoc;
 
-        const contractDevDoc = build?.output?.contracts?.[path]?.[contract]['devdoc'];
+        // otherwise search in the `lsp` package
+        if (build == undefined) {
+          const lspNumber = lspInterface.match(/\d+/);
+
+          if (lspNumber != null) {
+            source = `lsp${lspNumber}/contracts/${lspInterface}.sol:${lspInterface}`;
+            build = await hre.artifacts.getBuildInfo(source);
+            const [path] = source.split(':');
+            contractDevDoc = build?.output?.contracts?.[path]?.[lspInterface]['devdoc'];
+          }
+        } else {
+          const [path] = source.split(':');
+
+          contractDevDoc = build?.output?.contracts?.[path]?.[contract]['devdoc'];
+        }
 
         if (contractDevDoc == undefined) {
-          throw new Error(`No devdoc for ${contract}`);
+          throw new Error(`No devdoc for ${contract} at path ${path}`);
         }
 
         if (contractDevDoc.hasOwnProperty('title')) {
