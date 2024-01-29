@@ -20,8 +20,6 @@ import {
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP1Utils} from "lsp1/contracts/LSP1Utils.sol";
 import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
-import {LSP1Utils} from "lsp1/contracts/LSP1Utils.sol";
-import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
 
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
