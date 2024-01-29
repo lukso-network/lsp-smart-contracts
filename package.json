@@ -112,6 +112,7 @@
     "@openzeppelin/contracts": "^4.9.2",
     "@openzeppelin/contracts-upgradeable": "^4.9.2",
     "solidity-bytes-utils": "0.8.0",
+    "lsp1": "*",
     "lsp2": "*",
     "lsp4": "*",
     "lsp5": "*",

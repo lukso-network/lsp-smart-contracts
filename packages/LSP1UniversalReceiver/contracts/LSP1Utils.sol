@@ -15,7 +15,7 @@ import {
     _INTERFACEID_LSP1,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
-} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+} from "./LSP1Constants.sol";
 
 /**
  * @title LSP1 Utility library.

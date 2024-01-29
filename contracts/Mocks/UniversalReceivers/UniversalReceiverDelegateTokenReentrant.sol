@@ -9,7 +9,7 @@ import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 
 import {
     ILSP1UniversalReceiverDelegate
-} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+} from "lsp1/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
@@ -26,9 +26,7 @@ import {
     _TYPEID_LSP8_TOKENSRECIPIENT
 } from "../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 
-import {
-    _INTERFACEID_LSP1_DELEGATE
-} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_INTERFACEID_LSP1_DELEGATE} from "lsp1/contracts/LSP1Constants.sol";
 
 /**
  * @dev This contract is used only for testing purposes

@@ -9,7 +9,7 @@ import "../../../../contracts/Mocks/Tokens/LSP7Tester.sol";
 import "../../../../contracts/Mocks/Tokens/LSP8Tester.sol";
 import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-} from "../../../../contracts/LSP1UniversalReceiver/LSP1Constants.sol";
+} from "lsp1/contracts/LSP1Constants.sol";
 import {
     _LSP4_TOKEN_TYPE_TOKEN,
     _LSP4_TOKEN_TYPE_NFT

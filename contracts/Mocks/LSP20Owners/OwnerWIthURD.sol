@@ -3,7 +3,7 @@ pragma solidity ^0.8.4;
 
 import {
     ILSP1UniversalReceiver
-} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+} from "lsp1/contracts/ILSP1UniversalReceiver.sol";
 
 import {
     ILSP14Ownable2Step
