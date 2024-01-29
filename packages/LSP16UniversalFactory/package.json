@@ -19,12 +19,16 @@
     "clean": "hardhat clean",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
-    "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
+    "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
+    "test": "hardhat test --no-compile tests/*.test.ts",
+    "test:foundry": "FOUNDRY_PROFILE=lsp16 forge test --no-match-test Skip -vvv"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.2"
   },
   "devDependencies": {
+    "@erc725/smart-contracts": "7.0.0",
+    "@openzeppelin/contracts-upgradeable": "4.9.3",
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
     "@typechain/ethers-v5": "^10.2.0",
     "dotenv": "^16.0.3",
@@ -39,6 +43,6 @@
     "ts-node": "^10.2.0",
     "tsconfig": "*",
     "typechain": "^8.0.0",
-    "typescript": "^4.9.5"
+    "typescript": "^5.3.3"
   }
 }

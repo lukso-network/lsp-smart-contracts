@@ -20,3 +20,4 @@ lsp17contractextension/=packages/LSP17ContractExtension/
 lsp17/=packages/LSP17Extensions
 lsp20/=packages/LSP20CallVerification/
 lsp25/=packages/LSP25ExecuteRelayCall/
+lsp16/=packages/LSP16UniversalFactory/
