@@ -5,12 +5,12 @@
 
 :::info Standard Specifications
 
-[`LSP-20-CallVerification`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-20-CallVerification.md)
+[`LSP-20-CallVerification.sol`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-20-CallVerification.sol.md)
 
 :::
 :::info Solidity implementation
 
-[`LSP20CallVerification.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP20CallVerification/LSP20CallVerification.sol)
+[`LSP20CallVerification.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/lsp20/contracts/LSP20CallVerification.sol)
 
 :::
 

@@ -13,7 +13,7 @@ import {
 import {
     _LSP4_TOKEN_TYPE_TOKEN,
     _LSP4_TOKEN_TYPE_NFT
-} from "../../../../contracts/LSP4DigitalAssetMetadata/LSP4Constants.sol";
+} from "lsp4/contracts/LSP4Constants.sol";
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
     _PERMISSION_SUPER_SETDATA,

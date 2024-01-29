@@ -13,7 +13,7 @@ import {
 
 import {
     LSP4DigitalAssetMetadataCore
-} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataCore.sol";
+} from "lsp4/contracts/LSP4DigitalAssetMetadataCore.sol";
 
 // libraries
 import {
