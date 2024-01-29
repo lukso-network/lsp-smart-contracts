@@ -81,12 +81,22 @@ jobs:
               @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
               ../=$(pwd)/contracts/ \
-              lsp25/=packages/LSP25ExecuteRelayCall/  \
-              lsp17contractextension/=packages/LSP17ContractExtension/
+              lsp1/=packages/LSP1UniversalReceiver/ \
+              lsp2/=packages/LSP2ERC725YJSONSchema/ \
+              lsp4/=packages/LSP4DigitalAssetMetadata/ \
+              lsp5/=packages/LSP5ReceivedAssets/ \
+              lsp17contractextension/=packages/LSP17ContractExtension/ \
+              lsp20/=packages/LSP20CallVerification/ \
+              lsp25/=packages/LSP25ExecuteRelayCall/
           else
             solc contracts/**/*.sol \
               @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
-              lsp25/=packages/LSP25ExecuteRelayCall/ \
-              lsp17contractextension/=packages/LSP17ContractExtension/
+              lsp1/=packages/LSP1UniversalReceiver/ \
+              lsp2/=packages/LSP2ERC725YJSONSchema/ \
+              lsp4/=packages/LSP4DigitalAssetMetadata/ \
+              lsp5/=packages/LSP5ReceivedAssets/ \
+              lsp17contractextension/=packages/LSP17ContractExtension/ \
+              lsp20/=packages/LSP20CallVerification/ \
+              lsp25/=packages/LSP25ExecuteRelayCall/
           fi;

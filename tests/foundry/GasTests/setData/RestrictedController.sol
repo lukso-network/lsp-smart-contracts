@@ -2,9 +2,10 @@ pragma solidity ^0.8.13;
 
 import "../LSP6s/LSP6SetDataRC.sol";
 import "../../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
-import "../../../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import "lsp2/contracts/LSP2Utils.sol";
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
+    _LSP6KEY_ADDRESSPERMISSIONS_AllowedERC725YDataKeys_PREFIX,
     _PERMISSION_SUPER_SETDATA,
     _PERMISSION_SUPER_CALL,
     _PERMISSION_REENTRANCY,

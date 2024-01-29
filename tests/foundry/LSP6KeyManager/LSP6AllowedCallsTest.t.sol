@@ -3,9 +3,7 @@ pragma solidity ^0.8.4;
 
 // libraries
 import "forge-std/Test.sol";
-import {
-    LSP2Utils
-} from "../../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
 
 // modules
 import {UniversalProfile} from "../../../contracts/UniversalProfile.sol";

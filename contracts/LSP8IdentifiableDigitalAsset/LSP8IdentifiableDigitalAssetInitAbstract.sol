@@ -11,20 +11,18 @@ import {
 } from "./LSP8IdentifiableDigitalAssetCore.sol";
 import {
     LSP4DigitalAssetMetadataInitAbstract
-} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataInitAbstract.sol";
+} from "lsp4/contracts/LSP4DigitalAssetMetadataInitAbstract.sol";
 
 import {
     LSP4DigitalAssetMetadataCore
-} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataCore.sol";
+} from "lsp4/contracts/LSP4DigitalAssetMetadataCore.sol";
 
 import {
     LSP17Extendable
 } from "lsp17contractextension/contracts/LSP17Extendable.sol";
 
 // libraries
-import {
-    LSP2Utils
-} from "../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
 
 // constants
 import {_INTERFACEID_LSP8, _LSP8_TOKENID_FORMAT_KEY} from "./LSP8Constants.sol";

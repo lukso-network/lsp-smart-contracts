@@ -5,21 +5,22 @@ import "forge-std/Test.sol";
 
 import "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
 import "../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol";
-import "../../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import "lsp2/contracts/LSP2Utils.sol";
 import "../../../contracts/Mocks/Tokens/LSP7Tester.sol";
 import "../../../contracts/Mocks/Tokens/LSP8Tester.sol";
 import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-} from "../../../contracts/LSP1UniversalReceiver/LSP1Constants.sol";
+} from "lsp1/contracts/LSP1Constants.sol";
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
+    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX,
     _PERMISSION_SUPER_SETDATA,
     _PERMISSION_SUPER_CALL,
     _PERMISSION_REENTRANCY,
     _PERMISSION_SUPER_TRANSFERVALUE
 } from "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 
-import "../../../contracts/LSP6KeyManager/LSP6Utils.sol";
+import {LSP6Utils} from "../../../contracts/LSP6KeyManager/LSP6Utils.sol";
 
 contract UniversalProfileTestsHelper is Test {
     function setURDToUPAndGivePermissions(

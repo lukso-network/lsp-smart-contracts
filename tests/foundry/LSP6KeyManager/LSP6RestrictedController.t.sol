@@ -2,7 +2,7 @@ pragma solidity ^0.8.13;
 
 import "../../../contracts/LSP6KeyManager/LSP6KeyManager.sol";
 import "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
-import "../../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import "lsp2/contracts/LSP2Utils.sol";
 import "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 import "../GasTests/UniversalProfileTestsHelper.sol";
 

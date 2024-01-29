@@ -6,11 +6,11 @@ import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP0ERC725Account} from "./ILSP0ERC725Account.sol";
 import {
     ILSP1UniversalReceiver
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+} from "lsp1/contracts/ILSP1UniversalReceiver.sol";
 
 import {
     ILSP1UniversalReceiverDelegate as ILSP1Delegate
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+} from "lsp1/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -18,10 +18,8 @@ import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
-import {
-    LSP2Utils
-} from "../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import {LSP1Utils} from "lsp1/contracts/LSP1Utils.sol";
+import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
 
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
@@ -33,9 +31,7 @@ import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 import {
     LSP17Extendable
 } from "lsp17contractextension/contracts/LSP17Extendable.sol";
-import {
-    LSP20CallVerification
-} from "../LSP20CallVerification/LSP20CallVerification.sol";
+import {LSP20CallVerification} from "lsp20/contracts/LSP20CallVerification.sol";
 
 // constants
 import {
@@ -53,7 +49,7 @@ import {
     _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+} from "lsp1/contracts/LSP1Constants.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 import {
@@ -61,7 +57,7 @@ import {
 } from "lsp17contractextension/contracts/LSP17Constants.sol";
 import {
     _INTERFACEID_LSP20_CALL_VERIFICATION
-} from "../LSP20CallVerification/LSP20Constants.sol";
+} from "lsp20/contracts/LSP20Constants.sol";
 
 // errors
 import {

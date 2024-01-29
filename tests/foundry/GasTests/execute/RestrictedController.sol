@@ -4,16 +4,16 @@ pragma solidity ^0.8.13;
 import "../LSP6s/LSP6ExecuteRC.sol";
 import "../../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
 import "../../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol";
-import "../../../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import "lsp2/contracts/LSP2Utils.sol";
 import "../../../../contracts/Mocks/Tokens/LSP7Tester.sol";
 import "../../../../contracts/Mocks/Tokens/LSP8Tester.sol";
 import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-} from "../../../../contracts/LSP1UniversalReceiver/LSP1Constants.sol";
+} from "lsp1/contracts/LSP1Constants.sol";
 import {
     _LSP4_TOKEN_TYPE_TOKEN,
     _LSP4_TOKEN_TYPE_NFT
-} from "../../../../contracts/LSP4DigitalAssetMetadata/LSP4Constants.sol";
+} from "lsp4/contracts/LSP4Constants.sol";
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
     _PERMISSION_SUPER_SETDATA,

@@ -8,7 +8,7 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {
     LSP4DigitalAssetMetadataInitAbstract
-} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataInitAbstract.sol";
+} from "lsp4/contracts/LSP4DigitalAssetMetadataInitAbstract.sol";
 import {LSP7DigitalAssetCore} from "./LSP7DigitalAssetCore.sol";
 
 import {
@@ -16,9 +16,7 @@ import {
 } from "lsp17contractextension/contracts/LSP17Extendable.sol";
 
 // libraries
-import {
-    LSP2Utils
-} from "../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
 
 // constants
 import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";

@@ -31,11 +31,11 @@ import {IERC223} from "./Tokens/IERC223.sol";
 import {ILSP0ERC725Account} from "../LSP0ERC725Account/ILSP0ERC725Account.sol";
 import {
     ILSP1UniversalReceiver as ILSP1
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+} from "lsp1/contracts/ILSP1UniversalReceiver.sol";
 
 import {
     ILSP1UniversalReceiverDelegate as ILSP1Delegate
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+} from "lsp1/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 import {ILSP6KeyManager as ILSP6} from "../LSP6KeyManager/ILSP6KeyManager.sol";
 import {
@@ -54,7 +54,7 @@ import {
 } from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 import {
     ILSP20CallVerifier as ILSP20
-} from "../LSP20CallVerification/ILSP20CallVerifier.sol";
+} from "lsp20/contracts/ILSP20CallVerifier.sol";
 import {
     ILSP25ExecuteRelayCall as ILSP25
 } from "lsp25/contracts/ILSP25ExecuteRelayCall.sol";
@@ -64,7 +64,7 @@ import {_INTERFACEID_LSP0} from "../LSP0ERC725Account/LSP0Constants.sol";
 import {
     _INTERFACEID_LSP1,
     _INTERFACEID_LSP1_DELEGATE
-} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+} from "lsp1/contracts/LSP1Constants.sol";
 import {_INTERFACEID_LSP6} from "../LSP6KeyManager/LSP6Constants.sol";
 import {_INTERFACEID_LSP7} from "../LSP7DigitalAsset/LSP7Constants.sol";
 import {
@@ -82,7 +82,7 @@ import {
 import {
     _INTERFACEID_LSP20_CALL_VERIFICATION,
     _INTERFACEID_LSP20_CALL_VERIFIER
-} from "../LSP20CallVerification/LSP20Constants.sol";
+} from "lsp20/contracts/LSP20Constants.sol";
 import {_INTERFACEID_LSP25} from "lsp25/contracts/LSP25Constants.sol";
 
 // libraries
