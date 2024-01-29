@@ -3,34 +3,31 @@ import { expect } from 'chai';
 import { FakeContract, smock } from '@defi-wonderland/smock';
 
 import {
-  LSP1UniversalReceiverDelegateUP__factory,
-  UniversalProfileInit,
-  UniversalProfileInit__factory,
-  LSP1UniversalReceiverDelegateUP,
-  UniversalProfile,
-  UniversalProfile__factory,
+  LSP16UniversalFactory,
+  LSP16UniversalFactory__factory,
+  Account,
+  Account__factory,
+  AccountInit,
+  AccountInit__factory,
   PayableContract,
   PayableContract__factory,
+  NonPayableContract__factory,
   ImplementationTester,
   ImplementationTester__factory,
   FallbackInitializer,
   FallbackInitializer__factory,
-  LSP6KeyManager__factory,
-} from '../../types';
-
-import {
-  LSP16UniversalFactory,
-  LSP16UniversalFactory__factory,
-} from '../../packages/LSP16UniversalFactory/types';
+  ContractNoConstructor__factory,
+  ContractNoConstructor,
+} from '../types';
 
 import web3 from 'web3';
 
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-import { provider, AddressOffset } from '../utils/helpers';
+import { provider, AddressOffset } from '../../../tests/utils/helpers';
 
-const UniversalProfileBytecode = UniversalProfile__factory.bytecode;
-const LSP6KeyManagerBytecode = LSP6KeyManager__factory.bytecode;
+const AccountBytecode = Account__factory.bytecode;
+const NonPayableConstructorBytecode = NonPayableContract__factory.bytecode;
 const ImplementationTesterBytecode = ImplementationTester__factory.bytecode;
 const FallbackInitializerBytecode = FallbackInitializer__factory.bytecode;
 
@@ -63,9 +60,9 @@ describe('UniversalFactory contract', () => {
 
   describe('When using LSP16UniversalFactory', () => {
     let context: UniversalFactoryTestContext;
-    let universalProfileConstructor: UniversalProfile;
-    let universalProfileBaseContract: UniversalProfileInit;
-    let universalReceiverDelegate: LSP1UniversalReceiverDelegateUP;
+    let accountConstructor: Account;
+    let accountBaseContract: AccountInit;
+    let contractNoConstructor: ContractNoConstructor;
     let payableContract: PayableContract;
     let fallbackContract: FakeContract;
     let implementationTester: ImplementationTester;
@@ -74,15 +71,13 @@ describe('UniversalFactory contract', () => {
     before(async () => {
       context = await buildTestContext();
 
-      universalProfileConstructor = await new UniversalProfile__factory(
-        context.accounts.random,
-      ).deploy(ethers.constants.AddressZero);
+      accountConstructor = await new Account__factory(context.accounts.random).deploy(
+        context.accounts.random.address,
+      );
 
-      universalProfileBaseContract = await new UniversalProfileInit__factory(
-        context.accounts.random,
-      ).deploy();
+      accountBaseContract = await new AccountInit__factory(context.accounts.random).deploy();
 
-      universalReceiverDelegate = await new LSP1UniversalReceiverDelegateUP__factory(
+      contractNoConstructor = await new ContractNoConstructor__factory(
         context.accounts.random,
       ).deploy();
 
@@ -109,9 +104,10 @@ describe('UniversalFactory contract', () => {
       it('should calculate the address of a non-initializable contract correctly', async () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
+        const randomAddress = ethers.Wallet.createRandom();
+
         // Set the Owner as the ZeroAddress
-        const UPBytecode =
-          UniversalProfileBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
+        const UPBytecode = AccountBytecode + AddressOffset + randomAddress.address.substring(2);
 
         const bytecodeHash = ethers.utils.solidityKeccak256(['bytes'], [UPBytecode]);
 
@@ -132,8 +128,9 @@ describe('UniversalFactory contract', () => {
       it('should calculate the same address of a contract if the initializeCalldata changed and the contract is not initializable', async () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
-        const UPBytecode =
-          UniversalProfileBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
+        const randomAddress = ethers.Wallet.createRandom();
+
+        const UPBytecode = AccountBytecode + AddressOffset + randomAddress.address.substr(2);
 
         const bytecodeHash = ethers.utils.solidityKeccak256(['bytes'], [UPBytecode]);
 
@@ -160,8 +157,7 @@ describe('UniversalFactory contract', () => {
         const salt1 = ethers.utils.solidityKeccak256(['string'], ['Salt1']);
         const salt2 = ethers.utils.solidityKeccak256(['string'], ['Salt2']);
 
-        const UPBytecode =
-          UniversalProfileBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
+        const UPBytecode = AccountBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
 
         const bytecodeHash = ethers.utils.solidityKeccak256(['bytes'], [UPBytecode]);
 
@@ -188,12 +184,12 @@ describe('UniversalFactory contract', () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
         const UPBytecode1 =
-          UniversalProfileBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
+          AccountBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
 
         const bytecodeHash1 = ethers.utils.solidityKeccak256(['bytes'], [UPBytecode1]);
 
         const UPBytecode2 =
-          UniversalProfileBytecode + AddressOffset + 'cafecafecafecafecafecafecafecafecafecafe';
+          AccountBytecode + AddressOffset + 'cafecafecafecafecafecafecafecafecafecafe';
 
         const bytecodeHash2 = ethers.utils.solidityKeccak256(['bytes'], [UPBytecode2]);
 
@@ -219,8 +215,9 @@ describe('UniversalFactory contract', () => {
       it('should revert when deploying a non-initializable contract with the same bytecode and salt ', async () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
-        const UPBytecode =
-          UniversalProfileBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
+        const randomAddress = ethers.Wallet.createRandom();
+
+        const UPBytecode = AccountBytecode + AddressOffset + randomAddress.address.substring(2);
 
         await context.universalFactory.deployCreate2(UPBytecode, salt);
 
@@ -233,7 +230,7 @@ describe('UniversalFactory contract', () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['OtherSalt']);
 
         const KMBytecode =
-          LSP6KeyManagerBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
+          NonPayableConstructorBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
 
         await expect(
           context.universalFactory.deployCreate2(KMBytecode, salt, {
@@ -267,7 +264,7 @@ describe('UniversalFactory contract', () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
         const UPBytecode =
-          UniversalProfileBytecode + AddressOffset + context.accounts.deployer3.address.substr(2);
+          AccountBytecode + AddressOffset + context.accounts.deployer3.address.substr(2);
 
         const contractCreatedAddress = await context.universalFactory.callStatic.deployCreate2(
           UPBytecode,
@@ -284,7 +281,7 @@ describe('UniversalFactory contract', () => {
           .to.emit(context.universalFactory, 'ContractCreated')
           .withArgs(contractCreatedAddress, salt, generatedSalt, false, '0x');
 
-        const universalProfile = universalProfileConstructor.attach(contractCreatedAddress);
+        const universalProfile = accountConstructor.attach(contractCreatedAddress);
 
         const owner = await universalProfile.callStatic.owner();
         expect(owner).to.equal(context.accounts.deployer3.address);
@@ -328,15 +325,13 @@ describe('UniversalFactory contract', () => {
         const salt1 = ethers.utils.solidityKeccak256(['string'], ['Salt1']);
         const salt2 = ethers.utils.solidityKeccak256(['string'], ['Salt2']);
 
-        const UPBytecode =
-          UniversalProfileBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
+        const UPBytecode = AccountBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
 
         const bytecodeHash = ethers.utils.solidityKeccak256(['bytes'], [UPBytecode]);
 
-        const initializeCallData = universalProfileBaseContract.interface.encodeFunctionData(
-          'initialize',
-          [context.accounts.deployer1.address],
-        );
+        const initializeCallData = accountBaseContract.interface.encodeFunctionData('initialize', [
+          context.accounts.deployer1.address,
+        ]);
 
         const calulcatedAddressSalt1 = await context.universalFactory.computeAddress(
           bytecodeHash,
@@ -360,15 +355,13 @@ describe('UniversalFactory contract', () => {
       it('should calculate a different address of a contract if the initializeCalldata changed', async () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
-        const UPBytecode =
-          UniversalProfileBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
+        const UPBytecode = AccountBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
 
         const bytecodeHash = ethers.utils.solidityKeccak256(['bytes'], [UPBytecode]);
 
-        const initializeCallData = universalProfileBaseContract.interface.encodeFunctionData(
-          'initialize',
-          [context.accounts.deployer1.address],
-        );
+        const initializeCallData = accountBaseContract.interface.encodeFunctionData('initialize', [
+          context.accounts.deployer1.address,
+        ]);
 
         const calculatedAddressInitializableFalse = await context.universalFactory.computeAddress(
           bytecodeHash,
@@ -394,17 +387,16 @@ describe('UniversalFactory contract', () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
         const UPBytecode1 =
-          UniversalProfileBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
+          AccountBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
 
-        const initializeCallData = universalProfileBaseContract.interface.encodeFunctionData(
-          'initialize',
-          [context.accounts.deployer1.address],
-        );
+        const initializeCallData = accountBaseContract.interface.encodeFunctionData('initialize', [
+          context.accounts.deployer1.address,
+        ]);
 
         const bytecodeHash1 = ethers.utils.solidityKeccak256(['bytes'], [UPBytecode1]);
 
         const UPBytecode2 =
-          UniversalProfileBytecode + AddressOffset + 'cafecafecafecafecafecafecafecafecafecafe';
+          AccountBytecode + AddressOffset + 'cafecafecafecafecafecafecafecafecafecafe';
 
         const bytecodeHash2 = ethers.utils.solidityKeccak256(['bytes'], [UPBytecode2]);
 
@@ -430,8 +422,9 @@ describe('UniversalFactory contract', () => {
       it('should revert when deploying an initializable contract with the same bytecode and salt ', async () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
-        const UPBytecode =
-          UniversalProfileBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
+        const randomAddress = ethers.Wallet.createRandom();
+
+        const UPBytecode = AccountBytecode + AddressOffset + randomAddress.address.substring(2);
 
         await context.universalFactory.deployCreate2AndInitialize(
           UPBytecode,
@@ -455,13 +448,11 @@ describe('UniversalFactory contract', () => {
       it('should revert when deploying an initializable contract with sending value unmatched to the msgValue arguments', async () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
-        const UPBytecode =
-          UniversalProfileBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
+        const UPBytecode = AccountBytecode + AddressOffset + ethers.constants.AddressZero.substr(2);
 
-        const initializeCallData = universalProfileBaseContract.interface.encodeFunctionData(
-          'initialize',
-          [context.accounts.deployer1.address],
-        );
+        const initializeCallData = accountBaseContract.interface.encodeFunctionData('initialize', [
+          context.accounts.deployer1.address,
+        ]);
 
         await expect(
           context.universalFactory.deployCreate2AndInitialize(
@@ -583,7 +574,7 @@ describe('UniversalFactory contract', () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
         const calculatedAddress = await context.universalFactory.computeERC1167Address(
-          universalReceiverDelegate.address,
+          contractNoConstructor.address,
           salt,
           false,
           '0x',
@@ -591,7 +582,7 @@ describe('UniversalFactory contract', () => {
 
         const contractCreated = await context.universalFactory
           .connect(context.accounts.deployer1)
-          .callStatic.deployERC1167Proxy(universalReceiverDelegate.address, salt);
+          .callStatic.deployERC1167Proxy(contractNoConstructor.address, salt);
 
         expect(calculatedAddress).to.equal(contractCreated);
       });
@@ -601,14 +592,14 @@ describe('UniversalFactory contract', () => {
         const salt2 = ethers.utils.solidityKeccak256(['string'], ['Salt2']);
 
         const calculatedAddressSalt1 = await context.universalFactory.computeERC1167Address(
-          universalProfileBaseContract.address,
+          accountBaseContract.address,
           salt1,
           false,
           '0x',
         );
 
         const calculatedAddressSalt2 = await context.universalFactory.computeERC1167Address(
-          universalProfileBaseContract.address,
+          accountBaseContract.address,
           salt2,
           false,
           '0x',
@@ -622,14 +613,13 @@ describe('UniversalFactory contract', () => {
       it("should calculate the same address of a proxy if the initializeCalldata changed (because it's not initializable)", async () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
-        const initializeCallData = universalProfileBaseContract.interface.encodeFunctionData(
-          'initialize',
-          [context.accounts.deployer1.address],
-        );
+        const initializeCallData = accountBaseContract.interface.encodeFunctionData('initialize', [
+          context.accounts.deployer1.address,
+        ]);
 
         const calculatedAddressInitializableTrue =
           await context.universalFactory.computeERC1167Address(
-            universalProfileBaseContract.address,
+            accountBaseContract.address,
             salt,
             false,
             initializeCallData,
@@ -637,7 +627,7 @@ describe('UniversalFactory contract', () => {
 
         const calculatedAddressInitializableFalse =
           await context.universalFactory.computeERC1167Address(
-            universalProfileBaseContract.address,
+            accountBaseContract.address,
             salt,
             false,
             '0xaabb',
@@ -653,14 +643,14 @@ describe('UniversalFactory contract', () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
         const calulcatedAddressBaseContract1 = await context.universalFactory.computeERC1167Address(
-          universalProfileBaseContract.address,
+          accountBaseContract.address,
           salt,
           false,
           '0x',
         );
 
         const calulcatedAddressBaseContract2 = await context.universalFactory.computeERC1167Address(
-          universalReceiverDelegate.address,
+          contractNoConstructor.address,
           salt,
           false,
           '0x',
@@ -674,13 +664,10 @@ describe('UniversalFactory contract', () => {
       it('should revert when deploying a proxy contract with the same `baseContract` and salt ', async () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
-        await context.universalFactory.deployERC1167Proxy(
-          universalProfileBaseContract.address,
-          salt,
-        );
+        await context.universalFactory.deployERC1167Proxy(accountBaseContract.address, salt);
 
         await expect(
-          context.universalFactory.deployERC1167Proxy(universalProfileBaseContract.address, salt),
+          context.universalFactory.deployERC1167Proxy(accountBaseContract.address, salt),
         ).to.be.revertedWith('ERC1167: create2 failed');
       });
 
@@ -688,7 +675,7 @@ describe('UniversalFactory contract', () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt#2']);
 
         const contractCreatedAddress = await context.universalFactory.callStatic.deployERC1167Proxy(
-          universalProfileBaseContract.address,
+          accountBaseContract.address,
           salt,
         );
 
@@ -698,13 +685,11 @@ describe('UniversalFactory contract', () => {
           '0x',
         );
 
-        await expect(
-          context.universalFactory.deployERC1167Proxy(universalProfileBaseContract.address, salt),
-        )
+        await expect(context.universalFactory.deployERC1167Proxy(accountBaseContract.address, salt))
           .to.emit(context.universalFactory, 'ContractCreated')
           .withArgs(contractCreatedAddress, salt, generatedSalt, false, '0x');
 
-        const universalProfile = universalProfileBaseContract.attach(contractCreatedAddress);
+        const universalProfile = accountBaseContract.attach(contractCreatedAddress);
 
         const owner = await universalProfile.callStatic.owner();
         expect(owner).to.equal(ethers.constants.AddressZero);
@@ -715,13 +700,12 @@ describe('UniversalFactory contract', () => {
       it("should calculate the address of a proxy correctly if it's initializable", async () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
-        const initializeCallData = universalProfileBaseContract.interface.encodeFunctionData(
-          'initialize',
-          [context.accounts.deployer1.address],
-        );
+        const initializeCallData = accountBaseContract.interface.encodeFunctionData('initialize', [
+          context.accounts.deployer1.address,
+        ]);
 
         const calculatedAddress = await context.universalFactory.computeERC1167Address(
-          universalProfileBaseContract.address,
+          accountBaseContract.address,
           salt,
           true,
           initializeCallData,
@@ -730,7 +714,7 @@ describe('UniversalFactory contract', () => {
         const contractCreated = await context.universalFactory
           .connect(context.accounts.deployer1)
           .callStatic.deployERC1167ProxyAndInitialize(
-            universalProfileBaseContract.address,
+            accountBaseContract.address,
             salt,
             initializeCallData,
           );
@@ -742,20 +726,19 @@ describe('UniversalFactory contract', () => {
         const salt1 = ethers.utils.solidityKeccak256(['string'], ['Salt1']);
         const salt2 = ethers.utils.solidityKeccak256(['string'], ['Salt2']);
 
-        const initializeCallData = universalProfileBaseContract.interface.encodeFunctionData(
-          'initialize',
-          [context.accounts.deployer1.address],
-        );
+        const initializeCallData = accountBaseContract.interface.encodeFunctionData('initialize', [
+          context.accounts.deployer1.address,
+        ]);
 
         const calculatedAddressSalt1 = await context.universalFactory.computeERC1167Address(
-          universalProfileBaseContract.address,
+          accountBaseContract.address,
           salt1,
           true,
           initializeCallData,
         );
 
         const calculatedAddressSalt2 = await context.universalFactory.computeERC1167Address(
-          universalProfileBaseContract.address,
+          accountBaseContract.address,
           salt2,
           true,
           initializeCallData,
@@ -769,19 +752,17 @@ describe('UniversalFactory contract', () => {
       it('should calculate a different address of a proxy if the `initializeCallData` changed', async () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
-        const initializeCallData1 = universalProfileBaseContract.interface.encodeFunctionData(
-          'initialize',
-          [context.accounts.deployer1.address],
-        );
+        const initializeCallData1 = accountBaseContract.interface.encodeFunctionData('initialize', [
+          context.accounts.deployer1.address,
+        ]);
 
-        const initializeCallData2 = universalProfileBaseContract.interface.encodeFunctionData(
-          'initialize',
-          [context.accounts.deployer2.address],
-        );
+        const initializeCallData2 = accountBaseContract.interface.encodeFunctionData('initialize', [
+          context.accounts.deployer2.address,
+        ]);
 
         const calulcatedAddressinitializeCallData1 =
           await context.universalFactory.computeERC1167Address(
-            universalProfileBaseContract.address,
+            accountBaseContract.address,
             salt,
             true,
             initializeCallData1,
@@ -789,7 +770,7 @@ describe('UniversalFactory contract', () => {
 
         const calulcatedAddressinitializeCallData2 =
           await context.universalFactory.computeERC1167Address(
-            universalProfileBaseContract.address,
+            accountBaseContract.address,
             salt,
             true,
             initializeCallData2,
@@ -804,20 +785,19 @@ describe('UniversalFactory contract', () => {
       it('should calculate a different address of a proxy if the `baseContract` changed', async () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
-        const initializeCallData = universalProfileBaseContract.interface.encodeFunctionData(
-          'initialize',
-          [context.accounts.deployer1.address],
-        );
+        const initializeCallData = accountBaseContract.interface.encodeFunctionData('initialize', [
+          context.accounts.deployer1.address,
+        ]);
 
         const calulcatedAddressBaseContract1 = await context.universalFactory.computeERC1167Address(
-          universalProfileBaseContract.address,
+          accountBaseContract.address,
           salt,
           true,
           initializeCallData,
         );
 
         const calulcatedAddressBaseContract2 = await context.universalFactory.computeERC1167Address(
-          universalReceiverDelegate.address,
+          contractNoConstructor.address,
           salt,
           true,
           initializeCallData,
@@ -832,14 +812,14 @@ describe('UniversalFactory contract', () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
         await context.universalFactory.deployERC1167ProxyAndInitialize(
-          universalProfileBaseContract.address,
+          accountBaseContract.address,
           salt,
           '0x',
         );
 
         await expect(
           context.universalFactory.deployERC1167ProxyAndInitialize(
-            universalProfileBaseContract.address,
+            accountBaseContract.address,
             salt,
             '0x',
           ),
@@ -937,14 +917,13 @@ describe('UniversalFactory contract', () => {
       it('should deploy an initializable CREATE2 proxy contract and emit the event and get the owner successfully', async () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt#3']);
 
-        const initializeCallData = universalProfileBaseContract.interface.encodeFunctionData(
-          'initialize',
-          [context.accounts.deployer4.address],
-        );
+        const initializeCallData = accountBaseContract.interface.encodeFunctionData('initialize', [
+          context.accounts.deployer4.address,
+        ]);
 
         const contractCreatedAddress =
           await context.universalFactory.callStatic.deployERC1167ProxyAndInitialize(
-            universalProfileBaseContract.address,
+            accountBaseContract.address,
             salt,
             initializeCallData,
           );
@@ -957,7 +936,7 @@ describe('UniversalFactory contract', () => {
 
         await expect(
           context.universalFactory.deployERC1167ProxyAndInitialize(
-            universalProfileBaseContract.address,
+            accountBaseContract.address,
             salt,
             initializeCallData,
           ),
@@ -965,7 +944,7 @@ describe('UniversalFactory contract', () => {
           .to.emit(context.universalFactory, 'ContractCreated')
           .withArgs(contractCreatedAddress, salt, generatedSalt, true, initializeCallData);
 
-        const universalProfile = universalProfileBaseContract.attach(contractCreatedAddress);
+        const universalProfile = accountBaseContract.attach(contractCreatedAddress);
 
         const owner = await universalProfile.callStatic.owner();
         expect(owner).to.equal(context.accounts.deployer4.address);
@@ -980,14 +959,13 @@ describe('UniversalFactory contract', () => {
         before(async () => {
           salt = ethers.utils.solidityKeccak256(['string'], ['SaltEdge']);
 
-          initializeCallData = universalProfileBaseContract.interface.encodeFunctionData(
-            'initialize',
-            [context.accounts.deployer1.address],
-          );
+          initializeCallData = accountBaseContract.interface.encodeFunctionData('initialize', [
+            context.accounts.deployer1.address,
+          ]);
 
           contractCreatedWithdeployERC1167ProxyAndInitialize =
             await context.universalFactory.callStatic.deployERC1167ProxyAndInitialize(
-              universalProfileBaseContract.address,
+              accountBaseContract.address,
               salt,
               initializeCallData,
             );
@@ -996,7 +974,7 @@ describe('UniversalFactory contract', () => {
         it('should result in a different address if deployed without initializing with deployERC1167Proxy function', async () => {
           const contractCreatedWithdeployERC1167Proxy =
             await context.universalFactory.callStatic.deployERC1167Proxy(
-              universalProfileBaseContract.address,
+              accountBaseContract.address,
               salt,
             );
 
@@ -1014,7 +992,7 @@ describe('UniversalFactory contract', () => {
           // deploy proxy contract
           const proxyBytecode = eip1167RuntimeCodeTemplate.replace(
             'bebebebebebebebebebebebebebebebebebebebe',
-            universalProfileBaseContract.address.substr(2),
+            accountBaseContract.address.substr(2),
           );
 
           const contractCreatedWithDeployCreate2 =
@@ -1032,7 +1010,7 @@ describe('UniversalFactory contract', () => {
           // deploy proxy contract
           const proxyBytecode = eip1167RuntimeCodeTemplate.replace(
             'bebebebebebebebebebebebebebebebebebebebe',
-            universalProfileBaseContract.address.substr(2),
+            accountBaseContract.address.substr(2),
           );
 
           const contractCreatedWithdeployCreate2AndInitialize =

@@ -11,3 +11,4 @@ lsp2/=packages/LSP2ERC725YJSONSchema/
 lsp4/=packages/LSP4DigitalAssetMetadata/
 lsp20/=packages/LSP20CallVerification/
 lsp25/=packages/LSP25ExecuteRelayCall/
+lsp16/=packages/LSP16UniversalFactory/

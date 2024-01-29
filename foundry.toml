@@ -15,3 +15,8 @@ max_test_rejects = 200_000
 src = 'packages/LSP2ERC725YJSONSchema/contracts'
 test = 'packages/LSP2ERC725YJSONSchema/foundry'
 out = 'packages/LSP2ERC725YJSONSchema/contracts/foundry_artifacts'
+
+[profile.lsp16]
+src = 'packages/LSP16UniversalFactory/contracts'
+test = 'packages/LSP16UniversalFactory/foundry'
+out = 'packages/LSP16UniversalFactory/contracts/foundry_artifacts'
