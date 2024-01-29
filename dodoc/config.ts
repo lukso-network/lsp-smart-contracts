@@ -52,9 +52,9 @@ export const dodocConfig = {
   libraries: [
     'contracts/LSP1UniversalReceiver/LSP1Utils.sol',
     'lsp2/contracts/LSP2Utils.sol',
-    'contracts/LSP5ReceivedAssets/LSP5Utils.sol',
+    'lsp5/contracts/LSP5Utils.sol',
     'contracts/LSP6KeyManager/LSP6Utils.sol',
-    'contracts/LSP10ReceivedVaults/LSP10Utils.sol',
+    'lsp10/contracts/LSP10Utils.sol',
     'contracts/LSP17ContractExtension/LSP17Utils.sol',
   ],
   templatePath: './dodoc/template.sqrl',
