@@ -4,7 +4,9 @@ pragma solidity ^0.8.4;
 import {
     ERC721Holder
 } from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
-import {LSP17Extension} from "../LSP17ContractExtension/LSP17Extension.sol";
+import {
+    LSP17Extension
+} from "lsp17contractextension/contracts/LSP17Extension.sol";
 
 /**
  * @dev LSP17 Extension that can be attached to a LSP17Extendable contract

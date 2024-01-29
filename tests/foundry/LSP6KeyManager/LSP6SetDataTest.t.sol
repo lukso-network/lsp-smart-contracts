@@ -14,7 +14,7 @@ import {LSP6Utils} from "../../../contracts/LSP6KeyManager/LSP6Utils.sol";
 
 import "lsp1/contracts/LSP1Constants.sol";
 import "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
-import "../../../contracts/LSP17ContractExtension/LSP17Constants.sol";
+import "lsp17contractextension/contracts/LSP17Constants.sol";
 
 contract LSP6SetDataTest is Test {
     using BytesLib for bytes;
