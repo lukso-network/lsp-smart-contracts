@@ -17,7 +17,9 @@ import {
     LSP4DigitalAssetMetadataCore
 } from "lsp4/contracts/LSP4DigitalAssetMetadataCore.sol";
 
-import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
+import {
+    LSP17Extendable
+} from "lsp17contractextension/contracts/LSP17Extendable.sol";
 
 // libraries
 import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
@@ -33,7 +35,7 @@ import {
 
 import {
     _LSP17_EXTENSION_PREFIX
-} from "../LSP17ContractExtension/LSP17Constants.sol";
+} from "lsp17contractextension/contracts/LSP17Constants.sol";
 
 // errors
 
@@ -41,7 +43,7 @@ import {
     NoExtensionFoundForFunctionSelector,
     InvalidFunctionSelector,
     InvalidExtensionAddress
-} from "../LSP17ContractExtension/LSP17Errors.sol";
+} from "lsp17contractextension/contracts/LSP17Errors.sol";
 
 /**
  * @title Implementation of a LSP8 Identifiable Digital Asset, a contract that represents a non-fungible token.

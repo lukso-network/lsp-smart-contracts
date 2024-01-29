@@ -14,3 +14,4 @@ lsp5/=packages/LSP5ReceivedAssets/
 lsp10/=packages/LSP10ReceivedVaults/
 lsp20/=packages/LSP20CallVerification/
 lsp25/=packages/LSP25ExecuteRelayCall/
+lsp17contractextension/=packages/LSP17ContractExtension/

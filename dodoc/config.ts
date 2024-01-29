@@ -13,8 +13,8 @@ export const dodocConfig = {
     'contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol',
     'contracts/LSP14Ownable2Step/LSP14Ownable2Step.sol',
     'contracts/LSP16UniversalFactory/LSP16UniversalFactory.sol',
-    'contracts/LSP17ContractExtension/LSP17Extendable.sol',
-    'contracts/LSP17ContractExtension/LSP17Extension.sol',
+    'lsp17contractextension/contracts/LSP17Extendable.sol',
+    'lsp17contractextension/contracts/LSP17Extension.sol',
     'contracts/LSP17Extensions/Extension4337.sol',
     'contracts/LSP17Extensions/OnERC721ReceivedExtension.sol',
     'lsp20/contracts/LSP20CallVerification.sol',
@@ -44,7 +44,7 @@ export const dodocConfig = {
     'contracts/LSP5ReceivedAssets/LSP5Utils.sol',
     'contracts/LSP6KeyManager/LSP6Utils.sol',
     'contracts/LSP10ReceivedVaults/LSP10Utils.sol',
-    'contracts/LSP17ContractExtension/LSP17Utils.sol',
+    'lsp17contractextension/contracts/LSP17Utils.sol',
 
     // external --------------------
     '@erc725/smart-contracts/contracts/ERC725.sol',
@@ -55,7 +55,7 @@ export const dodocConfig = {
     'lsp5/contracts/LSP5Utils.sol',
     'contracts/LSP6KeyManager/LSP6Utils.sol',
     'lsp10/contracts/LSP10Utils.sol',
-    'contracts/LSP17ContractExtension/LSP17Utils.sol',
+    'lsp17contractextension/contracts/LSP17Utils.sol',
   ],
   templatePath: './dodoc/template.sqrl',
   helpers: [
