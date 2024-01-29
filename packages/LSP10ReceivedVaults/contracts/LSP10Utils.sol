@@ -7,16 +7,17 @@ import {
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 // libraries
-import {
-    LSP2Utils
-} from "../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
 
 // constants
-import {_INTERFACEID_LSP9} from "../LSP9Vault/LSP9Constants.sol";
+
+// TODO: add LSP9 as a dependency to this package and import the constant from it
+bytes4 constant _INTERFACEID_LSP9 = 0x28af17e6;
+
 import {
     _LSP10_VAULTS_MAP_KEY_PREFIX,
     _LSP10_VAULTS_ARRAY_KEY
-} from "../LSP10ReceivedVaults/LSP10Constants.sol";
+} from "./LSP10Constants.sol";
 
 /**
  * @title LSP10 Utility library.

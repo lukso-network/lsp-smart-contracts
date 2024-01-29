@@ -9,5 +9,7 @@ solidity-bytes-utils/=node_modules/solidity-bytes-utils/
 ds-test/=lib/forge-std/lib/ds-test/src/
 lsp2/=packages/LSP2ERC725YJSONSchema/
 lsp4/=packages/LSP4DigitalAssetMetadata/
+lsp5/=packages/LSP5ReceivedAssets/
 lsp20/=packages/LSP20CallVerification/
 lsp25/=packages/LSP25ExecuteRelayCall/
+lsp10/=packages/LSP10ReceivedVaults/

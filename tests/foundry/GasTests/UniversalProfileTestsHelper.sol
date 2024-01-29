@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 
 import "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
 import "../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol";
-import "../../../packages/LSP2ERC725YJSONSchema/contracts/LSP2Utils.sol";
+import "lsp2/contracts/LSP2Utils.sol";
 import "../../../contracts/Mocks/Tokens/LSP7Tester.sol";
 import "../../../contracts/Mocks/Tokens/LSP8Tester.sol";
 import {
