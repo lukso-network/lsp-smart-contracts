@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 // interfaces
 import {
     ILSP1UniversalReceiver as ILSP1
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+} from "lsp1/contracts/ILSP1UniversalReceiver.sol";
 import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 
 // modules
@@ -16,7 +16,7 @@ import {
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
+import {LSP1Utils} from "lsp1/contracts/LSP1Utils.sol";
 
 // errors
 import {
@@ -35,7 +35,7 @@ import {
 } from "./LSP7Errors.sol";
 
 // constants
-import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_INTERFACEID_LSP1} from "lsp1/contracts/LSP1Constants.sol";
 import {
     _TYPEID_LSP7_TOKENOPERATOR,
     _TYPEID_LSP7_TOKENSSENDER,
