@@ -9,7 +9,7 @@ import {
 import {ILSP20CallVerifier} from "lsp20/contracts/ILSP20CallVerifier.sol";
 
 // modules
-import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
+import {LSP14Ownable2Step} from "lsp14/contracts/LSP14Ownable2Step.sol";
 import {
     LSP17Extension
 } from "lsp17contractextension/contracts/LSP17Extension.sol";

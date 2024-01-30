@@ -51,7 +51,7 @@ import {
 } from "../LSP11BasicSocialRecovery/ILSP11BasicSocialRecovery.sol";
 import {
     ILSP14Ownable2Step as ILSP14
-} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
+} from "lsp14/contracts/ILSP14Ownable2Step.sol";
 import {
     ILSP20CallVerifier as ILSP20
 } from "lsp20/contracts/ILSP20CallVerifier.sol";
@@ -74,7 +74,7 @@ import {_INTERFACEID_LSP9} from "../LSP9Vault/LSP9Constants.sol";
 import {
     _INTERFACEID_LSP11
 } from "../LSP11BasicSocialRecovery/LSP11Constants.sol";
-import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
+import {_INTERFACEID_LSP14} from "lsp14/contracts/LSP14Constants.sol";
 import {
     _INTERFACEID_LSP17_EXTENDABLE,
     _INTERFACEID_LSP17_EXTENSION
