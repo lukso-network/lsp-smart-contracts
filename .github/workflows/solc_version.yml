@@ -85,6 +85,7 @@ jobs:
               lsp2/=packages/LSP2ERC725YJSONSchema/ \
               lsp4/=packages/LSP4DigitalAssetMetadata/ \
               lsp5/=packages/LSP5ReceivedAssets/ \
+              lsp14/=packages/LSP14Ownable2Step/ \
               lsp17contractextension/=packages/LSP17ContractExtension/ \
               lsp20/=packages/LSP20CallVerification/ \
               lsp25/=packages/LSP25ExecuteRelayCall/
@@ -96,6 +97,7 @@ jobs:
               lsp2/=packages/LSP2ERC725YJSONSchema/ \
               lsp4/=packages/LSP4DigitalAssetMetadata/ \
               lsp5/=packages/LSP5ReceivedAssets/ \
+              lsp14/=packages/LSP14Ownable2Step/ \
               lsp17contractextension/=packages/LSP17ContractExtension/ \
               lsp20/=packages/LSP20CallVerification/ \
               lsp25/=packages/LSP25ExecuteRelayCall/

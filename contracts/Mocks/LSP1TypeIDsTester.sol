@@ -27,7 +27,7 @@ import {
     _TYPEID_LSP14_OwnershipTransferStarted,
     _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP14_OwnershipTransferred_RecipientNotification
-} from "../LSP14Ownable2Step/LSP14Constants.sol";
+} from "lsp14/contracts/LSP14Constants.sol";
 
 error LSP1TypeIdHashIsWrong(bytes32 typeIdHash, string typeIdname);
 

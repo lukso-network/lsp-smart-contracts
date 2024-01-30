@@ -117,6 +117,7 @@
     "lsp4": "*",
     "lsp5": "*",
     "lsp10": "*",
+    "lsp14": "*",
     "lsp17contractextension": "*",
     "lsp20": "*",
     "lsp25": "*"
