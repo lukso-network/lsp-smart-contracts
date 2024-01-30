@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 import "@erc725/smart-contracts/contracts/constants.sol";
-import "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
+import "lsp0/contracts/LSP0ERC725Account.sol";
 
 import {LSP20EOACannotVerifyCall} from "lsp20/contracts/LSP20Errors.sol";
 

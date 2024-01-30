@@ -4,7 +4,9 @@ pragma solidity ^0.8.13;
 import "forge-std/Test.sol";
 
 import "lsp0/contracts/LSP0ERC725Account.sol";
-import "../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol";
+import {
+    LSP1UniversalReceiverDelegateUP
+} from "../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol";
 import "lsp2/contracts/LSP2Utils.sol";
 import "../../../contracts/Mocks/Tokens/LSP7Tester.sol";
 import "../../../contracts/Mocks/Tokens/LSP8Tester.sol";

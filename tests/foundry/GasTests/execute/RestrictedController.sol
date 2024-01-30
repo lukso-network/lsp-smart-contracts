@@ -2,8 +2,10 @@
 pragma solidity ^0.8.13;
 
 import "../LSP6s/LSP6ExecuteRC.sol";
-import "lsp0/contracts/LSP0ERC725Account.sol";
-import "../../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol";
+import {LSP0ERC725Account} from "lsp0/contracts/LSP0ERC725Account.sol";
+import {
+    LSP1UniversalReceiverDelegateUP
+} from "../../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol";
 import "lsp2/contracts/LSP2Utils.sol";
 import "../../../../contracts/Mocks/Tokens/LSP7Tester.sol";
 import "../../../../contracts/Mocks/Tokens/LSP8Tester.sol";
@@ -26,7 +28,7 @@ import {
 import {
     _LSP8_TOKENID_FORMAT_NUMBER
 } from "../../../../contracts/LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
-import "../UniversalProfileTestsHelper.sol";
+import {UniversalProfileTestsHelper} from "../UniversalProfileTestsHelper.sol";
 
 contract ExecuteRestrictedController is UniversalProfileTestsHelper {
     LSP0ERC725Account public mainUniversalProfile;
