@@ -16,7 +16,7 @@ import {
 
 // librairies
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import {LSP6Utils} from "../LSP6KeyManager/LSP6Utils.sol";
+import {LSP6Utils} from "lsp6/contracts/LSP6Utils.sol";
 
 // constants
 import {

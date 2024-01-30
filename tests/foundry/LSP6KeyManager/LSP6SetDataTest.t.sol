@@ -4,16 +4,16 @@ pragma solidity ^0.8.4;
 import "forge-std/Test.sol";
 import "../../../contracts/UniversalProfile.sol";
 import "../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol";
-import "../../../contracts/LSP6KeyManager/LSP6KeyManager.sol";
+import "lsp6/contracts/LSP6KeyManager.sol";
 import "lsp14/contracts/ILSP14Ownable2Step.sol";
 import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
-import {LSP6Utils} from "../../../contracts/LSP6KeyManager/LSP6Utils.sol";
+import {LSP6Utils} from "lsp6/contracts/LSP6Utils.sol";
 
 import "lsp1/contracts/LSP1Constants.sol";
-import "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
+import "lsp6/contracts/LSP6Constants.sol";
 import "lsp17contractextension/contracts/LSP17Constants.sol";
 
 contract LSP6SetDataTest is Test {

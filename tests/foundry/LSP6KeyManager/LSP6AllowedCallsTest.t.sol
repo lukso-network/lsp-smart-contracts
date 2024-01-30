@@ -23,10 +23,10 @@ import {
     _ALLOWEDCALLS_CALL,
     _ALLOWEDCALLS_STATICCALL,
     _ALLOWEDCALLS_DELEGATECALL
-} from "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
+} from "lsp6/contracts/LSP6Constants.sol";
 
 // errors to test
-import {NotAllowedCall} from "../../../contracts/LSP6KeyManager/LSP6Errors.sol";
+import {NotAllowedCall} from "lsp6/contracts/LSP6Errors.sol";
 
 // mock contracts for testing
 import {

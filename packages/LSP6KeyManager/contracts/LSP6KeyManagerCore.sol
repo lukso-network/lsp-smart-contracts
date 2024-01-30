@@ -57,7 +57,7 @@ import {
     _INTERFACEID_ERC1271,
     _ERC1271_SUCCESSVALUE,
     _ERC1271_FAILVALUE
-} from "../LSP0ERC725Account/LSP0Constants.sol";
+} from "./constants.sol";
 import {
     _INTERFACEID_LSP6,
     _PERMISSION_SIGN,

@@ -20,7 +20,7 @@ import {
     _PERMISSION_SUPER_CALL,
     _PERMISSION_REENTRANCY,
     _PERMISSION_SUPER_TRANSFERVALUE
-} from "../../../../contracts/LSP6KeyManager/LSP6Constants.sol";
+} from "lsp6/contracts/LSP6Constants.sol";
 import {
     _LSP8_TOKENID_FORMAT_NUMBER
 } from "../../../../contracts/LSP8IdentifiableDigitalAsset/LSP8Constants.sol";

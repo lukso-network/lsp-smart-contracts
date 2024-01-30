@@ -2,7 +2,7 @@
 pragma solidity ^0.8.5;
 
 // modules
-import {Version} from "../Version.sol";
+import {Version} from "./Version.sol";
 import {LSP6KeyManagerCore} from "./LSP6KeyManagerCore.sol";
 import {InvalidLSP6Target} from "./LSP6Errors.sol";
 

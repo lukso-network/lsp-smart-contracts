@@ -8,7 +8,7 @@ import {
 import {
     IERC725X
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
-import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
+import {ILSP6KeyManager} from "lsp6/contracts/ILSP6KeyManager.sol";
 
 /**
  * The purpose of these contracts is to perform tests on chained reentrancy scenarios
