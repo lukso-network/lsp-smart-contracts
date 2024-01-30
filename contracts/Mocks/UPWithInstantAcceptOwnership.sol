@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 // modules
 import {
     LSP0ERC725AccountCore
-} from "../LSP0ERC725Account/LSP0ERC725AccountCore.sol";
+} from "lsp0/contracts/LSP0ERC725AccountCore.sol";
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
@@ -13,7 +13,7 @@ import {LSP14Ownable2Step} from "lsp14/contracts/LSP14Ownable2Step.sol";
 // constants
 import {
     _TYPEID_LSP0_OwnershipTransferStarted
-} from "../LSP0ERC725Account/LSP0Constants.sol";
+} from "lsp0/contracts/LSP0Constants.sol";
 import {
     _TYPEID_LSP9_OwnershipTransferStarted
 } from "../LSP9Vault/LSP9Constants.sol";

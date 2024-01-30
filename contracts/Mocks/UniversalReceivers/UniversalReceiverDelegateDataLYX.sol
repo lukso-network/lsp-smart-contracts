@@ -16,7 +16,7 @@ import {
 
 import {
     _TYPEID_LSP0_VALUE_RECEIVED
-} from "../../LSP0ERC725Account/LSP0Constants.sol";
+} from "lsp0/contracts/LSP0Constants.sol";
 
 import {_INTERFACEID_LSP1_DELEGATE} from "lsp1/contracts/LSP1Constants.sol";
 

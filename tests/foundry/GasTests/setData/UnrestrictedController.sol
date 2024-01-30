@@ -1,7 +1,7 @@
 pragma solidity ^0.8.13;
 
 import "../LSP6s/LSP6SetDataUC.sol";
-import "../../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
+import "lsp0/contracts/LSP0ERC725Account.sol";
 import "lsp2/contracts/LSP2Utils.sol";
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,

@@ -5,7 +5,7 @@ export const dodocConfig = {
   runOnCompile: false,
   include: [
     'contracts/UniversalProfile.sol',
-    'contracts/LSP0ERC725Account/LSP0ERC725Account.sol',
+    'lsp0/contracts/LSP0ERC725Account.sol',
     'contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol',
     'contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol',
     'contracts/LSP6KeyManager/LSP6KeyManager.sol',
