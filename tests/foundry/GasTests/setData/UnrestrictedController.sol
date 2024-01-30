@@ -1,7 +1,9 @@
 pragma solidity ^0.8.13;
 
 import "../LSP6s/LSP6SetDataUC.sol";
-import "../../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
+import {
+    LSP0ERC725Account
+} from "../../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
 import "lsp2/contracts/LSP2Utils.sol";
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
@@ -16,7 +18,7 @@ import {
     _PERMISSION_ADDCONTROLLER,
     _PERMISSION_SETDATA
 } from "lsp6/contracts/LSP6Constants.sol";
-import "../UniversalProfileTestsHelper.sol";
+import {UniversalProfileTestsHelper} from "../UniversalProfileTestsHelper.sol";
 
 contract SetDataUnrestrictedController is UniversalProfileTestsHelper {
     LSP0ERC725Account public mainUniversalProfile;
