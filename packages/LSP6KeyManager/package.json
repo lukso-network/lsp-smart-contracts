@@ -28,7 +28,7 @@
     "lsp1": "*",
     "lsp2": "*",
     "lsp14": "*",
-    "lsp17": "*",
+    "lsp17contractextension": "*",
     "lsp20": "*",
     "lsp25": "*"
   },
