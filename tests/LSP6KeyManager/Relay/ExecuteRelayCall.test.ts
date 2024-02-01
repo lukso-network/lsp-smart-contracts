@@ -5,12 +5,8 @@ import { BigNumber } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import {
-  LSP7Mintable,
-  LSP7Mintable__factory,
-  TargetContract,
-  TargetContract__factory,
-} from '../../../types';
+import { LSP7Mintable, LSP7Mintable__factory } from 'lsp7/types';
+import { TargetContract, TargetContract__factory } from '../../../types';
 
 // constants
 import {

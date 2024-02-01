@@ -8,7 +8,7 @@ import {
 import {
     ILSP1UniversalReceiverDelegate
 } from "lsp1/contracts/ILSP1UniversalReceiverDelegate.sol";
-import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
+import {ILSP7DigitalAsset} from "lsp7/contracts/ILSP7DigitalAsset.sol";
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
@@ -23,7 +23,7 @@ import {
     _TYPEID_LSP7_TOKENSSENDER,
     _TYPEID_LSP7_TOKENSRECIPIENT,
     _INTERFACEID_LSP7
-} from "../../LSP7DigitalAsset/LSP7Constants.sol";
+} from "lsp7/contracts/LSP7Constants.sol";
 import {
     _TYPEID_LSP8_TOKENSSENDER,
     _TYPEID_LSP8_TOKENSRECIPIENT,

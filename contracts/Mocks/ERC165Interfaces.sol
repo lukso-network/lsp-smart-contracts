@@ -38,9 +38,7 @@ import {
 } from "lsp1/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 import {ILSP6KeyManager as ILSP6} from "lsp6/contracts/ILSP6KeyManager.sol";
-import {
-    ILSP7DigitalAsset as ILSP7
-} from "../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
+import {ILSP7DigitalAsset as ILSP7} from "lsp7/contracts/ILSP7DigitalAsset.sol";
 import {
     ILSP8IdentifiableDigitalAsset as ILSP8
 } from "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
@@ -66,7 +64,7 @@ import {
     _INTERFACEID_LSP1_DELEGATE
 } from "lsp1/contracts/LSP1Constants.sol";
 import {_INTERFACEID_LSP6} from "lsp6/contracts/LSP6Constants.sol";
-import {_INTERFACEID_LSP7} from "../LSP7DigitalAsset/LSP7Constants.sol";
+import {_INTERFACEID_LSP7} from "lsp7/contracts/LSP7Constants.sol";
 import {
     _INTERFACEID_LSP8
 } from "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
