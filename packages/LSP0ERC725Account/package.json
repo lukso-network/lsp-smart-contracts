@@ -23,7 +23,12 @@
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
-    "@openzeppelin/contracts": "^4.9.3"
+    "@openzeppelin/contracts": "^4.9.3",
+    "lsp1": "*",
+    "lsp2": "*",
+    "lsp14": "*",
+    "lsp17contractextension": "*",
+    "lsp20": "*"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
@@ -40,11 +45,6 @@
     "ts-node": "^10.2.0",
     "tsconfig": "*",
     "typechain": "^8.0.0",
-    "typescript": "^4.9.5",
-    "lsp1": "*",
-    "lsp2": "*",
-    "lsp14": "*",
-    "lsp17contractextension": "*",
-    "lsp20": "*"
+    "typescript": "^4.9.5"
   }
 }
