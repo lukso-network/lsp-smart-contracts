@@ -6,7 +6,7 @@ import {
     _TYPEID_LSP0_OwnershipTransferStarted,
     _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP0_OwnershipTransferred_RecipientNotification
-} from "../LSP0ERC725Account/LSP0Constants.sol";
+} from "lsp0/contracts/LSP0Constants.sol";
 import {
     _TYPEID_LSP7_TOKENSSENDER,
     _TYPEID_LSP7_TOKENSRECIPIENT,

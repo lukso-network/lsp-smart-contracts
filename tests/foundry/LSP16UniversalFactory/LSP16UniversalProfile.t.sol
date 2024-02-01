@@ -9,8 +9,8 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import "../../../contracts/LSP16UniversalFactory/LSP16UniversalFactory.sol";
 import "../../../contracts/Mocks/NonPayableFallback.sol";
 import "../../../contracts/Mocks/FallbackInitializer.sol";
-import "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
-import "../../../contracts/LSP0ERC725Account/LSP0ERC725AccountInit.sol";
+import "lsp0/contracts/LSP0ERC725Account.sol";
+import "lsp0/contracts/LSP0ERC725AccountInit.sol";
 
 contract LSP16UniversalProfileTest is Test {
     LSP16UniversalFactory public lsp16;

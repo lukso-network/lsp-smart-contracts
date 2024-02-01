@@ -2,17 +2,13 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {Version} from "../Version.sol";
-import {LSP0ERC725AccountCore} from "./LSP0ERC725AccountCore.sol";
+import {Version} from "./Version.sol";
 import {
-    OwnableUnset
-} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-
-// constants
-import {_TYPEID_LSP0_VALUE_RECEIVED} from "./LSP0Constants.sol";
+    LSP0ERC725AccountInitAbstract
+} from "./LSP0ERC725AccountInitAbstract.sol";
 
 /**
- * @title Deployable Implementation of [LSP-0-ERC725Account] Standard.
+ * @title Deployable Proxy Implementation of [LSP-0-ERC725Account] Standard.
  *
  * @author Fabian Vogelsteller <fabian@lukso.network>, Jean Cavallera (CJ42)
  *
@@ -26,13 +22,19 @@ import {_TYPEID_LSP0_VALUE_RECEIVED} from "./LSP0Constants.sol";
  * - Extending the account with new functions and interfaceIds of future standards using [LSP-17-ContractExtension]
  * - Verifying calls on the owner to make it easier to interact with the account directly using [LSP-20-CallVerification]
  */
-contract LSP0ERC725Account is LSP0ERC725AccountCore, Version {
+contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract, Version {
     /**
-     * @notice Deploying a LSP0ERC725Account contract with owner set to address `initialOwner`.
+     * @notice deploying a `LSP0ERC725AccountInit` base contract to be used behind proxy
+     * @dev Locks the base contract on deployment, so that it cannot be initialized, owned and controlled by anyone after it has been deployed. This is intended so that the sole purpose of this contract is to be used as a base contract behind a proxy.
+     */
+    constructor() {
+        _disableInitializers();
+    }
+
+    /**
+     * @notice Initializing a LSP0ERC725Account contract with owner set to address `initialOwner`.
      *
-     * @dev Set `initialOwner` as the contract owner.
-     * - The `constructor` also allows funding the contract on deployment.
-     * - The `initialOwner` will then be allowed to call protected functions marked with the `onlyOwner` modifier.
+     * @dev Set `initialOwner` as the contract owner. The `initialize(address)` also allows funding the contract on deployment.
      *
      * @param initialOwner The owner of the contract.
      *
@@ -40,17 +42,9 @@ contract LSP0ERC725Account is LSP0ERC725AccountCore, Version {
      * - {UniversalReceiver} event when funding the contract on deployment.
      * - {OwnershipTransferred} event when `initialOwner` is set as the contract {owner}.
      */
-    constructor(address initialOwner) payable {
-        if (msg.value != 0) {
-            emit UniversalReceiver(
-                msg.sender,
-                msg.value,
-                _TYPEID_LSP0_VALUE_RECEIVED,
-                "",
-                ""
-            );
-        }
-
-        OwnableUnset._setOwner(initialOwner);
+    function initialize(
+        address initialOwner
+    ) external payable virtual initializer {
+        LSP0ERC725AccountInitAbstract._initialize(initialOwner);
     }
 }
