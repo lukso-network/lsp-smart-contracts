@@ -290,11 +290,9 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
       it('should instantiate the renounceOwnership process correctly', async () => {
         const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
           (
-            await artifacts.getBuildInfo(
-              'contracts/LSP0ERC725Account/LSP0ERC725Account.sol:LSP0ERC725Account',
-            )
+            await artifacts.getBuildInfo('lsp0/contracts/LSP0ERC725Account.sol:LSP0ERC725Account')
           )?.output.contracts[
-            'contracts/LSP0ERC725Account/LSP0ERC725Account.sol'
+            'lsp0/contracts/LSP0ERC725Account.sol'
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
           ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
@@ -381,11 +379,9 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
       it('should initialize again if the confirmation period passed', async () => {
         const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
           (
-            await artifacts.getBuildInfo(
-              'contracts/LSP0ERC725Account/LSP0ERC725Account.sol:LSP0ERC725Account',
-            )
+            await artifacts.getBuildInfo('lsp0/contracts/LSP0ERC725Account.sol:LSP0ERC725Account')
           )?.output.contracts[
-            'contracts/LSP0ERC725Account/LSP0ERC725Account.sol'
+            'lsp0/contracts/LSP0ERC725Account.sol'
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
           ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
@@ -449,11 +445,9 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         it('should have reset the `_renounceOwnershipStartedAt` state variable to zero', async () => {
           const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
             (
-              await artifacts.getBuildInfo(
-                'contracts/LSP0ERC725Account/LSP0ERC725Account.sol:LSP0ERC725Account',
-              )
+              await artifacts.getBuildInfo('lsp0/contracts/LSP0ERC725Account.sol:LSP0ERC725Account')
             )?.output.contracts[
-              'contracts/LSP0ERC725Account/LSP0ERC725Account.sol'
+              'lsp0/contracts/LSP0ERC725Account.sol'
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
             ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
@@ -543,11 +537,9 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
     it('should instantiate the renounceOwnership process in 2 steps correctly', async () => {
       const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
         (
-          await artifacts.getBuildInfo(
-            'contracts/LSP0ERC725Account/LSP0ERC725Account.sol:LSP0ERC725Account',
-          )
+          await artifacts.getBuildInfo('lsp0/contracts/LSP0ERC725Account.sol:LSP0ERC725Account')
         )?.output.contracts[
-          'contracts/LSP0ERC725Account/LSP0ERC725Account.sol'
+          'lsp0/contracts/LSP0ERC725Account.sol'
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
         ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
