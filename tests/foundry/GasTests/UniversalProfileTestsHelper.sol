@@ -20,9 +20,9 @@ import {
     _PERMISSION_SUPER_CALL,
     _PERMISSION_REENTRANCY,
     _PERMISSION_SUPER_TRANSFERVALUE
-} from "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
+} from "lsp6/contracts/LSP6Constants.sol";
 
-import {LSP6Utils} from "../../../contracts/LSP6KeyManager/LSP6Utils.sol";
+import {LSP6Utils} from "lsp6/contracts/LSP6Utils.sol";
 
 contract UniversalProfileTestsHelper is Test {
     function setURDToUPAndGivePermissions(

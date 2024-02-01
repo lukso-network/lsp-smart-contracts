@@ -6,10 +6,10 @@ import "forge-std/Test.sol";
 import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
 
 // modules
-import {UniversalProfile} from "../../../contracts/UniversalProfile.sol";
+import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
 import {
     KeyManagerInternalTester
-} from "../../../contracts/Mocks/KeyManager/KeyManagerInternalsTester.sol";
+} from "../contracts/Mocks/KeyManagerInternalsTester.sol";
 
 // constants
 import {
@@ -23,29 +23,27 @@ import {
     _ALLOWEDCALLS_CALL,
     _ALLOWEDCALLS_STATICCALL,
     _ALLOWEDCALLS_DELEGATECALL
-} from "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
+} from "lsp6/contracts/LSP6Constants.sol";
 
 // errors to test
-import {NotAllowedCall} from "../../../contracts/LSP6KeyManager/LSP6Errors.sol";
+import {NotAllowedCall} from "lsp6/contracts/LSP6Errors.sol";
 
 // mock contracts for testing
-import {
-    FallbackInitializer
-} from "../../../contracts/Mocks/FallbackInitializer.sol";
-import {TargetContract} from "../../../contracts/Mocks/TargetContract.sol";
+import {FallbackInitializer} from "../contracts/Mocks/FallbackInitializer.sol";
+import {TargetContract} from "../contracts/Mocks/TargetContract.sol";
 
 contract LSP6AllowedCallsTest is Test {
     using LSP2Utils for *;
 
-    UniversalProfile universalProfile;
+    ERC725 account;
     KeyManagerInternalTester keyManager;
 
     TargetContract targetContract;
     FallbackInitializer targetWithFallback;
 
     function setUp() public {
-        universalProfile = new UniversalProfile(address(this));
-        keyManager = new KeyManagerInternalTester(address(universalProfile));
+        account = new ERC725(address(this));
+        keyManager = new KeyManagerInternalTester(address(account));
 
         targetContract = new TargetContract();
         targetWithFallback = new FallbackInitializer();
@@ -70,7 +68,7 @@ contract LSP6AllowedCallsTest is Test {
             allowedSelector // function
         );
 
-        universalProfile.setData(allowedCallsDataKey, allowedCallsDataValue);
+        account.setData(allowedCallsDataKey, allowedCallsDataValue);
     }
 
     function testShouldRevertWithEmptyMessageCallWithCallTypeAllowedValueOnly()
