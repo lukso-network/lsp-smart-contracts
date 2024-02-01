@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 // modules
 import {
     LSP0ERC725AccountInitAbstract
-} from "./LSP0ERC725Account/LSP0ERC725AccountInitAbstract.sol";
+} from "lsp0/contracts/LSP0ERC725AccountInitAbstract.sol";
 
 // constants
 import {
