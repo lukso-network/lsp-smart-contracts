@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
+import {ILSP6KeyManager} from "lsp6/contracts/ILSP6KeyManager.sol";
 import {LSP14Ownable2Step} from "lsp14/contracts/LSP14Ownable2Step.sol";
 
 import {

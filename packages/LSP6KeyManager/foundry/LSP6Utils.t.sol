@@ -4,8 +4,8 @@ pragma solidity ^0.8.13;
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
 
-import "../../../contracts/LSP6KeyManager/LSP6Utils.sol";
-import "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
+import {LSP6Utils} from "../contracts/LSP6Utils.sol";
+import "../contracts/LSP6Constants.sol";
 
 contract LSP6UtilsTests is Test {
     mapping(bytes32 => bool) selectedPermissions;

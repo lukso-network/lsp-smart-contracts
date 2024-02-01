@@ -53,7 +53,7 @@ import {
 
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PREFIX
-} from "../LSP6KeyManager/LSP6Constants.sol";
+} from "lsp6/contracts/LSP6Constants.sol";
 import {
     _INTERFACEID_LSP9,
     _TYPEID_LSP9_VALUE_RECEIVED,

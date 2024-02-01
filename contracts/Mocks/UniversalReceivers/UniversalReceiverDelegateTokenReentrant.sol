@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import {
     IERC725X
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
-import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
+import {ILSP6KeyManager} from "lsp6/contracts/ILSP6KeyManager.sol";
 
 import {
     ILSP1UniversalReceiverDelegate

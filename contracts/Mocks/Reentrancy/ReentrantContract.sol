@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
+import {ILSP6KeyManager} from "lsp6/contracts/ILSP6KeyManager.sol";
 
 // constants
 import {
@@ -11,7 +11,7 @@ import {
 
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX
-} from "../../LSP6KeyManager/LSP6Constants.sol";
+} from "lsp6/contracts/LSP6Constants.sol";
 
 contract ReentrantContract {
     event ValueReceived(uint256);

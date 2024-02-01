@@ -1,14 +1,14 @@
 pragma solidity ^0.8.13;
 
-import "../../../contracts/LSP6KeyManager/LSP6KeyManager.sol";
+import "lsp6/contracts/LSP6KeyManager.sol";
 import {LSP0ERC725Account} from "lsp0/contracts/LSP0ERC725Account.sol";
 import "lsp2/contracts/LSP2Utils.sol";
-import "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
+import "lsp6/contracts/LSP6Constants.sol";
 import {
     UniversalProfileTestsHelper
 } from "../GasTests/UniversalProfileTestsHelper.sol";
 
-import {NotAuthorised} from "../../../contracts/LSP6KeyManager/LSP6Errors.sol";
+import {NotAuthorised} from "lsp6/contracts/LSP6Errors.sol";
 
 import {
     OPERATION_4_DELEGATECALL
