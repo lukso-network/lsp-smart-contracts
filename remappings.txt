@@ -12,6 +12,7 @@ lsp1/=packages/LSP1UniversalReceiver/
 lsp2/=packages/LSP2ERC725YJSONSchema/
 lsp4/=packages/LSP4DigitalAssetMetadata/
 lsp5/=packages/LSP5ReceivedAssets/
+lsp6/=packages/LSP6KeyManager/
 lsp10/=packages/LSP10ReceivedVaults/
 lsp14/=packages/LSP14Ownable2Step/
 lsp17contractextension/=packages/LSP17ContractExtension/

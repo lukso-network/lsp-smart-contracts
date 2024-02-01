@@ -15,3 +15,8 @@ max_test_rejects = 200_000
 src = 'packages/LSP2ERC725YJSONSchema/contracts'
 test = 'packages/LSP2ERC725YJSONSchema/foundry'
 out = 'packages/LSP2ERC725YJSONSchema/contracts/foundry_artifacts'
+
+[profile.lsp6]
+src = 'packages/LSP6KeyManager/contracts'
+test = 'packages/LSP6KeyManager/foundry'
+out = 'packages/LSP6KeyManager/contracts/foundry_artifacts'

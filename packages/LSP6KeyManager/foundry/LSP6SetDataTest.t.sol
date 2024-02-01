@@ -2,35 +2,30 @@
 pragma solidity ^0.8.4;
 
 import "forge-std/Test.sol";
-import "../../../contracts/UniversalProfile.sol";
-import "../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol";
-import "../../../contracts/LSP6KeyManager/LSP6KeyManager.sol";
-import "lsp14/contracts/ILSP14Ownable2Step.sol";
-import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
+import {LSP6KeyManager} from "lsp6/contracts/LSP6KeyManager.sol";
+import {ILSP14Ownable2Step} from "lsp14/contracts/ILSP14Ownable2Step.sol";
+import {
+    IERC725Y
+} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
-import {LSP6Utils} from "../../../contracts/LSP6KeyManager/LSP6Utils.sol";
+import {LSP6Utils} from "lsp6/contracts/LSP6Utils.sol";
 
 import "lsp1/contracts/LSP1Constants.sol";
-import "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
+import "lsp6/contracts/LSP6Constants.sol";
 import "lsp17contractextension/contracts/LSP17Constants.sol";
 
 contract LSP6SetDataTest is Test {
     using BytesLib for bytes;
 
-    UniversalProfile universalProfile;
-    LSP1UniversalReceiverDelegateUP LSP1Delegate;
+    ERC725 account;
     LSP6KeyManager keyManager;
 
     function setUp() public {
-        universalProfile = new UniversalProfile(address(this));
-        keyManager = new LSP6KeyManager(address(universalProfile));
-        LSP1Delegate = new LSP1UniversalReceiverDelegateUP();
-        universalProfile.setData(
-            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY,
-            bytes.concat(bytes20(address(LSP1Delegate)))
-        );
+        account = new ERC725(address(this));
+        keyManager = new LSP6KeyManager(address(account));
     }
 
     // Test for `AddressPermissions:AllowedERC725YDataKeys:<controller>` == `[0x0000]
@@ -49,10 +44,7 @@ contract LSP6SetDataTest is Test {
             _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
             bytes20(address(this))
         );
-        universalProfile.setData(
-            ownerDataKey,
-            bytes.concat(_PERMISSION_CHANGEOWNER)
-        );
+        account.setData(ownerDataKey, bytes.concat(_PERMISSION_CHANGEOWNER));
 
         // Set permissions and allowed data keys for malicious address
         address malicious = vm.addr(1234);
@@ -67,7 +59,7 @@ contract LSP6SetDataTest is Test {
                 bytes20(malicious)
             );
 
-        universalProfile.setData(
+        account.setData(
             permissionsDataKey,
             bytes.concat(_PERMISSION_SETDATA | _PERMISSION_CHANGEOWNER)
         );
@@ -75,19 +67,16 @@ contract LSP6SetDataTest is Test {
         // set `0x0000` in the list of AllowedERC725YDataKeys of the controller
         // this correspond to a bytes[CompactBytesArray] with only one entry
         // where the length of this single `bytes` entry is `0`
-        universalProfile.setData(
-            allowedERC725YDataKeysDataKey,
-            bytes.concat(bytes2(0))
-        );
+        account.setData(allowedERC725YDataKeysDataKey, bytes.concat(bytes2(0)));
 
-        // Setup KeyManager as the owner of the universalProfile
-        universalProfile.transferOwnership(address(keyManager));
+        // Setup KeyManager as the owner of the account
+        account.transferOwnership(address(keyManager));
         bytes memory payload = abi.encodeWithSelector(
             ILSP14Ownable2Step.acceptOwnership.selector,
             ""
         );
         keyManager.execute(payload);
-        assert(universalProfile.owner() == address(keyManager));
+        assert(account.owner() == address(keyManager));
 
         // Verify malicious can set data for most data keys
         bytes memory functionArgs = abi.encode(dataKey, dataValue);
@@ -102,14 +91,14 @@ contract LSP6SetDataTest is Test {
         // CHECK the LSP20 verification function reverts as well
         keyManager.lsp20VerifyCall(
             malicious,
-            address(universalProfile),
+            address(account),
             malicious,
             0,
             functionArgs
         );
 
         // CHECK it reverts when calling directly the Universal Profile
-        universalProfile.setData(dataKey, dataValue);
+        account.setData(dataKey, dataValue);
     }
 
     // Test for
@@ -138,10 +127,7 @@ contract LSP6SetDataTest is Test {
             _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
             bytes20(address(this))
         );
-        universalProfile.setData(
-            ownerDataKey,
-            bytes.concat(_PERMISSION_CHANGEOWNER)
-        );
+        account.setData(ownerDataKey, bytes.concat(_PERMISSION_CHANGEOWNER));
 
         // Set permissions and allowed data keys for malicious address
         address malicious = vm.addr(1234);
@@ -156,7 +142,7 @@ contract LSP6SetDataTest is Test {
                 bytes20(malicious)
             );
 
-        universalProfile.setData(
+        account.setData(
             permissionsDataKey,
             bytes.concat(_PERMISSION_SETDATA | _PERMISSION_CHANGEOWNER)
         );
@@ -201,19 +187,19 @@ contract LSP6SetDataTest is Test {
         }
 
         // 2. set this list of malicious Allowed ERC725Y Data Keys
-        universalProfile.setData(
+        account.setData(
             allowedERC725YDataKeysDataKey,
             maliciousCompactBytesArrayOfAllowedERC725YDataKeys
         );
 
-        // Setup KeyManager as the owner of the universalProfile
-        universalProfile.transferOwnership(address(keyManager));
+        // Setup KeyManager as the owner of the account
+        account.transferOwnership(address(keyManager));
         bytes memory payload = abi.encodeWithSelector(
             ILSP14Ownable2Step.acceptOwnership.selector,
             ""
         );
         keyManager.execute(payload);
-        assert(universalProfile.owner() == address(keyManager));
+        assert(account.owner() == address(keyManager));
 
         // Verify malicious can set data for most data keys
         bytes memory functionArgs = abi.encode(dataKey, dataValue);
@@ -228,13 +214,13 @@ contract LSP6SetDataTest is Test {
         // CHECK the LSP20 verification function reverts as well
         keyManager.lsp20VerifyCall(
             malicious,
-            address(universalProfile),
+            address(account),
             malicious,
             0,
             functionArgs
         );
 
         // CHECK it reverts when calling directly the Universal Profile
-        universalProfile.setData(dataKey, dataValue);
+        account.setData(dataKey, dataValue);
     }
 }

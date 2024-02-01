@@ -26,7 +26,7 @@ import {
 } from "lsp1/contracts/LSP1Constants.sol";
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PREFIX
-} from "../../LSP6KeyManager/LSP6Constants.sol";
+} from "lsp6/contracts/LSP6Constants.sol";
 
 import {
     _LSP17_EXTENSION_PREFIX

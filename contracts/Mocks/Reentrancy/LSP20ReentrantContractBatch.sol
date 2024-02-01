@@ -17,7 +17,7 @@ import {
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
     ALL_REGULAR_PERMISSIONS
-} from "../../LSP6KeyManager/LSP6Constants.sol";
+} from "lsp6/contracts/LSP6Constants.sol";
 
 contract LSP20ReentrantContractBatch {
     event ValueReceived(uint256);
