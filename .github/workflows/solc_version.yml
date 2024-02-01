@@ -81,6 +81,7 @@ jobs:
               @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
               ../=$(pwd)/contracts/ \
+              lsp0/=packages/LSP0ERC725Account/ \
               lsp1/=packages/LSP1UniversalReceiver/ \
               lsp2/=packages/LSP2ERC725YJSONSchema/ \
               lsp4/=packages/LSP4DigitalAssetMetadata/ \
@@ -95,6 +96,7 @@ jobs:
             solc contracts/**/*.sol \
               @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
+              lsp0/=packages/LSP0ERC725Account/ \
               lsp1/=packages/LSP1UniversalReceiver/ \
               lsp2/=packages/LSP2ERC725YJSONSchema/ \
               lsp4/=packages/LSP4DigitalAssetMetadata/ \

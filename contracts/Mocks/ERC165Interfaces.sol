@@ -28,7 +28,7 @@ import {IERC223} from "./Tokens/IERC223.sol";
 
 // LSPs interfaces
 
-import {ILSP0ERC725Account} from "../LSP0ERC725Account/ILSP0ERC725Account.sol";
+import {ILSP0ERC725Account} from "lsp0/contracts/ILSP0ERC725Account.sol";
 import {
     ILSP1UniversalReceiver as ILSP1
 } from "lsp1/contracts/ILSP1UniversalReceiver.sol";
@@ -60,7 +60,7 @@ import {
 } from "lsp25/contracts/ILSP25ExecuteRelayCall.sol";
 
 // constants
-import {_INTERFACEID_LSP0} from "../LSP0ERC725Account/LSP0Constants.sol";
+import {_INTERFACEID_LSP0} from "lsp0/contracts/LSP0Constants.sol";
 import {
     _INTERFACEID_LSP1,
     _INTERFACEID_LSP1_DELEGATE

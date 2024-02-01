@@ -1,9 +1,7 @@
 pragma solidity ^0.8.13;
 
 import "lsp6/contracts/LSP6KeyManager.sol";
-import {
-    LSP0ERC725Account
-} from "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
+import {LSP0ERC725Account} from "lsp0/contracts/LSP0ERC725Account.sol";
 import "lsp2/contracts/LSP2Utils.sol";
 import "lsp6/contracts/LSP6Constants.sol";
 import {
