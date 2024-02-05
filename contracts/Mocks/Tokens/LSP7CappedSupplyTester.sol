@@ -3,10 +3,8 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP7DigitalAsset} from "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
-import {
-    LSP7CappedSupply
-} from "../../LSP7DigitalAsset/extensions/LSP7CappedSupply.sol";
+import {LSP7DigitalAsset} from "lsp7/contracts/LSP7DigitalAsset.sol";
+import {LSP7CappedSupply} from "lsp7/contracts/extensions/LSP7CappedSupply.sol";
 
 contract LSP7CappedSupplyTester is LSP7CappedSupply {
     constructor(

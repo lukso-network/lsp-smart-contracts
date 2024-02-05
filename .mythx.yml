@@ -26,10 +26,10 @@ analyze:
     - contracts/LSP6KeyManager/LSP6KeyManager.sol
     # - Tokens & NFTs
     - lsp4/contracts/LSP4DigitalAssetMetadata.sol
-    - contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol
-    - contracts/LSP7DigitalAsset/presets/LSP7Mintable.sol
-    - contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol
-    - contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply.sol
+    - lsp7/contracts/LSP7DigitalAsset.sol
+    - lsp7/contracts/presets/LSP7Mintable.sol
+    - lsp7/contracts/extensions/LSP7Burnable.sol
+    - lsp7/contracts/extensions/LSP7CappedSupply.sol
     - contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol
     - contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol
     - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol
@@ -46,8 +46,8 @@ analyze:
     - lsp4/contracts/LSP4DigitalAssetMetadataInitAbstract.sol
     - contracts/LSP6KeyManager/LSP6KeyManagerInit.sol
     # - Tokens & NFTs
-    - contracts/LSP7DigitalAsset/LSP7DigitalAssetInitAbstract.sol
-    - contracts/LSP7DigitalAsset/presets/LSP7MintableInit.sol
+    - lsp7/contracts/LSP7DigitalAssetInitAbstract.sol
+    - lsp7/contracts/presets/LSP7MintableInit.sol
     - contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInitAbstract.sol
     - contracts/LSP8IdentifiableDigitalAsset/presets/LSP8MintableInit.sol
     - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupplyInitAbstract.sol
