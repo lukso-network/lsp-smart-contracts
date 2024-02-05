@@ -41,7 +41,7 @@ import {ILSP6KeyManager as ILSP6} from "lsp6/contracts/ILSP6KeyManager.sol";
 import {ILSP7DigitalAsset as ILSP7} from "lsp7/contracts/ILSP7DigitalAsset.sol";
 import {
     ILSP8IdentifiableDigitalAsset as ILSP8
-} from "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
+} from "lsp8/contracts/ILSP8IdentifiableDigitalAsset.sol";
 
 import {ILSP9Vault as ILSP9} from "../LSP9Vault/ILSP9Vault.sol";
 import {
@@ -65,9 +65,7 @@ import {
 } from "lsp1/contracts/LSP1Constants.sol";
 import {_INTERFACEID_LSP6} from "lsp6/contracts/LSP6Constants.sol";
 import {_INTERFACEID_LSP7} from "lsp7/contracts/LSP7Constants.sol";
-import {
-    _INTERFACEID_LSP8
-} from "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
+import {_INTERFACEID_LSP8} from "lsp8/contracts/LSP8Constants.sol";
 import {_INTERFACEID_LSP9} from "../LSP9Vault/LSP9Constants.sol";
 import {
     _INTERFACEID_LSP11

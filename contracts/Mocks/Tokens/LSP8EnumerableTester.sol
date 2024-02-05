@@ -5,10 +5,8 @@ pragma solidity ^0.8.4;
 // modules
 import {
     LSP8IdentifiableDigitalAsset
-} from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol";
-import {
-    LSP8Enumerable
-} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol";
+} from "lsp8/contracts/LSP8IdentifiableDigitalAsset.sol";
+import {LSP8Enumerable} from "lsp8/contracts/extensions/LSP8Enumerable.sol";
 
 contract LSP8EnumerableTester is LSP8Enumerable {
     constructor(

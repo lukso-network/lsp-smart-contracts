@@ -28,7 +28,7 @@ import {
     _TYPEID_LSP8_TOKENSSENDER,
     _TYPEID_LSP8_TOKENSRECIPIENT,
     _INTERFACEID_LSP8
-} from "../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
+} from "lsp8/contracts/LSP8Constants.sol";
 
 // errors
 import {CannotRegisterEOAsAsAssets} from "../LSP1Errors.sol";

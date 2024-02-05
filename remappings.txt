@@ -14,6 +14,7 @@ lsp4/=packages/LSP4DigitalAssetMetadata/
 lsp5/=packages/LSP5ReceivedAssets/
 lsp6/=packages/LSP6KeyManager/
 lsp7/=packages/LSP7DigitalAsset/
+lsp8/=packages/LSP8IdentifiableDigitalAsset/
 lsp10/=packages/LSP10ReceivedVaults/
 lsp14/=packages/LSP14Ownable2Step/
 lsp16/=packages/LSP16UniversalFactory/

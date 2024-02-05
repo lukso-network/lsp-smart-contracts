@@ -25,9 +25,7 @@ import {
     _PERMISSION_CALL,
     _PERMISSION_TRANSFERVALUE
 } from "lsp6/contracts/LSP6Constants.sol";
-import {
-    _LSP8_TOKENID_FORMAT_NUMBER
-} from "../../../../contracts/LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
+import {_LSP8_TOKENID_FORMAT_NUMBER} from "lsp8/contracts/LSP8Constants.sol";
 import {UniversalProfileTestsHelper} from "../UniversalProfileTestsHelper.sol";
 
 contract ExecuteRestrictedController is UniversalProfileTestsHelper {
