@@ -20,9 +20,7 @@ import {
 // constants
 import {_TYPEID_LSP7_TOKENSRECIPIENT} from "lsp7/contracts/LSP7Constants.sol";
 
-import {
-    _TYPEID_LSP8_TOKENSRECIPIENT
-} from "../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
+import {_TYPEID_LSP8_TOKENSRECIPIENT} from "lsp8/contracts/LSP8Constants.sol";
 
 import {_INTERFACEID_LSP1_DELEGATE} from "lsp1/contracts/LSP1Constants.sol";
 
