@@ -125,7 +125,7 @@ export type AttributeMetadata = {
   key: string;
   value: string;
   type: string | number | boolean;
-}
+};
 
 export type Verification = {
   method: string;
