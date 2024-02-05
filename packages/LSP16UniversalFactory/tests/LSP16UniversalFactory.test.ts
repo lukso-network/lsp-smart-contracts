@@ -420,25 +420,23 @@ describe('UniversalFactory contract', () => {
       });
 
       it('should revert when deploying an initializable contract with the same bytecode and salt ', async () => {
-        const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
+        const salt = ethers.utils.solidityKeccak256(['string'], ['Salting']);
 
-        const randomAddress = ethers.Wallet.createRandom();
-
-        const UPBytecode = AccountBytecode + AddressOffset + randomAddress.address.substring(2);
+        const fallbackInitializerBytecode = FallbackInitializerBytecode;
 
         await context.universalFactory.deployCreate2AndInitialize(
-          UPBytecode,
+          fallbackInitializerBytecode,
           salt,
-          '0x00000000aabbccdd', // send some random data along prepended with `0x00000000`
+          '0xaabbccdd',
           0,
           0,
         );
 
         await expect(
           context.universalFactory.deployCreate2AndInitialize(
-            UPBytecode,
+            fallbackInitializerBytecode,
             salt,
-            '0x00000000aabbccdd', // send some random data along prepended with `0x00000000`
+            '0xaabbccdd',
             0,
             0,
           ),
@@ -811,17 +809,21 @@ describe('UniversalFactory contract', () => {
       it('should revert when deploying a proxy contract with the same `baseContract` and salt ', async () => {
         const salt = ethers.utils.solidityKeccak256(['string'], ['Salt']);
 
+        const initializeCallData = accountBaseContract.interface.encodeFunctionData('initialize', [
+          context.accounts.deployer1.address,
+        ]);
+
         await context.universalFactory.deployERC1167ProxyAndInitialize(
           accountBaseContract.address,
           salt,
-          '0x',
+          initializeCallData,
         );
 
         await expect(
           context.universalFactory.deployERC1167ProxyAndInitialize(
             accountBaseContract.address,
             salt,
-            '0x',
+            initializeCallData,
           ),
         ).to.be.revertedWith('ERC1167: create2 failed');
       });
