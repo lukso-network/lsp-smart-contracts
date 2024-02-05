@@ -18,9 +18,7 @@ import {
 } from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // constants
-import {
-    _TYPEID_LSP7_TOKENSRECIPIENT
-} from "../../LSP7DigitalAsset/LSP7Constants.sol";
+import {_TYPEID_LSP7_TOKENSRECIPIENT} from "lsp7/contracts/LSP7Constants.sol";
 
 import {
     _TYPEID_LSP8_TOKENSRECIPIENT

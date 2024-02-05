@@ -1,5 +1,5 @@
 import { LSP4_TOKEN_TYPES } from '../../../constants';
-import { LSP7Mintable, LSP7Mintable__factory } from '../../../types';
+import { LSP7Mintable, LSP7Mintable__factory } from 'lsp7/types';
 
 import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour';
 import {

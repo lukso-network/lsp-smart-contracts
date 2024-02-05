@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
+import { LSP7Mintable, LSP7Mintable__factory } from 'lsp7/types';
 import {
   SignatureValidator,
   SignatureValidator__factory,
@@ -9,8 +10,6 @@ import {
   TargetContract__factory,
   UniversalProfile,
   UniversalProfile__factory,
-  LSP7Mintable,
-  LSP7Mintable__factory,
 } from '../../../../types';
 
 // constants

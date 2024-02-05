@@ -24,12 +24,12 @@ export const dodocConfig = {
 
     // tokens
     'lsp4/contracts/LSP4DigitalAssetMetadata.sol',
-    'contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol',
-    'contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol',
-    'contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply.sol',
-    'contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol',
-    'contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol',
-    'contracts/LSP7DigitalAsset/presets/LSP7Mintable.sol',
+    'lsp7/contracts/LSP7DigitalAsset.sol',
+    'lsp7/contracts/extensions/LSP7Burnable.sol',
+    'lsp7/contracts/extensions/LSP7CappedSupply.sol',
+    'lsp7/contracts/extensions/LSP7CompatibleERC20.sol',
+    'lsp7/contracts/presets/LSP7CompatibleERC20Mintable.sol',
+    'lsp7/contracts/presets/LSP7Mintable.sol',
     'contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol',
     'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol',
     'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol',
@@ -334,6 +334,13 @@ const generateContractSpecsDetails = (contractName: string) => {
   const contractPath = dodocConfig.include.filter((value) => {
     if (value.endsWith(`${contractName}.sol`)) return value;
   })[0];
+
+  if (contractPath.startsWith('lsp7/contracts')) {
+    return {
+      specsName: 'LSP-7-DigitalAsset',
+      specsLink: `${linkBase}lips/tree/main/LSPs/LSP-7-DigitalAsset.md`,
+    };
+  }
 
   const specsIndex = contractPath.startsWith('lsp') ? 2 : 1;
   const specs = contractPath.split('/')[specsIndex];
