@@ -3,12 +3,11 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
+import { LSP7Mintable, LSP7Mintable__factory } from 'lsp7/types';
 import {
   LSP1UniversalReceiverDelegateUP,
   LSP1UniversalReceiverDelegateUP__factory,
   LSP6KeyManager__factory,
-  LSP7Mintable,
-  LSP7Mintable__factory,
   LSP8Mintable,
   LSP8Mintable__factory,
   UniversalProfile,

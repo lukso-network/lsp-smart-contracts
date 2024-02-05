@@ -4,11 +4,10 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber } from 'ethers';
 import { FakeContract, smock } from '@defi-wonderland/smock';
 
+import { LSP7Mintable, LSP7Mintable__factory } from 'lsp7/types';
 import {
   ExecutorLSP20,
   ExecutorLSP20__factory,
-  LSP7Mintable,
-  LSP7Mintable__factory,
   TargetContract__factory,
   TargetPayableContract,
   TargetPayableContract__factory,

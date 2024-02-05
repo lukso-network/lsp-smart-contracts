@@ -3,9 +3,8 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
+import { LSP7Mintable, LSP7Mintable__factory } from 'lsp7/types';
 import {
-  LSP7Mintable,
-  LSP7Mintable__factory,
   LSP8Mintable,
   LSP8Mintable__factory,
   TargetContract,
