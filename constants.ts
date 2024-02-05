@@ -118,7 +118,14 @@ export type LSP4DigitalAssetMetadata = {
   images: ImageMetadata[][];
   assets: AssetMetadata[];
   icon: ImageMetadata[];
+  attributes: AttributeMetadata[];
 };
+
+export type AttributeMetadata = {
+  key: string;
+  value: string;
+  type: string | number | boolean;
+}
 
 export type Verification = {
   method: string;
