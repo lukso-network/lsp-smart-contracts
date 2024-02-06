@@ -124,7 +124,8 @@
     "lsp17": "*",
     "lsp17contractextension": "*",
     "lsp20": "*",
-    "lsp25": "*"
+    "lsp25": "*",
+    "universalprofile": "*"
   },
   "devDependencies": {
     "@b00ste/hardhat-dodoc": "^0.3.16",

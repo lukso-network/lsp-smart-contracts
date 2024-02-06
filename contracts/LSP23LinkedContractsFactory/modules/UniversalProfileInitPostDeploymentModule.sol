@@ -5,7 +5,9 @@ import {
     OPERATION_4_DELEGATECALL
 } from "@erc725/smart-contracts/contracts/constants.sol";
 
-import {UniversalProfileInit} from "../../UniversalProfileInit.sol";
+import {
+    UniversalProfileInit
+} from "universalprofile/contracts/UniversalProfileInit.sol";
 
 contract UniversalProfileInitPostDeploymentModule is UniversalProfileInit {
     constructor() {
