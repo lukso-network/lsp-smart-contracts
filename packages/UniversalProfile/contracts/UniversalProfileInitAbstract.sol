@@ -10,7 +10,7 @@ import {
 import {
     _LSP3_SUPPORTED_STANDARDS_KEY,
     _LSP3_SUPPORTED_STANDARDS_VALUE
-} from "./LSP3ProfileMetadata/LSP3Constants.sol";
+} from "lsp3/contracts/LSP3Constants.sol";
 
 /**
  * @title Inheritable Proxy implementation of a LUKSO's Universal Profile based on LSP3

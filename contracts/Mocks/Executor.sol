@@ -11,7 +11,9 @@ import {
 import {ILSP6KeyManager} from "lsp6/contracts/ILSP6KeyManager.sol";
 
 // modules
-import {UniversalProfile} from "../UniversalProfile.sol";
+import {
+    UniversalProfile
+} from "universalprofile/contracts/UniversalProfile.sol";
 import {LSP6KeyManager} from "lsp6/contracts/LSP6KeyManager.sol";
 
 // constants
