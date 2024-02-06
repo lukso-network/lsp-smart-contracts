@@ -6,12 +6,12 @@ import { EntryPoint__factory, EntryPoint } from '@account-abstraction/contracts'
 import { BytesLike, parseEther } from 'ethers/lib/utils';
 import { expect } from 'chai';
 import {
-  Extension4337__factory,
   LSP6KeyManager,
   LSP6KeyManager__factory,
   UniversalProfile,
   UniversalProfile__factory,
 } from '../../../types';
+import { Extension4337__factory } from 'lsp17/types';
 import { deployEntryPoint, getBalance, isDeployed } from '../helpers/utils';
 import { ALL_PERMISSIONS, ERC725YDataKeys, OPERATION_TYPES } from '../../../constants';
 import { combinePermissions } from '../../utils/helpers';
