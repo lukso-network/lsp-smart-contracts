@@ -16,7 +16,7 @@ import {
     _TYPEID_LSP8_TOKENSSENDER,
     _TYPEID_LSP8_TOKENSRECIPIENT,
     _TYPEID_LSP8_TOKENOPERATOR
-} from "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
+} from "lsp8/contracts/LSP8Constants.sol";
 import {
     _TYPEID_LSP9_VALUE_RECEIVED,
     _TYPEID_LSP9_OwnershipTransferStarted,

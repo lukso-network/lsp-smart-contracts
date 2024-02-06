@@ -32,7 +32,7 @@ import {
     _TYPEID_LSP8_TOKENSSENDER,
     _TYPEID_LSP8_TOKENSRECIPIENT,
     _INTERFACEID_LSP8
-} from "../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
+} from "lsp8/contracts/LSP8Constants.sol";
 import {
     _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification

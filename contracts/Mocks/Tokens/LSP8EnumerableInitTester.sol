@@ -5,10 +5,10 @@ pragma solidity ^0.8.4;
 // modules
 import {
     LSP8IdentifiableDigitalAssetInitAbstract
-} from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInitAbstract.sol";
+} from "lsp8/contracts/LSP8IdentifiableDigitalAssetInitAbstract.sol";
 import {
     LSP8EnumerableInitAbstract
-} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8EnumerableInitAbstract.sol";
+} from "lsp8/contracts/extensions/LSP8EnumerableInitAbstract.sol";
 
 contract LSP8EnumerableInitTester is LSP8EnumerableInitAbstract {
     function initialize(

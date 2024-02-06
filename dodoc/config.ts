@@ -27,30 +27,26 @@ export const dodocConfig = {
     'lsp7/contracts/LSP7DigitalAsset.sol',
     'lsp7/contracts/extensions/LSP7Burnable.sol',
     'lsp7/contracts/extensions/LSP7CappedSupply.sol',
-    'lsp7/contracts/extensions/LSP7CompatibleERC20.sol',
-    'lsp7/contracts/presets/LSP7CompatibleERC20Mintable.sol',
     'lsp7/contracts/presets/LSP7Mintable.sol',
-    'contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol',
-    'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol',
-    'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol',
-    'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721.sol',
-    'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol',
-    'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol',
-    'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol',
+    'lsp8/contracts/LSP8IdentifiableDigitalAsset.sol',
+    'lsp8/contracts/extensions/LSP8Burnable.sol',
+    'lsp8/contracts/extensions/LSP8CappedSupply.sol',
+    'lsp8/contracts/extensions/LSP8Enumerable.sol',
+    'lsp8/contracts/presets/LSP8Mintable.sol',
 
     // libraries --------------------
-    'contracts/LSP1UniversalReceiver/LSP1Utils.sol',
+    'lsp1/contracts/LSP1Utils.sol',
     'lsp2/contracts/LSP2Utils.sol',
-    'contracts/LSP5ReceivedAssets/LSP5Utils.sol',
+    'lsp5/contracts/LSP5Utils.sol',
     'lsp6/contracts/LSP6Utils.sol',
-    'contracts/LSP10ReceivedVaults/LSP10Utils.sol',
+    'lsp10/contracts/LSP10Utils.sol',
     'lsp17contractextension/contracts/LSP17Utils.sol',
 
     // external --------------------
     '@erc725/smart-contracts/contracts/ERC725.sol',
   ],
   libraries: [
-    'contracts/LSP1UniversalReceiver/LSP1Utils.sol',
+    'lsp1/contracts/LSP1Utils.sol',
     'lsp2/contracts/LSP2Utils.sol',
     'lsp5/contracts/LSP5Utils.sol',
     'lsp6/contracts/LSP6Utils.sol',
@@ -335,10 +331,15 @@ const generateContractSpecsDetails = (contractName: string) => {
     if (value.endsWith(`${contractName}.sol`)) return value;
   })[0];
 
-  if (contractPath.startsWith('lsp7/contracts')) {
+  // token contracts have preset and extension folders.
+  if (contractPath.startsWith('lsp7/contracts') || contractPath.startsWith('lsp8/contracts')) {
+    const lspNumber = contractPath[3];
+    const lspName = lspNumber === '8' ? 'IdentifiableDigitalAsset' : 'DigitalAsset';
+    const specsName = `LSP-${lspNumber}-${lspName}`;
+
     return {
-      specsName: 'LSP-7-DigitalAsset',
-      specsLink: `${linkBase}lips/tree/main/LSPs/LSP-7-DigitalAsset.md`,
+      specsName: specsName,
+      specsLink: `${linkBase}lips/tree/main/LSPs/${specsName}.md`,
     };
   }
 
