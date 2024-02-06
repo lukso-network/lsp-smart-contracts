@@ -78,21 +78,24 @@ jobs:
           then
             solc $(ls contracts/**/*.sol | grep -v "Extension4337\|contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset") \
               --allow-paths $(pwd)/node_modules/,$(pwd)/packages/ \
+              ../=$(pwd)/contracts/ \
               @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
-              ../=$(pwd)/contracts/ \
               lsp0/=packages/LSP0ERC725Account/ \
               lsp1/=packages/LSP1UniversalReceiver/ \
               lsp2/=packages/LSP2ERC725YJSONSchema/ \
+              lsp3/=packages/LSP3ProfileMetadata/ \
               lsp4/=packages/LSP4DigitalAssetMetadata/ \
               lsp5/=packages/LSP5ReceivedAssets/ \
               lsp6/=packages/LSP6KeyManager/ \
               lsp7/=packages/LSP7DigitalAsset/ \
               lsp10/=packages/LSP10ReceivedVaults/ \
               lsp14/=packages/LSP14Ownable2Step/ \
+              lsp17/=packages/LSP17Extensions/ \
               lsp17contractextension/=packages/LSP17ContractExtension/ \
               lsp20/=packages/LSP20CallVerification/ \
-              lsp25/=packages/LSP25ExecuteRelayCall/
+              lsp25/=packages/LSP25ExecuteRelayCall/ \
+              universalprofile/=packages/UniversalProfile/
           else
             solc contracts/**/*.sol \
               @=node_modules/@ \
@@ -100,13 +103,16 @@ jobs:
               lsp0/=packages/LSP0ERC725Account/ \
               lsp1/=packages/LSP1UniversalReceiver/ \
               lsp2/=packages/LSP2ERC725YJSONSchema/ \
+              lsp3/=packages/LSP3ProfileMetadata/ \
               lsp4/=packages/LSP4DigitalAssetMetadata/ \
               lsp5/=packages/LSP5ReceivedAssets/ \
               lsp6/=packages/LSP6KeyManager/ \
               lsp7/=packages/LSP7DigitalAsset/ \
               lsp10/=packages/LSP10ReceivedVaults/ \
               lsp14/=packages/LSP14Ownable2Step/ \
+              lsp17/=packages/LSP17Extensions/ \
               lsp17contractextension/=packages/LSP17ContractExtension/ \
               lsp20/=packages/LSP20CallVerification/ \
-              lsp25/=packages/LSP25ExecuteRelayCall/
+              lsp25/=packages/LSP25ExecuteRelayCall/ \
+              universalprofile/=packages/UniversalProfile/
           fi;
