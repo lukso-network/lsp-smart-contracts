@@ -100,7 +100,6 @@
     "test:lsp20init": "hardhat test --no-compile tests/LSP20CallVerification/LSP6/LSP20WithLSP6Init.test.ts",
     "test:lsp23": "hardhat test --no-compile tests/LSP23LinkedContractsDeployment/LSP23LinkedContractsDeployment.test.ts",
     "test:lsp25": "hardhat test --no-compile tests/LSP25ExecuteRelayCall/LSP25MultiChannelNonce.test.ts",
-    "test:universalfactory": "hardhat test --no-compile tests/LSP16UniversalFactory/LSP16UniversalFactory.test.ts",
     "test:reentrancy": "hardhat test --no-compile tests/Reentrancy/Reentrancy.test.ts",
     "test:reentrancyinit": "hardhat test --no-compile tests/Reentrancy/ReentrancyInit.test.ts",
     "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
