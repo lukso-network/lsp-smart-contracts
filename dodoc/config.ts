@@ -27,15 +27,11 @@ export const dodocConfig = {
     'lsp7/contracts/LSP7DigitalAsset.sol',
     'lsp7/contracts/extensions/LSP7Burnable.sol',
     'lsp7/contracts/extensions/LSP7CappedSupply.sol',
-    'lsp7/contracts/extensions/LSP7CompatibleERC20.sol',
-    'lsp7/contracts/presets/LSP7CompatibleERC20Mintable.sol',
     'lsp7/contracts/presets/LSP7Mintable.sol',
     'lsp8/contracts/LSP8IdentifiableDigitalAsset.sol',
     'lsp8/contracts/extensions/LSP8Burnable.sol',
     'lsp8/contracts/extensions/LSP8CappedSupply.sol',
-    'lsp8/contracts/extensions/LSP8CompatibleERC721.sol',
     'lsp8/contracts/extensions/LSP8Enumerable.sol',
-    'lsp8/contracts/presets/LSP8CompatibleERC721Mintable.sol',
     'lsp8/contracts/presets/LSP8Mintable.sol',
 
     // libraries --------------------

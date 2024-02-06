@@ -1,5 +1,5 @@
 import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_FORMAT } from '../../../constants';
-import { LSP8Mintable, LSP8Mintable__factory } from '../../../types';
+import { LSP8Mintable, LSP8Mintable__factory } from 'lsp8/types';
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {

@@ -3,12 +3,8 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 import { LSP7Mintable, LSP7Mintable__factory } from 'lsp7/types';
-import {
-  LSP8Mintable,
-  LSP8Mintable__factory,
-  TargetContract,
-  TargetContract__factory,
-} from '../../../../types';
+import { LSP8Mintable, LSP8Mintable__factory } from 'lsp8/types';
+import { TargetContract, TargetContract__factory } from '../../../../types';
 
 // constants
 import {
