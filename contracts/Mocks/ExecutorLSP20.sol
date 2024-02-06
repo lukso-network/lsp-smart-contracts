@@ -10,7 +10,9 @@ import {
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 // modules
-import {UniversalProfile} from "../UniversalProfile.sol";
+import {
+    UniversalProfile
+} from "universalprofile/contracts/UniversalProfile.sol";
 
 // constants
 import {
