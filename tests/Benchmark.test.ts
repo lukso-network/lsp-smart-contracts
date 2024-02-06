@@ -8,11 +8,11 @@ import {
   LSP1UniversalReceiverDelegateUP,
   LSP1UniversalReceiverDelegateUP__factory,
   LSP6KeyManager__factory,
-  LSP8Mintable,
-  LSP8Mintable__factory,
   UniversalProfile,
   UniversalProfile__factory,
 } from '../types';
+
+import { LSP8Mintable, LSP8Mintable__factory } from 'lsp8/types';
 
 import {
   ERC725YDataKeys,

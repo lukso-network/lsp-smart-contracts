@@ -4,11 +4,11 @@ import { BytesLike } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 import { LSP7Mintable, LSP7Mintable__factory } from 'lsp7/types';
+import { LSP8Mintable } from 'lsp8/types';
 import {
   LSP6KeyManager,
   LSP6KeyManager__factory,
   LSP7Tester__factory,
-  LSP8Mintable,
   LSP0ERC725Account__factory,
 } from '../../types';
 
