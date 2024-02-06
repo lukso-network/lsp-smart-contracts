@@ -4,7 +4,7 @@ import { HelperContent } from 'squirrelly/dist/types/containers';
 export const dodocConfig = {
   runOnCompile: false,
   include: [
-    'contracts/UniversalProfile.sol',
+    'universalprofile/contracts/UniversalProfile.sol',
     'lsp0/contracts/LSP0ERC725Account.sol',
     'contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol',
     'contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol',
