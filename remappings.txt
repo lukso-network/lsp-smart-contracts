@@ -16,6 +16,7 @@ lsp6/=packages/LSP6KeyManager/
 lsp7/=packages/LSP7DigitalAsset/
 lsp10/=packages/LSP10ReceivedVaults/
 lsp14/=packages/LSP14Ownable2Step/
+lsp16/=packages/LSP16UniversalFactory/
 lsp17contractextension/=packages/LSP17ContractExtension/
 lsp17/=packages/LSP17Extensions
 lsp20/=packages/LSP20CallVerification/
