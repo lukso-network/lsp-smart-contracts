@@ -7,12 +7,8 @@ import "forge-std/console.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 import {LSP16UniversalFactory} from "../contracts/LSP16UniversalFactory.sol";
-import {
-    NonPayableFallback
-} from "../../../contracts/Mocks/NonPayableFallback.sol";
-import {
-    FallbackInitializer
-} from "../../../contracts/Mocks/FallbackInitializer.sol";
+import {NonPayableFallback} from "../contracts/Mocks/NonPayableFallback.sol";
+import {FallbackInitializer} from "../contracts/Mocks/FallbackInitializer.sol";
 import {Account} from "../contracts/Mocks/Account.sol";
 import {AccountInit} from "../contracts/Mocks/AccountInit.sol";
 
