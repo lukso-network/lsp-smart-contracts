@@ -90,6 +90,7 @@ jobs:
               lsp7/=packages/LSP7DigitalAsset/ \
               lsp10/=packages/LSP10ReceivedVaults/ \
               lsp14/=packages/LSP14Ownable2Step/ \
+              lsp16/=packages/LSP16UniversalFactory/ \
               lsp17contractextension/=packages/LSP17ContractExtension/ \
               lsp20/=packages/LSP20CallVerification/ \
               lsp25/=packages/LSP25ExecuteRelayCall/
@@ -106,6 +107,7 @@ jobs:
               lsp7/=packages/LSP7DigitalAsset/ \
               lsp10/=packages/LSP10ReceivedVaults/ \
               lsp14/=packages/LSP14Ownable2Step/ \
+              lsp16/=packages/LSP16UniversalFactory/ \
               lsp17contractextension/=packages/LSP17ContractExtension/ \
               lsp20/=packages/LSP20CallVerification/ \
               lsp25/=packages/LSP25ExecuteRelayCall/
