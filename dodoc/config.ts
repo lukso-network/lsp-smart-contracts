@@ -9,7 +9,7 @@ export const dodocConfig = {
     'contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol',
     'contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol',
     'lsp6/contracts/LSP6KeyManager.sol',
-    'contracts/LSP9Vault/LSP9Vault.sol',
+    'lsp9/contracts/LSP9Vault.sol',
     'contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol',
     'lsp14/contracts/LSP14Ownable2Step.sol',
     'lsp16/contracts/LSP16UniversalFactory.sol',

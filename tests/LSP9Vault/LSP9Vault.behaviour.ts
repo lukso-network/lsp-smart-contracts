@@ -4,9 +4,9 @@ import type { TransactionResponse } from '@ethersproject/abstract-provider';
 import { expect } from 'chai';
 
 // types
+import { LSP9Vault } from 'lsp9/types';
 import {
   LSP6KeyManager,
-  LSP9Vault,
   UniversalProfile,
   UniversalReceiverDelegateVaultSetter__factory,
   UniversalReceiverDelegateVaultReentrantA__factory,

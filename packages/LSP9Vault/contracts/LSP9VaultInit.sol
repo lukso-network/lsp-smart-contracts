@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {Version} from "../Version.sol";
+import {Version} from "./Version.sol";
 import {LSP9VaultInitAbstract} from "./LSP9VaultInitAbstract.sol";
 
 /**

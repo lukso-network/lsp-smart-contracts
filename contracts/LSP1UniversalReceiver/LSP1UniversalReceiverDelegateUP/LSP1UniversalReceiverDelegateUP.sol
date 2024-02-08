@@ -36,7 +36,7 @@ import {
 import {
     _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
-} from "../../LSP9Vault/LSP9Constants.sol";
+} from "lsp9/contracts/LSP9Constants.sol";
 
 // errors
 import {CannotRegisterEOAsAsAssets} from "../LSP1Errors.sol";

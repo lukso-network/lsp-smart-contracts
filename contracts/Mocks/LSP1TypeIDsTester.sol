@@ -22,7 +22,7 @@ import {
     _TYPEID_LSP9_OwnershipTransferStarted,
     _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
-} from "../LSP9Vault/LSP9Constants.sol";
+} from "lsp9/contracts/LSP9Constants.sol";
 import {
     _TYPEID_LSP14_OwnershipTransferStarted,
     _TYPEID_LSP14_OwnershipTransferred_SenderNotification,

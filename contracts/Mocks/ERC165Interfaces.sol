@@ -43,7 +43,7 @@ import {
     ILSP8IdentifiableDigitalAsset as ILSP8
 } from "lsp8/contracts/ILSP8IdentifiableDigitalAsset.sol";
 
-import {ILSP9Vault as ILSP9} from "../LSP9Vault/ILSP9Vault.sol";
+import {ILSP9Vault as ILSP9} from "lsp9/contracts/ILSP9Vault.sol";
 import {
     ILSP11BasicSocialRecovery as ILSP11
 } from "../LSP11BasicSocialRecovery/ILSP11BasicSocialRecovery.sol";
@@ -66,7 +66,7 @@ import {
 import {_INTERFACEID_LSP6} from "lsp6/contracts/LSP6Constants.sol";
 import {_INTERFACEID_LSP7} from "lsp7/contracts/LSP7Constants.sol";
 import {_INTERFACEID_LSP8} from "lsp8/contracts/LSP8Constants.sol";
-import {_INTERFACEID_LSP9} from "../LSP9Vault/LSP9Constants.sol";
+import {_INTERFACEID_LSP9} from "lsp9/contracts/LSP9Constants.sol";
 import {
     _INTERFACEID_LSP11
 } from "../LSP11BasicSocialRecovery/LSP11Constants.sol";
