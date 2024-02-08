@@ -18,7 +18,7 @@ import {_TYPEID_LSP0_VALUE_RECEIVED} from "lsp0/contracts/LSP0Constants.sol";
 
 import {_INTERFACEID_LSP1_DELEGATE} from "lsp1/contracts/LSP1Constants.sol";
 
-import {_TYPEID_LSP9_VALUE_RECEIVED} from "../../LSP9Vault/LSP9Constants.sol";
+import {_TYPEID_LSP9_VALUE_RECEIVED} from "lsp9/contracts/LSP9Constants.sol";
 
 contract UniversalReceiverDelegateDataLYX is
     ERC165Storage,

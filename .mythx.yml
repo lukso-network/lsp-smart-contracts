@@ -36,7 +36,7 @@ analyze:
     - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol
     - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol
     # - Vault & Social Recovery
-    - contracts/LSP9Vault/LSP9Vault.sol
+    - lsp9/contracts/LSP9Vault.sol
     - contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol
 
     # Proxy version
@@ -53,7 +53,7 @@ analyze:
     - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupplyInitAbstract.sol
     - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8EnumerableInitAbstract.sol
     # - Vault & Social Recovery
-    - contracts/LSP9Vault/LSP9VaultInit.sol
+    - lsp9/contracts/LSP9VaultInit.sol
     - contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecoveryInit.sol
 
     # Generic Modules & Factories

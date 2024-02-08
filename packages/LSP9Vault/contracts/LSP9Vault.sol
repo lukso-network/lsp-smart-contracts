@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {Version} from "../Version.sol";
+import {Version} from "./Version.sol";
 import {LSP9VaultCore} from "./LSP9VaultCore.sol";
 
 // libraries
@@ -17,7 +17,7 @@ import {
     _LSP9_SUPPORTED_STANDARDS_VALUE,
     _TYPEID_LSP9_VALUE_RECEIVED,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
-} from "../LSP9Vault/LSP9Constants.sol";
+} from "./LSP9Constants.sol";
 
 /**
  * @title Implementation of LSP9Vault built on top of [ERC725], [LSP-1-UniversalReceiver]

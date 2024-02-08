@@ -19,7 +19,7 @@ import {
     _LSP9_SUPPORTED_STANDARDS_VALUE,
     _TYPEID_LSP9_VALUE_RECEIVED,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
-} from "../LSP9Vault/LSP9Constants.sol";
+} from "./LSP9Constants.sol";
 
 /**
  * @title Inheritable Proxy Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver

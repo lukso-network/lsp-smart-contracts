@@ -14,7 +14,7 @@ import {
 } from "lsp0/contracts/LSP0Constants.sol";
 import {
     _TYPEID_LSP9_OwnershipTransferStarted
-} from "../LSP9Vault/LSP9Constants.sol";
+} from "lsp9/contracts/LSP9Constants.sol";
 import {
     _TYPEID_LSP14_OwnershipTransferStarted
 } from "lsp14/contracts/LSP14Constants.sol";

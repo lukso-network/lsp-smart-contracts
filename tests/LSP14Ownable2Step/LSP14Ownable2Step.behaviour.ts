@@ -288,9 +288,9 @@ export const shouldBehaveLikeLSP14 = (
       it('should instantiate the renounceOwnership process correctly', async () => {
         const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
           (
-            await artifacts.getBuildInfo('contracts/LSP9Vault/LSP9Vault.sol:LSP9Vault')
+            await artifacts.getBuildInfo('lsp9/contracts/LSP9Vault.sol:LSP9Vault')
           )?.output.contracts[
-            'contracts/LSP9Vault/LSP9Vault.sol'
+            'lsp9/contracts/LSP9Vault.sol'
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
           ].LSP9Vault.storageLayout.storage.filter((elem) => {
@@ -377,9 +377,9 @@ export const shouldBehaveLikeLSP14 = (
       it('should initialize again if the confirmation period passed', async () => {
         const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
           (
-            await artifacts.getBuildInfo('contracts/LSP9Vault/LSP9Vault.sol:LSP9Vault')
+            await artifacts.getBuildInfo('lsp9/contracts/LSP9Vault.sol:LSP9Vault')
           )?.output.contracts[
-            'contracts/LSP9Vault/LSP9Vault.sol'
+            'lsp9/contracts/LSP9Vault.sol'
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
           ].LSP9Vault.storageLayout.storage.filter((elem) => {
@@ -444,9 +444,9 @@ export const shouldBehaveLikeLSP14 = (
         it('should have reset the `_renounceOwnershipStartedAt` state variable to zero', async () => {
           const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
             (
-              await artifacts.getBuildInfo('contracts/LSP9Vault/LSP9Vault.sol:LSP9Vault')
+              await artifacts.getBuildInfo('lsp9/contracts/LSP9Vault.sol:LSP9Vault')
             )?.output.contracts[
-              'contracts/LSP9Vault/LSP9Vault.sol'
+              'lsp9/contracts/LSP9Vault.sol'
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
             ].LSP9Vault.storageLayout.storage.filter((elem) => {
@@ -532,10 +532,8 @@ export const shouldBehaveLikeLSP14 = (
 
     it('should instantiate the renounceOwnership process in 2 steps correctly', async () => {
       const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
-        (
-          await artifacts.getBuildInfo('contracts/LSP9Vault/LSP9Vault.sol:LSP9Vault')
-        )?.output.contracts[
-          'contracts/LSP9Vault/LSP9Vault.sol'
+        (await artifacts.getBuildInfo('lsp9/contracts/LSP9Vault.sol:LSP9Vault'))?.output.contracts[
+          'lsp9/contracts/LSP9Vault.sol'
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
         ].LSP9Vault.storageLayout.storage.filter((elem) => {
