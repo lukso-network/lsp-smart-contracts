@@ -17,6 +17,7 @@ lsp7/=packages/LSP7DigitalAsset/
 lsp8/=packages/LSP8IdentifiableDigitalAsset/
 lsp9/=packages/LSP9Vault/
 lsp10/=packages/LSP10ReceivedVaults/
+lsp12/=packages/LSP12IssuedAssets/
 lsp14/=packages/LSP14Ownable2Step/
 lsp16/=packages/LSP16UniversalFactory/
 lsp17contractextension/=packages/LSP17ContractExtension/
