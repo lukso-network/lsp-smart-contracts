@@ -16,8 +16,8 @@ analyze:
   targets:
     # LSP1
     # ------------------
-    - contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol
-    - contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol
+    - lsp1delegate/contract/LSP1UniversalReceiverDelegateUP.sol
+    - lsp1delegate/contract/LSP1UniversalReceiverDelegateVault.sol
 
     # Standard version
     # ------------------

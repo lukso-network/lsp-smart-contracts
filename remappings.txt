@@ -9,6 +9,7 @@ solidity-bytes-utils/=node_modules/solidity-bytes-utils/
 ds-test/=lib/forge-std/lib/ds-test/src/
 lsp0/=packages/LSP0ERC725Account/
 lsp1/=packages/LSP1UniversalReceiver/
+lsp1delegate/=packages/LSP1UniversalReceiverDelegate/
 lsp2/=packages/LSP2ERC725YJSONSchema/
 lsp4/=packages/LSP4DigitalAssetMetadata/
 lsp5/=packages/LSP5ReceivedAssets/
