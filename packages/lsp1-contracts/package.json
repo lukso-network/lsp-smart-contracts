@@ -4,6 +4,19 @@
   "description": "Package for the LSP1 Universal Receiver standard",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "typings": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./artifacts/*": "./artifacts/*",
+    "./package.json": "./package.json"
+  },
   "keywords": [
     "LUKSO",
     "LSP",
