@@ -83,6 +83,7 @@ jobs:
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
               lsp0/=packages/LSP0ERC725Account/ \
               lsp1/=packages/LSP1UniversalReceiver/ \
+              lsp1delegate/=packages/LSP1UniversalReceiverDelegate/ \
               lsp2/=packages/LSP2ERC725YJSONSchema/ \
               lsp3/=packages/LSP3ProfileMetadata/ \
               lsp4/=packages/LSP4DigitalAssetMetadata/ \
@@ -105,6 +106,7 @@ jobs:
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
               lsp0/=packages/LSP0ERC725Account/ \
               lsp1/=packages/LSP1UniversalReceiver/ \
+              lsp1delegate/=packages/LSP1UniversalReceiverDelegate/ \
               lsp2/=packages/LSP2ERC725YJSONSchema/ \
               lsp3/=packages/LSP3ProfileMetadata/ \
               lsp4/=packages/LSP4DigitalAssetMetadata/ \

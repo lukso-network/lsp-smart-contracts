@@ -1,24 +1,26 @@
 <!-- This file is auto-generated. Do not edit! -->
 <!-- Check `@lukso-network/lsp-smart-contracts/CONTRIBUTING.md#solidity-code-comments` for more information. -->
 
-# LSP1UniversalReceiverDelegateVault
+# LSP1UniversalReceiverDelegateUP
 
 :::info Standard Specifications
 
-[`LSP-1-UniversalReceiver`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md)
+[`LSP-1-UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiverDelegateUP.sol.md)
 
 :::
 :::info Solidity implementation
 
-[`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol)
+[`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/lsp1delegate/contracts/LSP1UniversalReceiverDelegateUP.sol)
 
 :::
 
-> Implementation of a UniversalReceiverDelegate for the [LSP9Vault]
+> Implementation of a UniversalReceiverDelegate for the [LSP-0-ERC725Account]
 
-The [`LSP1UniversalReceiverDelegateVault`](#lsp1universalreceiverdelegatevault) follows the [LSP-1-UniversalReceiver] standard and is designed for [LSP9Vault] contracts. The [`LSP1UniversalReceiverDelegateVault`](#lsp1universalreceiverdelegatevault) is a contract called by the [`universalReceiver(...)`](#universalreceiver) function of the [LSP-9-Vault] contract that:
+The [`LSP1UniversalReceiverDelegateUP`](#lsp1universalreceiverdelegateup) follows the [LSP-1-UniversalReceiver] standard and is designed for [LSP-0-ERC725Account] contracts. The [`LSP1UniversalReceiverDelegateUP`](#lsp1universalreceiverdelegateup) is a contract called by the [`universalReceiver(...)`](#universalreceiver) function of the [LSP-0-ERC725Account] contract that:
 
 - Writes the data keys representing assets received from type [LSP-7-DigitalAsset] and [LSP-8-IdentifiableDigitalAsset] into the account storage, and removes them when the balance is zero according to the [LSP-5-ReceivedAssets] Standard.
+
+- Writes the data keys representing the owned vaults from type [LSP-9-Vault] into your account storage, and removes them when transferring ownership to other accounts according to the [LSP-10-ReceivedVaults] Standard.
 
 ## Public Methods
 
@@ -29,8 +31,8 @@ When marked as 'public', a method can be called both externally and internally, 
 
 :::note References
 
-- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#version)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol)
+- Specification details: [**LSP-1-UniversalReceiverDelegateUP.sol**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiverDelegateUP.sol.md#version)
+- Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/lsp1delegate/contracts/LSP1UniversalReceiverDelegateUP.sol)
 - Function signature: `VERSION()`
 - Function selector: `0xffa1ad74`
 
@@ -54,8 +56,8 @@ _Contract version._
 
 :::note References
 
-- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#supportsinterface)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol)
+- Specification details: [**LSP-1-UniversalReceiverDelegateUP.sol**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiverDelegateUP.sol.md#supportsinterface)
+- Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/lsp1delegate/contracts/LSP1UniversalReceiverDelegateUP.sol)
 - Function signature: `supportsInterface(bytes4)`
 - Function selector: `0x01ffc9a7`
 
@@ -85,8 +87,8 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 :::note References
 
-- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#universalreceiverdelegate)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol)
+- Specification details: [**LSP-1-UniversalReceiverDelegateUP.sol**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiverDelegateUP.sol.md#universalreceiverdelegate)
+- Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/lsp1delegate/contracts/LSP1UniversalReceiverDelegateUP.sol)
 - Function signature: `universalReceiverDelegate(address,uint256,bytes32,bytes)`
 - Function selector: `0xa245bbda`
 
@@ -96,6 +98,12 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 - If some issues occured with generating the `dataKeys` or `dataValues` the `returnedMessage` will be an error message, otherwise it will be empty.
 - If an error occured when trying to use `setDataBatch(dataKeys,dataValues)`, it will return the raw error data back to the caller.
+
+:::
+
+:::caution Warning
+
+When the data stored in the ERC725Y storage of the LSP0 contract is corrupted (\_e.g: ([LSP-5-ReceivedAssets]'s Array length not 16 bytes long, the token received is already registered in `LSP5ReceivetAssets[]`, the token being sent is not sent as full balance, etc...), the function call will still pass and return (**not revert!**) and not modify any data key on the storage of the [LSP-0-ERC725Account].
 
 :::
 
@@ -110,13 +118,16 @@ function universalReceiverDelegate(
 
 _Reacted on received notification with `typeId`._
 
-Handles two cases: Writes the received [LSP-7-DigitalAsset] or [LSP-8-IdentifiableDigitalAsset] assets into the vault storage according to the [LSP-5-ReceivedAssets] standard.
+1. Writes the data keys of the received [LSP-7-DigitalAsset], [LSP-8-IdentifiableDigitalAsset] and [LSP-9-Vault] contract addresses into the account storage according to the [LSP-5-ReceivedAssets] and [LSP-10-ReceivedVaults] Standard.
+
+2. The data keys representing an asset/vault are cleared when the asset/vault is no longer owned by the account.
 
 <blockquote>
 
 **Requirements:**
 
-- Cannot accept native tokens.
+- This contract should be allowed to use the [`setDataBatch(...)`](#setdatabatch) function in order to update the LSP5 and LSP10 Data Keys.
+- Cannot accept native tokens
 
 </blockquote>
 
@@ -179,6 +190,38 @@ Handler for LSP7 and LSP8 token recipient type id.
 
 <br/>
 
+### \_vaultSender
+
+```solidity
+function _vaultSender(address notifier) internal nonpayable returns (bytes);
+```
+
+Handler for LSP9 vault sender type id.
+
+#### Parameters
+
+| Name       |   Type    | Description             |
+| ---------- | :-------: | ----------------------- |
+| `notifier` | `address` | The LSP9 vault address. |
+
+<br/>
+
+### \_vaultRecipient
+
+```solidity
+function _vaultRecipient(address notifier) internal nonpayable returns (bytes);
+```
+
+Handler for LSP9 vault recipient type id.
+
+#### Parameters
+
+| Name       |   Type    | Description             |
+| ---------- | :-------: | ----------------------- |
+| `notifier` | `address` | The LSP9 vault address. |
+
+<br/>
+
 ### \_setDataBatchWithoutReverting
 
 :::info
@@ -194,7 +237,7 @@ function _setDataBatchWithoutReverting(
 ) internal nonpayable returns (bytes);
 ```
 
-Calls `bytes4(keccak256(setDataBatch(bytes32[],bytes[])))` without checking for `bool succes`, but it returns all the data back.
+Calls `bytes4(keccak256(setDataBatch(bytes32[],bytes[])))` without checking for `bool success`, but it returns all the data back.
 
 #### Parameters
 
@@ -211,8 +254,8 @@ Calls `bytes4(keccak256(setDataBatch(bytes32[],bytes[])))` without checking for 
 
 :::note References
 
-- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiver.md#cannotregistereoasasassets)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol)
+- Specification details: [**LSP-1-UniversalReceiverDelegateUP.sol**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-UniversalReceiverDelegateUP.sol.md#cannotregistereoasasassets)
+- Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/lsp1delegate/contracts/LSP1UniversalReceiverDelegateUP.sol)
 - Error signature: `CannotRegisterEOAsAsAssets(address)`
 - Error hash: `0xa5295345`
 

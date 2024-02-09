@@ -6,8 +6,8 @@ export const dodocConfig = {
   include: [
     'universalprofile/contracts/UniversalProfile.sol',
     'lsp0/contracts/LSP0ERC725Account.sol',
-    'contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol',
-    'contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol',
+    'lsp1delegate/contracts/LSP1UniversalReceiverDelegateUP.sol',
+    'lsp1delegate/contracts/LSP1UniversalReceiverDelegateVault.sol',
     'lsp6/contracts/LSP6KeyManager.sol',
     'lsp9/contracts/LSP9Vault.sol',
     'contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol',

@@ -12,14 +12,10 @@ import {ILSP7DigitalAsset} from "lsp7/contracts/ILSP7DigitalAsset.sol";
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {Version} from "../../Version.sol";
+import {Version} from "./Version.sol";
 
 // libraries
-import {
-    ERC165Checker
-} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP5Utils} from "lsp5/contracts/LSP5Utils.sol";
-import {LSP10Utils} from "lsp10/contracts/LSP10Utils.sol";
 
 // constants
 import {_INTERFACEID_LSP1_DELEGATE} from "lsp1/contracts/LSP1Constants.sol";
@@ -33,42 +29,33 @@ import {
     _TYPEID_LSP8_TOKENSRECIPIENT,
     _INTERFACEID_LSP8
 } from "lsp8/contracts/LSP8Constants.sol";
-import {
-    _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
-    _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
-} from "lsp9/contracts/LSP9Constants.sol";
 
 // errors
-import {CannotRegisterEOAsAsAssets} from "../LSP1Errors.sol";
+import {CannotRegisterEOAsAsAssets} from "./LSP1Errors.sol";
 
 /**
- * @title Implementation of a UniversalReceiverDelegate for the [LSP-0-ERC725Account]
+ * @title Implementation of a UniversalReceiverDelegate for the [LSP9Vault]
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
- * @dev The {LSP1UniversalReceiverDelegateUP} follows the [LSP-1-UniversalReceiver] standard and is designed
- * for [LSP-0-ERC725Account] contracts.
+ * @dev The {LSP1UniversalReceiverDelegateVault} follows the [LSP-1-UniversalReceiver] standard and is designed
+ * for [LSP9Vault] contracts.
  *
- * The {LSP1UniversalReceiverDelegateUP} is a contract called by the {universalReceiver(...)} function of the [LSP-0-ERC725Account] contract that:
+ * The {LSP1UniversalReceiverDelegateVault} is a contract called by the {universalReceiver(...)} function of the [LSP-9-Vault] contract that:
  *
  * - Writes the data keys representing assets received from type [LSP-7-DigitalAsset] and [LSP-8-IdentifiableDigitalAsset] into the account storage, and removes them when the balance is zero according to the [LSP-5-ReceivedAssets] Standard.
- * - Writes the data keys representing the owned vaults from type [LSP-9-Vault] into your account storage, and removes them when transferring ownership to other accounts according to the [LSP-10-ReceivedVaults] Standard.
- *
  */
-contract LSP1UniversalReceiverDelegateUP is
+contract LSP1UniversalReceiverDelegateVault is
     ERC165,
     Version,
     ILSP1UniversalReceiverDelegate
 {
-    using ERC165Checker for address;
-
     /**
      * @dev When receiving notifications about:
      * - LSP7 Tokens sent or received
      * - LSP8 Tokens sent or received
-     * - LSP9 Vaults sent or received
-     * The notifier should be either the LSP7 or LSP8 or LSP9 contract.
+     * The notifier should be either the LSP7 or LSP8 contract.
      *
      * We revert to avoid registering the EOA as asset (spam protection)
-     * if we received a typeId associated with tokens or vaults transfers.
+     * if we received a typeId associated with tokens transfers.
      *
      * @param notifier The address that notified.
      */
@@ -81,18 +68,14 @@ contract LSP1UniversalReceiverDelegateUP is
     }
 
     /**
-     * @dev
-     * 1. Writes the data keys of the received [LSP-7-DigitalAsset], [LSP-8-IdentifiableDigitalAsset] and [LSP-9-Vault] contract addresses into the account storage according to the [LSP-5-ReceivedAssets] and [LSP-10-ReceivedVaults] Standard.
-     * 2. The data keys representing an asset/vault are cleared when the asset/vault is no longer owned by the account.
+     * @inheritdoc ILSP1UniversalReceiverDelegate
+     * @dev Handles two cases:
+     *
+     * Writes the received [LSP-7-DigitalAsset] or [LSP-8-IdentifiableDigitalAsset] assets into the vault storage according to the [LSP-5-ReceivedAssets] standard.
      *
      * @notice Reacted on received notification with `typeId`.
      *
-     * @custom:warning When the data stored in the ERC725Y storage of the LSP0 contract is corrupted (_e.g: ([LSP-5-ReceivedAssets]'s Array length not 16 bytes long, the token received is already registered in `LSP5ReceivetAssets[]`, the token being sent is not sent as full balance, etc...), the function call will still pass and return (**not revert!**) and not modify any data key on the storage of the [LSP-0-ERC725Account].
-     *
-     * @custom:requirements
-     * - This contract should be allowed to use the {setDataBatch(...)} function in order to update the LSP5 and LSP10 Data Keys.
-     * - Cannot accept native tokens
-     *
+     * @custom:requirements Cannot accept native tokens.
      * @custom:info
      * - If some issues occured with generating the `dataKeys` or `dataValues` the `returnedMessage` will be an error message, otherwise it will be empty.
      * - If an error occured when trying to use `setDataBatch(dataKeys,dataValues)`, it will return the raw error data back to the caller.
@@ -120,14 +103,6 @@ contract LSP1UniversalReceiverDelegateUP is
 
         if (typeId == _TYPEID_LSP8_TOKENSRECIPIENT) {
             return _tokenRecipient(notifier, _INTERFACEID_LSP8);
-        }
-
-        if (typeId == _TYPEID_LSP9_OwnershipTransferred_SenderNotification) {
-            return _vaultSender(notifier);
-        }
-
-        if (typeId == _TYPEID_LSP9_OwnershipTransferred_RecipientNotification) {
-            return _vaultRecipient(notifier);
         }
 
         return "LSP1: typeId out of scope";
@@ -212,57 +187,7 @@ contract LSP1UniversalReceiverDelegateUP is
     }
 
     /**
-     * @dev Handler for LSP9 vault sender type id.
-     *
-     * @custom:info
-     * - Tries to generate LSP10 data key/value pairs for removing vault from the ERC725Y storage.
-     * - Tries to use `setDataBatch(bytes32[],bytes[])` if generated proper LSP10 data key/value pairs.
-     * - Does not revert. But returns an error message. Use off-chain lib to get even more info.
-     *
-     * @param notifier The LSP9 vault address.
-     */
-    function _vaultSender(
-        address notifier
-    ) internal notEOA(notifier) returns (bytes memory) {
-        (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
-            .generateSentVaultKeys(msg.sender, notifier);
-
-        // `generateSentVaultKeys(...)` returns empty arrays when encountering errors
-        if (dataKeys.length == 0 && dataValues.length == 0) {
-            return "LSP10: Error generating data key/value pairs";
-        }
-
-        // Set the LSP10 generated data keys on the account
-        return _setDataBatchWithoutReverting(dataKeys, dataValues);
-    }
-
-    /**
-     * @dev Handler for LSP9 vault recipient type id.
-     *
-     * @custom:info
-     * - Tries to generate LSP5 data key/value pairs for adding vault to the ERC725Y storage.
-     * - Tries to use `setDataBatch(bytes32[],bytes[])` if generated proper LSP5 data key/value pairs.
-     * - Does not revert. But returns an error message. Use off-chain lib to get even more info.
-     *
-     * @param notifier The LSP9 vault address.
-     */
-    function _vaultRecipient(
-        address notifier
-    ) internal notEOA(notifier) returns (bytes memory) {
-        (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
-            .generateReceivedVaultKeys(msg.sender, notifier);
-
-        // `generateReceivedVaultKeys(...)` returns empty arrays when encountering errors
-        if (dataKeys.length == 0 && dataValues.length == 0) {
-            return "LSP10: Error generating data key/value pairs";
-        }
-
-        // Set the LSP10 generated data keys on the account
-        return _setDataBatchWithoutReverting(dataKeys, dataValues);
-    }
-
-    /**
-     * @dev Calls `bytes4(keccak256(setDataBatch(bytes32[],bytes[])))` without checking for `bool success`, but it returns all the data back.
+     * @dev Calls `bytes4(keccak256(setDataBatch(bytes32[],bytes[])))` without checking for `bool succes`, but it returns all the data back.
      *
      * @custom:info If an the low-level transaction revert, the returned data will be forwarded. Th contract that uses this function can use the `Address` library to revert with the revert reason.
      *
