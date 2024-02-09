@@ -1,5 +1,4 @@
-// TODO: import from LSP2 Constants
-export type LSP2ArrayKey = { length: string; index: string };
+import { Verification, LSP2ArrayKey } from 'lsp2';
 
 export type LSP4DigitalAssetMetadataJSON = {
   LSP4Metadata: LSP4DigitalAssetMetadata;
@@ -14,16 +13,9 @@ export type LSP4DigitalAssetMetadata = {
   attributes: AttributeMetadata[];
 };
 
-export type AttributeMetadata = {
-  key: string;
-  value: string;
-  type: string | number | boolean;
-};
-
-export type Verification = {
-  method: string;
-  data: string;
-  source?: string;
+export type LinkMetadata = {
+  title: string;
+  url: string;
 };
 
 export type ImageMetadata = {
@@ -33,15 +25,16 @@ export type ImageMetadata = {
   url: string;
 };
 
-export type LinkMetadata = {
-  title: string;
-  url: string;
-};
-
 export type AssetMetadata = {
   verification?: Verification;
   url: string;
   fileType: string;
+};
+
+export type AttributeMetadata = {
+  key: string;
+  value: string;
+  type: string | number | boolean;
 };
 
 export const LSP4SupportedStandard = {

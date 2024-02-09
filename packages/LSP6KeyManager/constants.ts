@@ -1,5 +1,4 @@
-export type LSP2ArrayKey = { length: string; index: string };
-export type LSP6PermissionName = keyof typeof PERMISSIONS;
+import { LSP2ArrayKey } from 'lsp2';
 
 export const INTERFACE_ID_LSP6KEYMANAGER = '0x23f34c62';
 
@@ -75,3 +74,5 @@ export const PERMISSIONS = {
     SIGN:                            '0x0000000000000000000000000000000000000000000000000000000000200000', // 0010 0000 0000 0000 0000 0000
     EXECUTE_RELAY_CALL:              '0x0000000000000000000000000000000000000000000000000000000000400000', // 0100 0000 0000 0000 0000 0000
   }
+
+export type LSP6PermissionName = keyof typeof PERMISSIONS;

@@ -1,3 +1,5 @@
+import { Verification } from 'lsp2';
+
 export type LSP3ProfileMetadataJSON = {
   LSP3Profile: LSP3ProfileMetadata;
 };
@@ -10,13 +12,6 @@ export type LSP3ProfileMetadata = {
   tags?: string[];
   links?: LinkMetadata[];
   avatar?: AssetMetadata[];
-};
-
-// TODO: move to LSP2 Constants
-export type Verification = {
-  method: string;
-  data: string;
-  source?: string;
 };
 
 export type ImageMetadata = {
