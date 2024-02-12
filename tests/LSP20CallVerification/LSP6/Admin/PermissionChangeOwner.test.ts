@@ -6,7 +6,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 // constants
 import { ERC725YDataKeys, PERMISSIONS, OPERATION_TYPES } from '../../../../constants';
 
-import { LSP6KeyManager, LSP6KeyManager__factory } from '../../../../types';
+import { LSP6KeyManager, LSP6KeyManager__factory } from 'lsp6/types';
 
 // setup
 import { LSP6TestContext } from '../../../utils/context';

@@ -1,12 +1,12 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import {
-  ILSP23LinkedContractsFactory,
-  KeyManagerWithExtraParams,
-  LSP6KeyManager,
-  UniversalProfile,
-} from '../../types';
+import { KeyManagerWithExtraParams } from '../../types';
+
+import { LSP6KeyManager } from 'lsp6/types';
+import { UniversalProfile } from 'universalprofile/types';
+import { ILSP23LinkedContractsFactory } from 'lsp23/types';
+
 import { ERC725YDataKeys } from '../../constants';
 import {
   calculateProxiesAddresses,

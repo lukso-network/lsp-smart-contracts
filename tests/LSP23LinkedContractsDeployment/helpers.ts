@@ -1,6 +1,13 @@
 import { ethers } from 'hardhat';
 import { BytesLike } from 'ethers';
 import { PromiseOrValue } from '../../types/common';
+import { UniversalProfileInit__factory } from 'universalprofile/types';
+import {
+  LSP23LinkedContractsFactory__factory,
+  UniversalProfileInitPostDeploymentModule__factory,
+  UniversalProfilePostDeploymentModule__factory,
+} from 'lsp23/types';
+import { LSP6KeyManagerInit__factory } from 'lsp6/types';
 
 export async function calculateProxiesAddresses(
   salt: PromiseOrValue<BytesLike>,
@@ -60,24 +67,24 @@ export const create16BytesUint = (value: number) => {
 };
 
 export async function deployImplementationContracts() {
-  const KeyManagerInitFactory = await ethers.getContractFactory('LSP6KeyManagerInit');
+  const [deployer] = await ethers.getSigners();
+
+  const KeyManagerInitFactory = new LSP6KeyManagerInit__factory(deployer);
   const keyManagerInit = await KeyManagerInitFactory.deploy();
 
-  const UniversalProfileInitFactory = await ethers.getContractFactory('UniversalProfileInit');
+  const UniversalProfileInitFactory = new UniversalProfileInit__factory(deployer);
   const universalProfileInit = await UniversalProfileInitFactory.deploy();
 
-  const LinkedContractsFactoryFactory = await ethers.getContractFactory(
-    'LSP23LinkedContractsFactory',
-  );
+  const LinkedContractsFactoryFactory = new LSP23LinkedContractsFactory__factory(deployer);
   const LSP23LinkedContractsFactory = await LinkedContractsFactoryFactory.deploy();
 
-  const UPPostDeploymentManagerFactory = await ethers.getContractFactory(
-    'UniversalProfilePostDeploymentModule',
+  const UPPostDeploymentManagerFactory = new UniversalProfilePostDeploymentModule__factory(
+    deployer,
   );
   const upPostDeploymentModule = await UPPostDeploymentManagerFactory.deploy();
 
-  const UPInitPostDeploymentManagerFactory = await ethers.getContractFactory(
-    'UniversalProfileInitPostDeploymentModule',
+  const UPInitPostDeploymentManagerFactory = new UniversalProfileInitPostDeploymentModule__factory(
+    deployer,
   );
   const upInitPostDeploymentModule = await UPInitPostDeploymentManagerFactory.deploy();
 

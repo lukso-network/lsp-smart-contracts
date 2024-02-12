@@ -8,9 +8,8 @@ import {
   SignatureValidator__factory,
   TargetContract,
   TargetContract__factory,
-  UniversalProfile,
-  UniversalProfile__factory,
 } from '../../../types';
+import { UniversalProfile__factory, UniversalProfile } from 'universalprofile/types';
 
 // constants
 import {

@@ -2,11 +2,8 @@ import { expect } from 'chai';
 import { ethers, network, artifacts } from 'hardhat';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import {
-  LSP0ERC725Account,
-  UPWithInstantAcceptOwnership__factory,
-  UPWithInstantAcceptOwnership,
-} from '../../types';
+import { UPWithInstantAcceptOwnership__factory, UPWithInstantAcceptOwnership } from '../../types';
+import { LSP0ERC725Account } from 'lsp0/types';
 
 // constants
 import { OPERATION_TYPES } from '../../constants';

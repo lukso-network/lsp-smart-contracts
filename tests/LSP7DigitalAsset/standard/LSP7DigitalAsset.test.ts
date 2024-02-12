@@ -1,7 +1,8 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LSP7Tester__factory, LSP7DigitalAsset } from '../../../types';
+import { LSP7Tester__factory } from '../../../types';
+import { LSP7DigitalAsset } from 'lsp7/types';
 
 import {
   getNamedAccounts,

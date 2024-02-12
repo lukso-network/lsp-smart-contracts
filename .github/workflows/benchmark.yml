@@ -40,7 +40,9 @@ jobs:
         run: npm ci
 
       - name: 🏗️ Build contract artifacts
-        run: npx hardhat compile
+        run: |
+          npm run build
+          npm run build:turbo
 
       - name: 🧪 Run Benchmark tests
         # Rename the file to be able to generate benchmark JSON report

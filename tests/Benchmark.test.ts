@@ -7,10 +7,9 @@ import { LSP7Mintable, LSP7Mintable__factory } from 'lsp7/types';
 import {
   LSP1UniversalReceiverDelegateUP,
   LSP1UniversalReceiverDelegateUP__factory,
-  LSP6KeyManager__factory,
-  UniversalProfile,
-  UniversalProfile__factory,
 } from '../types';
+import { UniversalProfile, UniversalProfile__factory } from 'universalprofile/types';
+import { LSP6KeyManager__factory } from 'lsp6/types';
 
 import { LSP8Mintable, LSP8Mintable__factory } from 'lsp8/types';
 

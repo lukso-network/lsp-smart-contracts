@@ -1,11 +1,10 @@
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
 
-import {
-  UniversalProfile__factory,
-  LSP6KeyManager__factory,
-  KeyManagerInternalTester__factory,
-} from '../../types';
+import { KeyManagerInternalTester__factory } from '../../types';
+
+import { UniversalProfile__factory } from 'universalprofile/types';
+import { LSP6KeyManager__factory } from 'lsp6/types';
 
 import { LSP6TestContext } from '../utils/context';
 

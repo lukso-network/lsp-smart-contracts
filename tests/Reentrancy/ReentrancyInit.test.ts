@@ -1,7 +1,8 @@
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
 
-import { UniversalProfileInit__factory, LSP6KeyManagerInit__factory } from '../../types';
+import { UniversalProfileInit__factory } from 'universalprofile/types';
+import { LSP6KeyManagerInit__factory } from 'lsp6/types';
 
 import { deployProxy } from '../utils/fixtures';
 import { LSP6TestContext } from '../utils/context';

@@ -24,4 +24,5 @@ lsp16/=packages/LSP16UniversalFactory/
 lsp17contractextension/=packages/LSP17ContractExtension/
 lsp17/=packages/LSP17Extensions
 lsp20/=packages/LSP20CallVerification/
+lsp23/=packages/LSP23LinkedContractsDeployment/
 lsp25/=packages/LSP25ExecuteRelayCall/
