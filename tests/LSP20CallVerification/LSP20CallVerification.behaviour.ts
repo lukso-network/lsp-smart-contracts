@@ -5,8 +5,6 @@ import { FakeContract, smock } from '@defi-wonderland/smock';
 
 // types
 import {
-  UniversalProfile,
-  UniversalProfile__factory,
   NotImplementingVerifyCall,
   NotImplementingVerifyCall__factory,
   ImplementingFallback,
@@ -23,6 +21,7 @@ import {
   OwnerWithURD,
   OwnerWithURD__factory,
 } from '../../types';
+import { UniversalProfile, UniversalProfile__factory } from 'universalprofile/types';
 
 // constants
 import { LSP1_TYPE_IDS, LSP20_SUCCESS_VALUES, OPERATION_TYPES } from '../../constants';

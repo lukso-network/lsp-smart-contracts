@@ -11,11 +11,10 @@ import {
   TargetContract__factory,
   TargetPayableContract,
   TargetPayableContract__factory,
-  UniversalProfile__factory,
-  UniversalProfile,
   GraffitiEventExtension__factory,
   GraffitiEventExtension,
 } from '../../../../types';
+import { UniversalProfile__factory, UniversalProfile } from 'universalprofile/types';
 
 // constants
 import {
