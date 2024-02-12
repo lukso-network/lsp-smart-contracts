@@ -3,14 +3,11 @@ import { expect } from 'chai';
 import { BytesLike } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
+import { LSP0ERC725Account__factory } from 'lsp0/types';
+import { LSP6KeyManager, LSP6KeyManager__factory } from 'lsp6/types';
 import { LSP7Mintable, LSP7Mintable__factory } from 'lsp7/types';
 import { LSP8Mintable } from 'lsp8/types';
-import {
-  LSP6KeyManager,
-  LSP6KeyManager__factory,
-  LSP7Tester__factory,
-  LSP0ERC725Account__factory,
-} from '../../types';
+import { LSP7Tester__factory } from '../../types';
 
 import {
   ERC725YDataKeys,
