@@ -37,6 +37,7 @@
     "./CONTRIBUTING.md",
     "./LICENSE"
   ],
+  "type": "module",
   "main": "./dist/constants.cjs",
   "module": "./dist/constants.mjs",
   "typings": "./dist/constants.d.ts",

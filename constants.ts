@@ -4,8 +4,6 @@
  */
 export * from './contracts';
 
-import { INTERFACE_ID as ERC725_INTERFACE_IDS } from '@erc725/smart-contracts/constants';
-
 import { INTERFACE_ID_LSP0ERC725Account, LSP0_TYPE_IDS } from 'lsp0';
 import { INTERFACE_ID_LSP1, LSP1DataKeys } from 'lsp1';
 import { INTERFACE_ID_LSP1DELEGATE } from 'lsp1delegate';
@@ -45,8 +43,8 @@ export const INTERFACE_IDS = {
   ERC721Metadata: '0x5b5e139f',
   ERC777: '0xe58e113c',
   ERC1155: '0xd9b67a26',
-  ERC725X: ERC725_INTERFACE_IDS.ERC725X,
-  ERC725Y: ERC725_INTERFACE_IDS.ERC725Y,
+  ERC725X: '0x7545acac',
+  ERC725Y: '0x629aa694',
   LSP0ERC725Account: INTERFACE_ID_LSP0ERC725Account,
   LSP1UniversalReceiver: INTERFACE_ID_LSP1,
   LSP1UniversalReceiverDelegate: INTERFACE_ID_LSP1DELEGATE,

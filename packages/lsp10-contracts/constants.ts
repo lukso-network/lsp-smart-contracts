@@ -1,12 +1,12 @@
 import { LSP2ArrayKey } from 'lsp2';
 
-export const LSP12DataKeys = {
-  // LSP12IssuedAssetsMap:<address>  + bytes2(0)
-  LSP12IssuedAssetsMap: '0x74ac2555c10b9349e78f0000',
+export const LSP10DataKeys = {
+  // keccak256('LSP10VaultsMap') + bytes2(0)
+  LSP10VaultsMap: '0x192448c3c0f88c7f238c0000',
 
-  // keccak256('LSP12IssuedAssets[]')
-  'LSP12IssuedAssets[]': {
-    length: '0x7c8c3416d6cda87cd42c71ea1843df28ac4850354f988d55ee2eaa47b6dc05cd',
-    index: '0x7c8c3416d6cda87cd42c71ea1843df28',
+  // keccak256('LSP10Vaults[]')
+  'LSP10Vaults[]': {
+    length: '0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06',
+    index: '0x55482936e01da86729a45d2b87a6b1d3',
   } as LSP2ArrayKey,
 };
