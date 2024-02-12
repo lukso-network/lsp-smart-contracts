@@ -1,10 +1,8 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import {
-  LSP0ERC725Account,
-  UniversalProfileInit__factory,
-  UniversalReceiverTester__factory,
-} from '../types';
+import { UniversalReceiverTester__factory } from '../types';
+import { UniversalProfileInit__factory } from 'universalprofile/types';
+import { LSP0ERC725Account } from 'lsp0/types';
 import { deployProxy } from './utils/fixtures';
 
 import {

@@ -4,7 +4,6 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 // types
 import {
-  UniversalProfile,
   GenericExecutor__factory,
   ERC1271MaliciousMock__factory,
   UniversalReceiverDelegateDataLYX__factory,
@@ -14,6 +13,7 @@ import {
   OwnerWithURD__factory,
   OwnerWithURD,
 } from '../types';
+import { UniversalProfile } from 'universalprofile/types';
 
 // helpers
 import { LSP1_HOOK_PLACEHOLDER, abiCoder, getRandomAddresses } from './utils/helpers';
