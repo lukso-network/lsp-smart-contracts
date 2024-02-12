@@ -12,12 +12,12 @@ import {
 // constants
 import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
-} from "lsp1/contracts/LSP1Constants.sol";
+} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
     ALL_REGULAR_PERMISSIONS
-} from "lsp6/contracts/LSP6Constants.sol";
+} from "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
 
 contract LSP20ReentrantContractBatch {
     event ValueReceived(uint256);

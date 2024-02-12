@@ -1,5 +1,5 @@
 {
-  "name": "lsp0",
+  "name": "@lukso/lsp0-contracts",
   "version": "0.12.1",
   "description": "Package for the LSP0ERC725Account standard",
   "license": "Apache-2.0",
@@ -24,11 +24,11 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "lsp1": "*",
-    "lsp2": "*",
-    "lsp14": "*",
-    "lsp17contractextension": "*",
-    "lsp20": "*"
+    "@lukso/lsp1-contracts": "*",
+    "@lukso/lsp2-contracts": "*",
+    "@lukso/lsp14-contracts": "*",
+    "@lukso/lsp17contractextension-contracts": "*",
+    "@lukso/lsp20-contracts": "*"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",

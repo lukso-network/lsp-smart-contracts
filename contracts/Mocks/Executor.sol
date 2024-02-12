@@ -8,13 +8,17 @@ import {
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {ILSP6KeyManager} from "lsp6/contracts/ILSP6KeyManager.sol";
+import {
+    ILSP6KeyManager
+} from "@lukso/lsp6-contracts/contracts/ILSP6KeyManager.sol";
 
 // modules
 import {
     UniversalProfile
-} from "universalprofile/contracts/UniversalProfile.sol";
-import {LSP6KeyManager} from "lsp6/contracts/LSP6KeyManager.sol";
+} from "@lukso/universalprofile-contracts/contracts/UniversalProfile.sol";
+import {
+    LSP6KeyManager
+} from "@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol";
 
 // constants
 import {

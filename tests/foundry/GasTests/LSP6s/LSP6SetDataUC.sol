@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 
-import "lsp6/contracts/LSP6KeyManager.sol";
+import "@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol";
 
 contract LSP6SetDataUnrestrictedController is LSP6KeyManager {
     constructor(address target_) LSP6KeyManager(target_) {}

@@ -12,13 +12,15 @@ import {
 import {ILSP6KeyManager as ILSP6} from "./ILSP6KeyManager.sol";
 import {
     ILSP20CallVerifier as ILSP20
-} from "lsp20/contracts/ILSP20CallVerifier.sol";
+} from "@lukso/lsp20-contracts/contracts/ILSP20CallVerifier.sol";
 import {
     ILSP25ExecuteRelayCall as ILSP25
-} from "lsp25/contracts/ILSP25ExecuteRelayCall.sol";
+} from "@lukso/lsp25-contracts/contracts/ILSP25ExecuteRelayCall.sol";
 
 // modules
-import {ILSP14Ownable2Step} from "lsp14/contracts/ILSP14Ownable2Step.sol";
+import {
+    ILSP14Ownable2Step
+} from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {LSP6SetDataModule} from "./LSP6Modules/LSP6SetDataModule.sol";
@@ -29,7 +31,7 @@ import {
 import {LSP6OwnershipModule} from "./LSP6Modules/LSP6OwnershipModule.sol";
 import {
     LSP25MultiChannelNonce
-} from "lsp25/contracts/LSP25MultiChannelNonce.sol";
+} from "@lukso/lsp25-contracts/contracts/LSP25MultiChannelNonce.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -68,8 +70,10 @@ import {
     _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITHOUT_POST_VERIFICATION,
     _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITH_POST_VERIFICATION,
     _LSP20_VERIFY_CALL_RESULT_SUCCESS_VALUE
-} from "lsp20/contracts/LSP20Constants.sol";
-import {_INTERFACEID_LSP25} from "lsp25/contracts/LSP25Constants.sol";
+} from "@lukso/lsp20-contracts/contracts/LSP20Constants.sol";
+import {
+    _INTERFACEID_LSP25
+} from "@lukso/lsp25-contracts/contracts/LSP25Constants.sol";
 
 /**
  * @title Core implementation of the LSP6 Key Manager standard.

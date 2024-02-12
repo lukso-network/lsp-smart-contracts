@@ -1,5 +1,5 @@
 {
-  "name": "lsp14",
+  "name": "@lukso/lsp14-contracts",
   "version": "0.12.1",
   "description": "Package for the LSP14 Ownable 2 Step standard",
   "license": "Apache-2.0",
@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
-    "lsp1": "*"
+    "@lukso/lsp1-contracts": "*"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",

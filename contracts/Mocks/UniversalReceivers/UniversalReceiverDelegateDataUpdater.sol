@@ -2,12 +2,16 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {ILSP6KeyManager} from "lsp6/contracts/ILSP6KeyManager.sol";
-import {LSP14Ownable2Step} from "lsp14/contracts/LSP14Ownable2Step.sol";
+import {
+    ILSP6KeyManager
+} from "@lukso/lsp6-contracts/contracts/ILSP6KeyManager.sol";
+import {
+    LSP14Ownable2Step
+} from "@lukso/lsp14-contracts/contracts/LSP14Ownable2Step.sol";
 
 import {
     ILSP1UniversalReceiverDelegate
-} from "lsp1/contracts/ILSP1UniversalReceiverDelegate.sol";
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 // modules
 import {
@@ -15,9 +19,13 @@ import {
 } from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // constants
-import {_TYPEID_LSP7_TOKENSSENDER} from "lsp7/contracts/LSP7Constants.sol";
+import {
+    _TYPEID_LSP7_TOKENSSENDER
+} from "@lukso/lsp7-contracts/contracts/LSP7Constants.sol";
 
-import {_INTERFACEID_LSP1_DELEGATE} from "lsp1/contracts/LSP1Constants.sol";
+import {
+    _INTERFACEID_LSP1_DELEGATE
+} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 
 contract UniversalReceiverDelegateDataUpdater is
     ERC165Storage,

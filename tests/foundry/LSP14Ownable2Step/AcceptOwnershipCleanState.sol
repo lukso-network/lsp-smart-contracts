@@ -3,9 +3,13 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 import "@erc725/smart-contracts/contracts/constants.sol";
-import {LSP0ERC725Account} from "lsp0/contracts/LSP0ERC725Account.sol";
+import {
+    LSP0ERC725Account
+} from "@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol";
 
-import {LSP20EOACannotVerifyCall} from "lsp20/contracts/LSP20Errors.sol";
+import {
+    LSP20EOACannotVerifyCall
+} from "@lukso/lsp20-contracts/contracts/LSP20Errors.sol";
 
 contract LSP0Implementation is LSP0ERC725Account {
     constructor(address _addr) LSP0ERC725Account(_addr) {}

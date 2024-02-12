@@ -5,10 +5,10 @@ pragma solidity ^0.8.4;
 // modules
 import {
     LSP8IdentifiableDigitalAssetInitAbstract
-} from "lsp8/contracts/LSP8IdentifiableDigitalAssetInitAbstract.sol";
+} from "@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAssetInitAbstract.sol";
 import {
     LSP8CappedSupplyInitAbstract
-} from "lsp8/contracts/extensions/LSP8CappedSupplyInitAbstract.sol";
+} from "@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupplyInitAbstract.sol";
 
 contract LSP8CappedSupplyInitTester is LSP8CappedSupplyInitAbstract {
     function initialize(

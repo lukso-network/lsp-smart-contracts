@@ -2,11 +2,13 @@
 pragma solidity ^0.8.4;
 
 // libraries
-import {LSP6Utils} from "lsp6/contracts/LSP6Utils.sol";
+import {LSP6Utils} from "@lukso/lsp6-contracts/contracts/LSP6Utils.sol";
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
-import {LSP6KeyManager} from "lsp6/contracts/LSP6KeyManager.sol";
+import {
+    LSP6KeyManager
+} from "@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol";
 
 /**
  * Helper contract to test internal functions of the KeyManager

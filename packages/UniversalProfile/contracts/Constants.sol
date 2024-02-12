@@ -9,6 +9,6 @@ import {
     _LSP3_SUPPORTED_STANDARDS_KEY,
     _LSP3_SUPPORTED_STANDARDS_VALUE,
     _LSP3_PROFILE_KEY
-} from "lsp3/contracts/LSP3Constants.sol";
+} from "@lukso/lsp3-contracts/contracts/LSP3Constants.sol";
 
 // solhint-enable

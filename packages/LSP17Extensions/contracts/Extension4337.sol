@@ -6,17 +6,21 @@ import {IAccount} from "@account-abstraction/contracts/interfaces/IAccount.sol";
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {ILSP20CallVerifier} from "lsp20/contracts/ILSP20CallVerifier.sol";
+import {
+    ILSP20CallVerifier
+} from "@lukso/lsp20-contracts/contracts/ILSP20CallVerifier.sol";
 
 // modules
-import {LSP14Ownable2Step} from "lsp14/contracts/LSP14Ownable2Step.sol";
+import {
+    LSP14Ownable2Step
+} from "@lukso/lsp14-contracts/contracts/LSP14Ownable2Step.sol";
 import {
     LSP17Extension
-} from "lsp17contractextension/contracts/LSP17Extension.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extension.sol";
 
 // librairies
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import {LSP6Utils} from "lsp6/contracts/LSP6Utils.sol";
+import {LSP6Utils} from "@lukso/lsp6-contracts/contracts/LSP6Utils.sol";
 
 // constants
 import {

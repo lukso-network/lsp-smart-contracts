@@ -6,28 +6,28 @@ import {
     _TYPEID_LSP0_OwnershipTransferStarted,
     _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP0_OwnershipTransferred_RecipientNotification
-} from "lsp0/contracts/LSP0Constants.sol";
+} from "@lukso/lsp0-contracts/contracts/LSP0Constants.sol";
 import {
     _TYPEID_LSP7_TOKENSSENDER,
     _TYPEID_LSP7_TOKENSRECIPIENT,
     _TYPEID_LSP7_TOKENOPERATOR
-} from "lsp7/contracts/LSP7Constants.sol";
+} from "@lukso/lsp7-contracts/contracts/LSP7Constants.sol";
 import {
     _TYPEID_LSP8_TOKENSSENDER,
     _TYPEID_LSP8_TOKENSRECIPIENT,
     _TYPEID_LSP8_TOKENOPERATOR
-} from "lsp8/contracts/LSP8Constants.sol";
+} from "@lukso/lsp8-contracts/contracts/LSP8Constants.sol";
 import {
     _TYPEID_LSP9_VALUE_RECEIVED,
     _TYPEID_LSP9_OwnershipTransferStarted,
     _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
-} from "lsp9/contracts/LSP9Constants.sol";
+} from "@lukso/lsp9-contracts/contracts/LSP9Constants.sol";
 import {
     _TYPEID_LSP14_OwnershipTransferStarted,
     _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP14_OwnershipTransferred_RecipientNotification
-} from "lsp14/contracts/LSP14Constants.sol";
+} from "@lukso/lsp14-contracts/contracts/LSP14Constants.sol";
 
 error LSP1TypeIdHashIsWrong(bytes32 typeIdHash, string typeIdname);
 

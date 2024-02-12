@@ -21,7 +21,10 @@ import {
   OwnerWithURD,
   OwnerWithURD__factory,
 } from '../../types';
-import { UniversalProfile, UniversalProfile__factory } from 'universalprofile/types';
+import {
+  UniversalProfile,
+  UniversalProfile__factory,
+} from '@lukso/universalprofile-contracts/types';
 
 // constants
 import { LSP1_TYPE_IDS, LSP20_SUCCESS_VALUES, OPERATION_TYPES } from '../../constants';

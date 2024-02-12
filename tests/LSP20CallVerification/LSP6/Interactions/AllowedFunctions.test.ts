@@ -2,8 +2,8 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-import { LSP7Mintable, LSP7Mintable__factory } from 'lsp7/types';
-import { LSP8Mintable, LSP8Mintable__factory } from 'lsp8/types';
+import { LSP7Mintable, LSP7Mintable__factory } from '@lukso/lsp7-contracts/types';
+import { LSP8Mintable, LSP8Mintable__factory } from '@lukso/lsp8-contracts/types';
 import { TargetContract, TargetContract__factory } from '../../../../types';
 
 // constants

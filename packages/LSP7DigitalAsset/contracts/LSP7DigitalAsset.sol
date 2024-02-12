@@ -8,14 +8,14 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {
     LSP4DigitalAssetMetadata
-} from "lsp4/contracts/LSP4DigitalAssetMetadata.sol";
+} from "@lukso/lsp4-contracts/contracts/LSP4DigitalAssetMetadata.sol";
 import {LSP7DigitalAssetCore} from "./LSP7DigitalAssetCore.sol";
 import {
     LSP17Extendable
-} from "lsp17contractextension/contracts/LSP17Extendable.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
 
 // libraries
-import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
+import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 
 // constants
 import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";
@@ -23,7 +23,7 @@ import {LSP7TokenContractCannotHoldValue} from "./LSP7Errors.sol";
 
 import {
     _LSP17_EXTENSION_PREFIX
-} from "lsp17contractextension/contracts/LSP17Constants.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
 
 // errors
 
@@ -31,7 +31,7 @@ import {
     NoExtensionFoundForFunctionSelector,
     InvalidFunctionSelector,
     InvalidExtensionAddress
-} from "lsp17contractextension/contracts/LSP17Errors.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Errors.sol";
 
 /**
  * @title Implementation of a LSP7 Digital Asset, a contract that represents a fungible token.

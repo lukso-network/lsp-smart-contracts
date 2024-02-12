@@ -1,5 +1,5 @@
 {
-  "name": "lsp1delegate",
+  "name": "@lukso/lsp1delegate-contracts",
   "version": "0.12.1",
   "description": "Package for the LSP1 Universal Receiver Delegate standard",
   "license": "Apache-2.0",
@@ -24,12 +24,12 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "lsp1": "*",
-    "lsp5": "*",
-    "lsp7": "*",
-    "lsp8": "*",
-    "lsp9": "*",
-    "lsp10": "*"
+    "@lukso/lsp1-contracts": "*",
+    "@lukso/lsp5-contracts": "*",
+    "@lukso/lsp7-contracts": "*",
+    "@lukso/lsp8-contracts": "*",
+    "@lukso/lsp9-contracts": "*",
+    "@lukso/lsp10-contracts": "*"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",

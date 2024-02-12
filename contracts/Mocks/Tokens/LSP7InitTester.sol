@@ -5,10 +5,10 @@ pragma solidity ^0.8.4;
 // modules
 import {
     LSP7DigitalAssetInitAbstract
-} from "lsp7/contracts/LSP7DigitalAssetInitAbstract.sol";
+} from "@lukso/lsp7-contracts/contracts/LSP7DigitalAssetInitAbstract.sol";
 import {
     LSP7BurnableInitAbstract
-} from "lsp7/contracts/extensions/LSP7BurnableInitAbstract.sol";
+} from "@lukso/lsp7-contracts/contracts/extensions/LSP7BurnableInitAbstract.sol";
 
 contract LSP7InitTester is
     LSP7DigitalAssetInitAbstract,

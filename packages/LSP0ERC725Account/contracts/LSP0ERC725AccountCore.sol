@@ -6,11 +6,11 @@ import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP0ERC725Account} from "./ILSP0ERC725Account.sol";
 import {
     ILSP1UniversalReceiver
-} from "lsp1/contracts/ILSP1UniversalReceiver.sol";
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
 
 import {
     ILSP1UniversalReceiverDelegate as ILSP1Delegate
-} from "lsp1/contracts/ILSP1UniversalReceiverDelegate.sol";
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -18,8 +18,8 @@ import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {LSP1Utils} from "lsp1/contracts/LSP1Utils.sol";
-import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
+import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
+import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
@@ -27,11 +27,15 @@ import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {LSP14Ownable2Step} from "lsp14/contracts/LSP14Ownable2Step.sol";
+import {
+    LSP14Ownable2Step
+} from "@lukso/lsp14-contracts/contracts/LSP14Ownable2Step.sol";
 import {
     LSP17Extendable
-} from "lsp17contractextension/contracts/LSP17Extendable.sol";
-import {LSP20CallVerification} from "lsp20/contracts/LSP20CallVerification.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
+import {
+    LSP20CallVerification
+} from "@lukso/lsp20-contracts/contracts/LSP20CallVerification.sol";
 
 // constants
 import {
@@ -49,15 +53,17 @@ import {
     _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-} from "lsp1/contracts/LSP1Constants.sol";
-import {_INTERFACEID_LSP14} from "lsp14/contracts/LSP14Constants.sol";
+} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
+import {
+    _INTERFACEID_LSP14
+} from "@lukso/lsp14-contracts/contracts/LSP14Constants.sol";
 
 import {
     _LSP17_EXTENSION_PREFIX
-} from "lsp17contractextension/contracts/LSP17Constants.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
 import {
     _INTERFACEID_LSP20_CALL_VERIFICATION
-} from "lsp20/contracts/LSP20Constants.sol";
+} from "@lukso/lsp20-contracts/contracts/LSP20Constants.sol";
 
 // errors
 import {
@@ -66,7 +72,7 @@ import {
 } from "@erc725/smart-contracts/contracts/errors.sol";
 import {
     NoExtensionFoundForFunctionSelector
-} from "lsp17contractextension/contracts/LSP17Errors.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Errors.sol";
 
 /**
  * @title The Core Implementation of [LSP-0-ERC725Account] Standard.

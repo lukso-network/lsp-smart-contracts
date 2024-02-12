@@ -3,7 +3,7 @@ pragma solidity ^0.8.4;
 
 // libraries
 import "forge-std/Test.sol";
-import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
+import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 
 // modules
 import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
@@ -23,10 +23,10 @@ import {
     _ALLOWEDCALLS_CALL,
     _ALLOWEDCALLS_STATICCALL,
     _ALLOWEDCALLS_DELEGATECALL
-} from "lsp6/contracts/LSP6Constants.sol";
+} from "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
 
 // errors to test
-import {NotAllowedCall} from "lsp6/contracts/LSP6Errors.sol";
+import {NotAllowedCall} from "@lukso/lsp6-contracts/contracts/LSP6Errors.sol";
 
 // mock contracts for testing
 import {FallbackInitializer} from "../contracts/Mocks/FallbackInitializer.sol";

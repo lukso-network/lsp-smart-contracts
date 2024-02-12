@@ -1,5 +1,5 @@
 {
-  "name": "lsp9",
+  "name": "@lukso/lsp9-contracts",
   "version": "0.12.1",
   "description": "Package for the LSP9 Vault standard",
   "license": "Apache-2.0",
@@ -24,8 +24,8 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "lsp1": "*",
-    "lsp6": "*"
+    "@lukso/lsp1-contracts": "*",
+    "@lukso/lsp6-contracts": "*"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",

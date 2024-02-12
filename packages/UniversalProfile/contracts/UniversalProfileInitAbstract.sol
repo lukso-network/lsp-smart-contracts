@@ -4,13 +4,13 @@ pragma solidity ^0.8.4;
 // modules
 import {
     LSP0ERC725AccountInitAbstract
-} from "lsp0/contracts/LSP0ERC725AccountInitAbstract.sol";
+} from "@lukso/lsp0-contracts/contracts/LSP0ERC725AccountInitAbstract.sol";
 
 // constants
 import {
     _LSP3_SUPPORTED_STANDARDS_KEY,
     _LSP3_SUPPORTED_STANDARDS_VALUE
-} from "lsp3/contracts/LSP3Constants.sol";
+} from "@lukso/lsp3-contracts/contracts/LSP3Constants.sol";
 
 /**
  * @title Inheritable Proxy implementation of a LUKSO's Universal Profile based on LSP3

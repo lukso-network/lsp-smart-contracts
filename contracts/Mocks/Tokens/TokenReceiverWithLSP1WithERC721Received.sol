@@ -7,7 +7,7 @@ import {
 } from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 import {
     ILSP1UniversalReceiver
-} from "lsp1/contracts/ILSP1UniversalReceiver.sol";
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
 
 // modules
 import {
@@ -15,7 +15,9 @@ import {
 } from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // constants
-import {_INTERFACEID_LSP1} from "lsp1/contracts/LSP1Constants.sol";
+import {
+    _INTERFACEID_LSP1
+} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 
 contract TokenReceiverWithLSP1WithERC721Received is
     ERC165Storage,

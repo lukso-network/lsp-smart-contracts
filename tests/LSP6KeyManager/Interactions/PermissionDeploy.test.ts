@@ -5,7 +5,7 @@ import { calculateCreate2 } from 'eth-create2-calculator';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import { TargetContract__factory } from '../../../types';
-import { UniversalProfile__factory } from 'universalprofile/types';
+import { UniversalProfile__factory } from '@lukso/universalprofile-contracts/types';
 
 // constants
 import {

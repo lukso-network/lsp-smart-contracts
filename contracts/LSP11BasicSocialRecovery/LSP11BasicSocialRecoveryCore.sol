@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import {ILSP11BasicSocialRecovery} from "./ILSP11BasicSocialRecovery.sol";
 
 // libraries
-import {LSP6Utils} from "lsp6/contracts/LSP6Utils.sol";
+import {LSP6Utils} from "@lukso/lsp6-contracts/contracts/LSP6Utils.sol";
 
 // modules
 import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
@@ -18,7 +18,9 @@ import {
 } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // constants
-import {ALL_REGULAR_PERMISSIONS} from "lsp6/contracts/LSP6Constants.sol";
+import {
+    ALL_REGULAR_PERMISSIONS
+} from "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
 import {_INTERFACEID_LSP11} from "./LSP11Constants.sol";
 import {
     CallerIsNotGuardian,

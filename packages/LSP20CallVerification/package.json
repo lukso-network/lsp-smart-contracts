@@ -1,5 +1,5 @@
 {
-  "name": "lsp20",
+  "name": "@lukso/lsp20-contracts",
   "version": "0.12.1",
   "description": "Package for the LSP20 Call Verification standard",
   "license": "Apache-2.0",
@@ -21,7 +21,6 @@
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
   },
-  "dependencies": {},
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
     "@typechain/ethers-v5": "^10.2.0",

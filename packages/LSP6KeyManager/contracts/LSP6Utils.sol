@@ -8,7 +8,7 @@ import {
 import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 
 // libraries
-import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
+import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 
 // constants
 import {

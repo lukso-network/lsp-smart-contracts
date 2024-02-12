@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "lsp6/contracts/LSP6KeyManager.sol";
+import "@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol";
 
 contract LSP6ExecuteRestrictedController is LSP6KeyManager {
     constructor(address target_) LSP6KeyManager(target_) {}

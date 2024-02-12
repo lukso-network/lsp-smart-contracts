@@ -6,7 +6,7 @@ import {
   shouldBehaveLikeLSP14,
 } from '../LSP14Ownable2Step/LSP14Ownable2Step.behaviour';
 
-import { LSP9Vault__factory } from 'lsp9/types';
+import { LSP9Vault__factory } from '@lukso/lsp9-contracts/types';
 import { UniversalProfile, LSP6KeyManager } from '../../types';
 
 import {

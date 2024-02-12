@@ -1,5 +1,5 @@
 {
-  "name": "lsp4",
+  "name": "@lukso/lsp4-contracts",
   "version": "0.12.1",
   "description": "Package for the LSP4 Digital Asset Metadata standard",
   "license": "Apache-2.0",

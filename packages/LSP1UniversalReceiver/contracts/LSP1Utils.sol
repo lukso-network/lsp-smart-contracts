@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
+import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 
 // constants
 import {ILSP1UniversalReceiver as ILSP1} from "./ILSP1UniversalReceiver.sol";

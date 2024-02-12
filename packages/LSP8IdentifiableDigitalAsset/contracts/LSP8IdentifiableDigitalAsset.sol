@@ -11,18 +11,18 @@ import {
 } from "./LSP8IdentifiableDigitalAssetCore.sol";
 import {
     LSP4DigitalAssetMetadata
-} from "lsp4/contracts/LSP4DigitalAssetMetadata.sol";
+} from "@lukso/lsp4-contracts/contracts/LSP4DigitalAssetMetadata.sol";
 
 import {
     LSP4DigitalAssetMetadataCore
-} from "lsp4/contracts/LSP4DigitalAssetMetadataCore.sol";
+} from "@lukso/lsp4-contracts/contracts/LSP4DigitalAssetMetadataCore.sol";
 
 import {
     LSP17Extendable
-} from "lsp17contractextension/contracts/LSP17Extendable.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
 
 // libraries
-import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
+import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 
 // constants
 import {_INTERFACEID_LSP8, _LSP8_TOKENID_FORMAT_KEY} from "./LSP8Constants.sol";
@@ -35,7 +35,7 @@ import {
 
 import {
     _LSP17_EXTENSION_PREFIX
-} from "lsp17contractextension/contracts/LSP17Constants.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
 
 // errors
 
@@ -43,7 +43,7 @@ import {
     NoExtensionFoundForFunctionSelector,
     InvalidFunctionSelector,
     InvalidExtensionAddress
-} from "lsp17contractextension/contracts/LSP17Errors.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Errors.sol";
 
 /**
  * @title Implementation of a LSP8 Identifiable Digital Asset, a contract that represents a non-fungible token.

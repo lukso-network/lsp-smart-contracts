@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { UniversalReceiverTester__factory } from '../types';
-import { UniversalProfile__factory } from 'universalprofile/types';
+import { UniversalProfile__factory } from '@lukso/universalprofile-contracts/types';
 
 import {
   LSP1TestContext,

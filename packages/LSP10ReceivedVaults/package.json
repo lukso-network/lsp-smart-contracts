@@ -1,5 +1,5 @@
 {
-  "name": "lsp10",
+  "name": "@lukso/lsp10-contracts",
   "version": "0.12.1",
   "description": "Package for the LSP10 Received Vaults standard",
   "license": "Apache-2.0",
@@ -35,7 +35,7 @@
     "hardhat-deploy": "^0.11.25",
     "hardhat-gas-reporter": "^1.0.9",
     "hardhat-packager": "^1.4.2",
-    "lsp2": "*",
+    "@lukso/lsp2-contracts": "*",
     "solhint": "^3.3.6",
     "ts-node": "^10.2.0",
     "tsconfig": "*",

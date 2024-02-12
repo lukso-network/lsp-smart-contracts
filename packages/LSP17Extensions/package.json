@@ -1,5 +1,5 @@
 {
-  "name": "lsp17",
+  "name": "@lukso/lsp17-contracts",
   "version": "0.12.1",
   "description": "Package for the LSP17 extensions",
   "license": "Apache-2.0",
@@ -25,9 +25,9 @@
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
     "@account-abstraction/contracts": "^0.6.0",
-    "lsp14": "*",
-    "lsp17contractextension": "*",
-    "lsp20": "*"
+    "@lukso/lsp14-contracts": "*",
+    "@lukso/lsp17contractextension-contracts": "*",
+    "@lukso/lsp20-contracts": "*"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",

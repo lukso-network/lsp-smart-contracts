@@ -6,7 +6,7 @@ import {
 } from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 import {
     LSP17Extension
-} from "lsp17contractextension/contracts/LSP17Extension.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extension.sol";
 
 /**
  * @dev LSP17 Extension that can be attached to a LSP17Extendable contract

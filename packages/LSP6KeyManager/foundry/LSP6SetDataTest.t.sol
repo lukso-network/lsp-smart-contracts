@@ -3,19 +3,23 @@ pragma solidity ^0.8.4;
 
 import "forge-std/Test.sol";
 import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
-import {LSP6KeyManager} from "lsp6/contracts/LSP6KeyManager.sol";
-import {ILSP14Ownable2Step} from "lsp14/contracts/ILSP14Ownable2Step.sol";
+import {
+    LSP6KeyManager
+} from "@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol";
+import {
+    ILSP14Ownable2Step
+} from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-import {LSP2Utils} from "lsp2/contracts/LSP2Utils.sol";
-import {LSP6Utils} from "lsp6/contracts/LSP6Utils.sol";
+import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
+import {LSP6Utils} from "@lukso/lsp6-contracts/contracts/LSP6Utils.sol";
 
-import "lsp1/contracts/LSP1Constants.sol";
-import "lsp6/contracts/LSP6Constants.sol";
-import "lsp17contractextension/contracts/LSP17Constants.sol";
+import "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
+import "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
+import "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
 
 contract LSP6SetDataTest is Test {
     using BytesLib for bytes;

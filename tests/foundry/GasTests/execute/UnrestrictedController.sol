@@ -2,28 +2,32 @@
 pragma solidity ^0.8.13;
 
 import "../LSP6s/LSP6ExecuteUC.sol";
-import {LSP0ERC725Account} from "lsp0/contracts/LSP0ERC725Account.sol";
+import {
+    LSP0ERC725Account
+} from "@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol";
 import {
     LSP1UniversalReceiverDelegateUP
-} from "lsp1delegate/contracts/LSP1UniversalReceiverDelegateUP.sol";
-import "lsp2/contracts/LSP2Utils.sol";
+} from "@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol";
+import "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 import "../../../../contracts/Mocks/Tokens/LSP7Tester.sol";
 import "../../../../contracts/Mocks/Tokens/LSP8Tester.sol";
 import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-} from "lsp1/contracts/LSP1Constants.sol";
+} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 import {
     _LSP4_TOKEN_TYPE_TOKEN,
     _LSP4_TOKEN_TYPE_NFT
-} from "lsp4/contracts/LSP4Constants.sol";
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
     _PERMISSION_SUPER_SETDATA,
     _PERMISSION_SUPER_CALL,
     _PERMISSION_REENTRANCY,
     _PERMISSION_SUPER_TRANSFERVALUE
-} from "lsp6/contracts/LSP6Constants.sol";
-import {_LSP8_TOKENID_FORMAT_NUMBER} from "lsp8/contracts/LSP8Constants.sol";
+} from "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
+import {
+    _LSP8_TOKENID_FORMAT_NUMBER
+} from "@lukso/lsp8-contracts/contracts/LSP8Constants.sol";
 import {UniversalProfileTestsHelper} from "../UniversalProfileTestsHelper.sol";
 
 contract ExecuteUnrestrictedController is UniversalProfileTestsHelper {

@@ -3,9 +3,9 @@ import { expect } from 'chai';
 
 import { KeyManagerWithExtraParams } from '../../types';
 
-import { LSP6KeyManager } from 'lsp6/types';
-import { UniversalProfile } from 'universalprofile/types';
-import { ILSP23LinkedContractsFactory } from 'lsp23/types';
+import { LSP6KeyManager } from '@lukso/lsp6-contracts/types';
+import { UniversalProfile } from '@lukso/universalprofile-contracts/types';
+import { ILSP23LinkedContractsFactory } from '@lukso/lsp23-contracts/types';
 
 import { ERC725YDataKeys } from '../../constants';
 import {

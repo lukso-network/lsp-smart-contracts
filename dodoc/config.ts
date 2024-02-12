@@ -4,54 +4,54 @@ import { HelperContent } from 'squirrelly/dist/types/containers';
 export const dodocConfig = {
   runOnCompile: false,
   include: [
-    'universalprofile/contracts/UniversalProfile.sol',
-    'lsp0/contracts/LSP0ERC725Account.sol',
-    'lsp1delegate/contracts/LSP1UniversalReceiverDelegateUP.sol',
-    'lsp1delegate/contracts/LSP1UniversalReceiverDelegateVault.sol',
-    'lsp6/contracts/LSP6KeyManager.sol',
-    'lsp9/contracts/LSP9Vault.sol',
+    '@lukso/universalprofile-contracts/contracts/UniversalProfile.sol',
+    '@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol',
+    '@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol',
+    '@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateVault.sol',
+    '@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol',
+    '@lukso/lsp9-contracts/contracts/LSP9Vault.sol',
     'contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol',
-    'lsp14/contracts/LSP14Ownable2Step.sol',
-    'lsp16/contracts/LSP16UniversalFactory.sol',
-    'lsp17contractextension/contracts/LSP17Extendable.sol',
-    'lsp17contractextension/contracts/LSP17Extension.sol',
-    'lsp17/Extension4337.sol',
-    'lsp17/OnERC721ReceivedExtension.sol',
-    'lsp20/contracts/LSP20CallVerification.sol',
+    '@lukso/lsp14-contracts/contracts/LSP14Ownable2Step.sol',
+    '@lukso/lsp16-contracts/contracts/LSP16UniversalFactory.sol',
+    '@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol',
+    '@lukso/lsp17contractextension-contracts/contracts/LSP17Extension.sol',
+    '@lukso/lsp17-contracts/Extension4337.sol',
+    '@lukso/lsp17-contracts/OnERC721ReceivedExtension.sol',
+    '@lukso/lsp20-contracts/contracts/LSP20CallVerification.sol',
     'contracts/LSP23LinkedContractsFactory/LSP23LinkedContractsFactory.sol',
     'contracts/LSP23LinkedContractsFactory/IPostDeploymentModule.sol',
-    'lsp25/contracts/LSP25MultiChannelNonce.sol',
+    '@lukso/lsp25-contracts/contracts/LSP25MultiChannelNonce.sol',
 
     // tokens
-    'lsp4/contracts/LSP4DigitalAssetMetadata.sol',
-    'lsp7/contracts/LSP7DigitalAsset.sol',
-    'lsp7/contracts/extensions/LSP7Burnable.sol',
-    'lsp7/contracts/extensions/LSP7CappedSupply.sol',
-    'lsp7/contracts/presets/LSP7Mintable.sol',
-    'lsp8/contracts/LSP8IdentifiableDigitalAsset.sol',
-    'lsp8/contracts/extensions/LSP8Burnable.sol',
-    'lsp8/contracts/extensions/LSP8CappedSupply.sol',
-    'lsp8/contracts/extensions/LSP8Enumerable.sol',
-    'lsp8/contracts/presets/LSP8Mintable.sol',
+    '@lukso/lsp4-contracts/contracts/LSP4DigitalAssetMetadata.sol',
+    '@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol',
+    '@lukso/lsp7-contracts/contracts/extensions/LSP7Burnable.sol',
+    '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply.sol',
+    '@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.sol',
+    '@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAsset.sol',
+    '@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable.sol',
+    '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply.sol',
+    '@lukso/lsp8-contracts/contracts/extensions/LSP8Enumerable.sol',
+    '@lukso/lsp8-contracts/contracts/presets/LSP8Mintable.sol',
 
     // libraries --------------------
-    'lsp1/contracts/LSP1Utils.sol',
-    'lsp2/contracts/LSP2Utils.sol',
-    'lsp5/contracts/LSP5Utils.sol',
-    'lsp6/contracts/LSP6Utils.sol',
-    'lsp10/contracts/LSP10Utils.sol',
-    'lsp17contractextension/contracts/LSP17Utils.sol',
+    '@lukso/lsp1-contracts/contracts/LSP1Utils.sol',
+    '@lukso/lsp2-contracts/contracts/LSP2Utils.sol',
+    '@lukso/lsp5-contracts/contracts/LSP5Utils.sol',
+    '@lukso/lsp6-contracts/contracts/LSP6Utils.sol',
+    '@lukso/lsp10-contracts/contracts/LSP10Utils.sol',
+    '@lukso/lsp17contractextension-contracts/contracts/LSP17Utils.sol',
 
     // external --------------------
     '@erc725/smart-contracts/contracts/ERC725.sol',
   ],
   libraries: [
-    'lsp1/contracts/LSP1Utils.sol',
-    'lsp2/contracts/LSP2Utils.sol',
-    'lsp5/contracts/LSP5Utils.sol',
-    'lsp6/contracts/LSP6Utils.sol',
-    'lsp10/contracts/LSP10Utils.sol',
-    'lsp17contractextension/contracts/LSP17Utils.sol',
+    '@lukso/lsp1-contracts/contracts/LSP1Utils.sol',
+    '@lukso/lsp2-contracts/contracts/LSP2Utils.sol',
+    '@lukso/lsp5-contracts/contracts/LSP5Utils.sol',
+    '@lukso/lsp6-contracts/contracts/LSP6Utils.sol',
+    '@lukso/lsp10-contracts/contracts/LSP10Utils.sol',
+    '@lukso/lsp17contractextension-contracts/contracts/LSP17Utils.sol',
   ],
   templatePath: './dodoc/template.sqrl',
   helpers: [
@@ -332,7 +332,10 @@ const generateContractSpecsDetails = (contractName: string) => {
   })[0];
 
   // token contracts have preset and extension folders.
-  if (contractPath.startsWith('lsp7/contracts') || contractPath.startsWith('lsp8/contracts')) {
+  if (
+    contractPath.startsWith('@lukso/lsp7-contracts/contracts') ||
+    contractPath.startsWith('@lukso/lsp8-contracts/contracts')
+  ) {
     const lspNumber = contractPath[3];
     const lspName = lspNumber === '8' ? 'IdentifiableDigitalAsset' : 'DigitalAsset';
     const specsName = `LSP-${lspNumber}-${lspName}`;

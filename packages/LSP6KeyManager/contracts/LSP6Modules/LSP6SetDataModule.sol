@@ -4,7 +4,7 @@ pragma solidity ^0.8.5;
 // interfaces
 import {
     ILSP20CallVerifier as ILSP20
-} from "lsp20/contracts/ILSP20CallVerifier.sol";
+} from "@lukso/lsp20-contracts/contracts/ILSP20CallVerifier.sol";
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
@@ -32,10 +32,10 @@ import {
 import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-} from "lsp1/contracts/LSP1Constants.sol";
+} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 import {
     _LSP17_EXTENSION_PREFIX
-} from "lsp17contractextension/contracts/LSP17Constants.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
 
 // errors
 import {

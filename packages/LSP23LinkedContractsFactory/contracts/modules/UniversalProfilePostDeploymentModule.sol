@@ -7,7 +7,7 @@ import {
 
 import {
     UniversalProfile
-} from "universalprofile/contracts/UniversalProfile.sol";
+} from "@lukso/universalprofile-contracts/contracts/UniversalProfile.sol";
 
 contract UniversalProfilePostDeploymentModule is UniversalProfile {
     constructor() UniversalProfile(address(0)) {}

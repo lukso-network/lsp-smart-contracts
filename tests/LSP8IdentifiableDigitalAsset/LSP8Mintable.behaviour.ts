@@ -8,7 +8,7 @@ import {
   UniversalReceiverDelegateTokenReentrant__factory,
 } from '../../types';
 
-import { LSP8Mintable } from 'lsp8/types';
+import { LSP8Mintable } from '@lukso/lsp8-contracts/types';
 
 import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 

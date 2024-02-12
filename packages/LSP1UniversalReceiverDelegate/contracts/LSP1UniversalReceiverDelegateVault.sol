@@ -7,28 +7,32 @@ import {
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {
     ILSP1UniversalReceiverDelegate
-} from "lsp1/contracts/ILSP1UniversalReceiverDelegate.sol";
-import {ILSP7DigitalAsset} from "lsp7/contracts/ILSP7DigitalAsset.sol";
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
+import {
+    ILSP7DigitalAsset
+} from "@lukso/lsp7-contracts/contracts/ILSP7DigitalAsset.sol";
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {Version} from "./Version.sol";
 
 // libraries
-import {LSP5Utils} from "lsp5/contracts/LSP5Utils.sol";
+import {LSP5Utils} from "@lukso/lsp5-contracts/contracts/LSP5Utils.sol";
 
 // constants
-import {_INTERFACEID_LSP1_DELEGATE} from "lsp1/contracts/LSP1Constants.sol";
+import {
+    _INTERFACEID_LSP1_DELEGATE
+} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 import {
     _TYPEID_LSP7_TOKENSSENDER,
     _TYPEID_LSP7_TOKENSRECIPIENT,
     _INTERFACEID_LSP7
-} from "lsp7/contracts/LSP7Constants.sol";
+} from "@lukso/lsp7-contracts/contracts/LSP7Constants.sol";
 import {
     _TYPEID_LSP8_TOKENSSENDER,
     _TYPEID_LSP8_TOKENSRECIPIENT,
     _INTERFACEID_LSP8
-} from "lsp8/contracts/LSP8Constants.sol";
+} from "@lukso/lsp8-contracts/contracts/LSP8Constants.sol";
 
 // errors
 import {CannotRegisterEOAsAsAssets} from "./LSP1Errors.sol";

@@ -28,58 +28,80 @@ import {IERC223} from "./Tokens/IERC223.sol";
 
 // LSPs interfaces
 
-import {ILSP0ERC725Account} from "lsp0/contracts/ILSP0ERC725Account.sol";
+import {
+    ILSP0ERC725Account
+} from "@lukso/lsp0-contracts/contracts/ILSP0ERC725Account.sol";
 import {
     ILSP1UniversalReceiver as ILSP1
-} from "lsp1/contracts/ILSP1UniversalReceiver.sol";
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
 
 import {
     ILSP1UniversalReceiverDelegate as ILSP1Delegate
-} from "lsp1/contracts/ILSP1UniversalReceiverDelegate.sol";
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
 
-import {ILSP6KeyManager as ILSP6} from "lsp6/contracts/ILSP6KeyManager.sol";
-import {ILSP7DigitalAsset as ILSP7} from "lsp7/contracts/ILSP7DigitalAsset.sol";
+import {
+    ILSP6KeyManager as ILSP6
+} from "@lukso/lsp6-contracts/contracts/ILSP6KeyManager.sol";
+import {
+    ILSP7DigitalAsset as ILSP7
+} from "@lukso/lsp7-contracts/contracts/ILSP7DigitalAsset.sol";
 import {
     ILSP8IdentifiableDigitalAsset as ILSP8
-} from "lsp8/contracts/ILSP8IdentifiableDigitalAsset.sol";
+} from "@lukso/lsp8-contracts/contracts/ILSP8IdentifiableDigitalAsset.sol";
 
-import {ILSP9Vault as ILSP9} from "lsp9/contracts/ILSP9Vault.sol";
+import {
+    ILSP9Vault as ILSP9
+} from "@lukso/lsp9-contracts/contracts/ILSP9Vault.sol";
 import {
     ILSP11BasicSocialRecovery as ILSP11
 } from "../LSP11BasicSocialRecovery/ILSP11BasicSocialRecovery.sol";
 import {
     ILSP14Ownable2Step as ILSP14
-} from "lsp14/contracts/ILSP14Ownable2Step.sol";
+} from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
 import {
     ILSP20CallVerifier as ILSP20
-} from "lsp20/contracts/ILSP20CallVerifier.sol";
+} from "@lukso/lsp20-contracts/contracts/ILSP20CallVerifier.sol";
 import {
     ILSP25ExecuteRelayCall as ILSP25
-} from "lsp25/contracts/ILSP25ExecuteRelayCall.sol";
+} from "@lukso/lsp25-contracts/contracts/ILSP25ExecuteRelayCall.sol";
 
 // constants
-import {_INTERFACEID_LSP0} from "lsp0/contracts/LSP0Constants.sol";
+import {
+    _INTERFACEID_LSP0
+} from "@lukso/lsp0-contracts/contracts/LSP0Constants.sol";
 import {
     _INTERFACEID_LSP1,
     _INTERFACEID_LSP1_DELEGATE
-} from "lsp1/contracts/LSP1Constants.sol";
-import {_INTERFACEID_LSP6} from "lsp6/contracts/LSP6Constants.sol";
-import {_INTERFACEID_LSP7} from "lsp7/contracts/LSP7Constants.sol";
-import {_INTERFACEID_LSP8} from "lsp8/contracts/LSP8Constants.sol";
-import {_INTERFACEID_LSP9} from "lsp9/contracts/LSP9Constants.sol";
+} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
+import {
+    _INTERFACEID_LSP6
+} from "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
+import {
+    _INTERFACEID_LSP7
+} from "@lukso/lsp7-contracts/contracts/LSP7Constants.sol";
+import {
+    _INTERFACEID_LSP8
+} from "@lukso/lsp8-contracts/contracts/LSP8Constants.sol";
+import {
+    _INTERFACEID_LSP9
+} from "@lukso/lsp9-contracts/contracts/LSP9Constants.sol";
 import {
     _INTERFACEID_LSP11
 } from "../LSP11BasicSocialRecovery/LSP11Constants.sol";
-import {_INTERFACEID_LSP14} from "lsp14/contracts/LSP14Constants.sol";
+import {
+    _INTERFACEID_LSP14
+} from "@lukso/lsp14-contracts/contracts/LSP14Constants.sol";
 import {
     _INTERFACEID_LSP17_EXTENDABLE,
     _INTERFACEID_LSP17_EXTENSION
-} from "lsp17contractextension/contracts/LSP17Constants.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
 import {
     _INTERFACEID_LSP20_CALL_VERIFICATION,
     _INTERFACEID_LSP20_CALL_VERIFIER
-} from "lsp20/contracts/LSP20Constants.sol";
-import {_INTERFACEID_LSP25} from "lsp25/contracts/LSP25Constants.sol";
+} from "@lukso/lsp20-contracts/contracts/LSP20Constants.sol";
+import {
+    _INTERFACEID_LSP25
+} from "@lukso/lsp25-contracts/contracts/LSP25Constants.sol";
 
 // libraries
 import {
