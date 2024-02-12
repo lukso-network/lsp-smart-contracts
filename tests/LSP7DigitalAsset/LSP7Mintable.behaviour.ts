@@ -1,12 +1,11 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import {
-  LSP7Mintable,
-  UniversalProfile,
-  LSP6KeyManager,
-  UniversalReceiverDelegateTokenReentrant__factory,
-} from '../../types';
+
+import { UniversalReceiverDelegateTokenReentrant__factory } from '../../types';
+import { LSP7Mintable } from 'lsp7/types';
+import { LSP6KeyManager } from 'lsp6/types';
+import { UniversalProfile } from 'universalprofile/types';
 
 import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 

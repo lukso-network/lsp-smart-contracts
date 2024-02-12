@@ -7,7 +7,6 @@ import type { TransactionResponse } from '@ethersproject/abstract-provider';
 // types
 import {
   LSP7Tester,
-  LSP7DigitalAsset,
   TokenReceiverWithLSP1,
   TokenReceiverWithLSP1__factory,
   TokenReceiverWithoutLSP1,
@@ -17,6 +16,7 @@ import {
   TokenReceiverWithLSP1Revert,
   TokenReceiverWithLSP1Revert__factory,
 } from '../../types';
+import { LSP7DigitalAsset } from 'lsp7/types';
 
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } from '../../constants';
