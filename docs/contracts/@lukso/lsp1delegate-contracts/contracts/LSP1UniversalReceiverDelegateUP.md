@@ -5,7 +5,7 @@
 
 :::info Standard Specifications
 
-[`LSP-1-undefined`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-undefined.md)
+[`LSP-1-UniversalReceiver`](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md)
 
 :::
 :::info Solidity implementation
@@ -31,7 +31,7 @@ When marked as 'public', a method can be called both externally and internally, 
 
 :::note References
 
-- Specification details: [**LSP-1-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-undefined.md#version)
+- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md#version)
 - Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol)
 - Function signature: `VERSION()`
 - Function selector: `0xffa1ad74`
@@ -56,7 +56,7 @@ _Contract version._
 
 :::note References
 
-- Specification details: [**LSP-1-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-undefined.md#supportsinterface)
+- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md#supportsinterface)
 - Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol)
 - Function signature: `supportsInterface(bytes4)`
 - Function selector: `0x01ffc9a7`
@@ -87,7 +87,7 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 :::note References
 
-- Specification details: [**LSP-1-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-undefined.md#universalreceiverdelegate)
+- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md#universalreceiverdelegate)
 - Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol)
 - Function signature: `universalReceiverDelegate(address,uint256,bytes32,bytes)`
 - Function selector: `0xa245bbda`
@@ -254,7 +254,7 @@ Calls `bytes4(keccak256(setDataBatch(bytes32[],bytes[])))` without checking for 
 
 :::note References
 
-- Specification details: [**LSP-1-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-undefined.md#cannotregistereoasasassets)
+- Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md#cannotregistereoasasassets)
 - Solidity implementation: [`LSP1UniversalReceiverDelegateUP.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol)
 - Error signature: `CannotRegisterEOAsAsAssets(address)`
 - Error hash: `0xa5295345`

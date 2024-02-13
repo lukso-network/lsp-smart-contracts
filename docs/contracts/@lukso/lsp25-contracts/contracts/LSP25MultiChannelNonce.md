@@ -5,7 +5,7 @@
 
 :::info Standard Specifications
 
-[`LSP-25-undefined`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-25-undefined.md)
+[`LSP-25-ExecuteRelayCall`](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-25-ExecuteRelayCall.md)
 
 :::
 :::info Solidity implementation

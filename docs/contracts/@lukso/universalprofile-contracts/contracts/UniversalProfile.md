@@ -5,7 +5,7 @@
 
 :::info Standard Specifications
 
-[`UniversalProfile`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md)
+[`UniversalProfile`](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md)
 
 :::
 :::info Solidity implementation
@@ -27,7 +27,7 @@ When marked as 'public', a method can be called both externally and internally, 
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#constructor)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#constructor)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 
 :::
@@ -66,7 +66,7 @@ Set `initialOwner` as the contract owner and the `SupportedStandards:LSP3Profile
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#fallback)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#fallback)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 
 :::
@@ -81,7 +81,7 @@ fallback() external payable;
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#receive)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#receive)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 
 :::
@@ -96,7 +96,7 @@ receive() external payable;
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#renounce_ownership_confirmation_delay)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#renounce_ownership_confirmation_delay)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY()`
 - Function selector: `0xead3fbdf`
@@ -122,7 +122,7 @@ function RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY()
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#renounce_ownership_confirmation_period)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#renounce_ownership_confirmation_period)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD()`
 - Function selector: `0x01bfba61`
@@ -148,7 +148,7 @@ function RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD()
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#version)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#version)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `VERSION()`
 - Function selector: `0xffa1ad74`
@@ -173,7 +173,7 @@ _Contract version._
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#acceptownership)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#acceptownership)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `acceptOwnership()`
 - Function selector: `0x79ba5097`
@@ -208,7 +208,7 @@ Transfer ownership of the contract from the current [`owner()`](#owner) to the [
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#batchcalls)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#batchcalls)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `batchCalls(bytes[])`
 - Function selector: `0x6963d438`
@@ -247,7 +247,7 @@ Allows a caller to batch different function calls in one call. Perform a `delega
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#execute)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#execute)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `execute(uint256,address,uint256,bytes)`
 - Function selector: `0x44c028fe`
@@ -315,7 +315,7 @@ Generic executor function to:
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#executebatch)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#executebatch)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `executeBatch(uint256[],address[],uint256[],bytes[])`
 - Function selector: `0x31858452`
@@ -384,7 +384,7 @@ Batch executor function that behaves the same as [`execute`](#execute) but allow
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#getdata)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#getdata)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `getData(bytes32)`
 - Function selector: `0x54f6127f`
@@ -417,7 +417,7 @@ Get in the ERC725Y storage the bytes data stored at a specific data key `dataKey
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#getdatabatch)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#getdatabatch)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `getDataBatch(bytes32[])`
 - Function selector: `0xdedff9c6`
@@ -452,7 +452,7 @@ Get in the ERC725Y storage the bytes data stored at multiple data keys `dataKeys
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#isvalidsignature)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#isvalidsignature)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `isValidSignature(bytes32,bytes)`
 - Function selector: `0x1626ba7e`
@@ -507,7 +507,7 @@ Handles two cases:
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#owner)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#owner)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `owner()`
 - Function selector: `0x8da5cb5b`
@@ -532,7 +532,7 @@ Returns the address of the current owner.
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#pendingowner)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#pendingowner)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `pendingOwner()`
 - Function selector: `0xe30c3978`
@@ -563,7 +563,7 @@ The address that ownership of the contract is transferred to. This address may u
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#renounceownership)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#renounceownership)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `renounceOwnership()`
 - Function selector: `0x715018a6`
@@ -602,7 +602,7 @@ Renounce ownership of the contract in a 2-step process.
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#setdata)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#setdata)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `setData(bytes32,bytes)`
 - Function selector: `0x7f23690c`
@@ -647,7 +647,7 @@ Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#setdatabatch)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#setdatabatch)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `setDataBatch(bytes32[],bytes[])`
 - Function selector: `0x97902421`
@@ -692,7 +692,7 @@ Batch data setting function that behaves the same as [`setData`](#setdata) but a
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#supportsinterface)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#supportsinterface)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `supportsInterface(bytes4)`
 - Function selector: `0x01ffc9a7`
@@ -725,7 +725,7 @@ Achieves the goal of [ERC-165] to detect supported interfaces and [LSP-17-Contra
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#transferownership)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#transferownership)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `transferOwnership(address)`
 - Function selector: `0xf2fde38b`
@@ -762,7 +762,7 @@ Initiate the process of transferring ownership of the contract by setting the ne
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#universalreceiver)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#universalreceiver)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Function signature: `universalReceiver(bytes32,bytes)`
 - Function selector: `0x6bb56a14`
@@ -1212,7 +1212,7 @@ function _revertWithLSP20DefaultError(
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#contractcreated)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#contractcreated)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Event signature: `ContractCreated(uint256,address,uint256,bytes32)`
 - Event topic hash: `0xa1fb700aaee2ae4a2ff6f91ce7eba292f89c2f5488b8ec4c5c5c8150692595c3`
@@ -1247,7 +1247,7 @@ Emitted when a new contract was created and deployed.
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#datachanged)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#datachanged)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Event signature: `DataChanged(bytes32,bytes)`
 - Event topic hash: `0xece574603820d07bc9b91f2a932baadf4628aabcb8afba49776529c14a6104b2`
@@ -1275,7 +1275,7 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#executed)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#executed)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Event signature: `Executed(uint256,address,uint256,bytes4)`
 - Event topic hash: `0x4810874456b8e6487bd861375cf6abd8e1c8bb5858c8ce36a86a04dabfac199e`
@@ -1310,7 +1310,7 @@ Emitted when calling an address `target` (EOA or contract) with `value`.
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#ownershiprenounced)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#ownershiprenounced)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Event signature: `OwnershipRenounced()`
 - Event topic hash: `0xd1f66c3d2bc1993a86be5e3d33709d98f0442381befcedd29f578b9b2506b1ce`
@@ -1331,7 +1331,7 @@ Emitted when the ownership of the contract has been renounced.
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#ownershiptransferstarted)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#ownershiptransferstarted)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Event signature: `OwnershipTransferStarted(address,address)`
 - Event topic hash: `0x38d16b8cac22d99fc7c124b9cd0de2d3fa1faef420bfe791d8c362d765e22700`
@@ -1362,7 +1362,7 @@ Emitted when [`transferOwnership(..)`](#transferownership) was called and the fi
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#ownershiptransferred)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#ownershiptransferred)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Event signature: `OwnershipTransferred(address,address)`
 - Event topic hash: `0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0`
@@ -1389,7 +1389,7 @@ event OwnershipTransferred(
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#renounceownershipstarted)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#renounceownershipstarted)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Event signature: `RenounceOwnershipStarted()`
 - Event topic hash: `0x81b7f830f1f0084db6497c486cbe6974c86488dcc4e3738eab94ab6d6b1653e7`
@@ -1410,7 +1410,7 @@ Emitted when starting the [`renounceOwnership(..)`](#renounceownership) 2-step p
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#universalreceiver)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#universalreceiver)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Event signature: `UniversalReceiver(address,uint256,bytes32,bytes,bytes)`
 - Event topic hash: `0x9c3ba68eb5742b8e3961aea0afc7371a71bf433c8a67a831803b64c064a178c2`
@@ -1451,7 +1451,7 @@ Emitted when the [`universalReceiver`](#universalreceiver) function was called w
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_contractdeploymentfailed)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_contractdeploymentfailed)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `ERC725X_ContractDeploymentFailed()`
 - Error hash: `0x0b07489b`
@@ -1470,7 +1470,7 @@ Reverts when contract deployment failed via [`execute`](#execute) or [`executeBa
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_createoperationsrequireemptyrecipientaddress)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_createoperationsrequireemptyrecipientaddress)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `ERC725X_CreateOperationsRequireEmptyRecipientAddress()`
 - Error hash: `0x3041824a`
@@ -1489,7 +1489,7 @@ Reverts when passing a `to` address that is not `address(0)` (= address zero) wh
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_executeparametersemptyarray)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_executeparametersemptyarray)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `ERC725X_ExecuteParametersEmptyArray()`
 - Error hash: `0xe9ad2b5f`
@@ -1508,7 +1508,7 @@ Reverts when one of the array parameter provided to the [`executeBatch`](#execut
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_executeparameterslengthmismatch)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_executeparameterslengthmismatch)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `ERC725X_ExecuteParametersLengthMismatch()`
 - Error hash: `0x3ff55f4d`
@@ -1527,7 +1527,7 @@ Reverts when there is not the same number of elements in the `operationTypes`, `
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_insufficientbalance)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_insufficientbalance)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `ERC725X_InsufficientBalance(uint256,uint256)`
 - Error hash: `0x0df9a8f8`
@@ -1553,7 +1553,7 @@ Reverts when trying to send more native tokens `value` than available in current
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_msgvaluedisallowedindelegatecall)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_msgvaluedisallowedindelegatecall)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `ERC725X_MsgValueDisallowedInDelegateCall()`
 - Error hash: `0x5ac83135`
@@ -1572,7 +1572,7 @@ Reverts when trying to send native tokens (`value` / `values[]` parameter of [`e
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_msgvaluedisallowedinstaticcall)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_msgvaluedisallowedinstaticcall)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `ERC725X_MsgValueDisallowedInStaticCall()`
 - Error hash: `0x72f2bc6a`
@@ -1591,7 +1591,7 @@ Reverts when trying to send native tokens (`value` / `values[]` parameter of [`e
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_nocontractbytecodeprovided)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_nocontractbytecodeprovided)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `ERC725X_NoContractBytecodeProvided()`
 - Error hash: `0xb81cd8d9`
@@ -1610,7 +1610,7 @@ Reverts when no contract bytecode was provided as parameter when trying to deplo
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_unknownoperationtype)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725x_unknownoperationtype)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `ERC725X_UnknownOperationType(uint256)`
 - Error hash: `0x7583b3bc`
@@ -1635,7 +1635,7 @@ Reverts when the `operationTypeProvided` is none of the default operation types 
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725y_datakeysvaluesemptyarray)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725y_datakeysvaluesemptyarray)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `ERC725Y_DataKeysValuesEmptyArray()`
 - Error hash: `0x97da5f95`
@@ -1654,7 +1654,7 @@ Reverts when one of the array parameter provided to [`setDataBatch`](#setdatabat
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725y_datakeysvalueslengthmismatch)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#erc725y_datakeysvalueslengthmismatch)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `ERC725Y_DataKeysValuesLengthMismatch()`
 - Error hash: `0x3bcc8979`
@@ -1673,7 +1673,7 @@ Reverts when there is not the same number of elements in the `datakeys` and `dat
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp14callernotpendingowner)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp14callernotpendingowner)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `LSP14CallerNotPendingOwner(address)`
 - Error hash: `0x451e4528`
@@ -1698,7 +1698,7 @@ Reverts when the `caller` that is trying to accept ownership of the contract is 
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp14cannottransferownershiptoself)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp14cannottransferownershiptoself)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `LSP14CannotTransferOwnershipToSelf()`
 - Error hash: `0xe052a6f8`
@@ -1719,7 +1719,7 @@ Reverts when trying to transfer ownership to the `address(this)`.
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp14mustacceptownershipinseparatetransaction)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp14mustacceptownershipinseparatetransaction)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `LSP14MustAcceptOwnershipInSeparateTransaction()`
 - Error hash: `0x5758dd07`
@@ -1740,7 +1740,7 @@ Reverts when pending owner accept ownership in the same transaction of transferr
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp14notinrenounceownershipinterval)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp14notinrenounceownershipinterval)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `LSP14NotInRenounceOwnershipInterval(uint256,uint256)`
 - Error hash: `0x1b080942`
@@ -1771,7 +1771,7 @@ Reverts when trying to renounce ownership before the initial confirmation delay.
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp20callverificationfailed)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp20callverificationfailed)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `LSP20CallVerificationFailed(bool,bytes4)`
 - Error hash: `0x9d6741e3`
@@ -1797,7 +1797,7 @@ reverts when the call to the owner does not return the LSP20 success value
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp20callingverifierfailed)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp20callingverifierfailed)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `LSP20CallingVerifierFailed(bool)`
 - Error hash: `0x8c6a8ae3`
@@ -1822,7 +1822,7 @@ reverts when the call to the owner fail with no revert reason
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp20eoacannotverifycall)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#lsp20eoacannotverifycall)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `LSP20EOACannotVerifyCall(address)`
 - Error hash: `0x0c392301`
@@ -1847,7 +1847,7 @@ Reverts when the logic verifier is an Externally Owned Account (EOA) that cannot
 
 :::note References
 
-- Specification details: [**UniversalProfile**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md#noextensionfoundforfunctionselector)
+- Specification details: [**UniversalProfile**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-3-UniversalProfile-Metadata.md#noextensionfoundforfunctionselector)
 - Solidity implementation: [`UniversalProfile.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol)
 - Error signature: `NoExtensionFoundForFunctionSelector(bytes4)`
 - Error hash: `0xbb370b2b`

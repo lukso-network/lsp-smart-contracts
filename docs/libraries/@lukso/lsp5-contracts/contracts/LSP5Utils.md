@@ -5,7 +5,7 @@
 
 :::info Standard Specifications
 
-[`LSP-5-undefined`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-5-undefined.md)
+[`LSP-5-ReceivedAssets`](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-5-ReceivedAssets.md)
 
 :::
 :::info Solidity implementation

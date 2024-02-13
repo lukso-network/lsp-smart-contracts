@@ -5,7 +5,7 @@
 
 :::info Standard Specifications
 
-[`LSP-1-undefined`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-1-undefined.md)
+[`LSP-1-UniversalReceiver`](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md)
 
 :::
 :::info Solidity implementation

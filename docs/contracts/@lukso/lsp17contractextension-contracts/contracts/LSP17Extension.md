@@ -5,7 +5,7 @@
 
 :::info Standard Specifications
 
-[`LSP-17-undefined`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-17-undefined.md)
+[`LSP-17-ContractExtension`](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-17-ContractExtension.md)
 
 :::
 :::info Solidity implementation
@@ -27,7 +27,7 @@ When marked as 'public', a method can be called both externally and internally, 
 
 :::note References
 
-- Specification details: [**LSP-17-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-17-undefined.md#version)
+- Specification details: [**LSP-17-ContractExtension**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-17-ContractExtension.md#version)
 - Solidity implementation: [`LSP17Extension.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp17contractextension-contracts/contracts/LSP17Extension.sol)
 - Function signature: `VERSION()`
 - Function selector: `0xffa1ad74`
@@ -52,7 +52,7 @@ _Contract version._
 
 :::note References
 
-- Specification details: [**LSP-17-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-17-undefined.md#supportsinterface)
+- Specification details: [**LSP-17-ContractExtension**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-17-ContractExtension.md#supportsinterface)
 - Solidity implementation: [`LSP17Extension.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp17contractextension-contracts/contracts/LSP17Extension.sol)
 - Function signature: `supportsInterface(bytes4)`
 - Function selector: `0x01ffc9a7`

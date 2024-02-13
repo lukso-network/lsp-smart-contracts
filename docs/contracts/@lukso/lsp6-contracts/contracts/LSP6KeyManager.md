@@ -5,7 +5,7 @@
 
 :::info Standard Specifications
 
-[`LSP-6-undefined`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md)
+[`LSP-6-KeyManager`](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md)
 
 :::
 :::info Solidity implementation
@@ -27,7 +27,7 @@ When marked as 'public', a method can be called both externally and internally, 
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#constructor)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#constructor)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 
 :::
@@ -52,7 +52,7 @@ Deploy a Key Manager and set the `target_` address in the contract storage, maki
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#version)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#version)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Function signature: `VERSION()`
 - Function selector: `0xffa1ad74`
@@ -77,7 +77,7 @@ _Contract version._
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#execute)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#execute)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Function signature: `execute(bytes)`
 - Function selector: `0x09c5eabe`
@@ -118,7 +118,7 @@ Execute A `payload` on the linked [`target`](#target) contract after having veri
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#executebatch)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#executebatch)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Function signature: `executeBatch(uint256[],bytes[])`
 - Function selector: `0xbf0176ff`
@@ -167,7 +167,7 @@ Same as [`execute`](#execute) but execute a batch of payloads (abi-encoded funct
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#executerelaycall)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#executerelaycall)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Function signature: `executeRelayCall(bytes,uint256,uint256,bytes)`
 - Function selector: `0x4c8a4e74`
@@ -222,7 +222,7 @@ Allows any address (executor) to execute a payload (= abi-encoded function call)
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#executerelaycallbatch)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#executerelaycallbatch)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Function signature: `executeRelayCallBatch(bytes[],uint256[],uint256[],uint256[],bytes[])`
 - Function selector: `0xa20856a5`
@@ -274,7 +274,7 @@ Same as [`executeRelayCall`](#executerelaycall) but execute a batch of signed ca
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#getnonce)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#getnonce)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Function signature: `getNonce(address,uint128)`
 - Function selector: `0xb44581d9`
@@ -320,7 +320,7 @@ Get the nonce for a specific `from` address that can be used for signing relay t
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#isvalidsignature)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#isvalidsignature)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Function signature: `isValidSignature(bytes32,bytes)`
 - Function selector: `0x1626ba7e`
@@ -361,7 +361,7 @@ Checks if a signature was signed by a controller that has the permission `SIGN`.
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#lsp20verifycall)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#lsp20verifycall)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Function signature: `lsp20VerifyCall(address,address,address,uint256,bytes)`
 - Function selector: `0xde928f14`
@@ -409,7 +409,7 @@ function lsp20VerifyCall(
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#lsp20verifycallresult)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#lsp20verifycallresult)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Function signature: `lsp20VerifyCallResult(bytes32,bytes)`
 - Function selector: `0xd3fc45d3`
@@ -442,7 +442,7 @@ function lsp20VerifyCallResult(
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#supportsinterface)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#supportsinterface)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Function signature: `supportsInterface(bytes4)`
 - Function selector: `0x01ffc9a7`
@@ -473,7 +473,7 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#target)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#target)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Function signature: `target()`
 - Function selector: `0xd4b83992`
@@ -1254,7 +1254,7 @@ Used at the end of the [`lsp20VerifyCall`](#`lsp20verifycall`), [`_execute`](#`_
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#permissionsverified)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#permissionsverified)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Event signature: `PermissionsVerified(address,uint256,bytes4)`
 - Event topic hash: `0xc0a62328f6bf5e3172bb1fcb2019f54b2c523b6a48e3513a2298fbf0150b781e`
@@ -1289,7 +1289,7 @@ Emitted when the LSP6KeyManager contract verified the permissions of the `signer
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#batchexecuteparamslengthmismatch)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#batchexecuteparamslengthmismatch)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `BatchExecuteParamsLengthMismatch()`
 - Error hash: `0x55a187db`
@@ -1310,7 +1310,7 @@ Reverts when the array parameters `uint256[] value` and `bytes[] payload` have d
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#batchexecuterelaycallparamslengthmismatch)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#batchexecuterelaycallparamslengthmismatch)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `BatchExecuteRelayCallParamsLengthMismatch()`
 - Error hash: `0xb4d50d21`
@@ -1331,7 +1331,7 @@ Reverts when providing array parameters of different sizes to `executeRelayCallB
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#callingkeymanagernotallowed)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#callingkeymanagernotallowed)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `CallingKeyManagerNotAllowed()`
 - Error hash: `0xa431b236`
@@ -1352,7 +1352,7 @@ Reverts when calling the KeyManager through `execute(uint256,address,uint256,byt
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#delegatecalldisallowedviakeymanager)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#delegatecalldisallowedviakeymanager)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `DelegateCallDisallowedViaKeyManager()`
 - Error hash: `0x80d6ebae`
@@ -1373,7 +1373,7 @@ Reverts when trying to do a `delegatecall` via the ERC725X.execute(uint256,addre
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#erc725x_executeparametersemptyarray)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#erc725x_executeparametersemptyarray)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `ERC725X_ExecuteParametersEmptyArray()`
 - Error hash: `0xe9ad2b5f`
@@ -1392,7 +1392,7 @@ Reverts when one of the array parameter provided to the [`executeBatch`](#execut
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#erc725x_executeparameterslengthmismatch)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#erc725x_executeparameterslengthmismatch)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `ERC725X_ExecuteParametersLengthMismatch()`
 - Error hash: `0x3ff55f4d`
@@ -1411,7 +1411,7 @@ Reverts when there is not the same number of elements in the `operationTypes`, `
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#erc725y_datakeysvalueslengthmismatch)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#erc725y_datakeysvalueslengthmismatch)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `ERC725Y_DataKeysValuesLengthMismatch()`
 - Error hash: `0x3bcc8979`
@@ -1430,7 +1430,7 @@ Reverts when there is not the same number of elements in the `datakeys` and `dat
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#invaliddatavaluesfordatakeys)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#invaliddatavaluesfordatakeys)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `InvalidDataValuesForDataKeys(bytes32,bytes)`
 - Error hash: `0x1fa41397`
@@ -1458,7 +1458,7 @@ Reverts when the data value length is not one of the required lengths for the sp
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#invaliderc725function)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#invaliderc725function)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `InvalidERC725Function(bytes4)`
 - Error hash: `0x2ba8851c`
@@ -1497,7 +1497,7 @@ Reverts when trying to call a function on the linked [`target`](#target), that i
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#invalidencodedallowedcalls)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#invalidencodedallowedcalls)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `InvalidEncodedAllowedCalls(bytes)`
 - Error hash: `0x187e77ab`
@@ -1524,7 +1524,7 @@ Reverts when `allowedCallsValue` is not properly encoded as a `(bytes4,address,b
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#invalidencodedallowederc725ydatakeys)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#invalidencodedallowederc725ydatakeys)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `InvalidEncodedAllowedERC725YDataKeys(bytes,string)`
 - Error hash: `0xae6cbd37`
@@ -1552,7 +1552,7 @@ Reverts when `value` is not encoded properly as a `bytes32[CompactBytesArray]`. 
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#invalidlsp6target)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#invalidlsp6target)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `InvalidLSP6Target()`
 - Error hash: `0xfc854579`
@@ -1573,7 +1573,7 @@ Reverts when the address provided to set as the [`target`](#target) linked to th
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#invalidpayload)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#invalidpayload)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `InvalidPayload(bytes)`
 - Error hash: `0x3621bbcc`
@@ -1600,7 +1600,7 @@ Reverts when the payload is invalid.
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#invalidrelaynonce)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#invalidrelaynonce)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `InvalidRelayNonce(address,uint256,bytes)`
 - Error hash: `0xc9bd9eb9`
@@ -1629,7 +1629,7 @@ Reverts when the `signer` address retrieved from the `signature` has an invalid 
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#invalidwhitelistedcall)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#invalidwhitelistedcall)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `InvalidWhitelistedCall(address)`
 - Error hash: `0x6fd203c5`
@@ -1656,7 +1656,7 @@ Reverts when a `from` address has _"any whitelisted call"_ as allowed call set. 
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#keymanagercannotbesetasextensionforlsp20functions)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#keymanagercannotbesetasextensionforlsp20functions)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `KeyManagerCannotBeSetAsExtensionForLSP20Functions()`
 - Error hash: `0x4a9fa8cf`
@@ -1677,7 +1677,7 @@ Reverts when the address of the Key Manager is being set as extensions for lsp20
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#lsp6batchexcessivevaluesent)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#lsp6batchexcessivevaluesent)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `LSP6BatchExcessiveValueSent(uint256,uint256)`
 - Error hash: `0xa51868b6`
@@ -1709,7 +1709,7 @@ This error occurs when there was too much funds sent to the batch functions `exe
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#lsp6batchinsufficientvaluesent)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#lsp6batchinsufficientvaluesent)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `LSP6BatchInsufficientValueSent(uint256,uint256)`
 - Error hash: `0x30a324ac`
@@ -1737,7 +1737,7 @@ This error occurs when there was not enough funds sent to the batch functions `e
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#nocallsallowed)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#nocallsallowed)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `NoCallsAllowed(address)`
 - Error hash: `0x6cb60587`
@@ -1764,7 +1764,7 @@ Reverts when the `from` address has no `AllowedCalls` set and cannot interact wi
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#noerc725ydatakeysallowed)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#noerc725ydatakeysallowed)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `NoERC725YDataKeysAllowed(address)`
 - Error hash: `0xed7fa509`
@@ -1791,7 +1791,7 @@ Reverts when the `from` address has no AllowedERC725YDataKeys set and cannot set
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#nopermissionsset)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#nopermissionsset)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `NoPermissionsSet(address)`
 - Error hash: `0xf292052a`
@@ -1818,7 +1818,7 @@ Reverts when address `from` does not have any permissions set on the account lin
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#notallowedcall)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#notallowedcall)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `NotAllowedCall(address,address,bytes4)`
 - Error hash: `0x45147bce`
@@ -1847,7 +1847,7 @@ Reverts when `from` is not authorised to call the `execute(uint256,address,uint2
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#notallowederc725ydatakey)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#notallowederc725ydatakey)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `NotAllowedERC725YDataKey(address,bytes32)`
 - Error hash: `0x557ae079`
@@ -1875,7 +1875,7 @@ Reverts when address `from` is not authorised to set the key `disallowedKey` on 
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#notauthorised)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#notauthorised)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `NotAuthorised(address,string)`
 - Error hash: `0x3bdad6e6`
@@ -1903,7 +1903,7 @@ Reverts when address `from` is not authorised and does not have `permission` on 
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#notrecognisedpermissionkey)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#notrecognisedpermissionkey)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `NotRecognisedPermissionKey(bytes32)`
 - Error hash: `0x0f7d735b`
@@ -1930,7 +1930,7 @@ Reverts when `dataKey` is a `bytes32` value that does not adhere to any of the p
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#relaycallbeforestarttime)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#relaycallbeforestarttime)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `RelayCallBeforeStartTime()`
 - Error hash: `0x00de4b8a`
@@ -1951,7 +1951,7 @@ Reverts when the relay call is cannot yet bet executed. This mean that the start
 
 :::note References
 
-- Specification details: [**LSP-6-undefined**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md#relaycallexpired)
+- Specification details: [**LSP-6-KeyManager**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#relaycallexpired)
 - Solidity implementation: [`LSP6KeyManager.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol)
 - Error signature: `RelayCallExpired()`
 - Error hash: `0x5c53a98c`

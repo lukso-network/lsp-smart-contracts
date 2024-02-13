@@ -5,7 +5,7 @@
 
 :::info Standard Specifications
 
-[`LSP-10-undefined`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-10-undefined.md)
+[`LSP-10-ReceivedVaults`](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-10-ReceivedVaults.md)
 
 :::
 :::info Solidity implementation

@@ -135,6 +135,77 @@ export const dodocConfig = {
 };
 
 const linkBase = 'https://github.com/lukso-network/';
+const SPECS_BASE_URI = 'https://github.com/lukso-network/LIPs/blob/main/LSPs';
+const specs = {
+  ERC725: {
+    specsName: 'ERC-725',
+    specsLink: 'https://github.com/ethereum/EIPs/blob/master/EIPS/eip-725.md',
+  },
+  UniversalProfile: {
+    specsName: 'UniversalProfile',
+    specsLink: `${SPECS_BASE_URI}/LSP-3-UniversalProfile-Metadata.md`,
+  },
+  LSP0ERC725Account: {
+    specsName: 'LSP-0-ERC725Account',
+    specsLink: `${SPECS_BASE_URI}/LSP-0-ERC725Account.md`,
+  },
+  LSP1UniversalReceiver: {
+    specsName: 'LSP-1-UniversalReceiver',
+    specsLink: `${SPECS_BASE_URI}/LSP-1-UniversalReceiver.md`,
+  },
+  LSP2ERC725YJSONSchema: {
+    specsName: 'LSP-2-ERC725YJSONSchema',
+    specsLink: `${SPECS_BASE_URI}/LSP-2-ERC725YJSONSchema.md`,
+  },
+  LSP4DigitalAssetMetadata: {
+    specsName: 'LSP-4-DigitalAsset-Metadata',
+    specsLink: `${SPECS_BASE_URI}/LSP-4-DigitalAsset-Metadata.md`,
+  },
+  LSP5ReceivedAssets: {
+    specsName: 'LSP-5-ReceivedAssets',
+    specsLink: `${SPECS_BASE_URI}/LSP-5-ReceivedAssets.md`,
+  },
+  LSP6KeyManager: {
+    specsName: 'LSP-6-KeyManager',
+    specsLink: `${SPECS_BASE_URI}/LSP-6-KeyManager.md`,
+  },
+  LSP7DigitalAsset: {
+    specsName: 'LSP-7-DigitalAsset',
+    specsLink: `${SPECS_BASE_URI}/LSP-7-DigitalAsset.md`,
+  },
+  LSP8IdentifiableDigitalAsset: {
+    specsName: 'LSP-8-IdentifiableDigitalAsset',
+    specsLink: `${SPECS_BASE_URI}/LSP-8-IdentifiableDigitalAsset.md`,
+  },
+  LSP9Vault: {
+    specsName: 'LSP-9-Vault',
+    specsLink: `${SPECS_BASE_URI}/LSP-9-Vault.md`,
+  },
+  LSP10ReceivedVaults: {
+    specsName: 'LSP-10-ReceivedVaults',
+    specsLink: `${SPECS_BASE_URI}/LSP-10-ReceivedVaults.md`,
+  },
+  LSP11BasicSocialRecovery: {
+    specsName: 'LSP-11-BasicSocialRecovery',
+    specsLink: `${SPECS_BASE_URI}/LSP-11-BasicSocialRecovery.md`,
+  },
+  LSP14Ownable2Step: {
+    specsName: 'LSP-14-Ownable2Step',
+    specsLink: `${SPECS_BASE_URI}/LSP-14-Ownable2Step.md`,
+  },
+  LSP17ContractExtension: {
+    specsName: 'LSP-17-ContractExtension',
+    specsLink: `${SPECS_BASE_URI}/LSP-17-ContractExtension.md`,
+  },
+  LSP20CallVerification: {
+    specsName: 'LSP-20-CallVerification',
+    specsLink: `${SPECS_BASE_URI}/LSP-20-CallVerification.md`,
+  },
+  LSP25ExecuteRelayCall: {
+    specsName: 'LSP-25-ExecuteRelayCall',
+    specsLink: `${SPECS_BASE_URI}/LSP-25-ExecuteRelayCall.md`,
+  },
+};
 
 const createLocalLinks = (textToFormat: string) => {
   let formatedText = textToFormat;
@@ -313,49 +384,31 @@ const generateContractLink = (contractName: string) => {
 };
 
 const generateContractSpecsDetails = (contractName: string) => {
-  if (contractName === 'UniversalProfile') {
-    return {
-      specsName: `${contractName}`,
-      specsLink: `${linkBase}lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md`,
-    };
+  const lspN = contractName.match(/LSP\d+/);
+
+  if (specs[contractName]) {
+    return specs[contractName];
+  } else if (lspN && lspN[0] === 'LSP1') {
+    return specs['LSP1UniversalReceiver'];
+  } else if (lspN && lspN[0] === 'LSP2') {
+    return specs['LSP2ERC725YJSONSchema'];
+  } else if (lspN && lspN[0] === 'LSP5') {
+    return specs['LSP5ReceivedAssets'];
+  } else if (lspN && lspN[0] === 'LSP6') {
+    return specs['LSP6KeyManager'];
+  } else if (lspN && lspN[0] === 'LSP7') {
+    return specs['LSP7DigitalAsset'];
+  } else if (lspN && lspN[0] === 'LSP8') {
+    return specs['LSP8IdentifiableDigitalAsset'];
+  } else if (lspN && lspN[0] === 'LSP10') {
+    return specs['LSP10ReceivedVaults'];
+  } else if (lspN && lspN[0] === 'LSP17') {
+    return specs['LSP17ContractExtension'];
+  } else if (lspN && lspN[0] === 'LSP25') {
+    return specs['LSP25ExecuteRelayCall'];
+  } else {
+    console.error(`Specs for '${contractName}' not found.`);
   }
-
-  if (contractName === 'ERC725') {
-    return {
-      specsName: 'ERC-725',
-      specsLink: 'https://github.com/ethereum/EIPs/blob/master/EIPS/eip-725.md',
-    };
-  }
-
-  const contractPath = dodocConfig.include.filter((value) => {
-    if (value.endsWith(`${contractName}.sol`)) return value;
-  })[0];
-
-  // token contracts have preset and extension folders.
-  if (
-    contractPath.startsWith('@lukso/lsp7-contracts/contracts') ||
-    contractPath.startsWith('@lukso/lsp8-contracts/contracts')
-  ) {
-    const lspNumber = contractPath[3];
-    const lspName = lspNumber === '8' ? 'IdentifiableDigitalAsset' : 'DigitalAsset';
-    const specsName = `LSP-${lspNumber}-${lspName}`;
-
-    return {
-      specsName: specsName,
-      specsLink: `${linkBase}lips/tree/main/LSPs/${specsName}.md`,
-    };
-  }
-
-  const specsIndex = contractPath.startsWith('lsp') ? 2 : 1;
-  const specs = contractPath.split('/')[specsIndex];
-
-  const lspNumber = specs.match(/\d+/)[0];
-  const lspName = specs.split(/LSP\d+/)[1];
-
-  const specsName = `LSP-${lspNumber}-${lspName}`;
-  const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${lspNumber}-${lspName}.md`;
-
-  return { specsName, specsLink };
 };
 
 const formatDisplayedCode = (textToFormat: string) => {

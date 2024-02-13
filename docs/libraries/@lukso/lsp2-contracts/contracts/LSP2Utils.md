@@ -5,7 +5,7 @@
 
 :::info Standard Specifications
 
-[`LSP-2-undefined`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-2-undefined.md)
+[`LSP-2-ERC725YJSONSchema`](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md)
 
 :::
 :::info Solidity implementation

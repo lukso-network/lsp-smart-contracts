@@ -5,7 +5,7 @@
 
 :::info Standard Specifications
 
-[`LSP-6-undefined`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-6-undefined.md)
+[`LSP-6-KeyManager`](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md)
 
 :::
 :::info Solidity implementation

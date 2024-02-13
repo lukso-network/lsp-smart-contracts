@@ -5,7 +5,7 @@
 
 :::info Standard Specifications
 
-[`LSP-20-undefined`](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-20-undefined.md)
+[`LSP-20-CallVerification`](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-20-CallVerification.md)
 
 :::
 :::info Solidity implementation
