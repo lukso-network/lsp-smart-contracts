@@ -79,12 +79,10 @@ jobs:
             solc $(ls contracts/**/*.sol | grep -v "Extension4337\|contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset") \
               --allow-paths $(pwd)/node_modules/,$(pwd)/packages/ \
               ../=$(pwd)/contracts/ \
-              @=packages/@ \
               @=node_modules/@ \
-              solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
+              solidity-bytes-utils/=node_modules/solidity-bytes-utils/
           else
             solc contracts/**/*.sol \
-              @=packages/@ \
               @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/
           fi;
