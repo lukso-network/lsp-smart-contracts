@@ -3,7 +3,7 @@ import { ethers, network, artifacts } from 'hardhat';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { UPWithInstantAcceptOwnership__factory, UPWithInstantAcceptOwnership } from '../../types';
-import { LSP0ERC725Account } from '@lukso/lsp0-contracts/types';
+import { LSP0ERC725Account } from '../../packages/lsp0-contracts/types';
 
 // constants
 import { OPERATION_TYPES } from '../../constants';

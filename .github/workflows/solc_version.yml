@@ -79,52 +79,12 @@ jobs:
             solc $(ls contracts/**/*.sol | grep -v "Extension4337\|contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset") \
               --allow-paths $(pwd)/node_modules/,$(pwd)/packages/ \
               ../=$(pwd)/contracts/ \
+              @=packages/@ \
               @=node_modules/@ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
-              @lukso/lsp0-contracts/=packages/LSP0ERC725Account/ \
-              @lukso/lsp1-contracts/=packages/LSP1UniversalReceiver/ \
-              @lukso/lsp1delegate-contracts/=packages/LSP1UniversalReceiverDelegate/ \
-              @lukso/lsp2-contracts/=packages/LSP2ERC725YJSONSchema/ \
-              @lukso/lsp3-contracts/=packages/LSP3ProfileMetadata/ \
-              @lukso/lsp4-contracts/=packages/LSP4DigitalAssetMetadata/ \
-              @lukso/lsp5-contracts/=packages/LSP5ReceivedAssets/ \
-              @lukso/lsp6-contracts/=packages/LSP6KeyManager/ \
-              @lukso/lsp7-contracts/=packages/LSP7DigitalAsset/ \
-              @lukso/lsp8-contracts/=packages/LSP8IdentifiableDigitalAsset/ \
-              @lukso/lsp9-contracts/=packages/LSP9Vault/ \
-              @lukso/lsp10-contracts/=packages/LSP10ReceivedVaults/ \
-              @lukso/lsp12-contracts/=packages/LSP12IssuedAssets/ \
-              @lukso/lsp14-contracts/=packages/LSP14Ownable2Step/ \
-              @lukso/lsp16-contracts/=packages/LSP16UniversalFactory/ \
-              @lukso/lsp17-contracts/=packages/LSP17Extensions/ \
-              @lukso/lsp17contractextension-contracts/=packages/LSP17ContractExtension/ \
-              @lukso/lsp20-contracts/=packages/LSP20CallVerification/ \
-              @lukso/lsp23-contracts/=packages/LSP23LinkedContractsDeployment/ \
-              @lukso/lsp25-contracts/=packages/LSP25ExecuteRelayCall/ \
-              @lukso/universalprofile-contracts/=packages/UniversalProfile/
           else
             solc contracts/**/*.sol \
+              @=packages/@ \
               @=node_modules/@ \
-              solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
-              @lukso/lsp0-contracts/=packages/LSP0ERC725Account/ \
-              @lukso/lsp1-contracts/=packages/LSP1UniversalReceiver/ \
-              @lukso/lsp1delegate-contracts/=packages/LSP1UniversalReceiverDelegate/ \
-              @lukso/lsp2-contracts/=packages/LSP2ERC725YJSONSchema/ \
-              @lukso/lsp3-contracts/=packages/LSP3ProfileMetadata/ \
-              @lukso/lsp4-contracts/=packages/LSP4DigitalAssetMetadata/ \
-              @lukso/lsp5-contracts/=packages/LSP5ReceivedAssets/ \
-              @lukso/lsp6-contracts/=packages/LSP6KeyManager/ \
-              @lukso/lsp7-contracts/=packages/LSP7DigitalAsset/ \
-              @lukso/lsp8-contracts/=packages/LSP8IdentifiableDigitalAsset/ \
-              @lukso/lsp9-contracts/=packages/LSP9Vault/ \
-              @lukso/lsp10-contracts/=packages/LSP10ReceivedVaults/ \
-              @lukso/lsp12-contracts/=packages/LSP12IssuedAssets/ \
-              @lukso/lsp14-contracts/=packages/LSP14Ownable2Step/ \
-              @lukso/lsp16-contracts/=packages/LSP16UniversalFactory/ \
-              @lukso/lsp17-contracts/=packages/LSP17Extensions/ \
-              @lukso/lsp17contractextension-contracts/=packages/LSP17ContractExtension/ \
-              @lukso/lsp20-contracts/=packages/LSP20CallVerification/ \
-              @lukso/lsp23-contracts/=packages/LSP23LinkedContractsDeployment/ \
-              @lukso/lsp25-contracts/=packages/LSP25ExecuteRelayCall/ \
-              @lukso/universalprofile-contracts/=packages/UniversalProfile/
+              solidity-bytes-utils/=node_modules/solidity-bytes-utils/
           fi;

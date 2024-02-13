@@ -18,8 +18,8 @@ export const dodocConfig = {
     '@lukso/lsp17-contracts/Extension4337.sol',
     '@lukso/lsp17-contracts/OnERC721ReceivedExtension.sol',
     '@lukso/lsp20-contracts/contracts/LSP20CallVerification.sol',
-    'contracts/LSP23LinkedContractsFactory/LSP23LinkedContractsFactory.sol',
-    'contracts/LSP23LinkedContractsFactory/IPostDeploymentModule.sol',
+    '@lukso/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol',
+    '@lukso/lsp23-contracts/contracts/IPostDeploymentModule.sol',
     '@lukso/lsp25-contracts/contracts/LSP25MultiChannelNonce.sol',
 
     // tokens
