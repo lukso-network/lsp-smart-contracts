@@ -1,0 +1,7 @@
+{
+  "extends": "tsconfig/contracts.json",
+  "include": [
+    "**/*.ts",
+    "../../packages/lsp-smart-contracts/scripts/interfaceIds.ts"
+  ]
+}

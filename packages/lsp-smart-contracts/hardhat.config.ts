@@ -20,7 +20,7 @@ import 'hardhat-contract-sizer';
 import 'hardhat-deploy';
 
 // custom built hardhat plugins for CI
-import './scripts/ci/docs-generate';
+import 'docs-generate';
 import './scripts/ci/gas_benchmark';
 import './scripts/ci/check-deployer-balance';
 import './scripts/ci/verify-all-contracts';
@@ -32,7 +32,7 @@ import '@nomiclabs/hardhat-web3';
  * @dev uncomment to generate contract docs in Markdown
  */
 import '@b00ste/hardhat-dodoc';
-import { dodocConfig } from '../../dodoc/config';
+import { dodocConfig } from 'docs-generate/config';
 
 dotenvConfig({ path: resolve(__dirname, './.env') });
 

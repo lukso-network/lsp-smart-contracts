@@ -104,6 +104,7 @@
     "@typechain/ethers-v5": "^10.2.0",
     "all-contributors-cli": "^6.24.0",
     "dotenv": "^16.0.3",
+    "docs-generate": "*",
     "esbuild": "^0.17.15",
     "eslint-config-custom": "*",
     "eslint": "^7.32.0",

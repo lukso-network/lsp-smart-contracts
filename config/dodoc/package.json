@@ -1,0 +1,30 @@
+{
+  "name": "docs-generate",
+  "version": "0.12.1",
+  "description": "Package to generate Markdown docs for each LSP smart contract package.",
+  "private": true,
+  "license": "Apache-2.0",
+  "author": "b00ste",
+  "contributors": [
+    "richtera",
+    "cj42"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "typings": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "hardhat compile --show-stack-traces",
+    "build:js": "unbuild",
+    "clean": "hardhat clean",
+    "format": "prettier --write .",
+    "lint": "eslint . --ext .ts,.js"
+  }
+}
