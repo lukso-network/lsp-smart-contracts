@@ -20,10 +20,10 @@ import 'hardhat-contract-sizer';
 import 'hardhat-deploy';
 
 // custom built hardhat plugins for CI
-import '../../scripts/ci/docs-generate';
-import '../../scripts/ci/gas_benchmark';
-import '../../scripts/ci/check-deployer-balance';
-import '../../scripts/ci/verify-all-contracts';
+import './scripts/ci/docs-generate';
+import './scripts/ci/gas_benchmark';
+import './scripts/ci/check-deployer-balance';
+import './scripts/ci/verify-all-contracts';
 
 // Typescript types for web3.js
 import '@nomiclabs/hardhat-web3';

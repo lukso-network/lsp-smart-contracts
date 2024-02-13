@@ -92,33 +92,6 @@
     "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
     "test:turbo": "turbo test"
   },
-  "dependencies": {
-    "@account-abstraction/contracts": "^0.6.0",
-    "@erc725/smart-contracts": "^7.0.0",
-    "@openzeppelin/contracts": "^4.9.2",
-    "@openzeppelin/contracts-upgradeable": "^4.9.2",
-    "solidity-bytes-utils": "0.8.0",
-    "lsp0": "*",
-    "lsp1": "*",
-    "lsp1delegate": "*",
-    "lsp2": "*",
-    "lsp4": "*",
-    "lsp5": "*",
-    "lsp6": "*",
-    "lsp7": "*",
-    "lsp8": "*",
-    "lsp9": "*",
-    "lsp10": "*",
-    "lsp12": "*",
-    "lsp14": "*",
-    "lsp16": "*",
-    "lsp17": "*",
-    "lsp17contractextension": "*",
-    "lsp20": "*",
-    "lsp23": "*",
-    "lsp25": "*",
-    "universalprofile": "*"
-  },
   "devDependencies": {
     "@b00ste/hardhat-dodoc": "^0.3.16",
     "@defi-wonderland/smock": "^2.3.4",
@@ -156,8 +129,6 @@
     "typechain": "^8.0.0",
     "typescript": "^5.3.3",
     "unbuild": "^2.0.0",
-    "vite-plugin-checker": "^0.5.6",
-    "vite-tsconfig-paths": "^4.0.7",
     "web3": "^1.5.2"
   },
   "workspaces": [
