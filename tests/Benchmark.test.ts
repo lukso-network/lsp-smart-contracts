@@ -3,15 +3,18 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-import { LSP7Mintable, LSP7Mintable__factory } from 'lsp7/types';
+import { LSP7Mintable, LSP7Mintable__factory } from '@lukso/lsp7-contracts/types';
 import {
   LSP1UniversalReceiverDelegateUP,
   LSP1UniversalReceiverDelegateUP__factory,
 } from '../types';
-import { UniversalProfile, UniversalProfile__factory } from 'universalprofile/types';
-import { LSP6KeyManager__factory } from 'lsp6/types';
+import {
+  UniversalProfile,
+  UniversalProfile__factory,
+} from '@lukso/universalprofile-contracts/types';
+import { LSP6KeyManager__factory } from '@lukso/lsp6-contracts/types';
 
-import { LSP8Mintable, LSP8Mintable__factory } from 'lsp8/types';
+import { LSP8Mintable, LSP8Mintable__factory } from '@lukso/lsp8-contracts/types';
 
 import {
   ERC725YDataKeys,

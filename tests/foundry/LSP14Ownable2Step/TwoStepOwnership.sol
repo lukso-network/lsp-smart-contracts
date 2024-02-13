@@ -3,11 +3,13 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 import "@erc725/smart-contracts/contracts/constants.sol";
-import {LSP0ERC725Account} from "lsp0/contracts/LSP0ERC725Account.sol";
+import {
+    LSP0ERC725Account
+} from "@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol";
 
 import {
     LSP14MustAcceptOwnershipInSeparateTransaction
-} from "lsp14/contracts/LSP14Errors.sol";
+} from "@lukso/lsp14-contracts/contracts/LSP14Errors.sol";
 
 contract Implementation is LSP0ERC725Account {
     constructor() LSP0ERC725Account(msg.sender) {}

@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
-import {LSP6KeyManager} from "lsp6/contracts/LSP6KeyManager.sol";
+import {
+    LSP6KeyManager
+} from "@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol";
 
 contract KeyManagerWithExtraParams is LSP6KeyManager {
     address public immutable FIRST_PARAM;

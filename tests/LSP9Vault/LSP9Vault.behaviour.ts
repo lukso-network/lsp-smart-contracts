@@ -4,7 +4,7 @@ import type { TransactionResponse } from '@ethersproject/abstract-provider';
 import { expect } from 'chai';
 
 // types
-import { LSP9Vault } from 'lsp9/types';
+import { LSP9Vault } from '@lukso/lsp9-contracts/types';
 import {
   LSP6KeyManager,
   UniversalProfile,

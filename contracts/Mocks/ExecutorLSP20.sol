@@ -12,7 +12,7 @@ import {
 // modules
 import {
     UniversalProfile
-} from "universalprofile/contracts/UniversalProfile.sol";
+} from "@lukso/universalprofile-contracts/contracts/UniversalProfile.sol";
 
 // constants
 import {

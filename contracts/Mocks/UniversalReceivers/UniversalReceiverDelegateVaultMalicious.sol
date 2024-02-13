@@ -11,7 +11,7 @@ import {
 
 import {
     ILSP1UniversalReceiverDelegate
-} from "lsp1/contracts/ILSP1UniversalReceiverDelegate.sol";
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 // modules
 import {
@@ -23,14 +23,14 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {
     _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
-} from "lsp1/contracts/LSP1Constants.sol";
+} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PREFIX
-} from "lsp6/contracts/LSP6Constants.sol";
+} from "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
 
 import {
     _LSP17_EXTENSION_PREFIX
-} from "lsp17contractextension/contracts/LSP17Constants.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
 
 /**
  * @dev This contract is used only for testing

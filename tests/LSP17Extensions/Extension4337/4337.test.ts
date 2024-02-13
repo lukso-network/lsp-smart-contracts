@@ -11,7 +11,7 @@ import {
   UniversalProfile,
   UniversalProfile__factory,
 } from '../../../types';
-import { Extension4337__factory } from 'lsp17/types';
+import { Extension4337__factory } from '@lukso/lsp17-contracts/types';
 import { deployEntryPoint, getBalance, isDeployed } from '../helpers/utils';
 import { ALL_PERMISSIONS, ERC725YDataKeys, OPERATION_TYPES } from '../../../constants';
 import { combinePermissions } from '../../utils/helpers';

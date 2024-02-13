@@ -3,9 +3,9 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
 import { UniversalReceiverDelegateTokenReentrant__factory } from '../../types';
-import { LSP7Mintable } from 'lsp7/types';
-import { LSP6KeyManager } from 'lsp6/types';
-import { UniversalProfile } from 'universalprofile/types';
+import { LSP7Mintable } from '@lukso/lsp7-contracts/types';
+import { LSP6KeyManager } from '@lukso/lsp6-contracts/types';
+import { UniversalProfile } from '@lukso/universalprofile-contracts/types';
 
 import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 

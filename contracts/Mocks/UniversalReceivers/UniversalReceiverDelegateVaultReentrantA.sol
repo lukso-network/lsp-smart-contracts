@@ -7,7 +7,7 @@ import {
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {
     ILSP1UniversalReceiverDelegate
-} from "lsp1/contracts/ILSP1UniversalReceiverDelegate.sol";
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 // modules
 import {
@@ -15,7 +15,9 @@ import {
 } from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // constants
-import {_INTERFACEID_LSP1_DELEGATE} from "lsp1/contracts/LSP1Constants.sol";
+import {
+    _INTERFACEID_LSP1_DELEGATE
+} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 
 /**
  * @dev This contract is used only for testing purposes

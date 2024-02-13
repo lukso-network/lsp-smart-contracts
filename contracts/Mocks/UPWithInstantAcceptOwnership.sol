@@ -2,22 +2,26 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP0ERC725AccountCore} from "lsp0/contracts/LSP0ERC725AccountCore.sol";
+import {
+    LSP0ERC725AccountCore
+} from "@lukso/lsp0-contracts/contracts/LSP0ERC725AccountCore.sol";
 import {
     OwnableUnset
 } from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {LSP14Ownable2Step} from "lsp14/contracts/LSP14Ownable2Step.sol";
+import {
+    LSP14Ownable2Step
+} from "@lukso/lsp14-contracts/contracts/LSP14Ownable2Step.sol";
 
 // constants
 import {
     _TYPEID_LSP0_OwnershipTransferStarted
-} from "lsp0/contracts/LSP0Constants.sol";
+} from "@lukso/lsp0-contracts/contracts/LSP0Constants.sol";
 import {
     _TYPEID_LSP9_OwnershipTransferStarted
-} from "lsp9/contracts/LSP9Constants.sol";
+} from "@lukso/lsp9-contracts/contracts/LSP9Constants.sol";
 import {
     _TYPEID_LSP14_OwnershipTransferStarted
-} from "lsp14/contracts/LSP14Constants.sol";
+} from "@lukso/lsp14-contracts/contracts/LSP14Constants.sol";
 
 /**
  * @dev This contract is used only for testing purposes

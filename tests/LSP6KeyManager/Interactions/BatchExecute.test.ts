@@ -14,7 +14,11 @@ import {
 import { LSP6TestContext } from '../../utils/context';
 import { setupKeyManager } from '../../utils/fixtures';
 import { abiCoder, provider } from '../../utils/helpers';
-import { LSP7Mintable, LSP7MintableInit__factory, LSP7Mintable__factory } from 'lsp7/types';
+import {
+  LSP7Mintable,
+  LSP7MintableInit__factory,
+  LSP7Mintable__factory,
+} from '@lukso/lsp7-contracts/types';
 
 export const shouldBehaveLikeBatchExecute = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,

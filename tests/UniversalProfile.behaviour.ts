@@ -13,7 +13,7 @@ import {
   OwnerWithURD__factory,
   OwnerWithURD,
 } from '../types';
-import { UniversalProfile } from 'universalprofile/types';
+import { UniversalProfile } from '@lukso/universalprofile-contracts/types';
 
 // helpers
 import { LSP1_HOOK_PLACEHOLDER, abiCoder, getRandomAddresses } from './utils/helpers';

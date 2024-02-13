@@ -3,7 +3,7 @@ pragma solidity ^0.8.4;
 
 import {
     LSP17Extendable
-} from "lsp17contractextension/contracts/LSP17Extendable.sol";
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
 
 /**
  * @dev This contract is used only for testing purposes

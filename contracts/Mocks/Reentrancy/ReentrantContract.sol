@@ -2,16 +2,18 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {ILSP6KeyManager} from "lsp6/contracts/ILSP6KeyManager.sol";
+import {
+    ILSP6KeyManager
+} from "@lukso/lsp6-contracts/contracts/ILSP6KeyManager.sol";
 
 // constants
 import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
-} from "lsp1/contracts/LSP1Constants.sol";
+} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX
-} from "lsp6/contracts/LSP6Constants.sol";
+} from "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
 
 contract ReentrantContract {
     event ValueReceived(uint256);

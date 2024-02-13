@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 
 import {
     ILSP1UniversalReceiverDelegate
-} from "lsp1/contracts/ILSP1UniversalReceiverDelegate.sol";
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 // modules
 import {
@@ -14,11 +14,17 @@ import {
 
 // constants
 
-import {_TYPEID_LSP0_VALUE_RECEIVED} from "lsp0/contracts/LSP0Constants.sol";
+import {
+    _TYPEID_LSP0_VALUE_RECEIVED
+} from "@lukso/lsp0-contracts/contracts/LSP0Constants.sol";
 
-import {_INTERFACEID_LSP1_DELEGATE} from "lsp1/contracts/LSP1Constants.sol";
+import {
+    _INTERFACEID_LSP1_DELEGATE
+} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 
-import {_TYPEID_LSP9_VALUE_RECEIVED} from "lsp9/contracts/LSP9Constants.sol";
+import {
+    _TYPEID_LSP9_VALUE_RECEIVED
+} from "@lukso/lsp9-contracts/contracts/LSP9Constants.sol";
 
 contract UniversalReceiverDelegateDataLYX is
     ERC165Storage,

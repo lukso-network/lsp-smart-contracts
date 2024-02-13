@@ -3,10 +3,10 @@ import { expect } from 'chai';
 import { BytesLike } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-import { LSP0ERC725Account__factory } from 'lsp0/types';
-import { LSP6KeyManager, LSP6KeyManager__factory } from 'lsp6/types';
-import { LSP7Mintable, LSP7Mintable__factory } from 'lsp7/types';
-import { LSP8Mintable } from 'lsp8/types';
+import { LSP0ERC725Account__factory } from '../../packages/lsp0-contracts/types';
+import { LSP6KeyManager, LSP6KeyManager__factory } from '@lukso/lsp6-contracts/types';
+import { LSP7Mintable, LSP7Mintable__factory } from '@lukso/lsp7-contracts/types';
+import { LSP8Mintable } from '@lukso/lsp8-contracts/types';
 import { LSP7Tester__factory } from '../../types';
 
 import {

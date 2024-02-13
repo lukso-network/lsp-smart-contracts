@@ -3,15 +3,19 @@ pragma solidity ^0.8.4;
 
 import {
     ILSP1UniversalReceiver
-} from "lsp1/contracts/ILSP1UniversalReceiver.sol";
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
 
-import {ILSP14Ownable2Step} from "lsp14/contracts/ILSP14Ownable2Step.sol";
+import {
+    ILSP14Ownable2Step
+} from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
 
-import {ILSP20CallVerifier} from "lsp20/contracts/ILSP20CallVerifier.sol";
+import {
+    ILSP20CallVerifier
+} from "@lukso/lsp20-contracts/contracts/ILSP20CallVerifier.sol";
 import {
     _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITH_POST_VERIFICATION,
     _LSP20_VERIFY_CALL_RESULT_SUCCESS_VALUE
-} from "lsp20/contracts/LSP20Constants.sol";
+} from "@lukso/lsp20-contracts/contracts/LSP20Constants.sol";
 
 contract OwnerWithURD is ILSP20CallVerifier, ILSP1UniversalReceiver {
     address private immutable _OWNED_CONTRACT;

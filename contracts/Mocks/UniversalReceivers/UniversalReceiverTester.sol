@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 // interfaces
 import {
     ILSP1UniversalReceiver
-} from "lsp1/contracts/ILSP1UniversalReceiver.sol";
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
 
 /**
  * @dev This contract is used only for testing purposes

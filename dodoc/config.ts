@@ -4,54 +4,54 @@ import { HelperContent } from 'squirrelly/dist/types/containers';
 export const dodocConfig = {
   runOnCompile: false,
   include: [
-    'universalprofile/contracts/UniversalProfile.sol',
-    'lsp0/contracts/LSP0ERC725Account.sol',
-    'lsp1delegate/contracts/LSP1UniversalReceiverDelegateUP.sol',
-    'lsp1delegate/contracts/LSP1UniversalReceiverDelegateVault.sol',
-    'lsp6/contracts/LSP6KeyManager.sol',
-    'lsp9/contracts/LSP9Vault.sol',
+    '@lukso/universalprofile-contracts/contracts/UniversalProfile.sol',
+    '@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol',
+    '@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol',
+    '@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateVault.sol',
+    '@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol',
+    '@lukso/lsp9-contracts/contracts/LSP9Vault.sol',
     'contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol',
-    'lsp14/contracts/LSP14Ownable2Step.sol',
-    'lsp16/contracts/LSP16UniversalFactory.sol',
-    'lsp17contractextension/contracts/LSP17Extendable.sol',
-    'lsp17contractextension/contracts/LSP17Extension.sol',
-    'lsp17/Extension4337.sol',
-    'lsp17/OnERC721ReceivedExtension.sol',
-    'lsp20/contracts/LSP20CallVerification.sol',
-    'contracts/LSP23LinkedContractsFactory/LSP23LinkedContractsFactory.sol',
-    'contracts/LSP23LinkedContractsFactory/IPostDeploymentModule.sol',
-    'lsp25/contracts/LSP25MultiChannelNonce.sol',
+    '@lukso/lsp14-contracts/contracts/LSP14Ownable2Step.sol',
+    '@lukso/lsp16-contracts/contracts/LSP16UniversalFactory.sol',
+    '@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol',
+    '@lukso/lsp17contractextension-contracts/contracts/LSP17Extension.sol',
+    '@lukso/lsp17-contracts/Extension4337.sol',
+    '@lukso/lsp17-contracts/OnERC721ReceivedExtension.sol',
+    '@lukso/lsp20-contracts/contracts/LSP20CallVerification.sol',
+    '@lukso/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol',
+    '@lukso/lsp23-contracts/contracts/IPostDeploymentModule.sol',
+    '@lukso/lsp25-contracts/contracts/LSP25MultiChannelNonce.sol',
 
     // tokens
-    'lsp4/contracts/LSP4DigitalAssetMetadata.sol',
-    'lsp7/contracts/LSP7DigitalAsset.sol',
-    'lsp7/contracts/extensions/LSP7Burnable.sol',
-    'lsp7/contracts/extensions/LSP7CappedSupply.sol',
-    'lsp7/contracts/presets/LSP7Mintable.sol',
-    'lsp8/contracts/LSP8IdentifiableDigitalAsset.sol',
-    'lsp8/contracts/extensions/LSP8Burnable.sol',
-    'lsp8/contracts/extensions/LSP8CappedSupply.sol',
-    'lsp8/contracts/extensions/LSP8Enumerable.sol',
-    'lsp8/contracts/presets/LSP8Mintable.sol',
+    '@lukso/lsp4-contracts/contracts/LSP4DigitalAssetMetadata.sol',
+    '@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol',
+    '@lukso/lsp7-contracts/contracts/extensions/LSP7Burnable.sol',
+    '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply.sol',
+    '@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.sol',
+    '@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAsset.sol',
+    '@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable.sol',
+    '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply.sol',
+    '@lukso/lsp8-contracts/contracts/extensions/LSP8Enumerable.sol',
+    '@lukso/lsp8-contracts/contracts/presets/LSP8Mintable.sol',
 
     // libraries --------------------
-    'lsp1/contracts/LSP1Utils.sol',
-    'lsp2/contracts/LSP2Utils.sol',
-    'lsp5/contracts/LSP5Utils.sol',
-    'lsp6/contracts/LSP6Utils.sol',
-    'lsp10/contracts/LSP10Utils.sol',
-    'lsp17contractextension/contracts/LSP17Utils.sol',
+    '@lukso/lsp1-contracts/contracts/LSP1Utils.sol',
+    '@lukso/lsp2-contracts/contracts/LSP2Utils.sol',
+    '@lukso/lsp5-contracts/contracts/LSP5Utils.sol',
+    '@lukso/lsp6-contracts/contracts/LSP6Utils.sol',
+    '@lukso/lsp10-contracts/contracts/LSP10Utils.sol',
+    '@lukso/lsp17contractextension-contracts/contracts/LSP17Utils.sol',
 
     // external --------------------
     '@erc725/smart-contracts/contracts/ERC725.sol',
   ],
   libraries: [
-    'lsp1/contracts/LSP1Utils.sol',
-    'lsp2/contracts/LSP2Utils.sol',
-    'lsp5/contracts/LSP5Utils.sol',
-    'lsp6/contracts/LSP6Utils.sol',
-    'lsp10/contracts/LSP10Utils.sol',
-    'lsp17contractextension/contracts/LSP17Utils.sol',
+    '@lukso/lsp1-contracts/contracts/LSP1Utils.sol',
+    '@lukso/lsp2-contracts/contracts/LSP2Utils.sol',
+    '@lukso/lsp5-contracts/contracts/LSP5Utils.sol',
+    '@lukso/lsp6-contracts/contracts/LSP6Utils.sol',
+    '@lukso/lsp10-contracts/contracts/LSP10Utils.sol',
+    '@lukso/lsp17contractextension-contracts/contracts/LSP17Utils.sol',
   ],
   templatePath: './dodoc/template.sqrl',
   helpers: [
@@ -135,6 +135,77 @@ export const dodocConfig = {
 };
 
 const linkBase = 'https://github.com/lukso-network/';
+const SPECS_BASE_URI = 'https://github.com/lukso-network/LIPs/blob/main/LSPs';
+const specs = {
+  ERC725: {
+    specsName: 'ERC-725',
+    specsLink: 'https://github.com/ethereum/EIPs/blob/master/EIPS/eip-725.md',
+  },
+  UniversalProfile: {
+    specsName: 'UniversalProfile',
+    specsLink: `${SPECS_BASE_URI}/LSP-3-UniversalProfile-Metadata.md`,
+  },
+  LSP0ERC725Account: {
+    specsName: 'LSP-0-ERC725Account',
+    specsLink: `${SPECS_BASE_URI}/LSP-0-ERC725Account.md`,
+  },
+  LSP1UniversalReceiver: {
+    specsName: 'LSP-1-UniversalReceiver',
+    specsLink: `${SPECS_BASE_URI}/LSP-1-UniversalReceiver.md`,
+  },
+  LSP2ERC725YJSONSchema: {
+    specsName: 'LSP-2-ERC725YJSONSchema',
+    specsLink: `${SPECS_BASE_URI}/LSP-2-ERC725YJSONSchema.md`,
+  },
+  LSP4DigitalAssetMetadata: {
+    specsName: 'LSP-4-DigitalAsset-Metadata',
+    specsLink: `${SPECS_BASE_URI}/LSP-4-DigitalAsset-Metadata.md`,
+  },
+  LSP5ReceivedAssets: {
+    specsName: 'LSP-5-ReceivedAssets',
+    specsLink: `${SPECS_BASE_URI}/LSP-5-ReceivedAssets.md`,
+  },
+  LSP6KeyManager: {
+    specsName: 'LSP-6-KeyManager',
+    specsLink: `${SPECS_BASE_URI}/LSP-6-KeyManager.md`,
+  },
+  LSP7DigitalAsset: {
+    specsName: 'LSP-7-DigitalAsset',
+    specsLink: `${SPECS_BASE_URI}/LSP-7-DigitalAsset.md`,
+  },
+  LSP8IdentifiableDigitalAsset: {
+    specsName: 'LSP-8-IdentifiableDigitalAsset',
+    specsLink: `${SPECS_BASE_URI}/LSP-8-IdentifiableDigitalAsset.md`,
+  },
+  LSP9Vault: {
+    specsName: 'LSP-9-Vault',
+    specsLink: `${SPECS_BASE_URI}/LSP-9-Vault.md`,
+  },
+  LSP10ReceivedVaults: {
+    specsName: 'LSP-10-ReceivedVaults',
+    specsLink: `${SPECS_BASE_URI}/LSP-10-ReceivedVaults.md`,
+  },
+  LSP11BasicSocialRecovery: {
+    specsName: 'LSP-11-BasicSocialRecovery',
+    specsLink: `${SPECS_BASE_URI}/LSP-11-BasicSocialRecovery.md`,
+  },
+  LSP14Ownable2Step: {
+    specsName: 'LSP-14-Ownable2Step',
+    specsLink: `${SPECS_BASE_URI}/LSP-14-Ownable2Step.md`,
+  },
+  LSP17ContractExtension: {
+    specsName: 'LSP-17-ContractExtension',
+    specsLink: `${SPECS_BASE_URI}/LSP-17-ContractExtension.md`,
+  },
+  LSP20CallVerification: {
+    specsName: 'LSP-20-CallVerification',
+    specsLink: `${SPECS_BASE_URI}/LSP-20-CallVerification.md`,
+  },
+  LSP25ExecuteRelayCall: {
+    specsName: 'LSP-25-ExecuteRelayCall',
+    specsLink: `${SPECS_BASE_URI}/LSP-25-ExecuteRelayCall.md`,
+  },
+};
 
 const createLocalLinks = (textToFormat: string) => {
   let formatedText = textToFormat;
@@ -313,46 +384,31 @@ const generateContractLink = (contractName: string) => {
 };
 
 const generateContractSpecsDetails = (contractName: string) => {
-  if (contractName === 'UniversalProfile') {
-    return {
-      specsName: `${contractName}`,
-      specsLink: `${linkBase}lips/tree/main/LSPs/LSP-3-UniversalProfile-Metadata.md`,
-    };
+  const lspN = contractName.match(/LSP\d+/);
+
+  if (specs[contractName]) {
+    return specs[contractName];
+  } else if (lspN && lspN[0] === 'LSP1') {
+    return specs['LSP1UniversalReceiver'];
+  } else if (lspN && lspN[0] === 'LSP2') {
+    return specs['LSP2ERC725YJSONSchema'];
+  } else if (lspN && lspN[0] === 'LSP5') {
+    return specs['LSP5ReceivedAssets'];
+  } else if (lspN && lspN[0] === 'LSP6') {
+    return specs['LSP6KeyManager'];
+  } else if (lspN && lspN[0] === 'LSP7') {
+    return specs['LSP7DigitalAsset'];
+  } else if (lspN && lspN[0] === 'LSP8') {
+    return specs['LSP8IdentifiableDigitalAsset'];
+  } else if (lspN && lspN[0] === 'LSP10') {
+    return specs['LSP10ReceivedVaults'];
+  } else if (lspN && lspN[0] === 'LSP17') {
+    return specs['LSP17ContractExtension'];
+  } else if (lspN && lspN[0] === 'LSP25') {
+    return specs['LSP25ExecuteRelayCall'];
+  } else {
+    console.error(`Specs for '${contractName}' not found.`);
   }
-
-  if (contractName === 'ERC725') {
-    return {
-      specsName: 'ERC-725',
-      specsLink: 'https://github.com/ethereum/EIPs/blob/master/EIPS/eip-725.md',
-    };
-  }
-
-  const contractPath = dodocConfig.include.filter((value) => {
-    if (value.endsWith(`${contractName}.sol`)) return value;
-  })[0];
-
-  // token contracts have preset and extension folders.
-  if (contractPath.startsWith('lsp7/contracts') || contractPath.startsWith('lsp8/contracts')) {
-    const lspNumber = contractPath[3];
-    const lspName = lspNumber === '8' ? 'IdentifiableDigitalAsset' : 'DigitalAsset';
-    const specsName = `LSP-${lspNumber}-${lspName}`;
-
-    return {
-      specsName: specsName,
-      specsLink: `${linkBase}lips/tree/main/LSPs/${specsName}.md`,
-    };
-  }
-
-  const specsIndex = contractPath.startsWith('lsp') ? 2 : 1;
-  const specs = contractPath.split('/')[specsIndex];
-
-  const lspNumber = specs.match(/\d+/)[0];
-  const lspName = specs.split(/LSP\d+/)[1];
-
-  const specsName = `LSP-${lspNumber}-${lspName}`;
-  const specsLink = `${linkBase}lips/tree/main/LSPs/LSP-${lspNumber}-${lspName}.md`;
-
-  return { specsName, specsLink };
 };
 
 const formatDisplayedCode = (textToFormat: string) => {

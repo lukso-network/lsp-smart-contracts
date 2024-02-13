@@ -2,8 +2,8 @@ import { expect } from 'chai';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
 
-import { UniversalProfileInit__factory } from 'universalprofile/types';
-import { LSP6KeyManagerInit__factory } from 'lsp6/types';
+import { UniversalProfileInit__factory } from '@lukso/universalprofile-contracts/types';
+import { LSP6KeyManagerInit__factory } from '@lukso/lsp6-contracts/types';
 
 import { LSP6TestContext } from '../../utils/context';
 import { deployProxy } from '../../utils/fixtures';

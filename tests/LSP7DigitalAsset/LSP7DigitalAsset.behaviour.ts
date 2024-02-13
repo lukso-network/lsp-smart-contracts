@@ -16,7 +16,7 @@ import {
   TokenReceiverWithLSP1Revert,
   TokenReceiverWithLSP1Revert__factory,
 } from '../../types';
-import { LSP7DigitalAsset } from 'lsp7/types';
+import { LSP7DigitalAsset } from '@lukso/lsp7-contracts/types';
 
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } from '../../constants';
