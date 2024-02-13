@@ -25,7 +25,7 @@ import { UniversalProfile, UniversalProfile__factory } from 'universalprofile/ty
 
 // constants
 import { LSP1_TYPE_IDS, LSP20_SUCCESS_VALUES, OPERATION_TYPES } from '../../constants';
-import { abiCoder } from './..//utils/helpers';
+import { abiCoder } from '../utils/helpers';
 
 export type LSP20TestContext = {
   accounts: SignerWithAddress[];

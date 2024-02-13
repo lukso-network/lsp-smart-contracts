@@ -1,0 +1,98 @@
+{
+  "name": "@lukso/lsp-smart-contracts",
+  "version": "0.12.1",
+  "description": "Package for the LSP Smart Contracts that contains artifacts and Solidity contracts implementation of multiple LSP standards.",
+  "license": "Apache-2.0",
+  "author": "",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "typings": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./constants.js": {
+      "require": "./dist/constants.cjs",
+      "import": "./dist/constants.mjs",
+      "types": "./dist/constants.d.ts"
+    },
+    "./constants": {
+      "require": "./dist/constants.cjs",
+      "import": "./dist/constants.mjs",
+      "types": "./dist/constants.d.ts"
+    },
+    "./userdocs/*": "./userdocs",
+    "./devdocs/*": "./devdocs/*",
+    "./artifacts/*": "./artifacts/*",
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
+  },
+  "keywords": [
+    "LUKSO",
+    "LSP",
+    "Blockchain",
+    "Standards",
+    "Smart Contracts",
+    "Ethereum",
+    "EVM",
+    "Solidity"
+  ],
+  "scripts": {
+    "build": "hardhat compile --show-stack-traces",
+    "build:docs": "hardhat dodoc && prettier -w ./docs",
+    "build:js": "unbuild",
+    "clean": "hardhat clean",
+    "format": "prettier --write .",
+    "lint": "eslint . --ext .ts,.js",
+    "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
+    "package": "hardhat prepare-package",
+    "test": "hardhat test --no-compile tests/*.test.ts",
+    "test:benchmark": "hardhat test --no-compile tests/Benchmark.test.ts",
+    "test:coverage": "hardhat coverage",
+    "test:foundry": "forge test --no-match-test Skip -vvv"
+  },
+  "dependencies": {
+    "@lukso/lsp0-contracts": "*",
+    "@lukso/lsp1-contracts": "*",
+    "@lukso/lsp1delegate-contracts": "*",
+    "@lukso/lsp2-contracts": "*",
+    "@lukso/lsp3-contracts": "*",
+    "@lukso/lsp4-contracts": "*",
+    "@lukso/lsp5-contracts": "*",
+    "@lukso/lsp6-contracts": "*",
+    "@lukso/lsp7-contracts": "*",
+    "@lukso/lsp8-contracts": "*",
+    "@lukso/lsp9-contracts": "*",
+    "@lukso/lsp10-contracts": "*",
+    "@lukso/lsp12-contracts": "*",
+    "@lukso/lsp14-contracts": "*",
+    "@lukso/lsp15-contracts": "*",
+    "@lukso/lsp16-contracts": "*",
+    "@lukso/lsp17contractextension": "*",
+    "@lukso/lsp17-contracts": "*",
+    "@lukso/lsp20-contracts": "*",
+    "@lukso/lsp23-contracts": "*",
+    "@lukso/lsp25-contracts": "*",
+    "@lukso/universalprofile-contracts": "*"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "@typechain/ethers-v5": "^10.2.0",
+    "dotenv": "^16.0.3",
+    "eslint-config-custom": "*",
+    "ethers": "^5.7.2",
+    "hardhat": "^2.13.0",
+    "hardhat-contract-sizer": "^2.8.0",
+    "hardhat-deploy": "^0.11.25",
+    "hardhat-gas-reporter": "^1.0.9",
+    "hardhat-packager": "^1.4.2",
+    "solhint": "^3.3.6",
+    "ts-node": "^10.2.0",
+    "tsconfig": "*",
+    "typechain": "^8.0.0",
+    "typescript": "^5.3.3"
+  }
+}
