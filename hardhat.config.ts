@@ -15,18 +15,18 @@ import { resolve } from 'path';
 import '@nomicfoundation/hardhat-toolbox';
 
 // additional hardhat plugins
-import 'hardhat-packager';
+// import 'hardhat-packager';
 import 'hardhat-contract-sizer';
 import 'hardhat-deploy';
 
 // custom built hardhat plugins for CI
-import './scripts/ci/docs-generate';
+// import './scripts/ci/docs-generate';
 import './scripts/ci/gas_benchmark';
 import './scripts/ci/check-deployer-balance';
 import './scripts/ci/verify-all-contracts';
 
 // Typescript types for web3.js
-import '@nomiclabs/hardhat-web3';
+// import '@nomiclabs/hardhat-web3';
 
 /**
  * @dev uncomment to generate contract docs in Markdown
@@ -142,58 +142,58 @@ const config: HardhatUserConfig = {
   mocha: {
     timeout: 10000000,
   },
-  packager: {
-    // What contracts to keep the artifacts and the bindings for.
-    contracts: [
-      // Standard version
-      // ------------------
-      'UniversalProfile',
-      'LSP0ERC725Account',
-      'LSP1UniversalReceiverDelegateUP',
-      'LSP1UniversalReceiverDelegateVault',
-      'LSP4DigitalAssetMetadata',
-      'LSP6KeyManager',
-      'LSP7DigitalAsset',
-      'LSP7CappedSupply',
-      'LSP7Mintable',
-      'LSP8IdentifiableDigitalAsset',
-      'LSP8CappedSupply',
-      'LSP8Mintable',
-      'LSP9Vault',
-      'LSP11BasicSocialRecovery',
-      // Proxy version
-      // ------------------
-      'UniversalProfileInit',
-      'LSP0ERC725AccountInit',
-      'LSP4DigitalAssetMetadataInitAbstract',
-      'LSP6KeyManagerInit',
-      'LSP7DigitalAssetInitAbstract',
-      'LSP7CappedSupplyInitAbstract',
-      'LSP7MintableInit',
-      'LSP8IdentifiableDigitalAssetInitAbstract',
-      'LSP8CappedSupplyInitAbstract',
-      'LSP8MintableInit',
-      'LSP9VaultInit',
-      'LSP11BasicSocialRecoveryInit',
-      // Legacy L14
-      // ------------------
-      'UniversalReceiverAddressStore',
-      // Tools
-      // ------------------
-      'Create2Factory',
-      'LSP23LinkedContractsFactory',
-    ],
-    // Whether to include the TypeChain factories or not.
-    // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
-    includeFactories: true,
-  },
+  // packager: {
+  //   // What contracts to keep the artifacts and the bindings for.
+  //   contracts: [
+  //     // Standard version
+  //     // ------------------
+  //     'UniversalProfile',
+  //     'LSP0ERC725Account',
+  //     'LSP1UniversalReceiverDelegateUP',
+  //     'LSP1UniversalReceiverDelegateVault',
+  //     'LSP4DigitalAssetMetadata',
+  //     'LSP6KeyManager',
+  //     'LSP7DigitalAsset',
+  //     'LSP7CappedSupply',
+  //     'LSP7Mintable',
+  //     'LSP8IdentifiableDigitalAsset',
+  //     'LSP8CappedSupply',
+  //     'LSP8Mintable',
+  //     'LSP9Vault',
+  //     'LSP11BasicSocialRecovery',
+  //     // Proxy version
+  //     // ------------------
+  //     'UniversalProfileInit',
+  //     'LSP0ERC725AccountInit',
+  //     'LSP4DigitalAssetMetadataInitAbstract',
+  //     'LSP6KeyManagerInit',
+  //     'LSP7DigitalAssetInitAbstract',
+  //     'LSP7CappedSupplyInitAbstract',
+  //     'LSP7MintableInit',
+  //     'LSP8IdentifiableDigitalAssetInitAbstract',
+  //     'LSP8CappedSupplyInitAbstract',
+  //     'LSP8MintableInit',
+  //     'LSP9VaultInit',
+  //     'LSP11BasicSocialRecoveryInit',
+  //     // Legacy L14
+  //     // ------------------
+  //     'UniversalReceiverAddressStore',
+  //     // Tools
+  //     // ------------------
+  //     'Create2Factory',
+  //     'LSP23LinkedContractsFactory',
+  //   ],
+  //   // Whether to include the TypeChain factories or not.
+  //   // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
+  //   includeFactories: true,
+  // },
   paths: {
     artifacts: 'artifacts',
     tests: 'tests',
   },
   typechain: {
     outDir: 'types',
-    target: 'ethers-v5',
+    target: 'ethers-v6',
   },
   dodoc: dodocConfig,
 };

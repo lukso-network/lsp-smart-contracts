@@ -21,12 +21,13 @@
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
-    "@typechain/ethers-v5": "^10.2.0",
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@typechain/hardhat": "^9.1.0",
+    "@typechain/ethers-v6": "^0.5.1",
     "dotenv": "^16.0.3",
     "eslint-config-custom": "*",
-    "ethers": "^5.7.2",
-    "hardhat": "^2.13.0",
+    "ethers": "^6.11.0",
+    "hardhat": "^2.20.0",
     "hardhat-contract-sizer": "^2.8.0",
     "hardhat-deploy": "^0.11.25",
     "hardhat-gas-reporter": "^1.0.9",
@@ -34,7 +35,7 @@
     "solhint": "^3.3.6",
     "ts-node": "^10.2.0",
     "tsconfig": "*",
-    "typechain": "^8.0.0",
+    "typechain": "^8.3.2",
     "typescript": "^5.3.3"
   }
 }

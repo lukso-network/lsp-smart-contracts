@@ -16,7 +16,7 @@ import { resolve } from 'path';
 import '@nomicfoundation/hardhat-toolbox';
 
 // additional hardhat plugins
-import 'hardhat-packager';
+// import 'hardhat-packager';
 import 'hardhat-contract-sizer';
 import 'hardhat-deploy';
 
@@ -118,7 +118,7 @@ const config: HardhatUserConfig = {
   },
   typechain: {
     outDir: 'types',
-    target: 'ethers-v5',
+    target: 'ethers-v6',
   },
   mocha: {
     timeout: 10000000,

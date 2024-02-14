@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
-    "@typechain/ethers-v5": "^10.2.0",
+    "@typechain/ethers-v6": "^0.5.1",
     "dotenv": "^16.0.3",
     "eslint-config-custom": "*",
     "ethers": "^5.7.2",
@@ -42,7 +42,7 @@
     "solhint": "^3.3.6",
     "ts-node": "^10.2.0",
     "tsconfig": "*",
-    "typechain": "^8.0.0",
+    "typechain": "^8.3.2",
     "typescript": "^5.3.3"
   }
 }

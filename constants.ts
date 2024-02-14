@@ -3,7 +3,7 @@
  * @see https://github.com/lukso-network/LIPs/tree/main/LSPs
  */
 
-export * from './contracts';
+// export * from './contracts';
 
 // ERC165
 // ---------
