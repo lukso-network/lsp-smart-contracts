@@ -83,7 +83,6 @@
     "test:up": "hardhat test --no-compile tests/UniversalProfile.test.ts",
     "test:upinit": "hardhat test --no-compile tests/UniversalProfileInit.test.ts",
     "test:lsp1": "hardhat test --no-compile tests/LSP1UniversalReceiver/*.test.ts",
-    "test:lsp2": "hardhat test --no-compile tests/LSP2ERC725YJSONSchema/LSP2UtilsLibrary.test.ts",
     "test:lsp6": "hardhat test --no-compile tests/LSP6KeyManager/LSP6KeyManager.test.ts",
     "test:lsp6init": "hardhat test --no-compile tests/LSP6KeyManager/LSP6KeyManagerInit.test.ts",
     "test:lsp7": "hardhat test --no-compile tests/LSP7DigitalAsset/standard/*.test.ts",
