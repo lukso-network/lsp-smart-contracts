@@ -795,7 +795,7 @@ Transfer a given `tokenId` token from the `from` address to the `to` address. If
 | `from`    | `address` | The address that owns the given `tokenId`.                                                                                                                          |
 | `to`      | `address` | The address that will receive the `tokenId`.                                                                                                                        |
 | `tokenId` | `bytes32` | The token ID to transfer.                                                                                                                                           |
-| `force`   |  `bool`   | When set to `true`, the `to` address CAN be any addres. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard. |
+| `force`   |  `bool`   | When set to `true`, the `to` address CAN be any address. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard. |
 | `data`    |  `bytes`  | Any additional data the caller wants included in the emitted event, and sent in the hooks of the `from` and `to` addresses.                                         |
 
 <br/>
@@ -1211,7 +1211,7 @@ function _beforeTokenTransfer(
 ```
 
 Hook that is called before any token transfer, including minting and burning.
-Allows to run custom logic before updating balances and notifiying sender/recipient by overriding this function.
+Allows to run custom logic before updating balances and notifying sender/recipient by overriding this function.
 
 #### Parameters
 
@@ -1236,7 +1236,7 @@ function _afterTokenTransfer(
 ```
 
 Hook that is called after any token transfer, including minting and burning.
-Allows to run custom logic after updating balances, but **before notifiying sender/recipient via LSP1** by overriding this function.
+Allows to run custom logic after updating balances, but **before notifying sender/recipient via LSP1** by overriding this function.
 
 #### Parameters
 
