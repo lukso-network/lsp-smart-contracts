@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers, network } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 // types
 import {
@@ -16,7 +16,7 @@ import {
 import { UniversalProfile } from '@lukso/universalprofile-contracts/types';
 
 // helpers
-import { LSP1_HOOK_PLACEHOLDER, abiCoder, getRandomAddresses } from './utils/helpers';
+import { LSP1_HOOK_PLACEHOLDER, abiCoder, getRandomAddresses } from './utils/helpers.ts';
 
 // constants
 import {
@@ -27,6 +27,7 @@ import {
   OPERATION_TYPES,
   SupportedStandards,
 } from '../constants';
+import { AddressLike } from 'ethers';
 
 export type LSP3TestContext = {
   accounts: SignerWithAddress[];
@@ -39,19 +40,24 @@ export const shouldBehaveLikeLSP3 = (
 ) => {
   let context: LSP3TestContext;
 
+  let universalProfileAddress: AddressLike;
+
   before(async () => {
     context = await buildContext(100);
+    universalProfileAddress = await context.universalProfile.getAddress();
   });
 
   describe('when using `isValidSignature()` from ERC1271', () => {
-    afterEach(async () => {
+    beforeEach(async () => {
       context = await buildContext(100);
+      universalProfileAddress = await context.universalProfile.getAddress();
     });
+
     it('should verify signature from owner', async () => {
       const signer = context.deployParams.owner;
 
       const dataToSign = '0xcafecafe';
-      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const messageHash = ethers.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
 
       const result = await context.universalProfile.isValidSignature(messageHash, signature);
@@ -62,7 +68,7 @@ export const shouldBehaveLikeLSP3 = (
       const signer = context.accounts[1];
 
       const dataToSign = '0xcafecafe';
-      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const messageHash = ethers.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
 
       const result = await context.universalProfile.isValidSignature(messageHash, signature);
@@ -73,18 +79,19 @@ export const shouldBehaveLikeLSP3 = (
       const signer = context.accounts[1];
 
       const genericExecutor = await new GenericExecutor__factory(context.accounts[0]).deploy();
+      const genericExecutorAddress = await genericExecutor.getAddress();
 
       await context.universalProfile
         .connect(context.accounts[0])
-        .transferOwnership(genericExecutor.address);
+        .transferOwnership(genericExecutorAddress);
 
       const acceptOwnershipPayload =
         context.universalProfile.interface.encodeFunctionData('acceptOwnership');
 
-      await genericExecutor.call(context.universalProfile.address, 0, acceptOwnershipPayload);
+      await genericExecutor.call(universalProfileAddress, 0, acceptOwnershipPayload);
 
       const dataToSign = '0xcafecafe';
-      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const messageHash = ethers.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
 
       const result = await context.universalProfile.isValidSignature(messageHash, signature);
@@ -97,22 +104,19 @@ export const shouldBehaveLikeLSP3 = (
       const maliciousERC1271Wallet = await new ERC1271MaliciousMock__factory(
         context.accounts[0],
       ).deploy();
+      const maliciousERC1271WalletAddress = await maliciousERC1271Wallet.getAddress();
 
       await context.universalProfile
         .connect(context.accounts[0])
-        .transferOwnership(maliciousERC1271Wallet.address);
+        .transferOwnership(maliciousERC1271WalletAddress);
 
       const acceptOwnershipPayload =
         context.universalProfile.interface.encodeFunctionData('acceptOwnership');
 
-      await maliciousERC1271Wallet.call(
-        context.universalProfile.address,
-        0,
-        acceptOwnershipPayload,
-      );
+      await maliciousERC1271Wallet.call(universalProfileAddress, 0, acceptOwnershipPayload);
 
       const dataToSign = '0xcafecafe';
-      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const messageHash = ethers.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
 
       const result = await context.universalProfile.isValidSignature(messageHash, signature);
@@ -121,7 +125,7 @@ export const shouldBehaveLikeLSP3 = (
 
     it('should return failValue when providing an invalid length signature', async () => {
       const data = '0xcafecafe';
-      const messageHash = ethers.utils.hashMessage(data);
+      const messageHash = ethers.hashMessage(data);
       const signature = '0xbadbadbadb';
 
       const result = await context.universalProfile.isValidSignature(messageHash, signature);
@@ -176,11 +180,11 @@ export const shouldBehaveLikeLSP3 = (
       const expectedValuesLength = lsp12IssuedAssetsValues.length + newIssuedAssets.length;
 
       for (let ii = 0; ii < newIssuedAssets.length; ii++) {
-        const hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length);
+        const hexIndex = ethers.toBeHex(lsp12IssuedAssetsKeys.length);
 
         lsp12IssuedAssetsKeys.push(
           ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].index +
-            ethers.utils.hexZeroPad(hexIndex, 16).substring(2),
+            ethers.zeroPadValue(hexIndex, 16).substring(2),
         );
 
         lsp12IssuedAssetsValues.push(newIssuedAssets[ii]);
@@ -195,7 +199,7 @@ export const shouldBehaveLikeLSP3 = (
 
       const values = [
         ...lsp12IssuedAssetsValues,
-        ethers.utils.hexZeroPad(ethers.utils.hexlify(lsp12IssuedAssetsValues.length), 32),
+        ethers.zeroPadValue(ethers.toBeHex(lsp12IssuedAssetsValues.length), 32),
       ];
 
       await context.universalProfile.setDataBatch(keys, values);
@@ -206,11 +210,11 @@ export const shouldBehaveLikeLSP3 = (
 
     for (let ii = 1; ii <= 8; ii++) {
       it('should add +1 LSP12IssuedAssets', async () => {
-        const hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length + 1);
+        const hexIndex = ethers.toBeHex(lsp12IssuedAssetsKeys.length + 1);
 
         lsp12IssuedAssetsKeys.push(
           ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].index +
-            ethers.utils.hexZeroPad(hexIndex, 16).substring(2),
+            ethers.zeroPadValue(hexIndex, 16).substring(2),
         );
 
         lsp12IssuedAssetsValues.push(ethers.Wallet.createRandom().address.toLowerCase());
@@ -222,7 +226,7 @@ export const shouldBehaveLikeLSP3 = (
 
         const values = [
           ...lsp12IssuedAssetsValues,
-          ethers.utils.hexZeroPad(ethers.utils.hexlify(lsp12IssuedAssetsValues.length), 32),
+          ethers.zeroPadValue(ethers.toBeHex(lsp12IssuedAssetsValues.length), 32),
         ];
 
         await context.universalProfile.setDataBatch(keys, values);
@@ -234,8 +238,8 @@ export const shouldBehaveLikeLSP3 = (
 
     describe('when setting a data key with a value less than 256 bytes', () => {
       it('should emit DataChanged event with the whole data value', async () => {
-        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-        const value = ethers.utils.hexlify(ethers.utils.randomBytes(200));
+        const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
+        const value = ethers.hexlify(ethers.randomBytes(200));
 
         await expect(context.universalProfile.setData(key, value))
           .to.emit(context.universalProfile, 'DataChanged')
@@ -248,8 +252,8 @@ export const shouldBehaveLikeLSP3 = (
 
     describe('when setting a data key with a value more than 256 bytes', () => {
       it('should emit DataChanged event with the whole data value', async () => {
-        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-        const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+        const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
+        const value = ethers.hexlify(ethers.randomBytes(500));
 
         await expect(context.universalProfile.setData(key, value))
           .to.emit(context.universalProfile, 'DataChanged')
@@ -262,8 +266,8 @@ export const shouldBehaveLikeLSP3 = (
 
     describe('when setting a data key with a value exactly 256 bytes long', () => {
       it('should emit DataChanged event with the whole data value', async () => {
-        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-        const value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
+        const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
+        const value = ethers.hexlify(ethers.randomBytes(256));
 
         await expect(context.universalProfile.setData(key, value))
           .to.emit(context.universalProfile, 'DataChanged')
@@ -277,9 +281,9 @@ export const shouldBehaveLikeLSP3 = (
     describe('when sending value while setting data', () => {
       describe('when calling setData(..)', () => {
         it('should pass and emit the UniversalReceiver event', async () => {
-          const msgValue = ethers.utils.parseEther('2');
-          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-          const value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
+          const msgValue = ethers.parseEther('2');
+          const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
+          const value = ethers.hexlify(ethers.randomBytes(256));
 
           await expect(
             context.universalProfile
@@ -291,7 +295,7 @@ export const shouldBehaveLikeLSP3 = (
               context.accounts[0].address,
               msgValue,
               LSP1_TYPE_IDS.LSP0ValueReceived,
-              context.universalProfile.interface.getSighash('setData'),
+              context.universalProfile.interface.getFunction('setData').selector,
               '0x',
             );
 
@@ -302,9 +306,9 @@ export const shouldBehaveLikeLSP3 = (
 
       describe('when calling setData(..) Array', () => {
         it('should pass and emit the UniversalReceiver event', async () => {
-          const msgValue = ethers.utils.parseEther('2');
-          const key = [ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'))];
-          const value = [ethers.utils.hexlify(ethers.utils.randomBytes(256))];
+          const msgValue = ethers.parseEther('2');
+          const key = [ethers.keccak256(ethers.toUtf8Bytes('My Key'))];
+          const value = [ethers.hexlify(ethers.randomBytes(256))];
 
           await expect(
             context.universalProfile
@@ -316,7 +320,7 @@ export const shouldBehaveLikeLSP3 = (
               context.accounts[0].address,
               msgValue,
               LSP1_TYPE_IDS.LSP0ValueReceived,
-              context.universalProfile.interface.getSighash('setDataBatch'),
+              context.universalProfile.interface.getFunction('setDataBatch').selector,
               '0x',
             );
 
@@ -335,22 +339,21 @@ export const shouldBehaveLikeLSP3 = (
       // prettier-ignore
       await expect(
         sender.sendTransaction({
-          to: context.universalProfile.address,
+          to: universalProfileAddress,
           value: amount,
         })
-      ).to.not.be.reverted
-        .to.not.emit(context.universalProfile, "UniversalReceiver");
+      ).to.not.emit(context.universalProfile, "UniversalReceiver");
     });
   });
 
   describe('when sending native tokens to the contract', () => {
     it('should emit the right UniversalReceiver event', async () => {
       const sender = context.accounts[0];
-      const amount = ethers.utils.parseEther('5');
+      const amount = ethers.parseEther('5');
 
       await expect(
         sender.sendTransaction({
-          to: context.universalProfile.address,
+          to: universalProfileAddress,
           value: amount,
         }),
       )
@@ -366,13 +369,13 @@ export const shouldBehaveLikeLSP3 = (
 
     it('should allow to send a random payload as well, and emit the UniversalReceiver event', async () => {
       const sender = context.accounts[0];
-      const amount = ethers.utils.parseEther('5');
+      const amount = ethers.parseEther('5');
 
       // The payload must be prepended with bytes4(0) to be interpreted as graffiti
       // and not as a function selector
       await expect(
         sender.sendTransaction({
-          to: context.universalProfile.address,
+          to: universalProfileAddress,
           value: amount,
           data: '0x00000000aabbccdd',
         }),
@@ -393,7 +396,7 @@ export const shouldBehaveLikeLSP3 = (
       // The payload must be prepended with bytes4(0) to be interpreted as graffiti
       // and not as a function selector
       const tx = await context.accounts[0].sendTransaction({
-        to: context.universalProfile.address,
+        to: universalProfileAddress,
         value: 0,
         data: '0x00000000aabbccdd',
       });
@@ -412,10 +415,10 @@ export const shouldBehaveLikeLSP3 = (
           context.accounts[2].address,
           context.accounts[3].address,
         ];
-        const values = Array(3).fill(ethers.BigNumber.from('1'));
+        const values = Array(3).fill(ethers.toBigInt(1));
         const datas = Array(3).fill('0x');
 
-        const msgValue = ethers.utils.parseEther('10');
+        const msgValue = ethers.parseEther('10');
 
         const tx = await context.universalProfile.executeBatch(
           operationsType,
@@ -431,7 +434,7 @@ export const shouldBehaveLikeLSP3 = (
             context.deployParams.owner.address,
             msgValue,
             LSP1_TYPE_IDS.LSP0ValueReceived,
-            context.universalProfile.interface.getSighash('executeBatch'),
+            context.universalProfile.interface.getFunction('executeBatch').selector,
             '0x',
           );
       });
@@ -445,7 +448,7 @@ export const shouldBehaveLikeLSP3 = (
           context.accounts[2].address,
           context.accounts[3].address,
         ];
-        const values = Array(3).fill(ethers.BigNumber.from('1'));
+        const values = Array(3).fill(ethers.toBigInt(1));
         const datas = Array(3).fill('0x');
 
         const msgValue = 0;
@@ -466,8 +469,8 @@ export const shouldBehaveLikeLSP3 = (
   describe('when using batchCalls function', () => {
     describe('when non-owner is calling', () => {
       it('shoud revert', async () => {
-        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-        const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+        const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
+        const value = ethers.hexlify(ethers.randomBytes(500));
 
         const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
           key,
@@ -486,8 +489,8 @@ export const shouldBehaveLikeLSP3 = (
       describe('when executing one function', () => {
         describe('setData', () => {
           it('should pass', async () => {
-            const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
-            const value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+            const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
+            const value = ethers.hexlify(ethers.randomBytes(500));
 
             const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setData',
@@ -516,7 +519,7 @@ export const shouldBehaveLikeLSP3 = (
                 .connect(context.deployParams.owner)
                 .batchCalls([executePayload]),
             ).to.changeEtherBalances(
-              [context.universalProfile.address, context.accounts[4].address],
+              [universalProfileAddress, context.accounts[4].address],
               [`-${amount}`, amount],
             );
           });
@@ -532,8 +535,8 @@ export const shouldBehaveLikeLSP3 = (
               [0, context.accounts[5].address, amount, '0x'],
             );
 
-            const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('A new key'));
-            const value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
+            const key = ethers.keccak256(ethers.toUtf8Bytes('A new key'));
+            const value = ethers.hexlify(ethers.randomBytes(10));
 
             const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setData',
@@ -545,8 +548,8 @@ export const shouldBehaveLikeLSP3 = (
               [context.accounts[8].address],
             );
 
-            expect(await context.universalProfile.callStatic.pendingOwner()).to.equal(
-              ethers.constants.AddressZero,
+            expect(await context.universalProfile.pendingOwner.staticCall()).to.equal(
+              ethers.ZeroAddress,
             );
 
             await expect(() =>
@@ -554,14 +557,14 @@ export const shouldBehaveLikeLSP3 = (
                 .connect(context.deployParams.owner)
                 .batchCalls([executePayload, setDataPayload, transferOwnershipPayload]),
             ).to.changeEtherBalances(
-              [context.universalProfile.address, context.accounts[5].address],
+              [universalProfileAddress, context.accounts[5].address],
               [`-${amount}`, amount],
             );
 
             const result = await context.universalProfile.getData(key);
             expect(result).to.equal(value);
 
-            expect(await context.universalProfile.callStatic.pendingOwner()).to.equal(
+            expect(await context.universalProfile.pendingOwner.staticCall()).to.equal(
               context.accounts[8].address,
             );
           });
@@ -575,8 +578,8 @@ export const shouldBehaveLikeLSP3 = (
               [3, context.accounts[5].address, amount, '0x'],
             );
 
-            const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Another key'));
-            const value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
+            const key = ethers.keccak256(ethers.toUtf8Bytes('Another key'));
+            const value = ethers.hexlify(ethers.randomBytes(10));
 
             const setDataPayload = context.universalProfile.interface.encodeFunctionData(
               'setData',
@@ -609,21 +612,21 @@ export const shouldBehaveLikeLSP3 = (
         .setData(
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
             LSP1_TYPE_IDS.LSP0ValueReceived.substring(2, 42),
-          universalReceiverDelegateLYX.address,
+          await universalReceiverDelegateLYX.getAddress(),
         );
     });
 
     describe('when sending LYX to the receive function', () => {
       it('should react on the call and apply the logic of the URD', async () => {
         const tx = await context.accounts[1].sendTransaction({
-          to: context.universalProfile.address,
+          to: universalProfileAddress,
           value: 5,
         });
 
         expect(tx).to.emit(context.universalProfile, 'UniversalReceiver');
 
         const result = await universalReceiverDelegateLYX.lastValueReceived(
-          context.universalProfile.address,
+          universalProfileAddress,
         );
 
         expect(result).to.equal(5);
@@ -633,13 +636,13 @@ export const shouldBehaveLikeLSP3 = (
     describe('when sending empty call to the receive function', () => {
       it('should not react on the call and not emit UniversalReceiver', async () => {
         const tx = await context.accounts[1].sendTransaction({
-          to: context.universalProfile.address,
+          to: universalProfileAddress,
         });
 
         expect(tx).to.not.emit(context.universalProfile, 'UniversalReceiver');
 
-        const result = await universalReceiverDelegateLYX.callStatic.lastValueReceived(
-          context.universalProfile.address,
+        const result = await universalReceiverDelegateLYX.lastValueReceived.staticCall(
+          universalProfileAddress,
         );
 
         expect(result).to.equal(5);
@@ -649,15 +652,15 @@ export const shouldBehaveLikeLSP3 = (
     describe('when calling the UP with graffiti and value', () => {
       it('should react on the call and emit UniversalReceiver', async () => {
         const tx = await context.accounts[1].sendTransaction({
-          to: context.universalProfile.address,
+          to: universalProfileAddress,
           data: '0x00000000aabbccdd',
           value: 7,
         });
 
         expect(tx).to.emit(context.universalProfile, 'UniversalReceiver');
 
-        const result = await universalReceiverDelegateLYX.callStatic.lastValueReceived(
-          context.universalProfile.address,
+        const result = await universalReceiverDelegateLYX.lastValueReceived.staticCall(
+          universalProfileAddress,
         );
 
         expect(result).to.equal(7);
@@ -680,12 +683,12 @@ export const shouldBehaveLikeLSP3 = (
 
         await context.universalProfile
           .connect(context.deployParams.owner)
-          .setData(emitEventFunctionExtensionHandlerKey, emitEventExtension.address);
+          .setData(emitEventFunctionExtensionHandlerKey, await emitEventExtension.getAddress());
       });
 
       it('should react on the call and emit UniversalReceiver and run the extension', async () => {
         const tx = await context.accounts[1].sendTransaction({
-          to: context.universalProfile.address,
+          to: universalProfileAddress,
           data: emitEventFunctionSelector,
           value: 10,
         });
@@ -693,8 +696,8 @@ export const shouldBehaveLikeLSP3 = (
         expect(tx).to.emit(context.universalProfile, 'UniversalReceiver');
         expect(tx).to.emit(emitEventExtension, 'EventEmittedInExtension');
 
-        const result = await universalReceiverDelegateLYX.callStatic.lastValueReceived(
-          context.universalProfile.address,
+        const result = await universalReceiverDelegateLYX.lastValueReceived.staticCall(
+          universalProfileAddress,
         );
 
         expect(result).to.equal(10);
@@ -723,15 +726,15 @@ export const shouldBehaveLikeLSP3 = (
             context.accounts[0].address,
             15,
             LSP1_TYPE_IDS.LSP0ValueReceived,
-            context.universalProfile.interface.getSighash('universalReceiver') +
+            context.universalProfile.interface.getFunction('universalReceiver') +
               abiCoder
                 .encode(['bytes32', 'bytes'], [LSP1_HOOK_PLACEHOLDER, '0xaabbccdd'])
                 .substr(2),
             abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
           );
 
-        const result = await universalReceiverDelegateLYX.callStatic.lastValueReceived(
-          context.universalProfile.address,
+        const result = await universalReceiverDelegateLYX.lastValueReceived.staticCall(
+          universalProfileAddress,
         );
 
         expect(result).to.equal(15);
@@ -745,12 +748,12 @@ export const shouldBehaveLikeLSP3 = (
 
       before('Use custom owner that implements LSP1', async () => {
         newContractOwner = await new OwnerWithURD__factory(context.accounts[0]).deploy(
-          context.universalProfile.address,
+          universalProfileAddress,
         );
 
         await context.universalProfile
           .connect(context.deployParams.owner)
-          .transferOwnership(newContractOwner.address);
+          .transferOwnership(await newContractOwner.getAddress());
 
         await newContractOwner.acceptOwnership();
       });
@@ -762,19 +765,19 @@ export const shouldBehaveLikeLSP3 = (
       it('should renounce ownership of the contract and call the URD of the previous owner', async () => {
         await newContractOwner.connect(context.accounts[0]).renounceOwnership();
 
-        await network.provider.send('hardhat_mine', [ethers.utils.hexValue(199)]);
+        await network.provider.send('hardhat_mine', [ethers.toBeHex(199)]);
 
         const tx = await newContractOwner.connect(context.accounts[0]).renounceOwnership();
 
         await expect(tx)
           .to.emit(newContractOwner, 'UniversalReceiver')
           .withArgs(
-            context.universalProfile.address,
+            universalProfileAddress,
             0,
             LSP1_TYPE_IDS.LSP0OwnershipTransferred_SenderNotification,
             abiCoder.encode(
               ['address', 'address'],
-              [newContractOwner.address, ethers.constants.AddressZero],
+              [await newContractOwner.getAddress(), ethers.ZeroAddress],
             ),
             '0x',
           );

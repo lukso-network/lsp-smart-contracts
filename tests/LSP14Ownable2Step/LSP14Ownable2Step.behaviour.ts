@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers, network, artifacts } from 'hardhat';
 
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import {
   LSP9Vault,
   UPWithInstantAcceptOwnership__factory,
@@ -13,7 +13,7 @@ import { OPERATION_TYPES } from '../../constants';
 
 // helpers
 import { provider } from '../utils/helpers';
-import { BigNumber, ContractTransaction } from 'ethers';
+import { ContractTransaction } from 'ethers';
 
 export type LSP14TestContext = {
   accounts: SignerWithAddress[];
@@ -172,7 +172,7 @@ export const shouldBehaveLikeLSP14 = (
 
       it('should have cleared the pendingOwner after transferring ownership', async () => {
         const newPendingOwner = await context.contract.pendingOwner();
-        expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
+        expect(newPendingOwner).to.equal(ethers.ZeroAddress);
       });
 
       it('should have emitted a OwnershipTransferred event', async () => {
@@ -317,7 +317,7 @@ export const shouldBehaveLikeLSP14 = (
       });
 
       it('should reset the pendingOwner', async () => {
-        expect(await context.contract.pendingOwner()).to.equal(ethers.constants.AddressZero);
+        expect(await context.contract.pendingOwner()).to.equal(ethers.ZeroAddress);
       });
 
       describe('currentOwner should still be able to interact with contract before confirming', () => {
@@ -426,19 +426,19 @@ export const shouldBehaveLikeLSP14 = (
         it('should have emitted a OwnershipTransferred event', async () => {
           await expect(renounceOwnershipSecondTx)
             .to.emit(context.contract, 'OwnershipTransferred')
-            .withArgs(context.deployParams.owner.address, ethers.constants.AddressZero);
+            .withArgs(context.deployParams.owner.address, ethers.ZeroAddress);
 
-          expect(await context.contract.owner()).to.equal(ethers.constants.AddressZero);
+          expect(await context.contract.owner()).to.equal(ethers.ZeroAddress);
         });
 
         it('should have emitted a OwnershipRenounced event', async () => {
           await expect(renounceOwnershipSecondTx).to.emit(context.contract, 'OwnershipRenounced');
 
-          expect(await context.contract.owner()).to.equal(ethers.constants.AddressZero);
+          expect(await context.contract.owner()).to.equal(ethers.ZeroAddress);
         });
 
         it('owner should now be address(0)', async () => {
-          expect(await context.contract.owner()).to.equal(ethers.constants.AddressZero);
+          expect(await context.contract.owner()).to.equal(ethers.ZeroAddress);
         });
 
         it('should have reset the `_renounceOwnershipStartedAt` state variable to zero', async () => {
@@ -511,7 +511,7 @@ export const shouldBehaveLikeLSP14 = (
         });
 
         it('should reset the pendingOwner whenever renounceOwnership(..) is confirmed', async () => {
-          expect(await context.contract.pendingOwner()).to.equal(ethers.constants.AddressZero);
+          expect(await context.contract.pendingOwner()).to.equal(ethers.ZeroAddress);
         });
 
         it('previous pendingOwner should not be able to call acceptOwnership(...) anymore', async () => {
