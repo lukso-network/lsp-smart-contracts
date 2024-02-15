@@ -1,12 +1,13 @@
-import { BigNumber, BytesLike } from 'ethers';
-import { ethers } from 'hardhat';
-import { LSP6KeyManager } from '../../types';
+import { BytesLike } from 'ethers';
+import hre from 'hardhat';
+const { ethers } = hre;
+import { LSP6KeyManager } from '../../types/index.js';
 
 // constants
-import { LSP25_VERSION } from '../../constants';
+import { LSP25_VERSION } from '../../constants.ts';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-export const abiCoder = ethers.utils.defaultAbiCoder;
+export const abiCoder = ethers.AbiCoder.defaultAbiCoder();
 export const provider = ethers.provider;
 
 export const AddressOffset = '000000000000000000000000';
@@ -60,33 +61,33 @@ export function getRandomAddresses(count: number): string[] {
 }
 
 export function combinePermissions(..._permissions: string[]) {
-  let result: BigNumber = ethers.BigNumber.from(0);
+  let result: bigint = ethers.toBigInt(0);
 
   _permissions.forEach((permission) => {
-    const permissionAsBN = ethers.BigNumber.from(permission);
-    result = result.add(permissionAsBN);
+    const permissionAsBN = ethers.toBigInt(permission);
+    result = result & permissionAsBN;
   });
 
-  return ethers.utils.hexZeroPad(result.toHexString(), 32);
+  return ethers.zeroPadValue(ethers.toBeHex(result), 32);
 }
 
 export function combineCallTypes(..._callTypes: string[]) {
-  let result: BigNumber = ethers.BigNumber.from(0);
+  let result: bigint = ethers.toBigInt(0);
 
   _callTypes.forEach((callType) => {
-    const callTypeAsBN = ethers.BigNumber.from(callType);
-    result = result.add(callTypeAsBN);
+    const callTypeAsBN = ethers.toBigInt(callType);
+    result = result & callTypeAsBN;
   });
 
-  return ethers.utils.hexZeroPad(result.toHexString(), 4);
+  return ethers.zeroPadValue(ethers.toBeHex(result), 4);
 }
 
 export function encodeCompactBytesArray(inputKeys: BytesLike[]) {
   let compactBytesArray = '0x';
   for (let i = 0; i < inputKeys.length; i++) {
     compactBytesArray +=
-      ethers.utils
-        .hexZeroPad(ethers.utils.hexlify([inputKeys[i].toString().substring(2).length / 2]), 2)
+      ethers
+        .zeroPadValue(ethers.toBeHex(inputKeys[i].toString().substring(2).length / 2), 2)
         .substring(2) + inputKeys[i].toString().substring(2);
   }
 
@@ -97,9 +98,9 @@ export function decodeCompactBytes(compactBytesArray: BytesLike) {
   let pointer = 2;
   const keysToExport: BytesLike[] = [];
   while (pointer < compactBytesArray.length) {
-    const length = ethers.BigNumber.from(
+    const length = ethers.getNumber(
       '0x' + compactBytesArray.toString().substring(pointer, pointer + 4),
-    ).toNumber();
+    );
     keysToExport.push(
       '0x' + compactBytesArray.toString().substring(pointer + 4, pointer + 2 * (length + 2)),
     );
@@ -138,9 +139,9 @@ export function createValidityTimestamps(
   startingTimestamp: number,
   endingTimestamp: number,
 ): BytesLike {
-  return ethers.utils.hexConcat([
-    ethers.utils.zeroPad(ethers.utils.hexlify(startingTimestamp), 16),
-    ethers.utils.zeroPad(ethers.utils.hexlify(endingTimestamp), 16),
+  return ethers.concat([
+    ethers.zeroPadValue(ethers.toBeHex(startingTimestamp), 16),
+    ethers.zeroPadValue(ethers.toBeHex(endingTimestamp), 16),
   ]);
 }
 
@@ -149,7 +150,7 @@ export async function signLSP6ExecuteRelayCall(
   _signerNonce: string,
   _signerValidityTimestamps: BytesLike | number,
   _signerPrivateKey: string,
-  _msgValue: number | BigNumber | string,
+  _msgValue: number | bigint | string,
   _payload: string,
 ) {
   const signedMessageParams = {
@@ -161,7 +162,7 @@ export async function signLSP6ExecuteRelayCall(
     payload: _payload,
   };
 
-  const encodedMessage = ethers.utils.solidityPack(
+  const encodedMessage = ethers.solidityPacked(
     ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
     [
       signedMessageParams.lsp25Version,
@@ -176,7 +177,7 @@ export async function signLSP6ExecuteRelayCall(
   const eip191Signer = new EIP191Signer();
 
   const { signature } = await eip191Signer.signDataWithIntendedValidator(
-    _keyManager.address,
+    await _keyManager.getAddress(),
     encodedMessage,
     _signerPrivateKey,
   );
