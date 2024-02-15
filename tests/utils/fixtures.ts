@@ -1,18 +1,18 @@
 import hre from 'hardhat';
 const { ethers } = hre;
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers.js';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import {
   LSP1UniversalReceiverDelegateUP__factory,
   LSP6KeyManager__factory,
   UniversalProfile__factory,
-} from '../../types/index.js';
+} from '../../types';
 
-import { PERMISSIONS, ERC725YDataKeys, ALL_PERMISSIONS } from '../../constants.ts';
+import { PERMISSIONS, ERC725YDataKeys, ALL_PERMISSIONS } from '../../constants';
 
 // helpers
-import { combinePermissions } from '../utils/helpers.ts';
-import { LSP6TestContext, LSP6InternalsTestContext } from './context.ts';
+import { combinePermissions } from '../utils/helpers';
+import { LSP6TestContext, LSP6InternalsTestContext } from './context';
 
 /**
  * Deploy a proxy contract, referencing to baseContractAddress via delegateCall
@@ -158,7 +158,7 @@ export async function grantLSP11PermissionViaKeyManager(
   lsp6KeyManager,
   addressToGrant,
 ) {
-  const rawPermissionArrayLength = await universalProfile.callStatic['getData(bytes32)'](
+  const rawPermissionArrayLength = await universalProfile.getData(
     ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
   );
 

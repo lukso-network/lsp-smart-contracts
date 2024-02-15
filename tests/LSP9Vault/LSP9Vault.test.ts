@@ -23,7 +23,6 @@ import {
 
 import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 import { provider } from '../utils/helpers';
-import { BigNumber } from 'ethers';
 
 describe('LSP9Vault with constructor', () => {
   const buildTestContext = async (initialFunding?: number): Promise<LSP9TestContext> => {
@@ -51,7 +50,7 @@ describe('LSP9Vault with constructor', () => {
   };
 
   const buildLSP14TestContext = async (
-    initialFunding?: number | BigNumber,
+    initialFunding?: number | bigint,
   ): Promise<LSP14TestContext> => {
     const accounts = await ethers.getSigners();
     const deployParams = { owner: accounts[0], initialFunding };
@@ -90,7 +89,7 @@ describe('LSP9Vault with constructor', () => {
         });
 
         it(`should have deployed with the correct funding amount (${testCase.initialFunding})`, async () => {
-          const balance = await provider.getBalance(context.lsp9Vault.address);
+          const balance = await provider.getBalance(await context.lsp9Vault.getAddress());
           expect(balance).to.equal(testCase.initialFunding || 0);
         });
       });
@@ -106,7 +105,7 @@ describe('LSP9Vault with constructor', () => {
         return {
           lsp9Vault,
           deployParams,
-          initializeTransaction: context.lsp9Vault.deployTransaction,
+          initializeTransaction: context.lsp9Vault.deploymentTransaction(),
         };
       });
     });
