@@ -28,6 +28,7 @@
   ],
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
+    "build:js": "unbuild",
     "clean": "hardhat clean",
     "format": "prettier --write .",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
