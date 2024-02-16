@@ -1,4 +1,4 @@
-import { Verification, LSP2ArrayKey } from 'lsp2';
+import { Verification, LSP2ArrayKey } from '@lukso/lsp2-contracts';
 
 export type LSP4DigitalAssetMetadataJSON = {
   LSP4Metadata: LSP4DigitalAssetMetadata;

@@ -1,4 +1,4 @@
-import { Verification } from 'lsp2';
+import { Verification } from '@lukso/lsp2-contracts';
 
 export type LSP3ProfileMetadataJSON = {
   LSP3Profile: LSP3ProfileMetadata;

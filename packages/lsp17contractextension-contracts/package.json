@@ -16,6 +16,13 @@
     "./artifacts/*": "./artifacts/*",
     "./package.json": "./package.json"
   },
+  "files": [
+    "contracts/**/*.sol",
+    "!contracts/Mocks/**/*.sol",
+    "artifacts/*.json",
+    "dist",
+    "./README.md"
+  ],
   "keywords": [
     "LUKSO",
     "LSP",

@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { LSP25_VERSION } from '../../../constants';
+import { LSP25_VERSION } from '../constants';
 import { LOCAL_PRIVATE_KEYS } from '../../../tests/utils/helpers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 

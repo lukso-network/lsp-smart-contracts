@@ -24,7 +24,8 @@ import web3 from 'web3';
 
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-import { provider, AddressOffset } from '../../../tests/utils/helpers';
+const provider = ethers.provider;
+const AddressOffset = '000000000000000000000000';
 
 const AccountBytecode = Account__factory.bytecode;
 const NonPayableConstructorBytecode = NonPayableContract__factory.bytecode;

@@ -16,6 +16,13 @@
     "./artifacts/*": "./artifacts/*",
     "./package.json": "./package.json"
   },
+  "files": [
+    "contracts/**/*.sol",
+    "!contracts/Mocks/**/*.sol",
+    "artifacts/*.json",
+    "dist",
+    "./README.md"
+  ],
   "keywords": [
     "LUKSO",
     "LSP",
@@ -28,7 +35,6 @@
   ],
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
-    "build:js": "unbuild",
     "clean": "hardhat clean",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",

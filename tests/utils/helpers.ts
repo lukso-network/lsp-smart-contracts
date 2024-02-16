@@ -3,7 +3,7 @@ import { ethers } from 'hardhat';
 import { LSP6KeyManager } from '../../types';
 
 // constants
-import { LSP25_VERSION } from '../../constants';
+import { LSP25_VERSION } from '@lukso/lsp25-contracts';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 export const abiCoder = ethers.utils.defaultAbiCoder;

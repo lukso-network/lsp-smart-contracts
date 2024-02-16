@@ -16,6 +16,13 @@
     "./artifacts/*": "./artifacts/*",
     "./package.json": "./package.json"
   },
+  "files": [
+    "contracts/**/*.sol",
+    "!contracts/Mocks/**/*.sol",
+    "artifacts/*.json",
+    "dist",
+    "./README.md"
+  ],
   "keywords": [
     "LUKSO",
     "LSP",
@@ -33,6 +40,9 @@
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
+  },
+  "dependencies": {
+    "@lukso/lsp2-contracts": "*"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
