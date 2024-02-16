@@ -538,7 +538,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      *
      * @param operator The address of the operator to decrease the allowance of.
      * @param tokenOwner The address that granted an allowance on its balance to `operator`.
-     * @param amountToSpend The amount of tokens to substract in allowance of `operator`.
+     * @param amountToSpend The amount of tokens to subtract in allowance of `operator`.
      *
      * @custom:events
      * - {OperatorRevoked} event when operator's allowance is set to `0`.
@@ -641,7 +641,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
     /**
      * @dev Hook that is called before any token transfer, including minting and burning.
-     * Allows to run custom logic before updating balances and notifiying sender/recipient by overriding this function.
+     * Allows to run custom logic before updating balances and notifying sender/recipient by overriding this function.
      *
      * @param from The sender address
      * @param to The recipient address
@@ -657,7 +657,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
     /**
      * @dev Hook that is called after any token transfer, including minting and burning.
-     * Allows to run custom logic after updating balances, but **before notifiying sender/recipient** by overriding this function.
+     * Allows to run custom logic after updating balances, but **before notifying sender/recipient** by overriding this function.
      *
      * @param from The sender address
      * @param to The recipient address

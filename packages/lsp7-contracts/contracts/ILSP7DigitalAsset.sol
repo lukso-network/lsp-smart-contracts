@@ -65,7 +65,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
     /**
      * @dev Returns the number of decimals used to get its user representation.
      * If the asset contract has been set to be non-divisible via the `isNonDivisible_` parameter in
-     * the `constructor`, the decimals returned wiil be `0`. Otherwise `18` is the common value.
+     * the `constructor`, the decimals returned will be `0`. Otherwise `18` is the common value.
      *
      * @custom:notice This information is only used for _display_ purposes: it in
      * no way affects any of the arithmetic of the contract, including
