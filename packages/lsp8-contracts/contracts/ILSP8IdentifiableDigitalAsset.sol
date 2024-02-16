@@ -254,7 +254,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param from The address that owns the given `tokenId`.
      * @param to The address that will receive the `tokenId`.
      * @param tokenId The token ID to transfer.
-     * @param force When set to `true`, the `to` address CAN be any addres.
+     * @param force When set to `true`, the `to` address CAN be any address.
      * When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard.
      * @param data Any additional data the caller wants included in the emitted event, and sent in the hooks of the `from` and `to` addresses.
      *
