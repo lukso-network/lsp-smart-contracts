@@ -29,8 +29,13 @@ describe('LSP7MintableInit with proxy', () => {
       accounts.owner,
     ).deploy();
 
-    const lsp7MintableProxy = await deployProxy(LSP7MintableInit.address, accounts.owner);
-    const lsp7Mintable: LSP7MintableInit = LSP7MintableInit.attach(lsp7MintableProxy);
+    const lsp7MintableProxy = await deployProxy(
+      await LSP7MintableInit.getAddress(),
+      accounts.owner,
+    );
+    const lsp7Mintable: LSP7MintableInit = LSP7MintableInit.attach(
+      lsp7MintableProxy,
+    ) as LSP7MintableInit;
 
     return { accounts, lsp7Mintable, deployParams };
   };
@@ -56,7 +61,7 @@ describe('LSP7MintableInit with proxy', () => {
       expect(await lsp7MintableInit.getData(ERC725YDataKeys.LSP4.LSP4Metadata)).to.equal('0x');
       expect(await lsp7MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenType)).to.equal('0x');
 
-      expect(await lsp7MintableInit.owner()).to.equal(ethers.constants.AddressZero);
+      expect(await lsp7MintableInit.owner()).to.equal(ethers.ZeroAddress);
     });
 
     it('prevent any address from calling the initialize(...) function on the implementation', async () => {

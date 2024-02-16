@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LSP8InitTester__factory, LSP8IdentifiableDigitalAsset } from '../../../types';
+import { LSP8InitTester__factory, LSP8IdentifiableDigitalAsset, LSP8Tester } from '../../../types';
 
 import {
   getNamedAccounts,
@@ -30,8 +30,8 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
     };
 
     const lsp8TesterInit = await new LSP8InitTester__factory(accounts.owner).deploy();
-    const lsp8Proxy = await deployProxy(lsp8TesterInit.address, accounts.owner);
-    const lsp8 = lsp8TesterInit.attach(lsp8Proxy);
+    const lsp8Proxy = await deployProxy(await lsp8TesterInit.getAddress(), accounts.owner);
+    const lsp8 = lsp8TesterInit.attach(lsp8Proxy) as LSP8Tester;
 
     return { accounts, lsp8, deployParams };
   };
@@ -75,7 +75,7 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
         context.lsp8['initialize(string,string,address,uint256,uint256)'](
           context.deployParams.name,
           context.deployParams.symbol,
-          ethers.constants.AddressZero,
+          ethers.ZeroAddress,
           0,
           context.deployParams.lsp4TokenType,
         ),

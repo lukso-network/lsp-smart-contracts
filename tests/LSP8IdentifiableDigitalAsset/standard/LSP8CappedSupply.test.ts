@@ -19,7 +19,7 @@ describe('LSP8CappedSupply with constructor', () => {
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
-      tokenSupplyCap: ethers.BigNumber.from('2'),
+      tokenSupplyCap: ethers.toBigInt('2'),
     };
     const lsp8CappedSupply = await new LSP8CappedSupplyTester__factory(accounts.owner).deploy(
       deployParams.name,
@@ -46,7 +46,7 @@ describe('LSP8CappedSupply with constructor', () => {
       return {
         lsp8,
         deployParams,
-        initializeTransaction: context.lsp8CappedSupply.deployTransaction,
+        initializeTransaction: context.lsp8CappedSupply.deploymentTransaction(),
       };
     });
   });

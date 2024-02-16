@@ -87,7 +87,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
       const deployParams = {
         name: 'LSP8 - deployed with constructor',
         symbol: 'NFT',
-        newOwner: ethers.constants.AddressZero,
+        newOwner: ethers.ZeroAddress,
         lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       };
 
@@ -97,7 +97,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
         contractToDeploy.deploy(
           deployParams.name,
           deployParams.symbol,
-          ethers.constants.AddressZero,
+          ethers.ZeroAddress,
           deployParams.lsp4TokenType,
           LSP8_TOKEN_ID_FORMAT.NUMBER,
         ),
@@ -117,7 +117,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
         return {
           lsp8,
           deployParams,
-          initializeTransaction: context.lsp8.deployTransaction,
+          initializeTransaction: context.lsp8.deploymentTransaction(),
         };
       });
     });

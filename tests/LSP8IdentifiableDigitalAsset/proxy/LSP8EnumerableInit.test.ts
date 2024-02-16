@@ -25,8 +25,13 @@ describe('LSP8EnumerableInit with proxy', () => {
     const LSP8EnumerableInit: LSP8EnumerableInitTester =
       await new LSP8EnumerableInitTester__factory(accounts.owner).deploy();
 
-    const lsp8EnumerableProxy = await deployProxy(LSP8EnumerableInit.address, accounts.owner);
-    const lsp8Enumerable: LSP8EnumerableInitTester = LSP8EnumerableInit.attach(lsp8EnumerableProxy);
+    const lsp8EnumerableProxy = await deployProxy(
+      await LSP8EnumerableInit.getAddress(),
+      accounts.owner,
+    );
+    const lsp8Enumerable: LSP8EnumerableInitTester = LSP8EnumerableInit.attach(
+      lsp8EnumerableProxy,
+    ) as LSP8EnumerableInitTester;
 
     return { accounts, lsp8Enumerable, deployParams };
   };
