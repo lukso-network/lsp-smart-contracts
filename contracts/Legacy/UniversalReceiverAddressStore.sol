@@ -53,7 +53,7 @@ contract UniversalReceiverAddressStore is ERC165Storage, AddressRegistry {
         return abi.encodePacked(typeId);
     }
 
-    /* Modifers */
+    /* Modifiers */
     modifier onlyAccount() {
         require(
             msg.sender == account,

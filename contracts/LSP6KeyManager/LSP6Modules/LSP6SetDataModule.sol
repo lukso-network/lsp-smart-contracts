@@ -217,7 +217,7 @@ abstract contract LSP6SetDataModule {
 
             // AddressPermissions:...
         } else if (bytes6(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX) {
-            // same as above, save gas by avoiding redundants or unecessary external calls to fetch values from the `target` storage.
+            // same as above, save gas by avoiding redundant or unnecessary external calls to fetch values from the `target` storage.
             bool hasBothAddControllerAndEditPermissions = controllerPermissions
                 .hasPermission(
                     _PERMISSION_ADDCONTROLLER | _PERMISSION_EDITPERMISSIONS

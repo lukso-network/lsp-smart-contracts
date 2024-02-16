@@ -131,7 +131,7 @@ abstract contract LSP6KeyManagerCore is
      * _Example: you have two transactions A and B, and transaction A must be executed first and complete successfully before
      * transaction B should be executed)._
      *
-     * - use any other `channelId` number for transactions that you want to be order independant (out-of-order execution, execution _"in parallel"_).
+     * - use any other `channelId` number for transactions that you want to be order independent (out-of-order execution, execution _"in parallel"_).
      *
      * _Example: you have two transactions A and B. You want transaction B to be executed a) without having to wait for transaction A to complete,
      * or b) regardless if transaction A completed successfully or not.
@@ -261,7 +261,7 @@ abstract contract LSP6KeyManagerCore is
      *
      * @dev Same as {executeRelayCall} but execute a batch of signed calldata payloads (abi-encoded function calls) in a single transaction.
      *
-     * The `signatures` can be from multiple controllers, not necessarely the same controller, as long as each of these controllers
+     * The `signatures` can be from multiple controllers, not necessarily the same controller, as long as each of these controllers
      * that signed have the right permissions related to the calldata `payload` they signed.
      *
      * @custom:requirements

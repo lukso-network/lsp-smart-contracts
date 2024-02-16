@@ -77,8 +77,8 @@ contract LSP1UniversalReceiverDelegateVault is
      *
      * @custom:requirements Cannot accept native tokens.
      * @custom:info
-     * - If some issues occured with generating the `dataKeys` or `dataValues` the `returnedMessage` will be an error message, otherwise it will be empty.
-     * - If an error occured when trying to use `setDataBatch(dataKeys,dataValues)`, it will return the raw error data back to the caller.
+     * - If some issues occurred with generating the `dataKeys` or `dataValues` the `returnedMessage` will be an error message, otherwise it will be empty.
+     * - If an error occurred when trying to use `setDataBatch(dataKeys,dataValues)`, it will return the raw error data back to the caller.
      *
      * @param typeId Unique identifier for a specific notification.
      * @return The result of the reaction for `typeId`.
@@ -187,7 +187,7 @@ contract LSP1UniversalReceiverDelegateVault is
     }
 
     /**
-     * @dev Calls `bytes4(keccak256(setDataBatch(bytes32[],bytes[])))` without checking for `bool succes`, but it returns all the data back.
+     * @dev Calls `bytes4(keccak256(setDataBatch(bytes32[],bytes[])))` without checking for `bool success`, but it returns all the data back.
      *
      * @custom:info If an the low-level transaction revert, the returned data will be forwarded. Th contract that uses this function can use the `Address` library to revert with the revert reason.
      *
