@@ -4,7 +4,6 @@
   "description": "Package for the LSP9 Vault standard",
   "license": "Apache-2.0",
   "author": "",
-  "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "typings": "./dist/index.d.ts",
