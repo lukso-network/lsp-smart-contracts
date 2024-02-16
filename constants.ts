@@ -4,26 +4,29 @@
  */
 export * from './contracts';
 
-import { INTERFACE_ID_LSP0ERC725Account, LSP0_TYPE_IDS } from 'lsp0';
-import { INTERFACE_ID_LSP1, LSP1DataKeys } from 'lsp1';
-import { INTERFACE_ID_LSP1DELEGATE } from 'lsp1delegate';
-import { LSP3DataKeys } from 'lsp3';
-import { LSP4DataKeys } from 'lsp4';
-import { LSP5DataKeys } from 'lsp5';
-import { INTERFACE_ID_LSP6KEYMANAGER, LSP6DataKeys } from 'lsp6';
-import { INTERFACE_ID_LSP7, LSP7_TYPE_IDS } from 'lsp7';
-import { INTERFACE_ID_LSP8, LSP8DataKeys, LSP8_TYPE_IDS } from 'lsp8';
-import { INTERFACE_ID_LSP9, LSP9DataKeys, LSP9_TYPE_IDS } from 'lsp9';
-import { LSP10DataKeys } from 'lsp10';
-import { LSP12DataKeys } from 'lsp12';
-import { INTERFACE_ID_LSP14, LSP14_TYPE_IDS } from 'lsp14';
+import { INTERFACE_ID_LSP0ERC725Account, LSP0_TYPE_IDS } from '@lukso/lsp0-contracts';
+import { INTERFACE_ID_LSP1, LSP1DataKeys } from '@lukso/lsp1-contracts';
+import { INTERFACE_ID_LSP1DELEGATE } from '@lukso/lsp1delegate-contracts';
+import { LSP3DataKeys } from '@lukso/lsp3-contracts';
+import { LSP4DataKeys } from '@lukso/lsp4-contracts';
+import { LSP5DataKeys } from '@lukso/lsp5-contracts';
+import { INTERFACE_ID_LSP6KEYMANAGER, LSP6DataKeys } from '@lukso/lsp6-contracts';
+import { INTERFACE_ID_LSP7, LSP7_TYPE_IDS } from '@lukso/lsp7-contracts';
+import { INTERFACE_ID_LSP8, LSP8DataKeys, LSP8_TYPE_IDS } from '@lukso/lsp8-contracts';
+import { INTERFACE_ID_LSP9, LSP9DataKeys, LSP9_TYPE_IDS } from '@lukso/lsp9-contracts';
+import { LSP10DataKeys } from '@lukso/lsp10-contracts';
+import { LSP12DataKeys } from '@lukso/lsp12-contracts';
+import { INTERFACE_ID_LSP14, LSP14_TYPE_IDS } from '@lukso/lsp14-contracts';
 import {
   INTERFACE_ID_LSP17Extendable,
   INTERFACE_ID_LSP17Extension,
   LSP17DataKeys,
-} from 'lsp17contractextension';
-import { INTERFACE_ID_LSP20CallVerification, INTERFACE_ID_LSP20CallVerifier } from 'lsp20';
-import { INTERFACE_ID_LSP25 } from 'lsp25';
+} from '@lukso/lsp17contractextension-contracts';
+import {
+  INTERFACE_ID_LSP20CallVerification,
+  INTERFACE_ID_LSP20CallVerifier,
+} from '@lukso/lsp20-contracts';
+import { INTERFACE_ID_LSP25 } from '@lukso/lsp25-contracts';
 
 // ERC165
 // ---------
