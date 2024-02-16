@@ -232,7 +232,7 @@ Allows a caller to batch different function calls in one call. Perform a `delega
 function decimals() external view returns (uint8);
 ```
 
-Returns the number of decimals used to get its user representation. If the asset contract has been set to be non-divisible via the `isNonDivisible_` parameter in the `constructor`, the decimals returned will be `0`. Otherwise `18` is the common value.
+Returns the number of decimals used to get its user representation. If the asset contract has been set to be non-divisible via the `isNonDivisible_` parameter in the `constructor`, the decimals returned wiil be `0`. Otherwise `18` is the common value.
 
 #### Returns
 
@@ -630,7 +630,7 @@ function tokenSupplyCap() external view returns (uint256);
 
 _The maximum supply amount of tokens allowed to exist is `_TOKEN_SUPPLY_CAP`._
 
-Get the maximum number of tokens that can exist to circulate. Once [`totalSupply`](#totalsupply) reaches reaches [`totalSupplyCap`](#totalsupplycap), it is not possible to mint more tokens.
+Get the maximum number of tokens that can exist to circulate. Once [`totalSupply`](#totalsupply) reaches reaches [`totalSuuplyCap`](#totalsuuplycap), it is not possible to mint more tokens.
 
 #### Returns
 
@@ -932,7 +932,7 @@ Spend `amountToSpend` from the `operator`'s authorized on behalf of the `tokenOw
 | --------------- | :-------: | ------------------------------------------------------------------- |
 | `operator`      | `address` | The address of the operator to decrease the allowance of.           |
 | `tokenOwner`    | `address` | The address that granted an allowance on its balance to `operator`. |
-| `amountToSpend` | `uint256` | The amount of tokens to subtract in allowance of `operator`.        |
+| `amountToSpend` | `uint256` | The amount of tokens to substract in allowance of `operator`.       |
 
 <br/>
 
@@ -996,7 +996,7 @@ function _beforeTokenTransfer(
 ```
 
 Hook that is called before any token transfer, including minting and burning.
-Allows to run custom logic before updating balances and notifying sender/recipient by overriding this function.
+Allows to run custom logic before updating balances and notifiying sender/recipient by overriding this function.
 
 #### Parameters
 
@@ -1021,7 +1021,7 @@ function _afterTokenTransfer(
 ```
 
 Hook that is called after any token transfer, including minting and burning.
-Allows to run custom logic after updating balances, but **before notifying sender/recipient** by overriding this function.
+Allows to run custom logic after updating balances, but **before notifiying sender/recipient** by overriding this function.
 
 #### Parameters
 
