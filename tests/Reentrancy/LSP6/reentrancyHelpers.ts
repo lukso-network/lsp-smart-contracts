@@ -1,8 +1,8 @@
 import { ethers } from 'hardhat';
 
 //types
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { BigNumber, BytesLike, Wallet } from 'ethers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { BytesLike, Wallet } from 'ethers';
 import {
   ReentrantContract__factory,
   ReentrantContract,
@@ -69,7 +69,7 @@ export type ReentrancyContext = {
 
 export type RelayCallParams = {
   signature: BytesLike;
-  nonce: BigNumber;
+  nonce: bigint;
   validityTimestamps: number | BytesLike;
   payload: BytesLike;
 };
@@ -347,7 +347,7 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
 
   const reentrantContract = await new ReentrantContract__factory(owner).deploy(
     newControllerAddress,
-    ethers.utils.keccak256(ethers.utils.toUtf8Bytes('RandomLSP1TypeId')),
+    ethers.keccak256(ethers.toUtf8Bytes('RandomLSP1TypeId')),
     newURDAddress,
   );
 
@@ -370,7 +370,11 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
     combineAllowedCalls(
       // allow controller to call the 3 x addresses listed below
       [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
-      [reentrantContract.address, singleReentarncyRelayer.address, batchReentarncyRelayer.address],
+      [
+        await reentrantContract.getAddress(),
+        await singleReentarncyRelayer.getAddress(),
+        await batchReentarncyRelayer.getAddress(),
+      ],
       ['0xffffffff', '0xffffffff', '0xffffffff'],
       ['0xffffffff', '0xffffffff', '0xffffffff'],
     ),
@@ -378,7 +382,11 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
     combineAllowedCalls(
       // allow controller to call the 3 x addresses listed below
       [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
-      [reentrantContract.address, singleReentarncyRelayer.address, batchReentarncyRelayer.address],
+      [
+        await reentrantContract.getAddress(),
+        await singleReentarncyRelayer.getAddress(),
+        await batchReentarncyRelayer.getAddress(),
+      ],
       ['0xffffffff', '0xffffffff', '0xffffffff'],
       ['0xffffffff', '0xffffffff', '0xffffffff'],
     ),
@@ -386,7 +394,7 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
 
   await setupKeyManager(context, permissionKeys, permissionValues);
 
-  const randomLSP1TypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('RandomLSP1TypeId'));
+  const randomLSP1TypeId = ethers.keccak256(ethers.toUtf8Bytes('RandomLSP1TypeId'));
 
   return {
     owner,
@@ -407,7 +415,7 @@ export const generateRelayCall = async (
   payload: BytesLike,
   signer: Wallet,
 ) => {
-  const nonce = await keyManager.callStatic.getNonce(signer.address, 1);
+  const nonce = await keyManager.getNonce(signer.address, 1);
 
   const validityTimestamps = 0;
 
@@ -445,15 +453,15 @@ export const generateSingleRelayPayload = async (
     case 'TRANSFERVALUE':
       payload = universalProfile.interface.encodeFunctionData('execute', [
         0,
-        reentrancyRelayer.address,
-        ethers.utils.parseEther('1'),
+        await reentrancyRelayer.getAddress(),
+        ethers.parseEther('1'),
         '0x',
       ]);
       break;
     case 'SETDATA':
       payload = universalProfile.interface.encodeFunctionData('setData', [
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('SomeRandomTextUsed')),
-        ethers.utils.hexlify(ethers.utils.toUtf8Bytes('SomeRandomTextUsed')),
+        ethers.keccak256(ethers.toUtf8Bytes('SomeRandomTextUsed')),
+        ethers.hexlify(ethers.toUtf8Bytes('SomeRandomTextUsed')),
       ]);
       break;
     case 'ADDCONTROLLER':
@@ -471,14 +479,14 @@ export const generateSingleRelayPayload = async (
     case 'ADDUNIVERSALRECEIVERDELEGATE':
       payload = universalProfile.interface.encodeFunctionData('setData', [
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('RandomLSP1TypeId')).substring(2, 42),
+          ethers.keccak256(ethers.toUtf8Bytes('RandomLSP1TypeId')).substring(2, 42),
         newURDAddress,
       ]);
       break;
     case 'CHANGEUNIVERSALRECEIVERDELEGATE':
       payload = universalProfile.interface.encodeFunctionData('setData', [
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('RandomLSP1TypeId')).substring(2, 42),
+          ethers.keccak256(ethers.toUtf8Bytes('RandomLSP1TypeId')).substring(2, 42),
         '0x',
       ]);
       break;
@@ -487,7 +495,7 @@ export const generateSingleRelayPayload = async (
       break;
   }
 
-  const nonce = await keyManager.callStatic.getNonce(reentrantSigner.address, 1);
+  const nonce = await keyManager.getNonce(reentrantSigner.address, 1);
 
   const validityTimestamps = 0;
 
@@ -518,15 +526,15 @@ export const generateBatchRelayPayload = async (
     case 'TRANSFERVALUE':
       payload = universalProfile.interface.encodeFunctionData('execute', [
         0,
-        reentrancyRelayer.address,
-        ethers.utils.parseEther('1'),
+        await reentrancyRelayer.getAddress(),
+        ethers.parseEther('1'),
         '0x',
       ]);
       break;
     case 'SETDATA':
       payload = universalProfile.interface.encodeFunctionData('setData', [
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('SomeRandomTextUsed')),
-        ethers.utils.hexlify(ethers.utils.toUtf8Bytes('SomeRandomTextUsed')),
+        ethers.keccak256(ethers.toUtf8Bytes('SomeRandomTextUsed')),
+        ethers.hexlify(ethers.toUtf8Bytes('SomeRandomTextUsed')),
       ]);
       break;
     case 'ADDCONTROLLER':
@@ -544,14 +552,14 @@ export const generateBatchRelayPayload = async (
     case 'ADDUNIVERSALRECEIVERDELEGATE':
       payload = universalProfile.interface.encodeFunctionData('setData', [
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('RandomLSP1TypeId')).substring(2, 42),
+          ethers.keccak256(ethers.toUtf8Bytes('RandomLSP1TypeId')).substring(2, 42),
         newURDAddress,
       ]);
       break;
     case 'CHANGEUNIVERSALRECEIVERDELEGATE':
       payload = universalProfile.interface.encodeFunctionData('setData', [
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('RandomLSP1TypeId')).substring(2, 42),
+          ethers.keccak256(ethers.toUtf8Bytes('RandomLSP1TypeId')).substring(2, 42),
         '0x',
       ]);
       break;
@@ -560,7 +568,7 @@ export const generateBatchRelayPayload = async (
       break;
   }
 
-  const nonce = await keyManager.callStatic.getNonce(reentrantSigner.address, 1);
+  const nonce = await keyManager.getNonce(reentrantSigner.address, 1);
 
   const validityTimestamps = 0;
 
@@ -644,9 +652,7 @@ export const loadTestCase = async (
       permissionValues = [
         testCase.permissions,
         (testCase as SetDataTestCase).allowedERC725YDataKeys
-          ? encodeCompactBytesArray([
-              ethers.utils.keccak256(ethers.utils.toUtf8Bytes('SomeRandomTextUsed')),
-            ])
+          ? encodeCompactBytesArray([ethers.keccak256(ethers.toUtf8Bytes('SomeRandomTextUsed'))])
           : '0x',
       ];
       break;

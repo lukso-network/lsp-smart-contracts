@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
 //types
-import { BigNumber, BytesLike } from 'ethers';
+import { BytesLike } from 'ethers';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';
@@ -25,16 +25,17 @@ import {
   generateExecutePayload,
   loadTestCase,
 } from './reentrancyHelpers';
+import { provider } from '../../utils/helpers';
 
 export const testSingleExecuteToBatchExecute = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
+  buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
   buildReentrancyContext: (context: LSP6TestContext) => Promise<ReentrancyContext>,
 ) => {
   let context: LSP6TestContext;
   let reentrancyContext: ReentrancyContext;
 
   before(async () => {
-    context = await buildContext(ethers.utils.parseEther('10'));
+    context = await buildContext(ethers.parseEther('10'));
     reentrancyContext = await buildReentrancyContext(context);
   });
 
@@ -42,8 +43,8 @@ export const testSingleExecuteToBatchExecute = (
     let executePayload: BytesLike;
     before(async () => {
       executePayload = generateExecutePayload(
-        context.keyManager.address,
-        reentrancyContext.reentrantContract.address,
+        await context.keyManager.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
         'TRANSFERVALUE',
       );
     });
@@ -58,15 +59,18 @@ export const testSingleExecuteToBatchExecute = (
           'TRANSFERVALUE',
           testCase,
           context,
-          reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address,
+          await reentrancyContext.reentrantContract.getAddress(),
+          await reentrancyContext.reentrantContract.getAddress(),
         );
 
         await expect(
           context.keyManager.connect(reentrancyContext.caller).executeBatch([0], [executePayload]),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
+          .withArgs(
+            await reentrancyContext.reentrantContract.getAddress(),
+            testCase.missingPermission,
+          );
       });
     });
 
@@ -75,8 +79,8 @@ export const testSingleExecuteToBatchExecute = (
         'TRANSFERVALUE',
         transferValueTestCases.NoCallsAllowed,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
       await expect(
@@ -89,27 +93,25 @@ export const testSingleExecuteToBatchExecute = (
         'TRANSFERVALUE',
         transferValueTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
-      expect(
-        await context.universalProfile.provider.getBalance(context.universalProfile.address),
-      ).to.equal(ethers.utils.parseEther('10'));
+      expect(await provider.getBalance(await context.universalProfile.getAddress())).to.equal(
+        ethers.parseEther('10'),
+      );
 
       await context.keyManager
         .connect(reentrancyContext.caller)
         .executeBatch([0], [executePayload]);
 
-      expect(
-        await context.universalProfile.provider.getBalance(context.universalProfile.address),
-      ).to.equal(ethers.utils.parseEther('9'));
+      expect(await provider.getBalance(await context.universalProfile.getAddress())).to.equal(
+        ethers.parseEther('9'),
+      );
 
       expect(
-        await context.universalProfile.provider.getBalance(
-          reentrancyContext.reentrantContract.address,
-        ),
-      ).to.equal(ethers.utils.parseEther('1'));
+        await provider.getBalance(await reentrancyContext.reentrantContract.getAddress()),
+      ).to.equal(ethers.parseEther('1'));
     });
   });
 
@@ -117,8 +119,8 @@ export const testSingleExecuteToBatchExecute = (
     let executePayload: BytesLike;
     before(async () => {
       executePayload = generateExecutePayload(
-        context.keyManager.address,
-        reentrancyContext.reentrantContract.address,
+        await context.keyManager.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
         'SETDATA',
       );
     });
@@ -133,15 +135,18 @@ export const testSingleExecuteToBatchExecute = (
           'SETDATA',
           testCase,
           context,
-          reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address,
+          await reentrancyContext.reentrantContract.getAddress(),
+          await reentrancyContext.reentrantContract.getAddress(),
         );
 
         await expect(
           context.keyManager.connect(reentrancyContext.caller).executeBatch([0], [executePayload]),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
+          .withArgs(
+            await reentrancyContext.reentrantContract.getAddress(),
+            testCase.missingPermission,
+          );
       });
     });
 
@@ -150,8 +155,8 @@ export const testSingleExecuteToBatchExecute = (
         'SETDATA',
         setDataTestCases.NoERC725YDataKeysAllowed,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
       await expect(
@@ -164,16 +169,16 @@ export const testSingleExecuteToBatchExecute = (
         'SETDATA',
         setDataTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
       await context.keyManager
         .connect(reentrancyContext.caller)
         .executeBatch([0], [executePayload]);
 
-      const hardcodedKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('SomeRandomTextUsed'));
-      const hardcodedValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('SomeRandomTextUsed'));
+      const hardcodedKey = ethers.keccak256(ethers.toUtf8Bytes('SomeRandomTextUsed'));
+      const hardcodedValue = ethers.hexlify(ethers.toUtf8Bytes('SomeRandomTextUsed'));
 
       expect(await context.universalProfile.getData(hardcodedKey)).to.equal(hardcodedValue);
     });
@@ -183,8 +188,8 @@ export const testSingleExecuteToBatchExecute = (
     let executePayload: BytesLike;
     before(async () => {
       executePayload = generateExecutePayload(
-        context.keyManager.address,
-        reentrancyContext.reentrantContract.address,
+        await context.keyManager.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
         'ADDCONTROLLER',
       );
     });
@@ -195,15 +200,18 @@ export const testSingleExecuteToBatchExecute = (
           'ADDCONTROLLER',
           testCase,
           context,
-          reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address,
+          await reentrancyContext.reentrantContract.getAddress(),
+          await reentrancyContext.reentrantContract.getAddress(),
         );
 
         await expect(
           context.keyManager.connect(reentrancyContext.caller).executeBatch([0], [executePayload]),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
+          .withArgs(
+            await reentrancyContext.reentrantContract.getAddress(),
+            testCase.missingPermission,
+          );
       });
     });
 
@@ -212,8 +220,8 @@ export const testSingleExecuteToBatchExecute = (
         'ADDCONTROLLER',
         addPermissionsTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
       await context.keyManager
@@ -236,8 +244,8 @@ export const testSingleExecuteToBatchExecute = (
     let executePayload: BytesLike;
     before(async () => {
       executePayload = generateExecutePayload(
-        context.keyManager.address,
-        reentrancyContext.reentrantContract.address,
+        await context.keyManager.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
         'EDITPERMISSIONS',
       );
     });
@@ -248,15 +256,18 @@ export const testSingleExecuteToBatchExecute = (
           'EDITPERMISSIONS',
           testCase,
           context,
-          reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address,
+          await reentrancyContext.reentrantContract.getAddress(),
+          await reentrancyContext.reentrantContract.getAddress(),
         );
 
         await expect(
           context.keyManager.connect(reentrancyContext.caller).executeBatch([0], [executePayload]),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
+          .withArgs(
+            await reentrancyContext.reentrantContract.getAddress(),
+            testCase.missingPermission,
+          );
       });
     });
 
@@ -265,8 +276,8 @@ export const testSingleExecuteToBatchExecute = (
         'EDITPERMISSIONS',
         editPermissionsTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
       await context.keyManager
@@ -288,8 +299,8 @@ export const testSingleExecuteToBatchExecute = (
     let executePayload: BytesLike;
     before(async () => {
       executePayload = generateExecutePayload(
-        context.keyManager.address,
-        reentrancyContext.reentrantContract.address,
+        await context.keyManager.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
         'ADDUNIVERSALRECEIVERDELEGATE',
       );
     });
@@ -300,15 +311,18 @@ export const testSingleExecuteToBatchExecute = (
           'ADDUNIVERSALRECEIVERDELEGATE',
           testCase,
           context,
-          reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address,
+          await reentrancyContext.reentrantContract.getAddress(),
+          await reentrancyContext.reentrantContract.getAddress(),
         );
 
         await expect(
           context.keyManager.connect(reentrancyContext.caller).executeBatch([0], [executePayload]),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
+          .withArgs(
+            await reentrancyContext.reentrantContract.getAddress(),
+            testCase.missingPermission,
+          );
       });
     });
 
@@ -317,8 +331,8 @@ export const testSingleExecuteToBatchExecute = (
         'ADDUNIVERSALRECEIVERDELEGATE',
         addUniversalReceiverDelegateTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
       await context.keyManager
@@ -341,8 +355,8 @@ export const testSingleExecuteToBatchExecute = (
     let executePayload: BytesLike;
     before(async () => {
       executePayload = generateExecutePayload(
-        context.keyManager.address,
-        reentrancyContext.reentrantContract.address,
+        await context.keyManager.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
         'CHANGEUNIVERSALRECEIVERDELEGATE',
       );
     });
@@ -353,15 +367,18 @@ export const testSingleExecuteToBatchExecute = (
           'CHANGEUNIVERSALRECEIVERDELEGATE',
           testCase,
           context,
-          reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address,
+          await reentrancyContext.reentrantContract.getAddress(),
+          await reentrancyContext.reentrantContract.getAddress(),
         );
 
         await expect(
           context.keyManager.connect(reentrancyContext.caller).executeBatch([0], [executePayload]),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
+          .withArgs(
+            await reentrancyContext.reentrantContract.getAddress(),
+            testCase.missingPermission,
+          );
       });
     });
 
@@ -370,8 +387,8 @@ export const testSingleExecuteToBatchExecute = (
         'CHANGEUNIVERSALRECEIVERDELEGATE',
         changeUniversalReceiverDelegateTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
       await context.keyManager

@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
 
 import { UniversalProfile__factory } from '@lukso/universalprofile-contracts/types';
@@ -10,7 +9,7 @@ import { shouldBehaveLikeLSP6ReentrancyScenarios } from './LSP6/LSP6Reentrancy.t
 import { shouldBehaveLikeLSP20WithLSP6ReentrancyScenarios } from './LSP20/LSP20WithLSP6Reentrancy.test';
 
 describe('Reentrancy scenarios with constructor', () => {
-  const buildTestContext = async (initialFunding?: BigNumber): Promise<LSP6TestContext> => {
+  const buildTestContext = async (initialFunding?: bigint): Promise<LSP6TestContext> => {
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
@@ -22,7 +21,7 @@ describe('Reentrancy scenarios with constructor', () => {
     );
 
     const keyManager = await new LSP6KeyManager__factory(mainController).deploy(
-      universalProfile.address,
+      await universalProfile.getAddress(),
     );
 
     return { accounts, mainController, universalProfile, keyManager, initialFunding };

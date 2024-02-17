@@ -1,8 +1,10 @@
-import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
 
-import { UniversalProfileInit__factory } from '@lukso/universalprofile-contracts/types';
-import { LSP6KeyManagerInit__factory } from '@lukso/lsp6-contracts/types';
+import {
+  UniversalProfileInit,
+  UniversalProfileInit__factory,
+} from '@lukso/universalprofile-contracts/types';
+import { LSP6KeyManagerInit, LSP6KeyManagerInit__factory } from '@lukso/lsp6-contracts/types';
 
 import { deployProxy } from '../utils/fixtures';
 import { LSP6TestContext } from '../utils/context';
@@ -11,17 +13,17 @@ import { shouldBehaveLikeLSP6ReentrancyScenarios } from './LSP6/LSP6Reentrancy.t
 import { shouldBehaveLikeLSP20WithLSP6ReentrancyScenarios } from './LSP20/LSP20WithLSP6Reentrancy.test';
 
 describe('Reentrancy scenarios with proxy', () => {
-  const buildProxyTestContext = async (initialFunding?: BigNumber): Promise<LSP6TestContext> => {
+  const buildProxyTestContext = async (initialFunding?: bigint): Promise<LSP6TestContext> => {
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
     const baseUP = await new UniversalProfileInit__factory(mainController).deploy();
-    const upProxy = await deployProxy(baseUP.address, mainController);
-    const universalProfile = await baseUP.attach(upProxy);
+    const upProxy = await deployProxy(await baseUP.getAddress(), mainController);
+    const universalProfile = (await baseUP.attach(upProxy)) as UniversalProfileInit;
 
     const baseKM = await new LSP6KeyManagerInit__factory(mainController).deploy();
-    const kmProxy = await deployProxy(baseKM.address, mainController);
-    const keyManager = await baseKM.attach(kmProxy);
+    const kmProxy = await deployProxy(await baseKM.getAddress(), mainController);
+    const keyManager = (await baseKM.attach(kmProxy)) as unknown as LSP6KeyManagerInit;
 
     return { accounts, mainController, universalProfile, keyManager, initialFunding };
   };
@@ -31,13 +33,13 @@ describe('Reentrancy scenarios with proxy', () => {
       value: context.initialFunding,
     });
 
-    await context.keyManager['initialize(address)'](context.universalProfile.address);
+    await context.keyManager['initialize(address)'](await context.universalProfile.getAddress());
 
     return context;
   };
 
   describe('when testing Reentrancy scenarios for LSP6', () => {
-    shouldBehaveLikeLSP6ReentrancyScenarios(async (initialFunding?: BigNumber) => {
+    shouldBehaveLikeLSP6ReentrancyScenarios(async (initialFunding?: bigint) => {
       const context = await buildProxyTestContext(initialFunding);
       await initializeProxies(context);
       return context;
@@ -45,7 +47,7 @@ describe('Reentrancy scenarios with proxy', () => {
   });
 
   describe('when testing Reentrancy scenarios for LSP20 + LSP6', () => {
-    shouldBehaveLikeLSP20WithLSP6ReentrancyScenarios(async (initialFunding?: BigNumber) => {
+    shouldBehaveLikeLSP20WithLSP6ReentrancyScenarios(async (initialFunding?: bigint) => {
       const context = await buildProxyTestContext(initialFunding);
       await initializeProxies(context);
       return context;

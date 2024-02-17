@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
 //types
-import { BigNumber, BytesLike } from 'ethers';
+import { BytesLike } from 'ethers';
 import { SingleReentrancyRelayer__factory } from '../../../types';
 
 // constants
@@ -26,9 +26,10 @@ import {
   generateSingleRelayPayload,
   loadTestCase,
 } from './reentrancyHelpers';
+import { provider } from '../../utils/helpers';
 
 export const testERC725XExecuteToLSP6ExecuteRelayCall = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
+  buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
   buildReentrancyContext: (context: LSP6TestContext) => Promise<ReentrancyContext>,
 ) => {
   let context: LSP6TestContext;
@@ -41,17 +42,17 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
   };
 
   before(async () => {
-    context = await buildContext(ethers.utils.parseEther('10'));
+    context = await buildContext(ethers.parseEther('10'));
     reentrancyContext = await buildReentrancyContext(context);
 
     const reentrantCall = new SingleReentrancyRelayer__factory().interface.encodeFunctionData(
       'relayCallThatReenters',
-      [context.keyManager.address],
+      [await context.keyManager.getAddress()],
     );
 
     executeCalldata = {
       operationType: OPERATION_TYPES.CALL,
-      to: reentrancyContext.singleReentarncyRelayer.address,
+      to: await reentrancyContext.singleReentarncyRelayer.getAddress(),
       value: 0,
       data: reentrantCall,
     };
@@ -81,7 +82,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address,
+          await reentrancyContext.singleReentarncyRelayer.getAddress(),
         );
 
         await expect(
@@ -105,7 +106,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         transferValueTestCases.NoCallsAllowed,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
       await expect(
@@ -126,12 +127,12 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         transferValueTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
-      expect(
-        await context.universalProfile.provider.getBalance(context.universalProfile.address),
-      ).to.equal(ethers.utils.parseEther('10'));
+      expect(await provider.getBalance(await context.universalProfile.getAddress())).to.equal(
+        ethers.parseEther('10'),
+      );
 
       await context.universalProfile
         .connect(reentrancyContext.caller)
@@ -142,15 +143,13 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
           executeCalldata.data,
         );
 
-      expect(
-        await context.universalProfile.provider.getBalance(context.universalProfile.address),
-      ).to.equal(ethers.utils.parseEther('9'));
+      expect(await provider.getBalance(await context.universalProfile.getAddress())).to.equal(
+        ethers.parseEther('9'),
+      );
 
       expect(
-        await context.universalProfile.provider.getBalance(
-          reentrancyContext.singleReentarncyRelayer.address,
-        ),
-      ).to.equal(ethers.utils.parseEther('1'));
+        await provider.getBalance(await reentrancyContext.singleReentarncyRelayer.getAddress()),
+      ).to.equal(ethers.parseEther('1'));
     });
   });
 
@@ -178,7 +177,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address,
+          await reentrancyContext.singleReentarncyRelayer.getAddress(),
         );
 
         await expect(
@@ -202,7 +201,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         setDataTestCases.NoERC725YDataKeysAllowed,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
       await expect(
@@ -223,7 +222,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         setDataTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
       await context.universalProfile
@@ -235,8 +234,8 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
           executeCalldata.data,
         );
 
-      const hardcodedKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('SomeRandomTextUsed'));
-      const hardcodedValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('SomeRandomTextUsed'));
+      const hardcodedKey = ethers.keccak256(ethers.toUtf8Bytes('SomeRandomTextUsed'));
+      const hardcodedValue = ethers.hexlify(ethers.toUtf8Bytes('SomeRandomTextUsed'));
 
       expect(await context.universalProfile.getData(hardcodedKey)).to.equal(hardcodedValue);
     });
@@ -262,7 +261,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address,
+          await reentrancyContext.singleReentarncyRelayer.getAddress(),
         );
 
         await expect(
@@ -286,7 +285,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         addPermissionsTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
       await context.universalProfile
@@ -330,7 +329,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address,
+          await reentrancyContext.singleReentarncyRelayer.getAddress(),
         );
 
         await expect(
@@ -354,7 +353,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         editPermissionsTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
       await context.universalProfile
@@ -397,7 +396,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address,
+          await reentrancyContext.singleReentarncyRelayer.getAddress(),
         );
 
         await expect(
@@ -421,7 +420,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         addUniversalReceiverDelegateTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
       await context.universalProfile
@@ -465,7 +464,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address,
+          await reentrancyContext.singleReentarncyRelayer.getAddress(),
         );
 
         await expect(
@@ -489,7 +488,7 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
         changeUniversalReceiverDelegateTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
       await context.universalProfile
