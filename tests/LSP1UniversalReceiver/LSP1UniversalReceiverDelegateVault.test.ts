@@ -26,27 +26,27 @@ describe('LSP1UniversalReceiverDelegateVault', () => {
       );
 
       const lsp9Vault1 = await new LSP9Vault__factory(accounts.any).deploy(
-        universalProfile.address,
+        await universalProfile.getAddress(),
       );
 
       const lsp9Vault2 = await new LSP9Vault__factory(accounts.any).deploy(
-        universalProfile.address,
+        await universalProfile.getAddress(),
       );
 
       // Setting lsp1UniversalReceiverDelegateVault as URD for the Vault
 
       const abi = lsp9Vault1.interface.encodeFunctionData('setData', [
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
-        lsp1universalReceiverDelegateVault.address,
+        await lsp1universalReceiverDelegateVault.getAddress(),
       ]);
 
       await universalProfile
         .connect(accounts.owner1)
-        .execute(OPERATION_TYPES.CALL, lsp9Vault1.address, 0, abi);
+        .execute(OPERATION_TYPES.CALL, await lsp9Vault1.getAddress(), 0, abi);
 
       await universalProfile
         .connect(accounts.owner1)
-        .execute(OPERATION_TYPES.CALL, lsp9Vault2.address, 0, abi);
+        .execute(OPERATION_TYPES.CALL, await lsp9Vault2.getAddress(), 0, abi);
 
       return {
         accounts,
