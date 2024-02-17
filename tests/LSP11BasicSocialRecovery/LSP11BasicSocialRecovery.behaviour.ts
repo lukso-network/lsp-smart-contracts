@@ -188,7 +188,7 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
           };
 
           recoveryCounterBeforeRecovery =
-            await context.lsp11BasicSocialRecovery.getRecoveryCounter.staticCall();
+            await context.lsp11BasicSocialRecovery.getRecoveryCounter();
 
           recoveryTx = await context.lsp11BasicSocialRecovery
             .connect(context.accounts.addressASelected)
@@ -201,7 +201,7 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
 
         it('should increment the recovery counter', async () => {
           const recoveryCounterAfterRecovery =
-            await context.lsp11BasicSocialRecovery.getRecoveryCounter.staticCall();
+            await context.lsp11BasicSocialRecovery.getRecoveryCounter();
 
           expect(recoveryCounterAfterRecovery).to.equal(
             ethers.toNumber(recoveryCounterBeforeRecovery) + 1,
@@ -209,7 +209,7 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
         });
 
         it('should emit RecoveryProcessSuccessful event', async () => {
-          const guardians = await context.lsp11BasicSocialRecovery.getGuardians.staticCall();
+          const guardians = await context.lsp11BasicSocialRecovery.getGuardians();
 
           expect(recoveryTx)
             .to.emit(context.lsp11BasicSocialRecovery, 'RecoveryProcessSuccessful')
@@ -532,7 +532,7 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
 
       describe('when owner calls setGuardiansThreshold(..) with a threshold higher than the guardians count', () => {
         it('should revert with ThresholdCannotBeHigherThanGuardiansNumber error', async () => {
-          const guardians = await context.lsp11BasicSocialRecovery.getGuardians.staticCall();
+          const guardians = await context.lsp11BasicSocialRecovery.getGuardians();
 
           expect(guardians.length).to.equal(1);
 
@@ -566,7 +566,7 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
 
       describe('when owner calls setGuardiansThreshold(..) with a threshold lower than the guardians count', () => {
         it('should pass', async () => {
-          const guardians = await context.lsp11BasicSocialRecovery.getGuardians.staticCall();
+          const guardians = await context.lsp11BasicSocialRecovery.getGuardians();
 
           expect(guardians.length).to.equal(1);
 
@@ -600,7 +600,7 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
 
       describe('when owner calls setGuardiansThreshold(..) with a threshold equal to the guardians count', () => {
         it('should pass', async () => {
-          const guardians = await context.lsp11BasicSocialRecovery.getGuardians.staticCall();
+          const guardians = await context.lsp11BasicSocialRecovery.getGuardians();
 
           expect(guardians.length).to.equal(1);
 
@@ -801,7 +801,7 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
           expect(isGuardian).to.be.true;
 
           const currentRecoveryCounter =
-            await context.lsp11BasicSocialRecovery.getRecoveryCounter.staticCall();
+            await context.lsp11BasicSocialRecovery.getRecoveryCounter();
 
           await expect(
             context.lsp11BasicSocialRecovery
@@ -823,8 +823,7 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
 
       before('Distribution selection of the guardians and setting recovery params', async () => {
         // Checks that recoveryCounter equal 0 before recovery
-        beforeRecoveryCounter =
-          await context.lsp11BasicSocialRecovery.getRecoveryCounter.staticCall();
+        beforeRecoveryCounter = await context.lsp11BasicSocialRecovery.getRecoveryCounter();
 
         expect(beforeRecoveryCounter).to.equal(0);
 
@@ -871,7 +870,7 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
           .connect(context.accounts.guardian1)
           .selectNewController(context.accounts.addressASelected.address);
 
-        const guardian1Choice = await context.lsp11BasicSocialRecovery.getGuardianChoice.staticCall(
+        const guardian1Choice = await context.lsp11BasicSocialRecovery.getGuardianChoice(
           context.accounts.guardian1.address,
         );
 
@@ -882,7 +881,7 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
           .connect(context.accounts.guardian2)
           .selectNewController(context.accounts.addressASelected.address);
 
-        const guardian2Choice = await context.lsp11BasicSocialRecovery.getGuardianChoice.staticCall(
+        const guardian2Choice = await context.lsp11BasicSocialRecovery.getGuardianChoice(
           context.accounts.guardian2.address,
         );
 
@@ -893,7 +892,7 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
           .connect(context.accounts.guardian3)
           .selectNewController(context.accounts.addressASelected.address);
 
-        const guardian3Choice = await context.lsp11BasicSocialRecovery.getGuardianChoice.staticCall(
+        const guardian3Choice = await context.lsp11BasicSocialRecovery.getGuardianChoice(
           context.accounts.guardian3.address,
         );
 
@@ -904,7 +903,7 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
           .connect(context.accounts.guardian4)
           .selectNewController(context.accounts.addressBSelected.address);
 
-        const guardian4Choice = await context.lsp11BasicSocialRecovery.getGuardianChoice.staticCall(
+        const guardian4Choice = await context.lsp11BasicSocialRecovery.getGuardianChoice(
           context.accounts.guardian4.address,
         );
 
@@ -1011,13 +1010,12 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
               beforeRecoveryCounter,
               context.accounts.addressASelected,
               newSecretHash,
-              await context.lsp11BasicSocialRecovery.getGuardians.staticCall(),
+              await context.lsp11BasicSocialRecovery.getGuardians(),
             );
         });
 
         it('should increment the recovery counter', async () => {
-          const afterRecoveryCounter =
-            await context.lsp11BasicSocialRecovery.getRecoveryCounter.staticCall();
+          const afterRecoveryCounter = await context.lsp11BasicSocialRecovery.getRecoveryCounter();
 
           expect(afterRecoveryCounter).to.equal(ethers.toNumber(beforeRecoveryCounter) + 1);
         });
@@ -1078,13 +1076,13 @@ export const shouldBehaveLikeLSP11 = (buildContext: () => Promise<LSP11TestConte
 
     describe('when checking guardians choice', () => {
       it('should be reset', async () => {
-        const guardian1Choice = await context.lsp11BasicSocialRecovery.getGuardianChoice.staticCall(
+        const guardian1Choice = await context.lsp11BasicSocialRecovery.getGuardianChoice(
           context.accounts.guardian1.address,
         );
 
         expect(guardian1Choice).to.equal(ethers.ZeroAddress);
 
-        const guardian2Choice = await context.lsp11BasicSocialRecovery.getGuardianChoice.staticCall(
+        const guardian2Choice = await context.lsp11BasicSocialRecovery.getGuardianChoice(
           context.accounts.guardian2.address,
         );
 
@@ -1129,7 +1127,7 @@ export const shouldInitializeLikeLSP11 = (
     });
 
     it('Should have set the linked target', async () => {
-      const target = await context.lsp11BasicSocialRecovery['target()'].staticCall();
+      const target = await context.lsp11BasicSocialRecovery['target()']();
       expect(target).to.equal(await context.deployParams.target.getAddress());
     });
   });
