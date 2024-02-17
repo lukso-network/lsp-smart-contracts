@@ -16,7 +16,7 @@ import {
 import { UniversalProfile } from '@lukso/universalprofile-contracts/types';
 
 // helpers
-import { LSP1_HOOK_PLACEHOLDER, abiCoder, getRandomAddresses } from './utils/helpers.ts';
+import { LSP1_HOOK_PLACEHOLDER, abiCoder, getRandomAddresses } from './utils/helpers';
 
 // constants
 import {
@@ -27,7 +27,6 @@ import {
   OPERATION_TYPES,
   SupportedStandards,
 } from '../constants';
-import { AddressLike } from 'ethers';
 
 export type LSP3TestContext = {
   accounts: SignerWithAddress[];
@@ -40,7 +39,7 @@ export const shouldBehaveLikeLSP3 = (
 ) => {
   let context: LSP3TestContext;
 
-  let universalProfileAddress: AddressLike;
+  let universalProfileAddress: string;
 
   before(async () => {
     context = await buildContext(100);
@@ -548,9 +547,7 @@ export const shouldBehaveLikeLSP3 = (
               [context.accounts[8].address],
             );
 
-            expect(await context.universalProfile.pendingOwner.staticCall()).to.equal(
-              ethers.ZeroAddress,
-            );
+            expect(await context.universalProfile.pendingOwner()).to.equal(ethers.ZeroAddress);
 
             await expect(() =>
               context.universalProfile
@@ -564,7 +561,7 @@ export const shouldBehaveLikeLSP3 = (
             const result = await context.universalProfile.getData(key);
             expect(result).to.equal(value);
 
-            expect(await context.universalProfile.pendingOwner.staticCall()).to.equal(
+            expect(await context.universalProfile.pendingOwner()).to.equal(
               context.accounts[8].address,
             );
           });
@@ -641,7 +638,7 @@ export const shouldBehaveLikeLSP3 = (
 
         expect(tx).to.not.emit(context.universalProfile, 'UniversalReceiver');
 
-        const result = await universalReceiverDelegateLYX.lastValueReceived.staticCall(
+        const result = await universalReceiverDelegateLYX.lastValueReceived(
           universalProfileAddress,
         );
 
@@ -659,7 +656,7 @@ export const shouldBehaveLikeLSP3 = (
 
         expect(tx).to.emit(context.universalProfile, 'UniversalReceiver');
 
-        const result = await universalReceiverDelegateLYX.lastValueReceived.staticCall(
+        const result = await universalReceiverDelegateLYX.lastValueReceived(
           universalProfileAddress,
         );
 
@@ -696,7 +693,7 @@ export const shouldBehaveLikeLSP3 = (
         expect(tx).to.emit(context.universalProfile, 'UniversalReceiver');
         expect(tx).to.emit(emitEventExtension, 'EventEmittedInExtension');
 
-        const result = await universalReceiverDelegateLYX.lastValueReceived.staticCall(
+        const result = await universalReceiverDelegateLYX.lastValueReceived(
           universalProfileAddress,
         );
 
@@ -733,7 +730,7 @@ export const shouldBehaveLikeLSP3 = (
             abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
           );
 
-        const result = await universalReceiverDelegateLYX.lastValueReceived.staticCall(
+        const result = await universalReceiverDelegateLYX.lastValueReceived(
           universalProfileAddress,
         );
 

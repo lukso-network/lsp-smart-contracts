@@ -239,7 +239,7 @@ task('ts-gen', 'Generate NatSpec documentation automatically on compilation')
       } = allMembers;
 
       for (const [sig, member] of Object.entries(allMembers)) {
-        const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(sig));
+        const hash = ethers.keccak256(ethers.toUtf8Bytes(sig));
         member.hash = member.type === 'event' ? hash : hash.slice(0, 10);
       }
 

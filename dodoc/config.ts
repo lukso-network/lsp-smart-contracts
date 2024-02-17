@@ -328,7 +328,7 @@ const generateAdditionalMethodInfo = (contract: string, code: string) => {
     infoBlock +=
       `- Function signature: \`${formatedCode}\`\n` +
       `- Function selector: \`${ethers.utils
-        .keccak256(ethers.utils.toUtf8Bytes(formatedCode))
+        .keccak256(ethers.toUtf8Bytes(formatedCode))
         .substring(0, 10)}\``;
   }
 
@@ -346,7 +346,7 @@ const generateAdditionalEventInfo = (contract: string, code: string) => {
       .toLowerCase()})\n` +
     `- Solidity implementation: [\`${contract}.sol\`](${contractLink})\n` +
     `- Event signature: \`${formatedCode}\`\n` +
-    `- Event topic hash: \`${ethers.utils.keccak256(ethers.utils.toUtf8Bytes(formatedCode))}\``
+    `- Event topic hash: \`${ethers.keccak256(ethers.toUtf8Bytes(formatedCode))}\``
   );
 };
 
@@ -361,9 +361,7 @@ const generateAdditionalErrorInfo = (contract: string, code: string) => {
       .toLowerCase()})\n` +
     `- Solidity implementation: [\`${contract}.sol\`](${contractLink})\n` +
     `- Error signature: \`${formatedCode}\`\n` +
-    `- Error hash: \`${ethers.utils
-      .keccak256(ethers.utils.toUtf8Bytes(formatedCode))
-      .substring(0, 10)}\``
+    `- Error hash: \`${ethers.keccak256(ethers.toUtf8Bytes(formatedCode)).substring(0, 10)}\``
   );
 };
 

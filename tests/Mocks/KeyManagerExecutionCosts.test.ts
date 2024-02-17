@@ -20,7 +20,7 @@ import {
 } from '../utils/helpers';
 
 import { setupKeyManager } from '../utils/fixtures';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 describe('Key Manager gas cost interactions', () => {
   describe('when using LSP6KeyManager with constructor', () => {
@@ -32,7 +32,7 @@ describe('Key Manager gas cost interactions', () => {
         mainController.address,
       );
       const keyManager = await new LSP6KeyManager__factory(mainController).deploy(
-        universalProfile.address,
+        await universalProfile.getAddress(),
       );
 
       return { accounts, mainController, universalProfile, keyManager };
@@ -75,13 +75,13 @@ describe('Key Manager gas cost interactions', () => {
           combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
           combineAllowedCalls(
             [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL)],
-            [contractImplementsERC1271.address],
+            [await contractImplementsERC1271.getAddress()],
             [INTERFACE_IDS.ERC1271],
             ['0xffffffff'],
           ),
           combineAllowedCalls(
             [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL)],
-            [contractImplementsERC1271.address],
+            [await contractImplementsERC1271.getAddress()],
             ['0xffffffff'],
             ['0xffffffff'],
           ),
@@ -90,23 +90,23 @@ describe('Key Manager gas cost interactions', () => {
         await setupKeyManager(context, permissionKeys, permissionValues);
 
         await context.mainController.sendTransaction({
-          to: context.universalProfile.address,
-          value: ethers.utils.parseEther('10'),
+          to: await context.universalProfile.getAddress(),
+          value: ethers.parseEther('10'),
         });
       });
 
       describe('display gas cost', () => {
         it('when caller has any allowed address and standard allowed', async () => {
           const initialAccountBalance = await provider.getBalance(
-            contractImplementsERC1271.address,
+            await contractImplementsERC1271.getAddress(),
           );
 
           const transferLyxPayload = context.universalProfile.interface.encodeFunctionData(
             'execute',
             [
               OPERATION_TYPES.CALL,
-              contractImplementsERC1271.address,
-              ethers.utils.parseEther('1'),
+              await contractImplementsERC1271.getAddress(),
+              ethers.parseEther('1'),
               '0x',
             ],
           );
@@ -119,23 +119,27 @@ describe('Key Manager gas cost interactions', () => {
 
           console.log(
             'gas cost LYX transfer - everything allowed: ',
-            ethers.BigNumber.from(receipt.gasUsed).toNumber(),
+            ethers.toNumber(receipt.gasUsed),
           );
 
-          const newAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
+          const newAccountBalance = await provider.getBalance(
+            await contractImplementsERC1271.getAddress(),
+          );
           expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);
         });
       });
 
       it('when caller has only 1 x allowed address allowed', async () => {
-        const initialAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
+        const initialAccountBalance = await provider.getBalance(
+          await contractImplementsERC1271.getAddress(),
+        );
 
         const transferLyxPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
           [
             OPERATION_TYPES.CALL,
-            contractImplementsERC1271.address,
-            ethers.utils.parseEther('1'),
+            await contractImplementsERC1271.getAddress(),
+            ethers.parseEther('1'),
             '0x',
           ],
         );
@@ -148,22 +152,26 @@ describe('Key Manager gas cost interactions', () => {
 
         console.log(
           'gas cost LYX transfer - with 1 x allowed address: ',
-          ethers.BigNumber.from(receipt.gasUsed).toNumber(),
+          ethers.toNumber(receipt.gasUsed),
         );
 
-        const newAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
+        const newAccountBalance = await provider.getBalance(
+          await contractImplementsERC1271.getAddress(),
+        );
         expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);
       });
 
       it('when caller has only 1 x allowed address + 1 x allowed standard allowed', async () => {
-        const initialAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
+        const initialAccountBalance = await provider.getBalance(
+          await contractImplementsERC1271.getAddress(),
+        );
 
         const transferLyxPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
           [
             OPERATION_TYPES.CALL,
-            contractImplementsERC1271.address,
-            ethers.utils.parseEther('1'),
+            await contractImplementsERC1271.getAddress(),
+            ethers.parseEther('1'),
             '0x',
           ],
         );
@@ -176,10 +184,12 @@ describe('Key Manager gas cost interactions', () => {
 
         console.log(
           'gas cost LYX transfer - with 1 x allowed address + 1 x allowed standard: ',
-          ethers.BigNumber.from(receipt.gasUsed).toNumber(),
+          ethers.toNumber(receipt.gasUsed),
         );
 
-        const newAccountBalance = await provider.getBalance(contractImplementsERC1271.address);
+        const newAccountBalance = await provider.getBalance(
+          await contractImplementsERC1271.getAddress(),
+        );
         expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);
       });
     });

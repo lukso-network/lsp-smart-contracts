@@ -154,7 +154,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           await expect(
             context.universalProfile1
               .connect(context.accounts.any)
-              .callStatic.universalReceiver(LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification, '0x'),
+              .universalReceiver.staticCall(LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification, '0x'),
           )
             .to.be.revertedWithCustomError(
               context.lsp1universalReceiverDelegateUP,
@@ -173,7 +173,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           const result = await context.universalProfile1
             .connect(context.accounts.owner1)
-            .callStatic.execute(
+            .execute.staticCall(
               OPERATION_TYPES.CALL,
               await context.universalProfile2.getAddress(),
               0,
@@ -1034,7 +1034,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           // check that it returns the correct string
           const universalReceiverResult =
-            await notTokenContractWithBalanceOfFunction.callStatic.call(
+            await notTokenContractWithBalanceOfFunction.call.staticCall(
               await context.universalProfile1.getAddress(),
               0,
               universalReceiverPayload,
@@ -1084,7 +1084,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           ).to.not.be.reverted;
 
           // check that it returns the correct string
-          const universalReceiverResult = await notTokenContract.callStatic.call(
+          const universalReceiverResult = await notTokenContract.call.staticCall(
             await context.universalProfile1.getAddress(),
             0,
             universalReceiverPayload,
@@ -2308,7 +2308,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           // check that it returns the correct string
           const universalReceiverResult =
-            await notTokenContractWithBalanceOfFunction.callStatic.call(
+            await notTokenContractWithBalanceOfFunction.call.staticCall(
               await context.universalProfile1.getAddress(),
               0,
               universalReceiverPayload,
@@ -2358,7 +2358,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           ).to.not.be.reverted;
 
           // check that it returns the correct string
-          const universalReceiverResult = await notTokenContract.callStatic.call(
+          const universalReceiverResult = await notTokenContract.call.staticCall(
             await context.universalProfile1.getAddress(),
             0,
             universalReceiverPayload,
@@ -2421,7 +2421,6 @@ export const shouldBehaveLikeLSP1Delegate = (
             OPERATION_TYPES.CALL,
             await lsp9VaultA.getAddress(),
             0,
-            // lsp9VaultA.interface.getSighash('acceptOwnership'),
             lsp9VaultA.interface.getFunction('acceptOwnership').selector,
           ]);
 
@@ -2448,7 +2447,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             OPERATION_TYPES.CALL,
             await lsp9VaultB.getAddress(),
             0,
-            lsp9VaultB.interface.getSighash('acceptOwnership'),
+            lsp9VaultB.interface.getFunction('acceptOwnership').selector,
           ]);
 
           await context.lsp6KeyManager1.connect(context.accounts.owner1).execute(executePayload);
@@ -2474,7 +2473,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             OPERATION_TYPES.CALL,
             await lsp9VaultC.getAddress(),
             0,
-            lsp9VaultC.interface.getSighash('acceptOwnership'),
+            lsp9VaultC.interface.getFunction('acceptOwnership').selector,
           ]);
 
           await context.lsp6KeyManager1.connect(context.accounts.owner1).execute(executePayload);
@@ -2506,7 +2505,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             OPERATION_TYPES.CALL,
             await lsp9VaultA.getAddress(),
             0,
-            lsp9VaultA.interface.getSighash('acceptOwnership'),
+            lsp9VaultA.interface.getFunction('acceptOwnership').selector,
           ]);
 
           await context.lsp6KeyManager2.connect(context.accounts.owner2).execute(executePayload);
@@ -2545,7 +2544,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             OPERATION_TYPES.CALL,
             await lsp9VaultB.getAddress(),
             0,
-            lsp9VaultB.interface.getSighash('acceptOwnership'),
+            lsp9VaultB.interface.getFunction('acceptOwnership').selector,
           ]);
 
           await context.lsp6KeyManager2.connect(context.accounts.owner2).execute(executePayload);
@@ -2588,7 +2587,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             OPERATION_TYPES.CALL,
             await lsp9VaultC.getAddress(),
             0,
-            lsp9VaultC.interface.getSighash('acceptOwnership'),
+            lsp9VaultC.interface.getFunction('acceptOwnership').selector,
           ]);
 
           await context.lsp6KeyManager2.connect(context.accounts.owner2).execute(executePayload);
@@ -2631,7 +2630,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             OPERATION_TYPES.CALL,
             await lsp9VaultB.getAddress(),
             0,
-            lsp9VaultB.interface.getSighash('acceptOwnership'),
+            lsp9VaultB.interface.getFunction('acceptOwnership').selector,
           ]);
 
           await context.lsp6KeyManager1.connect(context.accounts.owner1).execute(executePayload);
@@ -3027,7 +3026,7 @@ export const shouldBehaveLikeLSP1Delegate = (
       expect(await vault.pendingOwner()).to.equal(await context.universalProfile1.getAddress());
 
       // 2. UP accepts ownership of the vault
-      const acceptOwnershipPayload = vault.interface.getSighash('acceptOwnership');
+      const acceptOwnershipPayload = vault.interface.getFunction('acceptOwnership').selector;
 
       const executePayload = context.universalProfile1.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,

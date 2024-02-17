@@ -129,7 +129,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
           const result = await context.universalProfile
             .connect(context.accounts.owner1)
-            .callStatic.execute(
+            .execute.staticCall(
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
@@ -163,7 +163,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
           await expect(
             context.lsp9Vault1
               .connect(context.accounts.any)
-              .callStatic.universalReceiver(LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification, '0x'),
+              .universalReceiver.staticCall(LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification, '0x'),
           )
             .to.be.revertedWithCustomError(
               context.lsp1universalReceiverDelegateVault,
@@ -182,7 +182,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
           const result = await context.universalProfile
             .connect(context.accounts.owner1)
-            .callStatic.execute(
+            .execute.staticCall(
               OPERATION_TYPES.CALL,
               await context.lsp9Vault2.getAddress(),
               0,
@@ -1769,7 +1769,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
       const LSP9_setDataCalldata = context.lsp9Vault1.interface.encodeFunctionData('setData', [
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
-        newURD.getAddress(),
+        await newURD.getAddress(),
       ]);
 
       await context.universalProfile

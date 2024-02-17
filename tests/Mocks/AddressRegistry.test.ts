@@ -1,4 +1,4 @@
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import {
@@ -57,7 +57,7 @@ describe('Address Registry contracts', () => {
     });
 
     it('can list all values of the registry', async () => {
-      const length = await (await addressRegistry.length()).toNumber();
+      const length = ethers.toNumber(await addressRegistry.length());
       const values = [];
 
       for (let i = 0; i < length; i++) {
@@ -91,27 +91,31 @@ describe('Address Registry contracts', () => {
 
     it('add address', async () => {
       const abi = addressRegistryRequireERC725.interface.encodeFunctionData('addAddress', [
-        account.address,
+        await account.getAddress(),
       ]);
 
       await account.connect(owner).execute(0, addressRegistryRequireERC725.address, 0, abi, {
         gasLimit: 3_000_000,
       });
-      expect(await addressRegistryRequireERC725.getAddress(0)).to.equal(account.address);
+      expect(await addressRegistryRequireERC725.getAddress(0)).to.equal(await account.getAddress());
     });
 
     it('external account adds address', async () => {
-      await addressRegistryRequireERC725.connect(accounts[5]).addAddress(account.address);
-      expect(await addressRegistryRequireERC725.getAddress(0)).to.equal(account.address);
+      await addressRegistryRequireERC725
+        .connect(accounts[5])
+        .addAddress(await account.getAddress());
+      expect(await addressRegistryRequireERC725.getAddress(0)).to.equal(await account.getAddress());
     });
 
     it('remove address', async () => {
       const abi = addressRegistryRequireERC725.interface.encodeFunctionData('removeAddress', [
-        account.address,
+        await account.getAddress(),
       ]);
 
       await account.connect(owner).execute(0, addressRegistryRequireERC725.address, 0, abi);
-      expect(await addressRegistryRequireERC725.containsAddress(account.address)).to.equal(false);
+      expect(
+        await addressRegistryRequireERC725.containsAddress(await account.getAddress()),
+      ).to.equal(false);
     });
 
     it('should fail if called by a regular address', async () => {

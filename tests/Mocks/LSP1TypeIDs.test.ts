@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { hexlify, keccak256, toUtf8Bytes } from 'ethers/lib/utils';
+import { hexlify, keccak256, toUtf8Bytes } from 'ethers';
 import { LSP1TypeIDsTester, LSP1TypeIDsTester__factory } from '../../types';
 import { LSP1_TYPE_IDS } from '../../constants';
 
