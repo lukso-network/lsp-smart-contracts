@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { BigNumber } from 'ethers';
 
 // constants
 import {
@@ -21,7 +20,7 @@ import {
 } from '@lukso/lsp7-contracts/types';
 
 export const shouldBehaveLikeBatchExecute = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
+  buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
 
@@ -34,7 +33,7 @@ export const shouldBehaveLikeBatchExecute = (
     rLyxToken: LSP7Mintable;
 
   before(async () => {
-    context = await buildContext(ethers.utils.parseEther('50'));
+    context = await buildContext(ethers.parseEther('50'));
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -70,9 +69,9 @@ export const shouldBehaveLikeBatchExecute = (
       false,
     );
 
-    await lyxDaiToken.mint(context.universalProfile.address, 100, false, '0x');
-    await metaCoin.mint(context.universalProfile.address, 100, false, '0x');
-    await rLyxToken.mint(context.universalProfile.address, 100, false, '0x');
+    await lyxDaiToken.mint(await context.universalProfile.getAddress(), 100, false, '0x');
+    await metaCoin.mint(await context.universalProfile.getAddress(), 100, false, '0x');
+    await rLyxToken.mint(await context.universalProfile.getAddress(), 100, false, '0x');
   });
 
   describe('example scenarios', () => {
@@ -85,11 +84,7 @@ export const shouldBehaveLikeBatchExecute = (
         context.accounts[3].address,
       ];
 
-      const amounts = [
-        ethers.utils.parseEther('1'),
-        ethers.utils.parseEther('2'),
-        ethers.utils.parseEther('3'),
-      ];
+      const amounts = [ethers.parseEther('1'), ethers.parseEther('2'), ethers.parseEther('3')];
 
       const batchExecutePayloads = recipients.map((recipient, index) => {
         return universalProfile.interface.encodeFunctionData('execute', [
@@ -105,21 +100,23 @@ export const shouldBehaveLikeBatchExecute = (
         .executeBatch([0, 0, 0], batchExecutePayloads);
 
       await expect(tx).to.changeEtherBalance(
-        context.universalProfile.address,
-        ethers.utils.parseEther('-6'),
+        await context.universalProfile.getAddress(),
+        ethers.parseEther('-6'),
       );
       await expect(tx).to.changeEtherBalances(recipients, amounts);
     });
 
     it('should send LYX + some LSP7 tokens to the same address', async () => {
-      expect(await lyxDaiToken.balanceOf(context.universalProfile.address)).to.equal(100);
+      expect(await lyxDaiToken.balanceOf(await context.universalProfile.getAddress())).to.equal(
+        100,
+      );
 
       const recipient = context.accounts[1].address;
-      const lyxAmount = ethers.utils.parseEther('3');
+      const lyxAmount = ethers.parseEther('3');
       const lyxDaiAmount = 25;
 
       const lyxDaiTransferPayload = lyxDaiToken.interface.encodeFunctionData('transfer', [
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
         recipient,
         lyxDaiAmount,
         true,
@@ -163,17 +160,17 @@ export const shouldBehaveLikeBatchExecute = (
       // prettier-ignore
       const lyxDaiTransferPayload = lyxDaiToken.interface.encodeFunctionData(
         "transfer",
-        [context.universalProfile.address, recipient, lyxDaiAmount, true, "0x"]
+        [await context.universalProfile.getAddress(), recipient, lyxDaiAmount, true, "0x"]
       );
 
       // prettier-ignore
       const metaCoinTransferPayload = metaCoin.interface.encodeFunctionData(
         "transfer",
-        [context.universalProfile.address, recipient, metaCoinAmount, true, "0x"]
+        [await context.universalProfile.getAddress(), recipient, metaCoinAmount, true, "0x"]
       );
 
       const rLYXTransferPayload = metaCoin.interface.encodeFunctionData('transfer', [
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
         recipient,
         rLyxAmount,
         true,
@@ -221,12 +218,12 @@ export const shouldBehaveLikeBatchExecute = (
 
       const lsp7ProxyDeploymentPayload = context.universalProfile.interface.encodeFunctionData(
         'execute',
-        [OPERATION_TYPES.CREATE, ethers.constants.AddressZero, 0, lsp7TokenProxyBytecode],
+        [OPERATION_TYPES.CREATE, ethers.ZeroAddress, 0, lsp7TokenProxyBytecode],
       );
 
       const callResult = await context.keyManager
         .connect(context.mainController)
-        .callStatic.execute(lsp7ProxyDeploymentPayload);
+        .execute.staticCall(lsp7ProxyDeploymentPayload);
 
       const [futureTokenAddress] = abiCoder.decode(['bytes'], callResult);
 
@@ -237,7 +234,7 @@ export const shouldBehaveLikeBatchExecute = (
       const lsp7InitializePayload = futureTokenInstance.interface.encodeFunctionData('initialize', [
         'My LSP7 UP Token',
         'UPLSP7',
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
         LSP4_TOKEN_TYPES.TOKEN,
         false,
       ]);
@@ -279,9 +276,9 @@ export const shouldBehaveLikeBatchExecute = (
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
-          ethers.utils.getAddress(futureTokenAddress),
+          ethers.getAddress(futureTokenAddress),
           0,
-          ethers.utils.hexZeroPad('0x00', 32),
+          ethers.zeroPadValue('0x00', 32),
         );
 
       // CHECK initialize parameters have been set correctly
@@ -290,9 +287,11 @@ export const shouldBehaveLikeBatchExecute = (
         ERC725YDataKeys.LSP4['LSP4TokenSymbol'],
       );
 
-      expect(ethers.utils.toUtf8String(nameResult)).to.equal('My LSP7 UP Token');
-      expect(ethers.utils.toUtf8String(symbolResult)).to.equal('UPLSP7');
-      expect(await futureTokenInstance.owner()).to.equal(context.universalProfile.address);
+      expect(ethers.toUtf8String(nameResult)).to.equal('My LSP7 UP Token');
+      expect(ethers.toUtf8String(symbolResult)).to.equal('UPLSP7');
+      expect(await futureTokenInstance.owner()).to.equal(
+        await context.universalProfile.getAddress(),
+      );
 
       // CHECK LSP4 token metadata has been set
       expect(await futureTokenInstance.getData(ERC725YDataKeys.LSP4['LSP4Metadata'])).to.equal(
@@ -307,7 +306,7 @@ export const shouldBehaveLikeBatchExecute = (
         [
           'My UP LSP7 Token',
           'UPLSP7',
-          context.universalProfile.address,
+          await context.universalProfile.getAddress(),
           LSP4_TOKEN_TYPES.TOKEN,
           false,
         ],
@@ -317,7 +316,7 @@ export const shouldBehaveLikeBatchExecute = (
         'execute',
         [
           OPERATION_TYPES.CREATE,
-          ethers.constants.AddressZero,
+          ethers.ZeroAddress,
           0,
           LSP7Mintable__factory.bytecode + lsp7ConstructorArguments.substring(2),
         ],
@@ -328,21 +327,21 @@ export const shouldBehaveLikeBatchExecute = (
       // in the 2nd and 3rd payloads of the LSP6 batch `execute(bytes[])`
       const callResult = await context.keyManager
         .connect(context.mainController)
-        .callStatic.execute(lsp7DeploymentPayload);
+        .execute.staticCall(lsp7DeploymentPayload);
 
       const [futureTokenAddress] = abiCoder.decode(['bytes'], callResult);
 
       // step 2 - mint some tokens
       // use the interface of an existing token for encoding the function call
       const lsp7MintingPayload = lyxDaiToken.interface.encodeFunctionData('mint', [
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
         3_000,
         false,
         '0x',
       ]);
 
       // step 3 - transfer batch to multiple addresses
-      const sender = context.universalProfile.address;
+      const sender = await context.universalProfile.getAddress();
       const recipients = [
         context.accounts[1].address,
         context.accounts[2].address,
@@ -386,9 +385,9 @@ export const shouldBehaveLikeBatchExecute = (
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
-          ethers.utils.getAddress(futureTokenAddress),
+          ethers.getAddress(futureTokenAddress),
           0,
-          ethers.utils.hexZeroPad('0x00', 32),
+          ethers.zeroPadValue('0x00', 32),
         );
 
       // CHECK for tokens balances of recipients
@@ -407,16 +406,16 @@ export const shouldBehaveLikeBatchExecute = (
     describe('when all the payloads are setData(...)', () => {
       describe('if specifying 0 for each values[index]', () => {
         it('should revert and not leave any funds locked on the Key Manager', async () => {
-          const amountToFund = ethers.utils.parseEther('5');
+          const amountToFund = ethers.parseEther('5');
 
           const dataKeys = [
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key1')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key2')),
+            ethers.keccak256(ethers.toUtf8Bytes('key1')),
+            ethers.keccak256(ethers.toUtf8Bytes('key2')),
           ];
           const dataValues = ['0xaaaaaaaa', '0xbbbbbbbb'];
 
           const keyManagerBalanceBefore = await ethers.provider.getBalance(
-            context.keyManager.address,
+            await context.keyManager.getAddress(),
           );
 
           const firstSetDataPayload = context.universalProfile.interface.encodeFunctionData(
@@ -442,27 +441,27 @@ export const shouldBehaveLikeBatchExecute = (
             .withArgs(0, amountToFund);
 
           const keyManagerBalanceAfter = await ethers.provider.getBalance(
-            context.keyManager.address,
+            await context.keyManager.getAddress(),
           );
 
           expect(keyManagerBalanceAfter).to.equal(keyManagerBalanceBefore);
 
           // the Key Manager must not hold any funds and must always forward any funds sent to it.
           // it's balance must always be 0 after any execution
-          expect(await provider.getBalance(context.keyManager.address)).to.equal(0);
+          expect(await provider.getBalance(await context.keyManager.getAddress())).to.equal(0);
         });
       });
 
       describe('if specifying some value for each values[index]', () => {
         it('should pass when sending value while setting data', async () => {
-          const msgValues = [ethers.utils.parseEther('2'), ethers.utils.parseEther('2')];
-          const totalMsgValue = msgValues.reduce((accumulator, currentValue) =>
-            accumulator.add(currentValue),
+          const msgValues = [ethers.parseEther('2'), ethers.parseEther('2')];
+          const totalMsgValue = msgValues.reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
           );
 
           const dataKeys = [
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key1')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key2')),
+            ethers.keccak256(ethers.toUtf8Bytes('key1')),
+            ethers.keccak256(ethers.toUtf8Bytes('key2')),
           ];
           const dataValues = ['0xaaaaaaaa', '0xbbbbbbbb'];
 
@@ -482,7 +481,7 @@ export const shouldBehaveLikeBatchExecute = (
               .executeBatch(msgValues, [firstSetDataPayload, secondSetDataPayload], {
                 value: totalMsgValue,
               }),
-          ).to.changeEtherBalances([context.universalProfile.address], [totalMsgValue]);
+          ).to.changeEtherBalances([await context.universalProfile.getAddress()], [totalMsgValue]);
 
           expect(await context.universalProfile.getDataBatch(dataKeys)).to.deep.equal(dataValues);
         });
@@ -494,10 +493,10 @@ export const shouldBehaveLikeBatchExecute = (
         it('should pass', async () => {
           const recipient = context.accounts[5].address;
 
-          const dataKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Sample Data Key'));
-          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(10));
+          const dataKey = ethers.keccak256(ethers.toUtf8Bytes('Sample Data Key'));
+          const dataValue = ethers.hexlify(ethers.randomBytes(10));
 
-          const msgValues = [ethers.BigNumber.from(0), ethers.BigNumber.from('5')];
+          const msgValues = [ethers.toBigInt(0), ethers.toBigInt('5')];
 
           const payloads = [
             context.universalProfile.interface.encodeFunctionData('setData', [dataKey, dataValue]),
@@ -509,15 +508,18 @@ export const shouldBehaveLikeBatchExecute = (
             ]),
           ];
 
-          const totalValues = msgValues.reduce((accumulator, currentValue) =>
-            accumulator.add(currentValue),
+          const totalValues = msgValues.reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
           );
 
           await expect(
             context.keyManager.connect(context.mainController).executeBatch(msgValues, payloads, {
               value: totalValues,
             }),
-          ).to.changeEtherBalances([context.universalProfile.address, recipient], msgValues);
+          ).to.changeEtherBalances(
+            [await context.universalProfile.getAddress(), recipient],
+            msgValues,
+          );
 
           expect(await context.universalProfile.getData(dataKey)).to.equal(dataValue);
         });
@@ -527,10 +529,10 @@ export const shouldBehaveLikeBatchExecute = (
         it('should pass and increase the UP balance', async () => {
           const recipient = context.accounts[5].address;
 
-          const dataKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Sample Data Key'));
-          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(10));
+          const dataKey = ethers.keccak256(ethers.toUtf8Bytes('Sample Data Key'));
+          const dataValue = ethers.hexlify(ethers.randomBytes(10));
 
-          const msgValues = [ethers.BigNumber.from(5), ethers.BigNumber.from('5')];
+          const msgValues = [ethers.toBigInt(5), ethers.toBigInt('5')];
 
           const payloads = [
             context.universalProfile.interface.encodeFunctionData('setData', [dataKey, dataValue]),
@@ -542,8 +544,8 @@ export const shouldBehaveLikeBatchExecute = (
             ]),
           ];
 
-          const totalValues = msgValues.reduce((accumulator, currentValue) =>
-            accumulator.add(currentValue),
+          const totalValues = msgValues.reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
           );
 
           await context.keyManager
@@ -556,7 +558,10 @@ export const shouldBehaveLikeBatchExecute = (
             context.keyManager.connect(context.mainController).executeBatch(msgValues, payloads, {
               value: totalValues,
             }),
-          ).to.changeEtherBalances([context.universalProfile.address, recipient], msgValues);
+          ).to.changeEtherBalances(
+            [await context.universalProfile.getAddress(), recipient],
+            msgValues,
+          );
 
           expect(await context.universalProfile.getData(dataKey)).to.equal(dataValue);
         });
@@ -571,23 +576,19 @@ export const shouldBehaveLikeBatchExecute = (
           const thirdRecipient = context.accounts[5].address;
 
           const amountsToTransfer = [
-            ethers.utils.parseEther('1'),
-            ethers.utils.parseEther('1'),
-            ethers.utils.parseEther('1'),
+            ethers.parseEther('1'),
+            ethers.parseEther('1'),
+            ethers.parseEther('1'),
           ];
 
-          const values = [
-            ethers.utils.parseEther('2'),
-            ethers.utils.parseEther('2'),
-            ethers.utils.parseEther('2'),
-          ];
+          const values = [ethers.parseEther('2'), ethers.parseEther('2'), ethers.parseEther('2')];
 
-          const totalValues = values.reduce((accumulator, currentValue) =>
-            accumulator.add(currentValue),
+          const totalValues = values.reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
           );
 
           // total of values[] - 1. To check we are not sending enough fuds
-          const msgValue = totalValues.sub(1);
+          const msgValue = totalValues - BigInt(1);
 
           const payloads = [
             context.universalProfile.interface.encodeFunctionData('execute', [
@@ -627,23 +628,19 @@ export const shouldBehaveLikeBatchExecute = (
           const thirdRecipient = context.accounts[5].address;
 
           const amountsToTransfer = [
-            ethers.utils.parseEther('1'),
-            ethers.utils.parseEther('1'),
-            ethers.utils.parseEther('1'),
+            ethers.parseEther('1'),
+            ethers.parseEther('1'),
+            ethers.parseEther('1'),
           ];
 
-          const values = [
-            ethers.utils.parseEther('2'),
-            ethers.utils.parseEther('2'),
-            ethers.utils.parseEther('2'),
-          ];
+          const values = [ethers.parseEther('2'), ethers.parseEther('2'), ethers.parseEther('2')];
 
-          const totalValues = values.reduce((accumulator, currentValue) =>
-            accumulator.add(currentValue),
+          const totalValues = values.reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
           );
 
           // total of values[] + 1. To check we cannot send to much funds and leave some in the Key Manager
-          const msgValue = totalValues.add(1);
+          const msgValue = totalValues + BigInt(1);
 
           const payloads = [
             context.universalProfile.interface.encodeFunctionData('execute', [
@@ -683,19 +680,15 @@ export const shouldBehaveLikeBatchExecute = (
           const thirdRecipient = context.accounts[5].address;
 
           const amountsToTransfer = [
-            ethers.utils.parseEther('2'),
-            ethers.utils.parseEther('2'),
-            ethers.utils.parseEther('2'),
+            ethers.parseEther('2'),
+            ethers.parseEther('2'),
+            ethers.parseEther('2'),
           ];
 
-          const values = [
-            ethers.utils.parseEther('2'),
-            ethers.utils.parseEther('2'),
-            ethers.utils.parseEther('2'),
-          ];
+          const values = [ethers.parseEther('2'), ethers.parseEther('2'), ethers.parseEther('2')];
 
-          const totalValues = values.reduce((accumulator, currentValue) =>
-            accumulator.add(currentValue),
+          const totalValues = values.reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
           );
 
           const payloads = [
@@ -726,7 +719,12 @@ export const shouldBehaveLikeBatchExecute = (
             });
 
           await expect(tx).to.changeEtherBalances(
-            [context.universalProfile.address, firstRecipient, secondRecipient, thirdRecipient],
+            [
+              await context.universalProfile.getAddress(),
+              firstRecipient,
+              secondRecipient,
+              thirdRecipient,
+            ],
             [0, amountsToTransfer[0], amountsToTransfer[1], amountsToTransfer[2]],
           );
         });
@@ -736,13 +734,13 @@ export const shouldBehaveLikeBatchExecute = (
 
   describe('when one of the payload reverts', () => {
     it('should revert the whole transaction if first payload reverts', async () => {
-      const upBalance = await provider.getBalance(context.universalProfile.address);
+      const upBalance = await provider.getBalance(await context.universalProfile.getAddress());
 
-      const validAmount = ethers.utils.parseEther('1');
+      const validAmount = ethers.parseEther('1');
       expect(validAmount).to.be.lt(upBalance); // sanity check
 
       // make it revert by sending too much value than the actual balance
-      const invalidAmount = upBalance.add(10);
+      const invalidAmount = upBalance + BigInt(10);
 
       const randomRecipient = ethers.Wallet.createRandom().address;
 
@@ -772,13 +770,13 @@ export const shouldBehaveLikeBatchExecute = (
     });
 
     it('should revert the whole transaction if last payload reverts', async () => {
-      const upBalance = await provider.getBalance(context.universalProfile.address);
+      const upBalance = await provider.getBalance(await context.universalProfile.getAddress());
 
-      const validAmount = ethers.utils.parseEther('1');
+      const validAmount = ethers.parseEther('1');
       expect(validAmount).to.be.lt(upBalance); // sanity check
 
       // make it revert by sending too much value than the actual balance
-      const invalidAmount = upBalance.add(10);
+      const invalidAmount = upBalance + BigInt(10);
 
       const randomRecipient = ethers.Wallet.createRandom().address;
 

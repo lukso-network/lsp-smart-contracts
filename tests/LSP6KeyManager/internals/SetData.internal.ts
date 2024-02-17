@@ -27,14 +27,14 @@ export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTe
       describe('when there is not the same number of dataKeys[] and dataValues[] in each arrays', () => {
         it('should revert with error `...` if the dataValues is < (less than) dataKeys', async () => {
           const dataKeys = [
-            ethers.utils.hexlify(ethers.utils.randomBytes(32)),
-            ethers.utils.hexlify(ethers.utils.randomBytes(32)),
+            ethers.hexlify(ethers.randomBytes(32)),
+            ethers.hexlify(ethers.randomBytes(32)),
           ];
 
           const dataValues = [
-            ethers.utils.hexlify(ethers.utils.randomBytes(10)),
-            ethers.utils.hexlify(ethers.utils.randomBytes(10)),
-            ethers.utils.hexlify(ethers.utils.randomBytes(10)),
+            ethers.hexlify(ethers.randomBytes(10)),
+            ethers.hexlify(ethers.randomBytes(10)),
+            ethers.hexlify(ethers.randomBytes(10)),
           ];
 
           await expect(
@@ -52,14 +52,14 @@ export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTe
 
         it('should revert with error `...` if the dataValues > (greater than) dataKeys', async () => {
           const dataKeys = [
-            ethers.utils.hexlify(ethers.utils.randomBytes(32)),
-            ethers.utils.hexlify(ethers.utils.randomBytes(32)),
-            ethers.utils.hexlify(ethers.utils.randomBytes(32)),
+            ethers.hexlify(ethers.randomBytes(32)),
+            ethers.hexlify(ethers.randomBytes(32)),
+            ethers.hexlify(ethers.randomBytes(32)),
           ];
 
           const dataValues = [
-            ethers.utils.hexlify(ethers.utils.randomBytes(10)),
-            ethers.utils.hexlify(ethers.utils.randomBytes(10)),
+            ethers.hexlify(ethers.randomBytes(10)),
+            ethers.hexlify(ethers.randomBytes(10)),
           ];
 
           await expect(
@@ -79,15 +79,15 @@ export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTe
       describe('when there is the same number of dataKeys[] and dataValues[] in each array', () => {
         it('should pass', async () => {
           const dataKeys = [
-            ethers.utils.hexlify(ethers.utils.randomBytes(32)),
-            ethers.utils.hexlify(ethers.utils.randomBytes(32)),
-            ethers.utils.hexlify(ethers.utils.randomBytes(32)),
+            ethers.hexlify(ethers.randomBytes(32)),
+            ethers.hexlify(ethers.randomBytes(32)),
+            ethers.hexlify(ethers.randomBytes(32)),
           ];
 
           const dataValues = [
-            ethers.utils.hexlify(ethers.utils.randomBytes(10)),
-            ethers.utils.hexlify(ethers.utils.randomBytes(10)),
-            ethers.utils.hexlify(ethers.utils.randomBytes(10)),
+            ethers.hexlify(ethers.randomBytes(10)),
+            ethers.hexlify(ethers.randomBytes(10)),
+            ethers.hexlify(ethers.randomBytes(10)),
           ];
 
           await expect(

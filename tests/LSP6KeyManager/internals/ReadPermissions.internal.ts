@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 // constants
 import { ALL_PERMISSIONS, ERC725YDataKeys, PERMISSIONS } from '../../../constants';
@@ -224,7 +224,7 @@ export const testReadingPermissionsInternals = (
       it(`Checking address (=value) stored at AddressPermissions[${ii}]'`, async () => {
         let result = await context.universalProfile.getData(permissionArrayKeys[ii]);
         // raw bytes are stored lower case, so we need to checksum the address retrieved
-        result = ethers.utils.getAddress(result);
+        result = ethers.getAddress(result);
         expect(result).to.equal(permissionArrayValues[ii]);
       });
     }

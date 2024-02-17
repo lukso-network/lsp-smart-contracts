@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
 
 import { UniversalProfileInit__factory } from '@lukso/universalprofile-contracts/types';
@@ -11,7 +10,7 @@ import { deployProxy } from '../../utils/fixtures';
 import { shouldBehaveLikeLSP6 } from './LSP20WithLSP6.behaviour';
 
 describe('LSP20 Init + LSP6 Init with proxy', () => {
-  const buildProxyTestContext = async (initialFunding?: BigNumber): Promise<LSP6TestContext> => {
+  const buildProxyTestContext = async (initialFunding?: bigint): Promise<LSP6TestContext> => {
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
@@ -31,7 +30,7 @@ describe('LSP20 Init + LSP6 Init with proxy', () => {
       value: context.initialFunding,
     });
 
-    await context.keyManager['initialize(address)'](context.universalProfile.address);
+    await context.keyManager['initialize(address)'](await context.universalProfile.getAddress());
 
     return context;
   };
@@ -64,7 +63,7 @@ describe('LSP20 Init + LSP6 Init with proxy', () => {
   });
 
   describe('when testing deployed contract', () => {
-    shouldBehaveLikeLSP6(async (initialFunding?: BigNumber) => {
+    shouldBehaveLikeLSP6(async (initialFunding?: bigint) => {
       const context = await buildProxyTestContext(initialFunding);
       await initializeProxy(context);
       return context;

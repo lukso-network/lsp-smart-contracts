@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers, network } from 'hardhat';
-import { BigNumber, ContractTransaction } from 'ethers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { ContractTransaction } from 'ethers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 // constants
 import { ERC725YDataKeys, PERMISSIONS, OPERATION_TYPES, LSP25_VERSION } from '../../../constants';
@@ -15,7 +15,7 @@ import { EIP191Signer } from '@lukso/eip191-signer.js';
 import { LOCAL_PRIVATE_KEYS } from '../../utils/helpers';
 
 export const shouldBehaveLikePermissionChangeOwner = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
+  buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
 
@@ -30,23 +30,23 @@ export const shouldBehaveLikePermissionChangeOwner = (
   let permissionsValues: string[];
 
   before(async () => {
-    context = await buildContext(ethers.utils.parseEther('20'));
+    context = await buildContext(ethers.parseEther('20'));
 
     canChangeOwner = context.accounts[1];
     cannotChangeOwner = context.accounts[2];
 
     newKeyManager = await new LSP6KeyManager__factory(context.mainController).deploy(
-      context.universalProfile.address,
+      await context.universalProfile.getAddress(),
     );
 
     transferOwnershipPayload = context.universalProfile.interface.encodeFunctionData(
       'transferOwnership',
-      [newKeyManager.address],
+      [await newKeyManager.getAddress()],
     );
 
     resetOwnershipPayload = context.universalProfile.interface.encodeFunctionData(
       'transferOwnership',
-      [ethers.constants.AddressZero],
+      [ethers.ZeroAddress],
     );
 
     permissionsKeys = [
@@ -64,7 +64,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
     it('should revert', async () => {
       const transferOwnershipPayload = context.universalProfile.interface.encodeFunctionData(
         'transferOwnership',
-        [context.universalProfile.address],
+        [await context.universalProfile.getAddress()],
       );
 
       await expect(
@@ -98,7 +98,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       it('should have set newKeyManager as pendingOwner', async () => {
         const pendingOwner = await context.universalProfile.pendingOwner();
-        expect(pendingOwner).to.equal(newKeyManager.address);
+        expect(pendingOwner).to.equal(await newKeyManager.getAddress());
       });
 
       it('owner should remain the current KeyManager', async () => {
@@ -106,15 +106,15 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         const transferOwnershipPayload = context.universalProfile.interface.encodeFunctionData(
           'transferOwnership',
-          [newKeyManager.address],
+          [await newKeyManager.getAddress()],
         );
 
         await context.keyManager.connect(context.mainController).execute(transferOwnershipPayload);
 
         const ownerAfter = await context.universalProfile.owner();
 
-        expect(ownerBefore).to.equal(context.keyManager.address);
-        expect(ownerAfter).to.equal(context.keyManager.address);
+        expect(ownerBefore).to.equal(await context.keyManager.getAddress());
+        expect(ownerAfter).to.equal(await context.keyManager.getAddress());
       });
 
       describe('it should still be possible to call onlyOwner functions via the old KeyManager', () => {
@@ -135,7 +135,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         it('execute(...) - LYX transfer', async () => {
           const recipient = context.accounts[8];
-          const amount = ethers.utils.parseEther('3');
+          const amount = ethers.parseEther('3');
 
           const payload = context.universalProfile.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
@@ -162,7 +162,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           );
 
         // checksum the address of the pendingOwner fetched from the storage
-        const pendingOwner = ethers.utils.getAddress(await context.universalProfile.pendingOwner());
+        const pendingOwner = ethers.getAddress(await context.universalProfile.pendingOwner());
         expect(pendingOwner).to.equal(overridenPendingOwner);
       });
     });
@@ -178,7 +178,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       it('should have set newKeyManager as pendingOwner', async () => {
         const pendingOwner = await context.universalProfile.pendingOwner();
-        expect(pendingOwner).to.equal(newKeyManager.address);
+        expect(pendingOwner).to.equal(await newKeyManager.getAddress());
       });
 
       it('owner should remain the current KeyManager', async () => {
@@ -186,32 +186,32 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         const transferOwnershipPayload = context.universalProfile.interface.encodeFunctionData(
           'transferOwnership',
-          [newKeyManager.address],
+          [await newKeyManager.getAddress()],
         );
 
         await context.keyManager.connect(canChangeOwner).execute(transferOwnershipPayload);
 
         const ownerAfter = await context.universalProfile.owner();
 
-        expect(ownerBefore).to.equal(context.keyManager.address);
-        expect(ownerAfter).to.equal(context.keyManager.address);
+        expect(ownerBefore).to.equal(await context.keyManager.getAddress());
+        expect(ownerAfter).to.equal(await context.keyManager.getAddress());
       });
 
       it('should override the pendingOwner when transferOwnership(...) is called twice', async () => {
         const overridenPendingOwner = await new LSP6KeyManager__factory(
           context.mainController,
-        ).deploy(context.universalProfile.address);
+        ).deploy(await context.universalProfile.getAddress());
 
         await context.keyManager
           .connect(canChangeOwner)
           .execute(
             context.universalProfile.interface.encodeFunctionData('transferOwnership', [
-              overridenPendingOwner.address,
+              await overridenPendingOwner.getAddress(),
             ]),
           );
 
         const pendingOwner = await context.universalProfile.pendingOwner();
-        expect(pendingOwner).to.equal(overridenPendingOwner.address);
+        expect(pendingOwner).to.equal(await overridenPendingOwner.getAddress());
       });
     });
   });
@@ -223,14 +223,14 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
     it('should revert', async () => {
       const notPendingKeyManager = await new LSP6KeyManager__factory(context.accounts[5]).deploy(
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
       );
 
-      const payload = context.universalProfile.interface.getSighash('acceptOwnership');
+      const payload = context.universalProfile.interface.getFunction('acceptOwnership').selector;
 
       await expect(notPendingKeyManager.connect(context.mainController).execute(payload))
         .to.be.revertedWithCustomError(context.keyManager, 'NoPermissionsSet')
-        .withArgs(notPendingKeyManager.address);
+        .withArgs(await notPendingKeyManager.getAddress());
     });
   });
 
@@ -240,12 +240,12 @@ export const shouldBehaveLikePermissionChangeOwner = (
     before('`transferOwnership(...)` to new Key Manager', async () => {
       await context.universalProfile
         .connect(context.mainController)
-        .transferOwnership(newKeyManager.address);
+        .transferOwnership(await newKeyManager.getAddress());
 
       pendingOwner = await context.universalProfile.pendingOwner();
 
       const acceptOwnershipPayload =
-        context.universalProfile.interface.getSighash('acceptOwnership');
+        context.universalProfile.interface.getFunction('acceptOwnership').selector;
 
       await newKeyManager.connect(context.mainController).execute(acceptOwnershipPayload);
     });
@@ -257,7 +257,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
     it('should have cleared the pendingOwner after transfering ownership', async () => {
       const newPendingOwner = await context.universalProfile.pendingOwner();
-      expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
+      expect(newPendingOwner).to.equal(ethers.ZeroAddress);
     });
   });
 
@@ -281,12 +281,12 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await expect(oldKeyManager.connect(context.mainController).execute(payload))
           .to.be.revertedWithCustomError(newKeyManager, 'NoPermissionsSet')
-          .withArgs(oldKeyManager.address);
+          .withArgs(await oldKeyManager.getAddress());
       });
 
       it('should revert with error `NoPermissionsSet` when calling `execute(...)`', async () => {
         const recipient = context.accounts[3];
-        const amount = ethers.utils.parseEther('3');
+        const amount = ethers.parseEther('3');
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -297,7 +297,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await expect(oldKeyManager.connect(context.mainController).execute(payload))
           .to.be.revertedWithCustomError(newKeyManager, 'NoPermissionsSet')
-          .withArgs(oldKeyManager.address);
+          .withArgs(await oldKeyManager.getAddress());
       });
     });
 
@@ -319,7 +319,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       it('execute(...) - LYX transfer', async () => {
         const recipient = context.accounts[3];
-        const amount = ethers.utils.parseEther('3');
+        const amount = ethers.parseEther('3');
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -342,7 +342,8 @@ export const shouldBehaveLikePermissionChangeOwner = (
         let renounceOwnershipSecondTx: ContractTransaction;
 
         before(async () => {
-          const payload = context.universalProfile.interface.getSighash('renounceOwnership');
+          const payload =
+            context.universalProfile.interface.getFunction('renounceOwnership').selector;
 
           // 1st call
           renounceOwnershipFirstTx = await newKeyManager
@@ -350,7 +351,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
             .execute(payload);
 
           // mine 200 blocks
-          await network.provider.send('hardhat_mine', [ethers.utils.hexValue(200)]);
+          await network.provider.send('hardhat_mine', [ethers.toQuantity(200)]);
 
           // 2nd call
           renounceOwnershipSecondTx = await newKeyManager
@@ -373,13 +374,11 @@ export const shouldBehaveLikePermissionChangeOwner = (
         });
 
         it('should clear the `pendingOwner` and set it to `AddressZero`', async () => {
-          expect(await context.universalProfile.pendingOwner()).to.equal(
-            ethers.constants.AddressZero,
-          );
+          expect(await context.universalProfile.pendingOwner()).to.equal(ethers.ZeroAddress);
         });
 
         it('should update the owner to `AddressZero`', async () => {
-          expect(await context.universalProfile.owner()).to.equal(ethers.constants.AddressZero);
+          expect(await context.universalProfile.owner()).to.equal(ethers.ZeroAddress);
         });
       });
 
@@ -395,7 +394,8 @@ export const shouldBehaveLikePermissionChangeOwner = (
           // -------------------------------
 
           // ------ General variables for relay call ------
-          const payload = context.universalProfile.interface.getSighash('renounceOwnership');
+          const payload =
+            context.universalProfile.interface.getFunction('renounceOwnership').selector;
           const eip191Signer = new EIP191Signer();
           const HARDHAT_CHAINID = 31337;
           const validityTimestamps = 0;
@@ -405,13 +405,13 @@ export const shouldBehaveLikePermissionChangeOwner = (
           // ------ 1st call ------
           const firstNonce = await context.keyManager.getNonce(context.mainController.address, 0);
 
-          const firstEncodedMessage = ethers.utils.solidityPack(
+          const firstEncodedMessage = ethers.solidityPacked(
             ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
             [LSP25_VERSION, HARDHAT_CHAINID, firstNonce, validityTimestamps, valueToSend, payload],
           );
 
           const firstSignature = await eip191Signer.signDataWithIntendedValidator(
-            context.keyManager.address,
+            await context.keyManager.getAddress(),
             firstEncodedMessage,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
           ).signature;
@@ -424,18 +424,18 @@ export const shouldBehaveLikePermissionChangeOwner = (
           // ----------------------
 
           // mine 200 blocks
-          await network.provider.send('hardhat_mine', [ethers.utils.hexValue(200)]);
+          await network.provider.send('hardhat_mine', [ethers.toQuantity(200)]);
 
           // ------ 2nd call ------
           const secondNonce = await context.keyManager.getNonce(context.mainController.address, 0);
 
-          const secondEncodedMessage = ethers.utils.solidityPack(
+          const secondEncodedMessage = ethers.solidityPacked(
             ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
             [LSP25_VERSION, HARDHAT_CHAINID, secondNonce, validityTimestamps, valueToSend, payload],
           );
 
           const secondSignature = await eip191Signer.signDataWithIntendedValidator(
-            context.keyManager.address,
+            await context.keyManager.getAddress(),
             secondEncodedMessage,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
           ).signature;
@@ -463,13 +463,11 @@ export const shouldBehaveLikePermissionChangeOwner = (
         });
 
         it('should clear the `pendingOwner` and set it to `AddressZero`', async () => {
-          expect(await context.universalProfile.pendingOwner()).to.equal(
-            ethers.constants.AddressZero,
-          );
+          expect(await context.universalProfile.pendingOwner()).to.equal(ethers.ZeroAddress);
         });
 
         it('should update the owner to `AddressZero`', async () => {
-          expect(await context.universalProfile.owner()).to.equal(ethers.constants.AddressZero);
+          expect(await context.universalProfile.owner()).to.equal(ethers.ZeroAddress);
         });
       });
     });

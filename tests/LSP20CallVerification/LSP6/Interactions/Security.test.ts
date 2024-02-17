@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers, artifacts } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import {
   FirstToCallLSP20,
@@ -57,7 +57,9 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
 
     targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
-    maliciousContract = await new Reentrancy__factory(attacker).deploy(context.keyManager.address);
+    maliciousContract = await new Reentrancy__factory(attacker).deploy(
+      await context.keyManager.getAddress(),
+    );
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -75,7 +77,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
           combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
           combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
         ],
-        [signer.address, ethers.constants.AddressZero],
+        [signer.address, ethers.ZeroAddress],
         ['0xffffffff', '0xffffffff'],
         ['0xffffffff', '0xffffffff'],
       ),
@@ -85,8 +87,8 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
 
     // Fund Universal Profile with some LYXe
     await context.mainController.sendTransaction({
-      to: context.universalProfile.address,
-      value: ethers.utils.parseEther('10'),
+      to: await context.universalProfile.getAddress(),
+      value: ethers.parseEther('10'),
     });
   });
 
@@ -98,7 +100,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
     await expect(
       context.universalProfile
         .connect(addressWithNoPermissions)
-        .execute(OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload),
+        .execute(OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload),
     )
       .to.be.revertedWithCustomError(context.keyManager, 'NoPermissionsSet')
       .withArgs(addressWithNoPermissions.address);
@@ -109,7 +111,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
       'lsp20VerifyCall',
       [
         context.accounts[2].address,
-        context.keyManager.address,
+        await context.keyManager.getAddress(),
         context.accounts[2].address,
         0,
         '0xaabbccdd',
@@ -119,7 +121,12 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
     await expect(
       context.universalProfile
         .connect(context.mainController)
-        .execute(OPERATION_TYPES.CALL, context.keyManager.address, 0, lsp20VerifyCallPayload),
+        .execute(
+          OPERATION_TYPES.CALL,
+          await context.keyManager.getAddress(),
+          0,
+          lsp20VerifyCallPayload,
+        ),
     ).to.be.revertedWithCustomError(context.keyManager, 'CallingKeyManagerNotAllowed');
   });
 
@@ -130,8 +137,8 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
       // in the fallback function of the target (= recipient) contract
       const transferPayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
-        maliciousContract.address,
-        ethers.utils.parseEther('1'),
+        await maliciousContract.getAddress(),
+        ethers.parseEther('1'),
         EMPTY_PAYLOAD,
       ]);
 
@@ -142,18 +149,26 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
       // every time the contract receives LYX
       await maliciousContract.loadPayload(executePayload);
 
-      const initialAccountBalance = await provider.getBalance(context.universalProfile.address);
-      const initialAttackerContractBalance = await provider.getBalance(maliciousContract.address);
+      const initialAccountBalance = await provider.getBalance(
+        await context.universalProfile.getAddress(),
+      );
+      const initialAttackerContractBalance = await provider.getBalance(
+        await maliciousContract.getAddress(),
+      );
 
       // send LYX to malicious contract
       // at this point, the malicious contract receive function try to drain funds by re-entering the KeyManager
       // this should not be possible since it does not have the permission `REENTRANCY`
       await expect(context.keyManager.connect(context.mainController).execute(transferPayload))
         .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-        .withArgs(maliciousContract.address, 'REENTRANCY');
+        .withArgs(await maliciousContract.getAddress(), 'REENTRANCY');
 
-      const newAccountBalance = await provider.getBalance(context.universalProfile.address);
-      const newAttackerContractBalance = await provider.getBalance(maliciousContract.address);
+      const newAccountBalance = await provider.getBalance(
+        await context.universalProfile.getAddress(),
+      );
+      const newAttackerContractBalance = await provider.getBalance(
+        await maliciousContract.getAddress(),
+      );
 
       expect(newAccountBalance).to.equal(initialAccountBalance);
       expect(newAttackerContractBalance).to.equal(initialAttackerContractBalance);
@@ -165,23 +180,21 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
       const universalReceiverDelegateDataUpdater =
         await new UniversalReceiverDelegateDataUpdater__factory(context.mainController).deploy();
 
-      const randomHardcodedKey = ethers.utils.keccak256(
-        ethers.utils.toUtf8Bytes('some random data key'),
-      );
-      const randomHardcodedValue = ethers.utils.hexlify(
-        ethers.utils.toUtf8Bytes('some random text for the data value'),
+      const randomHardcodedKey = ethers.keccak256(ethers.toUtf8Bytes('some random data key'));
+      const randomHardcodedValue = ethers.hexlify(
+        ethers.toUtf8Bytes('some random text for the data value'),
       );
 
       const setDataPayload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
         [
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            universalReceiverDelegateDataUpdater.address.substring(2),
+            (await universalReceiverDelegateDataUpdater.getAddress()).substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-            universalReceiverDelegateDataUpdater.address.substring(2),
+            (await universalReceiverDelegateDataUpdater.getAddress()).substring(2),
         ],
         [
-          universalReceiverDelegateDataUpdater.address,
+          await universalReceiverDelegateDataUpdater.getAddress(),
           combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.REENTRANCY),
           encodeCompactBytesArray([randomHardcodedKey]),
         ],
@@ -193,7 +206,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
         universalReceiverDelegateDataUpdater.interface.encodeFunctionData(
           'universalReceiverDelegate',
           [
-            ethers.constants.AddressZero,
+            ethers.ZeroAddress,
             0,
             LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
             '0xcafecafecafecafe',
@@ -202,8 +215,8 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
 
       const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
-        universalReceiverDelegateDataUpdater.address,
-        ethers.utils.parseEther('0'),
+        await universalReceiverDelegateDataUpdater.getAddress(),
+        ethers.parseEther('0'),
         universalReceiverDelegatePayload,
       ]);
 
@@ -221,20 +234,20 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
 
     before(async () => {
       secondReentrant = await new SecondToCallLSP20__factory(context.accounts[0]).deploy(
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
       );
       firstReentrant = await new FirstToCallLSP20__factory(context.accounts[0]).deploy(
-        context.universalProfile.address,
-        secondReentrant.address,
+        await context.universalProfile.getAddress(),
+        await secondReentrant.getAddress(),
       );
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.mainController.address.substring(2),
+          (await context.mainController.getAddress()).substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          firstReentrant.address.substring(2),
+          (await firstReentrant.getAddress()).substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          secondReentrant.address.substring(2),
+          (await secondReentrant.getAddress()).substring(2),
       ];
 
       const permissionValues = [
@@ -255,10 +268,15 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
             await expect(
               context.universalProfile
                 .connect(context.mainController)
-                .execute(OPERATION_TYPES.CALL, firstReentrant.address, 0, firstTargetSelector),
+                .execute(
+                  OPERATION_TYPES.CALL,
+                  await firstReentrant.getAddress(),
+                  0,
+                  firstTargetSelector,
+                ),
             )
               .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-              .withArgs(secondReentrant.address, 'REENTRANCY');
+              .withArgs(await secondReentrant.getAddress(), 'REENTRANCY');
           });
         });
 
@@ -266,7 +284,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
           before(async () => {
             const permissionKeys = [
               ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-                secondReentrant.address.substring(2),
+                (await secondReentrant.getAddress()).substring(2),
             ];
 
             const permissionValues = [
@@ -281,11 +299,14 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
 
             await context.universalProfile
               .connect(context.mainController)
-              .execute(OPERATION_TYPES.CALL, firstReentrant.address, 0, firstTargetSelector);
+              .execute(
+                OPERATION_TYPES.CALL,
+                await firstReentrant.getAddress(),
+                0,
+                firstTargetSelector,
+              );
 
-            const result = await context.universalProfile['getData(bytes32)'](
-              ethers.constants.HashZero,
-            );
+            const result = await context.universalProfile.getData(ethers.ZeroHash);
 
             expect(result).to.equal('0xaabbccdd');
           });
@@ -304,7 +325,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
 
         const tx = await context.keyManager.lsp20VerifyCall(
           context.mainController.address,
-          context.universalProfile.address,
+          await context.universalProfile.getAddress(),
           context.mainController.address,
           0,
           emptyCallPayload,
@@ -326,8 +347,8 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
           })[0].slot,
         );
 
-        const _reentrancyStatusPackedWithAddress = await provider.getStorageAt(
-          context.keyManager.address,
+        const _reentrancyStatusPackedWithAddress = await provider.getStorage(
+          await context.keyManager.getAddress(),
           _reentrancyStatusSlotNumber,
         );
 

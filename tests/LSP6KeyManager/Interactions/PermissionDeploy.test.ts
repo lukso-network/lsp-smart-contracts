@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { calculateCreate2 } from 'eth-create2-calculator';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
@@ -21,10 +21,9 @@ import { LSP6TestContext } from '../../utils/context';
 import { setupKeyManager } from '../../utils/fixtures';
 
 import { abiCoder, combinePermissions, LOCAL_PRIVATE_KEYS, provider } from '../../utils/helpers';
-import { BigNumber } from 'ethers';
 
 export const shouldBehaveLikePermissionDeploy = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
+  buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
 
@@ -34,7 +33,7 @@ export const shouldBehaveLikePermissionDeploy = (
     addressCannotDeploy: SignerWithAddress;
 
   before(async () => {
-    context = await buildContext(ethers.utils.parseEther('100'));
+    context = await buildContext(ethers.parseEther('100'));
 
     addressCanDeploy = context.accounts[1];
     addressCanDeployAndTransferValue = context.accounts[2];
@@ -79,7 +78,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         0,
         contractBytecodeToDeploy, // init code
       ]);
@@ -88,7 +87,7 @@ export const shouldBehaveLikePermissionDeploy = (
       // so we can check it against the address emitted in the ContractCreated event
       const result = await context.keyManager
         .connect(context.mainController)
-        .callStatic.execute(payload);
+        .execute.staticCall(payload);
 
       const [expectedContractAddress] = abiCoder.decode(['bytes'], result);
 
@@ -96,9 +95,9 @@ export const shouldBehaveLikePermissionDeploy = (
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
-          ethers.utils.getAddress(expectedContractAddress),
+          ethers.getAddress(expectedContractAddress),
           0,
-          ethers.utils.hexZeroPad('0x00', 32),
+          ethers.zeroPadValue('0x00', 32),
         );
     });
 
@@ -112,11 +111,11 @@ export const shouldBehaveLikePermissionDeploy = (
       ).getDeployTransaction(initialUpOwner);
 
       const contractBytecodeToDeploy = upDeploymentTx.data;
-      const fundingAmount = ethers.utils.parseEther('10');
+      const fundingAmount = ethers.parseEther('10');
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         fundingAmount,
         contractBytecodeToDeploy, // init code
       ]);
@@ -125,7 +124,7 @@ export const shouldBehaveLikePermissionDeploy = (
       // so we can check it against the address emitted in the ContractCreated event
       const callResult = await context.keyManager
         .connect(context.mainController)
-        .callStatic.execute(payload);
+        .execute.staticCall(payload);
 
       const [expectedContractAddress] = abiCoder.decode(['bytes'], callResult);
 
@@ -133,9 +132,9 @@ export const shouldBehaveLikePermissionDeploy = (
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
-          ethers.utils.getAddress(expectedContractAddress),
+          ethers.getAddress(expectedContractAddress),
           fundingAmount,
-          ethers.utils.hexZeroPad('0x00', 32),
+          ethers.zeroPadValue('0x00', 32),
         );
 
       // check that the newly deployed contract (UP) has the correct owner
@@ -150,24 +149,24 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it('should be allowed to deploy a contract with CREATE2', async () => {
       const contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      const salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+      const salt = ethers.hexlify(ethers.randomBytes(32));
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE2,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         0,
         contractBytecodeToDeploy + salt.substring(2),
       ]);
 
       const preComputedAddress = calculateCreate2(
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
         salt,
         contractBytecodeToDeploy,
       ).toLowerCase();
 
       await expect(context.keyManager.connect(context.mainController).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
-        .withArgs(OPERATION_TYPES.CREATE2, ethers.utils.getAddress(preComputedAddress), 0, salt);
+        .withArgs(OPERATION_TYPES.CREATE2, ethers.getAddress(preComputedAddress), 0, salt);
     });
 
     it('should be allowed to deploy + fund a contract with CREATE2', async () => {
@@ -180,19 +179,19 @@ export const shouldBehaveLikePermissionDeploy = (
       ).getDeployTransaction(initialUpOwner);
 
       const contractBytecodeToDeploy = upDeploymentTx.data;
-      const fundingAmount = ethers.utils.parseEther('10');
+      const fundingAmount = ethers.parseEther('10');
 
-      const salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+      const salt = ethers.hexlify(ethers.randomBytes(32));
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE2,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         fundingAmount,
         contractBytecodeToDeploy + salt.substring(2),
       ]);
 
       const preComputedAddress = calculateCreate2(
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
         salt,
         contractBytecodeToDeploy,
       ).toLowerCase();
@@ -201,7 +200,7 @@ export const shouldBehaveLikePermissionDeploy = (
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE2,
-          ethers.utils.getAddress(preComputedAddress),
+          ethers.getAddress(preComputedAddress),
           fundingAmount,
           salt,
         );
@@ -222,12 +221,12 @@ export const shouldBehaveLikePermissionDeploy = (
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         0,
         contractBytecodeToDeploy,
       ]);
 
-      const result = await context.keyManager.connect(addressCanDeploy).callStatic.execute(payload);
+      const result = await context.keyManager.connect(addressCanDeploy).execute.staticCall(payload);
 
       const [expectedContractAddress] = abiCoder.decode(['bytes'], result);
 
@@ -235,9 +234,9 @@ export const shouldBehaveLikePermissionDeploy = (
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
-          ethers.utils.getAddress(expectedContractAddress),
+          ethers.getAddress(expectedContractAddress),
           0,
-          ethers.utils.hexZeroPad('0x00', 32),
+          ethers.zeroPadValue('0x00', 32),
         );
     });
 
@@ -251,11 +250,11 @@ export const shouldBehaveLikePermissionDeploy = (
       ).getDeployTransaction(initialUpOwner);
 
       const contractBytecodeToDeploy = upDeploymentTx.data;
-      const fundingAmount = ethers.utils.parseEther('10');
+      const fundingAmount = ethers.parseEther('10');
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         fundingAmount,
         contractBytecodeToDeploy, // init code
       ]);
@@ -267,24 +266,24 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it('should be allowed to deploy a contract with CREATE2', async () => {
       const contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      const salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+      const salt = ethers.hexlify(ethers.randomBytes(32));
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE2,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         0,
         contractBytecodeToDeploy + salt.substring(2),
       ]);
 
       const preComputedAddress = calculateCreate2(
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
         salt,
         contractBytecodeToDeploy,
       ).toLowerCase();
 
       await expect(context.keyManager.connect(addressCanDeploy).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
-        .withArgs(OPERATION_TYPES.CREATE2, ethers.utils.getAddress(preComputedAddress), 0, salt);
+        .withArgs(OPERATION_TYPES.CREATE2, ethers.getAddress(preComputedAddress), 0, salt);
     });
 
     it('should revert with error `NotAuthorised(SUPER_TRANSFERVALUE)` when trying to deploy + fund a contract with CREATE2', async () => {
@@ -297,13 +296,13 @@ export const shouldBehaveLikePermissionDeploy = (
       ).getDeployTransaction(initialUpOwner);
 
       const contractBytecodeToDeploy = upDeploymentTx.data;
-      const fundingAmount = ethers.utils.parseEther('10');
+      const fundingAmount = ethers.parseEther('10');
 
-      const salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+      const salt = ethers.hexlify(ethers.randomBytes(32));
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE2,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         fundingAmount,
         contractBytecodeToDeploy + salt.substring(2),
       ]);
@@ -320,7 +319,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         0,
         contractBytecodeToDeploy, // init code
       ]);
@@ -329,7 +328,7 @@ export const shouldBehaveLikePermissionDeploy = (
       // so we can check it against the address emitted in the ContractCreated event
       const result = await context.keyManager
         .connect(addressCanDeployAndTransferValue)
-        .callStatic.execute(payload);
+        .execute.staticCall(payload);
 
       const [expectedContractAddress] = abiCoder.decode(['bytes'], result);
 
@@ -337,9 +336,9 @@ export const shouldBehaveLikePermissionDeploy = (
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
-          ethers.utils.getAddress(expectedContractAddress),
+          ethers.getAddress(expectedContractAddress),
           0,
-          ethers.utils.hexZeroPad('0x00', 32),
+          ethers.zeroPadValue('0x00', 32),
         );
     });
 
@@ -353,11 +352,11 @@ export const shouldBehaveLikePermissionDeploy = (
       ).getDeployTransaction(initialUpOwner);
 
       const contractBytecodeToDeploy = upDeploymentTx.data;
-      const fundingAmount = ethers.utils.parseEther('10');
+      const fundingAmount = ethers.parseEther('10');
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         fundingAmount,
         contractBytecodeToDeploy, // init code
       ]);
@@ -369,24 +368,24 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it('should be allowed to deploy a contract with CREATE2', async () => {
       const contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      const salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+      const salt = ethers.hexlify(ethers.randomBytes(32));
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE2,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         0,
         contractBytecodeToDeploy + salt.substring(2),
       ]);
 
       const preComputedAddress = calculateCreate2(
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
         salt,
         contractBytecodeToDeploy,
       ).toLowerCase();
 
       await expect(context.keyManager.connect(addressCanDeployAndTransferValue).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
-        .withArgs(OPERATION_TYPES.CREATE2, ethers.utils.getAddress(preComputedAddress), 0, salt);
+        .withArgs(OPERATION_TYPES.CREATE2, ethers.getAddress(preComputedAddress), 0, salt);
     });
 
     it('should revert with error `NotAuthorised(SUPER_TRANSFERVALUE)` when trying to deploy + fund a contract with CREATE2', async () => {
@@ -399,13 +398,13 @@ export const shouldBehaveLikePermissionDeploy = (
       ).getDeployTransaction(initialUpOwner);
 
       const contractBytecodeToDeploy = upDeploymentTx.data;
-      const fundingAmount = ethers.utils.parseEther('10');
+      const fundingAmount = ethers.parseEther('10');
 
-      const salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+      const salt = ethers.hexlify(ethers.randomBytes(32));
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE2,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         fundingAmount,
         contractBytecodeToDeploy + salt.substring(2),
       ]);
@@ -422,7 +421,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         0,
         contractBytecodeToDeploy, // init code
       ]);
@@ -431,7 +430,7 @@ export const shouldBehaveLikePermissionDeploy = (
       // so we can check it against the address emitted in the ContractCreated event
       const result = await context.keyManager
         .connect(addressCanDeployAndSuperTransferValue)
-        .callStatic.execute(payload);
+        .execute.staticCall(payload);
 
       const [expectedContractAddress] = abiCoder.decode(['bytes'], result);
 
@@ -441,9 +440,9 @@ export const shouldBehaveLikePermissionDeploy = (
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
-          ethers.utils.getAddress(expectedContractAddress),
+          ethers.getAddress(expectedContractAddress),
           0,
-          ethers.utils.hexZeroPad('0x00', 32),
+          ethers.zeroPadValue('0x00', 32),
         );
     });
 
@@ -457,11 +456,11 @@ export const shouldBehaveLikePermissionDeploy = (
       ).getDeployTransaction(initialUpOwner);
 
       const contractBytecodeToDeploy = upDeploymentTx.data;
-      const fundingAmount = ethers.utils.parseEther('10');
+      const fundingAmount = ethers.parseEther('10');
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         fundingAmount,
         contractBytecodeToDeploy, // init code
       ]);
@@ -470,7 +469,7 @@ export const shouldBehaveLikePermissionDeploy = (
       // so we can check it against the address emitted in the ContractCreated event
       const result = await context.keyManager
         .connect(addressCanDeployAndSuperTransferValue)
-        .callStatic.execute(payload);
+        .execute.staticCall(payload);
 
       const [expectedContractAddress] = abiCoder.decode(['bytes'], result);
 
@@ -480,9 +479,9 @@ export const shouldBehaveLikePermissionDeploy = (
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
-          ethers.utils.getAddress(expectedContractAddress),
+          ethers.getAddress(expectedContractAddress),
           fundingAmount,
-          ethers.utils.hexZeroPad('0x00', 32),
+          ethers.zeroPadValue('0x00', 32),
         );
 
       // check that the newly deployed contract (UP) has the correct owner
@@ -497,17 +496,17 @@ export const shouldBehaveLikePermissionDeploy = (
 
     it('should be allowed to deploy a contract with CREATE2', async () => {
       const contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      const salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+      const salt = ethers.hexlify(ethers.randomBytes(32));
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE2,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         0,
         contractBytecodeToDeploy + salt.substring(2),
       ]);
 
       const preComputedAddress = calculateCreate2(
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
         salt,
         contractBytecodeToDeploy,
       ).toLowerCase();
@@ -516,7 +515,7 @@ export const shouldBehaveLikePermissionDeploy = (
         context.keyManager.connect(addressCanDeployAndSuperTransferValue).execute(payload),
       )
         .to.emit(context.universalProfile, 'ContractCreated')
-        .withArgs(OPERATION_TYPES.CREATE2, ethers.utils.getAddress(preComputedAddress), 0, salt);
+        .withArgs(OPERATION_TYPES.CREATE2, ethers.getAddress(preComputedAddress), 0, salt);
     });
 
     it('should be allowed to deploy + fund a contract with CREATE2', async () => {
@@ -529,19 +528,19 @@ export const shouldBehaveLikePermissionDeploy = (
       ).getDeployTransaction(initialUpOwner);
 
       const contractBytecodeToDeploy = upDeploymentTx.data;
-      const fundingAmount = ethers.utils.parseEther('10');
+      const fundingAmount = ethers.parseEther('10');
 
-      const salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+      const salt = ethers.hexlify(ethers.randomBytes(32));
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CREATE2,
-        ethers.constants.AddressZero,
+        ethers.ZeroAddress,
         fundingAmount,
         contractBytecodeToDeploy + salt.substring(2),
       ]);
 
       const preComputedAddress = calculateCreate2(
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
         salt,
         contractBytecodeToDeploy,
       ).toLowerCase();
@@ -552,7 +551,7 @@ export const shouldBehaveLikePermissionDeploy = (
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE2,
-          ethers.utils.getAddress(preComputedAddress),
+          ethers.getAddress(preComputedAddress),
           fundingAmount,
           salt,
         );
@@ -574,7 +573,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CREATE,
-          ethers.constants.AddressZero,
+          ethers.ZeroAddress,
           0,
           contractBytecodeToDeploy,
         ]);
@@ -586,11 +585,11 @@ export const shouldBehaveLikePermissionDeploy = (
 
       it('should revert when trying to deploy a contract via CREATE2', async () => {
         const contractBytecodeToDeploy = TargetContract__factory.bytecode;
-        const salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+        const salt = ethers.hexlify(ethers.randomBytes(32));
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CREATE2,
-          ethers.constants.AddressZero,
+          ethers.ZeroAddress,
           0,
           contractBytecodeToDeploy + salt.substring(2),
         ]);
@@ -607,16 +606,13 @@ export const shouldBehaveLikePermissionDeploy = (
           it('should recover the wrong signer address and revert with `NoPermissionsSet`', async () => {
             const contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
-            const nonce = await context.keyManager.callStatic.getNonce(
-              addressCannotDeploy.address,
-              0,
-            );
+            const nonce = await context.keyManager.getNonce(addressCannotDeploy.address, 0);
 
             const validityTimestamps = 0;
 
             const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CREATE,
-              ethers.constants.AddressZero,
+              ethers.ZeroAddress,
               0,
               contractBytecodeToDeploy,
             ]);
@@ -624,7 +620,7 @@ export const shouldBehaveLikePermissionDeploy = (
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [LSP25_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
             );
@@ -635,7 +631,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
             const incorrectSignerAddress = eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                context.keyManager.address,
+                await context.keyManager.getAddress(),
                 encodedMessage,
               ),
               ethereumSignature,
@@ -657,16 +653,13 @@ export const shouldBehaveLikePermissionDeploy = (
           it('should revert with `NotAuthorised` with correct signer address but missing permission DEPLOY', async () => {
             const contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
-            const nonce = await context.keyManager.callStatic.getNonce(
-              addressCannotDeploy.address,
-              0,
-            );
+            const nonce = await context.keyManager.getNonce(addressCannotDeploy.address, 0);
 
             const validityTimestamps = 0;
 
             const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CREATE,
-              ethers.constants.AddressZero,
+              ethers.ZeroAddress,
               0,
               contractBytecodeToDeploy,
             ]);
@@ -674,7 +667,7 @@ export const shouldBehaveLikePermissionDeploy = (
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [LSP25_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
             );
@@ -682,7 +675,7 @@ export const shouldBehaveLikePermissionDeploy = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = eip191Signer.signDataWithIntendedValidator(
-              context.keyManager.address,
+              await context.keyManager.getAddress(),
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT4,
             );
@@ -704,18 +697,15 @@ export const shouldBehaveLikePermissionDeploy = (
         describe('when signing with Ethereum Signed Message', () => {
           it('should recover the wrong signer address and revert with `NoPermissionsSet`', async () => {
             const contractBytecodeToDeploy = TargetContract__factory.bytecode;
-            const salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+            const salt = ethers.hexlify(ethers.randomBytes(32));
 
-            const nonce = await context.keyManager.callStatic.getNonce(
-              addressCannotDeploy.address,
-              0,
-            );
+            const nonce = await context.keyManager.getNonce(addressCannotDeploy.address, 0);
 
             const validityTimestamps = 0;
 
             const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CREATE2,
-              ethers.constants.AddressZero,
+              ethers.ZeroAddress,
               0,
               contractBytecodeToDeploy + salt.substring(2),
             ]);
@@ -723,7 +713,7 @@ export const shouldBehaveLikePermissionDeploy = (
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [LSP25_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
             );
@@ -733,7 +723,7 @@ export const shouldBehaveLikePermissionDeploy = (
             const eip191Signer = new EIP191Signer();
             const incorrectSignerAddress = eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                context.keyManager.address,
+                await context.keyManager.getAddress(),
                 encodedMessage,
               ),
               ethereumSignature,
@@ -754,18 +744,15 @@ export const shouldBehaveLikePermissionDeploy = (
         describe("when signing with EIP191Signer '\\x19\\x00'", () => {
           it('should revert with `NotAuthorised` with correct signer address but missing permission DEPLOY', async () => {
             const contractBytecodeToDeploy = TargetContract__factory.bytecode;
-            const salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+            const salt = ethers.hexlify(ethers.randomBytes(32));
 
-            const nonce = await context.keyManager.callStatic.getNonce(
-              addressCannotDeploy.address,
-              0,
-            );
+            const nonce = await context.keyManager.getNonce(addressCannotDeploy.address, 0);
 
             const validityTimestamps = 0;
 
             const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CREATE2,
-              ethers.constants.AddressZero,
+              ethers.ZeroAddress,
               0,
               contractBytecodeToDeploy + salt.substring(2),
             ]);
@@ -773,7 +760,7 @@ export const shouldBehaveLikePermissionDeploy = (
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [LSP25_VERSION, HARDHAT_CHAINID, nonce, validityTimestamps, valueToSend, payload],
             );
@@ -781,7 +768,7 @@ export const shouldBehaveLikePermissionDeploy = (
             const lsp6Signer = new EIP191Signer();
 
             const { signature } = lsp6Signer.signDataWithIntendedValidator(
-              context.keyManager.address,
+              await context.keyManager.getAddress(),
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT4,
             );

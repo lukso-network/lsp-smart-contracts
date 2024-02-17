@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { LSP6TestContext } from '../../utils/context';
 
 import {
@@ -33,7 +32,7 @@ import {
 } from './index';
 
 export const shouldBehaveLikeLSP6 = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
+  buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
   describe('CHANGEOWNER', () => {
     shouldBehaveLikePermissionChangeOwner(buildContext);

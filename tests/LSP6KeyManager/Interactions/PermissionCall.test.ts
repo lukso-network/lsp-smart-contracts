@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import {
@@ -35,10 +35,9 @@ import {
   LOCAL_PRIVATE_KEYS,
   provider,
 } from '../../utils/helpers';
-import { BigNumber } from 'ethers';
 
 export const shouldBehaveLikePermissionCall = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
+  buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
 
@@ -94,8 +93,8 @@ export const shouldBehaveLikePermissionCall = (
         [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
         [
           allowedEOA,
-          allowedContractWithFallback.address,
-          allowedContractWithFallbackRevert.address,
+          await allowedContractWithFallback.getAddress(),
+          await allowedContractWithFallbackRevert.getAddress(),
         ],
         ['0xffffffff', '0xffffffff', '0xffffffff'],
         ['0xffffffff', '0xffffffff', '0xffffffff'],
@@ -137,7 +136,7 @@ export const shouldBehaveLikePermissionCall = (
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          targetContract.address,
+          await targetContract.getAddress(),
           0,
           '0x',
         ]);
@@ -173,7 +172,7 @@ export const shouldBehaveLikePermissionCall = (
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          targetContract.address,
+          await targetContract.getAddress(),
           0,
           '0x',
         ]);
@@ -207,7 +206,7 @@ export const shouldBehaveLikePermissionCall = (
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          targetContract.address,
+          await targetContract.getAddress(),
           0,
           '0x',
         ]);
@@ -262,7 +261,7 @@ export const shouldBehaveLikePermissionCall = (
 
             const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
-              targetContract.address,
+              await targetContract.getAddress(),
               0,
               '0x',
             ]);
@@ -273,7 +272,7 @@ export const shouldBehaveLikePermissionCall = (
               .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
               .withArgs(
                 addressCanMakeCallWithAllowedCalls.address,
-                targetContract.address,
+                await targetContract.getAddress(),
                 '0x00000000',
               );
           });
@@ -284,7 +283,7 @@ export const shouldBehaveLikePermissionCall = (
             it("should pass and update `to` contract's storage", async () => {
               const payload = context.universalProfile.interface.encodeFunctionData('execute', [
                 OPERATION_TYPES.CALL,
-                allowedContractWithFallback.address,
+                await allowedContractWithFallback.getAddress(),
                 0,
                 '0x',
               ]);
@@ -292,7 +291,7 @@ export const shouldBehaveLikePermissionCall = (
               await context.keyManager.connect(addressCanMakeCallWithAllowedCalls).execute(payload);
 
               expect(await allowedContractWithFallback.caller()).to.equal(
-                context.universalProfile.address,
+                await context.universalProfile.getAddress(),
               );
             });
           });
@@ -301,7 +300,7 @@ export const shouldBehaveLikePermissionCall = (
             it('should fail and bubble the error back to the Key Manager', async () => {
               const payload = context.universalProfile.interface.encodeFunctionData('execute', [
                 OPERATION_TYPES.CALL,
-                allowedContractWithFallbackRevert.address,
+                await allowedContractWithFallbackRevert.getAddress(),
                 0,
                 '0x',
               ]);
@@ -338,7 +337,7 @@ export const shouldBehaveLikePermissionCall = (
 
             const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
-              targetContractWithFallback.address,
+              await targetContractWithFallback.getAddress(),
               0,
               '0x',
             ]);
@@ -346,7 +345,7 @@ export const shouldBehaveLikePermissionCall = (
             await context.keyManager.connect(addressWithSuperCall).execute(payload);
 
             expect(await targetContractWithFallback.caller()).to.equal(
-              context.universalProfile.address,
+              await context.universalProfile.getAddress(),
             );
           });
         });
@@ -359,7 +358,7 @@ export const shouldBehaveLikePermissionCall = (
 
             const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
-              targetContractWithFallbackRevert.address,
+              await targetContractWithFallbackRevert.getAddress(),
               0,
               '0x',
             ]);
@@ -409,7 +408,7 @@ export const shouldBehaveLikePermissionCall = (
         combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.EXECUTE_RELAY_CALL),
         combineAllowedCalls(
           [CALLTYPE.CALL],
-          [targetContract.address],
+          [await targetContract.getAddress()],
           ['0xffffffff'],
           ['0xffffffff'],
         ),
@@ -427,31 +426,31 @@ export const shouldBehaveLikePermissionCall = (
 
           const payload = context.universalProfile.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
-            targetContract.address,
+            await targetContract.getAddress(),
             0,
             targetPayload,
           ]);
 
           await context.keyManager.connect(context.mainController).execute(payload);
 
-          const result = await targetContract.callStatic.getName();
+          const result = await targetContract.getName();
           expect(result).to.equal(argument);
         });
 
         describe('when calling a function that returns some value', () => {
           it('should return the value to the Key Manager <- UP <- targetContract.getName()', async () => {
-            const expectedName = await targetContract.callStatic.getName();
+            const expectedName = await targetContract.getName();
 
             const targetContractPayload = targetContract.interface.encodeFunctionData('getName');
 
             const executePayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
-              [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+              [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
             );
 
             const result = await context.keyManager
               .connect(context.mainController)
-              .callStatic.execute(executePayload);
+              .execute.staticCall(executePayload);
 
             const [decodedBytes] = abiCoder.decode(['bytes'], result);
 
@@ -460,18 +459,18 @@ export const shouldBehaveLikePermissionCall = (
           });
 
           it('Should return the value to the Key Manager <- UP <- targetContract.getNumber()', async () => {
-            const expectedNumber = await targetContract.callStatic.getNumber();
+            const expectedNumber = await targetContract.getNumber();
 
             const targetContractPayload = targetContract.interface.encodeFunctionData('getNumber');
 
             const executePayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
-              [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+              [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
             );
 
             const result = await context.keyManager
               .connect(context.mainController)
-              .callStatic.execute(executePayload);
+              .execute.staticCall(executePayload);
 
             const [decodedBytes] = abiCoder.decode(['bytes'], result);
 
@@ -486,7 +485,7 @@ export const shouldBehaveLikePermissionCall = (
 
             const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
-              targetContract.address,
+              await targetContract.getAddress(),
               0,
               targetContractPayload,
             ]);
@@ -509,7 +508,7 @@ export const shouldBehaveLikePermissionCall = (
 
             const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
-              targetContract.address,
+              await targetContract.getAddress(),
               0,
               targetPayload,
             ]);
@@ -532,14 +531,14 @@ export const shouldBehaveLikePermissionCall = (
 
             const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
-              targetContract.address,
+              await targetContract.getAddress(),
               0,
               targetPayload,
             ]);
 
             await context.keyManager.connect(addressCanMakeCallWithAllowedCalls).execute(payload);
 
-            const result = await targetContract.callStatic.getName();
+            const result = await targetContract.getName();
             expect(result).to.equal(argument);
           });
         });
@@ -553,7 +552,7 @@ export const shouldBehaveLikePermissionCall = (
 
           const payload = context.universalProfile.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
-            targetContract.address,
+            await targetContract.getAddress(),
             0,
             targetPayload,
           ]);
@@ -577,7 +576,7 @@ export const shouldBehaveLikePermissionCall = (
             const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
               newName,
             ]);
-            const nonce = await context.keyManager.callStatic.getNonce(
+            const nonce = await context.keyManager.getNonce(
               context.mainController.address,
               channelId,
             );
@@ -586,13 +585,13 @@ export const shouldBehaveLikePermissionCall = (
 
             const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
-              [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+              [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
             );
 
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -607,7 +606,7 @@ export const shouldBehaveLikePermissionCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              context.keyManager.address,
+              await context.keyManager.getAddress(),
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT0,
             );
@@ -620,7 +619,7 @@ export const shouldBehaveLikePermissionCall = (
               { value: valueToSend },
             );
 
-            const result = await targetContract.callStatic.getName();
+            const result = await targetContract.getName();
             expect(result).to.equal(newName);
           });
         });
@@ -632,7 +631,7 @@ export const shouldBehaveLikePermissionCall = (
             const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
               newName,
             ]);
-            const nonce = await context.keyManager.callStatic.getNonce(
+            const nonce = await context.keyManager.getNonce(
               context.mainController.address,
               channelId,
             );
@@ -641,7 +640,7 @@ export const shouldBehaveLikePermissionCall = (
 
             const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
-              [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+              [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
             );
 
             const HARDHAT_CHAINID = 31337;
@@ -649,7 +648,7 @@ export const shouldBehaveLikePermissionCall = (
 
             const eip191Signer = new EIP191Signer();
 
-            const encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -665,7 +664,7 @@ export const shouldBehaveLikePermissionCall = (
 
             const incorrectSignerAddress = eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                context.keyManager.address,
+                await context.keyManager.getAddress(),
                 encodedMessage,
               ),
               signature,
@@ -696,7 +695,7 @@ export const shouldBehaveLikePermissionCall = (
                 newName,
               ]);
 
-              const nonce = await context.keyManager.callStatic.getNonce(
+              const nonce = await context.keyManager.getNonce(
                 addressCanMakeCallWithAllowedCalls.address,
                 channelId,
               );
@@ -705,13 +704,13 @@ export const shouldBehaveLikePermissionCall = (
 
               const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
                 'execute',
-                [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+                [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
               );
 
               const HARDHAT_CHAINID = 31337;
               const valueToSend = 0;
 
-              const encodedMessage = ethers.utils.solidityPack(
+              const encodedMessage = ethers.solidityPacked(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
                   LSP25_VERSION,
@@ -726,7 +725,7 @@ export const shouldBehaveLikePermissionCall = (
               const eip191Signer = new EIP191Signer();
 
               const { signature } = await eip191Signer.signDataWithIntendedValidator(
-                context.keyManager.address,
+                await context.keyManager.getAddress(),
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT2,
               );
@@ -739,7 +738,7 @@ export const shouldBehaveLikePermissionCall = (
                 { value: valueToSend },
               );
 
-              const result = await targetContract.callStatic.getName();
+              const result = await targetContract.getName();
               expect(result).to.equal(newName);
             });
           });
@@ -751,7 +750,7 @@ export const shouldBehaveLikePermissionCall = (
               const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
                 newName,
               ]);
-              const nonce = await context.keyManager.callStatic.getNonce(
+              const nonce = await context.keyManager.getNonce(
                 addressCanMakeCallNoAllowedCalls.address,
                 channelId,
               );
@@ -760,13 +759,13 @@ export const shouldBehaveLikePermissionCall = (
 
               const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
                 'execute',
-                [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+                [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
               );
 
               const HARDHAT_CHAINID = 31337;
               const valueToSend = 0;
 
-              const encodedMessage = ethers.utils.solidityPack(
+              const encodedMessage = ethers.solidityPacked(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
                   LSP25_VERSION,
@@ -781,7 +780,7 @@ export const shouldBehaveLikePermissionCall = (
               const eip191Signer = new EIP191Signer();
 
               const { signature } = await eip191Signer.signDataWithIntendedValidator(
-                context.keyManager.address,
+                await context.keyManager.getAddress(),
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT1,
               );
@@ -808,7 +807,7 @@ export const shouldBehaveLikePermissionCall = (
             const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
               newName,
             ]);
-            const nonce = await context.keyManager.callStatic.getNonce(
+            const nonce = await context.keyManager.getNonce(
               addressCanMakeCallWithAllowedCalls.address,
               channelId,
             );
@@ -817,13 +816,13 @@ export const shouldBehaveLikePermissionCall = (
 
             const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
-              [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+              [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
             );
 
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -840,7 +839,7 @@ export const shouldBehaveLikePermissionCall = (
             const eip191Signer = new EIP191Signer();
             const incorrectSignerAddress = eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                context.keyManager.address,
+                await context.keyManager.getAddress(),
                 encodedMessage,
               ),
               signature,
@@ -864,12 +863,12 @@ export const shouldBehaveLikePermissionCall = (
       describe('when signer does not have permission CALL', () => {
         describe('when signing tx with EIP191Signer `\\x19\\x00` prefix', () => {
           it('should revert with `NotAuthorised` and permission CALL error', async () => {
-            const initialName = await targetContract.callStatic.getName();
+            const initialName = await targetContract.getName();
 
             const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
               'Random name',
             ]);
-            const nonce = await context.keyManager.callStatic.getNonce(
+            const nonce = await context.keyManager.getNonce(
               addressCannotMakeCall.address,
               channelId,
             );
@@ -878,13 +877,13 @@ export const shouldBehaveLikePermissionCall = (
 
             const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
-              [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+              [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
             );
 
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -899,7 +898,7 @@ export const shouldBehaveLikePermissionCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              context.keyManager.address,
+              await context.keyManager.getAddress(),
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT3,
             );
@@ -917,19 +916,19 @@ export const shouldBehaveLikePermissionCall = (
               .withArgs(addressCannotMakeCall.address, 'CALL');
 
             // ensure no state change at the target contract
-            const result = await targetContract.callStatic.getName();
+            const result = await targetContract.getName();
             expect(result).to.equal(initialName);
           });
         });
 
         describe('when signing tx with Ethereum Signed Message prefix', () => {
           it('should retrieve the incorrect signer address and revert with `NoPermissionSet`', async () => {
-            const initialName = await targetContract.callStatic.getName();
+            const initialName = await targetContract.getName();
 
             const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
               'Random name',
             ]);
-            const nonce = await context.keyManager.callStatic.getNonce(
+            const nonce = await context.keyManager.getNonce(
               addressCannotMakeCall.address,
               channelId,
             );
@@ -938,13 +937,13 @@ export const shouldBehaveLikePermissionCall = (
 
             const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
-              [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+              [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
             );
 
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.utils.solidityPack(
+            const encodedMessage = ethers.solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -962,7 +961,7 @@ export const shouldBehaveLikePermissionCall = (
 
             const incorrectSignerAddress = await eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                context.keyManager.address,
+                await context.keyManager.getAddress(),
                 encodedMessage,
               ),
               ethereumSignature,
@@ -981,7 +980,7 @@ export const shouldBehaveLikePermissionCall = (
               .withArgs(incorrectSignerAddress);
 
             // ensure state at target contract has not changed
-            expect(await targetContract.callStatic.getName()).to.equal(initialName);
+            expect(await targetContract.getName()).to.equal(initialName);
           });
         });
       });
@@ -1016,7 +1015,7 @@ export const shouldBehaveLikePermissionCall = (
 
       const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
-        targetContract.address,
+        await targetContract.getAddress(),
         0,
         targetContractPayload,
       ]);
@@ -1031,7 +1030,7 @@ export const shouldBehaveLikePermissionCall = (
         'lsp20VerifyCall',
         [
           context.accounts[2].address,
-          context.keyManager.address,
+          await context.keyManager.getAddress(),
           context.accounts[2].address,
           0,
           '0xaabbccdd',
@@ -1040,7 +1039,7 @@ export const shouldBehaveLikePermissionCall = (
 
       const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
-        context.keyManager.address,
+        await context.keyManager.getAddress(),
         0,
         lsp20VerifyCallPayload,
       ]);
@@ -1067,7 +1066,7 @@ export const shouldBehaveLikePermissionCall = (
         let executePayload;
 
         before(async () => {
-          context = await buildContext(ethers.utils.parseEther('50'));
+          context = await buildContext(ethers.parseEther('50'));
 
           const accounts = await ethers.getSigners();
 
@@ -1107,7 +1106,7 @@ export const shouldBehaveLikePermissionCall = (
 
           const allowedCall = combineAllowedCalls(
             [combineCallTypes(CALLTYPE.CALL, CALLTYPE.VALUE)],
-            [targetContract.address],
+            [await targetContract.getAddress()],
             ['0xffffffff'],
             ['0xffffffff'],
           );
@@ -1135,7 +1134,7 @@ export const shouldBehaveLikePermissionCall = (
 
         afterEach('clearing target contract storage', async () => {
           await context.accounts[0].sendTransaction({
-            to: targetContract.address,
+            to: await targetContract.getAddress(),
             data: '0xcafecafe',
           });
         });
@@ -1144,7 +1143,7 @@ export const shouldBehaveLikePermissionCall = (
           before(async () => {
             executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
-              targetContract.address,
+              await targetContract.getAddress(),
               36,
               '0xdeadbeef',
             ]);
@@ -1186,14 +1185,16 @@ export const shouldBehaveLikePermissionCall = (
 
           describe('when caller has both permissions CALL + TRANSFERVALUE', () => {
             it('should pass and allow to call the contract', async () => {
-              expect(await provider.getBalance(targetContract.address)).to.equal(0);
+              expect(await provider.getBalance(await targetContract.getAddress())).to.equal(0);
 
               await context.keyManager
                 .connect(controllerCanTransferValueAndCall)
                 .execute(executePayload);
 
-              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
-              expect(await provider.getBalance(targetContract.address)).to.equal(36);
+              expect(await targetContract.caller()).to.equal(
+                await context.universalProfile.getAddress(),
+              );
+              expect(await provider.getBalance(await targetContract.getAddress())).to.equal(36);
             });
           });
         });
@@ -1202,7 +1203,7 @@ export const shouldBehaveLikePermissionCall = (
           before(async () => {
             executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
-              targetContract.address,
+              await targetContract.getAddress(),
               0,
               '0x',
             ]);
@@ -1217,14 +1218,18 @@ export const shouldBehaveLikePermissionCall = (
           describe('when controller has permission CALL only', () => {
             it('should pass', async () => {
               await context.keyManager.connect(controllerCanCall).execute(executePayload);
-              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+              expect(await targetContract.caller()).to.equal(
+                await context.universalProfile.getAddress(),
+              );
             });
           });
 
           describe('when controller has SUPER_CALL', () => {
             it('should pass', async () => {
               await context.keyManager.connect(controllerCanSuperCall).execute(executePayload);
-              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+              expect(await targetContract.caller()).to.equal(
+                await context.universalProfile.getAddress(),
+              );
             });
           });
 
@@ -1251,7 +1256,7 @@ export const shouldBehaveLikePermissionCall = (
         let executePayload;
 
         before(async () => {
-          context = await buildContext(ethers.utils.parseEther('50'));
+          context = await buildContext(ethers.parseEther('50'));
 
           const accounts = await ethers.getSigners();
 
@@ -1276,7 +1281,7 @@ export const shouldBehaveLikePermissionCall = (
 
           const allowedCall = combineAllowedCalls(
             [combineCallTypes(CALLTYPE.CALL)],
-            [targetContract.address],
+            [await targetContract.getAddress()],
             ['0xffffffff'],
             ['0xffffffff'],
           );
@@ -1295,7 +1300,7 @@ export const shouldBehaveLikePermissionCall = (
 
         afterEach('clearing target contract storage', async () => {
           await context.accounts[0].sendTransaction({
-            to: targetContract.address,
+            to: await targetContract.getAddress(),
             data: '0xcafecafe',
           });
         });
@@ -1304,7 +1309,7 @@ export const shouldBehaveLikePermissionCall = (
           before('constructing manually the payload', async () => {
             // 0x44c028fe                                                         --> ERC725X.execute(uint256,address,uint256,bytes) selector
             //   0000000000000000000000000000000000000000000000000000000000000000 --> operationType = CALL (0)
-            //   0000000000000000000000004ed7c70f96b99c776995fb64377f0d4ab3b0e1c1 --> target = targetContract.address
+            //   0000000000000000000000004ed7c70f96b99c776995fb64377f0d4ab3b0e1c1 --> target = await targetContract.getAddress()
             //   0000000000000000000000000000000000000000000000000000000000000000 --> value = 0
             //   00000000000000000000000000000000000000000000000000000000000000a0 --> offset = 160
             //   cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe --> 32 random bytes in between
@@ -1312,21 +1317,25 @@ export const shouldBehaveLikePermissionCall = (
             //   deadbeef00000000000000000000000000000000000000000000000000000000 --> `data` = 0xdeadbeef
             executePayload =
               '0x44c028fe0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000' +
-              targetContract.address.substring(2).toLowerCase() +
+              (await targetContract.getAddress()).substring(2).toLowerCase() +
               '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe0000000000000000000000000000000000000000000000000000000000000004deadbeef00000000000000000000000000000000000000000000000000000000';
           });
 
           describe('when caller has permission CALL', () => {
             it('should pass', async () => {
               await context.keyManager.connect(controllerCanCall).execute(executePayload);
-              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+              expect(await targetContract.caller()).to.equal(
+                await context.universalProfile.getAddress(),
+              );
             });
           });
 
           describe('when caller has permission SUPER_CALL', () => {
             it('should pass', async () => {
               await context.keyManager.connect(controllerCanSuperCall).execute(executePayload);
-              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+              expect(await targetContract.caller()).to.equal(
+                await context.universalProfile.getAddress(),
+              );
             });
           });
 
@@ -1345,28 +1354,32 @@ export const shouldBehaveLikePermissionCall = (
           before('constructing manually the payload', async () => {
             // 0x44c028fe                                                         --> ERC725X.execute(uint256,address,uint256,bytes) selector
             //   0000000000000000000000000000000000000000000000000000000000000000 --> operationType = CALL (0)
-            //   0000000000000000000000004ed7c70f96b99c776995fb64377f0d4ab3b0e1c1 --> target = targetContract.address
+            //   0000000000000000000000004ed7c70f96b99c776995fb64377f0d4ab3b0e1c1 --> target = await targetContract.getAddress()
             //   0000000000000000000000000000000000000000000000000000000000000000 --> value = 0
             //   00000000000000000000000000000000000000000000000000000000000000a0 --> offset = 160
             //   cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe --> 32 random bytes in between
             //   0000000000000000000000000000000000000000000000000000000000000000 --> `data.length` = 0
             executePayload =
               '0x44c028fe0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000' +
-              targetContract.address.substring(2).toLowerCase() +
+              (await targetContract.getAddress()).substring(2).toLowerCase() +
               '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe0000000000000000000000000000000000000000000000000000000000000000';
           });
 
           describe('when caller has permission CALL', () => {
             it('should pass', async () => {
               await context.keyManager.connect(controllerCanCall).execute(executePayload);
-              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+              expect(await targetContract.caller()).to.equal(
+                await context.universalProfile.getAddress(),
+              );
             });
           });
 
           describe('when caller has permission SUPER_CALL', () => {
             it('should pass', async () => {
               await context.keyManager.connect(controllerCanSuperCall).execute(executePayload);
-              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+              expect(await targetContract.caller()).to.equal(
+                await context.universalProfile.getAddress(),
+              );
             });
           });
 

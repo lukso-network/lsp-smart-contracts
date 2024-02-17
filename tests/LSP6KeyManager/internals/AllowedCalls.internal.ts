@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import { TargetContract, TargetContract__factory } from '../../../types';
 
@@ -59,7 +59,7 @@ export const testAllowedCallsInternals = (
       });
 
       it('should return `false` if element is not 28 bytes long', async () => {
-        const allowedCalls = ethers.utils.hexlify(ethers.utils.randomBytes(27));
+        const allowedCalls = ethers.hexlify(ethers.randomBytes(27));
         const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
           allowedCalls,
         );
@@ -112,7 +112,7 @@ export const testAllowedCallsInternals = (
           [CALLTYPE.VALUE, CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             context.accounts[5].address,
-            ethers.utils.hexlify(ethers.utils.randomBytes(27)),
+            ethers.hexlify(ethers.randomBytes(27)),
             context.accounts[7].address,
           ],
           ['0xffffffff', '0xffffffff', '0xffffffff'],
@@ -151,7 +151,10 @@ export const testAllowedCallsInternals = (
           combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
           combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
         ],
-        [allowedEOA.address.toLowerCase(), allowedTargetContract.address.toLowerCase()],
+        [
+          allowedEOA.address.toLowerCase(),
+          (await allowedTargetContract.getAddress()).toLowerCase(),
+        ],
         ['0xffffffff', '0xffffffff'],
         ['0xffffffff', '0xffffffff'],
       );
@@ -203,7 +206,7 @@ export const testAllowedCallsInternals = (
           const executeParams = {
             operationType: OPERATION_TYPES.CALL,
             to: allowedEOA.address,
-            value: ethers.utils.parseEther('1'),
+            value: ethers.parseEther('1'),
             data: '0x',
           };
 
@@ -221,14 +224,12 @@ export const testAllowedCallsInternals = (
 
       describe('when the ERC725X payload (transfer 1 LYX)  is for an address not listed in the allowed calls', () => {
         it('should revert', async () => {
-          const disallowedAddress = ethers.utils.getAddress(
-            '0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead',
-          );
+          const disallowedAddress = ethers.getAddress('0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead');
 
           const executeParams = {
             operationType: OPERATION_TYPES.CALL,
             to: disallowedAddress,
-            value: ethers.utils.parseEther('1'),
+            value: ethers.parseEther('1'),
             data: '0x',
           };
 
@@ -253,7 +254,7 @@ export const testAllowedCallsInternals = (
           const executeParams = {
             operationType: OPERATION_TYPES.CALL,
             to: randomAddress,
-            value: ethers.utils.parseEther('1'),
+            value: ethers.parseEther('1'),
             data: '0x',
           };
 
@@ -300,10 +301,10 @@ export const testAllowedCallsInternals = (
       allowedCalls = combineAllowedCalls(
         [CALLTYPE.VALUE, CALLTYPE.CALL, CALLTYPE.STATICCALL, CALLTYPE.DELEGATECALL],
         [
-          targetContractValue.address,
-          targetContractCall.address,
-          targetContractStaticCall.address,
-          targetContractDelegateCall.address,
+          await targetContractValue.getAddress(),
+          await targetContractCall.getAddress(),
+          await targetContractStaticCall.getAddress(),
+          await targetContractDelegateCall.getAddress(),
         ],
         ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
         ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
@@ -344,7 +345,7 @@ export const testAllowedCallsInternals = (
       it('should fail with `NotAllowedCall` error when the allowed address has `v` permission only (`v` = VALUE)', async () => {
         const executeParams = {
           operationType: OPERATION_TYPES.CALL,
-          to: targetContractValue.address,
+          to: await targetContractValue.getAddress(),
           value: 0,
           data: randomPayload,
         };
@@ -359,13 +360,13 @@ export const testAllowedCallsInternals = (
           ),
         )
           .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
-          .withArgs(controller.address, targetContractValue.address, randomPayload);
+          .withArgs(controller.address, await targetContractValue.getAddress(), randomPayload);
       });
 
       it('should pass when the allowed address has `c` permission only (`c` = CALL)', async () => {
         const executeParams = {
           operationType: OPERATION_TYPES.CALL,
-          to: targetContractCall.address,
+          to: await targetContractCall.getAddress(),
           value: 0,
           data: randomPayload,
         };
@@ -384,7 +385,7 @@ export const testAllowedCallsInternals = (
       it('should fail with `NotAllowedCall` error when the allowed address has `s` permission only (`s` = STATICCALL)', async () => {
         const executeParams = {
           operationType: OPERATION_TYPES.CALL,
-          to: targetContractStaticCall.address,
+          to: await targetContractStaticCall.getAddress(),
           value: 0,
           data: randomPayload,
         };
@@ -399,13 +400,13 @@ export const testAllowedCallsInternals = (
           ),
         )
           .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
-          .withArgs(controller.address, targetContractStaticCall.address, randomPayload);
+          .withArgs(controller.address, await targetContractStaticCall.getAddress(), randomPayload);
       });
 
       it('should fail with `NotAllowedCall` error when the allowed address has `d` permission only (`d` = DELEGATECALL)', async () => {
         const executeParams = {
           operationType: OPERATION_TYPES.CALL,
-          to: targetContractDelegateCall.address,
+          to: await targetContractDelegateCall.getAddress(),
           value: 0,
           data: randomPayload,
         };
@@ -420,7 +421,11 @@ export const testAllowedCallsInternals = (
           ),
         )
           .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
-          .withArgs(controller.address, targetContractDelegateCall.address, randomPayload);
+          .withArgs(
+            controller.address,
+            await targetContractDelegateCall.getAddress(),
+            randomPayload,
+          );
       });
     });
 
@@ -455,7 +460,7 @@ export const testAllowedCallsInternals = (
       it('should fail with `NotAllowedCall` error when the allowed address has `v` permission only (`v` = VALUE)', async () => {
         const executeParams = {
           operationType: OPERATION_TYPES.STATICCALL,
-          to: targetContractValue.address,
+          to: await targetContractValue.getAddress(),
           value: 0,
           data: randomPayload,
         };
@@ -470,13 +475,13 @@ export const testAllowedCallsInternals = (
           ),
         )
           .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
-          .withArgs(controller.address, targetContractValue.address, randomPayload);
+          .withArgs(controller.address, await targetContractValue.getAddress(), randomPayload);
       });
 
       it('should fail with `NotAllowedCall` error when the allowed address has `c` permission only (`c` = CALL)', async () => {
         const executeParams = {
           operationType: OPERATION_TYPES.STATICCALL,
-          to: targetContractCall.address,
+          to: await targetContractCall.getAddress(),
           value: 0,
           data: randomPayload,
         };
@@ -491,13 +496,13 @@ export const testAllowedCallsInternals = (
           ),
         )
           .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
-          .withArgs(controller.address, targetContractCall.address, randomPayload);
+          .withArgs(controller.address, await targetContractCall.getAddress(), randomPayload);
       });
 
       it('should pass when the allowed address has `s` permission only (`s` = STATICCALL)', async () => {
         const executeParams = {
           operationType: OPERATION_TYPES.STATICCALL,
-          to: targetContractStaticCall.address,
+          to: await targetContractStaticCall.getAddress(),
           value: 0,
           data: randomPayload,
         };
@@ -516,7 +521,7 @@ export const testAllowedCallsInternals = (
       it('should fail with `NotAllowedCall` error when the allowed address has `d` permission only (`d` = DELEGATECALL)', async () => {
         const executeParams = {
           operationType: OPERATION_TYPES.STATICCALL,
-          to: targetContractDelegateCall.address,
+          to: await targetContractDelegateCall.getAddress(),
           value: 0,
           data: randomPayload,
         };
@@ -531,7 +536,11 @@ export const testAllowedCallsInternals = (
           ),
         )
           .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
-          .withArgs(controller.address, targetContractDelegateCall.address, randomPayload);
+          .withArgs(
+            controller.address,
+            await targetContractDelegateCall.getAddress(),
+            randomPayload,
+          );
       });
     });
 
@@ -566,7 +575,7 @@ export const testAllowedCallsInternals = (
       it('should fail with `NotAllowedCall` error when the allowed address has `v` permission only (`v` = VALUE)', async () => {
         const executeParams = {
           operationType: OPERATION_TYPES.DELEGATECALL,
-          to: targetContractValue.address,
+          to: await targetContractValue.getAddress(),
           value: 0,
           data: randomPayload,
         };
@@ -581,13 +590,13 @@ export const testAllowedCallsInternals = (
           ),
         )
           .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
-          .withArgs(controller.address, targetContractValue.address, randomPayload);
+          .withArgs(controller.address, await targetContractValue.getAddress(), randomPayload);
       });
 
       it('should fail with `NotAllowedCall` error when the allowed address has `c` permission only (`c` = CALL)', async () => {
         const executeParams = {
           operationType: OPERATION_TYPES.DELEGATECALL,
-          to: targetContractCall.address,
+          to: await targetContractCall.getAddress(),
           value: 0,
           data: randomPayload,
         };
@@ -602,13 +611,13 @@ export const testAllowedCallsInternals = (
           ),
         )
           .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
-          .withArgs(controller.address, targetContractCall.address, randomPayload);
+          .withArgs(controller.address, await targetContractCall.getAddress(), randomPayload);
       });
 
       it('should fail with `NotAllowedCall` error when the allowed address has `s` permission only (`s` = STATICCALL)', async () => {
         const executeParams = {
           operationType: OPERATION_TYPES.DELEGATECALL,
-          to: targetContractStaticCall.address,
+          to: await targetContractStaticCall.getAddress(),
           value: 0,
           data: randomPayload,
         };
@@ -623,13 +632,13 @@ export const testAllowedCallsInternals = (
           ),
         )
           .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
-          .withArgs(controller.address, targetContractStaticCall.address, randomPayload);
+          .withArgs(controller.address, await targetContractStaticCall.getAddress(), randomPayload);
       });
 
       it('should pass when the allowed address has `d` permission only (`d` = DELEGATECALL)', async () => {
         const executeParams = {
           operationType: OPERATION_TYPES.DELEGATECALL,
-          to: targetContractDelegateCall.address,
+          to: await targetContractDelegateCall.getAddress(),
           value: 0,
           data: randomPayload, // random payload
         };
@@ -710,7 +719,7 @@ export const testAllowedCallsInternals = (
       const executeParams = {
         operationType: OPERATION_TYPES.CALL,
         to: randomAddress,
-        value: ethers.utils.parseEther('1'),
+        value: ethers.parseEther('1'),
         data: randomData,
       };
 
@@ -769,7 +778,7 @@ export const testAllowedCallsInternals = (
     const executeParams = {
       operationType: OPERATION_TYPES.CALL,
       to: randomAddress,
-      value: ethers.utils.parseEther('1'),
+      value: ethers.parseEther('1'),
       data: randomData,
     };
 
@@ -822,7 +831,7 @@ export const testAllowedCallsInternals = (
               .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
               .withArgs(
                 context.accounts[index + 1].address,
-                ethers.utils.getAddress(randomAddress),
+                ethers.getAddress(randomAddress),
                 randomData,
               );
           });
@@ -872,7 +881,7 @@ export const testAllowedCallsInternals = (
       const executeParams = {
         operationType: OPERATION_TYPES.CALL,
         to: randomAddress,
-        value: ethers.utils.parseEther('1'),
+        value: ethers.parseEther('1'),
         data: randomData,
       };
 

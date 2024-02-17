@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { encodeData, ERC725JSONSchema } from '@erc725/erc725.js';
 
 import { ExecutorLSP20, ExecutorLSP20__factory } from '../../../../types';
@@ -82,12 +82,12 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
           ERC725YDataKeys.LSP3.LSP3Profile,
           ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].index,
-          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My First Key')),
-          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFirstKey')),
-          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MySecondKey')),
-          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyThirdKey')),
-          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFourthKey')),
-          ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFifthKey')),
+          ethers.keccak256(ethers.toUtf8Bytes('My First Key')),
+          ethers.keccak256(ethers.toUtf8Bytes('MyFirstKey')),
+          ethers.keccak256(ethers.toUtf8Bytes('MySecondKey')),
+          ethers.keccak256(ethers.toUtf8Bytes('MyThirdKey')),
+          ethers.keccak256(ethers.toUtf8Bytes('MyFourthKey')),
+          ethers.keccak256(ethers.toUtf8Bytes('MyFifthKey')),
         ]),
         combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.CALL),
         PERMISSIONS.CALL,
@@ -99,33 +99,33 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
     describe('when setting one key', () => {
       describe('For UP owner', () => {
         it('should pass', async () => {
-          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My First Key'));
-          const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Hello Lukso!'));
+          const key = ethers.keccak256(ethers.toUtf8Bytes('My First Key'));
+          const value = ethers.hexlify(ethers.toUtf8Bytes('Hello Lukso!'));
 
           await context.universalProfile.connect(context.mainController).setData(key, value);
 
-          const fetchedResult = await context.universalProfile.callStatic['getData(bytes32)'](key);
+          const fetchedResult = await context.universalProfile.getData(key);
           expect(fetchedResult).to.equal(value);
         });
       });
 
       describe('For address that has permission SETDATA with AllowedERC725YDataKeys', () => {
         it('should pass', async () => {
-          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My First Key'));
-          const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Hello Lukso!'));
+          const key = ethers.keccak256(ethers.toUtf8Bytes('My First Key'));
+          const value = ethers.hexlify(ethers.toUtf8Bytes('Hello Lukso!'));
 
           await context.universalProfile
             .connect(canSetDataWithAllowedERC725YDataKeys)
             .setData(key, value);
-          const fetchedResult = await context.universalProfile.callStatic['getData(bytes32)'](key);
+          const fetchedResult = await context.universalProfile.getData(key);
           expect(fetchedResult).to.equal(value);
         });
       });
 
       describe('For address that has permission SETDATA without any AllowedERC725YDataKeys', () => {
         it('should revert', async () => {
-          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My First Key'));
-          const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Hello Lukso!'));
+          const key = ethers.keccak256(ethers.toUtf8Bytes('My First Key'));
+          const value = ethers.hexlify(ethers.toUtf8Bytes('Hello Lukso!'));
 
           await expect(
             context.universalProfile
@@ -139,8 +139,8 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
 
       describe("For address that doesn't have permission SETDATA", () => {
         it('should not allow', async () => {
-          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My First Key'));
-          const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Hello Lukso!'));
+          const key = ethers.keccak256(ethers.toUtf8Bytes('My First Key'));
+          const value = ethers.hexlify(ethers.toUtf8Bytes('Hello Lukso!'));
 
           await expect(context.universalProfile.connect(cannotSetData).setData(key, value))
             .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
@@ -153,24 +153,24 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       describe('For UP owner', () => {
         it('(should pass): adding 5 singleton keys', async () => {
           const keys = [
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFirstKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MySecondKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyThirdKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFourthKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFifthKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyFirstKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MySecondKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyThirdKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyFourthKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyFifthKey')),
           ];
 
           const values = [
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('aaaaaaaaaa')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('bbbbbbbbbb')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('cccccccccc')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('dddddddddd')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('eeeeeeeeee')),
+            ethers.hexlify(ethers.toUtf8Bytes('aaaaaaaaaa')),
+            ethers.hexlify(ethers.toUtf8Bytes('bbbbbbbbbb')),
+            ethers.hexlify(ethers.toUtf8Bytes('cccccccccc')),
+            ethers.hexlify(ethers.toUtf8Bytes('dddddddddd')),
+            ethers.hexlify(ethers.toUtf8Bytes('eeeeeeeeee')),
           ];
 
           await context.universalProfile.connect(context.mainController).setDataBatch(keys, values);
 
-          const fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
+          const fetchedResult = await context.universalProfile.getDataBatch(keys);
 
           expect(fetchedResult).to.deep.equal(values);
         });
@@ -184,7 +184,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
 
           await context.universalProfile.connect(context.mainController).setDataBatch(keys, values);
 
-          const fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
+          const fetchedResult = await context.universalProfile.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
 
@@ -193,9 +193,11 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
             {
               keyName: 'LSP3Profile',
               value: {
-                hashFunction: 'keccak256(utf8)',
-                hash: '0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361',
                 url: 'ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx',
+                verification: {
+                  method: 'keccak256(utf8)',
+                  data: '0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361',
+                },
               },
             },
             {
@@ -215,7 +217,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
 
           await context.universalProfile.connect(context.mainController).setDataBatch(keys, values);
 
-          const fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
+          const fetchedResult = await context.universalProfile.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
       });
@@ -223,26 +225,26 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       describe('For address that has permission SETDATA with AllowedERC725YDataKeys', () => {
         it('(should pass): adding 5 singleton keys', async () => {
           const keys = [
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFirstKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MySecondKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyThirdKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFourthKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFifthKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyFirstKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MySecondKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyThirdKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyFourthKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyFifthKey')),
           ];
 
           const values = [
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('aaaaaaaaaa')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('bbbbbbbbbb')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('cccccccccc')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('dddddddddd')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('eeeeeeeeee')),
+            ethers.hexlify(ethers.toUtf8Bytes('aaaaaaaaaa')),
+            ethers.hexlify(ethers.toUtf8Bytes('bbbbbbbbbb')),
+            ethers.hexlify(ethers.toUtf8Bytes('cccccccccc')),
+            ethers.hexlify(ethers.toUtf8Bytes('dddddddddd')),
+            ethers.hexlify(ethers.toUtf8Bytes('eeeeeeeeee')),
           ];
 
           await context.universalProfile
             .connect(canSetDataWithAllowedERC725YDataKeys)
             .setDataBatch(keys, values);
 
-          const fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
+          const fetchedResult = await context.universalProfile.getDataBatch(keys);
 
           expect(fetchedResult).to.deep.equal(values);
         });
@@ -258,7 +260,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
             .connect(canSetDataWithAllowedERC725YDataKeys)
             .setDataBatch(keys, values);
 
-          const fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
+          const fetchedResult = await context.universalProfile.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
 
@@ -267,9 +269,11 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
             {
               keyName: 'LSP3Profile',
               value: {
-                hashFunction: 'keccak256(utf8)',
-                hash: '0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361',
                 url: 'ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx',
+                verification: {
+                  method: 'keccak256(utf8)',
+                  data: '0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361',
+                },
               },
             },
             {
@@ -287,7 +291,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
             .connect(canSetDataWithAllowedERC725YDataKeys)
             .setDataBatch(keys, values);
 
-          const fetchedResult = await context.universalProfile.callStatic.getDataBatch(keys);
+          const fetchedResult = await context.universalProfile.getDataBatch(keys);
           expect(fetchedResult).to.deep.equal(values);
         });
       });
@@ -295,19 +299,19 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       describe('For address that has permission SETDATA without AllowedERC725YDataKeys', () => {
         it('(should revert): adding 5 singleton keys', async () => {
           const keys = [
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFirstKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MySecondKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyThirdKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFourthKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFifthKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyFirstKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MySecondKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyThirdKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyFourthKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyFifthKey')),
           ];
 
           const values = [
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('aaaaaaaaaa')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('bbbbbbbbbb')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('cccccccccc')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('dddddddddd')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('eeeeeeeeee')),
+            ethers.hexlify(ethers.toUtf8Bytes('aaaaaaaaaa')),
+            ethers.hexlify(ethers.toUtf8Bytes('bbbbbbbbbb')),
+            ethers.hexlify(ethers.toUtf8Bytes('cccccccccc')),
+            ethers.hexlify(ethers.toUtf8Bytes('dddddddddd')),
+            ethers.hexlify(ethers.toUtf8Bytes('eeeeeeeeee')),
           ];
 
           await expect(
@@ -340,9 +344,11 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
             {
               keyName: 'LSP3Profile',
               value: {
-                hashFunction: 'keccak256(utf8)',
-                hash: '0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361',
                 url: 'ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx',
+                verification: {
+                  method: 'keccak256(utf8)',
+                  data: '0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361',
+                },
               },
             },
             {
@@ -369,19 +375,19 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       describe("For address that doesn't have permission SETDATA", () => {
         it('(should fail): adding 5 singleton keys', async () => {
           const keys = [
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFirstKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MySecondKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyThirdKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFourthKey')),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes('MyFifthKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyFirstKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MySecondKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyThirdKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyFourthKey')),
+            ethers.keccak256(ethers.toUtf8Bytes('MyFifthKey')),
           ];
 
           const values = [
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('aaaaaaaaaa')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('bbbbbbbbbb')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('cccccccccc')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('dddddddddd')),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('eeeeeeeeee')),
+            ethers.hexlify(ethers.toUtf8Bytes('aaaaaaaaaa')),
+            ethers.hexlify(ethers.toUtf8Bytes('bbbbbbbbbb')),
+            ethers.hexlify(ethers.toUtf8Bytes('cccccccccc')),
+            ethers.hexlify(ethers.toUtf8Bytes('dddddddddd')),
+            ethers.hexlify(ethers.toUtf8Bytes('eeeeeeeeee')),
           ];
 
           await expect(context.universalProfile.connect(cannotSetData).setDataBatch(keys, values))
@@ -406,9 +412,11 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
             {
               keyName: 'LSP3Profile',
               value: {
-                hashFunction: 'keccak256(utf8)',
-                hash: '0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361',
                 url: 'ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx',
+                verification: {
+                  method: 'keccak256(utf8)',
+                  data: '0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361',
+                },
               },
             },
             {
@@ -433,7 +441,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
     let contractCanSetData: ExecutorLSP20;
 
     const hardcodedDataKey = '0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1';
-    const hardcodedDataValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some value'));
+    const hardcodedDataValue = ethers.hexlify(ethers.toUtf8Bytes('Some value'));
 
     /**
      * @dev this is necessary when the function being called in the contract
@@ -446,16 +454,16 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       context = await buildContext();
 
       contractCanSetData = await new ExecutorLSP20__factory(context.mainController).deploy(
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
       );
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          contractCanSetData.address.substring(2),
+          (await contractCanSetData.getAddress()).substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-          contractCanSetData.address.substring(2),
+          (await contractCanSetData.getAddress()).substring(2),
       ];
 
       const compactedAllowedERC725YDataKeys = encodeCompactBytesArray([
@@ -480,52 +488,40 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
     describe('> contract calls', () => {
       it('should allow to set a key hardcoded inside a function of the calling contract', async () => {
         // check that nothing is set at store[key]
-        const initialStorage = await context.universalProfile.callStatic['getData(bytes32)'](
-          hardcodedDataKey,
-        );
+        const initialStorage = await context.universalProfile.getData(hardcodedDataKey);
         expect(initialStorage).to.equal('0x');
 
         // make the executor call
         await contractCanSetData.setHardcodedKey();
 
         // check that store[key] is now set to value
-        const newStorage = await context.universalProfile.callStatic['getData(bytes32)'](
-          hardcodedDataKey,
-        );
+        const newStorage = await context.universalProfile.getData(hardcodedDataKey);
         expect(newStorage).to.equal(hardcodedDataValue);
       });
 
       it('Should allow to set a key computed inside a function of the calling contract', async () => {
         // check that nothing is set at store[key]
-        const initialStorage = await context.universalProfile.callStatic['getData(bytes32)'](
-          hardcodedDataKey,
-        );
+        const initialStorage = await context.universalProfile.getData(hardcodedDataKey);
         expect(initialStorage).to.equal('0x');
 
         // make the executor call
         await contractCanSetData.setComputedKey();
 
         // check that store[key] is now set to value
-        const newStorage = await context.universalProfile.callStatic['getData(bytes32)'](
-          hardcodedDataKey,
-        );
+        const newStorage = await context.universalProfile.getData(hardcodedDataKey);
         expect(newStorage).to.equal(hardcodedDataValue);
       });
 
       it('Should allow to set a key computed from parameters given to a function of the calling contract', async () => {
         // check that nothing is set at store[key]
-        const initialStorage = await context.universalProfile.callStatic['getData(bytes32)'](
-          hardcodedDataKey,
-        );
+        const initialStorage = await context.universalProfile.getData(hardcodedDataKey);
         expect(initialStorage).to.equal('0x');
 
         // make the executor call
         await contractCanSetData.setComputedKeyFromParams(hardcodedDataKey, hardcodedDataValue);
 
         // check that store[key] is now set to value
-        const newStorage = await context.universalProfile.callStatic['getData(bytes32)'](
-          hardcodedDataKey,
-        );
+        const newStorage = await context.universalProfile.getData(hardcodedDataKey);
         expect(newStorage).to.equal(hardcodedDataValue);
       });
     });
@@ -533,13 +529,11 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
     describe('> Low-level calls', () => {
       it('Should allow to `setHardcodedKeyRawCall` on UP', async () => {
         // check that nothing is set at store[key]
-        const initialStorage = await context.universalProfile.callStatic['getData(bytes32)'](
-          hardcodedDataKey,
-        );
+        const initialStorage = await context.universalProfile.getData(hardcodedDataKey);
         expect(initialStorage).to.equal('0x');
 
         // check if low-level call succeeded
-        const result = await contractCanSetData.callStatic.setHardcodedKeyRawCall({
+        const result = await contractCanSetData.setHardcodedKeyRawCall.staticCall({
           gasLimit: GAS_PROVIDED,
         });
         expect(result).to.be.true;
@@ -550,17 +544,13 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
         });
 
         // check that store[key] is now set to value
-        const newStorage = await context.universalProfile.callStatic['getData(bytes32)'](
-          hardcodedDataKey,
-        );
+        const newStorage = await context.universalProfile.getData(hardcodedDataKey);
         expect(newStorage).to.equal(hardcodedDataValue);
       });
 
       it('Should allow to `setComputedKeyRawCall` on UP', async () => {
         // check that nothing is set at store[key]
-        const initialStorage = await context.universalProfile.callStatic['getData(bytes32)'](
-          hardcodedDataKey,
-        );
+        const initialStorage = await context.universalProfile.getData(hardcodedDataKey);
         expect(initialStorage).to.equal('0x');
 
         // make the executor call
@@ -569,17 +559,13 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
         });
 
         // check that store[key] is now set to value
-        const newStorage = await context.universalProfile.callStatic['getData(bytes32)'](
-          hardcodedDataKey,
-        );
+        const newStorage = await context.universalProfile.getData(hardcodedDataKey);
         expect(newStorage).to.equal(hardcodedDataValue);
       });
 
       it('Should allow to `setComputedKeyFromParamsRawCall` on UP', async () => {
         // check that nothing is set at store[key]
-        const initialStorage = await context.universalProfile.callStatic['getData(bytes32)'](
-          hardcodedDataKey,
-        );
+        const initialStorage = await context.universalProfile.getData(hardcodedDataKey);
         expect(initialStorage).to.equal('0x');
 
         // make the executor call
@@ -592,9 +578,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
         );
 
         // check that store[key] is now set to value
-        const newStorage = await context.universalProfile.callStatic['getData(bytes32)'](
-          hardcodedDataKey,
-        );
+        const newStorage = await context.universalProfile.getData(hardcodedDataKey);
         expect(newStorage).to.equal(hardcodedDataValue);
       });
     });
@@ -624,7 +608,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       const bobPermissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + bob.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          aliceContext.universalProfile.address.substring(2),
+          (await aliceContext.universalProfile.getAddress()).substring(2),
       ];
 
       const bobPermissionValues = [ALL_PERMISSIONS, PERMISSIONS.SETDATA];
@@ -652,15 +636,15 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
     it("Alice's UP should have permission SETDATA on Bob's UP", async () => {
       const key =
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        aliceContext.universalProfile.address.substring(2);
+        (await aliceContext.universalProfile.getAddress()).substring(2);
 
       const result = await bobContext.universalProfile.getData(key);
       expect(result).to.equal(PERMISSIONS.SETDATA);
     });
 
     it("Alice's UP should't be able to `setData(...)` on Bob's UP when it doesn't have any AllowedERC725YDataKeys", async () => {
-      const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Alice's Key"));
-      const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Alice's Value"));
+      const key = ethers.keccak256(ethers.toUtf8Bytes("Alice's Key"));
+      const value = ethers.hexlify(ethers.toUtf8Bytes("Alice's Value"));
 
       const finalSetDataPayload = bobContext.universalProfile.interface.encodeFunctionData(
         'setData',
@@ -672,25 +656,25 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
           .connect(alice)
           .execute(
             OPERATION_TYPES.CALL,
-            bobContext.universalProfile.address,
+            await bobContext.universalProfile.getAddress(),
             0,
             finalSetDataPayload,
           ),
       )
         .to.be.revertedWithCustomError(bobContext.keyManager, 'NoERC725YDataKeysAllowed')
-        .withArgs(aliceContext.universalProfile.address);
+        .withArgs(await aliceContext.universalProfile.getAddress());
     });
 
     it("Alice's UP should be able to `setData(...)` on Bob's UP when it has AllowedERC725YDataKeys", async () => {
-      const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Alice's Key"));
-      const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Alice's Value"));
+      const key = ethers.keccak256(ethers.toUtf8Bytes("Alice's Key"));
+      const value = ethers.hexlify(ethers.toUtf8Bytes("Alice's Value"));
 
       // Adding `key` to AllowedERC725YDataKeys for Alice
       await bobContext.universalProfile
         .connect(bob)
         .setData(
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-            aliceContext.universalProfile.address.substring(2),
+            (await aliceContext.universalProfile.getAddress()).substring(2),
           encodeCompactBytesArray([key]),
         );
 
@@ -701,7 +685,12 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
 
       await aliceContext.universalProfile
         .connect(alice)
-        .execute(OPERATION_TYPES.CALL, bobContext.universalProfile.address, 0, finalSetDataPayload);
+        .execute(
+          OPERATION_TYPES.CALL,
+          await bobContext.universalProfile.getAddress(),
+          0,
+          finalSetDataPayload,
+        );
 
       const result = await bobContext.universalProfile.getData(key);
       expect(result).to.equal(value);
@@ -712,9 +701,9 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
     let caller: SignerWithAddress;
 
     const AllowedERC725YDataKeys = [
-      ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My 1st allowed key')),
-      ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My 2nd allowed key')),
-      ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My 3rd allowed key')),
+      ethers.keccak256(ethers.toUtf8Bytes('My 1st allowed key')),
+      ethers.keccak256(ethers.toUtf8Bytes('My 2nd allowed key')),
+      ethers.keccak256(ethers.toUtf8Bytes('My 3rd allowed key')),
     ];
 
     before(async () => {
@@ -738,8 +727,8 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
 
     describe('when trying to set a disallowed key', () => {
       for (let ii = 1; ii <= 5; ii++) {
-        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(`dissallowed key ${ii}`));
-        const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(`some value ${ii}`));
+        const key = ethers.keccak256(ethers.toUtf8Bytes(`dissallowed key ${ii}`));
+        const value = ethers.hexlify(ethers.toUtf8Bytes(`some value ${ii}`));
 
         it(`should be allowed to set a disallowed key: ${key}`, async () => {
           await context.universalProfile.connect(caller).setData(key, value);
@@ -752,7 +741,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
 
     describe('when trying to set an allowed key', () => {
       it('should be allowed to set the 1st allowed key', async () => {
-        const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('some value 1'));
+        const value = ethers.hexlify(ethers.toUtf8Bytes('some value 1'));
 
         await context.universalProfile.connect(caller).setData(AllowedERC725YDataKeys[0], value);
 
@@ -761,7 +750,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       });
 
       it('should be allowed to set the 2nd allowed key', async () => {
-        const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('some value 2'));
+        const value = ethers.hexlify(ethers.toUtf8Bytes('some value 2'));
 
         await context.universalProfile.connect(caller).setData(AllowedERC725YDataKeys[1], value);
 
@@ -770,7 +759,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       });
 
       it('should be allowed to set the 3rd allowed key', async () => {
-        const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('some value 3'));
+        const value = ethers.hexlify(ethers.toUtf8Bytes('some value 3'));
 
         await context.universalProfile.connect(caller).setData(AllowedERC725YDataKeys[2], value);
 

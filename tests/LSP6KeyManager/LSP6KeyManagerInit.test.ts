@@ -1,8 +1,7 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { BigNumber } from 'ethers';
 import { LSP6TestContext } from '../utils/context';
-import { LSP6KeyManagerInit__factory } from '../../types';
+import { LSP6KeyManagerInit, LSP6KeyManagerInit__factory } from '../../types';
 import { UniversalProfileInit__factory } from '@lukso/universalprofile-contracts/types';
 import { deployProxy } from '../utils/fixtures';
 import { shouldBehaveLikeLSP6, shouldInitializeLikeLSP6 } from './LSP6KeyManager.behaviour';
@@ -10,7 +9,7 @@ import { shouldBehaveLikeLSP6, shouldInitializeLikeLSP6 } from './LSP6KeyManager
 describe('LSP6KeyManager with proxy', () => {
   let context: LSP6TestContext;
 
-  const buildProxyTestContext = async (initialFunding?: BigNumber): Promise<LSP6TestContext> => {
+  const buildProxyTestContext = async (initialFunding?: bigint): Promise<LSP6TestContext> => {
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
@@ -19,8 +18,8 @@ describe('LSP6KeyManager with proxy', () => {
     const universalProfile = await baseUP.attach(upProxy);
 
     const baseKM = await new LSP6KeyManagerInit__factory(mainController).deploy();
-    const kmProxy = await deployProxy(baseKM.address, mainController);
-    const keyManager = await baseKM.attach(kmProxy);
+    const kmProxy = await deployProxy(await baseKM.getAddress(), mainController);
+    const keyManager = (await baseKM.attach(kmProxy)) as unknown as LSP6KeyManagerInit;
 
     return { accounts, mainController, universalProfile, keyManager, initialFunding };
   };
@@ -30,7 +29,7 @@ describe('LSP6KeyManager with proxy', () => {
       value: context.initialFunding,
     });
 
-    await context.keyManager['initialize(address)'](context.universalProfile.address);
+    await context.keyManager['initialize(address)'](await context.universalProfile.getAddress());
 
     return context;
   };
@@ -41,7 +40,7 @@ describe('LSP6KeyManager with proxy', () => {
       const keyManagerBaseContract = await new LSP6KeyManagerInit__factory(accounts[0]).deploy();
 
       const linkedTarget = await keyManagerBaseContract.target();
-      expect(linkedTarget).to.equal(ethers.constants.AddressZero);
+      expect(linkedTarget).to.equal(ethers.ZeroAddress);
     });
 
     it('should prevent any address from calling the `initialize(...)` function on the base contract', async () => {
@@ -75,7 +74,7 @@ describe('LSP6KeyManager with proxy', () => {
   });
 
   describe('when testing the deployed proxy', () => {
-    shouldBehaveLikeLSP6(async (initialFunding?: BigNumber) => {
+    shouldBehaveLikeLSP6(async (initialFunding?: bigint) => {
       const context = await buildProxyTestContext(initialFunding);
       await initializeProxies(context);
       return context;

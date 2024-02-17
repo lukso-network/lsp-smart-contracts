@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import { TargetContract__factory, TargetContract } from '../../../../types';
 
@@ -44,7 +44,7 @@ export const otherTestScenarios = (buildContext: () => Promise<LSP6TestContext>)
       await expect(
         context.universalProfile
           .connect(context.mainController)
-          .execute(INVALID_OPERATION_TYPE, targetContract.address, 0, targetPayload),
+          .execute(INVALID_OPERATION_TYPE, await targetContract.getAddress(), 0, targetPayload),
       ).to.be.revertedWithCustomError(context.universalProfile, 'ERC725X_UnknownOperationType');
     });
 
@@ -56,7 +56,7 @@ export const otherTestScenarios = (buildContext: () => Promise<LSP6TestContext>)
       await expect(
         context.universalProfile
           .connect(addressCanMakeCall)
-          .execute(INVALID_OPERATION_TYPE, targetContract.address, 0, targetPayload),
+          .execute(INVALID_OPERATION_TYPE, await targetContract.getAddress(), 0, targetPayload),
       ).to.be.revertedWithCustomError(context.universalProfile, 'ERC725X_UnknownOperationType');
     });
   });

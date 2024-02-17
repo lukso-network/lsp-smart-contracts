@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
 
 import { UniversalProfile__factory } from '@lukso/universalprofile-contracts/types';
@@ -9,7 +8,7 @@ import { LSP6TestContext } from '../../utils/context';
 import { shouldBehaveLikeLSP6 } from './LSP20WithLSP6.behaviour';
 
 describe('LSP20 + LSP6 with constructor', () => {
-  const buildTestContext = async (initialFunding?: BigNumber): Promise<LSP6TestContext> => {
+  const buildTestContext = async (initialFunding?: bigint): Promise<LSP6TestContext> => {
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
