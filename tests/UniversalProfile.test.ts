@@ -135,8 +135,8 @@ describe('UniversalProfile with constructor', () => {
   describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP3(buildLSP3TestContext);
     shouldBehaveLikeLSP1(buildLSP1TestContext);
-    // shouldBehaveLikeLSP14WithLSP20(buildLSP14WithLSP20TestContext);
+    shouldBehaveLikeLSP14WithLSP20(buildLSP14WithLSP20TestContext);
     shouldBehaveLikeLSP17(buildLSP17TestContext);
-    // shouldBehaveLikeLSP20(buildLSP20TestContext);
+    shouldBehaveLikeLSP20(buildLSP20TestContext);
   });
 });

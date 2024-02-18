@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { FakeContract, smock } from '@defi-wonderland/smock';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import {
   LSP0ERC725Account,
@@ -19,6 +18,10 @@ import {
   ReenterAccountExtension,
   BuyExtension,
   BuyExtension__factory,
+  NameExtension,
+  AgeExtension,
+  AgeExtension__factory,
+  NameExtension__factory,
 } from '../../types';
 
 // helpers
@@ -243,7 +246,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
                 await context.contract
                   .connect(context.deployParams.owner)
-                  .setData(checkMsgVariableFunctionExtensionHandlerKey, checkerExtension.address);
+                  .setData(
+                    checkMsgVariableFunctionExtensionHandlerKey,
+                    await checkerExtension.getAddress(),
+                  );
               });
 
               it('should fail if passed a different value from the msg.value', async () => {
@@ -308,7 +314,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(revertStringFunctionExtensionHandlerKey, revertStringExtension.address);
+              .setData(
+                revertStringFunctionExtensionHandlerKey,
+                await revertStringExtension.getAddress(),
+              );
           });
 
           it('should revert with a string error provided as argument', async () => {
@@ -338,7 +347,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(revertCustomFunctionExtensionHandlerKey, revertCustomExtension.address);
+              .setData(
+                revertCustomFunctionExtensionHandlerKey,
+                await revertCustomExtension.getAddress(),
+              );
           });
 
           it('should revert with a custom error with tx.origin and msg.sender as argument', async () => {
@@ -366,7 +378,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(emitEventFunctionExtensionHandlerKey, emitEventExtension.address);
+              .setData(emitEventFunctionExtensionHandlerKey, await emitEventExtension.getAddress());
           });
 
           it('should pass and emit the event on the extension', async () => {
@@ -381,29 +393,14 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         });
 
         describe('when calling an extension that returns a string', () => {
-          let nameExtension: FakeContract;
+          let nameExtension: NameExtension;
 
           before(async () => {
-            nameExtension = await smock.fake([
-              {
-                inputs: [],
-                name: 'name',
-                outputs: [
-                  {
-                    internalType: 'string',
-                    name: '',
-                    type: 'string',
-                  },
-                ],
-                stateMutability: 'view',
-                type: 'function',
-              },
-            ]);
-            nameExtension.name.returns('LUKSO');
+            nameExtension = await new NameExtension__factory(context.accounts[0]).deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(nameFunctionExtensionHandlerKey, nameExtension.address);
+              .setData(nameFunctionExtensionHandlerKey, nameExtension.target);
           });
 
           it('should pass and return the name correctly', async () => {
@@ -418,29 +415,14 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         });
 
         describe('when calling an extension that returns a number', () => {
-          let ageExtension: FakeContract;
+          let ageExtension: AgeExtension;
 
           before(async () => {
-            ageExtension = await smock.fake([
-              {
-                inputs: [],
-                name: 'age',
-                outputs: [
-                  {
-                    internalType: 'uint256',
-                    name: '',
-                    type: 'uint256',
-                  },
-                ],
-                stateMutability: 'view',
-                type: 'function',
-              },
-            ]);
-            ageExtension.age.returns(20);
+            ageExtension = await new AgeExtension__factory(context.accounts[0]).deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(ageFunctionExtensionHandlerKey, ageExtension.address);
+              .setData(ageFunctionExtensionHandlerKey, ageExtension.target);
           });
 
           it('should pass and return the age correctly', async () => {
@@ -462,13 +444,11 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(transferFunctionExtensionHandlerKey, transferExtension.address);
+              .setData(transferFunctionExtensionHandlerKey, await transferExtension.getAddress());
           });
 
           it('should pass and change the state accordingly', async () => {
-            const balanceBefore = await transferExtension.callStatic.balances(
-              context.accounts[0].address,
-            );
+            const balanceBefore = await transferExtension.balances(context.accounts[0].address);
 
             expect(balanceBefore).to.equal(0);
 
@@ -483,9 +463,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               data: transferFunctionSignature,
             });
 
-            const balanceAfter = await transferExtension.callStatic.balances(
-              context.accounts[0].address,
-            );
+            const balanceAfter = await transferExtension.balances(context.accounts[0].address);
 
             expect(balanceAfter).to.equal(amountTransferred);
           });
@@ -499,11 +477,11 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(buyFunctionExtensionHandlerKey, buyExtension.address);
+              .setData(buyFunctionExtensionHandlerKey, await buyExtension.getAddress());
           });
 
           it('should pass and receive the value sent within the contract', async () => {
-            const balanceBefore = await provider.getBalance(buyExtension.address);
+            const balanceBefore = await provider.getBalance(await buyExtension.getAddress());
 
             expect(balanceBefore).to.equal(0);
 
@@ -513,7 +491,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               data: buyFunctionSelector,
             });
 
-            const balanceAfter = await provider.getBalance(buyExtension.address);
+            const balanceAfter = await provider.getBalance(await buyExtension.getAddress());
 
             expect(balanceAfter).to.equal(100);
           });
@@ -529,7 +507,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(reenterAccountFunctionExtensionHandlerKey, reenterAccountExtension.address);
+              .setData(
+                reenterAccountFunctionExtensionHandlerKey,
+                await reenterAccountExtension.getAddress(),
+              );
           });
 
           describe('when reentering with a call to an extension that emits an event', () => {
@@ -565,7 +546,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
                 await context.contract
                   .connect(context.deployParams.owner)
-                  .setData(emitEventFunctionExtensionHandlerKey, emitEventExtension.address);
+                  .setData(
+                    emitEventFunctionExtensionHandlerKey,
+                    await emitEventExtension.getAddress(),
+                  );
               });
               it('should emit the event on 3rd extension called', async () => {
                 const reenterAccountFunctionSignature =
@@ -598,7 +582,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
               await context.contract
                 .connect(context.deployParams.owner)
-                .setData(supportsInterfaceFunctionExtensionHandlerKey, erc165Extension.address);
+                .setData(
+                  supportsInterfaceFunctionExtensionHandlerKey,
+                  await erc165Extension.getAddress(),
+                );
             });
 
             it('should return true', async () => {

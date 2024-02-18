@@ -2,7 +2,10 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { LSP6TestContext } from '../utils/context';
 import { LSP6KeyManagerInit, LSP6KeyManagerInit__factory } from '../../types';
-import { UniversalProfileInit__factory } from '@lukso/universalprofile-contracts/types';
+import {
+  UniversalProfileInit,
+  UniversalProfileInit__factory,
+} from '@lukso/universalprofile-contracts/types';
 import { deployProxy } from '../utils/fixtures';
 import { shouldBehaveLikeLSP6, shouldInitializeLikeLSP6 } from './LSP6KeyManager.behaviour';
 
@@ -14,12 +17,12 @@ describe('LSP6KeyManager with proxy', () => {
     const mainController = accounts[0];
 
     const baseUP = await new UniversalProfileInit__factory(mainController).deploy();
-    const upProxy = await deployProxy(baseUP.address, mainController);
-    const universalProfile = await baseUP.attach(upProxy);
+    const upProxy = await deployProxy(baseUP.target as string, mainController);
+    const universalProfile = baseUP.attach(upProxy) as UniversalProfileInit;
 
     const baseKM = await new LSP6KeyManagerInit__factory(mainController).deploy();
     const kmProxy = await deployProxy(await baseKM.getAddress(), mainController);
-    const keyManager = (await baseKM.attach(kmProxy)) as unknown as LSP6KeyManagerInit;
+    const keyManager = baseKM.attach(kmProxy) as unknown as LSP6KeyManagerInit;
 
     return { accounts, mainController, universalProfile, keyManager, initialFunding };
   };

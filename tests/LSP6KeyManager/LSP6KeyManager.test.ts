@@ -26,7 +26,7 @@ describe('LSP6KeyManager with constructor', () => {
     );
 
     const keyManager = await new LSP6KeyManager__factory(mainController).deploy(
-      universalProfile.address,
+      universalProfile.target,
     );
 
     return { accounts, mainController, universalProfile, keyManager, initialFunding };
@@ -52,7 +52,7 @@ describe('LSP6KeyManager with constructor', () => {
       );
       const keyManagerInternalTester = await new KeyManagerInternalTester__factory(
         mainController,
-      ).deploy(universalProfile.address);
+      ).deploy(universalProfile.target);
 
       return { mainController, accounts, universalProfile, keyManagerInternalTester };
     });

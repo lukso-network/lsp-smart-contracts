@@ -36,7 +36,7 @@ const buildContext = async () => {
     true,
   );
 
-  const keyManager = await new LSP6KeyManager__factory(accounts[0]).deploy(lsp7.address);
+  const keyManager = await new LSP6KeyManager__factory(accounts[0]).deploy(lsp7.target);
 
   const keys = [
     ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
@@ -47,7 +47,7 @@ const buildContext = async () => {
   const values = [ARRAY_LENGTH.ONE, accounts[0].address, ALL_PERMISSIONS];
 
   await lsp7.connect(accounts[0]).setDataBatch(keys, values);
-  await lsp7.connect(accounts[0]).transferOwnership(keyManager.address);
+  await lsp7.connect(accounts[0]).transferOwnership(await keyManager.getAddress());
 
   return {
     accounts,

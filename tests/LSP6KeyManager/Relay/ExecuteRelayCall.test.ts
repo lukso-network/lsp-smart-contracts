@@ -343,7 +343,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               .withArgs(
                 context.accounts[1].address,
                 signedMessageParams.msgValue,
-                context.universalProfile.interface.getSighash('execute'),
+                context.universalProfile.interface.getFunction('execute').selector,
               );
 
             const balanceOfUpAfter = await provider.getBalance(
@@ -1193,9 +1193,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
               channelId,
             );
 
-            const getDynamicArrayOf2NumbersSig = targetContract.interface.getSighash(
+            const getDynamicArrayOf2NumbersSig = targetContract.interface.getFunction(
               'getDynamicArrayOf2Numbers',
-            );
+            ).selector;
 
             const erc725xExecutePayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
@@ -1251,8 +1251,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
             channelId,
           );
 
-          const getNameSelector = targetContract.interface.getSighash('getName');
-          const getNumberSelector = targetContract.interface.getSighash('getNumber');
+          const getNameSelector = targetContract.interface.getFunction('getName').selector;
+          const getNumberSelector = targetContract.interface.getFunction('getNumber').selector;
 
           const erc725xExecuteBatchPayload = context.universalProfile.interface.encodeFunctionData(
             'executeBatch',
@@ -1354,7 +1354,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           await expect(tx).to.emit(context.keyManager, 'PermissionsVerified').withArgs(
             context.mainController.address, // signer
             0, // value
-            context.universalProfile.interface.getSighash('transferOwnership'), // selector
+            context.universalProfile.interface.getFunction('transferOwnership').selector, // selector
           );
         });
       });
@@ -1504,9 +1504,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
             combinePermissions(PERMISSIONS.CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
             combineAllowedCalls(
               [CALLTYPE.CALL],
-              [tokenContract.address],
+              [tokenContract.target as string],
               [INTERFACE_IDS.LSP7DigitalAsset],
-              [tokenContract.interface.getSighash('mint')],
+              [tokenContract.interface.getFunction('mint').selector],
             ),
           ],
         ],
@@ -1532,7 +1532,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
       ]);
       const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
-        tokenContract.address,
+        tokenContract.target,
         0,
         minterMintPayload,
       ]);
@@ -1877,11 +1877,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         const ownerNonce = await context.keyManager.getNonce(context.mainController.address, 0);
 
-        const nonces = [
-          ethers.toBeHex(ownerNonce),
-          ethers.toBeHex(ownerNonce + BigInt(1)),
-          ethers.toBeHex(ownerNonce + BigInt(2)),
-        ];
+        const nonces = [ownerNonce, ownerNonce + BigInt(1), ownerNonce + BigInt(2)];
 
         const validityTimestamps = 0;
 

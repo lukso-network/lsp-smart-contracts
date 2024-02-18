@@ -2,7 +2,7 @@ import { ethers } from 'hardhat';
 
 // types
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { BigNumber, BytesLike, Wallet } from 'ethers';
+import { BytesLike, Wallet } from 'ethers';
 import {
   LSP20ReentrantContract__factory,
   LSP20ReentrantContract,

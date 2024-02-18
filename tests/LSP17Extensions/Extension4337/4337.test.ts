@@ -1,9 +1,9 @@
 import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { Signer } from 'ethers';
 import { EntryPoint__factory, EntryPoint } from '@account-abstraction/contracts';
 
-import { BytesLike, parseEther } from 'ethers/lib/utils';
+import { BytesLike, parseEther } from 'ethers';
 import { expect } from 'chai';
 import {
   LSP6KeyManager,
@@ -48,12 +48,14 @@ describe('4337', function () {
       await deployer.getAddress(),
       { value: parseEther('1') },
     );
-    universalProfileAddress = universalProfile.address;
+    universalProfileAddress = await universalProfile.getAddress();
 
-    keyManager = await new LSP6KeyManager__factory(deployer).deploy(universalProfile.address);
+    keyManager = await new LSP6KeyManager__factory(deployer).deploy(
+      await universalProfile.getAddress(),
+    );
 
     // transfer ownership to keyManager
-    await universalProfile.transferOwnership(keyManager.address);
+    await universalProfile.transferOwnership(await keyManager.getAddress());
 
     const dataKey =
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + deployerAddress.slice(2);
@@ -62,19 +64,22 @@ describe('4337', function () {
 
     const acceptOwnershipBytes = universalProfile.interface.encodeFunctionData('acceptOwnership');
     await keyManager.execute(acceptOwnershipBytes);
-    expect(await universalProfile.owner()).to.eq(keyManager.address);
+    expect(await universalProfile.owner()).to.eq(await keyManager.getAddress());
 
     // deploy entrypoint
     entryPoint = await deployEntryPoint();
-    expect(await isDeployed(entryPoint.address)).to.eq(true);
+    expect(await isDeployed(await entryPoint.getAddress())).to.eq(true);
 
     // give all permissions to entrypoint
     const dataKeyEntryPointPermissions =
-      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + entryPoint.address.slice(2);
+      ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+      (await entryPoint.getAddress()).slice(2);
     await universalProfile.setData(dataKeyEntryPointPermissions, ALL_PERMISSIONS);
 
     // deploy extension and attach it to universalProfile
-    const extension4337 = await new Extension4337__factory(deployer).deploy(entryPoint.address);
+    const extension4337 = await new Extension4337__factory(deployer).deploy(
+      await entryPoint.getAddress(),
+    );
     const validateUserOpSigHash = extension4337.interface.getSighash('validateUserOp');
 
     const extensionDataKey =
@@ -107,7 +112,7 @@ describe('4337', function () {
     // execute calldata
     transferCallData = universalProfile.interface.encodeFunctionData('execute', [
       OPERATION_TYPES.CALL,
-      ethers.constants.AddressZero,
+      ethers.ZeroAddress,
       amountToTransfer,
       '0x1234',
     ]);
@@ -118,7 +123,7 @@ describe('4337', function () {
   });
 
   it('should pass', async function () {
-    const addressZeroBalanceBefore = await getBalance(ethers.constants.AddressZero);
+    const addressZeroBalanceBefore = await getBalance(ethers.ZeroAddress);
 
     const userOperation = await fillAndSign(
       {
@@ -131,7 +136,7 @@ describe('4337', function () {
 
     await entryPoint.handleOps([userOperation], bundler.address);
 
-    const addressZeroBalanceAfter = await getBalance(ethers.constants.AddressZero);
+    const addressZeroBalanceAfter = await getBalance(ethers.ZeroAddress);
 
     expect(addressZeroBalanceAfter - addressZeroBalanceBefore).to.eq(amountToTransfer);
   });

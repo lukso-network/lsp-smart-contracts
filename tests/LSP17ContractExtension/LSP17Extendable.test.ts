@@ -18,23 +18,23 @@ describe('LSP17Extendable - Basic Implementation', () => {
   let errorsExtension: RevertErrorsTestExtension;
 
   const selectorWithExtensionAndNoTransferValue =
-    EmitEventExtension__factory.createInterface().getSighash('emitEvent');
+    EmitEventExtension__factory.createInterface().getFunction('emitEvent').selector;
   const selectorWithNoExtension = '0xdeadbeef';
 
   // selectors to test that errors are bubbled up to the contract
   const revertErrorsExtensionInterface = RevertErrorsTestExtension__factory.createInterface();
 
   const selectorRevertCustomError =
-    revertErrorsExtensionInterface.getSighash('revertWithCustomError');
+    revertErrorsExtensionInterface.getFunction('revertWithCustomError').selector;
 
   const selectorRevertErrorString =
-    revertErrorsExtensionInterface.getSighash('revertWithErrorString');
+    revertErrorsExtensionInterface.getFunction('revertWithErrorString').selector;
 
   const selectorRevertPanicError =
-    revertErrorsExtensionInterface.getSighash('revertWithPanicError');
+    revertErrorsExtensionInterface.getFunction('revertWithPanicError').selector;
 
   const selectorRevertNoErrorData =
-    revertErrorsExtensionInterface.getSighash('revertWithNoErrorData');
+    revertErrorsExtensionInterface.getFunction('revertWithNoErrorData').selector;
 
   before('setup', async () => {
     accounts = await ethers.getSigners();
@@ -45,28 +45,28 @@ describe('LSP17Extendable - Basic Implementation', () => {
 
     await lsp17Implementation.setExtension(
       selectorWithExtensionAndNoTransferValue,
-      exampleExtension.address,
+      await exampleExtension.getAddress(),
       false,
     );
 
     await lsp17Implementation.setExtension(
       selectorRevertCustomError,
-      errorsExtension.address,
+      await errorsExtension.getAddress(),
       false,
     );
     await lsp17Implementation.setExtension(
       selectorRevertErrorString,
-      errorsExtension.address,
+      await errorsExtension.getAddress(),
       false,
     );
     await lsp17Implementation.setExtension(
       selectorRevertPanicError,
-      errorsExtension.address,
+      await errorsExtension.getAddress(),
       false,
     );
     await lsp17Implementation.setExtension(
       selectorRevertNoErrorData,
-      errorsExtension.address,
+      await errorsExtension.getAddress(),
       false,
     );
   });
@@ -81,7 +81,7 @@ describe('LSP17Extendable - Basic Implementation', () => {
     it('should revert with error `NoExtensionFoundForFunctionSelector', async () => {
       await expect(
         accounts[0].sendTransaction({
-          to: lsp17Implementation.address,
+          to: await lsp17Implementation.getAddress(),
           data: selectorWithNoExtension,
         }),
       ).to.be.revertedWithCustomError(lsp17Implementation, 'NoExtensionFoundForFunctionSelector');
@@ -93,7 +93,7 @@ describe('LSP17Extendable - Basic Implementation', () => {
       it('should pass and not revert', async () => {
         await expect(
           accounts[0].sendTransaction({
-            to: lsp17Implementation.address,
+            to: await lsp17Implementation.getAddress(),
             data: selectorWithExtensionAndNoTransferValue,
           }),
         ).to.emit(exampleExtension, 'EventEmittedInExtension');
@@ -108,7 +108,7 @@ describe('LSP17Extendable - Basic Implementation', () => {
           expect(anotherStorageBefore).to.equal('0x');
 
           await accounts[0].sendTransaction({
-            to: lsp17Implementation.address,
+            to: await lsp17Implementation.getAddress(),
             data: selectorWithExtensionAndNoTransferValue,
           });
 
@@ -125,18 +125,18 @@ describe('LSP17Extendable - Basic Implementation', () => {
       it('should bubble up custom errors', async () => {
         await expect(
           accounts[0].sendTransaction({
-            to: lsp17Implementation.address,
+            to: await lsp17Implementation.getAddress(),
             data: selectorRevertCustomError,
           }),
         )
           .to.be.revertedWithCustomError(errorsExtension, 'SomeCustomError')
-          .withArgs(lsp17Implementation.address);
+          .withArgs(await lsp17Implementation.getAddress());
       });
 
       it('should bubble up revert errors string', async () => {
         await expect(
           accounts[0].sendTransaction({
-            to: lsp17Implementation.address,
+            to: await lsp17Implementation.getAddress(),
             data: selectorRevertErrorString,
           }),
         ).to.be.revertedWith('some error message');
@@ -145,7 +145,7 @@ describe('LSP17Extendable - Basic Implementation', () => {
       it('should bubble up Panic type errors with their code', async () => {
         await expect(
           accounts[0].sendTransaction({
-            to: lsp17Implementation.address,
+            to: await lsp17Implementation.getAddress(),
             data: selectorRevertPanicError,
           }),
         ).to.be.revertedWithPanic('0x11' || 17);
@@ -154,7 +154,7 @@ describe('LSP17Extendable - Basic Implementation', () => {
       it('should not bubble up anything with empty error data (`revert()`)', async () => {
         await expect(
           accounts[0].sendTransaction({
-            to: lsp17Implementation.address,
+            to: await lsp17Implementation.getAddress(),
             data: selectorRevertNoErrorData,
           }),
         ).to.be.reverted;

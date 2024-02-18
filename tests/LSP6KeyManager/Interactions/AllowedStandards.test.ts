@@ -199,18 +199,18 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
     describe('when trying to interact an ERC725Account (LSP0)', () => {
       it('should allow to transfer LYX', async () => {
-        const initialAccountBalance = await provider.getBalance(otherUniversalProfile.address);
+        const initialAccountBalance = await provider.getBalance(otherUniversalProfile.target);
 
         const transferLyxPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
-          [OPERATION_TYPES.CALL, otherUniversalProfile.address, ethers.parseEther('1'), '0x'],
+          [OPERATION_TYPES.CALL, otherUniversalProfile.target, ethers.parseEther('1'), '0x'],
         );
 
         await context.keyManager
           .connect(addressCanInteractOnlyWithERC1271)
           .execute(transferLyxPayload);
 
-        const newAccountBalance = await provider.getBalance(otherUniversalProfile.address);
+        const newAccountBalance = await provider.getBalance(otherUniversalProfile.target);
         expect(newAccountBalance).to.be.gt(initialAccountBalance);
       });
     });
@@ -271,7 +271,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
       it('should fail when trying to transfer LYX', async () => {
         const transferLyxPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
-          [OPERATION_TYPES.CALL, otherUniversalProfile.address, ethers.parseEther('1'), '0x'],
+          [OPERATION_TYPES.CALL, otherUniversalProfile.target, ethers.parseEther('1'), '0x'],
         );
 
         await expect(
@@ -280,7 +280,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
           .withArgs(
             addressCanInteractOnlyWithLSP7.address,
-            otherUniversalProfile.address,
+            otherUniversalProfile.target,
             '0x00000000',
           );
       });
@@ -370,7 +370,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          lsp7TokenB.address,
+          lsp7TokenB.target,
           0,
           transferPayload,
         ]);
@@ -397,7 +397,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          lsp7TokenC.address,
+          lsp7TokenC.target,
           0,
           transferPayload,
         ]);

@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { ethers, network } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { FakeContract, smock } from '@defi-wonderland/smock';
 
 // types
 import {
@@ -20,6 +19,8 @@ import {
   ILSP20CallVerifier__factory,
   OwnerWithURD,
   OwnerWithURD__factory,
+  FirstCallReturnMagicValue__factory,
+  FirstCallReturnMagicValue,
 } from '../../types';
 import {
   UniversalProfile,
@@ -421,17 +422,16 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe("that implements verifyCall that returns a valid success value but doesn't invoke verifyCallResult", () => {
-        let firstCallReturnSuccessValueContract: FakeContract;
+        let firstCallReturnSuccessValueContract: FirstCallReturnMagicValue;
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {
-          firstCallReturnSuccessValueContract = await smock.fake(ILSP20CallVerifier__factory.abi);
-          firstCallReturnSuccessValueContract.lsp20VerifyCall.returns(
-            LSP20_SUCCESS_VALUES.VERIFY_CALL.NO_POST_VERIFICATION,
-          );
+          firstCallReturnSuccessValueContract = await new FirstCallReturnMagicValue__factory(
+            context.accounts[0],
+          ).deploy();
 
           newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
-            firstCallReturnSuccessValueContract.address,
+            firstCallReturnSuccessValueContract.target,
           );
         });
 
@@ -449,7 +449,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe('that implements verifyCall that returns a valid success value with additional data after the first 32 bytes', () => {
-        let firstCallReturnSuccessValueContract: FakeContract;
+        let firstCallReturnSuccessValueContract: FirstCallReturnMagicValue;
         let newUniversalProfile: UniversalProfile;
 
         before(async () => {

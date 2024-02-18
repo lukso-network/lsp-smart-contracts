@@ -127,6 +127,6 @@ describe('LSP7DigitalAsset with constructor', () => {
   describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP4DigitalAssetMetadata(buildLSP4DigitalAssetMetadataTestContext);
     shouldBehaveLikeLSP7(buildTestContext);
-    // shouldBehaveLikeLSP17(buildLSP17TestContext);
+    shouldBehaveLikeLSP17(buildLSP17TestContext);
   });
 });

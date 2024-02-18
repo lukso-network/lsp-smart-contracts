@@ -327,7 +327,7 @@ const generateAdditionalMethodInfo = (contract: string, code: string) => {
   ) {
     infoBlock +=
       `- Function signature: \`${formatedCode}\`\n` +
-      `- Function selector: \`${ethers.utils
+      `- Function selector: \`${ethers
         .keccak256(ethers.toUtf8Bytes(formatedCode))
         .substring(0, 10)}\``;
   }

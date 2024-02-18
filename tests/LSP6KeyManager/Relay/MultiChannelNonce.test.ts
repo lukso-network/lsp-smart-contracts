@@ -57,7 +57,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
 
   describe('when calling `getNonce(...)` with a channel ID greater than 2 ** 128', () => {
     it('should revert', async () => {
-      const channelId = ethers.toBigInt(2).pow(129);
+      const channelId = ethers.toBigInt(2 ** 129);
 
       await expect(context.keyManager.getNonce(signer.address, channelId)).to.be.revertedWithPanic;
     });
@@ -133,7 +133,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         );
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(latestNonce.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(latestNonce+ BigInt(1)); // ensure the nonce incremented
       });
     });
   });
@@ -193,7 +193,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const nonceAfter = await context.keyManager.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(nonceBefore + BigInt(1)); // ensure the nonce incremented
       });
 
       it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
@@ -244,7 +244,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const nonceAfter = await context.keyManager.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(nonceBefore + BigInt(1)); // ensure the nonce incremented
       });
     });
 
@@ -300,7 +300,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const nonceAfter = await context.keyManager.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(nonceBefore + BigInt(1)); // ensure the nonce incremented
       });
 
       it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
@@ -351,7 +351,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const nonceAfter = await context.keyManager.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(nonceBefore + BigInt(1)); // ensure the nonce incremented
       });
     });
 
@@ -407,7 +407,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const nonceAfter = await context.keyManager.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(nonceBefore + BigInt(1)); // ensure the nonce incremented
       });
 
       it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
@@ -458,7 +458,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const nonceAfter = await context.keyManager.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(nonceBefore + BigInt(1)); // ensure the nonce incremented
       });
     });
 
@@ -513,7 +513,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const nonceAfter = await context.keyManager.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(nonceBefore + BigInt(1)); // ensure the nonce incremented
       });
     });
   });

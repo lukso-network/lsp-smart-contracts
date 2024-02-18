@@ -408,7 +408,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          lsp8Contract.address,
+          lsp8Contract.target,
           0,
           authorizeOperatorPayload,
         ]);
@@ -419,7 +419,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
           .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
           .withArgs(
             await addressCanCallOnlyTransferOnLSP8.getAddress(),
-            lsp8Contract.address,
+            lsp8Contract.target,
             lsp8Contract.interface.getFunction('authorizeOperator').selector,
           );
       });
@@ -437,7 +437,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          lsp8Contract.address,
+          lsp8Contract.target,
           0,
           transferPayload,
         ]);
@@ -463,7 +463,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
-            lsp7Contract.address,
+            lsp7Contract.target,
             0,
             mintPayload,
           ]);
@@ -496,7 +496,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
-            lsp7Contract.address,
+            lsp7Contract.target,
             0,
             transferPayload,
           ]);
@@ -508,11 +508,11 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
           // CHECK that UP token balance has decreased
           expect(
             await lsp7Contract.balanceOf(await context.universalProfile.getAddress()),
-          ).to.equal(previousUPTokenBalance.sub(amount));
+          ).to.equal(previousUPTokenBalance - BigInt(amount));
 
           // CHECK that recipient token balance has increased
           expect(await lsp7Contract.balanceOf(recipient)).to.equal(
-            previousRecipientTokenBalance.add(amount),
+            previousRecipientTokenBalance + BigInt(amount),
           );
         });
 
@@ -527,7 +527,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
-            lsp7Contract.address,
+            lsp7Contract.target,
             0,
             authorizeOperatorPayload,
           ]);
@@ -553,7 +553,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           const payload = context.universalProfile.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
-            lsp7Contract.address,
+            lsp7Contract.target,
             0,
             setDataPayload,
           ]);
@@ -562,7 +562,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
             .connect(addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8)
             .execute(payload);
 
-          expect(await lsp7Contract.callStatic.getData(key)).to.equal(value);
+          expect(await lsp7Contract.getData(key)).to.equal(value);
         });
       });
 
@@ -580,7 +580,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
-            lsp8Contract.address,
+            lsp8Contract.target,
             0,
             transferPayload,
           ]);
@@ -593,7 +593,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
             .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
             .withArgs(
               await addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.getAddress(),
-              lsp8Contract.address,
+              lsp8Contract.target,
               lsp8Contract.interface.getFunction('transfer').selector,
             );
         });
@@ -611,7 +611,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
-            lsp8Contract.address,
+            lsp8Contract.target,
             0,
             mintPayload,
           ]);
@@ -624,7 +624,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
             .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
             .withArgs(
               await addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.getAddress(),
-              lsp8Contract.address,
+              lsp8Contract.target,
               lsp8Contract.interface.getFunction('mint').selector,
             );
         });
@@ -639,7 +639,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
-            lsp8Contract.address,
+            lsp8Contract.target,
             0,
             authorizeOperatorPayload,
           ]);

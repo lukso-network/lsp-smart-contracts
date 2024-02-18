@@ -1,11 +1,11 @@
-import { arrayify, defaultAbiCoder, hexDataSlice, keccak256 } from 'ethers/lib/utils';
+import { arrayify, defaultAbiCoder, hexDataSlice, keccak256 } from 'ethers';
 import { BigNumber, Wallet } from 'ethers';
 import { AddressZero, callDataCost } from './utils';
 import { ecsign, toRpcSig, keccak256 as keccak256_buffer } from 'ethereumjs-util';
 import { Create2Factory } from './Create2Factory';
 import { EntryPoint } from '@account-abstraction/contracts';
 import { ethers } from 'ethers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import * as typ from './solidityTypes';
 
 export interface UserOperation {
@@ -196,7 +196,7 @@ export async function fillUserOp(
   if (op1.nonce == null) {
     if (provider == null) throw new Error('must have entryPoint to autofill nonce');
 
-    const signerKeyAsUint192 = ethers.BigNumber.from(signer.address).toHexString();
+    const signerKeyAsUint192 = ethers.toBigInt(signer.address).toHexString();
 
     try {
       op1.nonce = await entryPoint.getNonce(op1.sender, signerKeyAsUint192);

@@ -128,29 +128,29 @@ export const shouldBehaveLikeLSP7Mintable = (
     });
 
     it('should pass', async () => {
-      // const firstAmount = 50;
-      // const secondAmount = 150;
-      // const reentrantMintPayload = context.lsp7Mintable.interface.encodeFunctionData('mint', [
-      //   universalProfile.address,
-      //   firstAmount,
-      //   false,
-      //   '0x',
-      // ]);
-      // const mintPayload = context.lsp7Mintable.interface.encodeFunctionData('mint', [
-      //   universalProfile.address,
-      //   secondAmount,
-      //   false,
-      //   reentrantMintPayload,
-      // ]);
-      // const executePayload = universalProfile.interface.encodeFunctionData('execute', [
-      //   OPERATION_TYPES.CALL,
-      //   await context.lsp7Mintable.getAddress(),
-      //   0,
-      //   mintPayload,
-      // ]);
-      // await lsp6KeyManager.connect(context.accounts.profileOwner).execute(executePayload);
-      // const balanceOfUP = await context.lsp7Mintable.balanceOf(universalProfile.address);
-      // expect(balanceOfUP).to.equal(firstAmount + secondAmount);
+      const firstAmount = 50;
+      const secondAmount = 150;
+      const reentrantMintPayload = context.lsp7Mintable.interface.encodeFunctionData('mint', [
+        universalProfile.address,
+        firstAmount,
+        false,
+        '0x',
+      ]);
+      const mintPayload = context.lsp7Mintable.interface.encodeFunctionData('mint', [
+        universalProfile.address,
+        secondAmount,
+        false,
+        reentrantMintPayload,
+      ]);
+      const executePayload = universalProfile.interface.encodeFunctionData('execute', [
+        OPERATION_TYPES.CALL,
+        await context.lsp7Mintable.getAddress(),
+        0,
+        mintPayload,
+      ]);
+      await lsp6KeyManager.connect(context.accounts.profileOwner).execute(executePayload);
+      const balanceOfUP = await context.lsp7Mintable.balanceOf(universalProfile.address);
+      expect(balanceOfUP).to.equal(firstAmount + secondAmount);
     });
   });
 };

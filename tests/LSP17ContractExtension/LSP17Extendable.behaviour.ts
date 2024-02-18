@@ -210,7 +210,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
     describe('when calling method that exist', () => {
       describe('when calling the contract with transferOwnership Signature', () => {
         it('should pass and set the pending owner', async () => {
-          const pendingOwnerBefore = await context.contract.pendingOwner.staticCall();
+          const pendingOwnerBefore = await context.contract.pendingOwner();
           expect(pendingOwnerBefore).to.equal(ethers.ZeroAddress);
 
           const transferOwnershipPayload = context.contract.interface.encodeFunctionData(
@@ -223,7 +223,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
             data: transferOwnershipPayload,
           });
 
-          const pendingOwnerAfter = await context.contract.pendingOwner.staticCall();
+          const pendingOwnerAfter = await context.contract.pendingOwner();
 
           expect(pendingOwnerAfter).to.equal(context.accounts[2].address);
         });
@@ -494,9 +494,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               data: transferFunctionSignature,
             });
 
-            const balanceAfter = await transferExtension.balances.staticCall(
-              context.accounts[0].address,
-            );
+            const balanceAfter = await transferExtension.balances(context.accounts[0].address);
 
             expect(balanceAfter).to.equal(amountTransferred);
           });
@@ -558,9 +556,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
           });
 
           it('should pass and change the state accordingly', async () => {
-            const balanceBefore = await transferExtension.balances.staticCall(
-              context.accounts[0].address,
-            );
+            const balanceBefore = await transferExtension.balances(context.accounts[0].address);
 
             expect(balanceBefore).to.equal(0);
 
@@ -575,9 +571,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               data: transferFunctionSignature,
             });
 
-            const balanceAfter = await transferExtension.balances.staticCall(
-              context.accounts[0].address,
-            );
+            const balanceAfter = await transferExtension.balances(context.accounts[0].address);
 
             expect(balanceAfter).to.equal(amountTransferred);
           });

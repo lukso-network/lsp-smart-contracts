@@ -2,7 +2,6 @@ import { ethers } from 'hardhat';
 import { assert, expect } from 'chai';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import type { BytesLike, ContractTransactionResponse } from 'ethers';
-import type { TransactionResponse } from '@ethersproject/abstract-provider';
 
 // types
 import {

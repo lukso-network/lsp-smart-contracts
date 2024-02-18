@@ -117,7 +117,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         PERMISSIONS.TRANSFERVALUE,
         combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
-          [recipient.address, recipientUP.address],
+          [recipient.address, recipientUP.target],
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
@@ -128,7 +128,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
           ],
-          [recipient.address, recipientUP.address],
+          [recipient.address, recipientUP.target],
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
@@ -136,7 +136,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         PERMISSIONS.CALL,
         combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL],
-          [recipient.address, recipientUP.address],
+          [recipient.address, recipientUP.target],
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
@@ -148,7 +148,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
           ],
-          [recipient.address, recipientUP.address],
+          [recipient.address, recipientUP.target],
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
@@ -618,11 +618,11 @@ export const shouldBehaveLikePermissionTransferValue = (
           const initialBalanceUP = await provider.getBalance(
             await context.universalProfile.getAddress(),
           );
-          const initialBalanceRecipient = await provider.getBalance(recipientUP.address);
+          const initialBalanceRecipient = await provider.getBalance(recipientUP.target);
 
           const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
-            recipientUP.address,
+            recipientUP.target,
             ethers.parseEther('3'),
             data,
           ]);
@@ -636,7 +636,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           const newBalanceUP = await provider.getBalance(
             await context.universalProfile.getAddress(),
           );
-          const newBalanceRecipient = await provider.getBalance(recipientUP.address);
+          const newBalanceRecipient = await provider.getBalance(recipientUP.target);
 
           // verify that native token balances have not changed
           expect(newBalanceUP).to.equal(initialBalanceUP);
@@ -647,11 +647,11 @@ export const shouldBehaveLikePermissionTransferValue = (
           const initialBalanceUP = await provider.getBalance(
             await context.universalProfile.getAddress(),
           );
-          const initialBalanceRecipient = await provider.getBalance(recipientUP.address);
+          const initialBalanceRecipient = await provider.getBalance(recipientUP.target);
 
           const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
-            recipientUP.address,
+            recipientUP.target,
             ethers.parseEther('3'),
             data,
           ]);
@@ -663,7 +663,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           const newBalanceUP = await provider.getBalance(
             await context.universalProfile.getAddress(),
           );
-          const newBalanceRecipient = await provider.getBalance(recipientUP.address);
+          const newBalanceRecipient = await provider.getBalance(recipientUP.target);
 
           // verify that native token balances have not changed
           expect(newBalanceUP).to.equal(initialBalanceUP);
@@ -675,7 +675,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
           const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
-            recipientUP.address,
+            recipientUP.target,
             amount,
             data,
           ]);
@@ -685,7 +685,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             ['execute(bytes)'](transferPayload);
 
           expect(tx).to.changeEtherBalances(
-            [await context.universalProfile.getAddress(), recipientUP.address],
+            [await context.universalProfile.getAddress(), recipientUP.target],
             [`-${amount}`, amount],
           );
 
@@ -969,7 +969,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
           ],
           [
-            lsp7Token.address,
+            lsp7Token.target,
             await targetContract.getAddress(),
             lyxRecipientEOA,
             lyxRecipientContract.address,
@@ -985,7 +985,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         const newUP = await new UniversalProfile__factory(context.accounts[0]).deploy(
           context.accounts[0].address,
         );
-        recipientUPs.push(newUP.address);
+        recipientUPs.push(await newUP.getAddress());
       }
     });
 
@@ -1127,7 +1127,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
         const executePayload = universalProfileInterface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          newLSP7Token.address,
+          newLSP7Token.target,
           5,
           lsp7TransferPayload,
         ]);
@@ -1136,7 +1136,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
           .withArgs(
             caller.address,
-            newLSP7Token.address,
+            newLSP7Token.target,
             newLSP7Token.interface.getFunction('transfer').selector,
           );
       });
@@ -1161,7 +1161,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
         const executePayload = universalProfileInterface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          lsp7Token.address,
+          lsp7Token.target,
           0,
           lsp7TransferPayload,
         ]);
@@ -1174,9 +1174,9 @@ export const shouldBehaveLikePermissionTransferValue = (
 
         const lsp7RecipientBalanceAfter = await lsp7Token.balanceOf(recipient);
 
-        expect(lsp7SenderBalanceAfter).to.equal(lsp7SenderBalanceBefore.sub(tokenAmount));
+        expect(lsp7SenderBalanceAfter).to.equal(lsp7SenderBalanceBefore - tokenAmount);
 
-        expect(lsp7RecipientBalanceAfter).to.equal(lsp7RecipientBalanceBefore.add(tokenAmount));
+        expect(lsp7RecipientBalanceAfter).to.equal(lsp7RecipientBalanceBefore + tokenAmount);
       });
 
       it('should be allowed to interact with an allowed contract', async () => {
@@ -1396,7 +1396,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             await lsp7Token.mint(await context.universalProfile.getAddress(), 100, false, '0x');
 
             const tokenRecipient = context.accounts[5].address;
-            const tokenAmount = 10;
+            const tokenAmount = BigInt(10);
 
             const senderTokenBalanceBefore = await lsp7Token.balanceOf(
               await context.universalProfile.getAddress(),
@@ -1415,7 +1415,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
             const executePayload = universalProfileInterface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
-              lsp7Token.address,
+              lsp7Token.target,
               0,
               tokenTransferPayload,
             ]);
@@ -1426,10 +1426,8 @@ export const shouldBehaveLikePermissionTransferValue = (
               await context.universalProfile.getAddress(),
             );
             const recipientTokenBalanceAfter = await lsp7Token.balanceOf(tokenRecipient);
-            expect(senderTokenBalanceAfter).to.equal(senderTokenBalanceBefore.sub(tokenAmount));
-            expect(recipientTokenBalanceAfter).to.equal(
-              recipientTokenBalanceBefore.add(tokenAmount),
-            );
+            expect(senderTokenBalanceAfter).to.equal(senderTokenBalanceBefore - tokenAmount);
+            expect(recipientTokenBalanceAfter).to.equal(recipientTokenBalanceBefore + tokenAmount);
           });
         }
       });
@@ -1585,7 +1583,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             await lsp7Token.mint(await context.universalProfile.getAddress(), 100, false, '0x');
 
             const tokenRecipient = context.accounts[5].address;
-            const tokenAmount = 10;
+            const tokenAmount = BigInt(10);
 
             const senderTokenBalanceBefore = await lsp7Token.balanceOf(
               await context.universalProfile.getAddress(),
@@ -1604,7 +1602,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
             const executePayload = universalProfileInterface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
-              lsp7Token.address,
+              lsp7Token.target,
               0,
               tokenTransferPayload,
             ]);
@@ -1615,10 +1613,8 @@ export const shouldBehaveLikePermissionTransferValue = (
               await context.universalProfile.getAddress(),
             );
             const recipientTokenBalanceAfter = await lsp7Token.balanceOf(tokenRecipient);
-            expect(senderTokenBalanceAfter).to.equal(senderTokenBalanceBefore.sub(tokenAmount));
-            expect(recipientTokenBalanceAfter).to.equal(
-              recipientTokenBalanceBefore.add(tokenAmount),
-            );
+            expect(senderTokenBalanceAfter).to.equal(senderTokenBalanceBefore - tokenAmount);
+            expect(recipientTokenBalanceAfter).to.equal(recipientTokenBalanceBefore + tokenAmount);
           });
         }
       });

@@ -49,7 +49,7 @@ describe('LSP25MultiChannelNonce', () => {
         payload: '0xcafecafe',
       };
 
-      const encodedMessage = ethers.utils.solidityPack(
+      const encodedMessage = ethers.solidityPacked(
         ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
         [
           LSP25_VERSION,
@@ -62,7 +62,7 @@ describe('LSP25MultiChannelNonce', () => {
       );
 
       const { signature } = await eip191Signer.signDataWithIntendedValidator(
-        contract.address,
+        contract.target as string,
         encodedMessage,
         signerPrivateKey,
       );
@@ -87,7 +87,7 @@ describe('LSP25MultiChannelNonce', () => {
         payload: '0xcafecafe',
       };
 
-      const encodedMessage = ethers.utils.solidityPack(
+      const encodedMessage = ethers.solidityPacked(
         ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
         [
           12345, // incorrect version number
@@ -100,7 +100,7 @@ describe('LSP25MultiChannelNonce', () => {
       );
 
       const { signature } = await eip191Signer.signDataWithIntendedValidator(
-        contract.address,
+        contract.target as string,
         encodedMessage,
         signerPrivateKey,
       );
@@ -123,7 +123,7 @@ describe('LSP25MultiChannelNonce', () => {
         payload: '0xcafecafe',
       };
 
-      const encodedMessage = ethers.utils.solidityPack(
+      const encodedMessage = ethers.solidityPacked(
         ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
         [
           12345, // incorrect version number
@@ -136,7 +136,7 @@ describe('LSP25MultiChannelNonce', () => {
       );
 
       const { signature } = await eip191Signer.signDataWithIntendedValidator(
-        contract.address,
+        contract.target as string,
         encodedMessage,
         signerPrivateKey,
       );

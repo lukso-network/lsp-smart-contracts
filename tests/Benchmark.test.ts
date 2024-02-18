@@ -33,7 +33,6 @@ import {
   combinePermissions,
   encodeCompactBytesArray,
 } from './utils/helpers';
-import { BigNumber } from 'ethers';
 
 export type UniversalProfileContext = {
   accounts: SignerWithAddress[];

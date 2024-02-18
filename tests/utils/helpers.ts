@@ -4,7 +4,7 @@ const { ethers } = hre;
 import { LSP6KeyManager } from '../../types/index.js';
 
 // constants
-import { LSP25_VERSION } from '../../constants.ts';
+import { LSP25_VERSION } from '../../constants';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 export const abiCoder = ethers.AbiCoder.defaultAbiCoder();
@@ -138,17 +138,18 @@ export function combineAllowedCalls(
 export function createValidityTimestamps(
   startingTimestamp: number,
   endingTimestamp: number,
-): BytesLike {
-  return ethers.concat([
+): bigint {
+  const concatenatedHex = ethers.concat([
     ethers.zeroPadValue(ethers.toBeHex(startingTimestamp), 16),
     ethers.zeroPadValue(ethers.toBeHex(endingTimestamp), 16),
   ]);
+  return ethers.toBigInt(concatenatedHex);
 }
 
 export async function signLSP6ExecuteRelayCall(
   _keyManager: LSP6KeyManager,
-  _signerNonce: string,
-  _signerValidityTimestamps: BytesLike | number,
+  _signerNonce: string | bigint,
+  _signerValidityTimestamps: BytesLike | number | bigint,
   _signerPrivateKey: string,
   _msgValue: number | bigint | string,
   _payload: string,

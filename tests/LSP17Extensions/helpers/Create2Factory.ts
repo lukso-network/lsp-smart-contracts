@@ -1,6 +1,6 @@
 // from: https://github.com/Arachnid/deterministic-deployment-proxy
-import { BigNumber, BigNumberish, ethers, Signer } from 'ethers';
-import { arrayify, hexConcat, hexlify, hexZeroPad, keccak256 } from 'ethers/lib/utils';
+import { BigNumberish, JsonRpcProvider, Signer, toBeHex } from 'ethers';
+import { getBytes, concat, zeroPadValue, keccak256 } from 'ethers';
 import { Provider } from '@ethersproject/providers';
 import { TransactionRequest } from '@ethersproject/abstract-provider';
 
@@ -20,7 +20,7 @@ export class Create2Factory {
 
   constructor(
     readonly provider: Provider,
-    readonly signer = (provider as ethers.providers.JsonRpcProvider).getSigner(),
+    readonly signer = (provider as unknown as JsonRpcProvider).getSigner().then(),
   ) {}
 
   /**
@@ -56,7 +56,7 @@ export class Create2Factory {
 
     if (gasLimit === undefined) {
       gasLimit =
-        arrayify(initCode)
+        getBytes(initCode)
           .map((x) => (x === 0 ? 4 : 16))
           .reduce((sum, x) => sum + x) +
         (200 * initCode.length) / 2 + // actual is usually somewhat smaller (only deposited code, not entire constructor)
@@ -77,8 +77,8 @@ export class Create2Factory {
   }
 
   getDeployTransactionCallData(initCode: string, salt: BigNumberish = 0): string {
-    const saltBytes32 = hexZeroPad(hexlify(salt), 32);
-    return hexConcat([saltBytes32, initCode]);
+    const saltBytes32 = zeroPadValue(toBeHex(salt), 32);
+    return concat([saltBytes32, initCode]);
   }
 
   /**
@@ -88,11 +88,11 @@ export class Create2Factory {
    * @param salt
    */
   static getDeployedAddress(initCode: string, salt: BigNumberish): string {
-    const saltBytes32 = hexZeroPad(hexlify(salt), 32);
+    const saltBytes32 = zeroPadValue(toBeHex(salt), 32);
     return (
       '0x' +
       keccak256(
-        hexConcat(['0xff', Create2Factory.contractAddress, saltBytes32, keccak256(initCode)]),
+        concat(['0xff', Create2Factory.contractAddress, saltBytes32, keccak256(initCode)]),
       ).slice(-40)
     );
   }
@@ -104,7 +104,7 @@ export class Create2Factory {
     }
     await (signer ?? this.signer).sendTransaction({
       to: Create2Factory.factoryDeployer,
-      value: BigNumber.from(Create2Factory.factoryDeploymentFee),
+      value: BigInt(Create2Factory.factoryDeploymentFee),
     });
     await this.provider.sendTransaction(Create2Factory.factoryTx);
     if (!(await this._isFactoryDeployed())) {
