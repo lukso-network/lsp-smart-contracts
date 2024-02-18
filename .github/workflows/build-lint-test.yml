@@ -45,9 +45,11 @@ jobs:
           path: |
             artifacts
             node_modules
+            dist
             types
             contracts.ts
             packages/**/types
+            packages/**/dist
           key: ${{ github.run_id }}
 
       - name: 📚 generate ABI docs

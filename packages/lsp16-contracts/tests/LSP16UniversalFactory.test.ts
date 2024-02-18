@@ -1,6 +1,6 @@
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { FakeContract, smock } from '@defi-wonderland/smock';
 
 import {
   LSP16UniversalFactory,
@@ -18,14 +18,13 @@ import {
   FallbackInitializer__factory,
   ContractNoConstructor__factory,
   ContractNoConstructor,
+  FallbackContract,
+  FallbackContract__factory,
 } from '../types';
 
 import web3 from 'web3';
 
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-
-const provider = ethers.provider;
-const AddressOffset = '000000000000000000000000';
+import { provider, AddressOffset } from '../../../tests/utils/helpers';
 
 const AccountBytecode = Account__factory.bytecode;
 const NonPayableConstructorBytecode = NonPayableContract__factory.bytecode;
@@ -65,7 +64,7 @@ describe('UniversalFactory contract', () => {
     let accountBaseContract: AccountInit;
     let contractNoConstructor: ContractNoConstructor;
     let payableContract: PayableContract;
-    let fallbackContract: FakeContract;
+    let fallbackContract: FallbackContract;
     let implementationTester: ImplementationTester;
     let fallbackInitializer: FallbackInitializer;
 
@@ -84,13 +83,7 @@ describe('UniversalFactory contract', () => {
 
       payableContract = await new PayableContract__factory(context.accounts.random).deploy();
 
-      fallbackContract = await smock.fake([
-        {
-          stateMutability: 'payable',
-          type: 'fallback',
-        },
-      ]);
-      fallbackContract.fallback.returns();
+      fallbackContract = await new FallbackContract__factory(context.accounts.random).deploy();
 
       implementationTester = await new ImplementationTester__factory(
         context.accounts.random,
