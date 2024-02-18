@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { FakeContract, smock } from '@defi-wonderland/smock';
 
 import { LSP7Mintable, LSP7Mintable__factory } from '@lukso/lsp7-contracts/types';
 import {
@@ -12,6 +11,8 @@ import {
   TargetPayableContract__factory,
   GraffitiEventExtension__factory,
   GraffitiEventExtension,
+  FallbackContract,
+  FallbackContract__factory,
 } from '../../../../types';
 import {
   UniversalProfile__factory,
@@ -106,7 +107,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         PERMISSIONS.TRANSFERVALUE,
         combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
-          [recipient.address, recipientUP.address],
+          [recipient.address, recipientUP.target],
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
@@ -116,7 +117,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
           ],
-          [recipient.address, recipientUP.address],
+          [recipient.address, recipientUP.target],
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
@@ -335,12 +336,12 @@ export const shouldBehaveLikePermissionTransferValue = (
           const initialBalanceUP = await provider.getBalance(
             await context.universalProfile.getAddress(),
           );
-          const initialBalanceRecipient = await provider.getBalance(recipientUP.address);
+          const initialBalanceRecipient = await provider.getBalance(recipientUP.target);
 
           await expect(
             context.universalProfile
               .connect(canTransferValue)
-              .execute(OPERATION_TYPES.CALL, recipientUP.address, ethers.parseEther('3'), data),
+              .execute(OPERATION_TYPES.CALL, recipientUP.target, ethers.parseEther('3'), data),
           )
             .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
             .withArgs(canTransferValue.address, 'CALL');
@@ -348,7 +349,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           const newBalanceUP = await provider.getBalance(
             await context.universalProfile.getAddress(),
           );
-          const newBalanceRecipient = await provider.getBalance(recipientUP.address);
+          const newBalanceRecipient = await provider.getBalance(recipientUP.target);
 
           // verify that native token balances have not changed
           expect(newBalanceUP).to.equal(initialBalanceUP);
@@ -360,10 +361,10 @@ export const shouldBehaveLikePermissionTransferValue = (
 
           const tx = await context.universalProfile
             .connect(canTransferValueAndCall)
-            .execute(OPERATION_TYPES.CALL, recipientUP.address, amount, data);
+            .execute(OPERATION_TYPES.CALL, recipientUP.target, amount, data);
 
           expect(tx).to.changeEtherBalances(
-            [await context.universalProfile.getAddress(), recipientUP.address],
+            [await context.universalProfile.getAddress(), recipientUP.target],
             [`-${amount}`, amount],
           );
 
@@ -581,7 +582,7 @@ export const shouldBehaveLikePermissionTransferValue = (
     let targetContract: TargetPayableContract;
 
     let lyxRecipientEOA: string;
-    let lyxRecipientContract: FakeContract;
+    let lyxRecipientContract: FallbackContract;
 
     const recipientsEOA: string[] = [
       ethers.Wallet.createRandom().address,
@@ -611,13 +612,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       lyxRecipientEOA = ethers.Wallet.createRandom().address;
 
       // this contract has a payable fallback function and can receive native tokens
-      lyxRecipientContract = await smock.fake([
-        {
-          stateMutability: 'payable',
-          type: 'fallback',
-        },
-      ]);
-      lyxRecipientContract.fallback.returns();
+      lyxRecipientContract = await new FallbackContract__factory(context.accounts[0]).deploy();
 
       await lsp7Token
         .connect(context.accounts[0])
@@ -641,10 +636,10 @@ export const shouldBehaveLikePermissionTransferValue = (
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
           ],
           [
-            lsp7Token.address,
+            lsp7Token.target as string,
             await targetContract.getAddress(),
             lyxRecipientEOA,
-            lyxRecipientContract.address,
+            lyxRecipientContract.target as string,
           ],
           ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
@@ -657,7 +652,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         const newUP = await new UniversalProfile__factory(context.accounts[0]).deploy(
           context.accounts[0].address,
         );
-        recipientUPs.push(newUP.address);
+        recipientUPs.push(newUP.target as string);
       }
     });
 
@@ -745,9 +740,9 @@ export const shouldBehaveLikePermissionTransferValue = (
         await expect(
           context.universalProfile
             .connect(caller)
-            .execute(OPERATION_TYPES.CALL, lyxRecipientContract.address, amount, data),
+            .execute(OPERATION_TYPES.CALL, lyxRecipientContract.target, amount, data),
         ).to.changeEtherBalances(
-          [await context.universalProfile.getAddress(), lyxRecipientContract.address],
+          [await context.universalProfile.getAddress(), lyxRecipientContract.target],
           [`-${amount}`, amount],
         );
       });
@@ -774,12 +769,12 @@ export const shouldBehaveLikePermissionTransferValue = (
         await expect(
           context.universalProfile
             .connect(caller)
-            .execute(OPERATION_TYPES.CALL, newLSP7Token.address, 5, lsp7TransferPayload),
+            .execute(OPERATION_TYPES.CALL, newLSP7Token.target, 5, lsp7TransferPayload),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
           .withArgs(
             caller.address,
-            newLSP7Token.address,
+            newLSP7Token.target,
             newLSP7Token.interface.getFunction('transfer').selector,
           );
       });
@@ -804,7 +799,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
         await context.universalProfile
           .connect(caller)
-          .execute(OPERATION_TYPES.CALL, lsp7Token.address, 0, lsp7TransferPayload);
+          .execute(OPERATION_TYPES.CALL, lsp7Token.target, 0, lsp7TransferPayload);
 
         const lsp7SenderBalanceAfter = await lsp7Token.balanceOf(
           await context.universalProfile.getAddress(),
@@ -812,9 +807,9 @@ export const shouldBehaveLikePermissionTransferValue = (
 
         const lsp7RecipientBalanceAfter = await lsp7Token.balanceOf(recipient);
 
-        expect(lsp7SenderBalanceAfter).to.equal(lsp7SenderBalanceBefore.sub(tokenAmount));
+        expect(lsp7SenderBalanceAfter).to.equal(lsp7SenderBalanceBefore - tokenAmount);
 
-        expect(lsp7RecipientBalanceAfter).to.equal(lsp7RecipientBalanceBefore.add(tokenAmount));
+        expect(lsp7RecipientBalanceAfter).to.equal(lsp7RecipientBalanceBefore + tokenAmount);
       });
 
       it('should be allowed to interact with an allowed contract', async () => {
@@ -1032,15 +1027,17 @@ export const shouldBehaveLikePermissionTransferValue = (
 
             await context.universalProfile
               .connect(caller)
-              .execute(OPERATION_TYPES.CALL, lsp7Token.address, 0, tokenTransferPayload);
+              .execute(OPERATION_TYPES.CALL, lsp7Token.target, 0, tokenTransferPayload);
 
             const senderTokenBalanceAfter = await lsp7Token.balanceOf(
               await context.universalProfile.getAddress(),
             );
             const recipientTokenBalanceAfter = await lsp7Token.balanceOf(tokenRecipient);
-            expect(senderTokenBalanceAfter).to.equal(senderTokenBalanceBefore.sub(tokenAmount));
+            expect(senderTokenBalanceAfter).to.equal(
+              senderTokenBalanceBefore - BigInt(tokenAmount),
+            );
             expect(recipientTokenBalanceAfter).to.equal(
-              recipientTokenBalanceBefore.add(tokenAmount),
+              recipientTokenBalanceBefore + BigInt(tokenAmount),
             );
           });
         }
@@ -1208,15 +1205,17 @@ export const shouldBehaveLikePermissionTransferValue = (
 
             await context.universalProfile
               .connect(caller)
-              .execute(OPERATION_TYPES.CALL, lsp7Token.address, 0, tokenTransferPayload);
+              .execute(OPERATION_TYPES.CALL, lsp7Token.target, 0, tokenTransferPayload);
 
             const senderTokenBalanceAfter = await lsp7Token.balanceOf(
               await context.universalProfile.getAddress(),
             );
             const recipientTokenBalanceAfter = await lsp7Token.balanceOf(tokenRecipient);
-            expect(senderTokenBalanceAfter).to.equal(senderTokenBalanceBefore.sub(tokenAmount));
+            expect(senderTokenBalanceAfter).to.equal(
+              senderTokenBalanceBefore - BigInt(tokenAmount),
+            );
             expect(recipientTokenBalanceAfter).to.equal(
-              recipientTokenBalanceBefore.add(tokenAmount),
+              recipientTokenBalanceBefore + BigInt(tokenAmount),
             );
           });
         }

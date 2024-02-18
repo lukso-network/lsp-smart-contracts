@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
-import { FakeContract, smock } from '@defi-wonderland/smock';
 
 import { LSP7Mintable, LSP7Mintable__factory } from '@lukso/lsp7-contracts/types';
 import {
@@ -13,6 +12,8 @@ import {
   TargetPayableContract__factory,
   GraffitiEventExtension__factory,
   GraffitiEventExtension,
+  FallbackContract,
+  FallbackContract__factory,
 } from '../../../types';
 import {
   UniversalProfile__factory,
@@ -909,7 +910,7 @@ export const shouldBehaveLikePermissionTransferValue = (
     let targetContract: TargetPayableContract;
 
     let lyxRecipientEOA: string;
-    let lyxRecipientContract: FakeContract;
+    let lyxRecipientContract: FallbackContract;
 
     const recipientsEOA: string[] = [
       ethers.Wallet.createRandom().address,
@@ -939,13 +940,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       lyxRecipientEOA = ethers.Wallet.createRandom().address;
 
       // this contract has a payable fallback function and can receive native tokens
-      lyxRecipientContract = await smock.fake([
-        {
-          stateMutability: 'payable',
-          type: 'fallback',
-        },
-      ]);
-      lyxRecipientContract.fallback.returns();
+      lyxRecipientContract = await new FallbackContract__factory(context.accounts[0]).deploy();
 
       await lsp7Token
         .connect(context.accounts[0])
@@ -969,10 +964,10 @@ export const shouldBehaveLikePermissionTransferValue = (
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
           ],
           [
-            lsp7Token.target,
+            lsp7Token.target as string,
             await targetContract.getAddress(),
             lyxRecipientEOA,
-            lyxRecipientContract.address,
+            lyxRecipientContract.target as string,
           ],
           ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
@@ -1093,7 +1088,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
         const transferLyxPayload = universalProfileInterface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          lyxRecipientContract.address,
+          lyxRecipientContract.target,
           amount,
           data,
         ]);
@@ -1101,7 +1096,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         await expect(
           context.keyManager.connect(caller).execute(transferLyxPayload),
         ).to.changeEtherBalances(
-          [await context.universalProfile.getAddress(), lyxRecipientContract.address],
+          [await context.universalProfile.getAddress(), lyxRecipientContract.target],
           [`-${amount}`, amount],
         );
       });

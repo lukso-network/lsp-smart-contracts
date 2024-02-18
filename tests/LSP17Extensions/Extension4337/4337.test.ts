@@ -80,14 +80,14 @@ describe('4337', function () {
     const extension4337 = await new Extension4337__factory(deployer).deploy(
       await entryPoint.getAddress(),
     );
-    const validateUserOpSigHash = extension4337.interface.getSighash('validateUserOp');
+    const validateUserOpSigHash = extension4337.interface.getFunction('validateUserOp').selector;
 
     const extensionDataKey =
       ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       validateUserOpSigHash.slice(2) +
       '00000000000000000000000000000000';
 
-    await universalProfile.setData(extensionDataKey, extension4337.address);
+    await universalProfile.setData(extensionDataKey, extension4337.target as string);
 
     // give permissions to controllers
     const dataKeyWithPermission4337 =

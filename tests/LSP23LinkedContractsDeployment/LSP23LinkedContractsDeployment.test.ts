@@ -570,8 +570,10 @@ describe('UniversalProfileDeployer', function () {
         encodedBytes,
       );
 
-      const upProxy = UniversalProfileInitFactory.attach(upAddress);
-      const keyManagerProxy = KeyManagerInitFactory.attach(keyManagerAddress);
+      const upProxy = UniversalProfileInitFactory.attach(upAddress) as UniversalProfile;
+      const keyManagerProxy = KeyManagerInitFactory.attach(
+        keyManagerAddress,
+      ) as unknown as LSP6KeyManager;
 
       const upProxyOwner = await upProxy.owner();
       const keyManagerProxyOwner = await keyManagerProxy.target();
@@ -793,6 +795,7 @@ describe('UniversalProfileDeployer', function () {
       expect(primaryAddress).to.not.equal(ethers.ZeroAddress);
       expect(secondaryAddress).to.not.equal(ethers.ZeroAddress);
     });
+
     it('should deploy proxies with correct initialization calldata (with secondary contract contains extraParams)', async function () {
       const { LSP23LinkedContractsFactory, upInitPostDeploymentModule, universalProfileInit } =
         await deployImplementationContracts();
@@ -803,7 +806,7 @@ describe('UniversalProfileDeployer', function () {
       const keyManagerWithExtraParamsFactory = await KeyManagerWithExtraParamsFactory.deploy();
       await keyManagerWithExtraParamsFactory.deployed();
 
-      const salt = ethers.randomBytes(32);
+      const salt = ethers.hexlify(ethers.randomBytes(32));
       const primaryFundingAmount = ethers.parseEther('1');
       const secondaryFundingAmount = ethers.parseEther('0');
 

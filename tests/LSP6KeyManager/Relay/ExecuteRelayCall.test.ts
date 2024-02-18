@@ -1882,7 +1882,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         const validityTimestamps = 0;
 
         const signatures = [
-          signLSP6ExecuteRelayCall(
+          await signLSP6ExecuteRelayCall(
             context.keyManager,
             nonces[0],
             validityTimestamps,
@@ -1890,7 +1890,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             0,
             failingTransferPayload,
           ),
-          signLSP6ExecuteRelayCall(
+          await signLSP6ExecuteRelayCall(
             context.keyManager,
             nonces[1],
             validityTimestamps,
@@ -1898,7 +1898,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             0,
             firstTransferPayload,
           ),
-          signLSP6ExecuteRelayCall(
+          await signLSP6ExecuteRelayCall(
             context.keyManager,
             nonces[2],
             validityTimestamps,
@@ -1958,7 +1958,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         const validityTimestamps = 0;
 
         const signatures = [
-          signLSP6ExecuteRelayCall(
+          await signLSP6ExecuteRelayCall(
             context.keyManager,
             ethers.toBeHex(nonces[0]),
             validityTimestamps,
@@ -1966,7 +1966,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             0,
             firstTransferPayload,
           ),
-          signLSP6ExecuteRelayCall(
+          await signLSP6ExecuteRelayCall(
             context.keyManager,
             ethers.toBeHex(nonces[1]),
             validityTimestamps,
@@ -1974,7 +1974,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             0,
             secondTransferPayload,
           ),
-          signLSP6ExecuteRelayCall(
+          await signLSP6ExecuteRelayCall(
             context.keyManager,
             ethers.toBeHex(nonces[2]),
             validityTimestamps,

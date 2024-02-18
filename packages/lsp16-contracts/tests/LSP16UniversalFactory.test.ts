@@ -18,6 +18,7 @@ import {
   FallbackInitializer__factory,
   ContractNoConstructor__factory,
   ContractNoConstructor,
+  FallbackContract__factory,
 } from '../types';
 
 import type { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
@@ -82,7 +83,7 @@ describe('UniversalFactory contract', () => {
 
       payableContract = await new PayableContract__factory(context.accounts.random).deploy();
 
-      fallbackContract = await new FallbackContract__factory(context.accounts[0]).deploy();
+      fallbackContract = await new FallbackContract__factory(context.accounts.random).deploy();
 
       implementationTester = await new ImplementationTester__factory(
         context.accounts.random,
@@ -108,7 +109,7 @@ describe('UniversalFactory contract', () => {
           bytecodeHash,
           salt,
           false,
-          [],
+          '0x',
         );
 
         const contractCreated = await context.universalFactory
@@ -462,7 +463,7 @@ describe('UniversalFactory contract', () => {
           await context.universalFactory.deployCreate2AndInitialize.staticCall(
             fallbackInitializerBytecode,
             salt,
-            [], // empty initializeCallData
+            '0x', // empty initializeCallData
             0,
             0,
           );
@@ -470,7 +471,7 @@ describe('UniversalFactory contract', () => {
         await context.universalFactory.deployCreate2AndInitialize(
           fallbackInitializerBytecode,
           salt,
-          [], // empty initializeCallData
+          '0x', // empty initializeCallData
           0,
           0,
         );
@@ -905,7 +906,7 @@ describe('UniversalFactory contract', () => {
         await expect(
           context.universalFactory
             .connect(context.accounts.deployer1)
-            .deployERC1167ProxyAndInitialize(fallbackContract.address, salt, RandomCalldata),
+            .deployERC1167ProxyAndInitialize(fallbackContract.target, salt, RandomCalldata),
         ).to.not.be.reverted;
       });
 
