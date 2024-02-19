@@ -4,7 +4,8 @@ import { ethers } from 'hardhat';
 // setup
 import { LSP6InternalsTestContext } from '../../utils/context';
 import { setupKeyManagerHelper } from '../../utils/fixtures';
-import { ALL_PERMISSIONS, ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants';
+import { ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
 
 export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTestContext>) => {
   let context: LSP6InternalsTestContext;

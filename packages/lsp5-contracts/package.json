@@ -14,15 +14,36 @@
     "EVM",
     "Solidity"
   ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "typings": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./artifacts/*": "./artifacts/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "contracts/**/*.sol",
+    "!contracts/Mocks/**/*.sol",
+    "artifacts/*.json",
+    "dist",
+    "./README.md"
+  ],
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
+    "build:js": "unbuild",
     "clean": "hardhat clean",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
   },
   "dependencies": {
-    "@erc725/smart-contracts": "^7.0.0"
+    "@erc725/smart-contracts": "^7.0.0",
+    "@lukso/lsp2-contracts": "*"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",

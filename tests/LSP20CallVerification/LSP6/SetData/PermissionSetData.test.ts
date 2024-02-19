@@ -6,12 +6,9 @@ import { encodeData, ERC725JSONSchema } from '@erc725/erc725.js';
 import { ExecutorLSP20, ExecutorLSP20__factory } from '../../../../types';
 
 // constants
-import {
-  ERC725YDataKeys,
-  ALL_PERMISSIONS,
-  PERMISSIONS,
-  OPERATION_TYPES,
-} from '../../../../constants';
+import { ERC725YDataKeys } from '../../../../constants';
+import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 
 // setup
 import { LSP6TestContext } from '../../../utils/context';

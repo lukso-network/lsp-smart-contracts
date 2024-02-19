@@ -2,29 +2,22 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-import { LSP7Mintable, LSP7Mintable__factory } from '@lukso/lsp7-contracts/types';
 import {
+  LSP7Mintable,
+  LSP7Mintable__factory,
   SignatureValidator,
   SignatureValidator__factory,
   TargetContract,
   TargetContract__factory,
-} from '../../../types';
-import {
   UniversalProfile__factory,
   UniversalProfile,
-} from '@lukso/universalprofile-contracts/types';
+} from '../../../types';
 
 // constants
-import {
-  ALL_PERMISSIONS,
-  ERC1271_VALUES,
-  ERC725YDataKeys,
-  INTERFACE_IDS,
-  OPERATION_TYPES,
-  PERMISSIONS,
-  CALLTYPE,
-  LSP4_TOKEN_TYPES,
-} from '../../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants';
+import { OPERATION_TYPES, ERC1271_VALUES } from '@lukso/lsp0-contracts';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
 import { LSP6TestContext } from '../../utils/context';

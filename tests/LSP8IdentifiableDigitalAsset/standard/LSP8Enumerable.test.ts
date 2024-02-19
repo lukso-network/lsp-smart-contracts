@@ -6,7 +6,8 @@ import {
   LSP8EnumerableTestContext,
   getNamedAccounts,
 } from '../LSP8Enumerable.behaviour';
-import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_FORMAT } from '../../../constants';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 
 describe('LSP8Enumerable with constructor', () => {
   const buildTestContext = async () => {

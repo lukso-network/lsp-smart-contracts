@@ -19,14 +19,11 @@ import {
 import { ARRAY_LENGTH, LSP1_HOOK_PLACEHOLDER, abiCoder } from '../utils/helpers';
 
 // constants
-import {
-  ERC725YDataKeys,
-  INTERFACE_IDS,
-  OPERATION_TYPES,
-  LSP1_TYPE_IDS,
-  LSP8_TOKEN_ID_FORMAT,
-  LSP4_TOKEN_TYPES,
-} from '../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS } from '../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
+
 import { callPayload, getLSP5MapAndArrayKeysValue } from '../utils/fixtures';
 import { BigNumber, BytesLike, Transaction } from 'ethers';
 

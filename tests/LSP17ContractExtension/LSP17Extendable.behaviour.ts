@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { FakeContract, smock } from '@defi-wonderland/smock';
 
 import {
   LSP0ERC725Account,
@@ -24,6 +23,9 @@ import {
   RequireCallbackToken__factory,
   RevertFallbackExtension,
   RevertFallbackExtension__factory,
+  NameExtension,
+  NameExtension__factory,
+  AgeExtension__factory,
 } from '../../types';
 
 // helpers
@@ -491,25 +493,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         });
 
         describe('when calling an extension that returns a string', () => {
-          let nameExtension: FakeContract;
+          let nameExtension: NameExtension;
 
           before(async () => {
-            nameExtension = await smock.fake([
-              {
-                inputs: [],
-                name: 'name',
-                outputs: [
-                  {
-                    internalType: 'string',
-                    name: '',
-                    type: 'string',
-                  },
-                ],
-                stateMutability: 'view',
-                type: 'function',
-              },
-            ]);
-            nameExtension.name.returns('LUKSO');
+            nameExtension = await new NameExtension__factory(context.accounts[0]).deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
@@ -528,25 +515,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         });
 
         describe('when calling an extension that returns a number', () => {
-          let ageExtension: FakeContract;
+          let ageExtension: AgeExtension;
 
           before(async () => {
-            ageExtension = await smock.fake([
-              {
-                inputs: [],
-                name: 'age',
-                outputs: [
-                  {
-                    internalType: 'uint256',
-                    name: '',
-                    type: 'uint256',
-                  },
-                ],
-                stateMutability: 'view',
-                type: 'function',
-              },
-            ]);
-            ageExtension.age.returns(20);
+            ageExtension = await new AgeExtension__factory(context.accounts[0]).deploy();
 
             await context.contract
               .connect(context.deployParams.owner)

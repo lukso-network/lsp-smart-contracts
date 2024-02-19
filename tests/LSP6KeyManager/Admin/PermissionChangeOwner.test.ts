@@ -4,7 +4,10 @@ import { BigNumber, ContractTransaction } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 // constants
-import { ERC725YDataKeys, PERMISSIONS, OPERATION_TYPES, LSP25_VERSION } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { PERMISSIONS } from '@lukso/lsp6-contracts';
+import { LSP25_VERSION } from '@lukso/lsp25-contracts';
 
 import { LSP6KeyManager, LSP6KeyManager__factory } from '../../../types';
 

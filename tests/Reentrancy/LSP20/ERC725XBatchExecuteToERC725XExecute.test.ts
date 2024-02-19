@@ -1,11 +1,12 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
-//types
+// types
 import { BigNumber, BytesLike } from 'ethers';
 
 // constants
-import { ALL_PERMISSIONS, ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants';
+import { ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
 import { LSP6TestContext } from '../../utils/context';

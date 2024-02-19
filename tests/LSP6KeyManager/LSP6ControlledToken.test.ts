@@ -3,19 +3,20 @@ import { expect } from 'chai';
 import { BytesLike } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-import { LSP0ERC725Account__factory } from '../../packages/lsp0-contracts/types';
-import { LSP6KeyManager, LSP6KeyManager__factory } from '@lukso/lsp6-contracts/types';
-import { LSP7Mintable, LSP7Mintable__factory } from '@lukso/lsp7-contracts/types';
-import { LSP8Mintable } from '@lukso/lsp8-contracts/types';
-import { LSP7Tester__factory } from '../../types';
-
 import {
-  ERC725YDataKeys,
-  ALL_PERMISSIONS,
-  PERMISSIONS,
-  ERC1271_VALUES,
-  LSP4_TOKEN_TYPES,
-} from '../../constants';
+  LSP7Tester__factory,
+  LSP0ERC725Account__factory,
+  LSP6KeyManager,
+  LSP6KeyManager__factory,
+  LSP7Mintable,
+  LSP7Mintable__factory,
+  LSP8Mintable,
+} from '../../types';
+
+import { ERC725YDataKeys } from '../../constants';
+import { ERC1271_VALUES } from '@lukso/lsp0-contracts';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 import { ARRAY_LENGTH, encodeCompactBytesArray } from '../utils/helpers';
 
 export type LSP6ControlledToken = {

@@ -7,17 +7,17 @@ import {
 /**
  * @title sample contract used for testing
  */
-contract FirstCallReturnFailValue {
+contract FirstCallReturnInvalidValue {
     event CallVerified();
 
     address public target;
 
     function lsp20VerifyCall(
-        address,
-        address,
-        address,
-        uint256,
-        bytes memory
+        address /* requestor */,
+        address /* targetContract */,
+        address /* caller */,
+        uint256 /* value */,
+        bytes memory /* data */
     ) external returns (bytes4) {
         emit CallVerified();
 

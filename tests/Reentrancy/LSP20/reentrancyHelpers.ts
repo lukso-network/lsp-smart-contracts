@@ -16,7 +16,8 @@ import {
 } from '../../../types';
 
 // constants
-import { ERC725YDataKeys, ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants';
+import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
 import { LSP6TestContext } from '../../utils/context';

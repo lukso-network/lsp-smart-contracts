@@ -9,7 +9,7 @@ import {
 } from '../../types';
 
 // constants
-import { OPERATION_TYPES } from '../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 
 // helpers
 import { provider } from '../utils/helpers';

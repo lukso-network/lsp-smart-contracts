@@ -4,6 +4,18 @@
   "description": "Package for the LSPN <write the standard name here> standard",
   "license": "Apache-2.0",
   "author": "",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "typings": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./artifacts/*": "./artifacts/*",
+    "./package.json": "./package.json"
+  },
   "keywords": [
     "LUKSO",
     "LSP",
@@ -16,6 +28,7 @@
   ],
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
+    "build:js": "unbuild",
     "clean": "hardhat clean",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",

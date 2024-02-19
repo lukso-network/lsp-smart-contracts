@@ -2,14 +2,9 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
 import { UniversalProfile__factory, LSP6KeyManager__factory, UniversalProfile } from '../../types';
-import {
-  ALL_PERMISSIONS,
-  ERC725YDataKeys,
-  OPERATION_TYPES,
-  PERMISSIONS,
-  INTERFACE_IDS,
-  CALLTYPE,
-} from '../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS } from '../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 import { LSP6TestContext } from '../utils/context';
 import {

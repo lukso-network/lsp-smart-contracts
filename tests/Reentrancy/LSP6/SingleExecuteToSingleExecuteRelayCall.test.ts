@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
-//types
+// types
 import { BigNumber, BytesLike } from 'ethers';
 import { SingleReentrancyRelayer__factory, UniversalProfile__factory } from '../../../types';
 

@@ -67,6 +67,7 @@
     "build:turbo": "turbo build",
     "build:docs": "hardhat dodoc && prettier -w ./docs",
     "build:js": "unbuild",
+    "build:js:turbo": "turbo build:js",
     "clean": "hardhat clean && rm -rf module common",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
@@ -135,7 +136,6 @@
   },
   "devDependencies": {
     "@b00ste/hardhat-dodoc": "^0.3.16",
-    "@defi-wonderland/smock": "^2.3.4",
     "@erc725/erc725.js": "0.17.2",
     "@lukso/eip191-signer.js": "^0.2.2",
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",

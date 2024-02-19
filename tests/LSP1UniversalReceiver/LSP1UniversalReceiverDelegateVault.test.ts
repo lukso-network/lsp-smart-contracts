@@ -1,8 +1,10 @@
-import { ERC725YDataKeys, OPERATION_TYPES } from '../../constants';
-import { LSP9Vault__factory } from '@lukso/lsp9-contracts/types';
+import { ERC725YDataKeys } from '../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+
 import {
   LSP1UniversalReceiverDelegateVault__factory,
   UniversalProfile__factory,
+  LSP9Vault__factory,
 } from '../../types';
 
 import {
