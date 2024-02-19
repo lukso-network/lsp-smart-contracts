@@ -36,7 +36,7 @@ export async function deployProxy(
   // deploy proxy contract
   const proxyBytecode = eip1167RuntimeCodeTemplate.replace(
     'bebebebebebebebebebebebebebebebebebebebe',
-    baseContractAddress.substr(2),
+    baseContractAddress.substring(2),
   );
   const tx = await deployer.sendTransaction({
     data: proxyBytecode,
@@ -204,8 +204,8 @@ export async function getLSP5MapAndArrayKeysValue(account, token) {
     ethers.concat([ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap, token.address]),
   );
 
-  const indexInHex = '0x' + mapValue.substr(10, mapValue.length);
-  const interfaceId = mapValue.substr(0, 10);
+  const indexInHex = '0x' + mapValue.substring(10, mapValue.length);
+  const interfaceId = mapValue.substring(0, 10);
 
   const indexInNumber = ethers.toNumber(ethers.toBigInt(indexInHex));
   const rawIndexInArray = ethers.zeroPadValue(ethers.toBeHex(indexInNumber), 16);

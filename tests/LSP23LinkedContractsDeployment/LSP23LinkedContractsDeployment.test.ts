@@ -15,6 +15,7 @@ import {
   createDataKey,
   deployImplementationContracts,
 } from './helpers';
+import { EventLog } from 'ethers';
 
 describe('UniversalProfileDeployer', function () {
   describe('for non-proxies deployment', async function () {
@@ -140,7 +141,7 @@ describe('UniversalProfileDeployer', function () {
       expect(await universalProfileInstance.owner()).to.equal(keyManagerContract);
 
       // CHECK that the `target()` of the KeyManager contract is the UP contract
-      expect(await keyManagerInstance.target()).to.equal(upContract);
+      expect(await keyManagerInstance['target()'].staticCall()).to.equal(upContract);
     });
 
     it('should deploy both contract (with value)', async function () {
@@ -472,7 +473,7 @@ describe('UniversalProfileDeployer', function () {
       expect(await universalProfileInstance.owner()).to.equal(keyManagerContract);
 
       // CHECK that the `target()` of the KeyManager contract is the UP contract
-      expect(await keyManagerInstance.target()).to.equal(upContract);
+      expect(await keyManagerInstance['target()'].staticCall()).to.equal(upContract);
 
       expect(await keyManagerInstance.FIRST_PARAM()).to.deep.equal(firstAddress);
       expect(await keyManagerInstance.LAST_PARAM()).to.deep.equal(lastAddress);
@@ -577,7 +578,7 @@ describe('UniversalProfileDeployer', function () {
       ) as unknown as LSP6KeyManager;
 
       const upProxyOwner = await upProxy.owner();
-      const keyManagerProxyOwner = await keyManagerProxy.target();
+      const keyManagerProxyOwner = await keyManagerProxy['target()'].staticCall();
 
       const [expectedUpProxyAddress, expectedKeyManagerProxyAddress] =
         await LSP23LinkedContractsFactory.computeERC1167Addresses(
@@ -805,7 +806,7 @@ describe('UniversalProfileDeployer', function () {
         'KeyManagerInitWithExtraParams',
       );
       const keyManagerWithExtraParamsFactory = await KeyManagerWithExtraParamsFactory.deploy();
-      await keyManagerWithExtraParamsFactory.deployed();
+      await keyManagerWithExtraParamsFactory.waitForDeployment();
 
       const salt = ethers.hexlify(ethers.randomBytes(32));
       const primaryFundingAmount = ethers.parseEther('1');
@@ -832,7 +833,7 @@ describe('UniversalProfileDeployer', function () {
 
       const secondaryContractDeploymentInit = {
         fundingAmount: secondaryFundingAmount,
-        implementationContract: keyManagerWithExtraParamsFactory.address,
+        implementationContract: keyManagerWithExtraParamsFactory.target,
         addPrimaryContractAddress: true,
         initializationCalldata: initializationDataWithSelector,
         extraInitializationParams: lastParam,
@@ -922,11 +923,12 @@ describe('UniversalProfileDeployer', function () {
       );
 
       const receipt = await tx.wait();
-      const event = receipt.events?.find((e) => e.event === 'DeployedERC1167Proxies');
+      // const event = receipt.events?.find((e) => e.event === 'DeployedERC1167Proxies');
+      const event = receipt.logs.find((e: EventLog) => e.eventName === 'DeployedERC1167Proxies');
 
       expect(event).to.not.be.undefined;
 
-      const args = event.args;
+      const args = (event as EventLog).args;
 
       expect(args[0]).to.equal(primaryAddress);
       expect(args[1]).to.equal(secondaryAddress);
