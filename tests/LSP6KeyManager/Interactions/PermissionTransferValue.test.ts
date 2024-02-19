@@ -5,7 +5,6 @@ import { EIP191Signer } from '@lukso/eip191-signer.js';
 import { BigNumber } from 'ethers';
 import { FakeContract, smock } from '@defi-wonderland/smock';
 
-import { LSP7Mintable, LSP7Mintable__factory } from '@lukso/lsp7-contracts/types';
 import {
   Executor,
   Executor__factory,
@@ -14,11 +13,11 @@ import {
   TargetPayableContract__factory,
   GraffitiEventExtension__factory,
   GraffitiEventExtension,
-} from '../../../types';
-import {
   UniversalProfile__factory,
   UniversalProfile,
-} from '@lukso/universalprofile-contracts/types';
+  LSP7Mintable,
+  LSP7Mintable__factory,
+} from '../../../types';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';

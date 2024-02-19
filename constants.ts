@@ -69,7 +69,7 @@ export const INTERFACE_IDS = {
   LSP17Extendable: INTERFACE_ID_LSP17Extendable,
   LSP17Extension: INTERFACE_ID_LSP17Extension,
   LSP20CallVerification: INTERFACE_ID_LSP20CallVerification,
-  LSP20CalVerifier: INTERFACE_ID_LSP20CallVerifier,
+  LSP20CallVerifier: INTERFACE_ID_LSP20CallVerifier,
   LSP11BasicSocialRecovery: '0x049a28f1',
   LSP25ExecuteRelayCall: INTERFACE_ID_LSP25,
 };

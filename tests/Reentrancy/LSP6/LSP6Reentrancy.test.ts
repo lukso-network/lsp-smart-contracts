@@ -15,15 +15,10 @@ import { testSingleExecuteRelayCallToSingleExecuteRelayCall } from './SingleExec
 import { testSingleExecuteToBatchExecute } from './SingleExecuteToBatchExecute.test';
 import { testSingleExecuteToBatchExecuteRelayCall } from './SingleExecuteToBatchExecuteRelayCall.test';
 
-import {
-  ALL_PERMISSIONS,
-  CALLTYPE,
-  ERC725YDataKeys,
-  LSP1_TYPE_IDS,
-  LSP25_VERSION,
-  OPERATION_TYPES,
-  PERMISSIONS,
-} from '../../../constants';
+import { ERC725YDataKeys, LSP1_TYPE_IDS } from '../../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { ALL_PERMISSIONS, CALLTYPE, PERMISSIONS } from '@lukso/lsp6-contracts';
+import { LSP25_VERSION } from '@lukso/lsp25-contracts';
 
 import {
   combineAllowedCalls,

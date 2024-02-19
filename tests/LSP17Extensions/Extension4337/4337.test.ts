@@ -10,8 +10,8 @@ import {
   LSP6KeyManager__factory,
   UniversalProfile,
   UniversalProfile__factory,
+  Extension4337__factory,
 } from '../../../types';
-import { Extension4337__factory } from '@lukso/lsp17-contracts/types';
 import { deployEntryPoint, getBalance, isDeployed } from '../helpers/utils';
 import { ERC725YDataKeys } from '../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';

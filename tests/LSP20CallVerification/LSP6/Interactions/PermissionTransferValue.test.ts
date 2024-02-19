@@ -14,11 +14,9 @@ import {
   GraffitiEventExtension,
   LSP7Mintable,
   LSP7Mintable__factory,
-} from '../../../../types';
-import {
   UniversalProfile__factory,
   UniversalProfile,
-} from '@lukso/universalprofile-contracts/types';
+} from '../../../../types';
 
 // constants
 import { ERC725YDataKeys } from '../../../../constants';

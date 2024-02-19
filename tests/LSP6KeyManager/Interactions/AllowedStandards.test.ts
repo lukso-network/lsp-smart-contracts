@@ -2,17 +2,16 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-import { LSP7Mintable, LSP7Mintable__factory } from '@lukso/lsp7-contracts/types';
 import {
+  LSP7Mintable,
+  LSP7Mintable__factory,
   SignatureValidator,
   SignatureValidator__factory,
   TargetContract,
   TargetContract__factory,
-} from '../../../types';
-import {
   UniversalProfile__factory,
   UniversalProfile,
-} from '@lukso/universalprofile-contracts/types';
+} from '../../../types';
 
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants';

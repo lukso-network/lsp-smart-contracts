@@ -38,3 +38,6 @@ import {
 import {
     IPostDeploymentModule
 } from "@lukso/lsp23-contracts/contracts/IPostDeploymentModule.sol";
+import {
+    Extension4337
+} from "@lukso/lsp17-contracts/contracts/Extension4337.sol";
