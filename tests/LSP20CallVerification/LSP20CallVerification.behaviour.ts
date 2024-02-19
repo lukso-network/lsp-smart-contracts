@@ -20,15 +20,15 @@ import {
   ILSP20CallVerifier__factory,
   OwnerWithURD,
   OwnerWithURD__factory,
-} from '../../types';
-import {
   UniversalProfile,
   UniversalProfile__factory,
-} from '@lukso/universalprofile-contracts/types';
+} from '../../types';
 
 // constants
-import { LSP1_TYPE_IDS, LSP20_SUCCESS_VALUES, OPERATION_TYPES } from '../../constants';
-import { abiCoder } from './..//utils/helpers';
+import { LSP1_TYPE_IDS } from '../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { LSP20_SUCCESS_VALUES } from '@lukso/lsp20-contracts';
+import { abiCoder } from './../utils/helpers';
 
 export type LSP20TestContext = {
   accounts: SignerWithAddress[];

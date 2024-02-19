@@ -8,16 +8,12 @@ import { LSP8Mintable, LSP8Mintable__factory } from '@lukso/lsp8-contracts/types
 import { TargetContract, TargetContract__factory } from '../../../types';
 
 // constants
-import {
-  ERC725YDataKeys,
-  OPERATION_TYPES,
-  LSP25_VERSION,
-  PERMISSIONS,
-  INTERFACE_IDS,
-  CALLTYPE,
-  LSP8_TOKEN_ID_FORMAT,
-  LSP4_TOKEN_TYPES,
-} from '../../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
+import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
+import { LSP25_VERSION } from '@lukso/lsp25-contracts';
 
 // setup
 import { LSP6TestContext } from '../../utils/context';

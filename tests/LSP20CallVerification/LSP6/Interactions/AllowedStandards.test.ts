@@ -15,16 +15,10 @@ import {
 } from '@lukso/universalprofile-contracts/types';
 
 // constants
-import {
-  ALL_PERMISSIONS,
-  ERC1271_VALUES,
-  ERC725YDataKeys,
-  INTERFACE_IDS,
-  OPERATION_TYPES,
-  PERMISSIONS,
-  CALLTYPE,
-  LSP4_TOKEN_TYPES,
-} from '../../../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS } from '../../../../constants';
+import { OPERATION_TYPES, ERC1271_VALUES } from '@lukso/lsp0-contracts';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
 import { LSP6TestContext } from '../../../utils/context';

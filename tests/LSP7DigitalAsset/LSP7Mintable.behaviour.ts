@@ -2,14 +2,18 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { UniversalReceiverDelegateTokenReentrant__factory } from '../../types';
-import { LSP7Mintable } from '@lukso/lsp7-contracts/types';
-import { LSP6KeyManager } from '@lukso/lsp6-contracts/types';
-import { UniversalProfile } from '@lukso/universalprofile-contracts/types';
+import {
+  UniversalReceiverDelegateTokenReentrant__factory,
+  LSP7Mintable,
+  LSP6KeyManager,
+  UniversalProfile,
+} from '../../types';
 
 import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 
-import { PERMISSIONS, ERC725YDataKeys, OPERATION_TYPES, CALLTYPE } from '../../constants';
+import { ERC725YDataKeys } from '../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 import { combineAllowedCalls, combinePermissions } from '../utils/helpers';
 
 export type LSP7MintableTestAccounts = {

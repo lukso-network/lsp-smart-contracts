@@ -4,7 +4,9 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 // constants
-import { ERC725YDataKeys, ALL_PERMISSIONS, PERMISSIONS, ERC1271_VALUES } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants';
+import { ERC1271_VALUES } from '@lukso/lsp0-contracts';
+import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
 import { LSP6TestContext } from '../../utils/context';

@@ -13,7 +13,9 @@ import {
 } from '../../../types';
 import { Extension4337__factory } from '@lukso/lsp17-contracts/types';
 import { deployEntryPoint, getBalance, isDeployed } from '../helpers/utils';
-import { ALL_PERMISSIONS, ERC725YDataKeys, OPERATION_TYPES } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
 import { combinePermissions } from '../../utils/helpers';
 import { fillAndSign } from '../helpers/UserOp';
 

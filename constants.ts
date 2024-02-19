@@ -28,6 +28,16 @@ import {
 } from '@lukso/lsp20-contracts';
 import { INTERFACE_ID_LSP25 } from '@lukso/lsp25-contracts';
 
+import { LSP3SupportedStandard } from '@lukso/lsp3-contracts';
+import { LSP4SupportedStandard } from '@lukso/lsp4-contracts';
+import { LSP9SupportedStandard } from '@lukso/lsp9-contracts';
+
+export const SupportedStandards = {
+  LSP3Profile: LSP3SupportedStandard as LSPSupportedStandard,
+  LSP4DigitalAsset: LSP4SupportedStandard as LSPSupportedStandard,
+  LSP9Vault: LSP9SupportedStandard as LSPSupportedStandard,
+};
+
 // ERC165
 // ---------
 

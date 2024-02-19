@@ -1,11 +1,12 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { KeyManagerWithExtraParams } from '../../types';
-
-import { LSP6KeyManager } from '@lukso/lsp6-contracts/types';
-import { UniversalProfile } from '@lukso/universalprofile-contracts/types';
-import { ILSP23LinkedContractsFactory } from '@lukso/lsp23-contracts/types';
+import {
+  KeyManagerWithExtraParams,
+  LSP6KeyManager,
+  UniversalProfile,
+  ILSP23LinkedContractsFactory,
+} from '../../types';
 
 import { ERC725YDataKeys } from '../../constants';
 import {

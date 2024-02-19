@@ -4,7 +4,6 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber } from 'ethers';
 import { FakeContract, smock } from '@defi-wonderland/smock';
 
-import { LSP7Mintable, LSP7Mintable__factory } from '@lukso/lsp7-contracts/types';
 import {
   ExecutorLSP20,
   ExecutorLSP20__factory,
@@ -13,6 +12,8 @@ import {
   TargetPayableContract__factory,
   GraffitiEventExtension__factory,
   GraffitiEventExtension,
+  LSP7Mintable,
+  LSP7Mintable__factory,
 } from '../../../../types';
 import {
   UniversalProfile__factory,
@@ -20,14 +21,10 @@ import {
 } from '@lukso/universalprofile-contracts/types';
 
 // constants
-import {
-  ERC725YDataKeys,
-  ALL_PERMISSIONS,
-  PERMISSIONS,
-  OPERATION_TYPES,
-  CALLTYPE,
-  LSP4_TOKEN_TYPES,
-} from '../../../../constants';
+import { ERC725YDataKeys } from '../../../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
 import { LSP6TestContext } from '../../../utils/context';

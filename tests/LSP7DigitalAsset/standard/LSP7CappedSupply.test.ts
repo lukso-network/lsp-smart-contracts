@@ -8,7 +8,7 @@ import {
   LSP7CappedSupplyTestContext,
   getNamedAccounts,
 } from '../LSP7CappedSupply.behaviour';
-import { LSP4_TOKEN_TYPES } from '../../../constants';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 
 describe('LSP7CappedSupply with constructor', () => {
   const buildTestContext = async () => {

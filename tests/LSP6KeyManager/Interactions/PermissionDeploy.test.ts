@@ -8,13 +8,10 @@ import { TargetContract__factory } from '../../../types';
 import { UniversalProfile__factory } from '@lukso/universalprofile-contracts/types';
 
 // constants
-import {
-  ERC725YDataKeys,
-  ALL_PERMISSIONS,
-  LSP25_VERSION,
-  PERMISSIONS,
-  OPERATION_TYPES,
-} from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { LSP25_VERSION } from '@lukso/lsp25-contracts';
+import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
 import { LSP6TestContext } from '../../utils/context';

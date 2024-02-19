@@ -3,12 +3,10 @@ import { ethers } from 'hardhat';
 import { BigNumber } from 'ethers';
 
 // constants
-import {
-  ALL_PERMISSIONS,
-  ERC725YDataKeys,
-  LSP4_TOKEN_TYPES,
-  OPERATION_TYPES,
-} from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+import { ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
 import { LSP6TestContext } from '../../utils/context';
