@@ -4,20 +4,19 @@ import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import { LSP7Mintable, LSP7Mintable__factory } from '@lukso/lsp7-contracts/types';
-import { TargetContract, TargetContract__factory } from '../../../types';
+import {
+  TargetContract,
+  TargetContract__factory,
+  LSP7Mintable,
+  LSP7Mintable__factory,
+} from '../../../types';
 
 // constants
-import {
-  ALL_PERMISSIONS,
-  ERC725YDataKeys,
-  OPERATION_TYPES,
-  LSP25_VERSION,
-  PERMISSIONS,
-  CALLTYPE,
-  INTERFACE_IDS,
-  LSP4_TOKEN_TYPES,
-} from '../../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
+import { LSP25_VERSION } from '@lukso/lsp25-contracts';
 
 // helpers
 import {

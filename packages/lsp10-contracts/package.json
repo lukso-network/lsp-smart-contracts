@@ -4,6 +4,25 @@
   "description": "Package for the LSP10 Received Vaults standard",
   "license": "Apache-2.0",
   "author": "",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "typings": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./artifacts/*": "./artifacts/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "contracts/**/*.sol",
+    "!contracts/Mocks/**/*.sol",
+    "artifacts/*.json",
+    "dist",
+    "./README.md"
+  ],
   "keywords": [
     "LUKSO",
     "LSP",
@@ -16,6 +35,7 @@
   ],
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
+    "build:js": "unbuild",
     "clean": "hardhat clean",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",

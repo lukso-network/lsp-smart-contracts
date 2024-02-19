@@ -5,13 +5,9 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { TargetContract, TargetContract__factory } from '../../../types';
 
 // constants
-import {
-  ALL_PERMISSIONS,
-  ERC725YDataKeys,
-  OPERATION_TYPES,
-  PERMISSIONS,
-  CALLTYPE,
-} from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
 import { LSP6TestContext } from '../../utils/context';

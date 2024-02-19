@@ -4,20 +4,13 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { calculateCreate2 } from 'eth-create2-calculator';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import { TargetContract__factory } from '../../../types';
-import {
-  UniversalProfile,
-  UniversalProfile__factory,
-} from '@lukso/universalprofile-contracts/types';
+import { TargetContract__factory, UniversalProfile__factory } from '../../../types';
 
 // constants
-import {
-  ERC725YDataKeys,
-  ALL_PERMISSIONS,
-  LSP25_VERSION,
-  PERMISSIONS,
-  OPERATION_TYPES,
-} from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { LSP25_VERSION } from '@lukso/lsp25-contracts';
+import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
 import { LSP6TestContext } from '../../utils/context';

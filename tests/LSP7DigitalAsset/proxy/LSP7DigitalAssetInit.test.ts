@@ -16,7 +16,7 @@ import {
 } from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
-import { LSP4_TOKEN_TYPES } from '../../../constants';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 
 describe('LSP7DigitalAssetInit with proxy', () => {
   const buildTestContext = async (): Promise<LSP7TestContext> => {

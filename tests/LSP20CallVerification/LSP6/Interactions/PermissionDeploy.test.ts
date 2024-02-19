@@ -6,12 +6,9 @@ import { calculateCreate2 } from 'eth-create2-calculator';
 import { TargetContract__factory } from '../../../../types';
 
 // constants
-import {
-  ERC725YDataKeys,
-  ALL_PERMISSIONS,
-  PERMISSIONS,
-  OPERATION_TYPES,
-} from '../../../../constants';
+import { ERC725YDataKeys } from '../../../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
 import { LSP6TestContext } from '../../../utils/context';

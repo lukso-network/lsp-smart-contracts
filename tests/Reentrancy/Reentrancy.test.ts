@@ -1,7 +1,6 @@
 import { ethers } from 'hardhat';
 
-import { UniversalProfile__factory } from '@lukso/universalprofile-contracts/types';
-import { LSP6KeyManager__factory } from '@lukso/lsp6-contracts/types';
+import { UniversalProfile__factory, LSP6KeyManager__factory } from '../../types';
 
 import { LSP6TestContext } from '../utils/context';
 

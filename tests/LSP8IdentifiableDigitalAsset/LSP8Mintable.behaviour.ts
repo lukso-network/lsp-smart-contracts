@@ -6,13 +6,14 @@ import {
   UniversalProfile,
   LSP6KeyManager,
   UniversalReceiverDelegateTokenReentrant__factory,
+  LSP8Mintable,
 } from '../../types';
-
-import { LSP8Mintable } from '@lukso/lsp8-contracts/types';
 
 import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 
-import { PERMISSIONS, ERC725YDataKeys, OPERATION_TYPES, CALLTYPE } from '../../constants';
+import { ERC725YDataKeys } from '../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 import { combineAllowedCalls, combinePermissions } from '../utils/helpers';
 
 export type LSP8MintableTestAccounts = {

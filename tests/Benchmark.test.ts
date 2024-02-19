@@ -3,28 +3,21 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import { LSP7Mintable, LSP7Mintable__factory } from '@lukso/lsp7-contracts/types';
 import {
+  LSP7Mintable,
+  LSP7Mintable__factory,
   LSP1UniversalReceiverDelegateUP,
   LSP1UniversalReceiverDelegateUP__factory,
-} from '../types';
-import {
   UniversalProfile,
   UniversalProfile__factory,
-} from '@lukso/universalprofile-contracts/types';
-import { LSP6KeyManager__factory } from '@lukso/lsp6-contracts/types';
+  LSP6KeyManager__factory,
+} from '../types';
 
-import { LSP8Mintable, LSP8Mintable__factory } from '@lukso/lsp8-contracts/types';
-
-import {
-  ERC725YDataKeys,
-  INTERFACE_IDS,
-  OPERATION_TYPES,
-  PERMISSIONS,
-  CALLTYPE,
-  LSP8_TOKEN_ID_FORMAT,
-  LSP4_TOKEN_TYPES,
-} from '../constants';
+import { ERC725YDataKeys, INTERFACE_IDS } from '../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
+import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 import { LSP6TestContext } from './utils/context';
 import { setupKeyManager, setupProfileWithKeyManagerWithURD } from './utils/fixtures';
 import {

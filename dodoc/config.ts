@@ -201,6 +201,10 @@ const specs = {
     specsName: 'LSP-20-CallVerification',
     specsLink: `${SPECS_BASE_URI}/LSP-20-CallVerification.md`,
   },
+  LSP23LinkedContractsFactory: {
+    specsName: 'LSP-23-LinkedContractsFactory',
+    specsLink: `${SPECS_BASE_URI}/LSP-23-LinkedContractsFactory.md`,
+  },
   LSP25ExecuteRelayCall: {
     specsName: 'LSP-25-ExecuteRelayCall',
     specsLink: `${SPECS_BASE_URI}/LSP-25-ExecuteRelayCall.md`,
@@ -402,8 +406,12 @@ const generateContractSpecsDetails = (contractName: string) => {
     return specs['LSP10ReceivedVaults'];
   } else if (lspN && lspN[0] === 'LSP17') {
     return specs['LSP17ContractExtension'];
+  } else if (lspN && lspN[0] === 'LSP23') {
+    return specs['LSP23LinkedContractsFactory'];
   } else if (lspN && lspN[0] === 'LSP25') {
     return specs['LSP25ExecuteRelayCall'];
+  } else if (contractName === 'IPostDeploymentModule') {
+    return specs['LSP23LinkedContractsFactory'];
   } else {
     console.error(`Specs for '${contractName}' not found.`);
   }

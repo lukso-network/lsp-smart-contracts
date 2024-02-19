@@ -18,10 +18,10 @@ import {
   ReenterAccountExtension,
   BuyExtension,
   BuyExtension__factory,
-  NameExtension,
-  AgeExtension,
-  AgeExtension__factory,
   NameExtension__factory,
+  NameExtension,
+  AgeExtension__factory,
+  AgeExtension,
 } from '../../types';
 
 // helpers

@@ -1,3 +1,4 @@
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
@@ -18,10 +19,11 @@ import {
   FallbackInitializer__factory,
   ContractNoConstructor__factory,
   ContractNoConstructor,
+  FallbackContract,
   FallbackContract__factory,
 } from '../types';
 
-import type { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import web3 from 'web3';
 
 import { provider, AddressOffset } from '../../../tests/utils/helpers';
 import { UniversalProfile } from '../../../types';

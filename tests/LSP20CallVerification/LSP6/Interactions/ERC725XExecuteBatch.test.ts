@@ -2,17 +2,15 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
 // constants
-import { ERC725YDataKeys, LSP4_TOKEN_TYPES, OPERATION_TYPES } from '../../../../constants';
+import { ERC725YDataKeys } from '../../../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 
 // setup
 import { LSP6TestContext } from '../../../utils/context';
 import { setupKeyManager } from '../../../utils/fixtures';
 import { abiCoder, provider } from '../../../utils/helpers';
-import {
-  LSP7Mintable,
-  LSP7MintableInit__factory,
-  LSP7Mintable__factory,
-} from '@lukso/lsp7-contracts/types';
+import { LSP7Mintable, LSP7MintableInit__factory, LSP7Mintable__factory } from '../../../../types';
 
 export const shouldBehaveLikeBatchExecute = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,

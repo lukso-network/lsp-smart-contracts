@@ -4,7 +4,8 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import { LSP11BasicSocialRecovery, LSP6KeyManager, UniversalProfile } from '../../types';
 
-import { ALL_PERMISSIONS, ERC725YDataKeys, INTERFACE_IDS } from '../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS } from '../../constants';
+import { ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
 
 import { callPayload } from '../utils/fixtures';
 import { ContractTransactionResponse } from 'ethers';

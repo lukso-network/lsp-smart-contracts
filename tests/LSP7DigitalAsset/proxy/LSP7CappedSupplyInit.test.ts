@@ -11,7 +11,7 @@ import {
 } from '../LSP7CappedSupply.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
-import { LSP4_TOKEN_TYPES } from '../../../constants';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 
 describe('LSP7CappedSupplyInit with proxy', () => {
   const buildTestContext = async () => {

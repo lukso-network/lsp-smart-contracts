@@ -12,21 +12,15 @@ import {
   EmitEventExtension__factory,
   OwnerWithURD__factory,
   OwnerWithURD,
+  UniversalProfile,
 } from '../types';
-import { UniversalProfile } from '@lukso/universalprofile-contracts/types';
 
 // helpers
 import { LSP1_HOOK_PLACEHOLDER, abiCoder, getRandomAddresses } from './utils/helpers';
 
 // constants
-import {
-  ERC1271_VALUES,
-  ERC725YDataKeys,
-  INTERFACE_IDS,
-  LSP1_TYPE_IDS,
-  OPERATION_TYPES,
-  SupportedStandards,
-} from '../constants';
+import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } from '../constants';
+import { ERC1271_VALUES, OPERATION_TYPES } from '@lukso/lsp0-contracts';
 
 export type LSP3TestContext = {
   accounts: SignerWithAddress[];
@@ -846,7 +840,7 @@ export const shouldInitializeLikeLSP3 = (buildContext: () => Promise<LSP3TestCon
       expect(result).to.be.true;
     });
 
-    it("should have set key 'SupportedStandards:LSP3UniversalProfile'", async () => {
+    it("should have set key 'SupportedStandards:LSP3Profile'", async () => {
       const result = await context.universalProfile.getData(SupportedStandards.LSP3Profile.key);
 
       expect(result).to.equal(SupportedStandards.LSP3Profile.value);

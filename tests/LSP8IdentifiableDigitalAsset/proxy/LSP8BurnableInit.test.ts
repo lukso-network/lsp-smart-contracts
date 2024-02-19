@@ -7,7 +7,8 @@ import { LSP8BurnableInitTester, LSP8BurnableInitTester__factory } from '../../.
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
-import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_FORMAT } from '../../../constants';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 
 type LSP8BurnableInitTestContext = {
   accounts: SignerWithAddress[];

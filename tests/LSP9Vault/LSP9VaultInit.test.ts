@@ -3,8 +3,7 @@ import { expect } from 'chai';
 
 import { shouldBehaveLikeLSP14 } from '../LSP14Ownable2Step/LSP14Ownable2Step.behaviour';
 
-import { LSP9VaultInit__factory } from '@lukso/lsp9-contracts/types';
-import { UniversalProfile, LSP6KeyManager, LSP9VaultInit } from '../../types';
+import { UniversalProfile, LSP6KeyManager, LSP9VaultInit__factory } from '../../types';
 
 import {
   getNamedAccounts,

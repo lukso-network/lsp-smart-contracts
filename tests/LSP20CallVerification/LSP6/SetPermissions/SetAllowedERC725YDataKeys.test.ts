@@ -3,7 +3,8 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 // constants
-import { ERC725YDataKeys, PERMISSIONS } from '../../../../constants';
+import { ERC725YDataKeys } from '../../../../constants';
+import { PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
 import { LSP6TestContext } from '../../../utils/context';

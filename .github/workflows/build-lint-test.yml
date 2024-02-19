@@ -36,6 +36,8 @@ jobs:
         run: |
           npm run build
           npm run build:turbo
+          npm run build:js
+          npm run build:js:turbo
 
       - name: 📤 cache dependencies + build
         uses: actions/cache@v4
@@ -43,9 +45,11 @@ jobs:
           path: |
             artifacts
             node_modules
+            dist
             types
             contracts.ts
             packages/**/types
+            packages/**/dist
           key: ${{ github.run_id }}
 
       - name: 📚 generate ABI docs
@@ -102,9 +106,11 @@ jobs:
           path: |
             artifacts
             node_modules
+            dist
             types
             contracts.ts
             packages/**/types
+            packages/**/dist
           key: ${{ github.run_id }}
 
       - name: Use Node.js v20

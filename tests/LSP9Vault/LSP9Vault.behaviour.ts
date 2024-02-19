@@ -3,7 +3,6 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { expect } from 'chai';
 
 // types
-import { LSP9Vault } from '@lukso/lsp9-contracts/types';
 import {
   LSP6KeyManager,
   UniversalProfile,
@@ -11,6 +10,7 @@ import {
   UniversalReceiverDelegateVaultReentrantA__factory,
   UniversalReceiverDelegateVaultReentrantB__factory,
   UniversalReceiverDelegateVaultMalicious__factory,
+  LSP9Vault,
 } from '../../types';
 
 // helpers
@@ -20,16 +20,9 @@ import { ARRAY_LENGTH, abiCoder, combineAllowedCalls } from '../utils/helpers';
 import { callPayload } from '../utils/fixtures';
 
 // constants
-import {
-  ERC725YDataKeys,
-  INTERFACE_IDS,
-  SupportedStandards,
-  PERMISSIONS,
-  OPERATION_TYPES,
-  LSP1_TYPE_IDS,
-  CALLTYPE,
-} from '../../constants';
-import { ContractTransactionResponse } from 'ethers';
+import { ERC725YDataKeys, INTERFACE_IDS, SupportedStandards, LSP1_TYPE_IDS } from '../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 export type LSP9TestAccounts = {
   owner: SignerWithAddress;

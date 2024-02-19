@@ -2,11 +2,14 @@ import { expect } from 'chai';
 import { ethers, network, artifacts } from 'hardhat';
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { UPWithInstantAcceptOwnership__factory, UPWithInstantAcceptOwnership } from '../../types';
-import { LSP0ERC725Account } from '../../packages/lsp0-contracts/types';
+import {
+  UPWithInstantAcceptOwnership__factory,
+  UPWithInstantAcceptOwnership,
+  LSP0ERC725Account,
+} from '../../types';
 
 // constants
-import { OPERATION_TYPES } from '../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 
 // helpers
 import { provider } from '../utils/helpers';

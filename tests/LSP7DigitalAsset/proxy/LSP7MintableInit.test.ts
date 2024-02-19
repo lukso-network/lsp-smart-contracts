@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { LSP7MintableInit, LSP7MintableInit__factory } from '@lukso/lsp7-contracts/types';
+import { LSP7MintableInit, LSP7MintableInit__factory } from '../../../types';
 
 import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour';
 import {
@@ -11,7 +11,8 @@ import {
 } from '../LSP7Mintable.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
-import { ERC725YDataKeys, LSP4_TOKEN_TYPES } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 
 describe('LSP7MintableInit with proxy', () => {
   const buildTestContext = async () => {

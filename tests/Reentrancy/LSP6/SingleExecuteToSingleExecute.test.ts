@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
-//types
+// types
 import { BytesLike } from 'ethers';
 
 // constants

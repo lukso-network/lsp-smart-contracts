@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import { LSP7Mintable, LSP7Mintable__factory } from '@lukso/lsp7-contracts/types';
 import {
   ExecutorLSP20,
   ExecutorLSP20__factory,
@@ -11,23 +10,19 @@ import {
   TargetPayableContract__factory,
   GraffitiEventExtension__factory,
   GraffitiEventExtension,
-  FallbackContract,
-  FallbackContract__factory,
-} from '../../../../types';
-import {
+  LSP7Mintable,
+  LSP7Mintable__factory,
   UniversalProfile__factory,
   UniversalProfile,
-} from '@lukso/universalprofile-contracts/types';
+  FallbackContract__factory,
+  FallbackContract,
+} from '../../../../types';
 
 // constants
-import {
-  ERC725YDataKeys,
-  ALL_PERMISSIONS,
-  PERMISSIONS,
-  OPERATION_TYPES,
-  CALLTYPE,
-  LSP4_TOKEN_TYPES,
-} from '../../../../constants';
+import { ERC725YDataKeys } from '../../../../constants';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
 import { LSP6TestContext } from '../../../utils/context';

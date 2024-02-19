@@ -27,6 +27,9 @@ import {
   RequireCallbackToken__factory,
   RevertFallbackExtension,
   RevertFallbackExtension__factory,
+  NameExtension,
+  NameExtension__factory,
+  AgeExtension__factory,
 } from '../../types';
 
 // helpers

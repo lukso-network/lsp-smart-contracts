@@ -7,6 +7,10 @@
       "outputs": ["**/artifacts/**", "types/**", "**/types/**"],
       "cache": true
     },
+    "build:js": {
+      "outputs": ["**/dist/**"],
+      "cache": true
+    },
     "lint": {
       "env": ["CONTRACT_VERIFICATION_TESTNET_PK"]
     },

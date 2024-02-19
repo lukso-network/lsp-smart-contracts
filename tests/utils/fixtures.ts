@@ -8,7 +8,8 @@ import {
   UniversalProfile__factory,
 } from '../../types';
 
-import { PERMISSIONS, ERC725YDataKeys, ALL_PERMISSIONS } from '../../constants';
+import { ERC725YDataKeys } from '../../constants';
+import { PERMISSIONS, ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // helpers
 import { combinePermissions } from '../utils/helpers';

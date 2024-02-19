@@ -67,6 +67,7 @@
     "build:turbo": "turbo build",
     "build:docs": "hardhat dodoc && prettier -w ./docs",
     "build:js": "unbuild",
+    "build:js:turbo": "turbo build:js",
     "clean": "hardhat clean && rm -rf module common",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",

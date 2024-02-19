@@ -1,5 +1,6 @@
-import { LSP4_TOKEN_TYPES, LSP8_TOKEN_ID_FORMAT } from '../../../constants';
-import { LSP8Mintable, LSP8Mintable__factory } from '@lukso/lsp8-contracts/types';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
+import { LSP8Mintable, LSP8Mintable__factory } from '../../../types';
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {

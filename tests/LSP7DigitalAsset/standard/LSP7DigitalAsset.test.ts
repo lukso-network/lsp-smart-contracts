@@ -1,8 +1,7 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LSP7Tester__factory } from '../../../types';
-import { LSP7DigitalAsset } from '@lukso/lsp7-contracts/types';
+import { LSP7Tester__factory, LSP7DigitalAsset } from '../../../types';
 
 import {
   getNamedAccounts,
@@ -20,7 +19,7 @@ import {
   LS4DigitalAssetMetadataTestContext,
   shouldBehaveLikeLSP4DigitalAssetMetadata,
 } from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour';
-import { LSP4_TOKEN_TYPES } from '../../../constants';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 
 describe('LSP7DigitalAsset with constructor', () => {
   const buildTestContext = async (): Promise<LSP7TestContext> => {
