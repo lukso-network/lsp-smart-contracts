@@ -270,7 +270,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
 
           await ownerContract
             .connect(context.deployParams.owner)
-            .acceptOwnership(await context.universalProfile.getAddress());
+            .acceptOwnership(context.universalProfile.target);
         });
 
         after('reverting to previous owner', async () => {
@@ -303,7 +303,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
             .connect(context.deployParams.owner)
             .transferOwnership(await ownerContract.getAddress());
 
-          await ownerContract.acceptOwnership(await context.universalProfile.getAddress());
+          await ownerContract.acceptOwnership(context.universalProfile.target);
         });
 
         after('reverting to previous owner', async () => {
@@ -336,7 +336,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
             .connect(context.deployParams.owner)
             .transferOwnership(await ownerContract.getAddress());
 
-          await ownerContract.acceptOwnership(await context.universalProfile.getAddress());
+          await ownerContract.acceptOwnership(context.universalProfile.target);
         });
 
         after('reverting to previous owner', async () => {
@@ -370,7 +370,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
             .connect(context.deployParams.owner)
             .transferOwnership(await ownerContract.getAddress());
 
-          await ownerContract.acceptOwnership(await context.universalProfile.getAddress());
+          await ownerContract.acceptOwnership(context.universalProfile.target);
         });
 
         after('reverting to previous owner', async () => {
@@ -403,7 +403,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
             .connect(context.deployParams.owner)
             .transferOwnership(await ownerContract.getAddress());
 
-          await ownerContract.acceptOwnership(await context.universalProfile.getAddress());
+          await ownerContract.acceptOwnership(context.universalProfile.target);
         });
 
         after('reverting to previous owner', async () => {
@@ -461,7 +461,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
           ).deploy();
 
           newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
-            firstCallReturnSuccessValueContract.address,
+            firstCallReturnSuccessValueContract.target,
           );
         });
 
@@ -490,7 +490,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
           ).deploy();
 
           newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
-            bothCallReturnSuccessValueContract.address,
+            bothCallReturnSuccessValueContract.target,
           );
         });
 
@@ -517,7 +517,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
           ).deploy();
 
           newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
-            bothCallReturnSuccessValueContract.address,
+            bothCallReturnSuccessValueContract.target,
           );
         });
 
@@ -546,7 +546,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
           ).deploy();
 
           newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
-            secondCallReturnFailureContract.address,
+            secondCallReturnFailureContract.target,
           );
         });
 
@@ -569,7 +569,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
             await new SecondCallReturnExpandedSuccessValue__factory(context.accounts[0]).deploy();
 
           newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
-            secondCallReturnExpandedValueContract.address,
+            secondCallReturnExpandedValueContract.target,
           );
         });
 
