@@ -136,7 +136,6 @@
   },
   "devDependencies": {
     "@b00ste/hardhat-dodoc": "^0.3.16",
-    "@defi-wonderland/smock": "^2.3.5",
     "@erc725/erc725.js": "0.17.2",
     "@lukso/eip191-signer.js": "^0.2.2",
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",

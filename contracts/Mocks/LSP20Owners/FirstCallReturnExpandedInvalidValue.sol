@@ -8,7 +8,7 @@ import {
 /**
  * @title sample contract used for testing
  */
-contract FirstCallReturnExpandedFailValue {
+contract FirstCallReturnExpandedInvalidValue {
     event CallVerified();
 
     address public target;
