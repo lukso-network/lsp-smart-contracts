@@ -35,3 +35,6 @@ import {
 import {
     UniversalProfilePostDeploymentModule
 } from "@lukso/lsp23-contracts/contracts/modules/UniversalProfilePostDeploymentModule.sol";
+import {
+    IPostDeploymentModule
+} from "@lukso/lsp23-contracts/contracts/IPostDeploymentModule.sol";

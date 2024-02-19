@@ -106,9 +106,11 @@ jobs:
           path: |
             artifacts
             node_modules
+            dist
             types
             contracts.ts
             packages/**/types
+            packages/**/dist
           key: ${{ github.run_id }}
 
       - name: Use Node.js v20
