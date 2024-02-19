@@ -30,8 +30,6 @@
     "contracts/**/*.sol",
     "!contracts/Mocks/**/*.sol",
     "artifacts/*.json",
-    "userdocs/*.json",
-    "devdocs/*.json",
     "dist",
     "./README.md",
     "./CONTRIBUTING.md",
@@ -56,8 +54,6 @@
       "import": "./dist/constants.mjs",
       "types": "./dist/constants.d.ts"
     },
-    "./userdocs/*": "./userdocs",
-    "./devdocs/*": "./devdocs/*",
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
