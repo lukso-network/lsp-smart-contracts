@@ -103,7 +103,7 @@ export const shouldBehaveLikeLSP8Mintable = (
 
       await context.lsp8Mintable
         .connect(context.accounts.owner)
-        .transferOwnership(universalProfile.address);
+        .transferOwnership(await universalProfile.getAddress());
 
       const URDTokenReentrant = await new UniversalReceiverDelegateTokenReentrant__factory(
         context.accounts.profileOwner,
@@ -136,14 +136,14 @@ export const shouldBehaveLikeLSP8Mintable = (
       const secondRandomTokenId = ethers.randomBytes(32);
 
       const reentrantMintPayload = context.lsp8Mintable.interface.encodeFunctionData('mint', [
-        universalProfile.address,
+        universalProfile.target,
         secondRandomTokenId,
         false,
         '0x',
       ]);
 
       const mintPayload = context.lsp8Mintable.interface.encodeFunctionData('mint', [
-        universalProfile.address,
+        universalProfile.target,
         randomTokenId,
         false,
         reentrantMintPayload,
@@ -158,9 +158,9 @@ export const shouldBehaveLikeLSP8Mintable = (
 
       await lsp6KeyManager.connect(context.accounts.profileOwner).execute(executePayload);
 
-      const balanceOfUP = await context.lsp8Mintable.balanceOf(universalProfile.address);
+      const balanceOfUP = await context.lsp8Mintable.balanceOf(universalProfile.target);
 
-      const tokenIdsOfUP = await context.lsp8Mintable.tokenIdsOf(universalProfile.address);
+      const tokenIdsOfUP = await context.lsp8Mintable.tokenIdsOf(universalProfile.target);
 
       expect(balanceOfUP).to.equal(2);
       expect(tokenIdsOfUP[0]).to.equal(ethers.hexlify(randomTokenId));

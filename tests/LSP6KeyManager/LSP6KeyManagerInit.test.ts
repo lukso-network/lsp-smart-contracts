@@ -38,7 +38,7 @@ describe('LSP6KeyManager with proxy', () => {
       const accounts = await ethers.getSigners();
       const keyManagerBaseContract = await new LSP6KeyManagerInit__factory(accounts[0]).deploy();
 
-      const linkedTarget = await keyManagerBaseContract.target();
+      const linkedTarget = await keyManagerBaseContract['target()'].staticCall();
       expect(linkedTarget).to.equal(ethers.ZeroAddress);
     });
 

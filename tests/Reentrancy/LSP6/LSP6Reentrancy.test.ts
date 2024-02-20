@@ -227,9 +227,9 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
             [
               ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
               ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-                (await URDDummy.getAddress()),
+                (await URDDummy.getAddress()).substring(2),
               ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-                (await URDDummy.getAddress()),
+                (await URDDummy.getAddress()).substring(2),
             ],
             [
               await URDDummy.getAddress(),

@@ -771,7 +771,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       const aliceUniversalProfilePayload =
         aliceContext.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          bobContext.keyManager.getAddress(),
+          await bobContext.keyManager.getAddress(),
           0,
           bobKeyManagerPayload,
         ]);
@@ -805,7 +805,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       const aliceUniversalProfilePayload =
         aliceContext.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          bobContext.keyManager.getAddress(),
+          await bobContext.keyManager.getAddress(),
           0,
           bobKeyManagerPayload,
         ]);

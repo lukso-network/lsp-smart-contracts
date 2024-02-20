@@ -53,7 +53,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
 
   describe('when calling `getNonce(...)` with a channel ID greater than 2 ** 128', () => {
     it('should revert', async () => {
-      const channelId = ethers.toBigInt(2 ** 129);
+      const channelId = ethers.toBigInt('0xffffffffffffffffffffffffffffffffff');
 
       await expect(context.keyManager.getNonce(signer.address, channelId)).to.be.revertedWithPanic;
     });

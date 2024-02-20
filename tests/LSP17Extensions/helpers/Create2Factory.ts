@@ -1,5 +1,5 @@
 // from: https://github.com/Arachnid/deterministic-deployment-proxy
-import { BigNumberish, JsonRpcProvider, Signer, toBeHex } from 'ethers';
+import { BigNumberish, JsonRpcProvider, Signer, ethers, toBeHex } from 'ethers';
 import { getBytes, concat, zeroPadValue, keccak256 } from 'ethers';
 import { Provider } from '@ethersproject/providers';
 import { TransactionRequest } from '@ethersproject/abstract-provider';
@@ -51,24 +51,25 @@ export class Create2Factory {
       data: this.getDeployTransactionCallData(initCode, salt),
     };
     if (gasLimit === 'estimate') {
-      gasLimit = await this.signer.estimateGas(deployTx);
+      gasLimit = await (await this.signer).estimateGas(deployTx);
     }
 
     if (gasLimit === undefined) {
-      gasLimit =
+      gasLimit = ethers.toBigInt(
         getBytes(initCode)
           .map((x) => (x === 0 ? 4 : 16))
           .reduce((sum, x) => sum + x) +
-        (200 * initCode.length) / 2 + // actual is usually somewhat smaller (only deposited code, not entire constructor)
-        6 * Math.ceil(initCode.length / 64) + // hash price. very minor compared to deposit costs
-        32000 +
-        21000;
+          (200 * initCode.length) / 2 + // actual is usually somewhat smaller (only deposited code, not entire constructor)
+          6 * Math.ceil(initCode.length / 64) + // hash price. very minor compared to deposit costs
+          32000 +
+          21000,
+      );
 
       // deployer requires some extra gas
-      gasLimit = Math.floor((gasLimit * 64) / 63);
+      gasLimit = ethers.toBigInt(Math.floor((ethers.toNumber(gasLimit) * 64) / 63));
     }
 
-    const ret = await this.signer.sendTransaction({ ...deployTx, gasLimit });
+    const ret = await (await this.signer).sendTransaction({ ...deployTx, gasLimit });
     await ret.wait();
     if ((await this.provider.getCode(addr).then((code) => code.length)) === 2) {
       throw new Error('failed to deploy');
@@ -102,7 +103,9 @@ export class Create2Factory {
     if (await this._isFactoryDeployed()) {
       return;
     }
-    await (signer ?? this.signer).sendTransaction({
+    await (
+      await (signer ?? this.signer)
+    ).sendTransaction({
       to: Create2Factory.factoryDeployer,
       value: BigInt(Create2Factory.factoryDeploymentFee),
     });
