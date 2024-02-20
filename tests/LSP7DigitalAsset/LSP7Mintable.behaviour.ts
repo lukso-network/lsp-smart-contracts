@@ -5,8 +5,6 @@ import { expect } from 'chai';
 import {
   UniversalReceiverDelegateTokenReentrant__factory,
   LSP7Mintable,
-  LSP6KeyManager,
-  UniversalProfile,
   UniversalProfileInit,
   LSP6KeyManagerInit,
   UniversalReceiverDelegateTokenReentrant,

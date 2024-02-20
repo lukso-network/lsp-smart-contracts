@@ -48,7 +48,10 @@ describe('UniversalProfileInit with proxy', () => {
       initialFunding,
     };
 
-    const universalProfileProxy = await deployProxy(universalProfileInit.address, accounts[0]);
+    const universalProfileProxy = await deployProxy(
+      await universalProfileInit.getAddress(),
+      accounts[0],
+    );
 
     const universalProfile = universalProfileInit.attach(universalProfileProxy);
 
@@ -62,7 +65,10 @@ describe('UniversalProfileInit with proxy', () => {
   };
 
   const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
-    const universalProfileProxy = await deployProxy(universalProfileInit.address, accounts[0]);
+    const universalProfileProxy = await deployProxy(
+      await universalProfileInit.getAddress(),
+      accounts[0],
+    );
 
     const lsp1Implementation = universalProfileInit.attach(universalProfileProxy);
 
@@ -81,7 +87,10 @@ describe('UniversalProfileInit with proxy', () => {
       initialFunding: initialFunding,
     };
 
-    const universalProfileProxy = await deployProxy(universalProfileInit.address, accounts[0]);
+    const universalProfileProxy = await deployProxy(
+      await universalProfileInit.getAddress(),
+      accounts[0],
+    );
 
     const universalProfile = universalProfileInit.attach(universalProfileProxy);
 
@@ -100,7 +109,10 @@ describe('UniversalProfileInit with proxy', () => {
       owner: accounts[0],
     };
 
-    const universalProfileProxy = await deployProxy(universalProfileInit.address, accounts[0]);
+    const universalProfileProxy = await deployProxy(
+      await universalProfileInit.getAddress(),
+      accounts[0],
+    );
 
     const universalProfile = universalProfileInit.attach(universalProfileProxy);
 

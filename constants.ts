@@ -2,7 +2,7 @@
  * Set of constants values as defined in each LUKSO Standards Proposals (LSPs).
  * @see https://github.com/lukso-network/LIPs/tree/main/LSPs
  */
-export * from './contracts';
+// export * from './contracts';
 
 import { INTERFACE_ID_LSP0ERC725Account, LSP0_TYPE_IDS } from '@lukso/lsp0-contracts';
 import { INTERFACE_ID_LSP1, LSP1DataKeys } from '@lukso/lsp1-contracts';

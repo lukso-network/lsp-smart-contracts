@@ -1,6 +1,5 @@
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { Signer } from 'ethers';
 import { EntryPoint__factory, EntryPoint } from '@account-abstraction/contracts';
 
 import { BytesLike, parseEther } from 'ethers';

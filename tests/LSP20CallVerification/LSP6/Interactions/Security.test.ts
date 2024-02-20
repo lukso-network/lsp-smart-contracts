@@ -331,10 +331,10 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
         const _reentrancyStatusSlotNumber = ethers.toBigInt(
           (
             await artifacts.getBuildInfo(
-              'contracts/LSP6KeyManager/LSP6KeyManager.sol:LSP6KeyManager',
+              '@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol:LSP6KeyManager',
             )
           )?.output.contracts[
-            'contracts/LSP6KeyManager/LSP6KeyManager.sol'
+            '@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol'
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
           ].LSP6KeyManager.storageLayout.storage.filter((elem) => {
