@@ -1,4 +1,4 @@
-# Universal Profile
+# Universal Profile &middot; [![npm version](https://img.shields.io/npm/v/@lukso/universalprofile-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/universalprofile-contracts)
 
 Smart Contract implementation for **Universal Profile**, a combination of LSP0 ERC725 Account and LSP3 Profile Metadata.
 
