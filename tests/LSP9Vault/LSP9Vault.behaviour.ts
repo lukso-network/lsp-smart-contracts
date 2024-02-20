@@ -509,14 +509,14 @@ export const shouldBehaveLikeLSP9 = (
       before(async () => {
         await context.lsp9Vault
           .connect(context.accounts.owner)
-          .transferOwnership(await context.universalProfile.getAddress());
+          .transferOwnership(context.universalProfile.target);
 
         const acceptOwnershipSelector =
           context.universalProfile.interface.getFunction('acceptOwnership').selector;
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          await context.lsp9Vault.getAddress(),
+          context.lsp9Vault.target,
           0,
           acceptOwnershipSelector,
         ]);
@@ -532,6 +532,7 @@ export const shouldBehaveLikeLSP9 = (
         const arrayLength = await context.universalProfile.getData(
           ERC725YDataKeys.LSP10['LSP10Vaults[]'].length,
         );
+
         expect(arrayLength).to.equal(ARRAY_LENGTH.ONE);
       });
     });

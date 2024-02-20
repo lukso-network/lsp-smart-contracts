@@ -287,7 +287,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
         await context.universalProfile
           .connect(addressCanCallOnlyTransferOnLSP8)
-          .execute(OPERATION_TYPES.CALL, lsp8Contract.address, 0, transferPayload);
+          .execute(OPERATION_TYPES.CALL, lsp8Contract.target, 0, transferPayload);
 
         expect(await lsp8Contract.tokenOwnerOf(tokenIdToTransfer)).to.equal(recipient);
       });
@@ -303,12 +303,12 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
         await expect(
           context.universalProfile
             .connect(addressCanCallOnlyTransferOnLSP8)
-            .execute(OPERATION_TYPES.CALL, lsp8Contract.address, 0, authorizeOperatorPayload),
+            .execute(OPERATION_TYPES.CALL, lsp8Contract.target, 0, authorizeOperatorPayload),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
           .withArgs(
             await addressCanCallOnlyTransferOnLSP8.getAddress(),
-            lsp8Contract.address,
+            lsp8Contract.target,
             lsp8Contract.interface.getFunction('authorizeOperator').selector,
           );
       });
@@ -329,7 +329,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           await context.universalProfile
             .connect(addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8)
-            .execute(OPERATION_TYPES.CALL, lsp7Contract.address, 0, mintPayload);
+            .execute(OPERATION_TYPES.CALL, lsp7Contract.target, 0, mintPayload);
 
           expect(await lsp7Contract.balanceOf(recipient)).to.equal(amount);
         });
@@ -355,16 +355,16 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           await context.universalProfile
             .connect(addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8)
-            .execute(OPERATION_TYPES.CALL, lsp7Contract.address, 0, transferPayload);
+            .execute(OPERATION_TYPES.CALL, lsp7Contract.target, 0, transferPayload);
 
           // CHECK that UP token balance has decreased
           expect(
             await lsp7Contract.balanceOf(await context.universalProfile.getAddress()),
-          ).to.equal(previousUPTokenBalance.sub(amount));
+          ).to.equal(previousUPTokenBalance - BigInt(amount));
 
           // CHECK that recipient token balance has increased
           expect(await lsp7Contract.balanceOf(recipient)).to.equal(
-            previousRecipientTokenBalance.add(amount),
+            previousRecipientTokenBalance + BigInt(amount),
           );
         });
 
@@ -379,7 +379,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           await context.universalProfile
             .connect(addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8)
-            .execute(OPERATION_TYPES.CALL, lsp7Contract.address, 0, authorizeOperatorPayload);
+            .execute(OPERATION_TYPES.CALL, lsp7Contract.target, 0, authorizeOperatorPayload);
 
           expect(
             await lsp7Contract.authorizedAmountFor(
@@ -398,9 +398,9 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           await context.universalProfile
             .connect(addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8)
-            .execute(OPERATION_TYPES.CALL, lsp7Contract.address, 0, setDataPayload);
+            .execute(OPERATION_TYPES.CALL, lsp7Contract.target, 0, setDataPayload);
 
-          expect(await lsp7Contract.callStatic.getData(key)).to.equal(value);
+          expect(await lsp7Contract.getData(key)).to.equal(value);
         });
       });
 
@@ -415,7 +415,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           await context.universalProfile
             .connect(addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8)
-            .execute(OPERATION_TYPES.CALL, lsp8Contract.address, 0, authorizeOperatorPayload);
+            .execute(OPERATION_TYPES.CALL, lsp8Contract.target, 0, authorizeOperatorPayload);
 
           expect(await lsp8Contract.isOperatorFor(recipient, tokenIdToApprove)).to.be.true;
         });
@@ -434,12 +434,12 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
           await expect(
             context.universalProfile
               .connect(addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8)
-              .execute(OPERATION_TYPES.CALL, lsp8Contract.address, 0, transferPayload),
+              .execute(OPERATION_TYPES.CALL, lsp8Contract.target, 0, transferPayload),
           )
             .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
             .withArgs(
               await addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.getAddress(),
-              lsp8Contract.address,
+              lsp8Contract.target,
               lsp8Contract.interface.getFunction('transfer').selector,
             );
         });
@@ -458,12 +458,12 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
           await expect(
             context.universalProfile
               .connect(addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8)
-              .execute(OPERATION_TYPES.CALL, lsp8Contract.address, 0, mintPayload),
+              .execute(OPERATION_TYPES.CALL, lsp8Contract.target, 0, mintPayload),
           )
             .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
             .withArgs(
               await addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.getAddress(),
-              lsp8Contract.address,
+              lsp8Contract.target,
               lsp8Contract.interface.getFunction('mint').selector,
             );
         });

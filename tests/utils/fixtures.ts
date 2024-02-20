@@ -63,9 +63,11 @@ export async function setupKeyManager(
     [ALL_PERMISSIONS, ..._dataValues],
   );
 
+  const keyManagerAddress = await _context.keyManager.getAddress();
+
   await _context.universalProfile
     .connect(_context.mainController)
-    .transferOwnership(await _context.keyManager.getAddress());
+    .transferOwnership(keyManagerAddress);
 
   const payload = _context.universalProfile.interface.getFunction('acceptOwnership').selector;
 
@@ -101,19 +103,19 @@ export async function setupKeyManagerHelper(
  * Deploy 1 Profile + 1 KeyManager + 1 URD and set all needed permissions
  */
 export async function setupProfileWithKeyManagerWithURD(EOA: SignerWithAddress) {
-  const universalProfile = await new UniversalProfile__factory(EOA).deploy(EOA.address);
-  const universalProfileAddress = await universalProfile.getAddress();
+  const universalProfile = await new UniversalProfile__factory(EOA).deploy(EOA.address, {
+    value: ethers.parseEther('10'),
+  });
 
   const lsp6KeyManager = await new LSP6KeyManager__factory(EOA).deploy(
     await universalProfile.getAddress(),
   );
+
   const lsp6KeyManagerAddress = await lsp6KeyManager.getAddress();
 
   const lsp1universalReceiverDelegateUP = await new LSP1UniversalReceiverDelegateUP__factory(
     EOA,
   ).deploy();
-
-  const lsp1DelegateAddress = await lsp1universalReceiverDelegateUP.getAddress();
 
   await universalProfile
     .connect(EOA)
@@ -123,16 +125,17 @@ export async function setupProfileWithKeyManagerWithURD(EOA: SignerWithAddress) 
         ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '00000000000000000000000000000000',
         ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '00000000000000000000000000000001',
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + EOA.address.substring(2),
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + lsp1DelegateAddress.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          (await lsp1universalReceiverDelegateUP.getAddress()).substring(2),
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
       ],
       [
         ethers.zeroPadValue(ethers.toBeHex(2), 16),
         EOA.address,
-        lsp1DelegateAddress,
+        await lsp1universalReceiverDelegateUP.getAddress(),
         ALL_PERMISSIONS,
         combinePermissions(PERMISSIONS.SUPER_SETDATA, PERMISSIONS.REENTRANCY),
-        lsp1DelegateAddress,
+        await lsp1universalReceiverDelegateUP.getAddress(),
       ],
     );
 
@@ -142,10 +145,6 @@ export async function setupProfileWithKeyManagerWithURD(EOA: SignerWithAddress) 
 
   await lsp6KeyManager.connect(EOA).execute(claimOwnershipPayload);
 
-  await EOA.sendTransaction({
-    to: universalProfileAddress,
-    value: ethers.parseEther('10'),
-  });
   return [universalProfile, lsp6KeyManager, lsp1universalReceiverDelegateUP];
 }
 
@@ -201,13 +200,13 @@ export function callPayload(from: any, to: string, abi: string) {
  */
 export async function getLSP5MapAndArrayKeysValue(account, token) {
   const mapValue = await account.getData(
-    ethers.concat([ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap, token.address]),
+    ethers.concat([ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap, await token.getAddress()]),
   );
 
   const indexInHex = '0x' + mapValue.substring(10, mapValue.length);
   const interfaceId = mapValue.substring(0, 10);
 
-  const indexInNumber = ethers.toNumber(ethers.toBigInt(indexInHex));
+  const indexInNumber = ethers.toNumber(ethers.toBigInt(indexInHex === '0x' ? 0 : indexInHex));
   const rawIndexInArray = ethers.zeroPadValue(ethers.toBeHex(indexInNumber), 16);
 
   const elementInArrayKey = ethers.concat([

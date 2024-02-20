@@ -7,6 +7,9 @@ import {
   LSP7Mintable,
   LSP6KeyManager,
   UniversalProfile,
+  UniversalProfileInit,
+  LSP6KeyManagerInit,
+  UniversalReceiverDelegateTokenReentrant,
 } from '../../types';
 
 import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
@@ -97,16 +100,16 @@ export const shouldBehaveLikeLSP7Mintable = (
     before(async () => {
       const [UP, KM] = await setupProfileWithKeyManagerWithURD(context.accounts.profileOwner);
 
-      universalProfile = UP as UniversalProfile;
-      lsp6KeyManager = KM as LSP6KeyManager;
+      universalProfile = UP as UniversalProfileInit;
+      lsp6KeyManager = KM as LSP6KeyManagerInit;
 
       await context.lsp7Mintable
         .connect(context.accounts.owner)
         .transferOwnership(await universalProfile.getAddress());
 
-      const URDTokenReentrant = await new UniversalReceiverDelegateTokenReentrant__factory(
+      const URDTokenReentrant = (await new UniversalReceiverDelegateTokenReentrant__factory(
         context.accounts.profileOwner,
-      ).deploy();
+      ).deploy()) as UniversalReceiverDelegateTokenReentrant;
 
       const setDataPayload = universalProfile.interface.encodeFunctionData('setDataBatch', [
         [
@@ -135,13 +138,13 @@ export const shouldBehaveLikeLSP7Mintable = (
       const firstAmount = 50;
       const secondAmount = 150;
       const reentrantMintPayload = context.lsp7Mintable.interface.encodeFunctionData('mint', [
-        universalProfile.address,
+        await universalProfile.getAddress(),
         firstAmount,
         false,
         '0x',
       ]);
       const mintPayload = context.lsp7Mintable.interface.encodeFunctionData('mint', [
-        universalProfile.address,
+        await universalProfile.getAddress(),
         secondAmount,
         false,
         reentrantMintPayload,
@@ -153,7 +156,7 @@ export const shouldBehaveLikeLSP7Mintable = (
         mintPayload,
       ]);
       await lsp6KeyManager.connect(context.accounts.profileOwner).execute(executePayload);
-      const balanceOfUP = await context.lsp7Mintable.balanceOf(universalProfile.address);
+      const balanceOfUP = await context.lsp7Mintable.balanceOf(await universalProfile.getAddress());
       expect(balanceOfUP).to.equal(firstAmount + secondAmount);
     });
   });

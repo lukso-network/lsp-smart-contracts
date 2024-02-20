@@ -328,7 +328,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
 
         await tx.wait();
 
-        const _reentrancyStatusSlotNumber = Number.parseInt(
+        const _reentrancyStatusSlotNumber = ethers.toBigInt(
           (
             await artifacts.getBuildInfo(
               'contracts/LSP6KeyManager/LSP6KeyManager.sol:LSP6KeyManager',
@@ -352,7 +352,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
         const _reentrancyStatusHex = _reentrancyStatusPackedWithAddress.slice(10, 12);
 
         // Convert the hexadecimal value to a boolean
-        const _reentrancyStatus = Boolean(parseInt(_reentrancyStatusHex, 16));
+        const _reentrancyStatus = Boolean(ethers.toNumber(_reentrancyStatusHex));
 
         expect(_reentrancyStatus).to.be.false;
       });

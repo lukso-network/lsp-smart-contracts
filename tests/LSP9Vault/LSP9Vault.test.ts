@@ -26,6 +26,7 @@ import { provider } from '../utils/helpers';
 describe('LSP9Vault with constructor', () => {
   const buildTestContext = async (initialFunding?: number): Promise<LSP9TestContext> => {
     const accounts = await getNamedAccounts();
+
     const deployParams = {
       newOwner: accounts.owner.address,
       initialFunding,

@@ -174,18 +174,18 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
     describe('when trying to interact an ERC725Account (LSP0)', () => {
       it('should allow to transfer LYX', async () => {
-        const initialAccountBalance = await provider.getBalance(otherUniversalProfile.address);
+        const initialAccountBalance = await provider.getBalance(otherUniversalProfile.target);
 
         await context.universalProfile
           .connect(addressCanInteractOnlyWithERC1271)
           .execute(
             OPERATION_TYPES.CALL,
-            otherUniversalProfile.address,
+            otherUniversalProfile.target,
             ethers.parseEther('1'),
             '0x',
           );
 
-        const newAccountBalance = await provider.getBalance(otherUniversalProfile.address);
+        const newAccountBalance = await provider.getBalance(otherUniversalProfile.target);
         expect(newAccountBalance).to.be.gt(initialAccountBalance);
       });
     });
@@ -246,7 +246,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
             .connect(addressCanInteractOnlyWithLSP7)
             .execute(
               OPERATION_TYPES.CALL,
-              otherUniversalProfile.address,
+              otherUniversalProfile.target,
               ethers.parseEther('1'),
               '0x',
             ),
@@ -254,7 +254,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
           .withArgs(
             addressCanInteractOnlyWithLSP7.address,
-            otherUniversalProfile.address,
+            otherUniversalProfile.target,
             '0x00000000',
           );
       });
@@ -339,7 +339,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
         await context.universalProfile
           .connect(addressCanInteractOnlyWithLSP7)
-          .execute(OPERATION_TYPES.CALL, lsp7TokenB.address, 0, transferPayload);
+          .execute(OPERATION_TYPES.CALL, lsp7TokenB.target, 0, transferPayload);
 
         expect(await lsp7TokenB.balanceOf(recipient)).to.equal(amount);
         expect(await lsp7TokenB.balanceOf(await context.universalProfile.getAddress())).to.equal(
@@ -361,7 +361,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
         await context.universalProfile
           .connect(addressCanInteractOnlyWithLSP7)
-          .execute(OPERATION_TYPES.CALL, lsp7TokenC.address, 0, transferPayload);
+          .execute(OPERATION_TYPES.CALL, lsp7TokenC.target, 0, transferPayload);
 
         expect(await lsp7TokenC.balanceOf(recipient)).to.equal(amount);
         expect(await lsp7TokenC.balanceOf(await context.universalProfile.getAddress())).to.equal(

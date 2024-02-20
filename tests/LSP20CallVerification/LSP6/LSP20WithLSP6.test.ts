@@ -19,7 +19,7 @@ describe('LSP20 + LSP6 with constructor', () => {
     );
 
     const keyManager = await new LSP6KeyManager__factory(mainController).deploy(
-      universalProfile.address,
+      universalProfile.target,
     );
 
     return { accounts, mainController, universalProfile, keyManager, initialFunding };

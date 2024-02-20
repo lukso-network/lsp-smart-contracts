@@ -65,7 +65,7 @@ export function combinePermissions(..._permissions: string[]) {
 
   _permissions.forEach((permission) => {
     const permissionAsBN = ethers.toBigInt(permission);
-    result = result & permissionAsBN;
+    result = result | permissionAsBN;
   });
 
   return ethers.zeroPadValue(ethers.toBeHex(result), 32);
@@ -76,7 +76,7 @@ export function combineCallTypes(..._callTypes: string[]) {
 
   _callTypes.forEach((callType) => {
     const callTypeAsBN = ethers.toBigInt(callType);
-    result = result & callTypeAsBN;
+    result = result | callTypeAsBN;
   });
 
   return ethers.zeroPadValue(ethers.toBeHex(result), 4);

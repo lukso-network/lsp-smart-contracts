@@ -10,7 +10,12 @@ import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP6TestContext } from '../../../utils/context';
 import { setupKeyManager } from '../../../utils/fixtures';
 import { abiCoder, provider } from '../../../utils/helpers';
-import { LSP7Mintable, LSP7MintableInit__factory, LSP7Mintable__factory } from '../../../../types';
+import {
+  LSP7Mintable,
+  LSP7MintableInit,
+  LSP7MintableInit__factory,
+  LSP7Mintable__factory,
+} from '../../../../types';
 
 export const shouldBehaveLikeBatchExecute = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
@@ -111,7 +116,7 @@ export const shouldBehaveLikeBatchExecute = (
 
       const operationTypes = [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL];
 
-      const targets = [recipient, lyxDaiToken.address];
+      const targets = [recipient, lyxDaiToken.target];
 
       const values = [lyxAmount, 0];
 
@@ -178,7 +183,7 @@ export const shouldBehaveLikeBatchExecute = (
 
       const operationTypes = [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL, OPERATION_TYPES.CALL];
 
-      const targets = [lyxDaiToken.address, metaCoin.address, rLyxToken.address];
+      const targets = [lyxDaiToken.target, metaCoin.target, rLyxToken.target];
 
       const values = [0, 0, 0];
 
@@ -189,22 +194,22 @@ export const shouldBehaveLikeBatchExecute = (
         .executeBatch(operationTypes, targets, values, payloads);
 
       expect(await lyxDaiToken.balanceOf(await universalProfile.getAddress())).to.equal(
-        universalProfileLyxDaiBalanceBefore.sub(lyxDaiAmount),
+        universalProfileLyxDaiBalanceBefore - BigInt(lyxDaiAmount),
       );
       expect(await lyxDaiToken.balanceOf(recipient)).to.equal(
-        recipientLyxDaiBalanceBefore.add(lyxDaiAmount),
+        recipientLyxDaiBalanceBefore + BigInt(lyxDaiAmount),
       );
       expect(await metaCoin.balanceOf(await universalProfile.getAddress())).to.equal(
-        universalProfileMetaCoinBalanceBefore.sub(metaCoinAmount),
+        universalProfileMetaCoinBalanceBefore - BigInt(metaCoinAmount),
       );
       expect(await metaCoin.balanceOf(recipient)).to.equal(
-        recipientMetaCoinBalanceBefore.add(metaCoinAmount),
+        recipientMetaCoinBalanceBefore + BigInt(metaCoinAmount),
       );
       expect(await rLyxToken.balanceOf(await universalProfile.getAddress())).to.equal(
-        universalProfileRLyxBalanceBefore.sub(rLyxAmount),
+        universalProfileRLyxBalanceBefore - BigInt(rLyxAmount),
       );
       expect(await rLyxToken.balanceOf(recipient)).to.equal(
-        recipientRLyxBalanceBefore.add(rLyxAmount),
+        recipientRLyxBalanceBefore + BigInt(rLyxAmount),
       );
     });
 
@@ -213,7 +218,10 @@ export const shouldBehaveLikeBatchExecute = (
 
       const lsp7TokenProxyBytecode = String(
         '0x3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3',
-      ).replace('bebebebebebebebebebebebebebebebebebebebe', lsp7MintableBase.address.substring(2));
+      ).replace(
+        'bebebebebebebebebebebebebebebebebebebebe',
+        (await lsp7MintableBase.getAddress()).substring(2),
+      );
 
       const futureTokenAddress = await context.universalProfile
         .connect(context.mainController)
@@ -221,7 +229,7 @@ export const shouldBehaveLikeBatchExecute = (
 
       const futureTokenInstance = new LSP7MintableInit__factory(context.accounts[0]).attach(
         futureTokenAddress,
-      );
+      ) as LSP7MintableInit;
 
       const lsp7InitializePayload = futureTokenInstance.interface.encodeFunctionData('initialize', [
         'My LSP7 UP Token',
@@ -348,9 +356,9 @@ export const shouldBehaveLikeBatchExecute = (
       );
 
       // CHECK for tokens balances of recipients
-      const createdTokenContract = await new LSP7Mintable__factory(context.accounts[0]).attach(
+      const createdTokenContract = (await new LSP7Mintable__factory(context.accounts[0]).attach(
         futureTokenAddress,
-      );
+      )) as LSP7Mintable;
       expect([
         await createdTokenContract.balanceOf(recipients[0]),
         await createdTokenContract.balanceOf(recipients[1]),

@@ -36,7 +36,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
     cannotChangeOwner = context.accounts[2];
 
     newKeyManager = await new LSP6KeyManager__factory(context.mainController).deploy(
-      await context.universalProfile.getAddress(),
+      context.universalProfile.target,
     );
 
     permissionsKeys = [
@@ -69,7 +69,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         await expect(
           context.universalProfile
             .connect(cannotChangeOwner)
-            .transferOwnership(newKeyManager.address),
+            .transferOwnership(await newKeyManager.getAddress()),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
           .withArgs(cannotChangeOwner.address, 'TRANSFEROWNERSHIP');
@@ -80,7 +80,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       before('`transferOwnership(...)` to new Key Manager', async () => {
         await context.universalProfile
           .connect(context.mainController)
-          .transferOwnership(newKeyManager.address);
+          .transferOwnership(await newKeyManager.getAddress());
       });
 
       after('reset ownership', async () => {
@@ -91,7 +91,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       it('should have set newKeyManager as pendingOwner', async () => {
         const pendingOwner = await context.universalProfile.pendingOwner();
-        expect(pendingOwner).to.equal(newKeyManager.address);
+        expect(pendingOwner).to.equal(await newKeyManager.getAddress());
       });
 
       it('owner should remain the current KeyManager', async () => {
@@ -99,7 +99,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await context.universalProfile
           .connect(context.mainController)
-          .transferOwnership(newKeyManager.address);
+          .transferOwnership(await newKeyManager.getAddress());
 
         const ownerAfter = await context.universalProfile.owner();
 
@@ -160,7 +160,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       before('`transferOwnership(...)` to new KeyManager', async () => {
         await context.universalProfile
           .connect(canChangeOwner)
-          .transferOwnership(newKeyManager.address);
+          .transferOwnership(await newKeyManager.getAddress());
       });
 
       after('reset ownership', async () => {
@@ -171,7 +171,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       it('should have set newKeyManager as pendingOwner', async () => {
         const pendingOwner = await context.universalProfile.pendingOwner();
-        expect(pendingOwner).to.equal(newKeyManager.address);
+        expect(pendingOwner).to.equal(await newKeyManager.getAddress());
       });
 
       it('owner should remain the current KeyManager', async () => {
@@ -179,7 +179,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await context.universalProfile
           .connect(canChangeOwner)
-          .transferOwnership(newKeyManager.address);
+          .transferOwnership(await newKeyManager.getAddress());
 
         const ownerAfter = await context.universalProfile.owner();
 
@@ -194,10 +194,10 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await context.universalProfile
           .connect(canChangeOwner)
-          .transferOwnership(overridenPendingOwner.address);
+          .transferOwnership(await overridenPendingOwner.getAddress());
 
         const pendingOwner = await context.universalProfile.pendingOwner();
-        expect(pendingOwner).to.equal(overridenPendingOwner.address);
+        expect(pendingOwner).to.equal(await overridenPendingOwner.getAddress());
       });
     });
   });
@@ -225,7 +225,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       before(async () => {
         await context.universalProfile
           .connect(context.mainController)
-          .transferOwnership(newKeyManager.address);
+          .transferOwnership(await newKeyManager.getAddress());
 
         pendingOwner = await context.universalProfile.pendingOwner();
       });
@@ -239,7 +239,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       it('should let you accept ownership if controller has permission', async () => {
         await context.universalProfile.connect(canChangeOwner).acceptOwnership();
 
-        expect(await context.universalProfile.owner()).to.equal(newKeyManager.address);
+        expect(await context.universalProfile.owner()).to.equal(await newKeyManager.getAddress());
       });
 
       it("should have change the account's owner to the pendingOwner (= pending KeyManager)", async () => {
@@ -273,7 +273,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await expect(oldKeyManager.connect(context.mainController).execute(payload))
           .to.be.revertedWithCustomError(newKeyManager, 'NoPermissionsSet')
-          .withArgs(oldKeyManager.address);
+          .withArgs(await oldKeyManager.getAddress());
       });
 
       it('should revert with error `NoPermissionsSet` when calling `execute(...)`', async () => {
@@ -289,7 +289,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await expect(oldKeyManager.connect(context.mainController).execute(payload))
           .to.be.revertedWithCustomError(newKeyManager, 'NoPermissionsSet')
-          .withArgs(oldKeyManager.address);
+          .withArgs(await oldKeyManager.getAddress());
       });
     });
 

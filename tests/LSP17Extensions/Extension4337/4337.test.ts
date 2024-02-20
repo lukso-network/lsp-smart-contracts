@@ -21,7 +21,7 @@ import { fillAndSign } from '../helpers/UserOp';
 
 describe('4337', function () {
   let bundler: SignerWithAddress;
-  let deployer: Signer;
+  let deployer: SignerWithAddress;
   let universalProfile: UniversalProfile;
   let universalProfileAddress: string;
   let keyManager: LSP6KeyManager;
@@ -36,7 +36,7 @@ describe('4337', function () {
 
   before('setup', async function () {
     const provider = ethers.provider;
-    deployer = provider.getSigner();
+    deployer = await provider.getSigner();
     const deployerAddress = await deployer.getAddress();
 
     [

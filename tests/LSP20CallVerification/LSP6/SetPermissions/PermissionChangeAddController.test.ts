@@ -145,7 +145,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            newController.address.substr(2);
+            newController.address.substring(2);
 
           await context.universalProfile
             .connect(context.mainController)
@@ -530,7 +530,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            newController.address.substr(2);
+            newController.address.substring(2);
 
           const value = PERMISSIONS.SETDATA;
 
@@ -723,7 +723,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            newController.address.substr(2);
+            newController.address.substring(2);
 
           const value = PERMISSIONS.SETDATA;
 
@@ -910,9 +910,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ethers.keccak256(ethers.toUtf8Bytes('My First Key')),
             ethers.keccak256(ethers.toUtf8Bytes('My SecondKey Key')),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              newControllerKeyOne.address.substr(2),
+              newControllerKeyOne.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              newControllerKeyTwo.address.substr(2),
+              newControllerKeyTwo.address.substring(2),
           ];
 
           const values = [
@@ -1049,9 +1049,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ethers.keccak256(ethers.toUtf8Bytes('My First Key')),
             ethers.keccak256(ethers.toUtf8Bytes('My SecondKey Key')),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              newControllerKeyOne.address.substr(2),
+              newControllerKeyOne.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              addressesToEditPermissions[0].address.substr(2),
+              addressesToEditPermissions[0].address.substring(2),
           ];
 
           const values = [
@@ -1081,9 +1081,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             allowedERC725YDataKeys[0],
             NotAllowedERC725YDataKey,
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              newControllerKeyOne.address.substr(2),
+              newControllerKeyOne.address.substring(2),
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-              newControllerKeyTwo.address.substr(2),
+              newControllerKeyTwo.address.substring(2),
           ];
 
           // prettier-ignore
@@ -1111,9 +1111,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ethers.keccak256(ethers.toUtf8Bytes('My First Key')),
             ethers.keccak256(ethers.toUtf8Bytes('My Second Key')),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              newControllerKeyOne.address.substr(2),
+              newControllerKeyOne.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              newControllerKeyTwo.address.substr(2),
+              newControllerKeyTwo.address.substring(2),
           ];
 
           const values = [
@@ -1144,9 +1144,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             allowedERC725YDataKeys[0],
             allowedERC725YDataKeys[1],
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              newControllerKeyOne.address.substr(2),
+              newControllerKeyOne.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              newControllerKeyTwo.address.substr(2),
+              newControllerKeyTwo.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
           ];
 
@@ -1183,9 +1183,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             allowedERC725YDataKeys[0],
             allowedERC725YDataKeys[1],
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              newControllerKeyOne.address.substr(2),
+              newControllerKeyOne.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              newControllerKeyTwo.address.substr(2),
+              newControllerKeyTwo.address.substring(2),
           ];
 
           const values = [
@@ -1239,9 +1239,9 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             allowedERC725YDataKeys[0],
             allowedERC725YDataKeys[1],
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              newControllerKeyOne.address.substr(2),
+              newControllerKeyOne.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              addressesToEditPermissions[0].address.substr(2),
+              addressesToEditPermissions[0].address.substring(2),
           ];
 
           const values = [

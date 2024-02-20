@@ -29,6 +29,7 @@ describe('LSP1UniversalReceiverDelegateUP', () => {
 
       const [UP2, KM2] = await setupProfileWithKeyManagerWithURD(accounts.owner2);
       const lsp1universalReceiverDelegateUP = LSP1_URD_UP as LSP1UniversalReceiverDelegateUP;
+
       const universalProfile1 = UP1 as UniversalProfile;
       const universalProfile2 = UP2 as UniversalProfile;
       const lsp6KeyManager1 = KM1 as LSP6KeyManager;

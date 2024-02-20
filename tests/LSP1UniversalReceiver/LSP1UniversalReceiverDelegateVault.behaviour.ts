@@ -346,9 +346,11 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               callPayload(context.lsp9Vault1, await lsp7TokenB.getAddress(), abi),
             );
         });
+
         it('should keep the same lsp5keys: arrayLength 2, index 1, tokenB address in Vault1', async () => {
           const [indexInMap, interfaceId, arrayLength, elementAddress] =
             await getLSP5MapAndArrayKeysValue(context.lsp9Vault1, lsp7TokenB);
+
           expect(indexInMap).to.equal(1);
           expect(interfaceId).to.equal(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).to.equal(ARRAY_LENGTH.TWO);
@@ -1807,7 +1809,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
         const LSP9_ExecuteCalldata = context.lsp9Vault1.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          LSP7.getAddress(),
+          await LSP7.getAddress(),
           0,
           LSP7_TransferCalldata,
         ]);

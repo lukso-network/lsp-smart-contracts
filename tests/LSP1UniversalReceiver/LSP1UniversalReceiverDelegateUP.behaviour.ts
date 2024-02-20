@@ -62,7 +62,7 @@ export type LSP1DelegateTestContext = {
  */
 async function getLSP10MapAndArrayKeysValue(account, lsp9Vault) {
   const mapValue = await account.getData(
-    ethers.concat([ERC725YDataKeys.LSP10.LSP10VaultsMap, lsp9Vault.address]),
+    ethers.concat([ERC725YDataKeys.LSP10.LSP10VaultsMap, await lsp9Vault.getAddress()]),
   );
 
   const indexInHex = '0x' + mapValue.substr(10, mapValue.length);
@@ -2707,7 +2707,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           someVault.interface.encodeFunctionData('renounceOwnership');
 
         // Skip 1000 blocks
-        await network.provider.send('hardhat_mine', [ethers.toBeHex(1000)]);
+        await network.provider.send('hardhat_mine', [ethers.toQuantity(1000)]);
 
         // Call renounceOwnership for the first time
         await context.universalProfile2
@@ -2930,7 +2930,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             LSP1_TYPE_IDS.LSP9OwnershipTransferred_SenderNotification,
             abiCoder.encode(
               ['address', 'address'],
-              [testContext.universalProfile.getAddress(), newVaultOwner.address],
+              [await testContext.universalProfile.getAddress(), newVaultOwner.address],
             ),
             expectedReturnedValues,
           );
