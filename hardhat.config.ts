@@ -175,12 +175,8 @@ const config: HardhatUserConfig = {
       'LSP8MintableInit',
       'LSP9VaultInit',
       'LSP11BasicSocialRecoveryInit',
-      // Legacy L14
-      // ------------------
-      'UniversalReceiverAddressStore',
       // Tools
       // ------------------
-      'Create2Factory',
       'LSP23LinkedContractsFactory',
     ],
     // Whether to include the TypeChain factories or not.
