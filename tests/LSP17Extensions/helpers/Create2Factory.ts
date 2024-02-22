@@ -1,7 +1,7 @@
 // from: https://github.com/Arachnid/deterministic-deployment-proxy
 import { BigNumberish, JsonRpcProvider, Signer, ethers, toBeHex } from 'ethers';
 import { getBytes, concat, zeroPadValue, keccak256 } from 'ethers';
-import { Provider } from '@ethersproject/providers';
+
 import { TransactionRequest } from '@ethersproject/abstract-provider';
 
 export class Create2Factory {
@@ -19,7 +19,7 @@ export class Create2Factory {
   ).toString();
 
   constructor(
-    readonly provider: Provider,
+    readonly provider: JsonRpcProvider,
     readonly signer = (provider as unknown as JsonRpcProvider).getSigner().then(),
   ) {}
 
@@ -109,7 +109,11 @@ export class Create2Factory {
       to: Create2Factory.factoryDeployer,
       value: BigInt(Create2Factory.factoryDeploymentFee),
     });
-    await this.provider.sendTransaction(Create2Factory.factoryTx);
+    await this.provider.send('eth_sendTransaction', [
+      {
+        data: Create2Factory.factoryTx,
+      },
+    ]);
     if (!(await this._isFactoryDeployed())) {
       throw new Error('fatal: failed to deploy deterministic deployer');
     }
