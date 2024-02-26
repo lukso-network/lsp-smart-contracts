@@ -48,7 +48,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     uint256 public constant RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD = 200;
 
     /**
-     * @dev The block number saved when initiating the process of renouncing ownerhsip.
+     * @dev The block number saved when initiating the process of renouncing ownership.
      */
     uint256 internal _renounceOwnershipStartedAt;
 

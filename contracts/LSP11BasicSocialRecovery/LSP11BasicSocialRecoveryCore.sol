@@ -49,7 +49,7 @@ abstract contract LSP11BasicSocialRecoveryCore is
     // The guardians threshold
     uint256 internal _guardiansThreshold;
 
-    // The number of successfull recovery processes
+    // The number of successful recovery processes
     uint256 internal _recoveryCounter;
 
     // The secret hash to be set by the owner
@@ -321,7 +321,7 @@ abstract contract LSP11BasicSocialRecoveryCore is
     }
 
     /**
-     * @dev Remove the guardians choice after a successfull recovery process
+     * @dev Remove the guardians choice after a successful recovery process
      * To avoid keeping unnecessary state
      */
     function _cleanStorage(
