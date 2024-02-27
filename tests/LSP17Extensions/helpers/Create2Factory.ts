@@ -1,5 +1,6 @@
 // from: https://github.com/Arachnid/deterministic-deployment-proxy
-import { BigNumberish, JsonRpcProvider, Signer, ethers, toBeHex } from 'ethers';
+import { BigNumberish, Signer, ethers, toBeHex } from 'ethers';
+import { ethers as hardhatEthers } from 'hardhat';
 import { getBytes, concat, zeroPadValue, keccak256 } from 'ethers';
 
 import { TransactionRequest } from '@ethersproject/abstract-provider';
@@ -19,8 +20,8 @@ export class Create2Factory {
   ).toString();
 
   constructor(
-    readonly provider: JsonRpcProvider,
-    readonly signer = (provider as unknown as JsonRpcProvider).getSigner().then(),
+    readonly provider: typeof hardhatEthers.provider = hardhatEthers.provider,
+    readonly signer = hardhatEthers.provider.getSigner().then(),
   ) {}
 
   /**
@@ -103,12 +104,18 @@ export class Create2Factory {
     if (await this._isFactoryDeployed()) {
       return;
     }
-    await (
-      await (signer ?? this.signer)
-    ).sendTransaction({
+
+    const currentSigner = (await signer) ?? (await this.signer);
+    const tx = await currentSigner.sendTransaction({
       to: Create2Factory.factoryDeployer,
       value: BigInt(Create2Factory.factoryDeploymentFee),
     });
+    await tx.wait();
+
+    // TODO: this transaction keeps failing with the following error, although the deployment transaction
+    // for the Create2Factory has not changed:
+    // `Error: VM Exception while processing transaction: invalid opcode`
+
     await this.provider.send('eth_sendTransaction', [
       {
         data: Create2Factory.factoryTx,

@@ -2,7 +2,7 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { EntryPoint__factory, EntryPoint } from '@account-abstraction/contracts';
 
-import { BytesLike, parseEther } from 'ethers';
+import { BytesLike, Signer, parseEther } from 'ethers';
 import { expect } from 'chai';
 import {
   LSP6KeyManager,
@@ -18,12 +18,15 @@ import { ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
 import { combinePermissions } from '../../utils/helpers';
 import { fillAndSign } from '../helpers/UserOp';
 
-describe('4337', function () {
+// Deploying NickFactory currently fails with latest Hardhat version. Commenting out temporarily until resolved
+// See following issue: https://github.com/NomicFoundation/hardhat/issues/4939
+describe.skip('4337', function () {
   let bundler: SignerWithAddress;
-  let deployer: SignerWithAddress;
+  let deployer: Signer;
   let universalProfile: UniversalProfile;
   let universalProfileAddress: string;
   let keyManager: LSP6KeyManager;
+  let keyManagerAddress: string;
   let entryPoint: EntryPoint;
   let controllerWith4337Permission: SignerWithAddress;
   let controllerWithout4337Permission: SignerWithAddress;
@@ -51,12 +54,11 @@ describe('4337', function () {
     );
     universalProfileAddress = await universalProfile.getAddress();
 
-    keyManager = await new LSP6KeyManager__factory(deployer).deploy(
-      await universalProfile.getAddress(),
-    );
+    keyManager = await new LSP6KeyManager__factory(deployer).deploy(universalProfileAddress);
+    keyManagerAddress = await keyManager.getAddress();
 
     // transfer ownership to keyManager
-    await universalProfile.transferOwnership(await keyManager.getAddress());
+    await universalProfile.transferOwnership(keyManagerAddress);
 
     const dataKey =
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + deployerAddress.slice(2);
@@ -65,7 +67,7 @@ describe('4337', function () {
 
     const acceptOwnershipBytes = universalProfile.interface.encodeFunctionData('acceptOwnership');
     await keyManager.execute(acceptOwnershipBytes);
-    expect(await universalProfile.owner()).to.eq(await keyManager.getAddress());
+    expect(await universalProfile.owner()).to.eq(keyManagerAddress);
 
     // deploy entrypoint
     entryPoint = await deployEntryPoint();
@@ -125,7 +127,6 @@ describe('4337', function () {
 
   it('should pass', async function () {
     const addressZeroBalanceBefore = await getBalance(ethers.ZeroAddress);
-
     const userOperation = await fillAndSign(
       {
         sender: universalProfileAddress,
@@ -134,11 +135,8 @@ describe('4337', function () {
       controllerWith4337Permission,
       entryPoint,
     );
-
     await entryPoint.handleOps([userOperation], bundler.address);
-
     const addressZeroBalanceAfter = await getBalance(ethers.ZeroAddress);
-
     expect(addressZeroBalanceAfter - addressZeroBalanceBefore).to.eq(amountToTransfer);
   });
 
