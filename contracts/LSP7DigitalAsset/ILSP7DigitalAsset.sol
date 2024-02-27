@@ -122,8 +122,8 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
     ) external;
 
     /**
-     * @dev Removes the `operator` address as an operator of callers tokens, disallowing it to send any amount of tokens
-     * on behalf of the token owner (the caller of the function `msg.sender`). See also {authorizedAmountFor}.
+     * @dev Enables `tokenOwner` to remove `operator` for its tokens, disallowing it to send any amount of tokens on its behalf.
+     * This function also allows the `operator` to remove itself if it is the caller of this function
      *
      * @param operator The address to revoke as an operator.
      * @param tokenOwner The address of the token owner.
@@ -131,7 +131,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
-     * - `operator` cannot be calling address.
+     * - caller MUST be `operator` or `tokenOwner`
      * - `operator` cannot be the zero address.
      *
      * @custom:events {OperatorRevoked} event with address of the operator being revoked for the caller (token holder).

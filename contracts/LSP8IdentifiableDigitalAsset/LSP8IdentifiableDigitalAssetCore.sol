@@ -294,10 +294,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address tokenOwner = tokenOwnerOf(tokenId);
 
         if (msg.sender != tokenOwner) {
-            if (
-                !_operators[tokenId].contains(msg.sender) ||
-                operator != msg.sender
-            ) {
+            if (operator != msg.sender) {
                 revert LSP8RevokeOperatorNotAuthorized(
                     msg.sender,
                     tokenOwner,

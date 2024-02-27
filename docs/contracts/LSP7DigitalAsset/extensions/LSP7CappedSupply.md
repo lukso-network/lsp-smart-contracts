@@ -473,7 +473,7 @@ function revokeOperator(
 ) external nonpayable;
 ```
 
-Removes the `operator` address as an operator of callers tokens, disallowing it to send any amount of tokens on behalf of the token owner (the caller of the function `msg.sender`). See also [`authorizedAmountFor`](#authorizedamountfor).
+Enables `tokenOwner` to remove `operator` for its tokens, disallowing it to send any amount of tokens on its behalf. This function also allows the `operator` to remove itself if it is the caller of this function
 
 #### Parameters
 
