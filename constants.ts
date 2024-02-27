@@ -29,7 +29,7 @@ export const INTERFACE_IDS = {
   LSP1UniversalReceiver: '0x6bb56a14',
   LSP1UniversalReceiverDelegate: '0xa245bbda',
   LSP6KeyManager: '0x23f34c62',
-  LSP7DigitalAsset: '0xb3c4928f',
+  LSP7DigitalAsset: '0xc52d6008',
   LSP8IdentifiableDigitalAsset: '0x3a271706',
   LSP9Vault: '0x28af17e6',
   LSP11BasicSocialRecovery: '0x049a28f1',
