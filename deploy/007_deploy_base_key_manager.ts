@@ -10,13 +10,10 @@ const deployBaseKeyManagerDeterministic: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner: deployer } = await getNamedAccounts();
 
-  const gasPrice = await ethers.provider.getGasPrice();
-
   await deploy('LSP6KeyManagerInit', {
     from: deployer,
     log: true,
     gasLimit: 5_000_000,
-    gasPrice,
     deterministicDeployment: SALT,
   });
 };
