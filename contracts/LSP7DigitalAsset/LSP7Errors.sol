@@ -87,10 +87,17 @@ error LSP7BatchCallFailed(uint256 callIndex);
 /**
  * @dev Reverts when the call to revoke operator is not authorized.
  */
-error LSP7RevokeOperatorNotAuthorized(address caller, address tokenOwner, address operator);
-
+error LSP7RevokeOperatorNotAuthorized(
+    address caller,
+    address tokenOwner,
+    address operator
+);
 
 /**
  * @dev Reverts when the call to decrease allowance is not authorized.
  */
-error LSP7DecreaseAllowanceNotAuthorized(address caller, address tokenOwner, address operator);
+error LSP7DecreaseAllowanceNotAuthorized(
+    address caller,
+    address tokenOwner,
+    address operator
+);

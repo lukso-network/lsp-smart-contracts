@@ -125,8 +125,8 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @dev Removes the `operator` address as an operator of callers tokens, disallowing it to send any amount of tokens
      * on behalf of the token owner (the caller of the function `msg.sender`). See also {authorizedAmountFor}.
      *
-     * @param operator The address of the token owner.
      * @param operator The address to revoke as an operator.
+     * @param tokenOwner The address of the token owner.
      * @param notify Boolean indicating whether to notify the operator or not.
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
@@ -137,8 +137,8 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @custom:events {OperatorRevoked} event with address of the operator being revoked for the caller (token holder).
      */
     function revokeOperator(
-        address tokenOwner,
         address operator,
+        address tokenOwner,
         bool notify,
         bytes memory operatorNotificationData
     ) external;
@@ -185,8 +185,8 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      *  - {OperatorRevoked} event if `subtractedAmount` is the full allowance,
      *    indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
      *
-     * @param operator The address of the token owner.
      * @param operator The operator to decrease allowance for `msg.sender`
+     * @param tokenOwner The address of the token owner.
      * @param subtractedAmount The amount to decrease by in the operator's allowance.
      *
      * @custom:requirements
@@ -194,8 +194,8 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      *  - `operator` must have allowance for the caller of at least `subtractedAmount`.
      */
     function decreaseAllowance(
-        address tokenOwner,
         address operator,
+        address tokenOwner,
         uint256 subtractedAmount,
         bytes memory operatorNotificationData
     ) external;

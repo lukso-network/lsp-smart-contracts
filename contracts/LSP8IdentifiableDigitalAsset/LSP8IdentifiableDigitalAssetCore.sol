@@ -293,9 +293,16 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     ) public virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
 
-        if (msg.sender != tokenOwner){
-            if (!_operators[tokenId].contains(msg.sender) || operator != msg.sender) {
-                revert LSP8RevokeOperatorNotAuthorized(msg.sender, tokenOwner, tokenId);
+        if (msg.sender != tokenOwner) {
+            if (
+                !_operators[tokenId].contains(msg.sender) ||
+                operator != msg.sender
+            ) {
+                revert LSP8RevokeOperatorNotAuthorized(
+                    msg.sender,
+                    tokenOwner,
+                    tokenId
+                );
             }
         }
 

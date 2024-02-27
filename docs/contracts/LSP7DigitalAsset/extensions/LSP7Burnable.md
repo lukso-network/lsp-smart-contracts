@@ -275,14 +275,15 @@ Returns the number of decimals used to get its user representation. If the asset
 
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#decreaseallowance)
 - Solidity implementation: [`LSP7Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol)
-- Function signature: `decreaseAllowance(address,uint256,bytes)`
-- Function selector: `0x7b204c4e`
+- Function signature: `decreaseAllowance(address,address,uint256,bytes)`
+- Function selector: `0x78381670`
 
 :::
 
 ```solidity
 function decreaseAllowance(
   address operator,
+  address tokenOwner,
   uint256 subtractedAmount,
   bytes operatorNotificationData
 ) external nonpayable;
@@ -297,6 +298,7 @@ Atomically decreases the allowance granted to `operator` by the caller. This is 
 | Name                       |   Type    | Description                                            |
 | -------------------------- | :-------: | ------------------------------------------------------ |
 | `operator`                 | `address` | The operator to decrease allowance for `msg.sender`    |
+| `tokenOwner`               | `address` | The address of the token owner.                        |
 | `subtractedAmount`         | `uint256` | The amount to decrease by in the operator's allowance. |
 | `operatorNotificationData` |  `bytes`  | -                                                      |
 
@@ -484,14 +486,15 @@ Leaves the contract without owner. It will not be possible to call `onlyOwner` f
 
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#revokeoperator)
 - Solidity implementation: [`LSP7Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol)
-- Function signature: `revokeOperator(address,bool,bytes)`
-- Function selector: `0x4521748e`
+- Function signature: `revokeOperator(address,address,bool,bytes)`
+- Function selector: `0x30d0dc37`
 
 :::
 
 ```solidity
 function revokeOperator(
   address operator,
+  address tokenOwner,
   bool notify,
   bytes operatorNotificationData
 ) external nonpayable;
@@ -504,6 +507,7 @@ Removes the `operator` address as an operator of callers tokens, disallowing it 
 | Name                       |   Type    | Description                                               |
 | -------------------------- | :-------: | --------------------------------------------------------- |
 | `operator`                 | `address` | The address to revoke as an operator.                     |
+| `tokenOwner`               | `address` | The address of the token owner.                           |
 | `notify`                   |  `bool`   | Boolean indicating whether to notify the operator or not. |
 | `operatorNotificationData` |  `bytes`  | The data to notify the operator about via LSP1.           |
 
@@ -1586,25 +1590,6 @@ Reverts when a batch call failed.
 
 <br/>
 
-### LSP7CannotSendToSelf
-
-:::note References
-
-- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#lsp7cannotsendtoself)
-- Solidity implementation: [`LSP7Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol)
-- Error signature: `LSP7CannotSendToSelf()`
-- Error hash: `0xb9afb000`
-
-:::
-
-```solidity
-error LSP7CannotSendToSelf();
-```
-
-reverts when specifying the same address for `from` or `to` in a token transfer.
-
-<br/>
-
 ### LSP7CannotSendWithAddressZero
 
 :::note References
@@ -1646,6 +1631,37 @@ error LSP7CannotUseAddressZeroAsOperator();
 ```
 
 reverts when trying to set the zero address as an operator.
+
+<br/>
+
+### LSP7DecreaseAllowanceNotAuthorized
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#lsp7decreaseallowancenotauthorized)
+- Solidity implementation: [`LSP7Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol)
+- Error signature: `LSP7DecreaseAllowanceNotAuthorized(address,address,address)`
+- Error hash: `0x98ce2945`
+
+:::
+
+```solidity
+error LSP7DecreaseAllowanceNotAuthorized(
+  address caller,
+  address tokenOwner,
+  address operator
+);
+```
+
+Reverts when the call to decrease allowance is not authorized.
+
+#### Parameters
+
+| Name         |   Type    | Description |
+| ------------ | :-------: | ----------- |
+| `caller`     | `address` | -           |
+| `tokenOwner` | `address` | -           |
+| `operator`   | `address` | -           |
 
 <br/>
 
@@ -1736,6 +1752,37 @@ reverts if the `tokenReceiver` is an EOA when minting or transferring tokens wit
 | Name            |   Type    | Description |
 | --------------- | :-------: | ----------- |
 | `tokenReceiver` | `address` | -           |
+
+<br/>
+
+### LSP7RevokeOperatorNotAuthorized
+
+:::note References
+
+- Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#lsp7revokeoperatornotauthorized)
+- Solidity implementation: [`LSP7Burnable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol)
+- Error signature: `LSP7RevokeOperatorNotAuthorized(address,address,address)`
+- Error hash: `0x1a525b32`
+
+:::
+
+```solidity
+error LSP7RevokeOperatorNotAuthorized(
+  address caller,
+  address tokenOwner,
+  address operator
+);
+```
+
+Reverts when the call to revoke operator is not authorized.
+
+#### Parameters
+
+| Name         |   Type    | Description |
+| ------------ | :-------: | ----------- |
+| `caller`     | `address` | -           |
+| `tokenOwner` | `address` | -           |
+| `operator`   | `address` | -           |
 
 <br/>
 

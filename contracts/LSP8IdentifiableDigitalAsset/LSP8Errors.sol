@@ -108,8 +108,11 @@ error LSP8TokenOwnerChanged(
     address newOwner
 );
 
-
 /**
  * @dev Reverts when the call to revoke operator is not authorized.
  */
-error LSP8RevokeOperatorNotAuthorized(address caller, address tokenOwner, bytes32 tokenId);
+error LSP8RevokeOperatorNotAuthorized(
+    address caller,
+    address tokenOwner,
+    bytes32 tokenId
+);

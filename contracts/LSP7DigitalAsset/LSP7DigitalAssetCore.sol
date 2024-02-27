@@ -178,11 +178,14 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         bool notify,
         bytes memory operatorNotificationData
     ) public virtual override {
-
         if (msg.sender != tokenOwner && msg.sender != operator) {
-            revert LSP7RevokeOperatorNotAuthorized(msg.sender, tokenOwner, operator);
+            revert LSP7RevokeOperatorNotAuthorized(
+                msg.sender,
+                tokenOwner,
+                operator
+            );
         }
-        
+
         _updateOperator(
             tokenOwner,
             operator,
@@ -265,9 +268,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         uint256 subtractedAmount,
         bytes memory operatorNotificationData
     ) public virtual override {
-
         if (msg.sender != tokenOwner && msg.sender != operator) {
-            revert LSP7DecreaseAllowanceNotAuthorized(msg.sender, tokenOwner, operator);
+            revert LSP7DecreaseAllowanceNotAuthorized(
+                msg.sender,
+                tokenOwner,
+                operator
+            );
         }
 
         uint256 currentAllowance = authorizedAmountFor(operator, tokenOwner);
