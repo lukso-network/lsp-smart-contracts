@@ -37,11 +37,6 @@ error LSP7CannotUseAddressZeroAsOperator();
 error LSP7CannotSendWithAddressZero();
 
 /**
- * @dev reverts when specifying the same address for `from` or `to` in a token transfer.
- */
-error LSP7CannotSendToSelf();
-
-/**
  * @dev reverts when the array parameters used in {transferBatch} have different lengths.
  */
 error LSP7InvalidTransferBatch();
@@ -88,3 +83,14 @@ error OperatorAllowanceCannotBeIncreasedFromZero(address operator);
  * @notice Batch call failed.
  */
 error LSP7BatchCallFailed(uint256 callIndex);
+
+/**
+ * @dev Reverts when the call to revoke operator is not authorized.
+ */
+error LSP7RevokeOperatorNotAuthorized(address caller, address tokenOwner, address operator);
+
+
+/**
+ * @dev Reverts when the call to decrease allowance is not authorized.
+ */
+error LSP7DecreaseAllowanceNotAuthorized(address caller, address tokenOwner, address operator);

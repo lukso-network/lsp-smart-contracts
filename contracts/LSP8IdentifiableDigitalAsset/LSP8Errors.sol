@@ -34,11 +34,6 @@ error LSP8CannotUseAddressZeroAsOperator();
 error LSP8CannotSendToAddressZero();
 
 /**
- * @dev Reverts when specifying the same address for `from` and `to` in a token transfer.
- */
-error LSP8CannotSendToSelf();
-
-/**
  * @dev Reverts when `operator` is not an operator for the `tokenId`.
  */
 error LSP8NonExistingOperator(address operator, bytes32 tokenId);
@@ -112,3 +107,9 @@ error LSP8TokenOwnerChanged(
     address oldOwner,
     address newOwner
 );
+
+
+/**
+ * @dev Reverts when the call to revoke operator is not authorized.
+ */
+error LSP8RevokeOperatorNotAuthorized(address caller, address tokenOwner, bytes32 tokenId);

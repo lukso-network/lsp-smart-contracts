@@ -20,7 +20,6 @@ import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 
 // errors
 import {
-    LSP7CannotSendToSelf,
     LSP7AmountExceedsAuthorizedAmount,
     LSP7InvalidTransferBatch,
     LSP7AmountExceedsBalance,
@@ -31,7 +30,9 @@ import {
     LSP7NotifyTokenReceiverContractMissingLSP1Interface,
     LSP7NotifyTokenReceiverIsEOA,
     OperatorAllowanceCannotBeIncreasedFromZero,
-    LSP7BatchCallFailed
+    LSP7BatchCallFailed,
+    LSP7RevokeOperatorNotAuthorized,
+    LSP7DecreaseAllowanceNotAuthorized
 } from "./LSP7Errors.sol";
 
 // constants
@@ -173,11 +174,17 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      */
     function revokeOperator(
         address operator,
+        address tokenOwner,
         bool notify,
         bytes memory operatorNotificationData
     ) public virtual override {
+
+        if (msg.sender != tokenOwner && msg.sender != operator) {
+            revert LSP7RevokeOperatorNotAuthorized(msg.sender, tokenOwner, operator);
+        }
+        
         _updateOperator(
-            msg.sender,
+            tokenOwner,
             operator,
             0,
             notify,
@@ -186,7 +193,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         if (notify) {
             bytes memory lsp1Data = abi.encode(
-                msg.sender,
+                tokenOwner,
                 0,
                 operatorNotificationData
             );
@@ -254,10 +261,16 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      */
     function decreaseAllowance(
         address operator,
+        address tokenOwner,
         uint256 subtractedAmount,
         bytes memory operatorNotificationData
     ) public virtual override {
-        uint256 currentAllowance = authorizedAmountFor(operator, msg.sender);
+
+        if (msg.sender != tokenOwner && msg.sender != operator) {
+            revert LSP7DecreaseAllowanceNotAuthorized(msg.sender, tokenOwner, operator);
+        }
+
+        uint256 currentAllowance = authorizedAmountFor(operator, tokenOwner);
         if (currentAllowance < subtractedAmount) {
             revert LSP7DecreasedAllowanceBelowZero();
         }
@@ -266,7 +279,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         unchecked {
             newAllowance = currentAllowance - subtractedAmount;
             _updateOperator(
-                msg.sender,
+                tokenOwner,
                 operator,
                 newAllowance,
                 true,
@@ -275,7 +288,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         }
 
         bytes memory lsp1Data = abi.encode(
-            msg.sender,
+            tokenOwner,
             newAllowance,
             operatorNotificationData
         );
@@ -295,8 +308,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         bool force,
         bytes memory data
     ) public virtual override {
-        if (from == to) revert LSP7CannotSendToSelf();
-
         if (msg.sender != from) {
             _spendAllowance({
                 operator: msg.sender,
