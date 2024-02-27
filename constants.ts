@@ -118,7 +118,7 @@ export type LSP4DigitalAssetMetadata = {
   images: ImageMetadata[][];
   assets: AssetMetadata[];
   icon: ImageMetadata[];
-  attributes: AttributeMetadata[];
+  attributes?: AttributeMetadata[];
 };
 
 export type AttributeMetadata = {
