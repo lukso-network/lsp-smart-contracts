@@ -148,9 +148,9 @@ export type LinkMetadata = {
 export type AssetMetadata = FileAsset | ContractAsset;
 
 export type FileAsset = {
-  verification?: Verification;
   url: string;
-  fileType: string;
+  verification?: Verification;
+  fileType?: string;
 };
 
 export type ContractAsset = {
