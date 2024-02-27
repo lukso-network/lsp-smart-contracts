@@ -145,15 +145,15 @@ export type LinkMetadata = {
   url: string;
 };
 
-export type AssetMetadata = IdentifiableDigitalAssetFile | IdentifiableDigitalAssetContract;
+export type AssetMetadata = AssetFile | DigitalAsset;
 
-export type IdentifiableDigitalAssetFile = {
+export type AssetFile = {
   url: string;
   verification?: Verification;
   fileType?: string;
 };
 
-export type IdentifiableDigitalAssetContract = {
+export type DigitalAsset = {
   address: string;
   tokenId?: string;
 };
