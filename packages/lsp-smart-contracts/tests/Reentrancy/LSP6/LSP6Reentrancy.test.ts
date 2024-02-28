@@ -37,7 +37,7 @@ import {
   SecondToCallLSP6,
   FirstToCallLSP6,
   UniversalReceiverDelegateDataUpdater__factory,
-} from '../../../../../types';
+} from '../../../types';
 
 import { setupKeyManager } from '../../utils/fixtures';
 

@@ -7,7 +7,7 @@ import {
   LSP6KeyManager,
   UniversalReceiverDelegateTokenReentrant__factory,
   LSP8Mintable,
-} from '../../../../types';
+} from '../../types';
 
 import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 

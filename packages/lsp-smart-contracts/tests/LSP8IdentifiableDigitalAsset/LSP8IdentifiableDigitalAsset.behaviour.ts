@@ -15,7 +15,7 @@ import {
   UniversalReceiverDelegateRevert__factory,
   TokenReceiverWithLSP1Revert,
   TokenReceiverWithLSP1Revert__factory,
-} from '../../../../types';
+} from '../../types';
 
 // helpers
 import { tokenIdAsBytes32 } from '../utils/tokens';

@@ -6,7 +6,7 @@ import {
   LSP9Vault,
   UPWithInstantAcceptOwnership__factory,
   UPWithInstantAcceptOwnership,
-} from '../../../../types';
+} from '../../types';
 
 // constants
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';

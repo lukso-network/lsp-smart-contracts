@@ -1,9 +1,5 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers.js';
-import {
-  KeyManagerInternalTester,
-  LSP6KeyManager,
-  UniversalProfile,
-} from '../../../../types/index.js';
+import { KeyManagerInternalTester, LSP6KeyManager, UniversalProfile } from '../../types/index.js';
 
 export type LSP6TestContext = {
   accounts: SignerWithAddress[];

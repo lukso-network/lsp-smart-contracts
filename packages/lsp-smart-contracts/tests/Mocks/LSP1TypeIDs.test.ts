@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { hexlify, keccak256, toUtf8Bytes } from 'ethers';
-import { LSP1TypeIDsTester, LSP1TypeIDsTester__factory } from '../../../../types';
+import { LSP1TypeIDsTester, LSP1TypeIDsTester__factory } from '../../types';
 import { LSP1_TYPE_IDS } from '../../constants';
 
 describe('calculate LSP1 Type IDs', () => {

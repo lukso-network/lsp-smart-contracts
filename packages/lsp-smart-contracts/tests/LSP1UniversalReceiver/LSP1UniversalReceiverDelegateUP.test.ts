@@ -1,9 +1,5 @@
 import { ethers } from 'hardhat';
-import {
-  LSP1UniversalReceiverDelegateUP,
-  UniversalProfile,
-  LSP6KeyManager,
-} from '../../../../types';
+import { LSP1UniversalReceiverDelegateUP, UniversalProfile, LSP6KeyManager } from '../../types';
 
 import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 

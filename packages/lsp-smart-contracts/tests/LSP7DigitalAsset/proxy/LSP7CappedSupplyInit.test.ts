@@ -1,10 +1,7 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import {
-  LSP7CappedSupplyInitTester,
-  LSP7CappedSupplyInitTester__factory,
-} from '../../../../../types';
+import { LSP7CappedSupplyInitTester, LSP7CappedSupplyInitTester__factory } from '../../../types';
 
 import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour';
 import {

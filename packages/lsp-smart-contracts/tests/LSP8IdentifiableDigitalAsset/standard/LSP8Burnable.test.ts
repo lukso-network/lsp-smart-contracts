@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import { LSP8BurnableTester, LSP8BurnableTester__factory } from '../../../../../types';
+import { LSP8BurnableTester, LSP8BurnableTester__factory } from '../../../types';
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';

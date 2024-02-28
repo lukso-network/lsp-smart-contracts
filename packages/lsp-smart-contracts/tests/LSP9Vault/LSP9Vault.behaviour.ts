@@ -11,7 +11,7 @@ import {
   UniversalReceiverDelegateVaultReentrantB__factory,
   UniversalReceiverDelegateVaultMalicious__factory,
   LSP9Vault,
-} from '../../../../types';
+} from '../../types';
 
 // helpers
 import { ARRAY_LENGTH, abiCoder, combineAllowedCalls } from '../utils/helpers';

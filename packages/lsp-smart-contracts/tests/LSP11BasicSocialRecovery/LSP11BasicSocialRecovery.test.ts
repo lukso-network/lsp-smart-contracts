@@ -1,8 +1,4 @@
-import {
-  LSP11BasicSocialRecovery__factory,
-  LSP6KeyManager,
-  UniversalProfile,
-} from '../../../../types';
+import { LSP11BasicSocialRecovery__factory, LSP6KeyManager, UniversalProfile } from '../../types';
 
 import {
   getNamedAccounts,

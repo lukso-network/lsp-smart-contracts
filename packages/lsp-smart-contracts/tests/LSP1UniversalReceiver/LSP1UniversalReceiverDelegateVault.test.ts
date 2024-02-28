@@ -5,7 +5,7 @@ import {
   LSP1UniversalReceiverDelegateVault__factory,
   UniversalProfile__factory,
   LSP9Vault__factory,
-} from '../../../../types';
+} from '../../types';
 
 import {
   LSP1TestContext,

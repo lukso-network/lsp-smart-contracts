@@ -1,7 +1,7 @@
 import { BytesLike } from 'ethers';
 import hre from 'hardhat';
 const { ethers } = hre;
-import { LSP6KeyManager } from '../../../../types/index.js';
+import { LSP6KeyManager } from '../../types/index.js';
 
 // constants
 import { LSP25_VERSION } from '@lukso/lsp25-contracts';

@@ -9,7 +9,7 @@ import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { PERMISSIONS } from '@lukso/lsp6-contracts';
 import { LSP25_VERSION } from '@lukso/lsp25-contracts';
 
-import { LSP6KeyManager, LSP6KeyManager__factory } from '../../../../../types';
+import { LSP6KeyManager, LSP6KeyManager__factory } from '../../../types';
 
 // setup
 import { LSP6TestContext } from '../../utils/context';

@@ -1,11 +1,7 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import {
-  UniversalProfile__factory,
-  LSP6KeyManager__factory,
-  UniversalProfile,
-} from '../../../../types';
+import { UniversalProfile__factory, LSP6KeyManager__factory, UniversalProfile } from '../../types';
 import { ERC725YDataKeys, INTERFACE_IDS } from '../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';

@@ -3,7 +3,7 @@ import { ethers } from 'hardhat';
 
 // types
 import { BytesLike } from 'ethers';
-import { SingleReentrancyRelayer__factory } from '../../../../../types';
+import { SingleReentrancyRelayer__factory } from '../../../types';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';

@@ -25,7 +25,7 @@ import {
   // Functions
   loadTestCase,
 } from './reentrancyHelpers';
-import { LSP20ReentrantContract__factory } from '../../../../../types';
+import { LSP20ReentrantContract__factory } from '../../../types';
 import { provider } from '../../utils/helpers';
 
 export const testERC725XExecuteToERC725XExecute = (

@@ -4,7 +4,7 @@ import {
   KeyManagerInternalTester__factory,
   UniversalProfile__factory,
   LSP6KeyManager__factory,
-} from '../../../../types';
+} from '../../types';
 
 import { LSP6TestContext } from '../utils/context';
 

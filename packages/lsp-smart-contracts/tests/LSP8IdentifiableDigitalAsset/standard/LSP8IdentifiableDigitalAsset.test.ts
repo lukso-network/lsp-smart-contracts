@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LSP8Tester__factory, LSP8IdentifiableDigitalAsset } from '../../../../../types';
+import { LSP8Tester__factory, LSP8IdentifiableDigitalAsset } from '../../../types';
 
 import {
   getNamedAccounts,

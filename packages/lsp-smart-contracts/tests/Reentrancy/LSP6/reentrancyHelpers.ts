@@ -13,7 +13,7 @@ import {
   SingleReentrancyRelayer__factory,
   BatchReentrancyRelayer__factory,
   UniversalProfile__factory,
-} from '../../../../../types';
+} from '../../../types';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';

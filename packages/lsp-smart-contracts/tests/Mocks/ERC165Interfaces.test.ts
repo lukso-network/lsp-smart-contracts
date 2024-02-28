@@ -6,7 +6,7 @@ import {
   CalculateLSPInterfaces__factory,
   CalculateERCInterfaces,
   CalculateERCInterfaces__factory,
-} from '../../../../types';
+} from '../../types';
 
 // utils
 import { INTERFACE_IDS } from '../../constants';
