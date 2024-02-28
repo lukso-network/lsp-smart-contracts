@@ -122,21 +122,23 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
     ) external;
 
     /**
-     * @dev Removes the `operator` address as an operator of callers tokens, disallowing it to send any amount of tokens
-     * on behalf of the token owner (the caller of the function `msg.sender`). See also {authorizedAmountFor}.
+     * @dev Enables `tokenOwner` to remove `operator` for its tokens, disallowing it to send any amount of tokens on its behalf.
+     * This function also allows the `operator` to remove itself if it is the caller of this function
      *
      * @param operator The address to revoke as an operator.
+     * @param tokenOwner The address of the token owner.
      * @param notify Boolean indicating whether to notify the operator or not.
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
      * @custom:requirements
-     * - `operator` cannot be calling address.
+     * - caller MUST be `operator` or `tokenOwner`
      * - `operator` cannot be the zero address.
      *
      * @custom:events {OperatorRevoked} event with address of the operator being revoked for the caller (token holder).
      */
     function revokeOperator(
         address operator,
+        address tokenOwner,
         bool notify,
         bytes memory operatorNotificationData
     ) external;
@@ -184,6 +186,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      *    indicating `operator` does not have any alauthorizedAmountForlowance left for `msg.sender`.
      *
      * @param operator The operator to decrease allowance for `msg.sender`
+     * @param tokenOwner The address of the token owner.
      * @param subtractedAmount The amount to decrease by in the operator's allowance.
      *
      * @custom:requirements
@@ -192,6 +195,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      */
     function decreaseAllowance(
         address operator,
+        address tokenOwner,
         uint256 subtractedAmount,
         bytes memory operatorNotificationData
     ) external;

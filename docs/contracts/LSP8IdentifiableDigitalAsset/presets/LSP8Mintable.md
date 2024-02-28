@@ -1796,25 +1796,6 @@ Reverts when trying to send token to the zero address.
 
 <br/>
 
-### LSP8CannotSendToSelf
-
-:::note References
-
-- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8cannotsendtoself)
-- Solidity implementation: [`LSP8Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol)
-- Error signature: `LSP8CannotSendToSelf()`
-- Error hash: `0x5d67d6c1`
-
-:::
-
-```solidity
-error LSP8CannotSendToSelf();
-```
-
-Reverts when specifying the same address for `from` and `to` in a token transfer.
-
-<br/>
-
 ### LSP8CannotUseAddressZeroAsOperator
 
 :::note References
@@ -2032,6 +2013,37 @@ Reverts when `operator` is already authorized for the `tokenId`.
 | ---------- | :-------: | ----------- |
 | `operator` | `address` | -           |
 | `tokenId`  | `bytes32` | -           |
+
+<br/>
+
+### LSP8RevokeOperatorNotAuthorized
+
+:::note References
+
+- Specification details: [**LSP-8-IdentifiableDigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-8-IdentifiableDigitalAsset.md#lsp8revokeoperatornotauthorized)
+- Solidity implementation: [`LSP8Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol)
+- Error signature: `LSP8RevokeOperatorNotAuthorized(address,address,bytes32)`
+- Error hash: `0x760b5acd`
+
+:::
+
+```solidity
+error LSP8RevokeOperatorNotAuthorized(
+  address caller,
+  address tokenOwner,
+  bytes32 tokenId
+);
+```
+
+Reverts when the call to revoke operator is not authorized.
+
+#### Parameters
+
+| Name         |   Type    | Description |
+| ------------ | :-------: | ----------- |
+| `caller`     | `address` | -           |
+| `tokenOwner` | `address` | -           |
+| `tokenId`    | `bytes32` | -           |
 
 <br/>
 

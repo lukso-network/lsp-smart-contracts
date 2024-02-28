@@ -36,13 +36,13 @@ import {
     LSP8NonExistingOperator,
     LSP8CannotSendToAddressZero,
     LSP8TokenIdAlreadyMinted,
-    LSP8CannotSendToSelf,
     LSP8NotifyTokenReceiverContractMissingLSP1Interface,
     LSP8NotifyTokenReceiverIsEOA,
     LSP8TokenIdsDataLengthMismatch,
     LSP8TokenIdsDataEmptyArray,
     LSP8BatchCallFailed,
-    LSP8TokenOwnerChanged
+    LSP8TokenOwnerChanged,
+    LSP8RevokeOperatorNotAuthorized
 } from "./LSP8Errors.sol";
 
 // constants
@@ -293,8 +293,14 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     ) public virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
 
-        if (tokenOwner != msg.sender) {
-            revert LSP8NotTokenOwner(tokenOwner, tokenId, msg.sender);
+        if (msg.sender != tokenOwner) {
+            if (operator != msg.sender) {
+                revert LSP8RevokeOperatorNotAuthorized(
+                    msg.sender,
+                    tokenOwner,
+                    tokenId
+                );
+            }
         }
 
         if (operator == address(0)) {
@@ -315,7 +321,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         if (notify) {
             bytes memory lsp1Data = abi.encode(
-                msg.sender,
+                tokenOwner,
                 tokenId,
                 false, // unauthorized
                 operatorNotificationData
@@ -625,10 +631,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool force,
         bytes memory data
     ) internal virtual {
-        if (from == to) {
-            revert LSP8CannotSendToSelf();
-        }
-
         address tokenOwner = tokenOwnerOf(tokenId);
         if (tokenOwner != from) {
             revert LSP8NotTokenOwner(tokenOwner, tokenId, from);
