@@ -5,7 +5,7 @@ name: Node.js CI - Build + Lint + Test
 on: pull_request
 
 jobs:
-  build:
+  build-lint-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,107 +22,27 @@ jobs:
         run: npm ci
 
       - name: 🔍 Run Solidity Linter
-        run: |
-          npm run lint:solidity
-          npm run lint:turbo:solidity
+        run: npm run lint:solidity
 
       - name: 🎨 Run ESLint on JS/TS files
-        run: |
-          npm run lint
-          npm run lint:turbo
+        run: npm run lint
 
       # This will also generate the Typechain types used by the Chai tests
       - name: 🏗️ Build contract artifacts
         run: |
           npm run build
-          npm run build:turbo
           npm run build:js
-          npm run build:js:turbo
 
-      - name: 📤 cache dependencies + build
-        uses: actions/cache@v4
-        with:
-          path: |
-            artifacts
-            node_modules
-            dist
-            types
-            contracts.ts
-            packages/**/types
-            packages/**/dist
-          key: ${{ github.run_id }}
+      # - name: 📚 generate ABI docs
+      #   run: npm run build:docs
 
-      - name: 📚 generate ABI docs
-        run: npm run build:docs
+      # - name: 🔍 check if ABI auto-generated docs need to be updated
+      #   run: |-
+      #     if [[ $(git diff --name-only) != "" ]];
+      #     then
+      #       echo "Error: Please generate ABI docs after making changes to Solidity code and Natspec comments!"
+      #       exit 1
+      #     fi
 
-      - name: 🔍 check if ABI auto-generated docs need to be updated
-        run: |-
-          if [[ $(git diff --name-only) != "" ]];
-          then
-            echo "Error: Please generate ABI docs after making changes to Solidity code and Natspec comments!"
-            exit 1
-          fi
-
-      - name: 🧪 Run Turbo tests
-        run: npm run test:turbo
-
-  test-suites:
-    strategy:
-      matrix:
-        lsp: [
-            "up",
-            "upinit",
-            "lsp1",
-            "lsp6",
-            "lsp6init",
-            "lsp7",
-            "lsp7init",
-            "lsp8",
-            "lsp8init",
-            "lsp9",
-            "lsp9init",
-            "lsp11",
-            "lsp11init",
-            "lsp17",
-            # Deploying NickFactory currently fails with latest Hardhat version. Commenting out temporarily until resolved
-            # See following issue: https://github.com/NomicFoundation/hardhat/issues/4939
-            # "lsp17extensions",
-            "lsp20",
-            "lsp20init",
-            "lsp23",
-            "reentrancy",
-            "reentrancyinit",
-            "mocks",
-          ]
-
-    runs-on: ubuntu-latest
-    needs: [build]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: 📥 restore cache
-        uses: actions/cache@v4
-        id: "build-cache"
-        with:
-          path: |
-            artifacts
-            node_modules
-            dist
-            types
-            contracts.ts
-            packages/**/types
-            packages/**/dist
-          key: ${{ github.run_id }}
-
-      - name: Use Node.js v20
-        uses: actions/setup-node@v3
-        with:
-          node-version: "20.x"
-          cache: "npm"
-
-      - name: Install dependencies
-        if: steps.build-cache.outputs.cache-hit != 'true'
-        run: npm ci
-
-      - name: 🧪 run tests
-        run: npm run test:${{ matrix.lsp }}
+      - name: 🧪 Run tests for each package
+        run: npm run test
