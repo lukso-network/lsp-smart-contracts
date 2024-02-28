@@ -2,8 +2,19 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { LSP2UtilsLibraryTester, LSP2UtilsLibraryTester__factory } from '../types';
+import { BytesLike } from 'ethers';
 
-import { encodeCompactBytesArray } from '../../../tests/utils/helpers';
+function encodeCompactBytesArray(inputKeys: BytesLike[]) {
+  let compactBytesArray = '0x';
+  for (let i = 0; i < inputKeys.length; i++) {
+    compactBytesArray +=
+      ethers
+        .zeroPadValue(ethers.toBeHex(inputKeys[i].toString().substring(2).length / 2), 2)
+        .substring(2) + inputKeys[i].toString().substring(2);
+  }
+
+  return compactBytesArray;
+}
 
 describe('LSP2Utils', () => {
   let accounts: SignerWithAddress[];
