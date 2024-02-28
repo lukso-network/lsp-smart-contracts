@@ -135,9 +135,10 @@ forge-cache/
 gas_benchmark.md
 
 # Exclude build output folders
+/**/dist
 /**/contracts.ts
-/devdocs
-/userdocs
+/**/devdocs
+/**/userdocs
 
 # test temporary folder
 /.test
