@@ -11,7 +11,9 @@ import {
   UniversalProfile,
   UniversalProfile__factory,
   LSP6KeyManager__factory,
-} from '../../../types';
+  LSP8Mintable__factory,
+  LSP8Mintable,
+} from '../types';
 
 import { ERC725YDataKeys, INTERFACE_IDS } from '../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -49,7 +51,7 @@ const buildLSP6TestContext = async (initialFunding?: bigint): Promise<LSP6TestCo
     },
   );
   const keyManager = await new LSP6KeyManager__factory(mainController).deploy(
-    universalProfile.address,
+    universalProfile.target,
   );
 
   return { accounts, mainController, universalProfile, keyManager };
@@ -91,31 +93,34 @@ describe('⛽📊 Gas Benchmark', () => {
         accounts[0].address,
       );
 
-      const universalProfileDeployTransaction = universalProfile.deployTransaction;
+      const universalProfileDeployTransaction = universalProfile.deploymentTransaction();
       const universalProfileDeploymentReceipt = await universalProfileDeployTransaction.wait();
 
-      gasBenchmark['deployment_costs']['UniversalProfile'] =
-        universalProfileDeploymentReceipt.gasUsed.toNumber();
+      gasBenchmark['deployment_costs']['UniversalProfile'] = ethers.toNumber(
+        universalProfileDeploymentReceipt.gasUsed,
+      );
 
       // Key Manager
       const keyManager = await new LSP6KeyManager__factory(accounts[0]).deploy(
-        universalProfile.address,
+        universalProfile.target,
       );
 
-      const keyManagerDeployTransaction = keyManager.deployTransaction;
+      const keyManagerDeployTransaction = keyManager.deploymentTransaction();
       const keyManagerDeploymentReceipt = await keyManagerDeployTransaction?.wait();
 
-      gasBenchmark['deployment_costs']['KeyManager'] =
-        keyManagerDeploymentReceipt?.gasUsed.toNumber();
+      gasBenchmark['deployment_costs']['KeyManager'] = ethers.toNumber(
+        keyManagerDeploymentReceipt?.gasUsed,
+      );
 
       // LSP1 Delegate
       const lsp1Delegate = await new LSP1UniversalReceiverDelegateUP__factory(accounts[0]).deploy();
 
-      const lsp1DelegateDeployTransaction = lsp1Delegate.deployTransaction;
+      const lsp1DelegateDeployTransaction = lsp1Delegate.deploymentTransaction();
       const lsp1DelegateDeploymentReceipt = await lsp1DelegateDeployTransaction.wait();
 
-      gasBenchmark['deployment_costs']['LSP1DelegateUP'] =
-        lsp1DelegateDeploymentReceipt.gasUsed.toNumber();
+      gasBenchmark['deployment_costs']['LSP1DelegateUP'] = ethers.toNumber(
+        lsp1DelegateDeploymentReceipt.gasUsed,
+      );
 
       // LSP7 Token (Mintable preset)
       const lsp7Mintable = await new LSP7Mintable__factory(accounts[0]).deploy(
@@ -126,10 +131,12 @@ describe('⛽📊 Gas Benchmark', () => {
         false,
       );
 
-      const lsp7DeployTransaction = lsp7Mintable.deployTransaction;
+      const lsp7DeployTransaction = lsp7Mintable.deploymentTransaction();
       const lsp7DeploymentReceipt = await lsp7DeployTransaction.wait();
 
-      gasBenchmark['deployment_costs']['LSP7Mintable'] = lsp7DeploymentReceipt.gasUsed.toNumber();
+      gasBenchmark['deployment_costs']['LSP7Mintable'] = ethers.toNumber(
+        lsp7DeploymentReceipt.gasUsed,
+      );
 
       // LSP8 NFT (Mintable preset)
       const lsp8Mintable = await new LSP8Mintable__factory(accounts[0]).deploy(
@@ -140,10 +147,12 @@ describe('⛽📊 Gas Benchmark', () => {
         LSP8_TOKEN_ID_FORMAT.NUMBER,
       );
 
-      const lsp8DeployTransaction = lsp8Mintable.deployTransaction;
+      const lsp8DeployTransaction = lsp8Mintable.deploymentTransaction();
       const lsp8DeploymentReceipt = await lsp8DeployTransaction.wait();
 
-      gasBenchmark['deployment_costs']['LSP8Mintable'] = lsp8DeploymentReceipt.gasUsed.toNumber();
+      gasBenchmark['deployment_costs']['LSP8Mintable'] = ethers.toNumber(
+        lsp8DeploymentReceipt.gasUsed,
+      );
     });
   });
 
@@ -169,7 +178,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['execute']['case_1']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Transfer 1 LYX to a UP without data', async () => {
@@ -185,7 +194,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['execute']['case_2']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Transfer 1 LYX to an EOA with 256 bytes of data', async () => {
@@ -201,7 +210,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['execute']['case_3']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Transfer 1 LYX to a UP with 256 bytes of data', async () => {
@@ -211,13 +220,13 @@ describe('⛽📊 Gas Benchmark', () => {
               OPERATION_TYPES.CALL,
               await context.universalProfile.getAddress(),
               ethers.parseEther('1'),
-              ethers.utils.hexConcat(['0x00000000', generateRandomData(252)]),
+              ethers.concat(['0x00000000', generateRandomData(252)]),
             );
 
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['execute']['case_4']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
       });
 
@@ -257,7 +266,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['execute']['case_5']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Transfer 0.1 LYX to 3x UP without data', async () => {
@@ -265,7 +274,7 @@ describe('⛽📊 Gas Benchmark', () => {
             .connect(context.mainController)
             .executeBatch(
               [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
-              [universalProfile1.address, universalProfile2.address, universalProfile3.address],
+              [universalProfile1.target, universalProfile2.target, universalProfile3.target],
               [ethers.parseEther('0.1'), ethers.parseEther('0.1'), ethers.parseEther('0.1')],
               ['0x', '0x', '0x'],
             );
@@ -273,7 +282,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['execute']['case_6']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Transfer 0.1 LYX to 3x EOA with 256 bytes of data', async () => {
@@ -293,20 +302,17 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['execute']['case_7']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Transfer 0.1 LYX to 3x UP with 256 bytes of data', async () => {
-          const random256BytesData = ethers.utils.hexConcat([
-            '0x00000000',
-            generateRandomData(252),
-          ]);
+          const random256BytesData = ethers.concat(['0x00000000', generateRandomData(252)]);
 
           const tx = await context.universalProfile
             .connect(context.mainController)
             .executeBatch(
               [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
-              [universalProfile1.address, universalProfile2.address, universalProfile3.address],
+              [universalProfile1.target, universalProfile2.target, universalProfile3.target],
               [ethers.parseEther('0.1'), ethers.parseEther('0.1'), ethers.parseEther('0.1')],
               [random256BytesData, random256BytesData, random256BytesData],
             );
@@ -314,7 +320,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['execute']['case_8']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
       });
     });
@@ -334,7 +340,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['setData']['case_1']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Set a 60 bytes long value', async () => {
@@ -346,7 +352,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['setData']['case_2']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Set a 160 bytes long value', async () => {
@@ -358,7 +364,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['setData']['case_3']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Set a 300 bytes long value', async () => {
@@ -370,7 +376,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['setData']['case_4']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Set a 600 bytes long value', async () => {
@@ -382,7 +388,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['setData']['case_5']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Change the value of a data key already set', async () => {
@@ -397,7 +403,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['setData']['case_6']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Remove the value of a data key already set', async () => {
@@ -411,7 +417,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['setData']['case_7']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
       });
 
@@ -432,7 +438,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['setData']['case_8']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Set 2 data keys of 100 bytes long value', async () => {
@@ -447,7 +453,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['setData']['case_9']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Set 3 data keys of 20 bytes long value', async () => {
@@ -468,7 +474,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['setData']['case_10']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Change the value of three data keys already set of 20 bytes long value', async () => {
@@ -491,7 +497,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['setData']['case_11']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('Remove the value of three data keys already set', async () => {
@@ -514,7 +520,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['setData']['case_12']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
       });
     });
@@ -561,7 +567,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['tokens']['case_1']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('when minting LSP7Token to a EOA without data', async () => {
@@ -570,7 +576,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['tokens']['case_2']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('when transferring LSP7Token from a UP to a UP without data', async () => {
@@ -584,12 +590,12 @@ describe('⛽📊 Gas Benchmark', () => {
 
           const tx = await context.universalProfile
             .connect(context.mainController)
-            .execute(OPERATION_TYPES.CALL, lsp7Token.address, 0, lsp7TransferPayload);
+            .execute(OPERATION_TYPES.CALL, lsp7Token.target, 0, lsp7TransferPayload);
 
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['tokens']['case_3']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
       });
 
@@ -612,7 +618,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['tokens']['case_4']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('when minting LSP8Token to a EOA without data', async () => {
@@ -621,7 +627,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['tokens']['case_5']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
 
         it('when transferring LSP8Token from a UP to a UP without data', async () => {
@@ -635,12 +641,12 @@ describe('⛽📊 Gas Benchmark', () => {
 
           const tx = await context.universalProfile
             .connect(context.mainController)
-            .execute(OPERATION_TYPES.CALL, lsp8Token.address, 0, lsp8TransferPayload);
+            .execute(OPERATION_TYPES.CALL, lsp8Token.target, 0, lsp8TransferPayload);
 
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['EOA_owner']['tokens']['case_6']['gas_cost'] =
-            receipt.gasUsed.toNumber();
+            ethers.toNumber(receipt.gasUsed);
         });
       });
     });
@@ -682,7 +688,7 @@ describe('⛽📊 Gas Benchmark', () => {
           await setupKeyManager(
             context,
             [ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate],
-            [lsp1Delegate.address],
+            [await lsp1Delegate.getAddress()],
           );
 
           // deploy a LSP7 token
@@ -721,19 +727,19 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_1'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('transfers some LYXes to a UP', async () => {
           const lyxAmount = ethers.parseEther('3');
 
           // prettier-ignore
-          const tx = await context.universalProfile.connect(context.mainController).execute(OPERATION_TYPES.CALL, aliceUP.address, lyxAmount, "0x");
+          const tx = await context.universalProfile.connect(context.mainController).execute(OPERATION_TYPES.CALL, aliceUP.target, lyxAmount, "0x");
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_2'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('transfers some tokens (LSP7) to an EOA (no data)', async () => {
@@ -742,7 +748,7 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const tx = await context.universalProfile.connect(context.mainController).execute(
             OPERATION_TYPES.CALL,
-            lsp7MetaCoin.address,
+            lsp7MetaCoin.target,
             0,
             lsp7MetaCoin.interface.encodeFunctionData("transfer", [
               await context.universalProfile.getAddress(),
@@ -756,7 +762,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_3'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('transfer some tokens (LSP7) to a UP (no data)', async () => {
@@ -765,11 +771,11 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const tx = await context.universalProfile.connect(context.mainController).execute(
             OPERATION_TYPES.CALL,
-            lsp7MetaCoin.address,
+            lsp7MetaCoin.target,
             0,
             lsp7MetaCoin.interface.encodeFunctionData("transfer", [
               await context.universalProfile.getAddress(),
-              aliceUP.address,
+              aliceUP.target,
               tokenAmount,
               true,
               "0x",
@@ -779,7 +785,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_4'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('transfer a NFT (LSP8) to a EOA (no data)', async () => {
@@ -788,7 +794,7 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const tx = await context.universalProfile.connect(context.mainController).execute(
             OPERATION_TYPES.CALL,
-            lsp8MetaNFT.address,
+            lsp8MetaNFT.target,
             0,
             lsp8MetaNFT.interface.encodeFunctionData("transfer", [
               await context.universalProfile.getAddress(),
@@ -802,7 +808,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_5'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('transfer a NFT (LSP8) to a UP (no data)', async () => {
@@ -811,11 +817,11 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const tx = await context.universalProfile.connect(context.mainController).execute(
             OPERATION_TYPES.CALL,
-            lsp8MetaNFT.address,
+            lsp8MetaNFT.target,
             0,
             lsp8MetaNFT.interface.encodeFunctionData("transfer", [
               await context.universalProfile.getAddress(),
-              aliceUP.address,
+              aliceUP.target,
               nftId,
               false,
               "0x",
@@ -825,7 +831,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_6'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
       });
 
@@ -941,20 +947,20 @@ describe('⛽📊 Gas Benchmark', () => {
               ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + canTransferTwoNFTs.address.substring(2),
             ],
             [
-              lsp1Delegate.address,
+              await lsp1Delegate.getAddress(),
               PERMISSIONS.TRANSFERVALUE,
               PERMISSIONS.CALL,
               PERMISSIONS.CALL,
-              combineAllowedCalls([CALLTYPE.VALUE, CALLTYPE.VALUE], [allowedAddressToTransferValue, aliceUP.address], ["0xffffffff", "0xffffffff"], ["0xffffffff", "0xffffffff"]),
+              combineAllowedCalls([CALLTYPE.VALUE, CALLTYPE.VALUE], [allowedAddressToTransferValue, await aliceUP.getAddress()], ["0xffffffff", "0xffffffff"], ["0xffffffff", "0xffffffff"]),
               combineAllowedCalls(
                 [CALLTYPE.CALL, CALLTYPE.CALL],
-                [lsp7MetaCoin.address, lsp7LyxDai.address],
+                [await lsp7MetaCoin.getAddress(), await lsp7LyxDai.getAddress()],
                 [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.LSP7DigitalAsset],
                 ["0xffffffff", "0xffffffff"]
               ),
               combineAllowedCalls(
                 [CALLTYPE.CALL, CALLTYPE.CALL],
-                [lsp8MetaNFT.address, lsp8LyxPunks.address],
+                [await lsp8MetaNFT.getAddress(), await lsp8LyxPunks.getAddress()],
                 [INTERFACE_IDS.LSP8IdentifiableDigitalAsset, INTERFACE_IDS.LSP8IdentifiableDigitalAsset],
                 ["0xffffffff", "0xffffffff"]
               )
@@ -972,7 +978,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_1'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('transfer some LYXes to a UP - restricted to 2 x allowed address only (an EOA + a UP) (TRANSFERVALUE + 2x AllowedCalls)', async () => {
@@ -981,12 +987,12 @@ describe('⛽📊 Gas Benchmark', () => {
 
           const tx = await context.universalProfile
             .connect(canTransferValueToOneAddress)
-            .execute(OPERATION_TYPES.CALL, aliceUP.address, lyxAmount, '0x');
+            .execute(OPERATION_TYPES.CALL, aliceUP.target, lyxAmount, '0x');
           const receipt = await tx.wait();
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_2'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('transfers some tokens (LSP7) to an EOA - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)', async () => {
@@ -995,7 +1001,7 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const tx = await context.universalProfile.connect(canTransferTwoTokens).execute(
             OPERATION_TYPES.CALL,
-            lsp7MetaCoin.address,
+            lsp7MetaCoin.target,
             0,
             lsp7MetaCoin.interface.encodeFunctionData("transfer", [
               await context.universalProfile.getAddress(),
@@ -1009,7 +1015,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_3'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('transfers some tokens (LSP7) to an other UP - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)', async () => {
@@ -1018,11 +1024,11 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const tx = await context.universalProfile.connect(canTransferTwoTokens).execute(
             OPERATION_TYPES.CALL,
-            lsp7MetaCoin.address,
+            lsp7MetaCoin.target,
             0,
             lsp7MetaCoin.interface.encodeFunctionData("transfer", [
               await context.universalProfile.getAddress(),
-              aliceUP.address,
+              aliceUP.target,
               tokenAmount,
               true,
               "0x",
@@ -1032,7 +1038,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_4'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('transfers a NFT (LSP8) to an EOA - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)', async () => {
@@ -1041,7 +1047,7 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const tx = await context.universalProfile.connect(canTransferTwoNFTs).execute(
             OPERATION_TYPES.CALL,
-            lsp8MetaNFT.address,
+            lsp8MetaNFT.target,
             0,
             lsp8MetaNFT.interface.encodeFunctionData("transfer", [
               await context.universalProfile.getAddress(),
@@ -1055,7 +1061,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_5'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('transfers a NFT (LSP8) to an other UP - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)', async () => {
@@ -1064,11 +1070,11 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const tx = await context.universalProfile.connect(canTransferTwoNFTs).execute(
             OPERATION_TYPES.CALL,
-            lsp8MetaNFT.address,
+            lsp8MetaNFT.target,
             0,
             lsp8MetaNFT.interface.encodeFunctionData("transfer", [
               await context.universalProfile.getAddress(),
-              aliceUP.address,
+              aliceUP.target,
               nftId,
               false,
               "0x",
@@ -1078,7 +1084,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['execute']['case_6'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
       });
     });
@@ -1123,7 +1129,7 @@ describe('⛽📊 Gas Benchmark', () => {
         const permissionValues = [
           // Set some JSONURL for LSP3Profile metadata to test gas cost of updating your profile details
           '0x6f357c6a70546a2accab18748420b63c63b5af4cf710848ae83afc0c51dd8ad17fb5e8b3697066733a2f2f516d65637247656a555156587057347a53393438704e76636e51724a314b69416f4d36626466725663575a736e35',
-          ethers.zeroPadValue(ethers.toBigInt(3).toHexString(), 16),
+          ethers.zeroPadValue(ethers.toBeHex(3), 16),
           context.mainController.address,
         ];
 
@@ -1145,7 +1151,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_1'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it(`Give permissions to a controller
@@ -1163,14 +1169,14 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const dataKeys = [
             ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-            ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.utils.hexStripZeros(AddressPermissionsArrayLength), 16).substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.stripZerosLeft(AddressPermissionsArrayLength), 16).substring(2),
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newController.address.substring(2),
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + newController.address.substring(2),
           ];
 
           // prettier-ignore
           const dataValues = [
-            ethers.zeroPadValue(ethers.toBigInt(AddressPermissionsArrayLength).add(1).toHexString(), 16),
+            ethers.zeroPadValue(ethers.toBeHex(ethers.toBigInt(AddressPermissionsArrayLength) + BigInt(1)), 16),
             newController.address,
             combinePermissions(PERMISSIONS.SETDATA),
             encodeCompactBytesArray([
@@ -1190,7 +1196,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_2'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('Update permissions of previous controller. Allow it now to `SUPER_SETDATA`', async () => {
@@ -1212,7 +1218,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_3'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it(`Remove a controller
@@ -1230,14 +1236,14 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const dataKeys = [
             ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-            ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.utils.hexStripZeros(AddressPermissionsArrayLength), 16).substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.stripZerosLeft(AddressPermissionsArrayLength), 16).substring(2),
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newController.address.substring(2),
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + newController.address.substring(2),
           ];
 
           // prettier-ignore
           const dataValues = [
-            ethers.zeroPadValue(ethers.toBigInt(AddressPermissionsArrayLength).sub(1).toHexString(), 16),
+            ethers.zeroPadValue(ethers.toBeHex(ethers.toBigInt(AddressPermissionsArrayLength) - BigInt(1)), 16),
             "0x",
             "0x",
             "0x",
@@ -1251,7 +1257,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_4'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('Write 5x new LSP12 Issued Assets', async () => {
@@ -1288,7 +1294,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_5'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('Updates 1x data key', async () => {
@@ -1303,7 +1309,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_5'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('Updates 3x data keys (first x3)', async () => {
@@ -1318,7 +1324,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_6'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('Update 3x data keys (middle x3)', async () => {
@@ -1333,7 +1339,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_7'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('Update 3x data keys (last x3)', async () => {
@@ -1348,20 +1354,20 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_8'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('Set 2x data keys + add 3x new controllers (including setting the array length + indexes under AddressPermissions[index]) - 12 data keys in total', async () => {
-          const addressPermissionsArrayLength = ethers
-            .toBigInt(
+          const addressPermissionsArrayLength = ethers.toNumber(
+            ethers.toBigInt(
               await context.universalProfile.getData(
                 ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
               ),
-            )
-            .toNumber();
+            ),
+          );
 
           const newArrayLengthUint128Hex = ethers.zeroPadValue(
-            ethers.toBigInt(addressPermissionsArrayLength).add(3).toHexString(),
+            ethers.toBeHex(ethers.toBigInt(addressPermissionsArrayLength) + BigInt(3)),
             16,
           );
 
@@ -1421,7 +1427,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_9'][
             'main_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
       });
 
@@ -1461,7 +1467,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const permissionValues = [
             // Set some JSONURL for LSP3Profile metadata to test gas cost of updating your profile details
             '0x6f357c6a70546a2accab18748420b63c63b5af4cf710848ae83afc0c51dd8ad17fb5e8b3697066733a2f2f516d65637247656a555156587057347a53393438704e76636e51724a314b69416f4d36626466725663575a736e35',
-            ethers.zeroPadValue(ethers.toBigInt(6).toHexString(), 16),
+            ethers.zeroPadValue(ethers.toBeHex(6), 16),
             context.mainController.address,
             PERMISSIONS.SETDATA,
             encodeCompactBytesArray([
@@ -1497,7 +1503,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_1'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it(`Give permissions to a controller
@@ -1515,14 +1521,14 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const dataKeys = [
               ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-              ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.utils.hexStripZeros(AddressPermissionsArrayLength), 16).substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.stripZerosLeft(AddressPermissionsArrayLength), 16).substring(2),
               ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newController.address.substring(2),
               ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + newController.address.substring(2),
             ];
 
           // prettier-ignore
           const dataValues = [
-              ethers.zeroPadValue(ethers.toBigInt(AddressPermissionsArrayLength).add(1).toHexString(), 16),
+              ethers.zeroPadValue(ethers.toBeHex(ethers.toBigInt(AddressPermissionsArrayLength) + BigInt(1)), 16),
               newController.address,
               combinePermissions(PERMISSIONS.SETDATA),
               encodeCompactBytesArray([
@@ -1542,7 +1548,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_2'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('Update permissions of previous controller. Allow it now to `SUPER_SETDATA`', async () => {
@@ -1564,7 +1570,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_3'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it(`Remove a controller
@@ -1582,14 +1588,14 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const dataKeys = [
               ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-              ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.toBigInt(AddressPermissionsArrayLength).sub(1).toHexString(), 16).substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.toBeHex(ethers.toBigInt(AddressPermissionsArrayLength) - BigInt(1)), 16).substring(2),
               ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newController.address.substring(2),
               ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + newController.address.substring(2),
             ];
 
           // prettier-ignore
           const dataValues = [
-              ethers.zeroPadValue(ethers.toBigInt(AddressPermissionsArrayLength).sub(1).toHexString(), 16),
+              ethers.zeroPadValue(ethers.toBeHex(ethers.toBigInt(AddressPermissionsArrayLength) - BigInt(1)), 16),
               "0x",
               "0x",
               "0x",
@@ -1603,7 +1609,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_4'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('Write 5x new LSP12 Issued Assets', async () => {
@@ -1640,7 +1646,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_5'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('Updates 1x data key', async () => {
@@ -1655,7 +1661,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_5'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('Updates 3x data keys (first x3)', async () => {
@@ -1670,7 +1676,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_6'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('Update 3x data keys (middle x3)', async () => {
@@ -1685,7 +1691,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_7'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('Update 3x data keys (last x3)', async () => {
@@ -1700,20 +1706,20 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_8'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
 
         it('Set 2x data keys + add 3x new controllers (including setting the array length + indexes under AddressPermissions[index]) - 12 data keys in total', async () => {
-          const addressPermissionsArrayLength = ethers
-            .toBigInt(
+          const addressPermissionsArrayLength = ethers.toNumber(
+            ethers.toBigInt(
               await context.universalProfile.getData(
                 ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
               ),
-            )
-            .toNumber();
+            ),
+          );
 
           const newArrayLengthUint128Hex = ethers.zeroPadValue(
-            ethers.toBigInt(addressPermissionsArrayLength).add(3).toHexString(),
+            ethers.toBeHex(ethers.toBigInt(addressPermissionsArrayLength) + BigInt(3)),
             16,
           );
 
@@ -1773,7 +1779,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           gasBenchmark['runtime_costs']['KeyManager_owner']['setData']['case_9'][
             'restricted_controller'
-          ] = receipt.gasUsed.toNumber();
+          ] = ethers.toNumber(receipt.gasUsed);
         });
       });
     });
