@@ -59,6 +59,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
+    "preinstall": "npx --yes force-resolutions",
     "build": "hardhat compile",
     "build:turbo": "turbo build",
     "build:docs": "hardhat dodoc && prettier -w ./docs",
@@ -136,7 +137,7 @@
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "@turbo/gen": "^1.12.3",
     "@typechain/ethers-v6": "^0.5.1",
-    "@typechain/hardhat": "^9.1.0",
+    "@typechain/hardhat": "9.1.0",
     "all-contributors-cli": "^6.26.1",
     "dotenv": "^16.0.3",
     "esbuild": "^0.17.15",
@@ -144,7 +145,7 @@
     "eslint-config-custom": "*",
     "eth-create2-calculator": "^1.1.5",
     "ethers": "^6.11.0",
-    "hardhat": "^2.20.0",
+    "hardhat": "^2.20.1",
     "hardhat-contract-sizer": "^2.8.0",
     "hardhat-deploy": "^0.11.25",
     "hardhat-deploy-ethers": "^0.4.1",
@@ -169,5 +170,8 @@
   "workspaces": [
     "config/*",
     "packages/*"
-  ]
+  ],
+  "resolutions": {
+    "@typechain/hardhat": "9.1.0"
+  }
 }
