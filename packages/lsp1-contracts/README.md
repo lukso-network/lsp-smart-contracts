@@ -1,5 +1,3 @@
-# LSP Template
+# LSP1 Universal Receiver &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp1-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp1-contracts)
 
-This project can be used as a skeleton to build a package for a LSP implementation in Solidity (LUKSO Standard Proposal)
-
-It is based on Hardhat.
+Package for the LSP1 Universal Receiver standard.

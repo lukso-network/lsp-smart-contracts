@@ -1,4 +1,4 @@
-# LSP17 Extensions Package
+# LSP17 Extensions Package &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp17-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp17-contracts)
 
 Package for the LSP17 Extensions, that includes the following extensions:
 
