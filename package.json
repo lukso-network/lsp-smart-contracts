@@ -1,7 +1,9 @@
 {
-  "name": "@lukso/lsp-smart-contracts",
-  "version": "0.12.1",
+  "name": "@lukso/lsp-smart-contracts-monorepo",
   "description": "The reference smart contract implementation for the LUKSO LSP standards",
+  "version": "0.12.1",
+  "private": true,
+  "npmClient": "npm",
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
@@ -23,41 +25,6 @@
     "Solidity",
     "Universal Profiles"
   ],
-  "directories": {
-    "test": "tests"
-  },
-  "files": [
-    "contracts/**/*.sol",
-    "!contracts/Mocks/**/*.sol",
-    "artifacts/*.json",
-    "dist",
-    "./README.md",
-    "./CONTRIBUTING.md",
-    "./LICENSE"
-  ],
-  "main": "./dist/constants.cjs",
-  "module": "./dist/constants.mjs",
-  "typings": "./dist/constants.d.ts",
-  "exports": {
-    ".": {
-      "require": "./dist/constants.cjs",
-      "import": "./dist/constants.mjs",
-      "types": "./dist/constants.d.ts"
-    },
-    "./constants.js": {
-      "require": "./dist/constants.cjs",
-      "import": "./dist/constants.mjs",
-      "types": "./dist/constants.d.ts"
-    },
-    "./constants": {
-      "require": "./dist/constants.cjs",
-      "import": "./dist/constants.mjs",
-      "types": "./dist/constants.d.ts"
-    },
-    "./artifacts/*": "./artifacts/*",
-    "./dist/*": "./dist/*",
-    "./package.json": "./package.json"
-  },
   "scripts": {
     "preinstall": "npx --yes force-resolutions",
     "build": "hardhat compile",
@@ -100,34 +67,6 @@
     "test:reentrancyinit": "hardhat test --no-compile tests/Reentrancy/ReentrancyInit.test.ts",
     "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
     "test:turbo": "turbo test"
-  },
-  "dependencies": {
-    "@account-abstraction/contracts": "^0.6.0",
-    "@erc725/smart-contracts": "^7.0.0",
-    "@lukso/lsp0-contracts": "*",
-    "@lukso/lsp1-contracts": "*",
-    "@lukso/lsp10-contracts": "*",
-    "@lukso/lsp12-contracts": "*",
-    "@lukso/lsp14-contracts": "*",
-    "@lukso/lsp16-contracts": "*",
-    "@lukso/lsp17-contracts": "*",
-    "@lukso/lsp17contractextension-contracts": "*",
-    "@lukso/lsp1delegate-contracts": "*",
-    "@lukso/lsp2-contracts": "*",
-    "@lukso/lsp20-contracts": "*",
-    "@lukso/lsp23-contracts": "*",
-    "@lukso/lsp25-contracts": "*",
-    "@lukso/lsp3-contracts": "*",
-    "@lukso/lsp4-contracts": "*",
-    "@lukso/lsp5-contracts": "*",
-    "@lukso/lsp6-contracts": "*",
-    "@lukso/lsp7-contracts": "*",
-    "@lukso/lsp8-contracts": "*",
-    "@lukso/lsp9-contracts": "*",
-    "@lukso/universalprofile-contracts": "*",
-    "@openzeppelin/contracts": "^4.9.2",
-    "@openzeppelin/contracts-upgradeable": "^4.9.2",
-    "solidity-bytes-utils": "0.8.0"
   },
   "devDependencies": {
     "@b00ste/hardhat-dodoc": "^0.3.16",
