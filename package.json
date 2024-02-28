@@ -28,6 +28,7 @@
   "scripts": {
     "preinstall": "npx --yes force-resolutions",
     "build": "turbo build",
+    "build:foundry": "turbo build:foundry",
     "build:js": "turbo build:js",
     "clean": "turbo clean",
     "format": "prettier --write .",
