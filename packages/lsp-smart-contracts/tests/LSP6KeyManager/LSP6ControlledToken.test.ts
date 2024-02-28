@@ -11,7 +11,7 @@ import {
   LSP7Mintable,
   LSP7Mintable__factory,
   LSP8Mintable,
-} from '../../../../types';
+} from '../../types';
 
 import { ERC725YDataKeys } from '../../constants';
 import { ERC1271_VALUES } from '@lukso/lsp0-contracts';

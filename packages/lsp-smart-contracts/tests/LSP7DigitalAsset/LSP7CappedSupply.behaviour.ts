@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { LSP7CappedSupplyTester } from '../../../../types';
+import { LSP7CappedSupplyTester } from '../../types';
 
 export type LSP7CappedSupplyTestAccounts = {
   owner: SignerWithAddress;

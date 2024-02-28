@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat';
 
-import { LSP7CappedSupplyTester__factory } from '../../../../../types';
+import { LSP7CappedSupplyTester__factory } from '../../../types';
 
 import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour';
 import {

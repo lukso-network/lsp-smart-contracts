@@ -6,7 +6,7 @@ import {
   UPWithInstantAcceptOwnership__factory,
   UPWithInstantAcceptOwnership,
   LSP0ERC725Account,
-} from '../../../../types';
+} from '../../types';
 
 // constants
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';

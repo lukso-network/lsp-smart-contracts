@@ -5,7 +5,7 @@ import {
   UniversalProfileInit__factory,
   LSP6KeyManagerInit__factory,
   LSP6KeyManagerInit,
-} from '../../../../../types';
+} from '../../../types';
 
 import { LSP6TestContext } from '../../utils/context';
 import { deployProxy } from '../../utils/fixtures';

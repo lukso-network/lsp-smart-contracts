@@ -11,7 +11,7 @@ import {
   LSP7Mintable__factory,
   UniversalProfile,
   UniversalProfile__factory,
-} from '../../../../../../types';
+} from '../../types';
 
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS } from '../../../../constants';

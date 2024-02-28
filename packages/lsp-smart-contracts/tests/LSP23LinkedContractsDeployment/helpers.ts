@@ -1,13 +1,13 @@
 import { ethers } from 'hardhat';
 import { BytesLike } from 'ethers';
-import { PromiseOrValue } from '../../../../types/common';
+import { PromiseOrValue } from '../../types/common';
 import {
   UniversalProfileInit__factory,
   LSP6KeyManagerInit__factory,
   LSP23LinkedContractsFactory__factory,
   UniversalProfileInitPostDeploymentModule__factory,
   UniversalProfilePostDeploymentModule__factory,
-} from '../../../../types';
+} from '../../types';
 
 export async function calculateProxiesAddresses(
   salt: PromiseOrValue<BytesLike>,

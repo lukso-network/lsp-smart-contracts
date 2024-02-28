@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { LSP8EnumerableInitTester, LSP8EnumerableInitTester__factory } from '../../../../../types';
+import { LSP8EnumerableInitTester, LSP8EnumerableInitTester__factory } from '../../../types';
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {

@@ -6,7 +6,7 @@ import {
   LSP6KeyManager,
   UniversalProfile,
   ILSP23LinkedContractsFactory,
-} from '../../../../types';
+} from '../../types';
 
 import { ERC725YDataKeys } from '../../constants';
 import {

@@ -2,7 +2,7 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import { LSP11BasicSocialRecovery, LSP6KeyManager, UniversalProfile } from '../../../../types';
+import { LSP11BasicSocialRecovery, LSP6KeyManager, UniversalProfile } from '../../types';
 
 import { ERC725YDataKeys, INTERFACE_IDS } from '../../constants';
 import { ALL_PERMISSIONS } from '@lukso/lsp6-contracts';

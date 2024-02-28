@@ -3,7 +3,7 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import { TargetContract, TargetContract__factory } from '../../../../../types';
+import { TargetContract, TargetContract__factory } from '../../../types';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';

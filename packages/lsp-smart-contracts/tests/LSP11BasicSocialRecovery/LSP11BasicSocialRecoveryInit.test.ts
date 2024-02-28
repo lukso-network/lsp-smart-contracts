@@ -5,7 +5,7 @@ import {
   UniversalProfile,
   LSP11BasicSocialRecoveryInit__factory,
   LSP11BasicSocialRecovery,
-} from '../../../../types';
+} from '../../types';
 
 import {
   getNamedAccounts,

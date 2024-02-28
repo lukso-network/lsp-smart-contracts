@@ -17,7 +17,7 @@ import {
   LSP7Mintable__factory,
   FallbackContract,
   FallbackContract__factory,
-} from '../../../../../types';
+} from '../../../types';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';

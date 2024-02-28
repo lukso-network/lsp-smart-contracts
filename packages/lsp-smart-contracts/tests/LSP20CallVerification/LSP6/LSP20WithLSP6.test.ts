@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat';
 
-import { UniversalProfile__factory, LSP6KeyManager__factory } from '../../../../../types';
+import { UniversalProfile__factory, LSP6KeyManager__factory } from '../../../types';
 
 import { LSP6TestContext } from '../../utils/context';
 

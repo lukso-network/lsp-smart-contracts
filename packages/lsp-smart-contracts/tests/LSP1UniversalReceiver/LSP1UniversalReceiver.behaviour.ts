@@ -8,7 +8,7 @@ import {
   UniversalReceiverTester,
   UniversalReceiverDelegateRevert__factory,
   UniversalReceiverDelegateRevert,
-} from '../../../../types';
+} from '../../types';
 
 // helpers
 import { abiCoder, LSP1_HOOK_PLACEHOLDER } from '../utils/helpers';

@@ -2,7 +2,7 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import { LSP8BurnableInitTester, LSP8BurnableInitTester__factory } from '../../../../../types';
+import { LSP8BurnableInitTester, LSP8BurnableInitTester__factory } from '../../../types';
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 
