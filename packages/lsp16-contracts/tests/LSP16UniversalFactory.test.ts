@@ -14,7 +14,6 @@ import {
   NonPayableContract__factory,
   ImplementationTester,
   ImplementationTester__factory,
-  FallbackContract,
   FallbackInitializer,
   FallbackInitializer__factory,
   ContractNoConstructor__factory,
@@ -23,10 +22,10 @@ import {
   FallbackContract__factory,
 } from '../types';
 
-import web3 from 'web3';
-
-import { provider, AddressOffset } from '../../../tests/utils/helpers';
 import { UniversalProfile } from '../../../types';
+import { AbiCoder, concat } from 'ethers';
+
+const abiCoder = new AbiCoder();
 
 const AccountBytecode = Account__factory.bytecode;
 const NonPayableConstructorBytecode = NonPayableContract__factory.bytecode;
@@ -103,7 +102,10 @@ describe('UniversalFactory contract', () => {
         const randomAddress = ethers.Wallet.createRandom();
 
         // Set the Owner as the ZeroAddress
-        const UPBytecode = AccountBytecode + AddressOffset + randomAddress.address.substring(2);
+        const UPBytecode = concat([
+          AccountBytecode,
+          abiCoder.encode(['address'], [randomAddress.address]),
+        ]);
 
         const bytecodeHash = ethers.solidityPackedKeccak256(['bytes'], [UPBytecode]);
 
@@ -126,7 +128,10 @@ describe('UniversalFactory contract', () => {
 
         const randomAddress = ethers.Wallet.createRandom();
 
-        const UPBytecode = AccountBytecode + AddressOffset + randomAddress.address.substr(2);
+        const UPBytecode = concat([
+          AccountBytecode,
+          abiCoder.encode(['address'], [randomAddress.address]),
+        ]);
 
         const bytecodeHash = ethers.solidityPackedKeccak256(['bytes'], [UPBytecode]);
 
@@ -153,7 +158,10 @@ describe('UniversalFactory contract', () => {
         const salt1 = ethers.solidityPackedKeccak256(['string'], ['Salt1']);
         const salt2 = ethers.solidityPackedKeccak256(['string'], ['Salt2']);
 
-        const UPBytecode = AccountBytecode + AddressOffset + ethers.ZeroAddress.substr(2);
+        const UPBytecode = concat([
+          AccountBytecode,
+          abiCoder.encode(['address'], [ethers.ZeroAddress]),
+        ]);
 
         const bytecodeHash = ethers.solidityPackedKeccak256(['bytes'], [UPBytecode]);
 
@@ -179,12 +187,17 @@ describe('UniversalFactory contract', () => {
       it('should calculate a different address of a contract if the bytecode changed', async () => {
         const salt = ethers.solidityPackedKeccak256(['string'], ['Salt']);
 
-        const UPBytecode1 = AccountBytecode + AddressOffset + ethers.ZeroAddress.substr(2);
+        const UPBytecode1 = concat([
+          AccountBytecode,
+          abiCoder.encode(['address'], [ethers.ZeroAddress]),
+        ]);
 
         const bytecodeHash1 = ethers.solidityPackedKeccak256(['bytes'], [UPBytecode1]);
 
-        const UPBytecode2 =
-          AccountBytecode + AddressOffset + 'cafecafecafecafecafecafecafecafecafecafe';
+        const UPBytecode2 = concat([
+          AccountBytecode,
+          abiCoder.encode(['address'], ['0xcafecafecafecafecafecafecafecafecafecafe']),
+        ]);
 
         const bytecodeHash2 = ethers.solidityPackedKeccak256(['bytes'], [UPBytecode2]);
 
@@ -212,7 +225,10 @@ describe('UniversalFactory contract', () => {
 
         const randomAddress = ethers.Wallet.createRandom();
 
-        const UPBytecode = AccountBytecode + AddressOffset + randomAddress.address.substring(2);
+        const UPBytecode = concat([
+          AccountBytecode,
+          abiCoder.encode(['address'], [randomAddress.address]),
+        ]);
 
         await context.universalFactory.deployCreate2(UPBytecode, salt);
 
@@ -224,8 +240,10 @@ describe('UniversalFactory contract', () => {
       it('should revert when sending value while deploying a non payable non-initializable contract', async () => {
         const salt = ethers.solidityPackedKeccak256(['string'], ['OtherSalt']);
 
-        const KMBytecode =
-          NonPayableConstructorBytecode + AddressOffset + ethers.ZeroAddress.substr(2);
+        const KMBytecode = concat([
+          NonPayableConstructorBytecode,
+          abiCoder.encode(['address'], [ethers.ZeroAddress]),
+        ]);
 
         await expect(
           context.universalFactory.deployCreate2(KMBytecode, salt, {
@@ -251,15 +269,17 @@ describe('UniversalFactory contract', () => {
           value: valueSent,
         });
 
-        const balance = await provider.getBalance(contractCreated);
+        const balance = await ethers.provider.getBalance(contractCreated);
         expect(balance).to.equal(valueSent);
       });
 
       it('should deploy an un-initializable contract and get the owner successfully', async () => {
         const salt = ethers.solidityPackedKeccak256(['string'], ['Salt']);
 
-        const UPBytecode =
-          AccountBytecode + AddressOffset + context.accounts.deployer3.address.substr(2);
+        const UPBytecode = concat([
+          AccountBytecode,
+          abiCoder.encode(['address'], [context.accounts.deployer3.address]),
+        ]);
 
         const contractCreatedAddress = await context.universalFactory.deployCreate2.staticCall(
           UPBytecode,
@@ -318,7 +338,10 @@ describe('UniversalFactory contract', () => {
         const salt1 = ethers.solidityPackedKeccak256(['string'], ['Salt1']);
         const salt2 = ethers.solidityPackedKeccak256(['string'], ['Salt2']);
 
-        const UPBytecode = AccountBytecode + AddressOffset + ethers.ZeroAddress.substr(2);
+        const UPBytecode = concat([
+          AccountBytecode,
+          abiCoder.encode(['address'], [ethers.ZeroAddress]),
+        ]);
 
         const bytecodeHash = ethers.solidityPackedKeccak256(['bytes'], [UPBytecode]);
 
@@ -348,7 +371,10 @@ describe('UniversalFactory contract', () => {
       it('should calculate a different address of a contract if the initializeCalldata changed', async () => {
         const salt = ethers.solidityPackedKeccak256(['string'], ['Salt']);
 
-        const UPBytecode = AccountBytecode + AddressOffset + ethers.ZeroAddress.substr(2);
+        const UPBytecode = concat([
+          AccountBytecode,
+          abiCoder.encode(['address'], [ethers.ZeroAddress]),
+        ]);
 
         const bytecodeHash = ethers.solidityPackedKeccak256(['bytes'], [UPBytecode]);
 
@@ -379,7 +405,10 @@ describe('UniversalFactory contract', () => {
       it('should calculate a different address of a contract if the bytecode changed', async () => {
         const salt = ethers.solidityPackedKeccak256(['string'], ['Salt']);
 
-        const UPBytecode1 = AccountBytecode + AddressOffset + ethers.ZeroAddress.substr(2);
+        const UPBytecode1 = concat([
+          AccountBytecode,
+          abiCoder.encode(['address'], [ethers.ZeroAddress]),
+        ]);
 
         const initializeCallData = accountBaseContract.interface.encodeFunctionData('initialize', [
           context.accounts.deployer1.address,
@@ -387,8 +416,10 @@ describe('UniversalFactory contract', () => {
 
         const bytecodeHash1 = ethers.solidityPackedKeccak256(['bytes'], [UPBytecode1]);
 
-        const UPBytecode2 =
-          AccountBytecode + AddressOffset + 'cafecafecafecafecafecafecafecafecafecafe';
+        const UPBytecode2 = concat([
+          AccountBytecode,
+          abiCoder.encode(['address'], ['0xcafecafecafecafecafecafecafecafecafecafe']),
+        ]);
 
         const bytecodeHash2 = ethers.solidityPackedKeccak256(['bytes'], [UPBytecode2]);
 
@@ -438,7 +469,10 @@ describe('UniversalFactory contract', () => {
       it('should revert when deploying an initializable contract with sending value unmatched to the msgValue arguments', async () => {
         const salt = ethers.solidityPackedKeccak256(['string'], ['Salt']);
 
-        const UPBytecode = AccountBytecode + AddressOffset + ethers.ZeroAddress.substr(2);
+        const UPBytecode = concat([
+          AccountBytecode,
+          abiCoder.encode(['address'], [ethers.ZeroAddress]),
+        ]);
 
         const initializeCallData = accountBaseContract.interface.encodeFunctionData('initialize', [
           context.accounts.deployer1.address,
@@ -517,7 +551,7 @@ describe('UniversalFactory contract', () => {
             { value: sumValueSent },
           );
 
-        const balance = await provider.getBalance(contractCreated);
+        const balance = await ethers.provider.getBalance(contractCreated);
         expect(balance).to.equal(sumValueSent);
       });
 
@@ -884,7 +918,7 @@ describe('UniversalFactory contract', () => {
             value: valueSent,
           });
 
-        const balance = await provider.getBalance(contractCreated);
+        const balance = await ethers.provider.getBalance(contractCreated);
         expect(balance).to.equal(valueSent);
       });
 
