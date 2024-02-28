@@ -44,24 +44,5 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@lukso/lsp2-contracts": "*"
-  },
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
-    "@typechain/hardhat": "^9.1.0",
-    "@typechain/ethers-v6": "^0.5.1",
-    "dotenv": "^16.0.3",
-    "eslint-config-custom": "*",
-    "ethers": "^6.11.0",
-    "hardhat": "^2.20.0",
-    "hardhat-contract-sizer": "^2.8.0",
-    "hardhat-deploy": "^0.11.25",
-    "hardhat-gas-reporter": "^1.0.9",
-    "hardhat-packager": "^1.4.2",
-    "@lukso/lsp2-contracts": "*",
-    "solhint": "^3.3.6",
-    "ts-node": "^10.2.0",
-    "tsconfig": "*",
-    "typechain": "^8.3.2",
-    "typescript": "^5.3.3"
   }
 }
