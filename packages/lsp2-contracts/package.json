@@ -35,6 +35,7 @@
   ],
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
+    "build:foundry": "forge build",
     "build:js": "unbuild",
     "clean": "hardhat clean && rm -Rf dist/",
     "format": "prettier --write .",

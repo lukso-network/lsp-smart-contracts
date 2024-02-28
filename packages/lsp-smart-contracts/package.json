@@ -51,6 +51,7 @@
   },
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
+    "build:foundry": "forge build",
     "build:js": "unbuild",
     "build:docs": "hardhat dodoc && prettier -w ./docs",
     "clean": "hardhat clean && rm -Rf dist/",

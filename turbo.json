@@ -7,6 +7,9 @@
       "outputs": ["**/artifacts/**", "types/**", "**/types/**"],
       "cache": true
     },
+    "build:foundry": {
+      "cache": true
+    },
     "build:js": {
       "outputs": ["**/dist/**"],
       "cache": true
@@ -29,6 +32,7 @@
       "cache": false
     },
     "test:foundry": {
+      "dependsOn": ["^build", "^build:foundry"],
       "cache": true
     }
   }

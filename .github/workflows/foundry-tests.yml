@@ -24,7 +24,9 @@ jobs:
         run: npm ci
 
       - name: NPM build
-        run: npm run build
+        run: |
+          npm run build
+          npm run build:foundry
 
       - name: Run Foundry tests
         run: npm run test:foundry
