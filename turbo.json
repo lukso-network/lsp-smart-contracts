@@ -11,21 +11,22 @@
       "outputs": ["**/dist/**"],
       "cache": true
     },
+    "clean": {},
     "lint": {
       "env": ["CONTRACT_VERIFICATION_TESTNET_PK"]
     },
     "lint:solidity": {},
-    "clean": {},
+    "package": {},
     "test": {
       "cache": true,
       "env": ["COVERAGE"]
     },
-    "test:foundry": {
-      "cache": true
-    },
     "test:coverage": {
       "dependsOn": ["test"],
       "cache": false
+    },
+    "test:foundry": {
+      "cache": true
     }
   }
 }

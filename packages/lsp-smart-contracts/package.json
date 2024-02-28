@@ -52,12 +52,14 @@
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
     "build:js": "unbuild",
-    "clean": "hardhat clean",
+    "build:docs": "hardhat dodoc && prettier -w ./docs",
+    "clean": "hardhat clean && rm -Rf dist/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
-    "test": "hardhat test --no-compile tests/*.test.ts",
-    "test:foundry": "forge test --no-match-test Skip -vvv",
+    "package": "hardhat prepare-package",
+    "test": "hardhat test --no-compile tests/**/*.test.ts",
+    "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
     "test:coverage": "hardhat coverage"
   },
   "dependencies": {
