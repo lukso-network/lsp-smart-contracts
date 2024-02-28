@@ -4,8 +4,8 @@ on:
   pull_request:
     # compare gas diff only when editing Solidity smart contract code
     paths:
-      - "contracts/**/*.sol"
-      - "tests/foundry/**/*.sol"
+      - "packages/**/*.sol"
+      - "packages/lsp-smart-contracts/tests/foundry/**/*.sol"
 
 jobs:
   foundry-tests:
@@ -24,7 +24,7 @@ jobs:
         run: npm ci
 
       - name: NPM build
-        run: npx hardhat compile
+        run: npm run build
 
       - name: Run Foundry tests
         run: npm run test:foundry

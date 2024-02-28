@@ -12,16 +12,21 @@ runs = 10_000
 max_test_rejects = 200_000
 
 [profile.lsp2]
-src = 'packages/LSP2ERC725YJSONSchema/contracts'
-test = 'packages/LSP2ERC725YJSONSchema/foundry'
-out = 'packages/LSP2ERC725YJSONSchema/contracts/foundry_artifacts'
+src = 'packages/lsp2-contracts/contracts'
+test = 'packages/lsp2-contracts/foundry'
+out = 'packages/lsp2-contracts/contracts/foundry_artifacts'
 
 [profile.lsp6]
-src = 'packages/LSP6KeyManager/contracts'
-test = 'packages/LSP6KeyManager/foundry'
-out = 'packages/LSP6KeyManager/contracts/foundry_artifacts'
+src = 'packages/lsp6-contracts/contracts'
+test = 'packages/lsp6-contracts/foundry'
+out = 'packages/lsp6-contracts/contracts/foundry_artifacts'
 
 [profile.lsp16]
-src = 'packages/LSP16UniversalFactory/contracts'
-test = 'packages/LSP16UniversalFactory/foundry'
-out = 'packages/LSP16UniversalFactory/contracts/foundry_artifacts'
+src = 'packages/lsp16-contracts/contracts'
+test = 'packages/lsp16-contracts/foundry'
+out = 'packages/lsp16-contracts/contracts/foundry_artifacts'
+
+[profile.lsp_smart_contracts]
+src = 'packages/lsp-smart-contracts/contracts'
+test = 'packages/lsp-smart-contracts/foundry'
+out = 'packages/lsp-smart-contracts/contracts/foundry_artifacts'
