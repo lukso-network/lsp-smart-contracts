@@ -14,6 +14,7 @@ import {
   NonPayableContract__factory,
   ImplementationTester,
   ImplementationTester__factory,
+  FallbackContract,
   FallbackInitializer,
   FallbackInitializer__factory,
   ContractNoConstructor__factory,
@@ -157,6 +158,8 @@ describe('UniversalFactory contract', () => {
       it('should calculate a different address of a contract if the salt changed', async () => {
         const salt1 = ethers.solidityPackedKeccak256(['string'], ['Salt1']);
         const salt2 = ethers.solidityPackedKeccak256(['string'], ['Salt2']);
+        const salt1 = ethers.solidityPackedKeccak256(['string'], ['Salt1']);
+        const salt2 = ethers.solidityPackedKeccak256(['string'], ['Salt2']);
 
         const UPBytecode = concat([
           AccountBytecode,
@@ -185,6 +188,7 @@ describe('UniversalFactory contract', () => {
       });
 
       it('should calculate a different address of a contract if the bytecode changed', async () => {
+        const salt = ethers.solidityPackedKeccak256(['string'], ['Salt']);
         const salt = ethers.solidityPackedKeccak256(['string'], ['Salt']);
 
         const UPBytecode1 = concat([
@@ -239,6 +243,7 @@ describe('UniversalFactory contract', () => {
 
       it('should revert when sending value while deploying a non payable non-initializable contract', async () => {
         const salt = ethers.solidityPackedKeccak256(['string'], ['OtherSalt']);
+        const salt = ethers.solidityPackedKeccak256(['string'], ['OtherSalt']);
 
         const KMBytecode = concat([
           NonPayableConstructorBytecode,
@@ -269,7 +274,7 @@ describe('UniversalFactory contract', () => {
           value: valueSent,
         });
 
-        const balance = await ethers.provider.getBalance(contractCreated);
+        const balance = await provider.getBalance(contractCreated);
         expect(balance).to.equal(valueSent);
       });
 
@@ -337,6 +342,8 @@ describe('UniversalFactory contract', () => {
       it('should calculate a different address of a contract if the salt changed', async () => {
         const salt1 = ethers.solidityPackedKeccak256(['string'], ['Salt1']);
         const salt2 = ethers.solidityPackedKeccak256(['string'], ['Salt2']);
+        const salt1 = ethers.solidityPackedKeccak256(['string'], ['Salt1']);
+        const salt2 = ethers.solidityPackedKeccak256(['string'], ['Salt2']);
 
         const UPBytecode = concat([
           AccountBytecode,
@@ -369,6 +376,7 @@ describe('UniversalFactory contract', () => {
       });
 
       it('should calculate a different address of a contract if the initializeCalldata changed', async () => {
+        const salt = ethers.solidityPackedKeccak256(['string'], ['Salt']);
         const salt = ethers.solidityPackedKeccak256(['string'], ['Salt']);
 
         const UPBytecode = concat([
@@ -403,6 +411,7 @@ describe('UniversalFactory contract', () => {
       });
 
       it('should calculate a different address of a contract if the bytecode changed', async () => {
+        const salt = ethers.solidityPackedKeccak256(['string'], ['Salt']);
         const salt = ethers.solidityPackedKeccak256(['string'], ['Salt']);
 
         const UPBytecode1 = concat([
@@ -467,6 +476,7 @@ describe('UniversalFactory contract', () => {
       });
 
       it('should revert when deploying an initializable contract with sending value unmatched to the msgValue arguments', async () => {
+        const salt = ethers.solidityPackedKeccak256(['string'], ['Salt']);
         const salt = ethers.solidityPackedKeccak256(['string'], ['Salt']);
 
         const UPBytecode = concat([
@@ -551,7 +561,7 @@ describe('UniversalFactory contract', () => {
             { value: sumValueSent },
           );
 
-        const balance = await ethers.provider.getBalance(contractCreated);
+        const balance = await provider.getBalance(contractCreated);
         expect(balance).to.equal(sumValueSent);
       });
 
@@ -915,10 +925,11 @@ describe('UniversalFactory contract', () => {
         await context.universalFactory
           .connect(context.accounts.deployer1)
           .deployERC1167ProxyAndInitialize(payableContract.target, salt, PayableTrueCalldata, {
+          .deployERC1167ProxyAndInitialize(payableContract.target, salt, PayableTrueCalldata, {
             value: valueSent,
           });
 
-        const balance = await ethers.provider.getBalance(contractCreated);
+        const balance = await provider.getBalance(contractCreated);
         expect(balance).to.equal(valueSent);
       });
 

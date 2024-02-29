@@ -1,5 +1,13 @@
 import { expect } from 'chai';
-import { ethers } from 'ethers';
+import {
+  hexlify,
+  keccak256,
+  parseEther,
+  solidityPacked,
+  toUtf8Bytes,
+  ZeroAddress,
+  ZeroHash,
+} from 'ethers';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
@@ -82,7 +90,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
           ],
-          [signer.address, ethers.ZeroAddress],
+          [signer.address, ZeroAddress],
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
@@ -93,7 +101,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
       // Fund Universal Profile with some LYXe
       await context.mainController.sendTransaction({
         to: await context.universalProfile.getAddress(),
-        value: ethers.parseEther('10'),
+        value: parseEther('10'),
       });
     });
 
@@ -105,7 +113,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
         const transferPayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
           await maliciousContract.getAddress(),
-          ethers.parseEther('1'),
+          parseEther('1'),
           '0x',
         ]);
 
@@ -151,13 +159,13 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
           const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
             'execute',
-            [OPERATION_TYPES.CALL, signer.address, ethers.parseEther('1'), '0x'],
+            [OPERATION_TYPES.CALL, signer.address, parseEther('1'), '0x'],
           );
 
           const HARDHAT_CHAINID = 31337;
           const valueToSend = 0;
 
-          const encodedMessage = ethers.solidityPacked(
+          const encodedMessage = solidityPacked(
             ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
             [
               LSP25_VERSION,
@@ -201,7 +209,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
         const transferPayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
           await maliciousContract.getAddress(),
-          ethers.parseEther('1'),
+          parseEther('1'),
           '0x',
         ]);
 
@@ -249,7 +257,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
         const transferPayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
           await URDDummy.getAddress(),
-          ethers.parseEther('1'),
+          parseEther('1'),
           '0x',
         ]);
 
@@ -273,9 +281,9 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
         );
         const newAttackerContractBalance = await provider.getBalance(await URDDummy.getAddress());
 
-        expect(newAccountBalance).to.equal(initialAccountBalance - ethers.parseEther('2'));
+        expect(newAccountBalance).to.equal(initialAccountBalance - parseEther('2'));
         expect(newAttackerContractBalance).to.equal(
-          initialAttackerContractBalance + ethers.parseEther('2'),
+          initialAttackerContractBalance + parseEther('2'),
         );
       });
 
@@ -283,10 +291,8 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
         const universalReceiverDelegateDataUpdater =
           await new UniversalReceiverDelegateDataUpdater__factory(context.mainController).deploy();
 
-        const randomHardcodedKey = ethers.keccak256(ethers.toUtf8Bytes('some random data key'));
-        const randomHardcodedValue = ethers.hexlify(
-          ethers.toUtf8Bytes('some random text for the data value'),
-        );
+        const randomHardcodedKey = keccak256(toUtf8Bytes('some random data key'));
+        const randomHardcodedValue = hexlify(toUtf8Bytes('some random text for the data value'));
 
         const setDataPayload = context.universalProfile.interface.encodeFunctionData(
           'setDataBatch',
@@ -311,18 +317,13 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
         const universalReceiverDelegatePayload =
           universalReceiverDelegateDataUpdater.interface.encodeFunctionData(
             'universalReceiverDelegate',
-            [
-              ethers.ZeroAddress,
-              0,
-              LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
-              '0xcafecafecafecafe',
-            ],
+            [ZeroAddress, 0, LSP1_TYPE_IDS.LSP7Tokens_SenderNotification, '0xcafecafecafecafe'],
           );
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
           await universalReceiverDelegateDataUpdater.getAddress(),
-          ethers.parseEther('0'),
+          parseEther('0'),
           universalReceiverDelegatePayload,
         ]);
 
@@ -412,7 +413,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
               await context.keyManager.connect(context.mainController).execute(payload);
 
-              const result = await context.universalProfile['getData(bytes32)'](ethers.ZeroHash);
+              const result = await context.universalProfile['getData(bytes32)'](ZeroHash);
 
               expect(result).to.equal('0xaabbccdd');
             });

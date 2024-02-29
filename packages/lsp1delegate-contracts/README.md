@@ -1,4 +1,4 @@
-# LSP1 Universal Receiver Delegate
+# LSP1 Universal Receiver Delegate &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp1delegate-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp1delegate-contracts)
 
 Smart contract implementations of LSP1 Universal Receiver Delegates
 to register and manage:

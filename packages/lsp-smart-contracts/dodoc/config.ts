@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { keccak256, toUtf8Bytes } from 'ethers';
 import { HelperContent } from 'squirrelly/dist/types/containers';
 
 export const dodocConfig = {
@@ -331,9 +331,7 @@ const generateAdditionalMethodInfo = (contract: string, code: string) => {
   ) {
     infoBlock +=
       `- Function signature: \`${formatedCode}\`\n` +
-      `- Function selector: \`${ethers
-        .keccak256(ethers.toUtf8Bytes(formatedCode))
-        .substring(0, 10)}\``;
+      `- Function selector: \`${keccak256(toUtf8Bytes(formatedCode)).substring(0, 10)}\``;
   }
 
   return infoBlock;
@@ -350,7 +348,7 @@ const generateAdditionalEventInfo = (contract: string, code: string) => {
       .toLowerCase()})\n` +
     `- Solidity implementation: [\`${contract}.sol\`](${contractLink})\n` +
     `- Event signature: \`${formatedCode}\`\n` +
-    `- Event topic hash: \`${ethers.keccak256(ethers.toUtf8Bytes(formatedCode))}\``
+    `- Event topic hash: \`${keccak256(toUtf8Bytes(formatedCode))}\``
   );
 };
 
@@ -365,7 +363,7 @@ const generateAdditionalErrorInfo = (contract: string, code: string) => {
       .toLowerCase()})\n` +
     `- Solidity implementation: [\`${contract}.sol\`](${contractLink})\n` +
     `- Error signature: \`${formatedCode}\`\n` +
-    `- Error hash: \`${ethers.keccak256(ethers.toUtf8Bytes(formatedCode)).substring(0, 10)}\``
+    `- Error hash: \`${keccak256(toUtf8Bytes(formatedCode)).substring(0, 10)}\``
   );
 };
 

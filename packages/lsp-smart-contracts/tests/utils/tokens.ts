@@ -1,6 +1,6 @@
-import * as ethers from 'ethers';
+import { zeroPadValue, toBeHex, toBigInt } from 'ethers';
 import type { BigNumberish, BytesLike } from 'ethers';
 
 export const tokenIdAsBytes32 = (tokenId: BigNumberish): BytesLike => {
-  return ethers.zeroPadValue(ethers.toBeHex(ethers.toBigInt(tokenId)), 32);
+  return zeroPadValue(toBeHex(toBigInt(tokenId)), 32);
 };
