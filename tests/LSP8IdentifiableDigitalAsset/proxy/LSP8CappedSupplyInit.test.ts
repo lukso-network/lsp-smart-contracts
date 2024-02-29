@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { LSP8CappedSupplyInitTester__factory } from '../../../types';
+import { LSP8CappedSupplyInitTester, LSP8CappedSupplyInitTester__factory } from '../../../types';
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {
@@ -22,13 +22,18 @@ describe('LSP8CappedSupplyInit with proxy', () => {
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
-      tokenSupplyCap: ethers.BigNumber.from('2'),
+      tokenSupplyCap: ethers.toBigInt('2'),
     };
     const lsp8CappedSupplyInit = await new LSP8CappedSupplyInitTester__factory(
       accounts.owner,
     ).deploy();
-    const lsp8CappedSupplyProxy = await deployProxy(lsp8CappedSupplyInit.address, accounts.owner);
-    const lsp8CappedSupply = lsp8CappedSupplyInit.attach(lsp8CappedSupplyProxy);
+    const lsp8CappedSupplyProxy = await deployProxy(
+      await lsp8CappedSupplyInit.getAddress(),
+      accounts.owner,
+    );
+    const lsp8CappedSupply = lsp8CappedSupplyInit.attach(
+      lsp8CappedSupplyProxy,
+    ) as LSP8CappedSupplyInitTester;
 
     return { accounts, lsp8CappedSupply, deployParams };
   };

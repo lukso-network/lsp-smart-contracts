@@ -30,13 +30,13 @@ describe('LSP11BasicSocialRecovery with constructor', () => {
 
     const lsp11BasicSocialRecovery = await new LSP11BasicSocialRecovery__factory(
       accounts.any,
-    ).deploy(deployParams.owner.address, deployParams.target.address);
+    ).deploy(await deployParams.owner.getAddress(), await deployParams.target.getAddress());
 
     await grantLSP11PermissionViaKeyManager(
       accounts.owner,
       universalProfile,
       lsp6KeyManager,
-      lsp11BasicSocialRecovery.address,
+      await lsp11BasicSocialRecovery.getAddress(),
     );
 
     return {
@@ -59,7 +59,7 @@ describe('LSP11BasicSocialRecovery with constructor', () => {
         return {
           lsp11BasicSocialRecovery,
           deployParams,
-          initializeTransaction: context.lsp11BasicSocialRecovery.deployTransaction,
+          initializeTransaction: context.lsp11BasicSocialRecovery.deploymentTransaction(),
         };
       });
     });

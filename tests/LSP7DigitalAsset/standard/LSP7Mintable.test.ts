@@ -44,7 +44,7 @@ describe('LSP7Mintable with constructor', () => {
       return {
         lsp7,
         deployParams,
-        initializeTransaction: context.lsp7Mintable.deployTransaction,
+        initializeTransaction: context.lsp7Mintable.deploymentTransaction(),
       };
     });
   });

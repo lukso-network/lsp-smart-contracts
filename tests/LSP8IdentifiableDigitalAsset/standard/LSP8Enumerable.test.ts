@@ -46,7 +46,7 @@ describe('LSP8Enumerable with constructor', () => {
       return {
         lsp8,
         deployParams,
-        initializeTransaction: context.lsp8Enumerable.deployTransaction,
+        initializeTransaction: context.lsp8Enumerable.deploymentTransaction(),
       };
     });
   });

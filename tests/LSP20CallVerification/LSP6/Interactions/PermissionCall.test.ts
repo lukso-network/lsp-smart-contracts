@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { BigNumber } from 'ethers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import {
   FallbackInitializer,
@@ -31,7 +30,7 @@ import {
 } from '../../../utils/helpers';
 
 export const shouldBehaveLikePermissionCall = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
+  buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
 
@@ -87,8 +86,8 @@ export const shouldBehaveLikePermissionCall = (
         [CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL, CALLTYPE.CALL],
         [
           allowedEOA,
-          allowedContractWithFallback.address,
-          allowedContractWithFallbackRevert.address,
+          await allowedContractWithFallback.getAddress(),
+          await allowedContractWithFallbackRevert.getAddress(),
         ],
         ['0xffffffff', '0xffffffff', '0xffffffff'],
         ['0xffffffff', '0xffffffff', '0xffffffff'],
@@ -126,7 +125,7 @@ export const shouldBehaveLikePermissionCall = (
         await expect(
           context.universalProfile
             .connect(addressCannotMakeCallNoAllowedCalls)
-            .execute(OPERATION_TYPES.CALL, targetContract.address, 0, '0x'),
+            .execute(OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, '0x'),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
           .withArgs(addressCannotMakeCallNoAllowedCalls.address, 'CALL');
@@ -152,7 +151,7 @@ export const shouldBehaveLikePermissionCall = (
         await expect(
           context.universalProfile
             .connect(addressCannotMakeCallWithAllowedCalls)
-            .execute(OPERATION_TYPES.CALL, targetContract.address, 0, '0x'),
+            .execute(OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, '0x'),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
           .withArgs(addressCannotMakeCallWithAllowedCalls.address, 'CALL');
@@ -178,7 +177,7 @@ export const shouldBehaveLikePermissionCall = (
         await expect(
           context.universalProfile
             .connect(addressCanMakeCallNoAllowedCalls)
-            .execute(OPERATION_TYPES.CALL, targetContract.address, 0, '0x'),
+            .execute(OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, '0x'),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NoCallsAllowed')
           .withArgs(addressCanMakeCallNoAllowedCalls.address);
@@ -224,12 +223,12 @@ export const shouldBehaveLikePermissionCall = (
             await expect(
               context.universalProfile
                 .connect(addressCanMakeCallWithAllowedCalls)
-                .execute(OPERATION_TYPES.CALL, targetContract.address, 0, '0x'),
+                .execute(OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, '0x'),
             )
               .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
               .withArgs(
                 addressCanMakeCallWithAllowedCalls.address,
-                targetContract.address,
+                await targetContract.getAddress(),
                 '0x00000000',
               );
           });
@@ -240,10 +239,15 @@ export const shouldBehaveLikePermissionCall = (
             it("should pass and update `to` contract's storage", async () => {
               await context.universalProfile
                 .connect(addressCanMakeCallWithAllowedCalls)
-                .execute(OPERATION_TYPES.CALL, allowedContractWithFallback.address, 0, '0x');
+                .execute(
+                  OPERATION_TYPES.CALL,
+                  await allowedContractWithFallback.getAddress(),
+                  0,
+                  '0x',
+                );
 
               expect(await allowedContractWithFallback.caller()).to.equal(
-                context.universalProfile.address,
+                await context.universalProfile.getAddress(),
               );
             });
           });
@@ -255,7 +259,7 @@ export const shouldBehaveLikePermissionCall = (
                   .connect(addressCanMakeCallWithAllowedCalls)
                   .execute(
                     OPERATION_TYPES.CALL,
-                    allowedContractWithFallbackRevert.address,
+                    await allowedContractWithFallbackRevert.getAddress(),
                     0,
                     '0x',
                   ),
@@ -284,10 +288,15 @@ export const shouldBehaveLikePermissionCall = (
 
             await context.universalProfile
               .connect(addressWithSuperCall)
-              .execute(OPERATION_TYPES.CALL, targetContractWithFallback.address, 0, '0x');
+              .execute(
+                OPERATION_TYPES.CALL,
+                await targetContractWithFallback.getAddress(),
+                0,
+                '0x',
+              );
 
             expect(await targetContractWithFallback.caller()).to.equal(
-              context.universalProfile.address,
+              await context.universalProfile.getAddress(),
             );
           });
         });
@@ -301,7 +310,12 @@ export const shouldBehaveLikePermissionCall = (
             await expect(
               context.universalProfile
                 .connect(addressWithSuperCall)
-                .execute(OPERATION_TYPES.CALL, targetContractWithFallbackRevert.address, 0, '0x'),
+                .execute(
+                  OPERATION_TYPES.CALL,
+                  await targetContractWithFallbackRevert.getAddress(),
+                  0,
+                  '0x',
+                ),
             ).to.be.revertedWith('fallback reverted');
           });
         });
@@ -345,7 +359,7 @@ export const shouldBehaveLikePermissionCall = (
         combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.EXECUTE_RELAY_CALL),
         combineAllowedCalls(
           [CALLTYPE.CALL],
-          [targetContract.address],
+          [await targetContract.getAddress()],
           ['0xffffffff'],
           ['0xffffffff'],
         ),
@@ -363,23 +377,23 @@ export const shouldBehaveLikePermissionCall = (
 
           await context.universalProfile
             .connect(context.mainController)
-            .execute(OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload);
+            .execute(OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetPayload);
 
-          const result = await targetContract.callStatic.getName();
+          const result = await targetContract.getName();
           expect(result).to.equal(argument);
         });
 
         describe('when calling a function that returns some value', () => {
           it('should return the value to the Key Manager <- UP <- targetContract.getName()', async () => {
-            const expectedName = await targetContract.callStatic.getName();
+            const expectedName = await targetContract.getName();
 
             const targetContractPayload = targetContract.interface.encodeFunctionData('getName');
 
             const result = await context.universalProfile
               .connect(context.mainController)
-              .callStatic.execute(
+              .execute.staticCall(
                 OPERATION_TYPES.CALL,
-                targetContract.address,
+                await targetContract.getAddress(),
                 0,
                 targetContractPayload,
               );
@@ -389,15 +403,15 @@ export const shouldBehaveLikePermissionCall = (
           });
 
           it('Should return the value to the Key Manager <- UP <- targetContract.getNumber()', async () => {
-            const expectedNumber = await targetContract.callStatic.getNumber();
+            const expectedNumber = await targetContract.getNumber();
 
             const targetContractPayload = targetContract.interface.encodeFunctionData('getNumber');
 
             const result = await context.universalProfile
               .connect(context.mainController)
-              .callStatic.execute(
+              .execute.staticCall(
                 OPERATION_TYPES.CALL,
-                targetContract.address,
+                await targetContract.getAddress(),
                 0,
                 targetContractPayload,
               );
@@ -414,7 +428,7 @@ export const shouldBehaveLikePermissionCall = (
             await expect(
               context.universalProfile.execute(
                 OPERATION_TYPES.CALL,
-                targetContract.address,
+                await targetContract.getAddress(),
                 0,
                 targetContractPayload,
               ),
@@ -435,7 +449,7 @@ export const shouldBehaveLikePermissionCall = (
             await expect(
               context.universalProfile
                 .connect(addressCanMakeCallNoAllowedCalls)
-                .execute(OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload),
+                .execute(OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetPayload),
             )
               .to.be.revertedWithCustomError(context.keyManager, 'NoCallsAllowed')
               .withArgs(addressCanMakeCallNoAllowedCalls.address);
@@ -452,9 +466,9 @@ export const shouldBehaveLikePermissionCall = (
 
             await context.universalProfile
               .connect(addressCanMakeCallWithAllowedCalls)
-              .execute(OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload);
+              .execute(OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetPayload);
 
-            const result = await targetContract.callStatic.getName();
+            const result = await targetContract.getName();
             expect(result).to.equal(argument);
           });
         });
@@ -469,7 +483,7 @@ export const shouldBehaveLikePermissionCall = (
           await expect(
             context.universalProfile
               .connect(addressCannotMakeCall)
-              .execute(OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload),
+              .execute(OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetPayload),
           )
             .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
             .withArgs(addressCannotMakeCall.address, 'CALL');
@@ -497,7 +511,7 @@ export const shouldBehaveLikePermissionCall = (
         'lsp20VerifyCall',
         [
           context.accounts[2].address,
-          context.keyManager.address,
+          await context.keyManager.getAddress(),
           context.accounts[2].address,
           0,
           '0xaabbccdd',
@@ -507,7 +521,7 @@ export const shouldBehaveLikePermissionCall = (
       await expect(
         context.universalProfile.execute(
           OPERATION_TYPES.CALL,
-          context.keyManager.address,
+          await context.keyManager.getAddress(),
           0,
           lsp20VerifyCallPayload,
         ),
@@ -531,7 +545,7 @@ export const shouldBehaveLikePermissionCall = (
         let executePayload;
 
         before(async () => {
-          context = await buildContext(ethers.utils.parseEther('50'));
+          context = await buildContext(ethers.parseEther('50'));
 
           const accounts = await ethers.getSigners();
 
@@ -571,7 +585,7 @@ export const shouldBehaveLikePermissionCall = (
 
           const allowedCall = combineAllowedCalls(
             [combineCallTypes(CALLTYPE.CALL, CALLTYPE.VALUE)],
-            [targetContract.address],
+            [await targetContract.getAddress()],
             ['0xffffffff'],
             ['0xffffffff'],
           );
@@ -595,7 +609,7 @@ export const shouldBehaveLikePermissionCall = (
 
         afterEach('clearing target contract storage', async () => {
           await context.accounts[0].sendTransaction({
-            to: targetContract.address,
+            to: await targetContract.getAddress(),
             data: '0xcafecafe',
           });
         });
@@ -604,7 +618,7 @@ export const shouldBehaveLikePermissionCall = (
           before(async () => {
             executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
-              targetContract.address,
+              await targetContract.getAddress(),
               36,
               '0xdeadbeef',
             ]);
@@ -621,7 +635,7 @@ export const shouldBehaveLikePermissionCall = (
               await expect(
                 // We need to do low level send transactions as the data offset is not standard
                 controllerCanTransferValue.sendTransaction({
-                  to: context.universalProfile.address,
+                  to: await context.universalProfile.getAddress(),
                   data: executePayload,
                 }),
               )
@@ -634,7 +648,7 @@ export const shouldBehaveLikePermissionCall = (
             it("should revert with 'NotAuthorised' error to 'TRANSFERVALUE'", async () => {
               await expect(
                 controllerCanCall.sendTransaction({
-                  to: context.universalProfile.address,
+                  to: await context.universalProfile.getAddress(),
                   data: executePayload,
                 }),
               )
@@ -647,7 +661,7 @@ export const shouldBehaveLikePermissionCall = (
             it("should revert with 'NotAuthorised' error to 'TRANSFERVALUE' (as value transfer is the first thing being checked", async () => {
               await expect(
                 controllerCanOnlySign.sendTransaction({
-                  to: context.universalProfile.address,
+                  to: await context.universalProfile.getAddress(),
                   data: executePayload,
                 }),
               )
@@ -658,15 +672,17 @@ export const shouldBehaveLikePermissionCall = (
 
           describe('when caller has both permissions CALL + TRANSFERVALUE', () => {
             it('should pass and allow to call the contract', async () => {
-              expect(await provider.getBalance(targetContract.address)).to.equal(0);
+              expect(await provider.getBalance(await targetContract.getAddress())).to.equal(0);
 
               await controllerCanTransferValueAndCall.sendTransaction({
-                to: context.universalProfile.address,
+                to: await context.universalProfile.getAddress(),
                 data: executePayload,
               });
 
-              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
-              expect(await provider.getBalance(targetContract.address)).to.equal(36);
+              expect(await targetContract.caller()).to.equal(
+                await context.universalProfile.getAddress(),
+              );
+              expect(await provider.getBalance(await targetContract.getAddress())).to.equal(36);
             });
           });
         });
@@ -675,7 +691,7 @@ export const shouldBehaveLikePermissionCall = (
           before(async () => {
             executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
-              targetContract.address,
+              await targetContract.getAddress(),
               0,
               '0x',
             ]);
@@ -690,20 +706,24 @@ export const shouldBehaveLikePermissionCall = (
           describe('when controller has permission CALL only', () => {
             it('should pass', async () => {
               await controllerCanCall.sendTransaction({
-                to: context.universalProfile.address,
+                to: await context.universalProfile.getAddress(),
                 data: executePayload,
               });
-              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+              expect(await targetContract.caller()).to.equal(
+                await context.universalProfile.getAddress(),
+              );
             });
           });
 
           describe('when controller has SUPER_CALL', () => {
             it('should pass', async () => {
               await controllerCanSuperCall.sendTransaction({
-                to: context.universalProfile.address,
+                to: await context.universalProfile.getAddress(),
                 data: executePayload,
               });
-              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+              expect(await targetContract.caller()).to.equal(
+                await context.universalProfile.getAddress(),
+              );
             });
           });
 
@@ -711,7 +731,7 @@ export const shouldBehaveLikePermissionCall = (
             it('should revert with `NotAuthorised` error to `CALL`', async () => {
               await expect(
                 controllerCanOnlySign.sendTransaction({
-                  to: context.universalProfile.address,
+                  to: await context.universalProfile.getAddress(),
                   data: executePayload,
                 }),
               )
@@ -733,7 +753,7 @@ export const shouldBehaveLikePermissionCall = (
         let executePayload;
 
         before(async () => {
-          context = await buildContext(ethers.utils.parseEther('50'));
+          context = await buildContext(ethers.parseEther('50'));
 
           const accounts = await ethers.getSigners();
 
@@ -758,7 +778,7 @@ export const shouldBehaveLikePermissionCall = (
 
           const allowedCall = combineAllowedCalls(
             [combineCallTypes(CALLTYPE.CALL)],
-            [targetContract.address],
+            [await targetContract.getAddress()],
             ['0xffffffff'],
             ['0xffffffff'],
           );
@@ -777,7 +797,7 @@ export const shouldBehaveLikePermissionCall = (
 
         afterEach('clearing target contract storage', async () => {
           await context.accounts[0].sendTransaction({
-            to: targetContract.address,
+            to: await targetContract.getAddress(),
             data: '0xcafecafe',
           });
         });
@@ -786,7 +806,7 @@ export const shouldBehaveLikePermissionCall = (
           before('constructing manually the payload', async () => {
             // 0x44c028fe                                                         --> ERC725X.execute(uint256,address,uint256,bytes) selector
             //   0000000000000000000000000000000000000000000000000000000000000000 --> operationType = CALL (0)
-            //   0000000000000000000000004ed7c70f96b99c776995fb64377f0d4ab3b0e1c1 --> target = targetContract.address
+            //   0000000000000000000000004ed7c70f96b99c776995fb64377f0d4ab3b0e1c1 --> target = await targetContract.getAddress()
             //   0000000000000000000000000000000000000000000000000000000000000000 --> value = 0
             //   00000000000000000000000000000000000000000000000000000000000000a0 --> offset = 160
             //   cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe --> 32 random bytes in between
@@ -794,27 +814,31 @@ export const shouldBehaveLikePermissionCall = (
             //   deadbeef00000000000000000000000000000000000000000000000000000000 --> `data` = 0xdeadbeef
             executePayload =
               '0x44c028fe0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000' +
-              targetContract.address.substring(2).toLowerCase() +
+              (await targetContract.getAddress()).substring(2).toLowerCase() +
               '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe0000000000000000000000000000000000000000000000000000000000000004deadbeef00000000000000000000000000000000000000000000000000000000';
           });
 
           describe('when caller has permission CALL', () => {
             it('should pass', async () => {
               await controllerCanCall.sendTransaction({
-                to: context.universalProfile.address,
+                to: await context.universalProfile.getAddress(),
                 data: executePayload,
               });
-              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+              expect(await targetContract.caller()).to.equal(
+                await context.universalProfile.getAddress(),
+              );
             });
           });
 
           describe('when caller has permission SUPER_CALL', () => {
             it('should pass', async () => {
               await controllerCanSuperCall.sendTransaction({
-                to: context.universalProfile.address,
+                to: await context.universalProfile.getAddress(),
                 data: executePayload,
               });
-              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+              expect(await targetContract.caller()).to.equal(
+                await context.universalProfile.getAddress(),
+              );
             });
           });
 
@@ -822,7 +846,7 @@ export const shouldBehaveLikePermissionCall = (
             it("should revert with 'NotAuthorised' error to 'CALL'", async () => {
               await expect(
                 controllerCanOnlySign.sendTransaction({
-                  to: context.universalProfile.address,
+                  to: await context.universalProfile.getAddress(),
                   data: executePayload,
                 }),
               )
@@ -836,34 +860,38 @@ export const shouldBehaveLikePermissionCall = (
           before('constructing manually the payload', async () => {
             // 0x44c028fe                                                         --> ERC725X.execute(uint256,address,uint256,bytes) selector
             //   0000000000000000000000000000000000000000000000000000000000000000 --> operationType = CALL (0)
-            //   0000000000000000000000004ed7c70f96b99c776995fb64377f0d4ab3b0e1c1 --> target = targetContract.address
+            //   0000000000000000000000004ed7c70f96b99c776995fb64377f0d4ab3b0e1c1 --> target = await targetContract.getAddress()
             //   0000000000000000000000000000000000000000000000000000000000000000 --> value = 0
             //   00000000000000000000000000000000000000000000000000000000000000a0 --> offset = 160
             //   cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe --> 32 random bytes in between
             //   0000000000000000000000000000000000000000000000000000000000000000 --> `data.length` = 0
             executePayload =
               '0x44c028fe0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000' +
-              targetContract.address.substring(2).toLowerCase() +
+              (await targetContract.getAddress()).substring(2).toLowerCase() +
               '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe0000000000000000000000000000000000000000000000000000000000000000';
           });
 
           describe('when caller has permission CALL', () => {
             it('should pass', async () => {
               await controllerCanCall.sendTransaction({
-                to: context.universalProfile.address,
+                to: await context.universalProfile.getAddress(),
                 data: executePayload,
               });
-              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+              expect(await targetContract.caller()).to.equal(
+                await context.universalProfile.getAddress(),
+              );
             });
           });
 
           describe('when caller has permission SUPER_CALL', () => {
             it('should pass', async () => {
               await controllerCanSuperCall.sendTransaction({
-                to: context.universalProfile.address,
+                to: await context.universalProfile.getAddress(),
                 data: executePayload,
               });
-              expect(await targetContract.caller()).to.equal(context.universalProfile.address);
+              expect(await targetContract.caller()).to.equal(
+                await context.universalProfile.getAddress(),
+              );
             });
           });
 
@@ -871,7 +899,7 @@ export const shouldBehaveLikePermissionCall = (
             it("should revert with 'NotAuthorised' error to 'CALL'", async () => {
               await expect(
                 controllerCanOnlySign.sendTransaction({
-                  to: context.universalProfile.address,
+                  to: await context.universalProfile.getAddress(),
                   data: executePayload,
                 }),
               )

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import { ERC725YDelegateCall, ERC725YDelegateCall__factory } from '../../../types';
 
@@ -33,7 +33,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       erc725YDelegateCallContract = await new ERC725YDelegateCall__factory(
         context.mainController,
-      ).deploy(context.universalProfile.address);
+      ).deploy(await context.universalProfile.getAddress());
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -67,7 +67,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.DELEGATECALL,
-        erc725YDelegateCallContract.address,
+        await erc725YDelegateCallContract.getAddress(),
         0,
         delegateCallPayload,
       ]);
@@ -95,7 +95,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.DELEGATECALL,
-        erc725YDelegateCallContract.address,
+        await erc725YDelegateCallContract.getAddress(),
         0,
         delegateCallPayload,
       ]);
@@ -123,7 +123,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.DELEGATECALL,
-        erc725YDelegateCallContract.address,
+        await erc725YDelegateCallContract.getAddress(),
         0,
         delegateCallPayload,
       ]);
@@ -162,7 +162,10 @@ export const shouldBehaveLikePermissionDelegateCall = (
         PERMISSIONS.SUPER_DELEGATECALL,
         combineAllowedCalls(
           [CALLTYPE.DELEGATECALL, CALLTYPE.DELEGATECALL],
-          [allowedDelegateCallContracts[0].address, allowedDelegateCallContracts[1].address],
+          [
+            await allowedDelegateCallContracts[0].getAddress(),
+            await allowedDelegateCallContracts[1].getAddress(),
+          ],
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
@@ -212,7 +215,12 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
             const executePayload = context.universalProfile.interface.encodeFunctionData(
               'execute',
-              [OPERATION_TYPES.DELEGATECALL, randomContracts[ii].address, 0, delegateCallPayload],
+              [
+                OPERATION_TYPES.DELEGATECALL,
+                await randomContracts[ii].getAddress(),
+                0,
+                delegateCallPayload,
+              ],
             );
 
             await expect(
@@ -248,7 +256,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.DELEGATECALL,
-          allowedDelegateCallContracts[0].address,
+          await allowedDelegateCallContracts[0].getAddress(),
           0,
           delegateCallPayload,
         ]);
@@ -279,7 +287,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.DELEGATECALL,
-          allowedDelegateCallContracts[1].address,
+          await allowedDelegateCallContracts[1].getAddress(),
           0,
           delegateCallPayload,
         ]);

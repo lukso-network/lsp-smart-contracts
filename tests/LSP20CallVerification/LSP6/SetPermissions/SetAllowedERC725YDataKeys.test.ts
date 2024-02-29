@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 // constants
 import { ERC725YDataKeys } from '../../../../constants';
@@ -61,7 +61,7 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
         encodeCompactBytesArray([
           ERC725YDataKeys.LSP3['LSP3Profile'],
           // prettier-ignore
-          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
+          ethers.keccak256(ethers.toUtf8Bytes("Some Custom Profile Data Key")),
         ]),
         '0x11223344',
         '0x0000000000000000000000000000000000000000000000000000000000000000',
@@ -82,9 +82,9 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
             const value = encodeCompactBytesArray([
               ERC725YDataKeys.LSP3['LSP3Profile'],
               // prettier-ignore
-              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
+              ethers.keccak256(ethers.toUtf8Bytes("Some Custom Profile Data Key")),
               // prettier-ignore
-              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Another Custom Data Key")),
+              ethers.keccak256(ethers.toUtf8Bytes("Another Custom Data Key")),
             ]);
 
             await expect(context.universalProfile.connect(canOnlyAddController).setData(key, value))
@@ -142,9 +142,9 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
 
             const value = encodeCompactBytesArray([
               // prettier-ignore
-              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Profile Key 1")),
+              ethers.keccak256(ethers.toUtf8Bytes("My Custom Profile Key 1")),
               // prettier-ignore
-              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Profile Key 2")),
+              ethers.keccak256(ethers.toUtf8Bytes("My Custom Profile Key 2")),
             ]);
 
             await context.universalProfile.connect(canOnlyAddController).setData(key, value);
@@ -185,9 +185,9 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
             const value = encodeCompactBytesArray([
               ERC725YDataKeys.LSP3['LSP3Profile'],
               // prettier-ignore
-              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
+              ethers.keccak256(ethers.toUtf8Bytes("Some Custom Profile Data Key")),
               // prettier-ignore
-              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Another Custom Data Key")),
+              ethers.keccak256(ethers.toUtf8Bytes("Another Custom Data Key")),
             ]);
 
             await context.universalProfile.connect(canOnlyEditPermissions).setData(key, value);
@@ -250,8 +250,8 @@ export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
               newController.address.substr(2);
 
             const value = encodeCompactBytesArray([
-              ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Custom Key 1')),
-              ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Custom Key 2')),
+              ethers.keccak256(ethers.toUtf8Bytes('My Custom Key 1')),
+              ethers.keccak256(ethers.toUtf8Bytes('My Custom Key 2')),
             ]);
 
             await expect(

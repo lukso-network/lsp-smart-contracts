@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import {
   LSP7Mintable,
@@ -26,20 +26,19 @@ import {
   combinePermissions,
   encodeCompactBytesArray,
 } from './utils/helpers';
-import { BigNumber } from 'ethers';
 
 export type UniversalProfileContext = {
   accounts: SignerWithAddress[];
   mainController: SignerWithAddress;
   universalProfile: UniversalProfile;
-  initialFunding?: BigNumber;
+  initialFunding?: bigint;
 };
 
 function generateRandomData(length) {
-  return ethers.utils.hexlify(ethers.utils.randomBytes(length));
+  return ethers.hexlify(ethers.randomBytes(length));
 }
 
-const buildLSP6TestContext = async (initialFunding?: BigNumber): Promise<LSP6TestContext> => {
+const buildLSP6TestContext = async (initialFunding?: bigint): Promise<LSP6TestContext> => {
   const accounts = await ethers.getSigners();
   const mainController = accounts[0];
 
@@ -57,7 +56,7 @@ const buildLSP6TestContext = async (initialFunding?: BigNumber): Promise<LSP6Tes
 };
 
 const buildUniversalProfileContext = async (
-  initialFunding?: BigNumber,
+  initialFunding?: bigint,
 ): Promise<UniversalProfileContext> => {
   const accounts = await ethers.getSigners();
   const mainController = accounts[0];
@@ -154,7 +153,7 @@ describe('⛽📊 Gas Benchmark', () => {
     describe('execute', () => {
       describe('execute Single', () => {
         before(async () => {
-          context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
+          context = await buildUniversalProfileContext(ethers.parseEther('50'));
         });
 
         it('Transfer 1 LYX to an EOA without data', async () => {
@@ -163,7 +162,7 @@ describe('⛽📊 Gas Benchmark', () => {
             .execute(
               OPERATION_TYPES.CALL,
               context.accounts[1].address,
-              ethers.utils.parseEther('1'),
+              ethers.parseEther('1'),
               '0x',
             );
 
@@ -178,8 +177,8 @@ describe('⛽📊 Gas Benchmark', () => {
             .connect(context.mainController)
             .execute(
               OPERATION_TYPES.CALL,
-              context.universalProfile.address,
-              ethers.utils.parseEther('1'),
+              await context.universalProfile.getAddress(),
+              ethers.parseEther('1'),
               '0x',
             );
 
@@ -195,7 +194,7 @@ describe('⛽📊 Gas Benchmark', () => {
             .execute(
               OPERATION_TYPES.CALL,
               context.accounts[1].address,
-              ethers.utils.parseEther('1'),
+              ethers.parseEther('1'),
               generateRandomData(256),
             );
 
@@ -210,8 +209,8 @@ describe('⛽📊 Gas Benchmark', () => {
             .connect(context.mainController)
             .execute(
               OPERATION_TYPES.CALL,
-              context.universalProfile.address,
-              ethers.utils.parseEther('1'),
+              await context.universalProfile.getAddress(),
+              ethers.parseEther('1'),
               ethers.utils.hexConcat(['0x00000000', generateRandomData(252)]),
             );
 
@@ -226,7 +225,7 @@ describe('⛽📊 Gas Benchmark', () => {
         let universalProfile1: UniversalProfile, universalProfile2, universalProfile3;
 
         before(async () => {
-          context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
+          context = await buildUniversalProfileContext(ethers.parseEther('50'));
 
           universalProfile1 = await new UniversalProfile__factory(context.mainController).deploy(
             context.accounts[2].address,
@@ -251,11 +250,7 @@ describe('⛽📊 Gas Benchmark', () => {
                 context.accounts[2].address,
                 context.accounts[3].address,
               ],
-              [
-                ethers.utils.parseEther('0.1'),
-                ethers.utils.parseEther('0.1'),
-                ethers.utils.parseEther('0.1'),
-              ],
+              [ethers.parseEther('0.1'), ethers.parseEther('0.1'), ethers.parseEther('0.1')],
               ['0x', '0x', '0x'],
             );
 
@@ -271,11 +266,7 @@ describe('⛽📊 Gas Benchmark', () => {
             .executeBatch(
               [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
               [universalProfile1.address, universalProfile2.address, universalProfile3.address],
-              [
-                ethers.utils.parseEther('0.1'),
-                ethers.utils.parseEther('0.1'),
-                ethers.utils.parseEther('0.1'),
-              ],
+              [ethers.parseEther('0.1'), ethers.parseEther('0.1'), ethers.parseEther('0.1')],
               ['0x', '0x', '0x'],
             );
 
@@ -295,11 +286,7 @@ describe('⛽📊 Gas Benchmark', () => {
                 context.accounts[2].address,
                 context.accounts[3].address,
               ],
-              [
-                ethers.utils.parseEther('0.1'),
-                ethers.utils.parseEther('0.1'),
-                ethers.utils.parseEther('0.1'),
-              ],
+              [ethers.parseEther('0.1'), ethers.parseEther('0.1'), ethers.parseEther('0.1')],
               [generateRandomData(256), generateRandomData(256), generateRandomData(256)],
             );
 
@@ -320,11 +307,7 @@ describe('⛽📊 Gas Benchmark', () => {
             .executeBatch(
               [OPERATION_TYPES.CALL, OPERATION_TYPES.CALL, OPERATION_TYPES.CALL],
               [universalProfile1.address, universalProfile2.address, universalProfile3.address],
-              [
-                ethers.utils.parseEther('0.1'),
-                ethers.utils.parseEther('0.1'),
-                ethers.utils.parseEther('0.1'),
-              ],
+              [ethers.parseEther('0.1'), ethers.parseEther('0.1'), ethers.parseEther('0.1')],
               [random256BytesData, random256BytesData, random256BytesData],
             );
 
@@ -339,11 +322,11 @@ describe('⛽📊 Gas Benchmark', () => {
     describe('setData', () => {
       describe('setData Single', () => {
         before(async () => {
-          context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
+          context = await buildUniversalProfileContext(ethers.parseEther('50'));
         });
 
         it('Set a 20 bytes long value', async () => {
-          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Key'));
+          const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
           const value = generateRandomData(20);
 
           const tx = await context.universalProfile.setData(key, value);
@@ -355,7 +338,7 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set a 60 bytes long value', async () => {
-          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Other Key'));
+          const key = ethers.keccak256(ethers.toUtf8Bytes('My Other Key'));
           const value = generateRandomData(60);
 
           const tx = await context.universalProfile.setData(key, value);
@@ -367,7 +350,7 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set a 160 bytes long value', async () => {
-          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Third Key'));
+          const key = ethers.keccak256(ethers.toUtf8Bytes('My Third Key'));
           const value = generateRandomData(160);
 
           const tx = await context.universalProfile.setData(key, value);
@@ -379,7 +362,7 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set a 300 bytes long value', async () => {
-          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fourth Key'));
+          const key = ethers.keccak256(ethers.toUtf8Bytes('My Fourth Key'));
           const value = generateRandomData(300);
 
           const tx = await context.universalProfile.setData(key, value);
@@ -391,7 +374,7 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set a 600 bytes long value', async () => {
-          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fifth Key'));
+          const key = ethers.keccak256(ethers.toUtf8Bytes('My Fifth Key'));
           const value = generateRandomData(600);
 
           const tx = await context.universalProfile.setData(key, value);
@@ -403,7 +386,7 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Change the value of a data key already set', async () => {
-          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fifth Key'));
+          const key = ethers.keccak256(ethers.toUtf8Bytes('My Fifth Key'));
           const value1 = generateRandomData(20);
           const value2 = generateRandomData(20);
 
@@ -418,7 +401,7 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Remove the value of a data key already set', async () => {
-          const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('My Fifth Key'));
+          const key = ethers.keccak256(ethers.toUtf8Bytes('My Fifth Key'));
           const value = generateRandomData(20);
 
           await context.universalProfile.setData(key, value);
@@ -434,14 +417,14 @@ describe('⛽📊 Gas Benchmark', () => {
 
       describe('setData Array', () => {
         before(async () => {
-          context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
+          context = await buildUniversalProfileContext(ethers.parseEther('50'));
         });
 
         it('Set 2 data keys of 20 bytes long value', async () => {
-          const key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key1'));
+          const key1 = ethers.keccak256(ethers.toUtf8Bytes('Key1'));
           const value1 = generateRandomData(20);
 
-          const key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key2'));
+          const key2 = ethers.keccak256(ethers.toUtf8Bytes('Key2'));
           const value2 = generateRandomData(20);
 
           const tx = await context.universalProfile.setDataBatch([key1, key2], [value1, value2]);
@@ -453,10 +436,10 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set 2 data keys of 100 bytes long value', async () => {
-          const key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key3'));
+          const key1 = ethers.keccak256(ethers.toUtf8Bytes('Key3'));
           const value1 = generateRandomData(100);
 
-          const key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key4'));
+          const key2 = ethers.keccak256(ethers.toUtf8Bytes('Key4'));
           const value2 = generateRandomData(100);
 
           const tx = await context.universalProfile.setDataBatch([key1, key2], [value1, value2]);
@@ -468,13 +451,13 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set 3 data keys of 20 bytes long value', async () => {
-          const key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key5'));
+          const key1 = ethers.keccak256(ethers.toUtf8Bytes('Key5'));
           const value1 = generateRandomData(20);
 
-          const key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key6'));
+          const key2 = ethers.keccak256(ethers.toUtf8Bytes('Key6'));
           const value2 = generateRandomData(20);
 
-          const key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key7'));
+          const key3 = ethers.keccak256(ethers.toUtf8Bytes('Key7'));
           const value3 = generateRandomData(20);
 
           const tx = await context.universalProfile.setDataBatch(
@@ -489,13 +472,13 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Change the value of three data keys already set of 20 bytes long value', async () => {
-          const key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key8'));
+          const key1 = ethers.keccak256(ethers.toUtf8Bytes('Key8'));
           const value1 = generateRandomData(20);
 
-          const key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key9'));
+          const key2 = ethers.keccak256(ethers.toUtf8Bytes('Key9'));
           const value2 = generateRandomData(20);
 
-          const key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key10'));
+          const key3 = ethers.keccak256(ethers.toUtf8Bytes('Key10'));
           const value3 = generateRandomData(20);
 
           await context.universalProfile.setDataBatch([key1, key2, key3], [value1, value2, value3]);
@@ -512,13 +495,13 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Remove the value of three data keys already set', async () => {
-          const key1 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key11'));
+          const key1 = ethers.keccak256(ethers.toUtf8Bytes('Key11'));
           const value1 = generateRandomData(20);
 
-          const key2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key12'));
+          const key2 = ethers.keccak256(ethers.toUtf8Bytes('Key12'));
           const value2 = generateRandomData(20);
 
-          const key3 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key13'));
+          const key3 = ethers.keccak256(ethers.toUtf8Bytes('Key13'));
           const value3 = generateRandomData(20);
 
           await context.universalProfile.setDataBatch([key1, key2, key3], [value1, value2, value3]);
@@ -542,7 +525,7 @@ describe('⛽📊 Gas Benchmark', () => {
       let universalProfile1;
 
       before(async () => {
-        context = await buildUniversalProfileContext(ethers.utils.parseEther('50'));
+        context = await buildUniversalProfileContext(ethers.parseEther('50'));
         // deploy a LSP7 token
         lsp7Token = await new LSP7Mintable__factory(context.mainController).deploy(
           'Token',
@@ -568,7 +551,12 @@ describe('⛽📊 Gas Benchmark', () => {
 
       describe('LSP7DigitalAsset', () => {
         it('when minting LSP7Token to a UP without data', async () => {
-          const tx = await lsp7Token.mint(context.universalProfile.address, 20, false, '0x');
+          const tx = await lsp7Token.mint(
+            await context.universalProfile.getAddress(),
+            20,
+            false,
+            '0x',
+          );
 
           const receipt = await tx.wait();
 
@@ -587,7 +575,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
         it('when transferring LSP7Token from a UP to a UP without data', async () => {
           const lsp7TransferPayload = lsp7Token.interface.encodeFunctionData('transfer', [
-            context.universalProfile.address,
+            await context.universalProfile.getAddress(),
             universalProfile1.address,
             5,
             false,
@@ -615,7 +603,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
         it('when minting LSP8Token to a UP without data', async () => {
           const tx = await lsp8Token.mint(
-            context.universalProfile.address,
+            await context.universalProfile.getAddress(),
             metaNFTList[0],
             false,
             '0x',
@@ -638,7 +626,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
         it('when transferring LSP8Token from a UP to a UP without data', async () => {
           const lsp8TransferPayload = lsp8Token.interface.encodeFunctionData('transfer', [
-            context.universalProfile.address,
+            await context.universalProfile.getAddress(),
             universalProfile1.address,
             metaNFTList[0],
             false,
@@ -678,7 +666,7 @@ describe('⛽📊 Gas Benchmark', () => {
         ];
 
         before(async () => {
-          context = await buildLSP6TestContext(ethers.utils.parseEther('50'));
+          context = await buildLSP6TestContext(ethers.parseEther('50'));
 
           recipientEOA = context.accounts[1];
           const deployedContracts = await setupProfileWithKeyManagerWithURD(context.accounts[2]);
@@ -716,16 +704,16 @@ describe('⛽📊 Gas Benchmark', () => {
           );
 
           // mint some tokens to the UP
-          await lsp7MetaCoin.mint(context.universalProfile.address, 1000, false, '0x');
+          await lsp7MetaCoin.mint(await context.universalProfile.getAddress(), 1000, false, '0x');
 
           // mint some NFTs to the UP
           nftList.forEach(async (nft) => {
-            await lsp8MetaNFT.mint(context.universalProfile.address, nft, false, '0x');
+            await lsp8MetaNFT.mint(await context.universalProfile.getAddress(), nft, false, '0x');
           });
         });
 
         it('transfer some LYXes to an EOA', async () => {
-          const lyxAmount = ethers.utils.parseEther('3');
+          const lyxAmount = ethers.parseEther('3');
 
           // prettier-ignore
           const tx = await context.universalProfile.connect(context.mainController).execute(OPERATION_TYPES.CALL, recipientEOA.address, lyxAmount, "0x");
@@ -737,7 +725,7 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('transfers some LYXes to a UP', async () => {
-          const lyxAmount = ethers.utils.parseEther('3');
+          const lyxAmount = ethers.parseEther('3');
 
           // prettier-ignore
           const tx = await context.universalProfile.connect(context.mainController).execute(OPERATION_TYPES.CALL, aliceUP.address, lyxAmount, "0x");
@@ -757,7 +745,7 @@ describe('⛽📊 Gas Benchmark', () => {
             lsp7MetaCoin.address,
             0,
             lsp7MetaCoin.interface.encodeFunctionData("transfer", [
-              context.universalProfile.address,
+              await context.universalProfile.getAddress(),
               recipientEOA.address,
               tokenAmount,
               true,
@@ -780,7 +768,7 @@ describe('⛽📊 Gas Benchmark', () => {
             lsp7MetaCoin.address,
             0,
             lsp7MetaCoin.interface.encodeFunctionData("transfer", [
-              context.universalProfile.address,
+              await context.universalProfile.getAddress(),
               aliceUP.address,
               tokenAmount,
               true,
@@ -803,7 +791,7 @@ describe('⛽📊 Gas Benchmark', () => {
             lsp8MetaNFT.address,
             0,
             lsp8MetaNFT.interface.encodeFunctionData("transfer", [
-              context.universalProfile.address,
+              await context.universalProfile.getAddress(),
               recipientEOA.address,
               nftId,
               true,
@@ -826,7 +814,7 @@ describe('⛽📊 Gas Benchmark', () => {
             lsp8MetaNFT.address,
             0,
             lsp8MetaNFT.interface.encodeFunctionData("transfer", [
-              context.universalProfile.address,
+              await context.universalProfile.getAddress(),
               aliceUP.address,
               nftId,
               false,
@@ -872,7 +860,7 @@ describe('⛽📊 Gas Benchmark', () => {
         ];
 
         before(async () => {
-          context = await buildLSP6TestContext(ethers.utils.parseEther('50'));
+          context = await buildLSP6TestContext(ethers.parseEther('50'));
 
           recipientEOA = context.accounts[1];
 
@@ -904,7 +892,7 @@ describe('⛽📊 Gas Benchmark', () => {
           );
 
           [lsp7MetaCoin, lsp7LyxDai].forEach(async (token) => {
-            await token.mint(context.universalProfile.address, 1000, false, '0x');
+            await token.mint(await context.universalProfile.getAddress(), 1000, false, '0x');
           });
 
           // LSP8 NFT transfer scenarios
@@ -932,7 +920,7 @@ describe('⛽📊 Gas Benchmark', () => {
           ].forEach(async (nftContract) => {
             // mint some NFTs to the UP
             nftContract.tokenIds.forEach(async (nft) => {
-              await lsp8MetaNFT.mint(context.universalProfile.address, nft, false, '0x');
+              await lsp8MetaNFT.mint(await context.universalProfile.getAddress(), nft, false, '0x');
             });
           });
 
@@ -1010,7 +998,7 @@ describe('⛽📊 Gas Benchmark', () => {
             lsp7MetaCoin.address,
             0,
             lsp7MetaCoin.interface.encodeFunctionData("transfer", [
-              context.universalProfile.address,
+              await context.universalProfile.getAddress(),
               recipientEOA.address,
               tokenAmount,
               true,
@@ -1033,7 +1021,7 @@ describe('⛽📊 Gas Benchmark', () => {
             lsp7MetaCoin.address,
             0,
             lsp7MetaCoin.interface.encodeFunctionData("transfer", [
-              context.universalProfile.address,
+              await context.universalProfile.getAddress(),
               aliceUP.address,
               tokenAmount,
               true,
@@ -1056,7 +1044,7 @@ describe('⛽📊 Gas Benchmark', () => {
             lsp8MetaNFT.address,
             0,
             lsp8MetaNFT.interface.encodeFunctionData("transfer", [
-              context.universalProfile.address,
+              await context.universalProfile.getAddress(),
               recipientEOA.address,
               nftId,
               true,
@@ -1079,7 +1067,7 @@ describe('⛽📊 Gas Benchmark', () => {
             lsp8MetaNFT.address,
             0,
             lsp8MetaNFT.interface.encodeFunctionData("transfer", [
-              context.universalProfile.address,
+              await context.universalProfile.getAddress(),
               aliceUP.address,
               nftId,
               false,
@@ -1101,23 +1089,23 @@ describe('⛽📊 Gas Benchmark', () => {
       let controllerToAddEditAndRemove: SignerWithAddress;
 
       const allowedERC725YDataKeys = [
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key1')),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key2')),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key3')),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key4')),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key5')),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key6')),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key7')),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key8')),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key9')),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('key10')),
+        ethers.keccak256(ethers.toUtf8Bytes('key1')),
+        ethers.keccak256(ethers.toUtf8Bytes('key2')),
+        ethers.keccak256(ethers.toUtf8Bytes('key3')),
+        ethers.keccak256(ethers.toUtf8Bytes('key4')),
+        ethers.keccak256(ethers.toUtf8Bytes('key5')),
+        ethers.keccak256(ethers.toUtf8Bytes('key6')),
+        ethers.keccak256(ethers.toUtf8Bytes('key7')),
+        ethers.keccak256(ethers.toUtf8Bytes('key8')),
+        ethers.keccak256(ethers.toUtf8Bytes('key9')),
+        ethers.keccak256(ethers.toUtf8Bytes('key10')),
       ];
 
       // Fictional scenario of a NFT Marketplace dApp
       const nftMarketplaceDataKeys = [
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NFT Marketplace dApp - settings')),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NFT Marketplace dApp - followers')),
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes('NFT Marketplace dApp - rewards')),
+        ethers.keccak256(ethers.toUtf8Bytes('NFT Marketplace dApp - settings')),
+        ethers.keccak256(ethers.toUtf8Bytes('NFT Marketplace dApp - followers')),
+        ethers.keccak256(ethers.toUtf8Bytes('NFT Marketplace dApp - rewards')),
       ];
 
       before(async () => {
@@ -1135,7 +1123,7 @@ describe('⛽📊 Gas Benchmark', () => {
         const permissionValues = [
           // Set some JSONURL for LSP3Profile metadata to test gas cost of updating your profile details
           '0x6f357c6a70546a2accab18748420b63c63b5af4cf710848ae83afc0c51dd8ad17fb5e8b3697066733a2f2f516d65637247656a555156587057347a53393438704e76636e51724a314b69416f4d36626466725663575a736e35',
-          ethers.utils.hexZeroPad(ethers.BigNumber.from(3).toHexString(), 16),
+          ethers.zeroPadValue(ethers.toBigInt(3).toHexString(), 16),
           context.mainController.address,
         ];
 
@@ -1175,14 +1163,14 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const dataKeys = [
             ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-            ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.utils.hexZeroPad(ethers.utils.hexStripZeros(AddressPermissionsArrayLength), 16).substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.utils.hexStripZeros(AddressPermissionsArrayLength), 16).substring(2),
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newController.address.substring(2),
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + newController.address.substring(2),
           ];
 
           // prettier-ignore
           const dataValues = [
-            ethers.utils.hexZeroPad(ethers.BigNumber.from(AddressPermissionsArrayLength).add(1).toHexString(), 16),
+            ethers.zeroPadValue(ethers.toBigInt(AddressPermissionsArrayLength).add(1).toHexString(), 16),
             newController.address,
             combinePermissions(PERMISSIONS.SETDATA),
             encodeCompactBytesArray([
@@ -1242,14 +1230,14 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const dataKeys = [
             ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-            ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.utils.hexZeroPad(ethers.utils.hexStripZeros(AddressPermissionsArrayLength), 16).substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.utils.hexStripZeros(AddressPermissionsArrayLength), 16).substring(2),
             ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newController.address.substring(2),
             ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + newController.address.substring(2),
           ];
 
           // prettier-ignore
           const dataValues = [
-            ethers.utils.hexZeroPad(ethers.BigNumber.from(AddressPermissionsArrayLength).sub(1).toHexString(), 16),
+            ethers.zeroPadValue(ethers.toBigInt(AddressPermissionsArrayLength).sub(1).toHexString(), 16),
             "0x",
             "0x",
             "0x",
@@ -1364,14 +1352,16 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set 2x data keys + add 3x new controllers (including setting the array length + indexes under AddressPermissions[index]) - 12 data keys in total', async () => {
-          const addressPermissionsArrayLength = ethers.BigNumber.from(
-            await context.universalProfile.getData(
-              ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
-            ),
-          ).toNumber();
+          const addressPermissionsArrayLength = ethers
+            .toBigInt(
+              await context.universalProfile.getData(
+                ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
+              ),
+            )
+            .toNumber();
 
-          const newArrayLengthUint128Hex = ethers.utils.hexZeroPad(
-            ethers.BigNumber.from(addressPermissionsArrayLength).add(3).toHexString(),
+          const newArrayLengthUint128Hex = ethers.zeroPadValue(
+            ethers.toBigInt(addressPermissionsArrayLength).add(3).toHexString(),
             16,
           );
 
@@ -1408,7 +1398,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           const dataValues = [
             // user settings
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some default user settings to start')),
+            ethers.hexlify(ethers.toUtf8Bytes('Some default user settings to start')),
             // followers count starts at 0
             abiCoder.encode(['uint256'], [0]),
             newArrayLengthUint128Hex,
@@ -1471,7 +1461,7 @@ describe('⛽📊 Gas Benchmark', () => {
           const permissionValues = [
             // Set some JSONURL for LSP3Profile metadata to test gas cost of updating your profile details
             '0x6f357c6a70546a2accab18748420b63c63b5af4cf710848ae83afc0c51dd8ad17fb5e8b3697066733a2f2f516d65637247656a555156587057347a53393438704e76636e51724a314b69416f4d36626466725663575a736e35',
-            ethers.utils.hexZeroPad(ethers.BigNumber.from(6).toHexString(), 16),
+            ethers.zeroPadValue(ethers.toBigInt(6).toHexString(), 16),
             context.mainController.address,
             PERMISSIONS.SETDATA,
             encodeCompactBytesArray([
@@ -1525,14 +1515,14 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const dataKeys = [
               ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-              ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.utils.hexZeroPad(ethers.utils.hexStripZeros(AddressPermissionsArrayLength), 16).substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.utils.hexStripZeros(AddressPermissionsArrayLength), 16).substring(2),
               ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newController.address.substring(2),
               ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + newController.address.substring(2),
             ];
 
           // prettier-ignore
           const dataValues = [
-              ethers.utils.hexZeroPad(ethers.BigNumber.from(AddressPermissionsArrayLength).add(1).toHexString(), 16),
+              ethers.zeroPadValue(ethers.toBigInt(AddressPermissionsArrayLength).add(1).toHexString(), 16),
               newController.address,
               combinePermissions(PERMISSIONS.SETDATA),
               encodeCompactBytesArray([
@@ -1592,14 +1582,14 @@ describe('⛽📊 Gas Benchmark', () => {
           // prettier-ignore
           const dataKeys = [
               ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-              ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.utils.hexZeroPad(ethers.BigNumber.from(AddressPermissionsArrayLength).sub(1).toHexString(), 16).substring(2),
+              ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.toBigInt(AddressPermissionsArrayLength).sub(1).toHexString(), 16).substring(2),
               ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newController.address.substring(2),
               ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + newController.address.substring(2),
             ];
 
           // prettier-ignore
           const dataValues = [
-              ethers.utils.hexZeroPad(ethers.BigNumber.from(AddressPermissionsArrayLength).sub(1).toHexString(), 16),
+              ethers.zeroPadValue(ethers.toBigInt(AddressPermissionsArrayLength).sub(1).toHexString(), 16),
               "0x",
               "0x",
               "0x",
@@ -1714,14 +1704,16 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('Set 2x data keys + add 3x new controllers (including setting the array length + indexes under AddressPermissions[index]) - 12 data keys in total', async () => {
-          const addressPermissionsArrayLength = ethers.BigNumber.from(
-            await context.universalProfile.getData(
-              ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
-            ),
-          ).toNumber();
+          const addressPermissionsArrayLength = ethers
+            .toBigInt(
+              await context.universalProfile.getData(
+                ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
+              ),
+            )
+            .toNumber();
 
-          const newArrayLengthUint128Hex = ethers.utils.hexZeroPad(
-            ethers.BigNumber.from(addressPermissionsArrayLength).add(3).toHexString(),
+          const newArrayLengthUint128Hex = ethers.zeroPadValue(
+            ethers.toBigInt(addressPermissionsArrayLength).add(3).toHexString(),
             16,
           );
 
@@ -1758,7 +1750,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
           const dataValues = [
             // user settings
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Some default user settings to start')),
+            ethers.hexlify(ethers.toUtf8Bytes('Some default user settings to start')),
             // followers count starts at 0
             abiCoder.encode(['uint256'], [0]),
             newArrayLengthUint128Hex,

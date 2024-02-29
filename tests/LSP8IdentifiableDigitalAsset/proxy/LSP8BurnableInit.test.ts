@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import { LSP8BurnableInitTester, LSP8BurnableInitTester__factory } from '../../../types';
 
@@ -36,8 +36,13 @@ describe('LSP8BurnableInit with proxy', () => {
     const lsp8BurnableImplementation = await new LSP8BurnableInitTester__factory(
       accounts[0],
     ).deploy();
-    const lsp8BurnableProxy = await deployProxy(lsp8BurnableImplementation.address, accounts[0]);
-    const lsp8Burnable = lsp8BurnableImplementation.attach(lsp8BurnableProxy);
+    const lsp8BurnableProxy = await deployProxy(
+      await lsp8BurnableImplementation.getAddress(),
+      accounts[0],
+    );
+    const lsp8Burnable = lsp8BurnableImplementation.attach(
+      lsp8BurnableProxy,
+    ) as LSP8BurnableInitTester;
 
     return { accounts, lsp8Burnable, deployParams };
   };

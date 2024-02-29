@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { calculateCreate2 } from 'eth-create2-calculator';
 
 import { TargetContract__factory } from '../../../../types';
@@ -43,9 +43,9 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
     it('should be allowed to deploy a contract TargetContract via CREATE', async () => {
       const contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
-      const expectedContractAddress = await context.universalProfile.callStatic['execute'](
+      const expectedContractAddress = await context.universalProfile.execute.staticCall(
         OPERATION_TYPES.CREATE, // operation type
-        ethers.constants.AddressZero, // recipient
+        ethers.ZeroAddress, // recipient
         0, // value
         contractBytecodeToDeploy,
       );
@@ -53,7 +53,7 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
       await expect(
         context.universalProfile.connect(context.mainController).execute(
           OPERATION_TYPES.CREATE, // operation type
-          ethers.constants.AddressZero, // recipient
+          ethers.ZeroAddress, // recipient
           0, // value
           contractBytecodeToDeploy,
         ),
@@ -61,18 +61,18 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
-          ethers.utils.getAddress(expectedContractAddress),
+          ethers.getAddress(expectedContractAddress),
           0,
-          ethers.utils.hexZeroPad('0x00', 32),
+          ethers.zeroPadValue('0x00', 32),
         );
     });
 
     it('should be allowed to deploy a contract TargetContract via CREATE2', async () => {
       const contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      const salt = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+      const salt = ethers.hexlify(ethers.randomBytes(32));
 
       const preComputedAddress = calculateCreate2(
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
         salt,
         contractBytecodeToDeploy,
       ).toLowerCase();
@@ -82,13 +82,13 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
           .connect(context.mainController)
           .execute(
             OPERATION_TYPES.CREATE2,
-            ethers.constants.AddressZero,
+            ethers.ZeroAddress,
             0,
             contractBytecodeToDeploy + salt.substring(2),
           ),
       )
         .to.emit(context.universalProfile, 'ContractCreated')
-        .withArgs(OPERATION_TYPES.CREATE2, ethers.utils.getAddress(preComputedAddress), 0, salt);
+        .withArgs(OPERATION_TYPES.CREATE2, ethers.getAddress(preComputedAddress), 0, salt);
     });
   });
 
@@ -98,9 +98,9 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
 
       const expectedContractAddress = await context.universalProfile
         .connect(addressCanDeploy)
-        .callStatic.execute(
+        .execute.staticCall(
           OPERATION_TYPES.CREATE,
-          ethers.constants.AddressZero,
+          ethers.ZeroAddress,
           0,
           contractBytecodeToDeploy,
         );
@@ -108,19 +108,14 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
       await expect(
         context.universalProfile
           .connect(addressCanDeploy)
-          .execute(
-            OPERATION_TYPES.CREATE,
-            ethers.constants.AddressZero,
-            0,
-            contractBytecodeToDeploy,
-          ),
+          .execute(OPERATION_TYPES.CREATE, ethers.ZeroAddress, 0, contractBytecodeToDeploy),
       )
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
-          ethers.utils.getAddress(expectedContractAddress),
+          ethers.getAddress(expectedContractAddress),
           0,
-          ethers.utils.hexZeroPad('0x00', 32),
+          ethers.zeroPadValue('0x00', 32),
         );
     });
 
@@ -129,7 +124,7 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
       const salt = '0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe';
 
       const preComputedAddress = calculateCreate2(
-        context.universalProfile.address,
+        await context.universalProfile.getAddress(),
         salt,
         contractBytecodeToDeploy,
       ).toLowerCase();
@@ -139,13 +134,13 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
           .connect(addressCanDeploy)
           .execute(
             OPERATION_TYPES.CREATE2,
-            ethers.constants.AddressZero,
+            ethers.ZeroAddress,
             0,
             contractBytecodeToDeploy + salt.substring(2),
           ),
       )
         .to.emit(context.universalProfile, 'ContractCreated')
-        .withArgs(OPERATION_TYPES.CREATE2, ethers.utils.getAddress(preComputedAddress), 0, salt);
+        .withArgs(OPERATION_TYPES.CREATE2, ethers.getAddress(preComputedAddress), 0, salt);
     });
   });
 
@@ -157,12 +152,7 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
         await expect(
           context.universalProfile
             .connect(addressCannotDeploy)
-            .execute(
-              OPERATION_TYPES.CREATE,
-              ethers.constants.AddressZero,
-              0,
-              contractBytecodeToDeploy,
-            ),
+            .execute(OPERATION_TYPES.CREATE, ethers.ZeroAddress, 0, contractBytecodeToDeploy),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
           .withArgs(addressCannotDeploy.address, 'DEPLOY');
@@ -177,7 +167,7 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
             .connect(addressCannotDeploy)
             .execute(
               OPERATION_TYPES.CREATE2,
-              ethers.constants.AddressZero,
+              ethers.ZeroAddress,
               0,
               contractBytecodeToDeploy + salt.substring(2),
             ),

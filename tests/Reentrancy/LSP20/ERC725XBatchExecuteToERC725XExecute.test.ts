@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
 // types
-import { BigNumber, BytesLike } from 'ethers';
+import { BytesLike } from 'ethers';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';
@@ -27,10 +27,11 @@ import {
 } from './reentrancyHelpers';
 
 import { LSP20ReentrantContract__factory } from '../../../types';
-import { Interface } from 'ethers/lib/utils';
+import { Interface } from 'ethers';
+import { provider } from '../../utils/helpers';
 
 export const testERC725XBatchExecuteToERC725XExecute = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
+  buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
   buildReentrancyContext: (context: LSP6TestContext) => Promise<ReentrancyContext>,
 ) => {
   let context: LSP6TestContext;
@@ -38,7 +39,7 @@ export const testERC725XBatchExecuteToERC725XExecute = (
   let reentrantContractInterface: Interface;
 
   before(async () => {
-    context = await buildContext(ethers.utils.parseEther('10'));
+    context = await buildContext(ethers.parseEther('10'));
     reentrancyContext = await buildReentrancyContext(context);
     reentrantContractInterface = new LSP20ReentrantContract__factory().interface;
   });
@@ -62,17 +63,25 @@ export const testERC725XBatchExecuteToERC725XExecute = (
           'TRANSFERVALUE',
           testCase,
           context,
-          reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address,
+          await reentrancyContext.reentrantContract.getAddress(),
+          await reentrancyContext.reentrantContract.getAddress(),
         );
 
         await expect(
           context.universalProfile
             .connect(reentrancyContext.caller)
-            .executeBatch([0], [reentrancyContext.reentrantContract.address], [0], [reentrantCall]),
+            .executeBatch(
+              [0],
+              [await reentrancyContext.reentrantContract.getAddress()],
+              [0],
+              [reentrantCall],
+            ),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
+          .withArgs(
+            await reentrancyContext.reentrantContract.getAddress(),
+            testCase.missingPermission,
+          );
       });
     });
 
@@ -81,14 +90,19 @@ export const testERC725XBatchExecuteToERC725XExecute = (
         'TRANSFERVALUE',
         transferValueTestCases.NoCallsAllowed,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
       await expect(
         context.universalProfile
           .connect(reentrancyContext.caller)
-          .executeBatch([0], [reentrancyContext.reentrantContract.address], [0], [reentrantCall]),
+          .executeBatch(
+            [0],
+            [await reentrancyContext.reentrantContract.getAddress()],
+            [0],
+            [reentrantCall],
+          ),
       ).to.be.revertedWithCustomError(context.keyManager, 'NoCallsAllowed');
     });
 
@@ -97,27 +111,30 @@ export const testERC725XBatchExecuteToERC725XExecute = (
         'TRANSFERVALUE',
         transferValueTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
-      expect(
-        await context.universalProfile.provider.getBalance(context.universalProfile.address),
-      ).to.equal(ethers.utils.parseEther('10'));
+      expect(await provider.getBalance(await context.universalProfile.getAddress())).to.equal(
+        ethers.parseEther('10'),
+      );
 
       await context.universalProfile
         .connect(reentrancyContext.caller)
-        .executeBatch([0], [reentrancyContext.reentrantContract.address], [0], [reentrantCall]);
+        .executeBatch(
+          [0],
+          [await reentrancyContext.reentrantContract.getAddress()],
+          [0],
+          [reentrantCall],
+        );
+
+      expect(await provider.getBalance(await context.universalProfile.getAddress())).to.equal(
+        ethers.parseEther('9'),
+      );
 
       expect(
-        await context.universalProfile.provider.getBalance(context.universalProfile.address),
-      ).to.equal(ethers.utils.parseEther('9'));
-
-      expect(
-        await context.universalProfile.provider.getBalance(
-          reentrancyContext.reentrantContract.address,
-        ),
-      ).to.equal(ethers.utils.parseEther('1'));
+        await provider.getBalance(await reentrancyContext.reentrantContract.getAddress()),
+      ).to.equal(ethers.parseEther('1'));
     });
   });
 
@@ -140,17 +157,25 @@ export const testERC725XBatchExecuteToERC725XExecute = (
           'SETDATA',
           testCase,
           context,
-          reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address,
+          await reentrancyContext.reentrantContract.getAddress(),
+          await reentrancyContext.reentrantContract.getAddress(),
         );
 
         await expect(
           context.universalProfile
             .connect(reentrancyContext.caller)
-            .executeBatch([0], [reentrancyContext.reentrantContract.address], [0], [reentrantCall]),
+            .executeBatch(
+              [0],
+              [await reentrancyContext.reentrantContract.getAddress()],
+              [0],
+              [reentrantCall],
+            ),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
+          .withArgs(
+            await reentrancyContext.reentrantContract.getAddress(),
+            testCase.missingPermission,
+          );
       });
     });
 
@@ -159,14 +184,19 @@ export const testERC725XBatchExecuteToERC725XExecute = (
         'SETDATA',
         setDataTestCases.NoERC725YDataKeysAllowed,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
       await expect(
         context.universalProfile
           .connect(reentrancyContext.caller)
-          .executeBatch([0], [reentrancyContext.reentrantContract.address], [0], [reentrantCall]),
+          .executeBatch(
+            [0],
+            [await reentrancyContext.reentrantContract.getAddress()],
+            [0],
+            [reentrantCall],
+          ),
       ).to.be.revertedWithCustomError(context.keyManager, 'NoERC725YDataKeysAllowed');
     });
 
@@ -175,16 +205,21 @@ export const testERC725XBatchExecuteToERC725XExecute = (
         'SETDATA',
         setDataTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
       await context.universalProfile
         .connect(reentrancyContext.caller)
-        .executeBatch([0], [reentrancyContext.reentrantContract.address], [0], [reentrantCall]);
+        .executeBatch(
+          [0],
+          [await reentrancyContext.reentrantContract.getAddress()],
+          [0],
+          [reentrantCall],
+        );
 
-      const hardcodedKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('SomeRandomTextUsed'));
-      const hardcodedValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('SomeRandomTextUsed'));
+      const hardcodedKey = ethers.keccak256(ethers.toUtf8Bytes('SomeRandomTextUsed'));
+      const hardcodedValue = ethers.hexlify(ethers.toUtf8Bytes('SomeRandomTextUsed'));
 
       expect(await context.universalProfile.getData(hardcodedKey)).to.equal(hardcodedValue);
     });
@@ -205,17 +240,25 @@ export const testERC725XBatchExecuteToERC725XExecute = (
           'ADDCONTROLLER',
           testCase,
           context,
-          reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address,
+          await reentrancyContext.reentrantContract.getAddress(),
+          await reentrancyContext.reentrantContract.getAddress(),
         );
 
         await expect(
           context.universalProfile
             .connect(reentrancyContext.caller)
-            .executeBatch([0], [reentrancyContext.reentrantContract.address], [0], [reentrantCall]),
+            .executeBatch(
+              [0],
+              [await reentrancyContext.reentrantContract.getAddress()],
+              [0],
+              [reentrantCall],
+            ),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
+          .withArgs(
+            await reentrancyContext.reentrantContract.getAddress(),
+            testCase.missingPermission,
+          );
       });
     });
 
@@ -224,13 +267,18 @@ export const testERC725XBatchExecuteToERC725XExecute = (
         'ADDCONTROLLER',
         addPermissionsTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
       await context.universalProfile
         .connect(reentrancyContext.caller)
-        .executeBatch([0], [reentrancyContext.reentrantContract.address], [0], [reentrantCall]);
+        .executeBatch(
+          [0],
+          [await reentrancyContext.reentrantContract.getAddress()],
+          [0],
+          [reentrantCall],
+        );
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -257,17 +305,25 @@ export const testERC725XBatchExecuteToERC725XExecute = (
           'EDITPERMISSIONS',
           testCase,
           context,
-          reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address,
+          await reentrancyContext.reentrantContract.getAddress(),
+          await reentrancyContext.reentrantContract.getAddress(),
         );
 
         await expect(
           context.universalProfile
             .connect(reentrancyContext.caller)
-            .executeBatch([0], [reentrancyContext.reentrantContract.address], [0], [reentrantCall]),
+            .executeBatch(
+              [0],
+              [await reentrancyContext.reentrantContract.getAddress()],
+              [0],
+              [reentrantCall],
+            ),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
+          .withArgs(
+            await reentrancyContext.reentrantContract.getAddress(),
+            testCase.missingPermission,
+          );
       });
     });
 
@@ -276,13 +332,18 @@ export const testERC725XBatchExecuteToERC725XExecute = (
         'EDITPERMISSIONS',
         editPermissionsTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
       await context.universalProfile
         .connect(reentrancyContext.caller)
-        .executeBatch([0], [reentrancyContext.reentrantContract.address], [0], [reentrantCall]);
+        .executeBatch(
+          [0],
+          [await reentrancyContext.reentrantContract.getAddress()],
+          [0],
+          [reentrantCall],
+        );
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -310,17 +371,25 @@ export const testERC725XBatchExecuteToERC725XExecute = (
           'ADDUNIVERSALRECEIVERDELEGATE',
           testCase,
           context,
-          reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address,
+          await reentrancyContext.reentrantContract.getAddress(),
+          await reentrancyContext.reentrantContract.getAddress(),
         );
 
         await expect(
           context.universalProfile
             .connect(reentrancyContext.caller)
-            .executeBatch([0], [reentrancyContext.reentrantContract.address], [0], [reentrantCall]),
+            .executeBatch(
+              [0],
+              [await reentrancyContext.reentrantContract.getAddress()],
+              [0],
+              [reentrantCall],
+            ),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
+          .withArgs(
+            await reentrancyContext.reentrantContract.getAddress(),
+            testCase.missingPermission,
+          );
       });
     });
 
@@ -329,13 +398,18 @@ export const testERC725XBatchExecuteToERC725XExecute = (
         'ADDUNIVERSALRECEIVERDELEGATE',
         addUniversalReceiverDelegateTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
       await context.universalProfile
         .connect(reentrancyContext.caller)
-        .executeBatch([0], [reentrancyContext.reentrantContract.address], [0], [reentrantCall]);
+        .executeBatch(
+          [0],
+          [await reentrancyContext.reentrantContract.getAddress()],
+          [0],
+          [reentrantCall],
+        );
 
       const hardcodedLSP1Key =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
@@ -364,17 +438,25 @@ export const testERC725XBatchExecuteToERC725XExecute = (
           'CHANGEUNIVERSALRECEIVERDELEGATE',
           testCase,
           context,
-          reentrancyContext.reentrantContract.address,
-          reentrancyContext.reentrantContract.address,
+          await reentrancyContext.reentrantContract.getAddress(),
+          await reentrancyContext.reentrantContract.getAddress(),
         );
 
         await expect(
           context.universalProfile
             .connect(reentrancyContext.caller)
-            .executeBatch([0], [reentrancyContext.reentrantContract.address], [0], [reentrantCall]),
+            .executeBatch(
+              [0],
+              [await reentrancyContext.reentrantContract.getAddress()],
+              [0],
+              [reentrantCall],
+            ),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
-          .withArgs(reentrancyContext.reentrantContract.address, testCase.missingPermission);
+          .withArgs(
+            await reentrancyContext.reentrantContract.getAddress(),
+            testCase.missingPermission,
+          );
       });
     });
 
@@ -383,13 +465,18 @@ export const testERC725XBatchExecuteToERC725XExecute = (
         'CHANGEUNIVERSALRECEIVERDELEGATE',
         changeUniversalReceiverDelegateTestCases.ValidCase,
         context,
-        reentrancyContext.reentrantContract.address,
-        reentrancyContext.reentrantContract.address,
+        await reentrancyContext.reentrantContract.getAddress(),
+        await reentrancyContext.reentrantContract.getAddress(),
       );
 
       await context.universalProfile
         .connect(reentrancyContext.caller)
-        .executeBatch([0], [reentrancyContext.reentrantContract.address], [0], [reentrantCall]);
+        .executeBatch(
+          [0],
+          [await reentrancyContext.reentrantContract.getAddress()],
+          [0],
+          [reentrantCall],
+        );
 
       const hardcodedLSP1Key =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +

@@ -1,5 +1,6 @@
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import hre from 'hardhat';
+const { ethers } = hre;
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import {
   LSP1UniversalReceiverDelegateUP__factory,
@@ -35,7 +36,7 @@ export async function deployProxy(
   // deploy proxy contract
   const proxyBytecode = eip1167RuntimeCodeTemplate.replace(
     'bebebebebebebebebebebebebebebebebebebebe',
-    baseContractAddress.substr(2),
+    baseContractAddress.substring(2),
   );
   const tx = await deployer.sendTransaction({
     data: proxyBytecode,
@@ -62,11 +63,13 @@ export async function setupKeyManager(
     [ALL_PERMISSIONS, ..._dataValues],
   );
 
+  const keyManagerAddress = await _context.keyManager.getAddress();
+
   await _context.universalProfile
     .connect(_context.mainController)
-    .transferOwnership(_context.keyManager.address);
+    .transferOwnership(keyManagerAddress);
 
-  const payload = _context.universalProfile.interface.getSighash('acceptOwnership');
+  const payload = _context.universalProfile.interface.getFunction('acceptOwnership').selector;
 
   await _context.keyManager.connect(_context.mainController).execute(payload);
 }
@@ -89,9 +92,9 @@ export async function setupKeyManagerHelper(
 
   await _context.universalProfile
     .connect(_context.mainController)
-    .transferOwnership(_context.keyManagerInternalTester.address);
+    .transferOwnership(await _context.keyManagerInternalTester.getAddress());
 
-  const payload = _context.universalProfile.interface.getSighash('acceptOwnership');
+  const payload = _context.universalProfile.interface.getFunction('acceptOwnership').selector;
 
   await _context.keyManagerInternalTester.connect(_context.mainController).execute(payload);
 }
@@ -100,8 +103,15 @@ export async function setupKeyManagerHelper(
  * Deploy 1 Profile + 1 KeyManager + 1 URD and set all needed permissions
  */
 export async function setupProfileWithKeyManagerWithURD(EOA: SignerWithAddress) {
-  const universalProfile = await new UniversalProfile__factory(EOA).deploy(EOA.address);
-  const lsp6KeyManager = await new LSP6KeyManager__factory(EOA).deploy(universalProfile.address);
+  const universalProfile = await new UniversalProfile__factory(EOA).deploy(EOA.address, {
+    value: ethers.parseEther('10'),
+  });
+
+  const lsp6KeyManager = await new LSP6KeyManager__factory(EOA).deploy(
+    await universalProfile.getAddress(),
+  );
+
+  const lsp6KeyManagerAddress = await lsp6KeyManager.getAddress();
 
   const lsp1universalReceiverDelegateUP = await new LSP1UniversalReceiverDelegateUP__factory(
     EOA,
@@ -116,29 +126,25 @@ export async function setupProfileWithKeyManagerWithURD(EOA: SignerWithAddress) 
         ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '00000000000000000000000000000001',
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + EOA.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          lsp1universalReceiverDelegateUP.address.substring(2),
+          (await lsp1universalReceiverDelegateUP.getAddress()).substring(2),
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
       ],
       [
-        ethers.utils.hexZeroPad(ethers.utils.hexlify(2), 16),
+        ethers.zeroPadValue(ethers.toBeHex(2), 16),
         EOA.address,
-        lsp1universalReceiverDelegateUP.address,
+        await lsp1universalReceiverDelegateUP.getAddress(),
         ALL_PERMISSIONS,
         combinePermissions(PERMISSIONS.SUPER_SETDATA, PERMISSIONS.REENTRANCY),
-        lsp1universalReceiverDelegateUP.address,
+        await lsp1universalReceiverDelegateUP.getAddress(),
       ],
     );
 
-  await universalProfile.connect(EOA).transferOwnership(lsp6KeyManager.address);
+  await universalProfile.connect(EOA).transferOwnership(lsp6KeyManagerAddress);
 
-  const claimOwnershipPayload = universalProfile.interface.getSighash('acceptOwnership');
+  const claimOwnershipPayload = universalProfile.interface.getFunction('acceptOwnership').selector;
 
   await lsp6KeyManager.connect(EOA).execute(claimOwnershipPayload);
 
-  await EOA.sendTransaction({
-    to: universalProfile.address,
-    value: ethers.utils.parseEther('10'),
-  });
   return [universalProfile, lsp6KeyManager, lsp1universalReceiverDelegateUP];
 }
 
@@ -152,15 +158,15 @@ export async function grantLSP11PermissionViaKeyManager(
   lsp6KeyManager,
   addressToGrant,
 ) {
-  const rawPermissionArrayLength = await universalProfile.callStatic['getData(bytes32)'](
+  const rawPermissionArrayLength = await universalProfile.getData(
     ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
   );
 
-  const permissionArrayLength = ethers.BigNumber.from(rawPermissionArrayLength).toNumber();
+  const permissionArrayLength = ethers.toNumber(ethers.toBigInt(rawPermissionArrayLength));
 
   const newPermissionArrayLength = permissionArrayLength + 1;
-  const newRawPermissionArrayLength = ethers.utils.hexZeroPad(
-    ethers.utils.hexValue(newPermissionArrayLength),
+  const newRawPermissionArrayLength = ethers.zeroPadValue(
+    ethers.toBeHex(newPermissionArrayLength),
     16,
   );
 
@@ -194,16 +200,16 @@ export function callPayload(from: any, to: string, abi: string) {
  */
 export async function getLSP5MapAndArrayKeysValue(account, token) {
   const mapValue = await account.getData(
-    ethers.utils.hexConcat([ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap, token.address]),
+    ethers.concat([ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap, await token.getAddress()]),
   );
 
-  const indexInHex = '0x' + mapValue.substr(10, mapValue.length);
-  const interfaceId = mapValue.substr(0, 10);
+  const indexInHex = '0x' + mapValue.substring(10, mapValue.length);
+  const interfaceId = mapValue.substring(0, 10);
 
-  const indexInNumber = ethers.BigNumber.from(indexInHex).toNumber();
-  const rawIndexInArray = ethers.utils.hexZeroPad(ethers.utils.hexValue(indexInNumber), 16);
+  const indexInNumber = ethers.toNumber(ethers.toBigInt(indexInHex === '0x' ? 0 : indexInHex));
+  const rawIndexInArray = ethers.zeroPadValue(ethers.toBeHex(indexInNumber), 16);
 
-  const elementInArrayKey = ethers.utils.hexConcat([
+  const elementInArrayKey = ethers.concat([
     ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index,
     rawIndexInArray,
   ]);
@@ -214,7 +220,7 @@ export async function getLSP5MapAndArrayKeysValue(account, token) {
   let elementAddress = _elementAddress;
 
   if (elementAddress != '0x') {
-    elementAddress = ethers.utils.getAddress(elementAddress);
+    elementAddress = ethers.getAddress(elementAddress);
   }
   return [indexInNumber, interfaceId, arrayLength, elementAddress];
 }

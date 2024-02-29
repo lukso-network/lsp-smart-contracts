@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import { TargetContract__factory, TargetContract } from '../../../types';
 
@@ -73,7 +73,7 @@ export const testInvalidExecutePayloads = (buildContext: () => Promise<LSP6TestC
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         INVALID_OPERATION_TYPE,
-        targetContract.address,
+        await targetContract.getAddress(),
         0,
         targetPayload,
       ]);
@@ -90,7 +90,7 @@ export const testInvalidExecutePayloads = (buildContext: () => Promise<LSP6TestC
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         INVALID_OPERATION_TYPE,
-        targetContract.address,
+        await targetContract.getAddress(),
         0,
         targetPayload,
       ]);

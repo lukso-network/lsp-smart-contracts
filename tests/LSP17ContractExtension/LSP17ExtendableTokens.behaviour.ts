@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import {
   LSP0ERC725Account,
@@ -155,7 +155,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
           it('should revert with NoExtensionForFunctionSignature error', async () => {
             await expect(
               context.accounts[0].sendTransaction({
-                to: context.contract.address,
+                to: await context.contract.getAddress(),
                 data: notExistingFunctionSignature,
               }),
             )
@@ -172,7 +172,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
             const amountSent = 200;
             await expect(
               context.accounts[0].sendTransaction({
-                to: context.contract.address,
+                to: await context.contract.getAddress(),
                 data: notExistingFunctionSignature,
                 value: amountSent,
               }),
@@ -202,7 +202,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                 // different sender
                 await expect(
                   context.accounts[1].sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: checkMsgVariableFunctionSignature,
                     value: value,
                   }),
@@ -225,7 +225,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
                 await expect(
                   sender.sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: checkMsgVariableFunctionSignature,
                     value: 100, // different value
                   }),
@@ -246,7 +246,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
                 await context.contract
                   .connect(context.deployParams.owner)
-                  .setData(checkMsgVariableFunctionExtensionHandlerKey, checkerExtension.address);
+                  .setData(
+                    checkMsgVariableFunctionExtensionHandlerKey,
+                    await checkerExtension.getAddress(),
+                  );
               });
 
               it('should fail if passed a different value from the msg.value', async () => {
@@ -260,7 +263,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
                 await expect(
                   sender.sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: checkMsgVariableFunctionSignature,
                     value: 100, // different value
                   }),
@@ -279,7 +282,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                 // different sender
                 await expect(
                   context.accounts[1].sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: checkMsgVariableFunctionSignature,
                     value: value,
                   }),
@@ -294,7 +297,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                   abiCoder.encode(['address', 'uint256'], [sender.address, value]).substring(2);
 
                 await sender.sendTransaction({
-                  to: context.contract.address,
+                  to: await context.contract.getAddress(),
                   data: checkMsgVariableFunctionSignature,
                   value: value,
                 });
@@ -311,7 +314,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(revertStringFunctionExtensionHandlerKey, revertStringExtension.address);
+              .setData(
+                revertStringFunctionExtensionHandlerKey,
+                await revertStringExtension.getAddress(),
+              );
           });
 
           it('should revert with a string error provided as argument', async () => {
@@ -323,7 +329,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await expect(
               context.accounts[0].sendTransaction({
-                to: context.contract.address,
+                to: await context.contract.getAddress(),
                 data: revertStringFunctionSignature,
                 value: 0,
               }),
@@ -341,7 +347,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(revertCustomFunctionExtensionHandlerKey, revertCustomExtension.address);
+              .setData(
+                revertCustomFunctionExtensionHandlerKey,
+                await revertCustomExtension.getAddress(),
+              );
           });
 
           it('should revert with a custom error with tx.origin and msg.sender as argument', async () => {
@@ -349,13 +358,13 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await expect(
               sender.sendTransaction({
-                to: context.contract.address,
+                to: await context.contract.getAddress(),
                 data: revertCustomFunctionSelector,
                 value: 0,
               }),
             )
               .to.be.revertedWithCustomError(revertCustomExtension, 'RevertWithAddresses')
-              .withArgs(sender.address, context.contract.address);
+              .withArgs(sender.address, await context.contract.getAddress());
           });
         });
 
@@ -369,13 +378,13 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(emitEventFunctionExtensionHandlerKey, emitEventExtension.address);
+              .setData(emitEventFunctionExtensionHandlerKey, await emitEventExtension.getAddress());
           });
 
           it('should pass and emit the event on the extension', async () => {
             await expect(
               context.accounts[0].sendTransaction({
-                to: context.contract.address,
+                to: await context.contract.getAddress(),
                 data: emitEventFunctionSelector,
                 value: 0,
               }),
@@ -391,13 +400,13 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(nameFunctionExtensionHandlerKey, nameExtension.address);
+              .setData(nameFunctionExtensionHandlerKey, nameExtension.target);
           });
 
           it('should pass and return the name correctly', async () => {
             const returnValue = await provider.call({
               from: context.accounts[0].address,
-              to: context.contract.address,
+              to: await context.contract.getAddress(),
               data: nameFunctionSelector,
             });
 
@@ -413,13 +422,13 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(ageFunctionExtensionHandlerKey, ageExtension.address);
+              .setData(ageFunctionExtensionHandlerKey, ageExtension.target);
           });
 
           it('should pass and return the age correctly', async () => {
             const returnValue = await provider.call({
               from: context.accounts[0].address,
-              to: context.contract.address,
+              to: await context.contract.getAddress(),
               data: ageFunctionSelector,
             });
 
@@ -435,13 +444,11 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(transferFunctionExtensionHandlerKey, transferExtension.address);
+              .setData(transferFunctionExtensionHandlerKey, await transferExtension.getAddress());
           });
 
           it('should pass and change the state accordingly', async () => {
-            const balanceBefore = await transferExtension.callStatic.balances(
-              context.accounts[0].address,
-            );
+            const balanceBefore = await transferExtension.balances(context.accounts[0].address);
 
             expect(balanceBefore).to.equal(0);
 
@@ -452,13 +459,11 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               abiCoder.encode(['uint256'], [amountTransferred]).substring(2);
 
             await context.accounts[0].sendTransaction({
-              to: context.contract.address,
+              to: await context.contract.getAddress(),
               data: transferFunctionSignature,
             });
 
-            const balanceAfter = await transferExtension.callStatic.balances(
-              context.accounts[0].address,
-            );
+            const balanceAfter = await transferExtension.balances(context.accounts[0].address);
 
             expect(balanceAfter).to.equal(amountTransferred);
           });
@@ -472,21 +477,21 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(buyFunctionExtensionHandlerKey, buyExtension.address);
+              .setData(buyFunctionExtensionHandlerKey, await buyExtension.getAddress());
           });
 
           it('should pass and receive the value sent within the contract', async () => {
-            const balanceBefore = await provider.getBalance(buyExtension.address);
+            const balanceBefore = await provider.getBalance(await buyExtension.getAddress());
 
             expect(balanceBefore).to.equal(0);
 
             await context.accounts[0].sendTransaction({
-              to: context.contract.address,
+              to: await context.contract.getAddress(),
               value: 100,
               data: buyFunctionSelector,
             });
 
-            const balanceAfter = await provider.getBalance(buyExtension.address);
+            const balanceAfter = await provider.getBalance(await buyExtension.getAddress());
 
             expect(balanceAfter).to.equal(100);
           });
@@ -502,7 +507,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(reenterAccountFunctionExtensionHandlerKey, reenterAccountExtension.address);
+              .setData(
+                reenterAccountFunctionExtensionHandlerKey,
+                await reenterAccountExtension.getAddress(),
+              );
           });
 
           describe('when reentering with a call to an extension that emits an event', () => {
@@ -522,7 +530,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
                 await expect(
                   context.accounts[0].sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: reenterAccountFunctionSignature,
                   }),
                 ).to.not.emit(emitEventExtension, 'EventEmittedInExtension');
@@ -538,7 +546,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
                 await context.contract
                   .connect(context.deployParams.owner)
-                  .setData(emitEventFunctionExtensionHandlerKey, emitEventExtension.address);
+                  .setData(
+                    emitEventFunctionExtensionHandlerKey,
+                    await emitEventExtension.getAddress(),
+                  );
               });
               it('should emit the event on 3rd extension called', async () => {
                 const reenterAccountFunctionSignature =
@@ -547,7 +558,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
                 await expect(
                   context.accounts[0].sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: reenterAccountFunctionSignature,
                     value: 0,
                   }),
@@ -571,7 +582,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
               await context.contract
                 .connect(context.deployParams.owner)
-                .setData(supportsInterfaceFunctionExtensionHandlerKey, erc165Extension.address);
+                .setData(
+                  supportsInterfaceFunctionExtensionHandlerKey,
+                  await erc165Extension.getAddress(),
+                );
             });
 
             it('should return true', async () => {
@@ -587,7 +601,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         it('should revert', async () => {
           await expect(
             context.accounts[0].sendTransaction({
-              to: context.contract.address,
+              to: await context.contract.getAddress(),
               data: '0x01',
             }),
           ).to.be.revertedWithCustomError(context.contract, 'InvalidFunctionSelector');

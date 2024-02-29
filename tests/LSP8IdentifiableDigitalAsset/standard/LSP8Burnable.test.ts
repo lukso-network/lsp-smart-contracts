@@ -1,5 +1,5 @@
 import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import { LSP8BurnableTester, LSP8BurnableTester__factory } from '../../../types';
 
@@ -54,7 +54,7 @@ describe('LSP8Burnable with constructor', () => {
       return {
         lsp8,
         deployParams,
-        initializeTransaction: context.lsp8Burnable.deployTransaction,
+        initializeTransaction: context.lsp8Burnable.deploymentTransaction(),
       };
     });
   });

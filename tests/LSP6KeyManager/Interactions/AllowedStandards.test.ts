@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import {
   LSP7Mintable,
@@ -92,8 +92,8 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
     await setupKeyManager(context, permissionsKeys, permissionsValues);
 
     await context.mainController.sendTransaction({
-      to: context.universalProfile.address,
-      value: ethers.utils.parseEther('10'),
+      to: await context.universalProfile.getAddress(),
+      value: ethers.parseEther('10'),
     });
   });
 
@@ -104,20 +104,20 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
       const upPayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
-        targetContract.address,
+        await targetContract.getAddress(),
         0,
         targetPayload,
       ]);
 
       await context.keyManager.connect(context.mainController).execute(upPayload);
-      const result = await targetContract.callStatic.getName();
+      const result = await targetContract.getName();
 
       expect(result).to.equal(newName);
     });
 
     describe('should allow to interact with a contract that implement (+ register) any interface', () => {
       it('ERC1271', async () => {
-        const sampleHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Sample Message'));
+        const sampleHash = ethers.keccak256(ethers.toUtf8Bytes('Sample Message'));
         const sampleSignature = await context.mainController.signMessage('Sample Message');
 
         const payload = signatureValidatorContract.interface.encodeFunctionData(
@@ -127,14 +127,14 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
         const upPayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          signatureValidatorContract.address,
+          await signatureValidatorContract.getAddress(),
           0,
           payload,
         ]);
 
         const callResult = await context.keyManager
           .connect(context.mainController)
-          .callStatic.execute(upPayload);
+          .execute.staticCall(upPayload);
 
         const [decodedResult] = abiCoder.decode(['bytes'], callResult);
 
@@ -143,7 +143,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
       });
 
       it('LSP0 (ERC725Account)', async () => {
-        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Key'));
+        const key = ethers.keccak256(ethers.toUtf8Bytes('Key'));
         const value = '0xcafecafecafecafe';
 
         const setDataPayload = context.universalProfile.interface.encodeFunctionData('setData', [
@@ -153,7 +153,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
         await context.keyManager.connect(context.mainController).execute(setDataPayload);
 
-        const result = await context.universalProfile.callStatic['getData(bytes32)'](key);
+        const result = await context.universalProfile.getData(key);
         expect(result).to.equal(value);
       });
     });
@@ -162,7 +162,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
   describe('when caller has only ERC1271 interface ID set for ALLOWED STANDARDS', () => {
     describe('when interacting with a contract that implements + register ERC1271 interface', () => {
       it('should pass', async () => {
-        const sampleHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Sample Message'));
+        const sampleHash = ethers.keccak256(ethers.toUtf8Bytes('Sample Message'));
         const sampleSignature = await addressCanInteractOnlyWithERC1271.signMessage(
           'Sample Message',
         );
@@ -174,14 +174,14 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
         const upPayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          signatureValidatorContract.address,
+          await signatureValidatorContract.getAddress(),
           0,
           payload,
         ]);
 
         const callResult = await context.keyManager
           .connect(addressCanInteractOnlyWithERC1271)
-          .callStatic.execute(upPayload);
+          .execute.staticCall(upPayload);
 
         const [decodedResult] = abiCoder.decode(['bytes'], callResult);
 
@@ -192,18 +192,18 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
     describe('when trying to interact an ERC725Account (LSP0)', () => {
       it('should allow to transfer LYX', async () => {
-        const initialAccountBalance = await provider.getBalance(otherUniversalProfile.address);
+        const initialAccountBalance = await provider.getBalance(otherUniversalProfile.target);
 
         const transferLyxPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
-          [OPERATION_TYPES.CALL, otherUniversalProfile.address, ethers.utils.parseEther('1'), '0x'],
+          [OPERATION_TYPES.CALL, otherUniversalProfile.target, ethers.parseEther('1'), '0x'],
         );
 
         await context.keyManager
           .connect(addressCanInteractOnlyWithERC1271)
           .execute(transferLyxPayload);
 
-        const newAccountBalance = await provider.getBalance(otherUniversalProfile.address);
+        const newAccountBalance = await provider.getBalance(otherUniversalProfile.target);
         expect(newAccountBalance).to.be.gt(initialAccountBalance);
       });
     });
@@ -214,7 +214,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
         const upPayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          targetContract.address,
+          await targetContract.getAddress(),
           0,
           targetPayload,
         ]);
@@ -225,8 +225,8 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
           .withArgs(
             addressCanInteractOnlyWithERC1271.address,
-            targetContract.address,
-            targetContract.interface.getSighash('setName'),
+            await targetContract.getAddress(),
+            targetContract.interface.getFunction('setName').selector,
           );
       });
     });
@@ -235,7 +235,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
   describe('when caller has only LSP7 interface ID set for ALLOWED STANDARDS', () => {
     describe('when interacting with a contract that implements + register ERC1271 interface', () => {
       it('should fail', async () => {
-        const sampleHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('Sample Message'));
+        const sampleHash = ethers.keccak256(ethers.toUtf8Bytes('Sample Message'));
         const sampleSignature = await addressCanInteractOnlyWithLSP7.signMessage('Sample Message');
 
         const payload = signatureValidatorContract.interface.encodeFunctionData(
@@ -245,7 +245,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
         const upPayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          signatureValidatorContract.address,
+          await signatureValidatorContract.getAddress(),
           0,
           payload,
         ]);
@@ -254,8 +254,8 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
           .withArgs(
             addressCanInteractOnlyWithLSP7.address,
-            signatureValidatorContract.address,
-            signatureValidatorContract.interface.getSighash('isValidSignature'),
+            await signatureValidatorContract.getAddress(),
+            signatureValidatorContract.interface.getFunction('isValidSignature').selector,
           );
       });
     });
@@ -264,7 +264,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
       it('should fail when trying to transfer LYX', async () => {
         const transferLyxPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
-          [OPERATION_TYPES.CALL, otherUniversalProfile.address, ethers.utils.parseEther('1'), '0x'],
+          [OPERATION_TYPES.CALL, otherUniversalProfile.target, ethers.parseEther('1'), '0x'],
         );
 
         await expect(
@@ -273,7 +273,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
           .withArgs(
             addressCanInteractOnlyWithLSP7.address,
-            otherUniversalProfile.address,
+            otherUniversalProfile.target,
             '0x00000000',
           );
       });
@@ -311,15 +311,15 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
         await lsp7TokenA
           .connect(context.accounts[0])
-          .mint(context.universalProfile.address, 100, false, '0x');
+          .mint(await context.universalProfile.getAddress(), 100, false, '0x');
 
         await lsp7TokenB
           .connect(context.accounts[0])
-          .mint(context.universalProfile.address, 100, false, '0x');
+          .mint(await context.universalProfile.getAddress(), 100, false, '0x');
 
         await lsp7TokenC
           .connect(context.accounts[0])
-          .mint(context.universalProfile.address, 100, false, '0x');
+          .mint(await context.universalProfile.getAddress(), 100, false, '0x');
       });
 
       it('-> interacting with lsp7TokenA', async () => {
@@ -327,7 +327,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
         const amount = 10;
 
         const transferPayload = lsp7TokenA.interface.encodeFunctionData('transfer', [
-          context.universalProfile.address,
+          await context.universalProfile.getAddress(),
           recipient,
           amount,
           true,
@@ -336,7 +336,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          lsp7TokenA.address,
+          await lsp7TokenA.getAddress(),
           0,
           transferPayload,
         ]);
@@ -344,7 +344,9 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
         await context.keyManager.connect(addressCanInteractOnlyWithLSP7).execute(executePayload);
 
         expect(await lsp7TokenA.balanceOf(recipient)).to.equal(amount);
-        expect(await lsp7TokenA.balanceOf(context.universalProfile.address)).to.equal(90);
+        expect(await lsp7TokenA.balanceOf(await context.universalProfile.getAddress())).to.equal(
+          90,
+        );
       });
 
       it('-> interacting with lsp7TokenB', async () => {
@@ -352,7 +354,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
         const amount = 10;
 
         const transferPayload = lsp7TokenB.interface.encodeFunctionData('transfer', [
-          context.universalProfile.address,
+          await context.universalProfile.getAddress(),
           recipient,
           amount,
           true,
@@ -361,7 +363,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          lsp7TokenB.address,
+          lsp7TokenB.target,
           0,
           transferPayload,
         ]);
@@ -369,7 +371,9 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
         await context.keyManager.connect(addressCanInteractOnlyWithLSP7).execute(executePayload);
 
         expect(await lsp7TokenB.balanceOf(recipient)).to.equal(amount);
-        expect(await lsp7TokenB.balanceOf(context.universalProfile.address)).to.equal(90);
+        expect(await lsp7TokenB.balanceOf(await context.universalProfile.getAddress())).to.equal(
+          90,
+        );
       });
 
       it('-> interacting with lsp7TokenC', async () => {
@@ -377,7 +381,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
         const amount = 10;
 
         const transferPayload = lsp7TokenC.interface.encodeFunctionData('transfer', [
-          context.universalProfile.address,
+          await context.universalProfile.getAddress(),
           recipient,
           amount,
           true,
@@ -386,7 +390,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
-          lsp7TokenC.address,
+          lsp7TokenC.target,
           0,
           transferPayload,
         ]);
@@ -394,7 +398,9 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
         await context.keyManager.connect(addressCanInteractOnlyWithLSP7).execute(executePayload);
 
         expect(await lsp7TokenC.balanceOf(recipient)).to.equal(amount);
-        expect(await lsp7TokenC.balanceOf(context.universalProfile.address)).to.equal(90);
+        expect(await lsp7TokenC.balanceOf(await context.universalProfile.getAddress())).to.equal(
+          90,
+        );
       });
     });
   });

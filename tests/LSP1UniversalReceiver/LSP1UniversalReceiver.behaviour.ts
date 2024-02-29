@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { parseEther } from 'ethers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 // types
 import {
@@ -27,11 +27,16 @@ export type LSP1TestContext = {
 export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext>) => {
   let context: LSP1TestContext;
 
+  let lsp1ImplementationAddress: string;
+  let lsp1CheckerAddress: string;
+
   describe('when calling the `universalReceiver(...)` function', () => {
     const valueSent = 0;
 
     before(async () => {
       context = await buildContext();
+      lsp1ImplementationAddress = await context.lsp1Implementation.getAddress();
+      lsp1CheckerAddress = await context.lsp1Checker.getAddress();
     });
 
     describe('from an EOA', () => {
@@ -67,14 +72,14 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
         it('should emit an UniversalReceiver(...) event', async () => {
           await expect(
             context.lsp1Checker.checkImplementation(
-              context.lsp1Implementation.address,
+              lsp1ImplementationAddress,
               LSP1_HOOK_PLACEHOLDER,
             ),
           )
             .to.emit(context.lsp1Implementation, 'UniversalReceiver')
             .withArgs(
               // from
-              context.lsp1Checker.address,
+              lsp1CheckerAddress,
               // value
               valueSent,
               // typeId
@@ -91,14 +96,14 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
         it('should emit an UniversalReceiver(...) event', async () => {
           await expect(
             context.lsp1Checker.checkImplementationLowLevelCall(
-              context.lsp1Implementation.address,
+              lsp1ImplementationAddress,
               LSP1_HOOK_PLACEHOLDER,
             ),
           )
             .to.emit(context.lsp1Implementation, 'UniversalReceiver')
             .withArgs(
               // from
-              context.lsp1Checker.address,
+              lsp1CheckerAddress,
               // value
               valueSent,
               // typeId
@@ -134,8 +139,8 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
             .connect(context.accounts[0])
             .setData(
               ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-                LSP1_HOOK_PLACEHOLDER.substr(2, 40),
-              revertableURD.address,
+                LSP1_HOOK_PLACEHOLDER.substring(2, 42),
+              await revertableURD.getAddress(),
             );
         });
 
@@ -154,10 +159,12 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
   });
 
   describe('when calling the `universalReceiver(...)` function while sending native tokens', () => {
-    const valueSent = ethers.utils.parseEther('3');
+    const valueSent = parseEther('3');
 
     before(async () => {
       context = await buildContext();
+      lsp1ImplementationAddress = await context.lsp1Implementation.getAddress();
+      lsp1CheckerAddress = await context.lsp1Checker.getAddress();
     });
 
     describe('from an EOA', () => {
@@ -185,8 +192,8 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
     describe('from a Contract', () => {
       before(async () => {
         await context.accounts[0].sendTransaction({
-          to: context.lsp1Checker.address,
-          value: ethers.utils.parseEther('50'),
+          to: lsp1CheckerAddress,
+          value: parseEther('50'),
         });
       });
 
@@ -194,7 +201,7 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
         it('should emit an UniversalReceiver(...) event', async () => {
           await expect(
             context.lsp1Checker.checkImplementation(
-              context.lsp1Implementation.address,
+              lsp1ImplementationAddress,
               LSP1_HOOK_PLACEHOLDER,
               { value: valueSent },
             ),
@@ -202,7 +209,7 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
             .to.emit(context.lsp1Implementation, 'UniversalReceiver')
             .withArgs(
               // from
-              context.lsp1Checker.address,
+              lsp1CheckerAddress,
               // value
               valueSent,
               // typeId
@@ -219,7 +226,7 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
         it('should emit an UniversalReceiver(...) event', async () => {
           await expect(
             context.lsp1Checker.checkImplementationLowLevelCall(
-              context.lsp1Implementation.address,
+              lsp1ImplementationAddress,
               LSP1_HOOK_PLACEHOLDER,
               { value: valueSent },
             ),
@@ -227,7 +234,7 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
             .to.emit(context.lsp1Implementation, 'UniversalReceiver')
             .withArgs(
               // from
-              context.lsp1Checker.address,
+              lsp1CheckerAddress,
               // value
               valueSent,
               // typeId

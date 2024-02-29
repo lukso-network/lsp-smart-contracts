@@ -1,8 +1,12 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import {
+  NameExtension,
+  NameExtension__factory,
+  AgeExtension__factory,
+  AgeExtension,
   LSP0ERC725Account,
   LSP9Vault,
   CheckerExtension__factory,
@@ -157,9 +161,9 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
       it('should pass and not emit UniversalReceiver', async () => {
         await expect(
           context.accounts[0].sendTransaction({
-            to: context.contract.address,
+            to: await context.contract.getAddress(),
           }),
-        ).to.not.be.reverted.to.not.emit(context.contract, 'UniversalReceiver');
+        ).to.not.emit(context.contract, 'UniversalReceiver');
       });
     });
 
@@ -169,7 +173,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
           const amountSent = 200;
 
           const tx = await context.accounts[0].sendTransaction({
-            to: context.contract.address,
+            to: await context.contract.getAddress(),
             value: amountSent,
           });
 
@@ -197,7 +201,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               '0x',
               abiCoder.encode(
                 ['bytes', 'bytes'],
-                [ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: typeId out of scope')), '0x'],
+                [ethers.hexlify(ethers.toUtf8Bytes('LSP1: typeId out of scope')), '0x'],
               ),
             );
         });
@@ -209,8 +213,8 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
     describe('when calling method that exist', () => {
       describe('when calling the contract with transferOwnership Signature', () => {
         it('should pass and set the pending owner', async () => {
-          const pendingOwnerBefore = await context.contract.callStatic.pendingOwner();
-          expect(pendingOwnerBefore).to.equal(ethers.constants.AddressZero);
+          const pendingOwnerBefore = await context.contract.pendingOwner();
+          expect(pendingOwnerBefore).to.equal(ethers.ZeroAddress);
 
           const transferOwnershipPayload = context.contract.interface.encodeFunctionData(
             'transferOwnership',
@@ -218,11 +222,11 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
           );
 
           await context.accounts[0].sendTransaction({
-            to: context.contract.address,
+            to: await context.contract.getAddress(),
             data: transferOwnershipPayload,
           });
 
-          const pendingOwnerAfter = await context.contract.callStatic.pendingOwner();
+          const pendingOwnerAfter = await context.contract.pendingOwner();
 
           expect(pendingOwnerAfter).to.equal(context.accounts[2].address);
         });
@@ -235,7 +239,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
           it('should revert with NoExtensionForFunctionSignature error', async () => {
             await expect(
               context.accounts[0].sendTransaction({
-                to: context.contract.address,
+                to: await context.contract.getAddress(),
                 data: notExistingFunctionSignature,
               }),
             )
@@ -252,7 +256,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
             const amountSent = 200;
             await expect(
               context.accounts[0].sendTransaction({
-                to: context.contract.address,
+                to: await context.contract.getAddress(),
                 data: notExistingFunctionSignature,
                 value: amountSent,
               }),
@@ -282,7 +286,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                 // different sender
                 await expect(
                   context.accounts[1].sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: checkMsgVariableFunctionSignature,
                     value: value,
                   }),
@@ -305,7 +309,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
                 await expect(
                   sender.sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: checkMsgVariableFunctionSignature,
                     value: 100, // different value
                   }),
@@ -326,7 +330,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
                 await context.contract
                   .connect(context.deployParams.owner)
-                  .setData(checkMsgVariableFunctionExtensionHandlerKey, checkerExtension.address);
+                  .setData(
+                    checkMsgVariableFunctionExtensionHandlerKey,
+                    await checkerExtension.getAddress(),
+                  );
               });
 
               it('should fail if passed a different value from the msg.value', async () => {
@@ -340,7 +347,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
                 await expect(
                   sender.sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: checkMsgVariableFunctionSignature,
                     value: 100, // different value
                   }),
@@ -359,7 +366,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                 // different sender
                 await expect(
                   context.accounts[1].sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: checkMsgVariableFunctionSignature,
                     value: value,
                   }),
@@ -374,7 +381,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                   abiCoder.encode(['address', 'uint256'], [sender.address, value]).substring(2);
 
                 await sender.sendTransaction({
-                  to: context.contract.address,
+                  to: await context.contract.getAddress(),
                   data: checkMsgVariableFunctionSignature,
                   value: value,
                 });
@@ -391,7 +398,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(revertStringFunctionExtensionHandlerKey, revertStringExtension.address);
+              .setData(
+                revertStringFunctionExtensionHandlerKey,
+                await revertStringExtension.getAddress(),
+              );
           });
 
           it('should revert with a string error provided as argument', async () => {
@@ -403,7 +413,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await expect(
               context.accounts[0].sendTransaction({
-                to: context.contract.address,
+                to: await context.contract.getAddress(),
                 data: revertStringFunctionSignature,
                 value: 0,
               }),
@@ -421,7 +431,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(revertCustomFunctionExtensionHandlerKey, revertCustomExtension.address);
+              .setData(
+                revertCustomFunctionExtensionHandlerKey,
+                await revertCustomExtension.getAddress(),
+              );
           });
 
           it('should revert with a custom error with tx.origin and msg.sender as argument', async () => {
@@ -429,13 +442,13 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await expect(
               sender.sendTransaction({
-                to: context.contract.address,
+                to: await context.contract.getAddress(),
                 data: revertCustomFunctionSelector,
                 value: 0,
               }),
             )
               .to.be.revertedWithCustomError(revertCustomExtension, 'RevertWithAddresses')
-              .withArgs(sender.address, context.contract.address);
+              .withArgs(sender.address, await context.contract.getAddress());
           });
         });
 
@@ -449,13 +462,13 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(emitEventFunctionExtensionHandlerKey, emitEventExtension.address);
+              .setData(emitEventFunctionExtensionHandlerKey, await emitEventExtension.getAddress());
           });
 
           it('should pass and emit the event on the extension', async () => {
             await expect(
               context.accounts[0].sendTransaction({
-                to: context.contract.address,
+                to: await context.contract.getAddress(),
                 data: emitEventFunctionSelector,
                 value: 0,
               }),
@@ -471,7 +484,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(transferFunctionExtensionHandlerKey, transferExtension.address);
+              .setData(transferFunctionExtensionHandlerKey, await transferExtension.getAddress());
 
             const amountTransferred = 20;
 
@@ -480,13 +493,11 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               abiCoder.encode(['uint256'], [amountTransferred]).substring(2);
 
             await context.accounts[0].sendTransaction({
-              to: context.contract.address,
+              to: await context.contract.getAddress(),
               data: transferFunctionSignature,
             });
 
-            const balanceAfter = await transferExtension.callStatic.balances(
-              context.accounts[0].address,
-            );
+            const balanceAfter = await transferExtension.balances(context.accounts[0].address);
 
             expect(balanceAfter).to.equal(amountTransferred);
           });
@@ -500,13 +511,13 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(nameFunctionExtensionHandlerKey, nameExtension.address);
+              .setData(nameFunctionExtensionHandlerKey, await nameExtension.getAddress());
           });
 
           it('should pass and return the name correctly', async () => {
             const returnValue = await provider.call({
               from: context.accounts[0].address,
-              to: context.contract.address,
+              to: await context.contract.getAddress(),
               data: nameFunctionSelector,
             });
 
@@ -522,13 +533,13 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(ageFunctionExtensionHandlerKey, ageExtension.address);
+              .setData(ageFunctionExtensionHandlerKey, await ageExtension.getAddress());
           });
 
           it('should pass and return the age correctly', async () => {
             const returnValue = await provider.call({
               from: context.accounts[0].address,
-              to: context.contract.address,
+              to: await context.contract.getAddress(),
               data: ageFunctionSelector,
             });
 
@@ -544,13 +555,11 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(transferFunctionExtensionHandlerKey, transferExtension.address);
+              .setData(transferFunctionExtensionHandlerKey, await transferExtension.getAddress());
           });
 
           it('should pass and change the state accordingly', async () => {
-            const balanceBefore = await transferExtension.callStatic.balances(
-              context.accounts[0].address,
-            );
+            const balanceBefore = await transferExtension.balances(context.accounts[0].address);
 
             expect(balanceBefore).to.equal(0);
 
@@ -561,13 +570,11 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               abiCoder.encode(['uint256'], [amountTransferred]).substring(2);
 
             await context.accounts[0].sendTransaction({
-              to: context.contract.address,
+              to: await context.contract.getAddress(),
               data: transferFunctionSignature,
             });
 
-            const balanceAfter = await transferExtension.callStatic.balances(
-              context.accounts[0].address,
-            );
+            const balanceAfter = await transferExtension.balances(context.accounts[0].address);
 
             expect(balanceAfter).to.equal(amountTransferred);
           });
@@ -583,7 +590,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
             await context.contract
               .connect(context.deployParams.owner)
-              .setData(reenterAccountFunctionExtensionHandlerKey, reenterAccountExtension.address);
+              .setData(
+                reenterAccountFunctionExtensionHandlerKey,
+                await reenterAccountExtension.getAddress(),
+              );
           });
 
           describe('when reentering the fallback function without calling any other extension', () => {
@@ -593,7 +603,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
               await expect(
                 context.accounts[0].sendTransaction({
-                  to: context.contract.address,
+                  to: await context.contract.getAddress(),
                   data: reenterAccountFunctionSignature,
                 }),
               ).to.not.be.reverted;
@@ -617,7 +627,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
                 await expect(
                   context.accounts[0].sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: reenterAccountFunctionSignature,
                   }),
                 ).to.not.emit(emitEventExtension, 'EventEmittedInExtension');
@@ -633,7 +643,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
                 await context.contract
                   .connect(context.deployParams.owner)
-                  .setData(emitEventFunctionExtensionHandlerKey, emitEventExtension.address);
+                  .setData(
+                    emitEventFunctionExtensionHandlerKey,
+                    await emitEventExtension.getAddress(),
+                  );
               });
               it('should emit the event on 3rd extension called', async () => {
                 const reenterAccountFunctionSignature =
@@ -642,7 +655,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
                 await expect(
                   context.accounts[0].sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: reenterAccountFunctionSignature,
                     value: 0,
                   }),
@@ -666,7 +679,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
               await context.contract
                 .connect(context.deployParams.owner)
-                .setData(supportsInterfaceFunctionExtensionHandlerKey, erc165Extension.address);
+                .setData(
+                  supportsInterfaceFunctionExtensionHandlerKey,
+                  await erc165Extension.getAddress(),
+                );
             });
 
             it('should return true', async () => {
@@ -693,13 +709,16 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
           await context.contract
             .connect(context.deployParams.owner)
-            .setData(bytes1ZeroPaddedExtensionHandlerKey, revertFallbackExtension.address);
+            .setData(
+              bytes1ZeroPaddedExtensionHandlerKey,
+              await revertFallbackExtension.getAddress(),
+            );
         });
 
         it('should pass even if there is an extension for it that reverts', async () => {
           await expect(
             context.accounts[0].sendTransaction({
-              to: context.contract.address,
+              to: await context.contract.getAddress(),
               data: '0x01',
             }),
           ).to.not.be.reverted;
@@ -714,7 +733,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                 const amountSent = 2;
 
                 const tx = await context.accounts[0].sendTransaction({
-                  to: context.contract.address,
+                  to: await context.contract.getAddress(),
                   data: '0x00000000',
                   value: amountSent,
                 });
@@ -743,10 +762,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                     '0x',
                     abiCoder.encode(
                       ['bytes', 'bytes'],
-                      [
-                        ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: typeId out of scope')),
-                        '0x',
-                      ],
+                      [ethers.hexlify(ethers.toUtf8Bytes('LSP1: typeId out of scope')), '0x'],
                     ),
                   );
               });
@@ -756,7 +772,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               it('should pass', async () => {
                 await expect(
                   context.accounts[0].sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: '0x00000000',
                   }),
                 ).to.not.be.reverted;
@@ -770,12 +786,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                 const amountSent = 2;
                 const graffiti =
                   '0x00000000' +
-                  ethers.utils
-                    .hexlify(ethers.utils.toUtf8Bytes('This is a small tip for you!'))
-                    .substring(2);
+                  ethers.hexlify(ethers.toUtf8Bytes('This is a small tip for you!')).substring(2);
 
                 const tx = await context.accounts[0].sendTransaction({
-                  to: context.contract.address,
+                  to: await context.contract.getAddress(),
                   data: graffiti,
                   value: amountSent,
                 });
@@ -804,10 +818,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                     '0x',
                     abiCoder.encode(
                       ['bytes', 'bytes'],
-                      [
-                        ethers.utils.hexlify(ethers.utils.toUtf8Bytes('LSP1: typeId out of scope')),
-                        '0x',
-                      ],
+                      [ethers.hexlify(ethers.toUtf8Bytes('LSP1: typeId out of scope')), '0x'],
                     ),
                   );
               });
@@ -817,13 +828,13 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               it('should pass', async () => {
                 const graffiti =
                   '0x00000000' +
-                  ethers.utils
-                    .hexlify(ethers.utils.toUtf8Bytes('Sending a decentralized message'))
+                  ethers
+                    .hexlify(ethers.toUtf8Bytes('Sending a decentralized message'))
                     .substring(2);
 
                 await expect(
                   context.accounts[0].sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: graffiti,
                   }),
                 ).to.not.be.reverted;
@@ -848,14 +859,17 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
               await context.contract
                 .connect(context.deployParams.owner)
-                .setData(bytes1ZeroPaddedExtensionHandlerKey, revertFallbackExtension.address);
+                .setData(
+                  bytes1ZeroPaddedExtensionHandlerKey,
+                  await revertFallbackExtension.getAddress(),
+                );
             });
 
             describe('when the payload is `0x00000000`', () => {
               it('should revert', async () => {
                 await expect(
                   context.accounts[0].sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: '0x00000000',
                   }),
                 ).to.be.reverted;
@@ -866,13 +880,13 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               it('should revert', async () => {
                 const graffiti =
                   '0x00000000' +
-                  ethers.utils
-                    .hexlify(ethers.utils.toUtf8Bytes('Sending a decentralized message'))
+                  ethers
+                    .hexlify(ethers.toUtf8Bytes('Sending a decentralized message'))
                     .substring(2);
 
                 await expect(
                   context.accounts[0].sendTransaction({
-                    to: context.contract.address,
+                    to: await context.contract.getAddress(),
                     data: graffiti,
                   }),
                 ).to.be.reverted;
@@ -885,8 +899,8 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
     describe('edge cases', () => {
       describe('when setting less than 20 bytes as data value for the LSP17Extension data key', () => {
-        const randomSelector = ethers.utils.hexlify(ethers.utils.randomBytes(4));
-        const randomBytes10Value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
+        const randomSelector = ethers.hexlify(ethers.randomBytes(4));
+        const randomBytes10Value = ethers.hexlify(ethers.randomBytes(10));
 
         const lsp17DataKey =
           ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
@@ -902,7 +916,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         it('should revert with no ExtensionFoundForSelector when calling the function selector mapped to the 10 random bytes', async () => {
           await expect(
             context.accounts[0].sendTransaction({
-              to: context.contract.address,
+              to: await context.contract.getAddress(),
               data: randomSelector,
             }),
           )
@@ -923,7 +937,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         describe('when minting to the account', () => {
           describe('before setting the onERC721ReceivedExtension', () => {
             it('should fail since onERC721Received is not implemented', async () => {
-              await expect(token.mint(context.contract.address)).to.be.reverted;
+              await expect(token.mint(await context.contract.getAddress())).to.be.reverted;
             });
           });
 
@@ -939,11 +953,14 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                 .connect(context.deployParams.owner)
                 .setData(
                   onERC721ReceivedFunctionExtensionHandlerKey,
-                  onERC721ReceivedExtension.address,
+                  await onERC721ReceivedExtension.getAddress(),
                 );
             });
             it('should pass since onERC721Received is implemented as a fallback extension', async () => {
-              await expect(token.mint(context.contract.address)).to.emit(token, 'Minted');
+              await expect(token.mint(await context.contract.getAddress())).to.emit(
+                token,
+                'Minted',
+              );
             });
           });
         });

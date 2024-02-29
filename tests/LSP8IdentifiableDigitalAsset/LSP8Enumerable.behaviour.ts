@@ -1,4 +1,4 @@
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
@@ -41,51 +41,49 @@ export const shouldBehaveLikeLSP8Enumerable = (
     it('should not get token', async () => {
       const tokenSupply = await context.lsp8Enumerable.totalSupply();
       expect(await context.lsp8Enumerable.tokenAt(tokenSupply)).to.equal(
-        ethers.utils.hexZeroPad(ethers.BigNumber.from(0).toHexString(), 32),
+        ethers.zeroPadValue(ethers.toBeHex(BigInt(0)), 32),
       );
     });
   });
 
   describe('when minted tokens', () => {
-    const tokenId = ethers.utils.randomBytes(32);
+    const tokenId = ethers.randomBytes(32);
 
     it('should access by index', async () => {
       const tokenSupply = await context.lsp8Enumerable.totalSupply();
       await context.lsp8Enumerable.mint(context.accounts.tokenReceiver.address, tokenId);
-      expect(await context.lsp8Enumerable.totalSupply()).to.equal(tokenSupply.add(1));
-      expect(await context.lsp8Enumerable.tokenAt(tokenSupply)).to.equal(
-        ethers.utils.hexlify(tokenId),
-      );
+      expect(await context.lsp8Enumerable.totalSupply()).to.equal(tokenSupply + BigInt(1));
+      expect(await context.lsp8Enumerable.tokenAt(tokenSupply)).to.equal(ethers.hexlify(tokenId));
     });
 
     it('should not access by index after removed', async () => {
       const tokenSupply = await context.lsp8Enumerable.totalSupply();
-      const anotherTokenId = ethers.utils.randomBytes(32);
+      const anotherTokenId = ethers.randomBytes(32);
       await context.lsp8Enumerable.mint(context.accounts.tokenReceiver.address, tokenId);
       await context.lsp8Enumerable.mint(context.accounts.tokenReceiver.address, anotherTokenId);
       await context.lsp8Enumerable.burn(tokenId);
-      expect(await context.lsp8Enumerable.totalSupply()).to.equal(tokenSupply.add(1));
+      expect(await context.lsp8Enumerable.totalSupply()).to.equal(tokenSupply + BigInt(1));
       expect(await context.lsp8Enumerable.tokenAt(tokenSupply)).to.equal(
-        ethers.utils.hexlify(anotherTokenId),
+        ethers.hexlify(anotherTokenId),
       );
-      expect(await context.lsp8Enumerable.tokenAt(tokenSupply.add(1))).to.equal(
-        ethers.utils.hexZeroPad(ethers.BigNumber.from(0).toHexString(), 32),
+      expect(await context.lsp8Enumerable.tokenAt(tokenSupply + BigInt(1))).to.equal(
+        ethers.zeroPadValue(ethers.toBeHex(BigInt(0)), 32),
       );
     });
 
     it('should access by index after removed', async () => {
       const tokenSupply = await context.lsp8Enumerable.totalSupply();
-      const anotherTokenId = ethers.utils.randomBytes(32);
+      const anotherTokenId = ethers.randomBytes(32);
       await context.lsp8Enumerable.mint(context.accounts.tokenReceiver.address, tokenId);
       await context.lsp8Enumerable.mint(context.accounts.tokenReceiver.address, anotherTokenId);
       await context.lsp8Enumerable.burn(tokenId);
       await context.lsp8Enumerable.mint(context.accounts.tokenReceiver.address, tokenId);
-      expect(await context.lsp8Enumerable.totalSupply()).to.equal(tokenSupply.add(2));
+      expect(await context.lsp8Enumerable.totalSupply()).to.equal(tokenSupply + BigInt(2));
       expect(await context.lsp8Enumerable.tokenAt(tokenSupply)).to.equal(
-        ethers.utils.hexlify(anotherTokenId),
+        ethers.hexlify(anotherTokenId),
       );
-      expect(await context.lsp8Enumerable.tokenAt(tokenSupply.add(1))).to.equal(
-        ethers.utils.hexlify(tokenId),
+      expect(await context.lsp8Enumerable.tokenAt(tokenSupply + BigInt(1))).to.equal(
+        ethers.hexlify(tokenId),
       );
     });
   });

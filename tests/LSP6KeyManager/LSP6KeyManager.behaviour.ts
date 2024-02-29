@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { BigNumber } from 'ethers';
 
 import { LSP6TestContext, LSP6InternalsTestContext } from '../utils/context';
 import { INTERFACE_IDS } from '../../constants';
@@ -47,7 +46,7 @@ import {
 } from './index';
 
 export const shouldBehaveLikeLSP6 = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
+  buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
   describe('CHANGEOWNER', () => {
     shouldBehaveLikePermissionChangeOwner(buildContext);
@@ -155,8 +154,8 @@ export const shouldInitializeLikeLSP6 = (buildContext: () => Promise<LSP6TestCon
     });
 
     it('should be linked to the right ERC725 account contract', async () => {
-      const account = await context.keyManager.target();
-      expect(account).to.equal(context.universalProfile.address);
+      const account = await context.keyManager['target()'].staticCall();
+      expect(account).to.equal(await context.universalProfile.getAddress());
     });
   });
 };

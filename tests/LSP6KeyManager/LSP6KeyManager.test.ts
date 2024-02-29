@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
 
 import {
@@ -16,7 +15,7 @@ import {
 } from './LSP6KeyManager.behaviour';
 
 describe('LSP6KeyManager with constructor', () => {
-  const buildTestContext = async (initialFunding?: BigNumber): Promise<LSP6TestContext> => {
+  const buildTestContext = async (initialFunding?: bigint): Promise<LSP6TestContext> => {
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
@@ -28,7 +27,7 @@ describe('LSP6KeyManager with constructor', () => {
     );
 
     const keyManager = await new LSP6KeyManager__factory(mainController).deploy(
-      universalProfile.address,
+      universalProfile.target,
     );
 
     return { accounts, mainController, universalProfile, keyManager, initialFunding };
@@ -54,7 +53,7 @@ describe('LSP6KeyManager with constructor', () => {
       );
       const keyManagerInternalTester = await new KeyManagerInternalTester__factory(
         mainController,
-      ).deploy(universalProfile.address);
+      ).deploy(universalProfile.target);
 
       return { mainController, accounts, universalProfile, keyManagerInternalTester };
     });

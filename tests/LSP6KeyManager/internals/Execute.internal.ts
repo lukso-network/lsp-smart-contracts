@@ -30,7 +30,7 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
       const executeParameters = {
         operationType: OPERATION_TYPES.CALL,
         to: context.accounts[3].address,
-        value: ethers.utils.parseEther('5'),
+        value: ethers.parseEther('5'),
         data: '0xcafecafecafecafe',
       };
 
@@ -53,7 +53,7 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
       const executeParameters = {
         operationType: OPERATION_TYPES.CALL,
         to: context.accounts[3].address,
-        value: ethers.utils.parseEther('5'),
+        value: ethers.parseEther('5'),
         data: '0xcafecafecafecafe',
       };
 

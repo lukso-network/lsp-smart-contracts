@@ -20,7 +20,7 @@ task(
 
   // the CI deploys all the contracts, so we need to make sure that the deployer has enough balance
   // each contract to deploy costs around 0.02 - 0.03 LYXe
-  const MINIMUM_DEPLOYER_BALANCE = ethers.utils.parseUnits('0.1', 'ether');
+  const MINIMUM_DEPLOYER_BALANCE = ethers.parseUnits('0.1', 'ether');
 
   const deployerAddress = wallet.address;
 
@@ -28,9 +28,9 @@ task(
   // via `npx hardhat verify-balance --network <luksoTestnet or luksoMainnet>`
   const deployerBalance = await hre.ethers.provider.getBalance(deployerAddress);
 
-  if (deployerBalance.lt(MINIMUM_DEPLOYER_BALANCE)) {
+  if (deployerBalance < MINIMUM_DEPLOYER_BALANCE) {
     throw new Error(
-      `❌ Deployer balance is too low: ${ethers.utils.formatEther(
+      `❌ Deployer balance is too low: ${ethers.formatEther(
         deployerBalance,
       )} LYXe left. Please fund the deployer address ${deployerAddress} on LUKSO Testnet.`,
     );
@@ -38,7 +38,7 @@ task(
     console.log(
       `✅ Deployer balance sufficient to deploy + verify contracts on LUKSO Testnet.
       Deployer address: ${deployerAddress}
-      Balance: ${ethers.utils.formatEther(deployerBalance)} LYXe`,
+      Balance: ${ethers.formatEther(deployerBalance)} LYXe`,
     );
   }
 });

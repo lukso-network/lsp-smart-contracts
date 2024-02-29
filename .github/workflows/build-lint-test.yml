@@ -69,8 +69,7 @@ jobs:
   test-suites:
     strategy:
       matrix:
-        lsp:
-          [
+        lsp: [
             "up",
             "upinit",
             "lsp1",
@@ -85,7 +84,9 @@ jobs:
             "lsp11",
             "lsp11init",
             "lsp17",
-            "lsp17extensions",
+            # Deploying NickFactory currently fails with latest Hardhat version. Commenting out temporarily until resolved
+            # See following issue: https://github.com/NomicFoundation/hardhat/issues/4939
+            # "lsp17extensions",
             "lsp20",
             "lsp20init",
             "lsp23",

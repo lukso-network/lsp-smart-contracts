@@ -18,12 +18,9 @@ import {
 } from '../LSP17ContractExtension/LSP17Extendable.behaviour';
 
 import { deployProxy, setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
-import { BigNumber } from 'ethers';
 
 describe('LSP9VaultInit with proxy', () => {
-  const buildTestContext = async (
-    initialFunding?: number | BigNumber,
-  ): Promise<LSP9TestContext> => {
+  const buildTestContext = async (initialFunding?: number | bigint): Promise<LSP9TestContext> => {
     const accounts = await getNamedAccounts();
     const deployParams = {
       newOwner: accounts.owner.address,
@@ -31,8 +28,8 @@ describe('LSP9VaultInit with proxy', () => {
     };
 
     const lsp9VaultInit = await new LSP9VaultInit__factory(accounts.owner).deploy();
-    const lsp9VaultProxy = await deployProxy(lsp9VaultInit.address, accounts.owner);
-    const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy);
+    const lsp9VaultProxy = await deployProxy(await lsp9VaultInit.getAddress(), accounts.owner);
+    const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy) as LSP9VaultInit;
 
     const [UP1, KM1] = await setupProfileWithKeyManagerWithURD(accounts.owner);
 
@@ -56,7 +53,7 @@ describe('LSP9VaultInit with proxy', () => {
 
     const lsp9VaultInit = await new LSP9VaultInit__factory(accounts[0]).deploy();
 
-    const lsp9VaultProxy = await deployProxy(lsp9VaultInit.address, accounts[0]);
+    const lsp9VaultProxy = await deployProxy(await lsp9VaultInit.getAddress(), accounts[0]);
 
     const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy);
 
@@ -77,7 +74,7 @@ describe('LSP9VaultInit with proxy', () => {
 
       const owner = await lsp9VaultInit.owner();
 
-      expect(owner).to.equal(ethers.constants.AddressZero);
+      expect(owner).to.equal(ethers.ZeroAddress);
     });
 
     it('prevent any address from calling the initialize(...) function on the implementation', async () => {
@@ -131,7 +128,7 @@ describe('LSP9VaultInit with proxy', () => {
       }),
     );
 
-    shouldBehaveLikeLSP14(async (initialFunding?: number | BigNumber) => {
+    shouldBehaveLikeLSP14(async (initialFunding?: number | bigint) => {
       const context = await buildTestContext(initialFunding);
       const accounts = await ethers.getSigners();
       await initializeProxy(context);

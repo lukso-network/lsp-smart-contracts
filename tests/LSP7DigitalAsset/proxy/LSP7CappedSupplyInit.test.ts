@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LSP7CappedSupplyInitTester__factory } from '../../../types';
+import { LSP7CappedSupplyInitTester, LSP7CappedSupplyInitTester__factory } from '../../../types';
 
 import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour';
 import {
@@ -21,13 +21,18 @@ describe('LSP7CappedSupplyInit with proxy', () => {
       symbol: 'CAP',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
-      tokenSupplyCap: ethers.BigNumber.from('2'),
+      tokenSupplyCap: ethers.toBigInt('2'),
     };
     const lsp7CappedSupplyInit = await new LSP7CappedSupplyInitTester__factory(
       accounts.owner,
     ).deploy();
-    const lsp7CappedSupplyProxy = await deployProxy(lsp7CappedSupplyInit.address, accounts.owner);
-    const lsp7CappedSupply = lsp7CappedSupplyInit.attach(lsp7CappedSupplyProxy);
+    const lsp7CappedSupplyProxy = await deployProxy(
+      await lsp7CappedSupplyInit.getAddress(),
+      accounts.owner,
+    );
+    const lsp7CappedSupply = lsp7CappedSupplyInit.attach(
+      lsp7CappedSupplyProxy,
+    ) as LSP7CappedSupplyInitTester;
 
     return { accounts, lsp7CappedSupply, deployParams };
   };

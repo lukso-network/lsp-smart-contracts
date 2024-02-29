@@ -1,7 +1,8 @@
 // from: https://github.com/Arachnid/deterministic-deployment-proxy
-import { BigNumber, BigNumberish, ethers, Signer } from 'ethers';
-import { arrayify, hexConcat, hexlify, hexZeroPad, keccak256 } from 'ethers/lib/utils';
-import { Provider } from '@ethersproject/providers';
+import { BigNumberish, Signer, ethers, toBeHex } from 'ethers';
+import { ethers as hardhatEthers } from 'hardhat';
+import { getBytes, concat, zeroPadValue, keccak256 } from 'ethers';
+
 import { TransactionRequest } from '@ethersproject/abstract-provider';
 
 export class Create2Factory {
@@ -19,8 +20,8 @@ export class Create2Factory {
   ).toString();
 
   constructor(
-    readonly provider: Provider,
-    readonly signer = (provider as ethers.providers.JsonRpcProvider).getSigner(),
+    readonly provider: typeof hardhatEthers.provider = hardhatEthers.provider,
+    readonly signer = hardhatEthers.provider.getSigner().then(),
   ) {}
 
   /**
@@ -51,24 +52,25 @@ export class Create2Factory {
       data: this.getDeployTransactionCallData(initCode, salt),
     };
     if (gasLimit === 'estimate') {
-      gasLimit = await this.signer.estimateGas(deployTx);
+      gasLimit = await (await this.signer).estimateGas(deployTx);
     }
 
     if (gasLimit === undefined) {
-      gasLimit =
-        arrayify(initCode)
+      gasLimit = ethers.toBigInt(
+        getBytes(initCode)
           .map((x) => (x === 0 ? 4 : 16))
           .reduce((sum, x) => sum + x) +
-        (200 * initCode.length) / 2 + // actual is usually somewhat smaller (only deposited code, not entire constructor)
-        6 * Math.ceil(initCode.length / 64) + // hash price. very minor compared to deposit costs
-        32000 +
-        21000;
+          (200 * initCode.length) / 2 + // actual is usually somewhat smaller (only deposited code, not entire constructor)
+          6 * Math.ceil(initCode.length / 64) + // hash price. very minor compared to deposit costs
+          32000 +
+          21000,
+      );
 
       // deployer requires some extra gas
-      gasLimit = Math.floor((gasLimit * 64) / 63);
+      gasLimit = ethers.toBigInt(Math.floor((ethers.toNumber(gasLimit) * 64) / 63));
     }
 
-    const ret = await this.signer.sendTransaction({ ...deployTx, gasLimit });
+    const ret = await (await this.signer).sendTransaction({ ...deployTx, gasLimit });
     await ret.wait();
     if ((await this.provider.getCode(addr).then((code) => code.length)) === 2) {
       throw new Error('failed to deploy');
@@ -77,8 +79,8 @@ export class Create2Factory {
   }
 
   getDeployTransactionCallData(initCode: string, salt: BigNumberish = 0): string {
-    const saltBytes32 = hexZeroPad(hexlify(salt), 32);
-    return hexConcat([saltBytes32, initCode]);
+    const saltBytes32 = zeroPadValue(toBeHex(salt), 32);
+    return concat([saltBytes32, initCode]);
   }
 
   /**
@@ -88,11 +90,11 @@ export class Create2Factory {
    * @param salt
    */
   static getDeployedAddress(initCode: string, salt: BigNumberish): string {
-    const saltBytes32 = hexZeroPad(hexlify(salt), 32);
+    const saltBytes32 = zeroPadValue(toBeHex(salt), 32);
     return (
       '0x' +
       keccak256(
-        hexConcat(['0xff', Create2Factory.contractAddress, saltBytes32, keccak256(initCode)]),
+        concat(['0xff', Create2Factory.contractAddress, saltBytes32, keccak256(initCode)]),
       ).slice(-40)
     );
   }
@@ -102,11 +104,23 @@ export class Create2Factory {
     if (await this._isFactoryDeployed()) {
       return;
     }
-    await (signer ?? this.signer).sendTransaction({
+
+    const currentSigner = (await signer) ?? (await this.signer);
+    const tx = await currentSigner.sendTransaction({
       to: Create2Factory.factoryDeployer,
-      value: BigNumber.from(Create2Factory.factoryDeploymentFee),
+      value: BigInt(Create2Factory.factoryDeploymentFee),
     });
-    await this.provider.sendTransaction(Create2Factory.factoryTx);
+    await tx.wait();
+
+    // TODO: this transaction keeps failing with the following error, although the deployment transaction
+    // for the Create2Factory has not changed:
+    // `Error: VM Exception while processing transaction: invalid opcode`
+
+    await this.provider.send('eth_sendTransaction', [
+      {
+        data: Create2Factory.factoryTx,
+      },
+    ]);
     if (!(await this._isFactoryDeployed())) {
       throw new Error('fatal: failed to deploy deterministic deployer');
     }

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import { TargetContract, TargetContract__factory } from '../../../types';
@@ -42,7 +42,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.EXECUTE_RELAY_CALL),
       combineAllowedCalls(
         [CALLTYPE.CALL],
-        [targetContract.address],
+        [await targetContract.getAddress()],
         ['0xffffffff'],
         ['0xffffffff'],
       ),
@@ -53,7 +53,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
 
   describe('when calling `getNonce(...)` with a channel ID greater than 2 ** 128', () => {
     it('should revert', async () => {
-      const channelId = ethers.BigNumber.from(2).pow(129);
+      const channelId = ethers.toBigInt('0xffffffffffffffffffffffffffffffffff');
 
       await expect(context.keyManager.getNonce(signer.address, channelId)).to.be.revertedWithPanic;
     });
@@ -70,7 +70,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
     ].forEach(({ callNb, newName, expectedNonce }) => {
       // prettier-ignore
       it(`${callNb} call > nonce should increment from ${expectedNonce - 1} to ${expectedNonce}`, async () => {
-        const latestNonce = await context.keyManager.callStatic.getNonce(
+        const latestNonce = await context.keyManager.getNonce(
           signer.address,
           channelId
         );
@@ -85,7 +85,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
             "execute",
             [
               OPERATION_TYPES.CALL,
-              targetContract.address,
+              await targetContract.getAddress(),
               0,
               targetContractPayload,
             ]
@@ -94,7 +94,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.utils.solidityPack(
+        const encodedMessage = ethers.solidityPacked(
           ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP25_VERSION,
@@ -109,7 +109,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
+          await context.keyManager.getAddress(),
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
         );
@@ -122,14 +122,14 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
           { value: valueToSend }
         );
 
-        const fetchedName = await targetContract.callStatic.getName();
-        const nonceAfter = await context.keyManager.callStatic.getNonce(
+        const fetchedName = await targetContract.getName();
+        const nonceAfter = await context.keyManager.getNonce(
           signer.address,
           0
         );
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(latestNonce.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(latestNonce+ BigInt(1)); // ensure the nonce incremented
       });
     });
   });
@@ -142,7 +142,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
       const names = ['Fabian', 'Yamen'];
 
       it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
-        const nonceBefore = await context.keyManager.callStatic.getNonce(signer.address, channelId);
+        const nonceBefore = await context.keyManager.getNonce(signer.address, channelId);
 
         const validityTimestamps = 0;
 
@@ -153,13 +153,13 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         ]);
         const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
-          [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+          [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
         );
 
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.utils.solidityPack(
+        const encodedMessage = ethers.solidityPacked(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
@@ -174,7 +174,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
+          await context.keyManager.getAddress(),
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
@@ -185,11 +185,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
             value: valueToSend,
           });
 
-        const fetchedName = await targetContract.callStatic.getName();
-        const nonceAfter = await context.keyManager.callStatic.getNonce(signer.address, channelId);
+        const fetchedName = await targetContract.getName();
+        const nonceAfter = await context.keyManager.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(nonceBefore + BigInt(1)); // ensure the nonce incremented
       });
 
       it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
@@ -204,13 +204,13 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         ]);
         const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
-          [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+          [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
         );
 
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.utils.solidityPack(
+        const encodedMessage = ethers.solidityPacked(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
@@ -225,7 +225,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
+          await context.keyManager.getAddress(),
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
@@ -236,11 +236,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
             value: valueToSend,
           });
 
-        const fetchedName = await targetContract.callStatic.getName();
-        const nonceAfter = await context.keyManager.callStatic.getNonce(signer.address, channelId);
+        const fetchedName = await targetContract.getName();
+        const nonceAfter = await context.keyManager.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(nonceBefore + BigInt(1)); // ensure the nonce incremented
       });
     });
 
@@ -260,13 +260,13 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         ]);
         const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
-          [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+          [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
         );
 
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.utils.solidityPack(
+        const encodedMessage = ethers.solidityPacked(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
@@ -281,7 +281,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
+          await context.keyManager.getAddress(),
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
@@ -292,11 +292,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
             value: valueToSend,
           });
 
-        const fetchedName = await targetContract.callStatic.getName();
-        const nonceAfter = await context.keyManager.callStatic.getNonce(signer.address, channelId);
+        const fetchedName = await targetContract.getName();
+        const nonceAfter = await context.keyManager.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(nonceBefore + BigInt(1)); // ensure the nonce incremented
       });
 
       it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
@@ -311,13 +311,13 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         ]);
         const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
-          [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+          [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
         );
 
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.utils.solidityPack(
+        const encodedMessage = ethers.solidityPacked(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
@@ -332,7 +332,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
+          await context.keyManager.getAddress(),
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
@@ -343,11 +343,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
             value: valueToSend,
           });
 
-        const fetchedName = await targetContract.callStatic.getName();
-        const nonceAfter = await context.keyManager.callStatic.getNonce(signer.address, channelId);
+        const fetchedName = await targetContract.getName();
+        const nonceAfter = await context.keyManager.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(nonceBefore + BigInt(1)); // ensure the nonce incremented
       });
     });
 
@@ -367,13 +367,13 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         ]);
         const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
-          [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+          [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
         );
 
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.utils.solidityPack(
+        const encodedMessage = ethers.solidityPacked(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
@@ -388,7 +388,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
+          await context.keyManager.getAddress(),
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
@@ -399,11 +399,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
             value: valueToSend,
           });
 
-        const fetchedName = await targetContract.callStatic.getName();
-        const nonceAfter = await context.keyManager.callStatic.getNonce(signer.address, channelId);
+        const fetchedName = await targetContract.getName();
+        const nonceAfter = await context.keyManager.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(nonceBefore + BigInt(1)); // ensure the nonce incremented
       });
 
       it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
@@ -418,13 +418,13 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         ]);
         const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
-          [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+          [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
         );
 
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.utils.solidityPack(
+        const encodedMessage = ethers.solidityPacked(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
@@ -439,7 +439,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
+          await context.keyManager.getAddress(),
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
@@ -450,11 +450,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
             value: valueToSend,
           });
 
-        const fetchedName = await targetContract.callStatic.getName();
-        const nonceAfter = await context.keyManager.callStatic.getNonce(signer.address, channelId);
+        const fetchedName = await targetContract.getName();
+        const nonceAfter = await context.keyManager.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(nonceBefore + BigInt(1)); // ensure the nonce incremented
       });
     });
 
@@ -473,13 +473,13 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         ]);
         const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
-          [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload],
+          [OPERATION_TYPES.CALL, await targetContract.getAddress(), 0, targetContractPayload],
         );
 
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.utils.solidityPack(
+        const encodedMessage = ethers.solidityPacked(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
@@ -494,7 +494,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
+          await context.keyManager.getAddress(),
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1,
         );
@@ -505,11 +505,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
             value: valueToSend,
           });
 
-        const fetchedName = await targetContract.callStatic.getName();
-        const nonceAfter = await context.keyManager.callStatic.getNonce(signer.address, channelId);
+        const fetchedName = await targetContract.getName();
+        const nonceAfter = await context.keyManager.getNonce(signer.address, channelId);
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(nonceBefore + BigInt(1)); // ensure the nonce incremented
       });
     });
   });

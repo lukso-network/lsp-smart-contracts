@@ -1,4 +1,4 @@
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import {
@@ -52,7 +52,7 @@ export const shouldBehaveLikeLSP8Mintable = (
 
   describe('when owner minting tokens', () => {
     it('total supply should have increased', async () => {
-      const randomTokenId = ethers.utils.randomBytes(32);
+      const randomTokenId = ethers.randomBytes(32);
 
       const preMintTotalSupply = await context.lsp8Mintable.totalSupply();
 
@@ -64,7 +64,7 @@ export const shouldBehaveLikeLSP8Mintable = (
       );
 
       const postMintTotalSupply = await context.lsp8Mintable.totalSupply();
-      expect(postMintTotalSupply).to.equal(preMintTotalSupply.add(1));
+      expect(postMintTotalSupply).to.equal(preMintTotalSupply + BigInt(1));
     });
 
     it('tokenReceiver balance should have increased', async () => {
@@ -78,7 +78,7 @@ export const shouldBehaveLikeLSP8Mintable = (
 
   describe('when non-owner minting tokens', () => {
     it('should revert', async () => {
-      const randomTokenId = ethers.utils.randomBytes(32);
+      const randomTokenId = ethers.randomBytes(32);
 
       // use any other account
       const nonOwner = context.accounts.tokenReceiver;
@@ -103,7 +103,7 @@ export const shouldBehaveLikeLSP8Mintable = (
 
       await context.lsp8Mintable
         .connect(context.accounts.owner)
-        .transferOwnership(universalProfile.address);
+        .transferOwnership(await universalProfile.getAddress());
 
       const URDTokenReentrant = await new UniversalReceiverDelegateTokenReentrant__factory(
         context.accounts.profileOwner,
@@ -112,38 +112,38 @@ export const shouldBehaveLikeLSP8Mintable = (
       const setDataPayload = universalProfile.interface.encodeFunctionData('setDataBatch', [
         [
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            URDTokenReentrant.address.substring(2),
+            (await URDTokenReentrant.getAddress()).substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-            URDTokenReentrant.address.substring(2),
+            (await URDTokenReentrant.getAddress()).substring(2),
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
         ],
         [
           combinePermissions(PERMISSIONS.CALL, PERMISSIONS.REENTRANCY),
           combineAllowedCalls(
             [CALLTYPE.CALL],
-            [context.lsp8Mintable.address],
+            [await context.lsp8Mintable.getAddress()],
             ['0xffffffff'],
             ['0xffffffff'],
           ),
-          URDTokenReentrant.address,
+          await URDTokenReentrant.getAddress(),
         ],
       ]);
 
       await lsp6KeyManager.connect(context.accounts.profileOwner).execute(setDataPayload);
     });
     it('should pass', async () => {
-      const randomTokenId = ethers.utils.randomBytes(32);
-      const secondRandomTokenId = ethers.utils.randomBytes(32);
+      const randomTokenId = ethers.randomBytes(32);
+      const secondRandomTokenId = ethers.randomBytes(32);
 
       const reentrantMintPayload = context.lsp8Mintable.interface.encodeFunctionData('mint', [
-        universalProfile.address,
+        universalProfile.target,
         secondRandomTokenId,
         false,
         '0x',
       ]);
 
       const mintPayload = context.lsp8Mintable.interface.encodeFunctionData('mint', [
-        universalProfile.address,
+        universalProfile.target,
         randomTokenId,
         false,
         reentrantMintPayload,
@@ -151,22 +151,20 @@ export const shouldBehaveLikeLSP8Mintable = (
 
       const executePayload = universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
-        context.lsp8Mintable.address,
+        await context.lsp8Mintable.getAddress(),
         0,
         mintPayload,
       ]);
 
       await lsp6KeyManager.connect(context.accounts.profileOwner).execute(executePayload);
 
-      const balanceOfUP = await context.lsp8Mintable.callStatic.balanceOf(universalProfile.address);
+      const balanceOfUP = await context.lsp8Mintable.balanceOf(universalProfile.target);
 
-      const tokenIdsOfUP = await context.lsp8Mintable.callStatic.tokenIdsOf(
-        universalProfile.address,
-      );
+      const tokenIdsOfUP = await context.lsp8Mintable.tokenIdsOf(universalProfile.target);
 
       expect(balanceOfUP).to.equal(2);
-      expect(tokenIdsOfUP[0]).to.equal(ethers.utils.hexlify(randomTokenId));
-      expect(tokenIdsOfUP[1]).to.equal(ethers.utils.hexlify(secondRandomTokenId));
+      expect(tokenIdsOfUP[0]).to.equal(ethers.hexlify(randomTokenId));
+      expect(tokenIdsOfUP[1]).to.equal(ethers.hexlify(secondRandomTokenId));
     });
   });
   describe('when there is an owner change in the _beforeTokenTransfer hook', () => {
@@ -179,9 +177,9 @@ export const shouldBehaveLikeLSP8Mintable = (
         context.accounts.owner.address,
         0, // token type
         0, // token id format
-      )) as LSP8TransferOwnerChange;
+      )) as unknown as LSP8TransferOwnerChange;
 
-      const randomTokenId = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+      const randomTokenId = ethers.hexlify(ethers.randomBytes(32));
 
       // // mint a token tokenReceiver
       await lsp8TransferOwnerChange.connect(context.accounts.owner).mint(
@@ -207,7 +205,7 @@ export const shouldBehaveLikeLSP8Mintable = (
         .withArgs(
           randomTokenId,
           context.accounts.tokenReceiver.address,
-          lsp8TransferOwnerChange.address,
+          await lsp8TransferOwnerChange.getAddress(),
         );
     });
   });

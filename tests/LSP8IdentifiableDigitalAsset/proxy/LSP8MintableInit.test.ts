@@ -29,8 +29,13 @@ describe('LSP8MintableInit with proxy', () => {
       accounts.owner,
     ).deploy();
 
-    const lsp8MintableProxy = await deployProxy(LSP8MintableInit.address, accounts.owner);
-    const lsp8Mintable: LSP8MintableInit = LSP8MintableInit.attach(lsp8MintableProxy);
+    const lsp8MintableProxy = await deployProxy(
+      await LSP8MintableInit.getAddress(),
+      accounts.owner,
+    );
+    const lsp8Mintable: LSP8MintableInit = LSP8MintableInit.attach(
+      lsp8MintableProxy,
+    ) as LSP8MintableInit;
 
     return { accounts, lsp8Mintable, deployParams };
   };
@@ -57,7 +62,7 @@ describe('LSP8MintableInit with proxy', () => {
       expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenType)).to.equal('0x');
       expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP8.LSP8TokenIdFormat)).to.equal('0x');
 
-      expect(await lsp8MintableInit.owner()).to.equal(ethers.constants.AddressZero);
+      expect(await lsp8MintableInit.owner()).to.equal(ethers.ZeroAddress);
     });
 
     it('prevent any address from calling the initialize(...) function on the implementation', async () => {

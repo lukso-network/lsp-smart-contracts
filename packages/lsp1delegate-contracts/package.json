@@ -50,22 +50,5 @@
     "@lukso/lsp8-contracts": "*",
     "@lukso/lsp9-contracts": "*",
     "@lukso/lsp10-contracts": "*"
-  },
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
-    "@typechain/ethers-v5": "^10.2.0",
-    "dotenv": "^16.0.3",
-    "eslint-config-custom": "*",
-    "ethers": "^5.7.2",
-    "hardhat": "^2.13.0",
-    "hardhat-contract-sizer": "^2.8.0",
-    "hardhat-deploy": "^0.11.25",
-    "hardhat-gas-reporter": "^1.0.9",
-    "hardhat-packager": "^1.4.2",
-    "solhint": "^3.3.6",
-    "ts-node": "^10.2.0",
-    "tsconfig": "*",
-    "typechain": "^8.0.0",
-    "typescript": "^5.3.3"
   }
 }

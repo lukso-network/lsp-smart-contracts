@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LSP7InitTester__factory, LSP7DigitalAsset } from '../../../types';
+import { LSP7InitTester__factory, LSP7DigitalAsset, LSP7InitTester } from '../../../types';
 
 import {
   getNamedAccounts,
@@ -21,7 +21,7 @@ import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 describe('LSP7DigitalAssetInit with proxy', () => {
   const buildTestContext = async (): Promise<LSP7TestContext> => {
     const accounts = await getNamedAccounts();
-    const initialSupply = ethers.BigNumber.from('3');
+    const initialSupply = ethers.toBigInt('3');
     const deployParams = {
       name: 'LSP7 - deployed with proxy',
       symbol: 'TKN',
@@ -31,9 +31,9 @@ describe('LSP7DigitalAssetInit with proxy', () => {
 
     const lsp7TesterInit = await new LSP7InitTester__factory(accounts.owner).deploy();
 
-    const lsp7Proxy = await deployProxy(lsp7TesterInit.address, accounts.owner);
+    const lsp7Proxy = await deployProxy(await lsp7TesterInit.getAddress(), accounts.owner);
 
-    const lsp7 = lsp7TesterInit.attach(lsp7Proxy);
+    const lsp7 = lsp7TesterInit.attach(lsp7Proxy) as LSP7InitTester;
 
     // mint tokens for the owner
     await lsp7.mint(accounts.owner.address, initialSupply, true, '0x');
@@ -80,7 +80,7 @@ describe('LSP7DigitalAssetInit with proxy', () => {
         context.lsp7['initialize(string,string,address,uint256,bool)'](
           context.deployParams.name,
           context.deployParams.symbol,
-          ethers.constants.AddressZero,
+          ethers.ZeroAddress,
           12345,
           false,
         ),

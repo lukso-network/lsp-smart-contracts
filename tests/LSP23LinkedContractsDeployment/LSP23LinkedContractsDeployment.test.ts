@@ -15,6 +15,7 @@ import {
   createDataKey,
   deployImplementationContracts,
 } from './helpers';
+import { EventLog } from 'ethers';
 
 describe('UniversalProfileDeployer', function () {
   describe('for non-proxies deployment', async function () {
@@ -33,9 +34,11 @@ describe('UniversalProfileDeployer', function () {
       // universalProfileCreationCode = universalProfileBytecode + abi encoded address of upInitPostDeploymentModule
       const universalProfileCreationCode =
         universalProfileBytecode +
-        ethers.utils.defaultAbiCoder.encode(['address'], [upPostDeploymentModule.address]).slice(2);
+        ethers.AbiCoder.defaultAbiCoder()
+          .encode(['address'], [await upPostDeploymentModule.getAddress()])
+          .slice(2);
 
-      const salt = ethers.utils.randomBytes(32);
+      const salt = ethers.randomBytes(32);
 
       const primaryContractDeployment: ILSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
         {
@@ -46,7 +49,7 @@ describe('UniversalProfileDeployer', function () {
 
       const secondaryContractDeployment: ILSP23LinkedContractsFactory.SecondaryContractDeploymentStruct =
         {
-          fundingAmount: ethers.BigNumber.from(0),
+          fundingAmount: ethers.toBigInt(0),
           creationBytecode: keyManagerBytecode,
           addPrimaryContractAddress: true,
           extraConstructorParams: '0x',
@@ -70,7 +73,7 @@ describe('UniversalProfileDeployer', function () {
 
       const types = ['bytes32[]', 'bytes[]'];
 
-      const encodedBytes = ethers.utils.defaultAbiCoder.encode(types, [
+      const encodedBytes = ethers.AbiCoder.defaultAbiCoder().encode(types, [
         [
           ERC725YDataKeys.LSP3.LSP3Profile, // LSP3Metadata
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate, // URD Address
@@ -83,12 +86,12 @@ describe('UniversalProfileDeployer', function () {
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + create16BytesUint(2), // Index of the third address
         ],
         [
-          ethers.utils.randomBytes(32), // LSP3Metadata
+          ethers.randomBytes(32), // LSP3Metadata
           universalReceiver.address, // URD Address
           allPermissionsSignerPermissionsValue, // URD Permissions
           allPermissionsSignerPermissionsValue, // Recovery Address permissions
           allPermissionsSignerPermissionsValue, // Signers permissions
-          ethers.utils.defaultAbiCoder.encode(['uint256'], [3]), // Address Permissions array length
+          ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [3]), // Address Permissions array length
           universalReceiver.address,
           recoverySigner.address,
           allPermissionsSigner.address,
@@ -97,17 +100,17 @@ describe('UniversalProfileDeployer', function () {
 
       // get the address of the UP and the KeyManager contracts
       const [upContract, keyManagerContract] =
-        await LSP23LinkedContractsFactory.callStatic.deployContracts(
+        await LSP23LinkedContractsFactory.deployContracts.staticCall(
           primaryContractDeployment,
           secondaryContractDeployment,
-          upPostDeploymentModule.address,
+          await upPostDeploymentModule.getAddress(),
           encodedBytes,
         );
 
       await LSP23LinkedContractsFactory.deployContracts(
         primaryContractDeployment,
         secondaryContractDeployment,
-        upPostDeploymentModule.address,
+        await upPostDeploymentModule.getAddress(),
         encodedBytes,
         {
           // Need to specify gasLimit, otherwise Hardhat reverts strangely with the following error:
@@ -120,29 +123,31 @@ describe('UniversalProfileDeployer', function () {
         await LSP23LinkedContractsFactory.computeAddresses(
           primaryContractDeployment,
           secondaryContractDeployment,
-          upPostDeploymentModule.address,
+          await upPostDeploymentModule.getAddress(),
           encodedBytes,
         );
 
       expect(upContract).to.equal(expectedUpAddress);
       expect(keyManagerContract).to.equal(expectedKeyManagerAddress);
 
-      const keyManagerInstance = KeyManagerFactory.attach(keyManagerContract) as LSP6KeyManager;
+      const keyManagerInstance = KeyManagerFactory.attach(
+        keyManagerContract,
+      ) as unknown as LSP6KeyManager;
       const universalProfileInstance = UniversalProfileFactory.attach(
         upContract,
-      ) as UniversalProfile;
+      ) as unknown as UniversalProfile;
 
       // CHECK that the UP is owned by the KeyManager contract
       expect(await universalProfileInstance.owner()).to.equal(keyManagerContract);
 
       // CHECK that the `target()` of the KeyManager contract is the UP contract
-      expect(await keyManagerInstance.target()).to.equal(upContract);
+      expect(await keyManagerInstance['target()'].staticCall()).to.equal(upContract);
     });
 
     it('should deploy both contract (with value)', async function () {
       const [allPermissionsSigner, universalReceiver, recoverySigner] = await ethers.getSigners();
 
-      const universalProfileFundAmount = ethers.utils.parseEther('1');
+      const universalProfileFundAmount = ethers.parseEther('1');
 
       const keyManagerBytecode = (await ethers.getContractFactory('LSP6KeyManager')).bytecode;
       const universalProfileBytecode = (await ethers.getContractFactory('UniversalProfile'))
@@ -154,9 +159,11 @@ describe('UniversalProfileDeployer', function () {
       // universalProfileCreationCode = universalProfileBytecode + abi encoded address of upInitPostDeploymentModule
       const universalProfileCreationCode =
         universalProfileBytecode +
-        ethers.utils.defaultAbiCoder.encode(['address'], [upPostDeploymentModule.address]).slice(2);
+        ethers.AbiCoder.defaultAbiCoder()
+          .encode(['address'], [await upPostDeploymentModule.getAddress()])
+          .slice(2);
 
-      const salt = ethers.utils.randomBytes(32);
+      const salt = ethers.randomBytes(32);
 
       const primaryContractDeployment: ILSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
         {
@@ -191,7 +198,7 @@ describe('UniversalProfileDeployer', function () {
 
       const types = ['bytes32[]', 'bytes[]'];
 
-      const encodedBytes = ethers.utils.defaultAbiCoder.encode(types, [
+      const encodedBytes = ethers.AbiCoder.defaultAbiCoder().encode(types, [
         [
           ERC725YDataKeys.LSP3.LSP3Profile, // LSP3Metadata
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate, // URD Address
@@ -204,12 +211,12 @@ describe('UniversalProfileDeployer', function () {
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + create16BytesUint(2), // Index of the third address
         ],
         [
-          ethers.utils.randomBytes(32), // LSP3Metadata
+          ethers.randomBytes(32), // LSP3Metadata
           universalReceiver.address, // URD Address
           allPermissionsSignerPermissionsValue, // URD Permissions
           allPermissionsSignerPermissionsValue, // Recovery Address permissions
           allPermissionsSignerPermissionsValue, // Signers permissions
-          ethers.utils.defaultAbiCoder.encode(['uint256'], [3]), // Address Permissions array length
+          ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [3]), // Address Permissions array length
           universalReceiver.address,
           recoverySigner.address,
           allPermissionsSigner.address,
@@ -218,10 +225,10 @@ describe('UniversalProfileDeployer', function () {
 
       // get the address of the UP and the KeyManager contracts
       const [upContract, keyManagerContract] =
-        await LSP23LinkedContractsFactory.callStatic.deployContracts(
+        await LSP23LinkedContractsFactory.deployContracts.staticCall(
           primaryContractDeployment,
           secondaryContractDeployment,
-          upPostDeploymentModule.address,
+          await upPostDeploymentModule.getAddress(),
           encodedBytes,
           { value: universalProfileFundAmount },
         );
@@ -230,7 +237,7 @@ describe('UniversalProfileDeployer', function () {
         await LSP23LinkedContractsFactory.computeAddresses(
           primaryContractDeployment,
           secondaryContractDeployment,
-          upPostDeploymentModule.address,
+          await upPostDeploymentModule.getAddress(),
           encodedBytes,
         );
 
@@ -241,7 +248,7 @@ describe('UniversalProfileDeployer', function () {
     it('should revert when values are wrong', async function () {
       const [allPermissionsSigner, universalReceiver, recoverySigner] = await ethers.getSigners();
 
-      const universalProfileFundAmount = ethers.utils.parseEther('1');
+      const universalProfileFundAmount = ethers.parseEther('1');
 
       const keyManagerBytecode = (await ethers.getContractFactory('LSP6KeyManager')).bytecode;
       const universalProfileBytecode = (await ethers.getContractFactory('UniversalProfile'))
@@ -253,9 +260,11 @@ describe('UniversalProfileDeployer', function () {
       // universalProfileCreationCode = universalProfileBytecode + abi encoded address of upInitPostDeploymentModule
       const universalProfileCreationCode =
         universalProfileBytecode +
-        ethers.utils.defaultAbiCoder.encode(['address'], [upPostDeploymentModule.address]).slice(2);
+        ethers.AbiCoder.defaultAbiCoder()
+          .encode(['address'], [await upPostDeploymentModule.getAddress()])
+          .slice(2);
 
-      const salt = ethers.utils.randomBytes(32);
+      const salt = ethers.randomBytes(32);
 
       const primaryContractDeployment: ILSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
         {
@@ -290,7 +299,7 @@ describe('UniversalProfileDeployer', function () {
 
       const types = ['bytes32[]', 'bytes[]'];
 
-      const encodedBytes = ethers.utils.defaultAbiCoder.encode(types, [
+      const encodedBytes = ethers.AbiCoder.defaultAbiCoder().encode(types, [
         [
           ERC725YDataKeys.LSP3.LSP3Profile, // LSP3Metadata
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate, // URD Address
@@ -303,12 +312,12 @@ describe('UniversalProfileDeployer', function () {
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + create16BytesUint(2), // Index of the third address
         ],
         [
-          ethers.utils.randomBytes(32), // LSP3Metadata
+          ethers.randomBytes(32), // LSP3Metadata
           universalReceiver.address, // URD Address
           allPermissionsSignerPermissionsValue, // URD Permissions
           allPermissionsSignerPermissionsValue, // Recovery Address permissions
           allPermissionsSignerPermissionsValue, // Signers permissions
-          ethers.utils.defaultAbiCoder.encode(['uint256'], [3]), // Address Permissions array length
+          ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [3]), // Address Permissions array length
           universalReceiver.address,
           recoverySigner.address,
           allPermissionsSigner.address,
@@ -317,12 +326,12 @@ describe('UniversalProfileDeployer', function () {
 
       // get the address of the UP and the KeyManager contracts
       await expect(
-        LSP23LinkedContractsFactory.callStatic.deployContracts(
+        LSP23LinkedContractsFactory.deployContracts.staticCall(
           primaryContractDeployment,
           secondaryContractDeployment,
-          upPostDeploymentModule.address,
+          await upPostDeploymentModule.getAddress(),
           encodedBytes,
-          { value: universalProfileFundAmount.add(ethers.utils.parseEther('0.1')) },
+          { value: universalProfileFundAmount + ethers.parseEther('0.1') },
         ),
       ).to.be.revertedWithCustomError(LSP23LinkedContractsFactory, 'InvalidValueSum');
     });
@@ -341,9 +350,11 @@ describe('UniversalProfileDeployer', function () {
       // universalProfileCreationCode = universalProfileBytecode + abi encoded address of upInitPostDeploymentModule
       const universalProfileCreationCode =
         universalProfileBytecode +
-        ethers.utils.defaultAbiCoder.encode(['address'], [upPostDeploymentModule.address]).slice(2);
+        ethers.AbiCoder.defaultAbiCoder()
+          .encode(['address'], [await upPostDeploymentModule.getAddress()])
+          .slice(2);
 
-      const salt = ethers.utils.randomBytes(32);
+      const salt = ethers.randomBytes(32);
 
       const primaryContractDeployment: ILSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
         {
@@ -352,16 +363,16 @@ describe('UniversalProfileDeployer', function () {
           creationBytecode: universalProfileCreationCode,
         };
 
-      const firstAddress = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+      const firstAddress = ethers.hexlify(ethers.randomBytes(20));
 
-      const secondaryContractFirstParam = ethers.utils.defaultAbiCoder.encode(
+      const secondaryContractFirstParam = ethers.AbiCoder.defaultAbiCoder().encode(
         ['address'],
         [firstAddress],
       );
 
-      const lastAddress = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+      const lastAddress = ethers.hexlify(ethers.randomBytes(20));
 
-      const secondaryContractLastParam = ethers.utils.defaultAbiCoder.encode(
+      const secondaryContractLastParam = ethers.AbiCoder.defaultAbiCoder().encode(
         ['address'],
         [lastAddress],
       );
@@ -394,7 +405,7 @@ describe('UniversalProfileDeployer', function () {
 
       const types = ['bytes32[]', 'bytes[]'];
 
-      const encodedBytes = ethers.utils.defaultAbiCoder.encode(types, [
+      const encodedBytes = ethers.AbiCoder.defaultAbiCoder().encode(types, [
         [
           ERC725YDataKeys.LSP3.LSP3Profile, // LSP3Metadata
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate, // URD Address
@@ -407,12 +418,12 @@ describe('UniversalProfileDeployer', function () {
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + create16BytesUint(2), // Index of the third address
         ],
         [
-          ethers.utils.randomBytes(32), // LSP3Metadata
+          ethers.randomBytes(32), // LSP3Metadata
           universalReceiver.address, // URD Address
           allPermissionsSignerPermissionsValue, // URD Permissions
           allPermissionsSignerPermissionsValue, // Recovery Address permissions
           allPermissionsSignerPermissionsValue, // Signers permissions
-          ethers.utils.defaultAbiCoder.encode(['uint256'], [3]), // Address Permissions array length
+          ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [3]), // Address Permissions array length
           universalReceiver.address,
           recoverySigner.address,
           allPermissionsSigner.address,
@@ -421,17 +432,17 @@ describe('UniversalProfileDeployer', function () {
 
       // get the address of the UP and the KeyManager contracts
       const [upContract, keyManagerContract] =
-        await LSP23LinkedContractsFactory.callStatic.deployContracts(
+        await LSP23LinkedContractsFactory.deployContracts.staticCall(
           primaryContractDeployment,
           secondaryContractDeployment,
-          upPostDeploymentModule.address,
+          await upPostDeploymentModule.getAddress(),
           encodedBytes,
         );
 
       await LSP23LinkedContractsFactory.deployContracts(
         primaryContractDeployment,
         secondaryContractDeployment,
-        upPostDeploymentModule.address,
+        await upPostDeploymentModule.getAddress(),
         encodedBytes,
         {
           // Need to specify gasLimit, otherwise Hardhat reverts strangely with the following error:
@@ -444,7 +455,7 @@ describe('UniversalProfileDeployer', function () {
         await LSP23LinkedContractsFactory.computeAddresses(
           primaryContractDeployment,
           secondaryContractDeployment,
-          upPostDeploymentModule.address,
+          await upPostDeploymentModule.getAddress(),
           encodedBytes,
         );
 
@@ -453,16 +464,16 @@ describe('UniversalProfileDeployer', function () {
 
       const keyManagerInstance = KeyManagerFactory.attach(
         keyManagerContract,
-      ) as KeyManagerWithExtraParams;
+      ) as unknown as KeyManagerWithExtraParams;
       const universalProfileInstance = UniversalProfileFactory.attach(
         upContract,
-      ) as UniversalProfile;
+      ) as unknown as UniversalProfile;
 
       // CHECK that the UP is owned by the KeyManager contract
       expect(await universalProfileInstance.owner()).to.equal(keyManagerContract);
 
       // CHECK that the `target()` of the KeyManager contract is the UP contract
-      expect(await keyManagerInstance.target()).to.equal(upContract);
+      expect(await keyManagerInstance['target()'].staticCall()).to.equal(upContract);
 
       expect(await keyManagerInstance.FIRST_PARAM()).to.deep.equal(firstAddress);
       expect(await keyManagerInstance.LAST_PARAM()).to.deep.equal(lastAddress);
@@ -481,22 +492,22 @@ describe('UniversalProfileDeployer', function () {
         KeyManagerInitFactory,
       } = await deployImplementationContracts();
 
-      const salt = ethers.utils.randomBytes(32);
+      const salt = ethers.randomBytes(32);
 
       const primaryContractDeploymentInit: ILSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
         {
           salt,
           fundingAmount: 0,
-          implementationContract: universalProfileInit.address,
+          implementationContract: await universalProfileInit.getAddress(),
           initializationCalldata: universalProfileInit.interface.encodeFunctionData('initialize', [
-            upInitPostDeploymentModule.address,
+            await upInitPostDeploymentModule.getAddress(),
           ]),
         };
 
       const secondaryContractDeploymentInit: ILSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
         {
           fundingAmount: 0,
-          implementationContract: keyManagerInit.address,
+          implementationContract: await keyManagerInit.getAddress(),
           addPrimaryContractAddress: true,
           initializationCalldata: '0xc4d66de8',
           extraInitializationParams: '0x',
@@ -520,7 +531,7 @@ describe('UniversalProfileDeployer', function () {
 
       const types = ['bytes32[]', 'bytes[]'];
 
-      const encodedBytes = ethers.utils.defaultAbiCoder.encode(types, [
+      const encodedBytes = ethers.AbiCoder.defaultAbiCoder().encode(types, [
         [
           ERC725YDataKeys.LSP3.LSP3Profile, // LSP3Metadata
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate, // URD Address
@@ -533,12 +544,12 @@ describe('UniversalProfileDeployer', function () {
           ERC725YDataKeys.LSP6['AddressPermissions[]'].index + create16BytesUint(2), // Index of the third address
         ],
         [
-          ethers.utils.randomBytes(32), // LSP3Metadata
+          ethers.randomBytes(32), // LSP3Metadata
           universalReceiver.address, // URD Address
           allPermissionsSignerPermissionsValue, // URD Permissions
           allPermissionsSignerPermissionsValue, // Recovery Address permissions
           allPermissionsSignerPermissionsValue, // Signers permissions
-          ethers.utils.defaultAbiCoder.encode(['uint256'], [3]), // Address Permissions array length
+          ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [3]), // Address Permissions array length
           universalReceiver.address,
           recoverySigner.address,
           allPermissionsSigner.address,
@@ -547,31 +558,33 @@ describe('UniversalProfileDeployer', function () {
 
       // get the address of the UP and the KeyManager contracts
       const [upAddress, keyManagerAddress] =
-        await LSP23LinkedContractsFactory.callStatic.deployERC1167Proxies(
+        await LSP23LinkedContractsFactory.deployERC1167Proxies.staticCall(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
-          upInitPostDeploymentModule.address,
+          await upInitPostDeploymentModule.getAddress(),
           encodedBytes,
         );
 
       await LSP23LinkedContractsFactory.deployERC1167Proxies(
         primaryContractDeploymentInit,
         secondaryContractDeploymentInit,
-        upInitPostDeploymentModule.address,
+        await upInitPostDeploymentModule.getAddress(),
         encodedBytes,
       );
 
-      const upProxy = UniversalProfileInitFactory.attach(upAddress);
-      const keyManagerProxy = KeyManagerInitFactory.attach(keyManagerAddress);
+      const upProxy = UniversalProfileInitFactory.attach(upAddress) as UniversalProfile;
+      const keyManagerProxy = KeyManagerInitFactory.attach(
+        keyManagerAddress,
+      ) as unknown as LSP6KeyManager;
 
       const upProxyOwner = await upProxy.owner();
-      const keyManagerProxyOwner = await keyManagerProxy.target();
+      const keyManagerProxyOwner = await keyManagerProxy['target()'].staticCall();
 
       const [expectedUpProxyAddress, expectedKeyManagerProxyAddress] =
         await LSP23LinkedContractsFactory.computeERC1167Addresses(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
-          upInitPostDeploymentModule.address,
+          await upInitPostDeploymentModule.getAddress(),
           encodedBytes,
         );
 
@@ -582,9 +595,9 @@ describe('UniversalProfileDeployer', function () {
         secondaryContractDeploymentInit.initializationCalldata,
         secondaryContractDeploymentInit.addPrimaryContractAddress,
         secondaryContractDeploymentInit.extraInitializationParams,
-        upInitPostDeploymentModule.address,
+        await upInitPostDeploymentModule.getAddress(),
         encodedBytes,
-        LSP23LinkedContractsFactory.address,
+        await LSP23LinkedContractsFactory.getAddress(),
       );
 
       expect(upAddress).to.equal(expectedUpProxyAddress);
@@ -595,14 +608,14 @@ describe('UniversalProfileDeployer', function () {
       expect(keyManagerAddress).to.equal(expectedKeyManagerProxyAddress);
       expect(keyManagerAddress).to.equal(calculatedKMProxyAddress);
 
-      expect(upProxyOwner).to.equal(keyManagerProxy.address);
-      expect(upProxyOwner).to.equal(keyManagerProxy.address);
-      expect(keyManagerProxyOwner).to.equal(upProxy.address);
-      expect(keyManagerProxyOwner).to.equal(upProxy.address);
+      expect(upProxyOwner).to.equal(await keyManagerProxy.getAddress());
+      expect(upProxyOwner).to.equal(await keyManagerProxy.getAddress());
+      expect(keyManagerProxyOwner).to.equal(await upProxy.getAddress());
+      expect(keyManagerProxyOwner).to.equal(await upProxy.getAddress());
     });
     it('should revert if the sent value is not equal to the sum of primary and secondary funding amounts', async function () {
-      const primaryFundingAmount = ethers.utils.parseEther('1');
-      const secondaryFundingAmount = ethers.utils.parseEther('1');
+      const primaryFundingAmount = ethers.parseEther('1');
+      const secondaryFundingAmount = ethers.parseEther('1');
 
       const {
         LSP23LinkedContractsFactory,
@@ -611,22 +624,22 @@ describe('UniversalProfileDeployer', function () {
         keyManagerInit,
       } = await deployImplementationContracts();
 
-      const salt = ethers.utils.randomBytes(32);
+      const salt = ethers.randomBytes(32);
 
       const primaryContractDeploymentInit: ILSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
         {
           salt,
           fundingAmount: primaryFundingAmount,
-          implementationContract: universalProfileInit.address,
+          implementationContract: await universalProfileInit.getAddress(),
           initializationCalldata: universalProfileInit.interface.encodeFunctionData('initialize', [
-            upInitPostDeploymentModule.address,
+            await upInitPostDeploymentModule.getAddress(),
           ]),
         };
 
       const secondaryContractDeploymentInit: ILSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
         {
           fundingAmount: secondaryFundingAmount,
-          implementationContract: keyManagerInit.address,
+          implementationContract: await keyManagerInit.getAddress(),
           addPrimaryContractAddress: true,
           initializationCalldata: '0xc4d66de8',
           extraInitializationParams: '0x',
@@ -634,12 +647,12 @@ describe('UniversalProfileDeployer', function () {
 
       const types = ['bytes32[]', 'bytes[]'];
 
-      const encodedBytes = ethers.utils.defaultAbiCoder.encode(types, [
+      const encodedBytes = ethers.AbiCoder.defaultAbiCoder().encode(types, [
         [
           ERC725YDataKeys.LSP3.LSP3Profile, // LSP3Metadata
         ],
         [
-          ethers.utils.randomBytes(32), // LSP3Metadata
+          ethers.randomBytes(32), // LSP3Metadata
         ],
       ]);
 
@@ -647,7 +660,7 @@ describe('UniversalProfileDeployer', function () {
         LSP23LinkedContractsFactory.deployERC1167Proxies(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
-          upInitPostDeploymentModule.address,
+          await upInitPostDeploymentModule.getAddress(),
           encodedBytes,
           { value: primaryFundingAmount }, // sending primary funding amount
         ),
@@ -658,12 +671,10 @@ describe('UniversalProfileDeployer', function () {
         LSP23LinkedContractsFactory.deployERC1167Proxies(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
-          upInitPostDeploymentModule.address,
+          await upInitPostDeploymentModule.getAddress(),
           encodedBytes,
           {
-            value: primaryFundingAmount
-              .add(secondaryFundingAmount)
-              .add(ethers.utils.parseEther('0.1')),
+            value: primaryFundingAmount + secondaryFundingAmount + ethers.parseEther('0.1'),
           }, // Sending extra 0.1 ETH
         ),
       ).to.be.revertedWithCustomError(LSP23LinkedContractsFactory, 'InvalidValueSum');
@@ -676,60 +687,60 @@ describe('UniversalProfileDeployer', function () {
         keyManagerInit,
       } = await deployImplementationContracts();
 
-      const salt = ethers.utils.randomBytes(32);
-      const primaryFundingAmount = ethers.utils.parseEther('1');
-      const secondaryFundingAmount = ethers.utils.parseEther('0'); // key manager does not accept funds
+      const salt = ethers.randomBytes(32);
+      const primaryFundingAmount = ethers.parseEther('1');
+      const secondaryFundingAmount = ethers.parseEther('0'); // key manager does not accept funds
 
       const primaryContractDeploymentInit: ILSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
         {
           salt,
           fundingAmount: primaryFundingAmount,
-          implementationContract: universalProfileInit.address,
+          implementationContract: await universalProfileInit.getAddress(),
           initializationCalldata: universalProfileInit.interface.encodeFunctionData('initialize', [
-            upInitPostDeploymentModule.address,
+            await upInitPostDeploymentModule.getAddress(),
           ]),
         };
 
       const secondaryContractDeploymentInit: ILSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
         {
           fundingAmount: secondaryFundingAmount,
-          implementationContract: keyManagerInit.address,
+          implementationContract: await keyManagerInit.getAddress(),
           addPrimaryContractAddress: true,
           initializationCalldata: '0xc4d66de8',
           extraInitializationParams: '0x',
         };
 
       const types = ['bytes32[]', 'bytes[]'];
-      const encodedBytes = ethers.utils.defaultAbiCoder.encode(types, [
+      const encodedBytes = ethers.AbiCoder.defaultAbiCoder().encode(types, [
         [ERC725YDataKeys.LSP3.LSP3Profile],
-        [ethers.utils.randomBytes(32)],
+        [ethers.randomBytes(32)],
       ]);
 
       const [primaryAddress, secondaryAddress] =
-        await LSP23LinkedContractsFactory.callStatic.deployERC1167Proxies(
+        await LSP23LinkedContractsFactory.deployERC1167Proxies.staticCall(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
-          upInitPostDeploymentModule.address,
+          await upInitPostDeploymentModule.getAddress(),
           encodedBytes,
-          { value: primaryFundingAmount.add(secondaryFundingAmount) },
+          { value: primaryFundingAmount + secondaryFundingAmount },
         );
 
       await LSP23LinkedContractsFactory.deployERC1167Proxies(
         primaryContractDeploymentInit,
         secondaryContractDeploymentInit,
-        upInitPostDeploymentModule.address,
+        await upInitPostDeploymentModule.getAddress(),
         encodedBytes,
-        { value: primaryFundingAmount.add(secondaryFundingAmount) },
+        { value: primaryFundingAmount + secondaryFundingAmount },
       );
 
       const primaryAddressBalance = await ethers.provider.getBalance(primaryAddress);
       const secondaryAddressBalance = await ethers.provider.getBalance(secondaryAddress);
 
       expect(primaryAddressBalance).to.equal(primaryFundingAmount);
-      expect(primaryAddress).to.not.equal(ethers.constants.AddressZero);
+      expect(primaryAddress).to.not.equal(ethers.ZeroAddress);
 
       expect(secondaryAddressBalance).to.equal(secondaryFundingAmount);
-      expect(secondaryAddress).to.not.equal(ethers.constants.AddressZero);
+      expect(secondaryAddress).to.not.equal(ethers.ZeroAddress);
     });
     it('should successfully deploy primary and secondary proxies', async function () {
       const {
@@ -739,53 +750,54 @@ describe('UniversalProfileDeployer', function () {
         keyManagerInit,
       } = await deployImplementationContracts();
 
-      const salt = ethers.utils.randomBytes(32);
-      const primaryFundingAmount = ethers.utils.parseEther('1');
-      const secondaryFundingAmount = ethers.utils.parseEther('0');
+      const salt = ethers.randomBytes(32);
+      const primaryFundingAmount = ethers.parseEther('1');
+      const secondaryFundingAmount = ethers.parseEther('0');
 
       const primaryContractDeploymentInit = {
         salt,
         fundingAmount: primaryFundingAmount,
-        implementationContract: universalProfileInit.address,
+        implementationContract: await universalProfileInit.getAddress(),
         initializationCalldata: universalProfileInit.interface.encodeFunctionData('initialize', [
-          upInitPostDeploymentModule.address,
+          await upInitPostDeploymentModule.getAddress(),
         ]),
       };
 
       const secondaryContractDeploymentInit = {
         fundingAmount: secondaryFundingAmount,
-        implementationContract: keyManagerInit.address,
+        implementationContract: await keyManagerInit.getAddress(),
         addPrimaryContractAddress: true,
         initializationCalldata: '0xc4d66de8',
         extraInitializationParams: '0x',
       };
 
       const types = ['bytes32[]', 'bytes[]'];
-      const encodedBytes = ethers.utils.defaultAbiCoder.encode(types, [
+      const encodedBytes = ethers.AbiCoder.defaultAbiCoder().encode(types, [
         [ERC725YDataKeys.LSP3.LSP3Profile],
-        [ethers.utils.randomBytes(32)],
+        [ethers.randomBytes(32)],
       ]);
 
       const [primaryAddress, secondaryAddress] =
-        await LSP23LinkedContractsFactory.callStatic.deployERC1167Proxies(
+        await LSP23LinkedContractsFactory.deployERC1167Proxies.staticCall(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
-          upInitPostDeploymentModule.address,
+          await upInitPostDeploymentModule.getAddress(),
           encodedBytes,
-          { value: primaryFundingAmount.add(secondaryFundingAmount) },
+          { value: primaryFundingAmount + secondaryFundingAmount },
         );
 
       await LSP23LinkedContractsFactory.deployERC1167Proxies(
         primaryContractDeploymentInit,
         secondaryContractDeploymentInit,
-        upInitPostDeploymentModule.address,
+        await upInitPostDeploymentModule.getAddress(),
         encodedBytes,
-        { value: primaryFundingAmount.add(secondaryFundingAmount), gasLimit: 30_000_000 },
+        { value: primaryFundingAmount + secondaryFundingAmount, gasLimit: 30_000_000 },
       );
 
-      expect(primaryAddress).to.not.equal(ethers.constants.AddressZero);
-      expect(secondaryAddress).to.not.equal(ethers.constants.AddressZero);
+      expect(primaryAddress).to.not.equal(ethers.ZeroAddress);
+      expect(secondaryAddress).to.not.equal(ethers.ZeroAddress);
     });
+
     it('should deploy proxies with correct initialization calldata (with secondary contract contains extraParams)', async function () {
       const { LSP23LinkedContractsFactory, upInitPostDeploymentModule, universalProfileInit } =
         await deployImplementationContracts();
@@ -794,60 +806,60 @@ describe('UniversalProfileDeployer', function () {
         'KeyManagerInitWithExtraParams',
       );
       const keyManagerWithExtraParamsFactory = await KeyManagerWithExtraParamsFactory.deploy();
-      await keyManagerWithExtraParamsFactory.deployed();
+      await keyManagerWithExtraParamsFactory.waitForDeployment();
 
-      const salt = ethers.utils.randomBytes(32);
-      const primaryFundingAmount = ethers.utils.parseEther('1');
-      const secondaryFundingAmount = ethers.utils.parseEther('0');
+      const salt = ethers.hexlify(ethers.randomBytes(32));
+      const primaryFundingAmount = ethers.parseEther('1');
+      const secondaryFundingAmount = ethers.parseEther('0');
 
       const primaryContractDeploymentInit = {
         salt,
         fundingAmount: primaryFundingAmount,
-        implementationContract: universalProfileInit.address,
+        implementationContract: await universalProfileInit.getAddress(),
         initializationCalldata: universalProfileInit.interface.encodeFunctionData('initialize', [
-          upInitPostDeploymentModule.address,
+          await upInitPostDeploymentModule.getAddress(),
         ]),
       };
 
-      const firstAddress = ethers.utils.hexlify(ethers.utils.randomBytes(20));
-      const firstParam = ethers.utils.defaultAbiCoder.encode(['address'], [firstAddress]);
+      const firstAddress = ethers.hexlify(ethers.randomBytes(20));
+      const firstParam = ethers.AbiCoder.defaultAbiCoder().encode(['address'], [firstAddress]);
 
       const initializeWithExtraParamsSelector = '0x00dc68f1';
       const initializationDataWithSelector =
         initializeWithExtraParamsSelector + firstParam.slice(2);
 
-      const lastAddress = ethers.utils.hexlify(ethers.utils.randomBytes(20));
-      const lastParam = ethers.utils.defaultAbiCoder.encode(['address'], [lastAddress]);
+      const lastAddress = ethers.hexlify(ethers.randomBytes(20));
+      const lastParam = ethers.AbiCoder.defaultAbiCoder().encode(['address'], [lastAddress]);
 
       const secondaryContractDeploymentInit = {
         fundingAmount: secondaryFundingAmount,
-        implementationContract: keyManagerWithExtraParamsFactory.address,
+        implementationContract: keyManagerWithExtraParamsFactory.target,
         addPrimaryContractAddress: true,
         initializationCalldata: initializationDataWithSelector,
         extraInitializationParams: lastParam,
       };
 
       const types = ['bytes32[]', 'bytes[]'];
-      const encodedBytes = ethers.utils.defaultAbiCoder.encode(types, [
+      const encodedBytes = ethers.AbiCoder.defaultAbiCoder().encode(types, [
         [ERC725YDataKeys.LSP3.LSP3Profile],
-        [ethers.utils.randomBytes(32)],
+        [ethers.randomBytes(32)],
       ]);
 
       const [primaryAddress, secondaryAddress] =
-        await LSP23LinkedContractsFactory.callStatic.deployERC1167Proxies(
+        await LSP23LinkedContractsFactory.deployERC1167Proxies.staticCall(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
-          upInitPostDeploymentModule.address,
+          await upInitPostDeploymentModule.getAddress(),
           encodedBytes,
-          { value: primaryFundingAmount.add(secondaryFundingAmount) },
+          { value: primaryFundingAmount + secondaryFundingAmount },
         );
 
       await LSP23LinkedContractsFactory.deployERC1167Proxies(
         primaryContractDeploymentInit,
         secondaryContractDeploymentInit,
-        upInitPostDeploymentModule.address,
+        await upInitPostDeploymentModule.getAddress(),
         encodedBytes,
-        { value: primaryFundingAmount.add(secondaryFundingAmount), gasLimit: 30_000_000 },
+        { value: primaryFundingAmount + secondaryFundingAmount, gasLimit: 30_000_000 },
       );
 
       const keyManagerWithExtraParams = KeyManagerWithExtraParamsFactory.attach(secondaryAddress);
@@ -855,8 +867,8 @@ describe('UniversalProfileDeployer', function () {
       expect(await keyManagerWithExtraParams.firstParam()).to.deep.equal(firstAddress);
       expect(await keyManagerWithExtraParams.lastParam()).to.deep.equal(lastAddress);
 
-      expect(primaryAddress).to.not.equal(ethers.constants.AddressZero);
-      expect(secondaryAddress).to.not.equal(ethers.constants.AddressZero);
+      expect(primaryAddress).to.not.equal(ethers.ZeroAddress);
+      expect(secondaryAddress).to.not.equal(ethers.ZeroAddress);
     });
     it('should emit DeployedERC1167Proxies event with correct parameters', async function () {
       const {
@@ -866,61 +878,62 @@ describe('UniversalProfileDeployer', function () {
         keyManagerInit,
       } = await deployImplementationContracts();
 
-      const salt = ethers.utils.randomBytes(32);
-      const primaryFundingAmount = ethers.utils.parseEther('1');
-      const secondaryFundingAmount = ethers.utils.parseEther('0');
+      const salt = ethers.randomBytes(32);
+      const primaryFundingAmount = ethers.parseEther('1');
+      const secondaryFundingAmount = ethers.parseEther('0');
 
       const primaryContractDeploymentInit = {
         salt,
         fundingAmount: primaryFundingAmount,
-        implementationContract: universalProfileInit.address,
+        implementationContract: await universalProfileInit.getAddress(),
         initializationCalldata: universalProfileInit.interface.encodeFunctionData('initialize', [
-          upInitPostDeploymentModule.address,
+          await upInitPostDeploymentModule.getAddress(),
         ]),
       };
 
       const secondaryContractDeploymentInit = {
         fundingAmount: secondaryFundingAmount,
-        implementationContract: keyManagerInit.address,
+        implementationContract: await keyManagerInit.getAddress(),
         addPrimaryContractAddress: true,
         initializationCalldata: '0xc4d66de8',
         extraInitializationParams: '0x',
       };
 
       const types = ['bytes32[]', 'bytes[]'];
-      const encodedBytes = ethers.utils.defaultAbiCoder.encode(types, [
+      const encodedBytes = ethers.AbiCoder.defaultAbiCoder().encode(types, [
         [ERC725YDataKeys.LSP3.LSP3Profile],
-        [ethers.utils.randomBytes(32)],
+        [ethers.randomBytes(32)],
       ]);
 
       const [primaryAddress, secondaryAddress] =
-        await LSP23LinkedContractsFactory.callStatic.deployERC1167Proxies(
+        await LSP23LinkedContractsFactory.deployERC1167Proxies.staticCall(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
-          upInitPostDeploymentModule.address,
+          await upInitPostDeploymentModule.getAddress(),
           encodedBytes,
-          { value: primaryFundingAmount.add(secondaryFundingAmount) },
+          { value: primaryFundingAmount + secondaryFundingAmount },
         );
 
       const tx = await LSP23LinkedContractsFactory.deployERC1167Proxies(
         primaryContractDeploymentInit,
         secondaryContractDeploymentInit,
-        upInitPostDeploymentModule.address,
+        await upInitPostDeploymentModule.getAddress(),
         encodedBytes,
-        { value: primaryFundingAmount.add(secondaryFundingAmount) },
+        { value: primaryFundingAmount + secondaryFundingAmount },
       );
 
       const receipt = await tx.wait();
-      const event = receipt.events?.find((e) => e.event === 'DeployedERC1167Proxies');
+      // const event = receipt.events?.find((e) => e.event === 'DeployedERC1167Proxies');
+      const event = receipt.logs.find((e: EventLog) => e.eventName === 'DeployedERC1167Proxies');
 
       expect(event).to.not.be.undefined;
 
-      const args = event.args;
+      const args = (event as EventLog).args;
 
       expect(args[0]).to.equal(primaryAddress);
       expect(args[1]).to.equal(secondaryAddress);
 
-      expect(args[2].salt).to.deep.equal(ethers.utils.hexlify(primaryContractDeploymentInit.salt));
+      expect(args[2].salt).to.deep.equal(ethers.hexlify(primaryContractDeploymentInit.salt));
       expect(args[2].fundingAmount).to.deep.equal(primaryContractDeploymentInit.fundingAmount);
       expect(args[2].implementationContract).to.deep.equal(
         primaryContractDeploymentInit.implementationContract,
@@ -937,48 +950,48 @@ describe('UniversalProfileDeployer', function () {
         keyManagerInit,
       } = await deployImplementationContracts();
 
-      const salt = ethers.utils.randomBytes(32);
-      const primaryFundingAmount = ethers.utils.parseEther('1');
+      const salt = ethers.randomBytes(32);
+      const primaryFundingAmount = ethers.parseEther('1');
       const secondaryFundingAmount = 0;
 
       const primaryContractDeploymentInit = {
         salt,
         fundingAmount: primaryFundingAmount,
-        implementationContract: universalProfileInit.address,
+        implementationContract: await universalProfileInit.getAddress(),
         initializationCalldata: universalProfileInit.interface.encodeFunctionData('initialize', [
-          upInitPostDeploymentModule.address,
+          await upInitPostDeploymentModule.getAddress(),
         ]),
       };
 
       const secondaryContractDeploymentInit = {
         fundingAmount: secondaryFundingAmount,
-        implementationContract: keyManagerInit.address,
+        implementationContract: await keyManagerInit.getAddress(),
         addPrimaryContractAddress: true,
         initializationCalldata: '0xc4d66de8',
         extraInitializationParams: '0x',
       };
 
       const types = ['bytes32[]', 'bytes[]'];
-      const encodedBytes = ethers.utils.defaultAbiCoder.encode(types, [
+      const encodedBytes = ethers.AbiCoder.defaultAbiCoder().encode(types, [
         [ERC725YDataKeys.LSP3.LSP3Profile],
-        [ethers.utils.randomBytes(32)],
+        [ethers.randomBytes(32)],
       ]);
 
       await LSP23LinkedContractsFactory.deployERC1167Proxies(
         primaryContractDeploymentInit,
         secondaryContractDeploymentInit,
-        upInitPostDeploymentModule.address,
+        await upInitPostDeploymentModule.getAddress(),
         encodedBytes,
-        { value: primaryFundingAmount.add(secondaryFundingAmount) },
+        { value: primaryFundingAmount + BigInt(secondaryFundingAmount) },
       );
 
       await expect(
         LSP23LinkedContractsFactory.deployERC1167Proxies(
           primaryContractDeploymentInit,
           secondaryContractDeploymentInit,
-          upInitPostDeploymentModule.address,
+          await upInitPostDeploymentModule.getAddress(),
           encodedBytes,
-          { value: primaryFundingAmount.add(secondaryFundingAmount) },
+          { value: primaryFundingAmount + BigInt(secondaryFundingAmount) },
         ),
       ).to.be.revertedWith('ERC1167: create2 failed');
     });

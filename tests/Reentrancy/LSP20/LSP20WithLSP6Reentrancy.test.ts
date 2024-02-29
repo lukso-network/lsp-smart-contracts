@@ -1,6 +1,3 @@
-// types
-import { BigNumber } from 'ethers';
-
 // setup
 import { LSP6TestContext } from '../../utils/context';
 import { buildReentrancyContext } from './reentrancyHelpers';
@@ -14,7 +11,7 @@ import { testERC725XExecuteToLSP6BatchExecuteRelayCall } from './ERC725XExecuteT
 import { testERC725XExecuteToERC725XExecuteBatch } from './ERC725XExecuteToERC725XBatchExecute.test';
 
 export const shouldBehaveLikeLSP20WithLSP6ReentrancyScenarios = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
+  buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
   describe('first call through `execute(uint256,address,uint256,bytes)`, second call through `execute(uint256,address,uint256,bytes)`', () => {
     testERC725XExecuteToERC725XExecute(buildContext, buildReentrancyContext);

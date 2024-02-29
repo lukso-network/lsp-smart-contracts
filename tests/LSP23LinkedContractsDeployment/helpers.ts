@@ -20,8 +20,8 @@ export async function calculateProxiesAddresses(
   postDeploymentCalldata: BytesLike,
   linkedContractsFactoryAddress: string,
 ): Promise<[string, string]> {
-  const generatedSalt = ethers.utils.keccak256(
-    ethers.utils.defaultAbiCoder.encode(
+  const generatedSalt = ethers.keccak256(
+    ethers.AbiCoder.defaultAbiCoder().encode(
       ['bytes32', 'address', 'bytes', 'bool', 'bytes', 'address', 'bytes'],
       [
         salt,
@@ -35,20 +35,20 @@ export async function calculateProxiesAddresses(
     ),
   );
 
-  const expectedPrimaryContractAddress = ethers.utils.getCreate2Address(
+  const expectedPrimaryContractAddress = ethers.getCreate2Address(
     linkedContractsFactoryAddress,
     generatedSalt,
-    ethers.utils.keccak256(
+    ethers.keccak256(
       '0x3d602d80600a3d3981f3363d3d373d3d3d363d73' +
         (primaryImplementationContractAddress as string).slice(2) +
         '5af43d82803e903d91602b57fd5bf3',
     ),
   );
 
-  const expectedSecondaryContractAddress = ethers.utils.getCreate2Address(
+  const expectedSecondaryContractAddress = ethers.getCreate2Address(
     linkedContractsFactoryAddress,
-    ethers.utils.keccak256(expectedPrimaryContractAddress),
-    ethers.utils.keccak256(
+    ethers.keccak256(expectedPrimaryContractAddress),
+    ethers.keccak256(
       '0x3d602d80600a3d3981f3363d3d373d3d3d363d73' +
         (secondaryImplementationContractAddress as string).slice(2) +
         '5af43d82803e903d91602b57fd5bf3',
@@ -63,7 +63,7 @@ export function createDataKey(prefix, address) {
 }
 
 export const create16BytesUint = (value: number) => {
-  return ethers.utils.hexZeroPad(ethers.utils.hexlify(value), 16).slice(2);
+  return ethers.zeroPadValue(ethers.toBeHex(value), 16).slice(2);
 };
 
 export async function deployImplementationContracts() {

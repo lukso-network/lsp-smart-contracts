@@ -181,7 +181,7 @@ const config: HardhatUserConfig = {
     ],
     // Whether to include the TypeChain factories or not.
     // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
-    includeFactories: true,
+    // includeFactories: true,
   },
   paths: {
     artifacts: 'artifacts',
@@ -189,7 +189,7 @@ const config: HardhatUserConfig = {
   },
   typechain: {
     outDir: 'types',
-    target: 'ethers-v5',
+    target: 'ethers-v6',
   },
   dodoc: dodocConfig,
 };

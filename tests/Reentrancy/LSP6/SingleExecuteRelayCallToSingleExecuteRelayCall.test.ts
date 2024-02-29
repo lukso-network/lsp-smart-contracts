@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
 // types
-import { BigNumber, BytesLike } from 'ethers';
+import { BytesLike } from 'ethers';
 import { SingleReentrancyRelayer__factory, UniversalProfile__factory } from '../../../types';
 
 // constants
@@ -28,9 +28,10 @@ import {
   loadTestCase,
   RelayCallParams,
 } from './reentrancyHelpers';
+import { provider } from '../../utils/helpers';
 
 export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
-  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
+  buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
   buildReentrancyContext: (context: LSP6TestContext) => Promise<ReentrancyContext>,
 ) => {
   let context: LSP6TestContext;
@@ -38,16 +39,16 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
   let executePayload: BytesLike;
 
   before(async () => {
-    context = await buildContext(ethers.utils.parseEther('10'));
+    context = await buildContext(ethers.parseEther('10'));
     reentrancyContext = await buildReentrancyContext(context);
 
     const reentrantCallPayload =
       new SingleReentrancyRelayer__factory().interface.encodeFunctionData('relayCallThatReenters', [
-        context.keyManager.address,
+        await context.keyManager.getAddress(),
       ]);
     executePayload = new UniversalProfile__factory().interface.encodeFunctionData('execute', [
       0,
-      reentrancyContext.singleReentarncyRelayer.address,
+      await reentrancyContext.singleReentarncyRelayer.getAddress(),
       0,
       reentrantCallPayload,
     ]);
@@ -84,7 +85,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address,
+          await reentrancyContext.singleReentarncyRelayer.getAddress(),
         );
 
         await expect(
@@ -108,7 +109,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         transferValueTestCases.NoCallsAllowed,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
       await expect(
@@ -129,12 +130,12 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         transferValueTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
-      expect(
-        await context.universalProfile.provider.getBalance(context.universalProfile.address),
-      ).to.equal(ethers.utils.parseEther('10'));
+      expect(await provider.getBalance(await context.universalProfile.getAddress())).to.equal(
+        ethers.parseEther('10'),
+      );
 
       await context.keyManager
         .connect(reentrancyContext.caller)
@@ -145,15 +146,13 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
           relayCallParams.payload,
         );
 
-      expect(
-        await context.universalProfile.provider.getBalance(context.universalProfile.address),
-      ).to.equal(ethers.utils.parseEther('9'));
+      expect(await provider.getBalance(await context.universalProfile.getAddress())).to.equal(
+        ethers.parseEther('9'),
+      );
 
       expect(
-        await context.universalProfile.provider.getBalance(
-          reentrancyContext.singleReentarncyRelayer.address,
-        ),
-      ).to.equal(ethers.utils.parseEther('1'));
+        await provider.getBalance(await reentrancyContext.singleReentarncyRelayer.getAddress()),
+      ).to.equal(ethers.parseEther('1'));
     });
   });
 
@@ -188,7 +187,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address,
+          await reentrancyContext.singleReentarncyRelayer.getAddress(),
         );
 
         await expect(
@@ -212,7 +211,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         setDataTestCases.NoERC725YDataKeysAllowed,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
       await expect(
@@ -233,7 +232,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         setDataTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
       await context.keyManager
@@ -245,8 +244,8 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
           relayCallParams.payload,
         );
 
-      const hardcodedKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('SomeRandomTextUsed'));
-      const hardcodedValue = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('SomeRandomTextUsed'));
+      const hardcodedKey = ethers.keccak256(ethers.toUtf8Bytes('SomeRandomTextUsed'));
+      const hardcodedValue = ethers.hexlify(ethers.toUtf8Bytes('SomeRandomTextUsed'));
 
       expect(await context.universalProfile.getData(hardcodedKey)).to.equal(hardcodedValue);
     });
@@ -279,7 +278,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address,
+          await reentrancyContext.singleReentarncyRelayer.getAddress(),
         );
 
         await expect(
@@ -303,7 +302,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         addPermissionsTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
       await context.keyManager
@@ -354,7 +353,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address,
+          await reentrancyContext.singleReentarncyRelayer.getAddress(),
         );
 
         await expect(
@@ -378,7 +377,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         editPermissionsTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
       await context.keyManager
@@ -428,7 +427,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address,
+          await reentrancyContext.singleReentarncyRelayer.getAddress(),
         );
 
         await expect(
@@ -452,7 +451,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         addUniversalReceiverDelegateTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
       await context.keyManager
@@ -503,7 +502,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
-          reentrancyContext.singleReentarncyRelayer.address,
+          await reentrancyContext.singleReentarncyRelayer.getAddress(),
         );
 
         await expect(
@@ -527,7 +526,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
         changeUniversalReceiverDelegateTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
-        reentrancyContext.singleReentarncyRelayer.address,
+        await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
       await context.keyManager

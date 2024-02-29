@@ -23,7 +23,6 @@ import {
   shouldBehaveLikeLSP3,
 } from './UniversalProfile.behaviour';
 import { provider } from './utils/helpers';
-import { BigNumber } from 'ethers';
 import {
   LSP14CombinedWithLSP20TestContext,
   shouldBehaveLikeLSP14WithLSP20,
@@ -43,6 +42,8 @@ describe('UniversalProfile with constructor', () => {
       },
     );
 
+    await universalProfile.waitForDeployment();
+
     return { accounts, universalProfile, deployParams };
   };
 
@@ -59,7 +60,7 @@ describe('UniversalProfile with constructor', () => {
   };
 
   const buildLSP14WithLSP20TestContext = async (
-    initialFunding?: number | BigNumber,
+    initialFunding?: number | bigint,
   ): Promise<LSP14CombinedWithLSP20TestContext> => {
     const accounts = await ethers.getSigners();
     const deployParams = {
@@ -111,7 +112,7 @@ describe('UniversalProfile with constructor', () => {
         });
 
         it(`should have deployed with the correct funding amount (${testCase.initialFunding})`, async () => {
-          const balance = await provider.getBalance(context.universalProfile.address);
+          const balance = await provider.getBalance(await context.universalProfile.getAddress());
           expect(balance).to.equal(testCase.initialFunding || 0);
         });
       });

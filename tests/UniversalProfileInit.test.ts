@@ -28,7 +28,6 @@ import {
   shouldBehaveLikeLSP3,
 } from './UniversalProfile.behaviour';
 import { provider } from './utils/helpers';
-import { BigNumber } from 'ethers';
 import {
   LSP14CombinedWithLSP20TestContext,
   shouldBehaveLikeLSP14WithLSP20,
@@ -49,7 +48,10 @@ describe('UniversalProfileInit with proxy', () => {
       initialFunding,
     };
 
-    const universalProfileProxy = await deployProxy(universalProfileInit.address, accounts[0]);
+    const universalProfileProxy = await deployProxy(
+      await universalProfileInit.getAddress(),
+      accounts[0],
+    );
 
     const universalProfile = universalProfileInit.attach(universalProfileProxy);
 
@@ -63,7 +65,10 @@ describe('UniversalProfileInit with proxy', () => {
   };
 
   const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
-    const universalProfileProxy = await deployProxy(universalProfileInit.address, accounts[0]);
+    const universalProfileProxy = await deployProxy(
+      await universalProfileInit.getAddress(),
+      accounts[0],
+    );
 
     const lsp1Implementation = universalProfileInit.attach(universalProfileProxy);
 
@@ -75,14 +80,17 @@ describe('UniversalProfileInit with proxy', () => {
   };
 
   const buildLSP14WithLSP20TestContext = async (
-    initialFunding?: number | BigNumber,
+    initialFunding?: number | bigint,
   ): Promise<LSP14CombinedWithLSP20TestContext> => {
     const deployParams = {
       owner: accounts[0],
       initialFunding: initialFunding,
     };
 
-    const universalProfileProxy = await deployProxy(universalProfileInit.address, accounts[0]);
+    const universalProfileProxy = await deployProxy(
+      await universalProfileInit.getAddress(),
+      accounts[0],
+    );
 
     const universalProfile = universalProfileInit.attach(universalProfileProxy);
 
@@ -101,7 +109,10 @@ describe('UniversalProfileInit with proxy', () => {
       owner: accounts[0],
     };
 
-    const universalProfileProxy = await deployProxy(universalProfileInit.address, accounts[0]);
+    const universalProfileProxy = await deployProxy(
+      await universalProfileInit.getAddress(),
+      accounts[0],
+    );
 
     const universalProfile = universalProfileInit.attach(universalProfileProxy);
 
@@ -116,17 +127,20 @@ describe('UniversalProfileInit with proxy', () => {
 
     const universalProfileInit = await new UniversalProfileInit__factory(accounts[0]).deploy();
 
-    const universalProfileProxy = await deployProxy(universalProfileInit.address, accounts[0]);
+    const universalProfileProxy = await deployProxy(
+      await universalProfileInit.getAddress(),
+      accounts[0],
+    );
 
     const universalProfile = universalProfileInit.attach(universalProfileProxy);
 
-    return { accounts, universalProfile: universalProfile, deployParams };
+    return { accounts, universalProfile: universalProfile as UniversalProfile, deployParams };
   };
 
   describe('when deploying the base implementation contract', () => {
     it('`owner()` of the base contract MUST be `address(0)`', async () => {
       const owner = await universalProfileInit.owner();
-      expect(owner).to.equal(ethers.constants.AddressZero);
+      expect(owner).to.equal(ethers.ZeroAddress);
     });
 
     it('prevent any address from calling the initialize(...) function on the implementation', async () => {
@@ -144,7 +158,7 @@ describe('UniversalProfileInit with proxy', () => {
         it(`should have initialized with the correct funding amount (${testCase.initialFunding})`, async () => {
           const context = await buildLSP3TestContext(testCase.initialFunding);
           await initializeProxy(context);
-          const balance = await provider.getBalance(context.universalProfile.address);
+          const balance = await provider.getBalance(await context.universalProfile.getAddress());
           expect(balance).to.equal(testCase.initialFunding || 0);
         });
       });
@@ -185,7 +199,7 @@ describe('UniversalProfileInit with proxy', () => {
       return lsp1Context;
     });
 
-    shouldBehaveLikeLSP14WithLSP20(async (initialFunding?: number | BigNumber) => {
+    shouldBehaveLikeLSP14WithLSP20(async (initialFunding?: number | bigint) => {
       const claimOwnershipContext = await buildLSP14WithLSP20TestContext(initialFunding);
 
       await initializeProxy({

@@ -45,7 +45,7 @@ describe('LSP8Mintable with constructor', () => {
       return {
         lsp8,
         deployParams,
-        initializeTransaction: context.lsp8Mintable.deployTransaction,
+        initializeTransaction: context.lsp8Mintable.deploymentTransaction(),
       };
     });
   });
