@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { parseEther } from 'ethers';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 // types
@@ -159,7 +159,7 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
   });
 
   describe('when calling the `universalReceiver(...)` function while sending native tokens', () => {
-    const valueSent = ethers.parseEther('3');
+    const valueSent = parseEther('3');
 
     before(async () => {
       context = await buildContext();
@@ -193,7 +193,7 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
       before(async () => {
         await context.accounts[0].sendTransaction({
           to: lsp1CheckerAddress,
-          value: ethers.parseEther('50'),
+          value: parseEther('50'),
         });
       });
 

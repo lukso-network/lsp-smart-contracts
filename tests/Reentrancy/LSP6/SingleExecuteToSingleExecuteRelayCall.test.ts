@@ -1,8 +1,7 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
 
 // types
-import { BytesLike } from 'ethers';
+import { BytesLike, hexlify, keccak256, parseEther, toUtf8Bytes } from 'ethers';
 import { SingleReentrancyRelayer__factory, UniversalProfile__factory } from '../../../types';
 
 // constants
@@ -37,7 +36,7 @@ export const testSingleExecuteToSingleExecuteRelayCall = (
   let executePayload: BytesLike;
 
   before(async () => {
-    context = await buildContext(ethers.parseEther('10'));
+    context = await buildContext(parseEther('10'));
     reentrancyContext = await buildReentrancyContext(context);
 
     const reentrantCallPayload =
@@ -109,18 +108,18 @@ export const testSingleExecuteToSingleExecuteRelayCall = (
       );
 
       expect(await provider.getBalance(await context.universalProfile.getAddress())).to.equal(
-        ethers.parseEther('10'),
+        parseEther('10'),
       );
 
       await context.keyManager.connect(reentrancyContext.caller).execute(executePayload);
 
       expect(await provider.getBalance(await context.universalProfile.getAddress())).to.equal(
-        ethers.parseEther('9'),
+        parseEther('9'),
       );
 
       expect(
         await provider.getBalance(await reentrancyContext.singleReentarncyRelayer.getAddress()),
-      ).to.equal(ethers.parseEther('1'));
+      ).to.equal(parseEther('1'));
     });
   });
 
@@ -182,8 +181,8 @@ export const testSingleExecuteToSingleExecuteRelayCall = (
 
       await context.keyManager.connect(reentrancyContext.caller).execute(executePayload);
 
-      const hardcodedKey = ethers.keccak256(ethers.toUtf8Bytes('SomeRandomTextUsed'));
-      const hardcodedValue = ethers.hexlify(ethers.toUtf8Bytes('SomeRandomTextUsed'));
+      const hardcodedKey = keccak256(toUtf8Bytes('SomeRandomTextUsed'));
+      const hardcodedValue = hexlify(toUtf8Bytes('SomeRandomTextUsed'));
 
       expect(await context.universalProfile.getData(hardcodedKey)).to.equal(hardcodedValue);
     });

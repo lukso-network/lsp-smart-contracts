@@ -16,7 +16,7 @@ import { resolve } from 'path';
 import '@nomicfoundation/hardhat-toolbox';
 
 // additional hardhat plugins
-// import 'hardhat-packager';
+import 'hardhat-packager';
 import 'hardhat-contract-sizer';
 import 'hardhat-deploy';
 

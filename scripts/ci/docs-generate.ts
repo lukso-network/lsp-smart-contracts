@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { task } from 'hardhat/config';
 import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names';
-import { ethers } from 'ethers';
+import { keccak256, toUtf8Bytes } from 'ethers';
 import pluralize from 'pluralize';
 import { mkdir, rm, stat, writeFile } from 'fs/promises';
 import { CompilerOutputContract } from 'hardhat/types';
@@ -239,7 +239,7 @@ task('ts-gen', 'Generate NatSpec documentation automatically on compilation')
       } = allMembers;
 
       for (const [sig, member] of Object.entries(allMembers)) {
-        const hash = ethers.keccak256(ethers.toUtf8Bytes(sig));
+        const hash = keccak256(toUtf8Bytes(sig));
         member.hash = member.type === 'event' ? hash : hash.slice(0, 10);
       }
 

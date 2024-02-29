@@ -135,9 +135,7 @@ forge-cache/
 gas_benchmark.md
 
 # Exclude build output folders
-/common
-/module
-/contracts.ts
+/**/contracts.ts
 /devdocs
 /userdocs
 

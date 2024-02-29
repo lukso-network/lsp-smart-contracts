@@ -1,14 +1,26 @@
-import { BytesLike } from 'ethers';
+import {
+  BytesLike,
+  AbiCoder,
+  Wallet,
+  toBigInt,
+  zeroPadValue,
+  toBeHex,
+  getNumber,
+  concat,
+  solidityPacked,
+} from 'ethers';
 import hre from 'hardhat';
-const { ethers } = hre;
+const {
+  ethers: { provider: hreProvider },
+} = hre;
 import { LSP6KeyManager } from '../../types/index.js';
 
 // constants
 import { LSP25_VERSION } from '@lukso/lsp25-contracts';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-export const abiCoder = ethers.AbiCoder.defaultAbiCoder();
-export const provider = ethers.provider;
+export const abiCoder = AbiCoder.defaultAbiCoder();
+export const provider = hreProvider;
 
 export const AddressOffset = '000000000000000000000000';
 export const EMPTY_PAYLOAD = '0x';
@@ -53,7 +65,7 @@ export function getRandomAddresses(count: number): string[] {
   for (let ii = 0; ii < count; ii++) {
     // addresses stored under ERC725Y storage have always lowercases character.
     // therefore, disable the checksum by converting to lowercase to avoid failing tests
-    const randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
+    const randomAddress = Wallet.createRandom().address.toLowerCase();
     addresses.push(randomAddress);
   }
 
@@ -61,34 +73,33 @@ export function getRandomAddresses(count: number): string[] {
 }
 
 export function combinePermissions(..._permissions: string[]) {
-  let result: bigint = ethers.toBigInt(0);
+  let result: bigint = toBigInt(0);
 
   _permissions.forEach((permission) => {
-    const permissionAsBN = ethers.toBigInt(permission);
+    const permissionAsBN = toBigInt(permission);
     result = result | permissionAsBN;
   });
 
-  return ethers.zeroPadValue(ethers.toBeHex(result), 32);
+  return zeroPadValue(toBeHex(result), 32);
 }
 
 export function combineCallTypes(..._callTypes: string[]) {
-  let result: bigint = ethers.toBigInt(0);
+  let result: bigint = toBigInt(0);
 
   _callTypes.forEach((callType) => {
-    const callTypeAsBN = ethers.toBigInt(callType);
+    const callTypeAsBN = toBigInt(callType);
     result = result | callTypeAsBN;
   });
 
-  return ethers.zeroPadValue(ethers.toBeHex(result), 4);
+  return zeroPadValue(toBeHex(result), 4);
 }
 
 export function encodeCompactBytesArray(inputKeys: BytesLike[]) {
   let compactBytesArray = '0x';
   for (let i = 0; i < inputKeys.length; i++) {
     compactBytesArray +=
-      ethers
-        .zeroPadValue(ethers.toBeHex(inputKeys[i].toString().substring(2).length / 2), 2)
-        .substring(2) + inputKeys[i].toString().substring(2);
+      zeroPadValue(toBeHex(inputKeys[i].toString().substring(2).length / 2), 2).substring(2) +
+      inputKeys[i].toString().substring(2);
   }
 
   return compactBytesArray;
@@ -98,9 +109,7 @@ export function decodeCompactBytes(compactBytesArray: BytesLike) {
   let pointer = 2;
   const keysToExport: BytesLike[] = [];
   while (pointer < compactBytesArray.length) {
-    const length = ethers.getNumber(
-      '0x' + compactBytesArray.toString().substring(pointer, pointer + 4),
-    );
+    const length = getNumber('0x' + compactBytesArray.toString().substring(pointer, pointer + 4));
     keysToExport.push(
       '0x' + compactBytesArray.toString().substring(pointer + 4, pointer + 2 * (length + 2)),
     );
@@ -139,11 +148,11 @@ export function createValidityTimestamps(
   startingTimestamp: number,
   endingTimestamp: number,
 ): bigint {
-  const concatenatedHex = ethers.concat([
-    ethers.zeroPadValue(ethers.toBeHex(startingTimestamp), 16),
-    ethers.zeroPadValue(ethers.toBeHex(endingTimestamp), 16),
+  const concatenatedHex = concat([
+    zeroPadValue(toBeHex(startingTimestamp), 16),
+    zeroPadValue(toBeHex(endingTimestamp), 16),
   ]);
-  return ethers.toBigInt(concatenatedHex);
+  return toBigInt(concatenatedHex);
 }
 
 export async function signLSP6ExecuteRelayCall(
@@ -163,7 +172,7 @@ export async function signLSP6ExecuteRelayCall(
     payload: _payload,
   };
 
-  const encodedMessage = ethers.solidityPacked(
+  const encodedMessage = solidityPacked(
     ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
     [
       signedMessageParams.lsp25Version,

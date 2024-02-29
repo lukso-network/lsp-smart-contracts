@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ethers } from 'ethers';
+import { hashMessage, parseEther, toUtf8Bytes } from 'ethers';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import {
@@ -166,7 +166,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       });
 
       it('should revert with error `ERC725X_MsgValueDisallowedInStaticCall` if `value` param is not 0', async () => {
-        const LyxAmount = ethers.parseEther('3');
+        const LyxAmount = parseEther('3');
 
         const targetContractPayload = targetContract.interface.encodeFunctionData('getName');
 
@@ -191,7 +191,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         it('should pass and return data when `value` param is 0', async () => {
           const message = 'some message to sign';
           const signature = await context.mainController.signMessage(message);
-          const messageHash = ethers.hashMessage(message);
+          const messageHash = hashMessage(message);
 
           const erc1271ContractPayload = signatureValidator.interface.encodeFunctionData(
             'isValidSignature',
@@ -216,11 +216,11 @@ export const shouldBehaveLikePermissionStaticCall = (
         });
 
         it('should revert with error `ERC725X_MsgValueDisallowedInStaticCall` if `value` param is not 0', async () => {
-          const lyxAmount = ethers.parseEther('3');
+          const lyxAmount = parseEther('3');
 
           const message = 'some message to sign';
           const signature = await context.mainController.signMessage(message);
-          const messageHash = ethers.hashMessage(message);
+          const messageHash = hashMessage(message);
 
           const erc1271ContractPayload = signatureValidator.interface.encodeFunctionData(
             'isValidSignature',
@@ -252,7 +252,7 @@ export const shouldBehaveLikePermissionStaticCall = (
               context.mainController.address,
               context.mainController.address,
               1,
-              ethers.toUtf8Bytes('some data'),
+              toUtf8Bytes('some data'),
             ],
           );
 
@@ -279,7 +279,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       });
 
       it('should revert with error `ERC725X_MsgValueDisallowedInStaticCall` if `value` param is not 0', async () => {
-        const lyxAmount = ethers.parseEther('3');
+        const lyxAmount = parseEther('3');
 
         // the params are not relevant for this test and just used as placeholders.
         const onERC721Payload = onERC721ReceivedContract.interface.encodeFunctionData(
@@ -288,7 +288,7 @@ export const shouldBehaveLikePermissionStaticCall = (
             context.mainController.address,
             context.mainController.address,
             1,
-            ethers.toUtf8Bytes('some data'),
+            toUtf8Bytes('some data'),
           ],
         );
 
@@ -332,7 +332,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       });
 
       it('should revert with error `ERC725X_MsgValueDisallowedInStaticCall` if `value` parameter is not 0', async () => {
-        const lyxAmount = ethers.parseEther('3');
+        const lyxAmount = parseEther('3');
 
         const targetContractPayload = targetContract.interface.encodeFunctionData('setName', [
           'modified name',
@@ -655,7 +655,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       it('should revert with error `ERC725X_MsgValueDisallowedInStaticCall` when `value` param is not 0', async () => {
         const randomContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
-        const lyxAmount = ethers.parseEther('3');
+        const lyxAmount = parseEther('3');
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.STATICCALL,
@@ -815,7 +815,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.STATICCALL,
           await allowedTargetContracts[0].getAddress(),
-          ethers.parseEther('3'),
+          parseEther('3'),
           targetPayload,
         ]);
 
@@ -857,7 +857,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.STATICCALL,
           await allowedTargetContracts[1].getAddress(),
-          ethers.parseEther('3'),
+          parseEther('3'),
           targetPayload,
         ]);
 
