@@ -36,7 +36,7 @@
     "lint:solidity": "turbo lint:solidity",
     "package": "turbo package",
     "test": "turbo test",
-    "test:foundry": "turbo test:foundry",
+    "test:foundry": "turbo test:foundry --scope='!@lukso/lsp16-contracts'",
     "test:benchmark": "hardhat test --no-compile tests/Benchmark.test.ts",
     "test:coverage": "turbo test:coverage",
     "test:mocks": "hardhat test --no-compile packages/lsp-smart-contracts/tests/Mocks/*.test.ts",
