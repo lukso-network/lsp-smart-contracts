@@ -1,15 +1,17 @@
 # **Release Process**
 
-Releases are created on the Github repository and published to [npm]() using the [Release Please](https://github.com/googleapis/release-please) via the [`release-please`](https://github.com/google-github-actions/release-please-action#automating-publication-to-npm) Github action.
+> 📒 See [**release-please** documentation](See release-please documentation for more infos.) for more infos and configurations.
 
-This package automates CHANGELOG generation, version bumps and npm releases by parsing the git history, looking for [Conventional Commit messages](https://www.conventionalcommits.org/).
+Releases are created on the Github repository and published to [npm]() using [Release Please](https://github.com/googleapis/release-please) via the [`release-please`](https://github.com/google-github-actions/release-please-action#automating-publication-to-npm) Github action.
 
-When changes and feature PRs are merged from develop to main, release-please will open and maintain a release PR with the updated CHANGELOG and new version number. When this PR is merged, a release will be created and the package published to NPM.
+The workflow [`release.yml`](./workflow/release.yml) automates CHANGELOG generation, version bumps and npm releases by parsing the git history, looking for [Conventional Commit messages](https://www.conventionalcommits.org/).
 
-1. Merge develop into main.
-2. Release Please will create the release PR going to main.
+When changes and feature PRs are merged from `develop` to `main`, release-please will open and maintain a release PR for a specific package with the updated CHANGELOG and new version number. When this PR is merged, a release will be created and the package published to NPM.
+
+1. Merge `develop` into `main`.
+2. Release Please will create the release PR going to `main` for the affected package(s).
 3. Merge the generated release PR.
-4. Package will be published to NPM.
+4. Package will be published to [NPM](https://npmjs.org).
 
 ## Conventional Commit prefixes?
 
@@ -41,6 +43,37 @@ When a commit to the main branch has `Release-As: x.x.x` (case insensitive) in t
 chore: release 2.0.0
 
 Release-As: 2.0.0
+```
+
+The following [commit pattern](https://github.com/googleapis/release-please/blob/main/docs/customizing.md#pull-request-title) can also be specified to instruct release-please to trigger a specific release for a specific package.
+
+```
+chore: release${component} ${version}
+```
+
+Where:
+
+- `${component}`: the name of the LSP package listed under `packages/` to release.
+- `${version}`: the version number to release for.
+
+_Example:_
+
+A common release pull request title would be:
+
+```
+chore: release lsp-smart-contracts v0.15.0
+```
+
+## Creating pre-release
+
+We use the suffix `-rc` to specify release versions that are not ready for production and may be unstable. This usually takes the following pattern as an example: `@lukso/lsp7-contracts-v0.15.0-rc0`. Each pre-release can then in turn be incremented as `rc1`, `rc2`, etc...
+
+If you would like to publish a package as a pre-release version, you can enforce it by specifying the following fields for this package under the `.release-please-manifest.json`.
+
+```json
+ "release-as": "0.15.0-rc0",
+ "prerelease-type": "rc",
+ "prerelease": true
 ```
 
 ## How can I fix release notes?
