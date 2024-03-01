@@ -7,25 +7,33 @@
       "outputs": ["**/artifacts/**", "types/**", "**/types/**"],
       "cache": true
     },
+    "build:foundry": {
+      "cache": true
+    },
     "build:js": {
       "outputs": ["**/dist/**"],
       "cache": true
     },
+    "clean": {},
     "lint": {
-      "env": ["CONTRACT_VERIFICATION_TESTNET_PK"]
+      "env": [
+        "CONTRACT_VERIFICATION_TESTNET_PK",
+        "CONTRACT_VERIFICATION_MAINNET_PK"
+      ]
     },
     "lint:solidity": {},
-    "clean": {},
+    "package": {},
     "test": {
       "cache": true,
       "env": ["COVERAGE"]
     },
-    "test:foundry": {
-      "cache": true
-    },
     "test:coverage": {
       "dependsOn": ["test"],
       "cache": false
+    },
+    "test:foundry": {
+      "dependsOn": ["^build", "^build:foundry"],
+      "cache": true
     }
   }
 }

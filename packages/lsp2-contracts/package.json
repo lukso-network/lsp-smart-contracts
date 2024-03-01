@@ -35,8 +35,9 @@
   ],
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
+    "build:foundry": "forge build",
     "build:js": "unbuild",
-    "clean": "hardhat clean",
+    "clean": "hardhat clean && rm -Rf dist/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",

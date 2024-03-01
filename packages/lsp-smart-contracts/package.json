@@ -1,0 +1,90 @@
+{
+  "name": "@lukso/lsp-smart-contracts",
+  "version": "0.12.1",
+  "description": "The reference smart contract implementation for the LUKSO LSP standards",
+  "license": "Apache-2.0",
+  "author": "",
+  "keywords": [
+    "LUKSO",
+    "LSP",
+    "Blockchain",
+    "Standards",
+    "Smart Contracts",
+    "Ethereum",
+    "EVM",
+    "Solidity"
+  ],
+  "directories": {
+    "test": "tests"
+  },
+  "files": [
+    "contracts/**/*.sol",
+    "!contracts/Mocks/**/*.sol",
+    "artifacts/*.json",
+    "dist",
+    "./README.md",
+    "./CONTRIBUTING.md",
+    "./LICENSE"
+  ],
+  "main": "./dist/constants.cjs",
+  "module": "./dist/constants.mjs",
+  "typings": "./dist/constants.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/constants.cjs",
+      "import": "./dist/constants.mjs",
+      "types": "./dist/constants.d.ts"
+    },
+    "./constants.js": {
+      "require": "./dist/constants.cjs",
+      "import": "./dist/constants.mjs",
+      "types": "./dist/constants.d.ts"
+    },
+    "./constants": {
+      "require": "./dist/constants.cjs",
+      "import": "./dist/constants.mjs",
+      "types": "./dist/constants.d.ts"
+    },
+    "./artifacts/*": "./artifacts/*",
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "hardhat compile --show-stack-traces",
+    "build:foundry": "forge build",
+    "build:js": "unbuild",
+    "build:docs": "hardhat dodoc && prettier -w ./docs",
+    "clean": "hardhat clean && rm -Rf dist/",
+    "format": "prettier --write .",
+    "lint": "eslint . --ext .ts,.js",
+    "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
+    "package": "hardhat prepare-package",
+    "test": "hardhat test --no-compile tests/**/*.test.ts",
+    "test:foundry": "FOUNDRY_PROFILE=lsp_smart_contracts forge test --no-match-test Skip -vvv",
+    "test:coverage": "hardhat coverage",
+    "test:benchmark": "hardhat test --no-compile tests/Benchmark.test.ts"
+  },
+  "dependencies": {
+    "@lukso/lsp0-contracts": "*",
+    "@lukso/lsp1-contracts": "*",
+    "@lukso/lsp10-contracts": "*",
+    "@lukso/lsp12-contracts": "*",
+    "@lukso/lsp14-contracts": "*",
+    "@lukso/lsp16-contracts": "*",
+    "@lukso/lsp17-contracts": "*",
+    "@lukso/lsp17contractextension-contracts": "*",
+    "@lukso/lsp1delegate-contracts": "*",
+    "@lukso/lsp2-contracts": "*",
+    "@lukso/lsp20-contracts": "*",
+    "@lukso/lsp23-contracts": "*",
+    "@lukso/lsp25-contracts": "*",
+    "@lukso/lsp3-contracts": "*",
+    "@lukso/lsp4-contracts": "*",
+    "@lukso/lsp5-contracts": "*",
+    "@lukso/lsp6-contracts": "*",
+    "@lukso/lsp7-contracts": "*",
+    "@lukso/lsp8-contracts": "*",
+    "@lukso/lsp9-contracts": "*",
+    "@lukso/universalprofile-contracts": "*"
+  }
+}

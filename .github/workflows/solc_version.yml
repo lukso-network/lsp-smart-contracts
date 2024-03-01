@@ -11,15 +11,18 @@ on:
       - "develop"
     # Only run when `.sol` files have been changed
     paths:
-      - "contracts/**/*.sol"
+      - "*.sol"
 
   pull_request:
     paths:
-      - "contracts/**/*.sol"
+      - "*.sol"
 
 jobs:
   solc_version:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/lsp-smart-contracts
     strategy:
       matrix:
         solc: [

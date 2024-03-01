@@ -34,12 +34,13 @@
   ],
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
-    "clean": "hardhat clean",
+    "build:foundry": "forge build",
+    "clean": "hardhat clean && rm -Rf dist/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "test": "hardhat test --no-compile tests/*.test.ts",
-    "test:foundry": "forge test --no-match-test Skip -vvv",
+    "test:foundry": "FOUNDRY_PROFILE=lsp16 forge test --no-match-test Skip -vvv",
     "test:coverage": "hardhat coverage"
   },
   "dependencies": {
