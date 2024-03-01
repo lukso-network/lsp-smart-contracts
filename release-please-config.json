@@ -8,9 +8,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "release-as": "0.15.0-rc0",
-      "prerelease-type": "rc",
-      "prerelease": true
+      "prerelease-type": "rc"
     },
     "packages/lsp0-contracts": {
       "component": "lsp0-contracts",
@@ -20,7 +18,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false,
+      "prerelease-type": "rc",
       "extra-files": ["./packages/lsp0-contracts/contracts/Version.sol"]
     },
     "packages/lsp1-contracts": {
@@ -31,7 +29,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false
+      "prerelease-type": "rc"
     },
     "packages/lsp1delegate-contracts": {
       "component": "lsp1delegate-contracts",
@@ -41,7 +39,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false,
+      "prerelease-type": "rc",
       "extra-files": ["./packages/lsp1delegate-contracts/contracts/Version.sol"]
     },
     "packages/lsp2-contracts": {
@@ -52,7 +50,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false
+      "prerelease-type": "rc"
     },
     "packages/lsp3-contracts": {
       "component": "lsp3-contracts",
@@ -62,7 +60,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false
+      "prerelease-type": "rc"
     },
     "packages/lsp4-contracts": {
       "component": "lsp4-contracts",
@@ -72,7 +70,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false
+      "prerelease-type": "rc"
     },
     "packages/lsp5-contracts": {
       "component": "lsp5-contracts",
@@ -82,7 +80,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false
+      "prerelease-type": "rc"
     },
     "packages/lsp6-contracts": {
       "component": "lsp6-contracts",
@@ -92,7 +90,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false,
+      "prerelease-type": "rc",
       "extra-files": ["./packages/lsp6-contracts/contracts/Version.sol"]
     },
     "packages/lsp7-contracts": {
@@ -103,7 +101,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false
+      "prerelease-type": "rc"
     },
     "packages/lsp8-contracts": {
       "component": "lsp8-contracts",
@@ -113,7 +111,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false
+      "prerelease-type": "rc"
     },
     "packages/lsp9-contracts": {
       "component": "lsp9-contracts",
@@ -123,7 +121,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false,
+      "prerelease-type": "rc",
       "extra-files": ["./packages/lsp9-contracts/contracts/Version.sol"]
     },
     "packages/lsp10-contracts": {
@@ -134,7 +132,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false
+      "prerelease-type": "rc"
     },
     "packages/lsp12-contracts": {
       "component": "lsp12-contracts",
@@ -144,7 +142,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false
+      "prerelease-type": "rc"
     },
     "packages/lsp14-contracts": {
       "component": "lsp14-contracts",
@@ -154,7 +152,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false
+      "prerelease-type": "rc"
     },
     "packages/lsp16-contracts": {
       "component": "lsp16-contracts",
@@ -164,7 +162,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false
+      "prerelease-type": "rc"
     },
     "packages/lsp17-contracts": {
       "component": "lsp17-contracts",
@@ -174,7 +172,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false
+      "prerelease-type": "rc"
     },
     "packages/lsp17contractextension-contracts": {
       "component": "lsp17contractextension-contracts",
@@ -184,8 +182,10 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false,
-      "extra-files": ["./packages/lsp17contractextension-contracts/contracts/Version.sol"]
+      "prerelease-type": "rc",
+      "extra-files": [
+        "./packages/lsp17contractextension-contracts/contracts/Version.sol"
+      ]
     },
     "packages/lsp23-contracts": {
       "component": "lsp23-contracts",
@@ -195,7 +195,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease": false
+      "prerelease-type": "rc"
     }
   },
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
