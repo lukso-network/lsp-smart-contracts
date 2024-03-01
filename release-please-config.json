@@ -1,13 +1,229 @@
 {
   "packages": {
-    ".": {
-      "changelog-path": "CHANGELOG.md",
+    "packages/data-provider-base": {
+      "component": "data-provider-base",
+      "package-name": "@lukso/data-provider-base",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/data-provider-ipfs-http-client": {
+      "component": "data-provider-ipfs-http-client",
+      "package-name": "@lukso/data-provider-ipfs-http-client",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/data-provider-pinata": {
+      "component": "data-provider-pinata",
+      "package-name": "@lukso/data-provider-pinata",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/data-provider-urlresolver": {
+      "component": "data-provider-urlresolver",
+      "package-name": "@lukso/data-provider-urlresolver",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/lsp0-contracts": {
+      "component": "lsp0-contracts",
+      "package-name": "@lukso/lsp0-contracts",
+      "include-component-in-tag": true,
       "release-type": "node",
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "prerelease": false,
-      "extra-files": ["contracts/Version.sol"]
+      "extra-files": ["./packages/lsp0-contracts/contracts/Version.sol"]
+    },
+    "packages/lsp1-contracts": {
+      "component": "lsp1-contracts",
+      "package-name": "@lukso/lsp1-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/lsp1delegate-contracts": {
+      "component": "lsp1delegate-contracts",
+      "package-name": "@lukso/lsp1delegate-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false,
+      "extra-files": ["./packages/lsp1delegate-contracts/contracts/Version.sol"]
+    },
+    "packages/lsp2-contracts": {
+      "component": "lsp2-contracts",
+      "package-name": "@lukso/lsp2-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/lsp3-contracts": {
+      "component": "lsp3-contracts",
+      "package-name": "@lukso/lsp3-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/lsp4-contracts": {
+      "component": "lsp4-contracts",
+      "package-name": "@lukso/lsp4-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/lsp5-contracts": {
+      "component": "lsp5-contracts",
+      "package-name": "@lukso/lsp5-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/lsp6-contracts": {
+      "component": "lsp6-contracts",
+      "package-name": "@lukso/lsp6-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false,
+      "extra-files": ["./packages/lsp6-contracts/contracts/Version.sol"]
+    },
+    "packages/lsp7-contracts": {
+      "component": "lsp7-contracts",
+      "package-name": "@lukso/lsp7-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/lsp8-contracts": {
+      "component": "lsp8-contracts",
+      "package-name": "@lukso/lsp8-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/lsp9-contracts": {
+      "component": "lsp9-contracts",
+      "package-name": "@lukso/lsp9-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false,
+      "extra-files": ["./packages/lsp9-contracts/contracts/Version.sol"]
+    },
+    "packages/lsp10-contracts": {
+      "component": "lsp10-contracts",
+      "package-name": "@lukso/lsp10-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/lsp12-contracts": {
+      "component": "lsp12-contracts",
+      "package-name": "@lukso/lsp12-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/lsp14-contracts": {
+      "component": "lsp14-contracts",
+      "package-name": "@lukso/lsp14-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/lsp16-contracts": {
+      "component": "lsp16-contracts",
+      "package-name": "@lukso/lsp16-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/lsp17-contracts": {
+      "component": "lsp17-contracts",
+      "package-name": "@lukso/lsp17-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/lsp17contractextension-contracts": {
+      "component": "lsp17contractextension-contracts",
+      "package-name": "@lukso/lsp17contractextension-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false,
+      "extra-files": ["./packages/lsp17contractextension-contracts/contracts/Version.sol"]
+    },
+    "packages/lsp23-contracts": {
+      "component": "lsp23-contracts",
+      "package-name": "@lukso/lsp23-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
     }
   },
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
