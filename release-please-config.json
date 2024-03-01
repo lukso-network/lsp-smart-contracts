@@ -1,38 +1,8 @@
 {
   "packages": {
-    "packages/data-provider-base": {
-      "component": "data-provider-base",
-      "package-name": "@lukso/data-provider-base",
-      "include-component-in-tag": true,
-      "release-type": "node",
-      "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": false,
-      "draft": false,
-      "prerelease": false
-    },
-    "packages/data-provider-ipfs-http-client": {
-      "component": "data-provider-ipfs-http-client",
-      "package-name": "@lukso/data-provider-ipfs-http-client",
-      "include-component-in-tag": true,
-      "release-type": "node",
-      "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": false,
-      "draft": false,
-      "prerelease": false
-    },
-    "packages/data-provider-pinata": {
-      "component": "data-provider-pinata",
-      "package-name": "@lukso/data-provider-pinata",
-      "include-component-in-tag": true,
-      "release-type": "node",
-      "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": false,
-      "draft": false,
-      "prerelease": false
-    },
-    "packages/data-provider-urlresolver": {
-      "component": "data-provider-urlresolver",
-      "package-name": "@lukso/data-provider-urlresolver",
+    "packages/lsp-smart-contracts": {
+      "component": "lsp-smart-contracts",
+      "package-name": "@lukso/lsp-smart-contracts",
       "include-component-in-tag": true,
       "release-type": "node",
       "bump-minor-pre-major": true,
