@@ -22,6 +22,8 @@
     "!contracts/Mocks/**/*.sol",
     "artifacts/*.json",
     "dist",
+    "types",
+    "!types/factories",
     "./README.md",
     "./CONTRIBUTING.md",
     "./LICENSE"
@@ -53,6 +55,7 @@
     "build": "hardhat compile --show-stack-traces",
     "build:foundry": "forge build",
     "build:js": "unbuild",
+    "build:types": "npx typechain --target=ethers-v6 ./artifacts/*.json --out-dir types",
     "build:docs": "hardhat dodoc && prettier -w ./docs",
     "clean": "hardhat clean && rm -Rf dist/",
     "format": "prettier --write .",

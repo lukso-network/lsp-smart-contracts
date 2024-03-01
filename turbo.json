@@ -15,6 +15,10 @@
       "cache": true
     },
     "clean": {},
+    "build:types": {
+      "outputs": ["**/types/**"],
+      "cache": true
+    },
     "lint": {
       "env": [
         "CONTRACT_VERIFICATION_TESTNET_PK",
