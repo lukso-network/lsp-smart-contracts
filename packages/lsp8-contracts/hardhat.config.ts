@@ -107,7 +107,18 @@ const config: HardhatUserConfig = {
   },
   packager: {
     // What contracts to keep the artifacts and the bindings for.
-    contracts: [],
+    contracts: [
+      // Standard version
+      // ------------------
+      'LSP8IdentifiableDigitalAsset',
+      'LSP8CappedSupply',
+      'LSP8Mintable',
+      // Proxy version
+      // ------------------
+      'LSP8IdentifiableDigitalAssetInitAbstract',
+      'LSP8CappedSupplyInitAbstract',
+      'LSP8MintableInit',
+    ],
     // Whether to include the TypeChain factories or not.
     // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
     includeFactories: true,
