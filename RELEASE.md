@@ -66,15 +66,24 @@ chore: release lsp-smart-contracts v0.15.0
 
 ## Creating pre-release
 
-We use the suffix `-rc` to specify release versions that are not ready for production and may be unstable. This usually takes the following pattern as an example: `@lukso/lsp7-contracts-v0.15.0-rc0`. Each pre-release can then in turn be incremented as `rc1`, `rc2`, etc...
+We use the suffix `-rc` to specify release versions that are not ready for production and may be unstable. This usually takes the following pattern as an example: `@lukso/lsp7-contracts-v0.15.0-rc.0`. Each pre-release can then in turn be incremented as `rc.1`, `rc.2`, etc...
 
-If you would like to publish a package as a pre-release version, you can enforce it by specifying the following fields for this package under the `.release-please-manifest.json`.
+If you would like to publish a package as a pre-release version, you can enforce it by:
+
+1. creating a commit that includes the following pattern (for example):
+
+```
+chore: release lsp-smart-contracts v0.15.0-rc.0
+```
+
+2. specifying the following fields for this package under the `.release-please-manifest.json`.
 
 ```json
- "release-as": "0.15.0-rc0",
  "prerelease-type": "rc",
  "prerelease": true
 ```
+
+Pre-releases will show up with a "Pre-Release" badge on the [list of Github Releases](https://github.com/lukso-network/lsp-smart-contracts/releases) of the repository.
 
 ## How can I fix release notes?
 
