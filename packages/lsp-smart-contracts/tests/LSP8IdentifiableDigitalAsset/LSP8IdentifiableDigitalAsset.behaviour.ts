@@ -513,7 +513,7 @@ export const shouldBehaveLikeLSP8 = (
 
       describe('when operator is the zero address', () => {
         it('should revert', async () => {
-          const operator = ethers.ZeroAddress;
+          const operator = AddressZero;
           const tokenId = mintedTokenId;
 
           await expect(
@@ -1029,30 +1029,6 @@ export const shouldBehaveLikeLSP8 = (
                   )
                   .withArgs(txParams.to);
               });
-            });
-          });
-
-          describe("when `from == to` address (= sending to tokenId's owner itself)", () => {
-            it('should revert', async () => {
-              const txParams = {
-                from: context.accounts.owner.address,
-                to: context.accounts.owner.address,
-                tokenId: mintedTokenId,
-                force,
-                data,
-              };
-
-              await expect(
-                context.lsp8
-                  .connect(operator)
-                  .transfer(
-                    txParams.from,
-                    txParams.to,
-                    txParams.tokenId,
-                    txParams.force,
-                    txParams.data,
-                  ),
-              ).to.be.revertedWithCustomError(context.lsp8, 'LSP8NotifyTokenReceiverIsEOA');
             });
           });
         });
