@@ -21,6 +21,8 @@
     "!contracts/Mocks/**/*.sol",
     "artifacts/*.json",
     "dist",
+    "types",
+    "!types/factories",
     "./README.md"
   ],
   "keywords": [
@@ -34,9 +36,11 @@
     "Solidity"
   ],
   "scripts": {
+    "package": "hardhat prepare-package",
     "build": "hardhat compile --show-stack-traces",
     "build:foundry": "forge build",
     "build:js": "unbuild",
+    "build:types": "npx typechain --target=ethers-v6 ./artifacts/*.json --out-dir types",
     "clean": "hardhat clean && rm -Rf dist/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
