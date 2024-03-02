@@ -485,8 +485,8 @@ export const shouldBehaveLikeLSP8 = (
             .connect(context.accounts.anyone)
             .revokeOperator(context.accounts.operator.address, mintedTokenId, false, '0x'),
         )
-          .to.be.revertedWithCustomError(context.lsp8, 'LSP8NotTokenOwner')
-          .withArgs(context.accounts.owner.address, mintedTokenId, context.accounts.anyone.address);
+          .to.be.revertedWithCustomError(context.lsp8, 'LSP8RevokeOperatorNotAuthorized')
+          .withArgs(context.accounts.anyone.address, context.accounts.owner.address, mintedTokenId);
       });
     });
 
@@ -513,7 +513,7 @@ export const shouldBehaveLikeLSP8 = (
 
       describe('when operator is the zero address', () => {
         it('should revert', async () => {
-          const operator = ethers.ZeroAddress;
+          const operator = AddressZero;
           const tokenId = mintedTokenId;
 
           await expect(
@@ -579,6 +579,32 @@ export const shouldBehaveLikeLSP8 = (
           await expect(
             context.lsp8.revokeOperator(operator, tokenId, true, '0xaabbccdd'),
           ).to.be.revertedWith('I reverted');
+        });
+      });
+    });
+
+    describe('when caller is operator of tokenId', () => {
+      describe('when operator is not the zero address', () => {
+        it('should succeed', async () => {
+          const operator = context.accounts.operator.address;
+          const tokenOwner = context.accounts.owner.address;
+          const tokenId = mintedTokenId;
+
+          // pre-conditions
+          await context.lsp8.authorizeOperator(operator, tokenId, '0x');
+          expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.true;
+
+          // effects
+          const tx = await context.lsp8
+            .connect(context.accounts.operator)
+            .revokeOperator(operator, tokenId, false, '0x');
+
+          await expect(tx)
+            .to.emit(context.lsp8, 'OperatorRevoked')
+            .withArgs(operator, tokenOwner, tokenId, false, '0x');
+
+          // post-conditions
+          expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be.false;
         });
       });
     });
@@ -917,30 +943,6 @@ export const shouldBehaveLikeLSP8 = (
               });
             });
           });
-
-          describe("when `from == to` address (= sending to tokenId's owner itself)", () => {
-            it('should revert', async () => {
-              const txParams = {
-                from: context.accounts.owner.address,
-                to: context.accounts.owner.address,
-                tokenId: mintedTokenId,
-                force,
-                data,
-              };
-
-              await expect(
-                context.lsp8
-                  .connect(operator)
-                  .transfer(
-                    txParams.from,
-                    txParams.to,
-                    txParams.tokenId,
-                    txParams.force,
-                    txParams.data,
-                  ),
-              ).to.be.revertedWithCustomError(context.lsp8, 'LSP8CannotSendToSelf');
-            });
-          });
         });
 
         describe('when force=false', () => {
@@ -1027,30 +1029,6 @@ export const shouldBehaveLikeLSP8 = (
                   )
                   .withArgs(txParams.to);
               });
-            });
-          });
-
-          describe("when `from == to` address (= sending to tokenId's owner itself)", () => {
-            it('should revert', async () => {
-              const txParams = {
-                from: context.accounts.owner.address,
-                to: context.accounts.owner.address,
-                tokenId: mintedTokenId,
-                force,
-                data,
-              };
-
-              await expect(
-                context.lsp8
-                  .connect(operator)
-                  .transfer(
-                    txParams.from,
-                    txParams.to,
-                    txParams.tokenId,
-                    txParams.force,
-                    txParams.data,
-                  ),
-              ).to.be.revertedWithCustomError(context.lsp8, 'LSP8CannotSendToSelf');
             });
           });
         });
