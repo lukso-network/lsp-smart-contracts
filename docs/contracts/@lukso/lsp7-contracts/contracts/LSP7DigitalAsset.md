@@ -249,16 +249,16 @@ Returns the number of decimals used to get its user representation. If the asset
 :::note References
 
 <<<<<<< HEAD:docs/contracts/LSP7DigitalAsset/LSP7DigitalAsset.md
+
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#decreaseallowance)
 - Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol)
 - Function signature: `decreaseAllowance(address,address,uint256,bytes)`
-- Function selector: `0x78381670`
-=======
+- # Function selector: `0x78381670`
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-7-DigitalAsset.md#decreaseallowance)
 - Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol)
 - Function signature: `decreaseAllowance(address,uint256,bytes)`
 - Function selector: `0x7b204c4e`
->>>>>>> lsp-monorepo:docs/contracts/@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.md
+  > > > > > > > lsp-monorepo:docs/contracts/@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.md
 
 :::
 
@@ -467,16 +467,16 @@ Leaves the contract without owner. It will not be possible to call `onlyOwner` f
 :::note References
 
 <<<<<<< HEAD:docs/contracts/LSP7DigitalAsset/LSP7DigitalAsset.md
+
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#revokeoperator)
 - Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol)
 - Function signature: `revokeOperator(address,address,bool,bytes)`
-- Function selector: `0x30d0dc37`
-=======
+- # Function selector: `0x30d0dc37`
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-7-DigitalAsset.md#revokeoperator)
 - Solidity implementation: [`LSP7DigitalAsset.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol)
 - Function signature: `revokeOperator(address,bool,bytes)`
 - Function selector: `0x4521748e`
->>>>>>> lsp-monorepo:docs/contracts/@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.md
+  > > > > > > > lsp-monorepo:docs/contracts/@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.md
 
 :::
 
@@ -1599,8 +1599,8 @@ Reverts when a batch call failed.
 
 <br/>
 
-<<<<<<< HEAD:docs/contracts/LSP7DigitalAsset/LSP7DigitalAsset.md
-=======
+# <<<<<<< HEAD:docs/contracts/LSP7DigitalAsset/LSP7DigitalAsset.md
+
 ### LSP7CannotSendToSelf
 
 :::note References
@@ -1620,7 +1620,8 @@ reverts when specifying the same address for `from` or `to` in a token transfer.
 
 <br/>
 
->>>>>>> lsp-monorepo:docs/contracts/@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.md
+> > > > > > > lsp-monorepo:docs/contracts/@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.md
+
 ### LSP7CannotSendWithAddressZero
 
 :::note References

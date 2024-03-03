@@ -40,7 +40,7 @@ constructor(
 );
 ```
 
-_Deploying a `LSP8Mintable` token contract with: token name = `name_`, token symbol = `symbol_`, and address `newOwner_` as the token contract owner._
+_Deploying a `LSP8Mintable` token contract with: token name = `name_`, token symbol = `symbol*`, and address `newOwner*` as the token contract owner.\_
 
 #### Parameters
 
@@ -1821,8 +1821,8 @@ Reverts when trying to send token to the zero address.
 
 <br/>
 
-<<<<<<< HEAD:docs/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.md
-=======
+# <<<<<<< HEAD:docs/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.md
+
 ### LSP8CannotSendToSelf
 
 :::note References
@@ -1842,7 +1842,8 @@ Reverts when specifying the same address for `from` and `to` in a token transfer
 
 <br/>
 
->>>>>>> lsp-monorepo:docs/contracts/@lukso/lsp8-contracts/contracts/presets/LSP8Mintable.md
+> > > > > > > lsp-monorepo:docs/contracts/@lukso/lsp8-contracts/contracts/presets/LSP8Mintable.md
+
 ### LSP8CannotUseAddressZeroAsOperator
 
 :::note References

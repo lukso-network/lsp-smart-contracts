@@ -1783,8 +1783,8 @@ Reverts when trying to send token to the zero address.
 
 <br/>
 
-<<<<<<< HEAD:docs/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.md
-=======
+# <<<<<<< HEAD:docs/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.md
+
 ### LSP8CannotSendToSelf
 
 :::note References
@@ -1804,7 +1804,8 @@ Reverts when specifying the same address for `from` and `to` in a token transfer
 
 <br/>
 
->>>>>>> lsp-monorepo:docs/contracts/@lukso/lsp8-contracts/contracts/extensions/LSP8Enumerable.md
+> > > > > > > lsp-monorepo:docs/contracts/@lukso/lsp8-contracts/contracts/extensions/LSP8Enumerable.md
+
 ### LSP8CannotUseAddressZeroAsOperator
 
 :::note References

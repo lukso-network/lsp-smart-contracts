@@ -40,7 +40,7 @@ constructor(
 );
 ```
 
-_Deploying a `LSP7Mintable` token contract with: token name = `name_`, token symbol = `symbol_`, and address `newOwner_` as the token contract owner._
+_Deploying a `LSP7Mintable` token contract with: token name = `name_`, token symbol = `symbol*`, and address `newOwner*` as the token contract owner.\_
 
 #### Parameters
 
@@ -280,16 +280,16 @@ Returns the number of decimals used to get its user representation. If the asset
 :::note References
 
 <<<<<<< HEAD:docs/contracts/LSP7DigitalAsset/presets/LSP7Mintable.md
+
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#decreaseallowance)
 - Solidity implementation: [`LSP7Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7Mintable.sol)
 - Function signature: `decreaseAllowance(address,address,uint256,bytes)`
-- Function selector: `0x78381670`
-=======
+- # Function selector: `0x78381670`
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-7-DigitalAsset.md#decreaseallowance)
 - Solidity implementation: [`LSP7Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.sol)
 - Function signature: `decreaseAllowance(address,uint256,bytes)`
 - Function selector: `0x7b204c4e`
->>>>>>> lsp-monorepo:docs/contracts/@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.md
+  > > > > > > > lsp-monorepo:docs/contracts/@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.md
 
 :::
 
@@ -531,16 +531,16 @@ Leaves the contract without owner. It will not be possible to call `onlyOwner` f
 :::note References
 
 <<<<<<< HEAD:docs/contracts/LSP7DigitalAsset/presets/LSP7Mintable.md
+
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/lips/tree/main/LSPs/LSP-7-DigitalAsset.md#revokeoperator)
 - Solidity implementation: [`LSP7Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP7DigitalAsset/presets/LSP7Mintable.sol)
 - Function signature: `revokeOperator(address,address,bool,bytes)`
-- Function selector: `0x30d0dc37`
-=======
+- # Function selector: `0x30d0dc37`
 - Specification details: [**LSP-7-DigitalAsset**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-7-DigitalAsset.md#revokeoperator)
 - Solidity implementation: [`LSP7Mintable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.sol)
 - Function signature: `revokeOperator(address,bool,bytes)`
 - Function selector: `0x4521748e`
->>>>>>> lsp-monorepo:docs/contracts/@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.md
+  > > > > > > > lsp-monorepo:docs/contracts/@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.md
 
 :::
 
@@ -1663,8 +1663,8 @@ Reverts when a batch call failed.
 
 <br/>
 
-<<<<<<< HEAD:docs/contracts/LSP7DigitalAsset/presets/LSP7Mintable.md
-=======
+# <<<<<<< HEAD:docs/contracts/LSP7DigitalAsset/presets/LSP7Mintable.md
+
 ### LSP7CannotSendToSelf
 
 :::note References
@@ -1684,7 +1684,8 @@ reverts when specifying the same address for `from` or `to` in a token transfer.
 
 <br/>
 
->>>>>>> lsp-monorepo:docs/contracts/@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.md
+> > > > > > > lsp-monorepo:docs/contracts/@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.md
+
 ### LSP7CannotSendWithAddressZero
 
 :::note References

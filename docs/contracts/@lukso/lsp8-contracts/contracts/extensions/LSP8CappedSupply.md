@@ -1755,8 +1755,8 @@ Reverts when trying to send token to the zero address.
 
 <br/>
 
-<<<<<<< HEAD:docs/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.md
-=======
+# <<<<<<< HEAD:docs/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.md
+
 ### LSP8CannotSendToSelf
 
 :::note References
@@ -1776,7 +1776,8 @@ Reverts when specifying the same address for `from` and `to` in a token transfer
 
 <br/>
 
->>>>>>> lsp-monorepo:docs/contracts/@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply.md
+> > > > > > > lsp-monorepo:docs/contracts/@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply.md
+
 ### LSP8CannotUseAddressZeroAsOperator
 
 :::note References
