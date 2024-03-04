@@ -1,6 +1,5 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
-import { ethers } from 'hardhat';
 
 const deployKeyManager: DeployFunction = async ({
   deployments,
@@ -11,12 +10,9 @@ const deployKeyManager: DeployFunction = async ({
 
   const UniversalProfile = await deployments.get('UniversalProfile');
 
-  const gasPrice = await ethers.provider.getGasPrice();
-
   await deploy('LSP6KeyManager', {
     from: owner,
     args: [UniversalProfile.address],
-    gasPrice,
     log: true,
   });
 };

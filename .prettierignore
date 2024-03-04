@@ -1,4 +1,4 @@
-/contracts/LSP6KeyManager/LSP6Constants.sol
+/packages/LSP6KeyManager/contracts/LSP6Constants.sol
 /artifacts
 /cache
 /types
@@ -11,3 +11,5 @@
 /common
 /package
 /module
+packages/*/types/
+packages/*/artifacts/

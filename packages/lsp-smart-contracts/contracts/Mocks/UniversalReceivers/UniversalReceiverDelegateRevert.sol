@@ -1,0 +1,41 @@
+// SPDX-License-Identifier: Apache-2.0
+pragma solidity ^0.8.4;
+
+// interfaces
+import {
+    ILSP1UniversalReceiverDelegate
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
+import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import {
+    _INTERFACEID_LSP1_DELEGATE
+} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
+
+/**
+ * @dev This contract is used only for testing purposes
+ */
+contract UniversalReceiverDelegateRevert is
+    ERC165,
+    ILSP1UniversalReceiverDelegate
+{
+    /**
+     * @inheritdoc ILSP1UniversalReceiverDelegate
+     * @dev Allows to register arrayKeys and Map of incoming vaults and assets and removing them after being sent
+     * @return result the return value of keyManager's execute function
+     */
+    function universalReceiverDelegate(
+        address /*sender*/,
+        uint256 /*value*/,
+        bytes32 /*typeId*/,
+        bytes memory /* data */
+    ) public virtual returns (bytes memory) {
+        revert("I Revert");
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override returns (bool) {
+        return
+            interfaceId == _INTERFACEID_LSP1_DELEGATE ||
+            super.supportsInterface(interfaceId);
+    }
+}

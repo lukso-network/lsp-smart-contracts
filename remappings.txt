@@ -1,6 +1,4 @@
-@erc725/smart-contracts/=node_modules/@erc725/smart-contracts/
-@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/
-@openzeppelin/contracts-upgradeable/=node_modules/@openzeppelin/contracts-upgradeable/
+@=node_modules/@
 eth-gas-reporter/=node_modules/eth-gas-reporter/
 forge-std/=lib/forge-std/src/
 hardhat-deploy/=node_modules/hardhat-deploy/
