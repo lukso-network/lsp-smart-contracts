@@ -37,15 +37,15 @@ The following commit prefixes will result in changes in the CHANGELOG:
 
 When a commit to the main branch has `Release-As: x.x.x` (case insensitive) in the **commit body**, Release Please will open a new pull request for the specified version.
 
-`git commit --allow-empty -m "chore: release 2.0.0" -m "Release-As: 2.0.0"` results in the following commit message:
+`git commit --allow-empty -m "chore: release lsp-smart-contracts 2.0.0" -m "Release-As: 2.0.0"` results in the following commit message:
 
 ```txt
-chore: release 2.0.0
+chore: release lsp-smart-contracts 2.0.0
 
 Release-As: 2.0.0
 ```
 
-The following [commit pattern](https://github.com/googleapis/release-please/blob/main/docs/customizing.md#pull-request-title) can also be specified to instruct release-please to trigger a specific release for a specific package.
+The following [commit pattern](https://github.com/googleapis/release-please/blob/main/docs/customizing.md#pull-request-title) must be specified:
 
 ```
 chore: release${component} ${version}
@@ -56,12 +56,23 @@ Where:
 - `${component}`: the name of the LSP package listed under `packages/` to release.
 - `${version}`: the version number to release for.
 
+Depending on the pattern, you can instruct to:
+
+- either release the full `@lukso/lsp-smart-contracts` package
+- or instruct release-please to trigger a specific release for a specific package like `@lukso/lsp7-contracts` for the LSP7 contracts only.
+
 _Example:_
 
-A common release pull request title would be:
+A common release pull request title for the `@lukso/lsp-smart-contracts` (the "umbrella" package that contains all the LSPs) would be:
 
 ```
 chore: release lsp-smart-contracts v0.15.0
+```
+
+A common release pull request title for a specific package only like `@lukso/lsp7-contracts` (only the contracts related to LSP7) would be:
+
+```
+chore: release lsp7-contracts v0.15.0
 ```
 
 ## Creating pre-release
@@ -70,17 +81,27 @@ We use the suffix `-rc` to specify release versions that are not ready for produ
 
 If you would like to publish a package as a pre-release version, you can enforce it by:
 
-1. creating a commit that includes the following pattern (for example):
+1. First, create a commit that includes the following pattern.
+
+_Example for the whole `@lukso/lsp-smart-contracts` repository that contains all the packages:_
 
 ```
-chore: release lsp-smart-contracts v0.15.0-rc.0
+chore: release lsp-smart-contracts 0.15.0-rc.0
 ```
 
-2. specifying the following fields for this package under the `.release-please-manifest.json`.
+_Example for only a specific package like `@lukso/lsp7-contracts` to only create a pre-release of the LSP7 contracts:_
+
+2. Then specify the following fields for this package under the `.release-please-manifest.json`.
 
 ```json
  "prerelease-type": "rc",
  "prerelease": true
+```
+
+3. Finally, make an empty commit like the commands above:
+
+```
+git commit --allow-empty -m "chore: release lsp-smart-contracts 0.15.0-rc.0" -m "Release-As: 0.15.0-rc.0"
 ```
 
 Pre-releases will show up with a "Pre-Release" badge on the [list of Github Releases](https://github.com/lukso-network/lsp-smart-contracts/releases) of the repository.
