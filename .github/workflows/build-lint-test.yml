@@ -5,17 +5,17 @@ name: Node.js CI - Build + Lint + Test
 on: pull_request
 
 jobs:
-  build:
+  build-lint-test:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
 
       # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-      - name: Use Node.js '16.15.0'
-        uses: actions/setup-node@v2
+      - name: Use Node.js v20
+        uses: actions/setup-node@v3
         with:
-          node-version: "16.15.0"
+          node-version: "20.x"
           cache: "npm"
 
       - name: 📦 Install dependencies
@@ -29,87 +29,20 @@ jobs:
 
       # This will also generate the Typechain types used by the Chai tests
       - name: 🏗️ Build contract artifacts
-        run: npx hardhat compile
+        run: |
+          npm run build
+          npm run build:js
 
-      - name: 📤 cache dependencies + build
-        uses: actions/cache@v2
-        with:
-          path: |
-            artifacts
-            node_modules
-            types
-            contracts.ts
-          key: ${{ github.run_id }}
+      # - name: 📚 generate ABI docs
+      #   run: npm run build:docs
 
-      - name: 🧪 run import/requires tests
-        run: npm run test:importRequire
+      # - name: 🔍 check if ABI auto-generated docs need to be updated
+      #   run: |-
+      #     if [[ $(git diff --name-only) != "" ]];
+      #     then
+      #       echo "Error: Please generate ABI docs after making changes to Solidity code and Natspec comments!"
+      #       exit 1
+      #     fi
 
-      - name: 📚 generate ABI docs
-        run: npm run build:docs
-
-      - name: 🔍 check if ABI auto-generated docs need to be updated
-        run: |-
-          if [[ $(git diff --name-only) != "" ]];
-          then
-            echo "Error: Please generate ABI docs after making changes to Solidity code and Natspec comments!"
-            exit 1
-          fi
-
-  test-suites:
-    strategy:
-      matrix:
-        lsp:
-          [
-            "up",
-            "upinit",
-            "lsp1",
-            "lsp2",
-            "lsp6",
-            "lsp6init",
-            "lsp7",
-            "lsp7init",
-            "lsp8",
-            "lsp8init",
-            "lsp9",
-            "lsp9init",
-            "lsp11",
-            "lsp11init",
-            "lsp17",
-            "lsp17extensions",
-            "lsp20",
-            "lsp20init",
-            "lsp23",
-            "universalfactory",
-            "reentrancy",
-            "reentrancyinit",
-            "mocks",
-          ]
-
-    runs-on: ubuntu-latest
-    needs: [build]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: 📥 restore cache
-        uses: actions/cache@v2
-        id: "build-cache"
-        with:
-          path: |
-            artifacts
-            node_modules
-            types
-            contracts.ts
-          key: ${{ github.run_id }}
-
-      - name: Use Node.js v16
-        uses: actions/setup-node@v2
-        with:
-          node-version: "16.x"
-          cache: "npm"
-
-      - name: Install dependencies
-        if: steps.build-cache.outputs.cache-hit != 'true'
-        run: npm ci
-
-      - name: 🧪 run tests
-        run: npm run test:${{ matrix.lsp }}
+      - name: 🧪 Run tests for each package
+        run: npm run test
