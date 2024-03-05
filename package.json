@@ -1,7 +1,7 @@
 {
   "name": "@lukso/lsp-smart-contracts-monorepo",
+  "version": "0.14.0",
   "description": "The reference smart contract implementation for the LUKSO LSP standards",
-  "version": "0.12.1",
   "private": true,
   "npmClient": "npm",
   "author": "",
