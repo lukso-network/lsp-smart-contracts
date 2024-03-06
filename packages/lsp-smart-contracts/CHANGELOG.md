@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.14.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.13.0...lsp-smart-contracts-v0.14.0) (2023-12-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* change set/get TokenId function name in LSP8 and `LSP8TokenIdSchema` to `LSP8TokenIdFormat` ([#822](https://github.com/lukso-network/lsp-smart-contracts/issues/822))
+
+### Code Refactoring
+
+* change LSP4 Mapping data key from `bytes12` to `bytes10` ([#824](https://github.com/lukso-network/lsp-smart-contracts/pull/824))
+* change set/get TokenId function name in LSP8 and `LSP8TokenIdSchema` to `LSP8TokenIdFormat` ([#822](https://github.com/lukso-network/lsp-smart-contracts/issues/822)) ([2bf84f6](https://github.com/lukso-network/lsp-smart-contracts/commit/2bf84f638926a9969385ce12f98f389b26ca0173))
+
+## [0.13.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.13.0...lsp-smart-contracts-v0.12.1) (2023-11-30)
+
+### ⚠ BREAKING CHANGES
+
+- Emit full DataChanged Event in LSP0 and LSP7, LSP8 ([#814](https://github.com/lukso-network/lsp-smart-contracts/issues/814))
+- Add `batchCalls(...)` to LSP7 & LSP8 ([#810](https://github.com/lukso-network/lsp-smart-contracts/issues/810))
+- Change Operator event names in LSP7 and LSP8 ([#809](https://github.com/lukso-network/lsp-smart-contracts/issues/809))
+- add set/getTokenIdData functions in LSP8 ([#808](https://github.com/lukso-network/lsp-smart-contracts/issues/808))
+- set `LSP4TokenType` on deployment of LSP7/8 Digital Assets ([#806](https://github.com/lukso-network/lsp-smart-contracts/issues/806))
+
+### Features
+
+- Add `batchCalls(...)` to LSP7 & LSP8 ([#810](https://github.com/lukso-network/lsp-smart-contracts/issues/810)) ([be46796](https://github.com/lukso-network/lsp-smart-contracts/commit/be467960a9d82c0932f6fa18d2eea6cf9b210710))
+- add set/getTokenIdData functions in LSP8 ([#808](https://github.com/lukso-network/lsp-smart-contracts/issues/808)) ([642da9d](https://github.com/lukso-network/lsp-smart-contracts/commit/642da9d0c08601eb924b438e8be376f2297f03f1))
+- set `LSP4TokenType` on deployment of LSP7/8 Digital Assets ([#806](https://github.com/lukso-network/lsp-smart-contracts/issues/806)) ([9ee6558](https://github.com/lukso-network/lsp-smart-contracts/commit/9ee6558d5865608f7e89869ebc43425cc3088875))
+- extract verification metadata ([#802](https://github.com/lukso-network/lsp-smart-contracts/issues/802)) ([15cc284](https://github.com/lukso-network/lsp-smart-contracts/commit/15cc284c9f4c6a4ac4ff3df1c421b81ef7675936))
+
+### Code Refactoring
+
+- Change Operator event names in LSP7 and LSP8 ([#809](https://github.com/lukso-network/lsp-smart-contracts/issues/809)) ([07c56c1](https://github.com/lukso-network/lsp-smart-contracts/commit/07c56c13f0d2aff3be465d292807b7ab0e6912ca))
+- Emit full DataChanged Event in LSP0 and LSP7, LSP8 ([#814](https://github.com/lukso-network/lsp-smart-contracts/issues/814)) ([6a5ea06](https://github.com/lukso-network/lsp-smart-contracts/commit/6a5ea06c7446e456fbe63b819b0f7c9c6b4c9e1a))
+
 ## [0.12.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.12.0...v0.12.1) (2023-11-07)
 
 ### Bug Fixes
