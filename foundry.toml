@@ -16,6 +16,11 @@ src = 'packages/lsp2-contracts/contracts'
 test = 'packages/lsp2-contracts/foundry'
 out = 'packages/lsp2-contracts/contracts/foundry_artifacts'
 
+[profile.lsp11]
+src = 'packages/lsp11-contracts/contracts'
+test = 'packages/lsp11-contracts/foundry'
+out = 'packages/lsp11-contracts/contracts/foundry_artifacts'
+
 [profile.lsp6]
 src = 'packages/lsp6-contracts/contracts'
 test = 'packages/lsp6-contracts/foundry'
