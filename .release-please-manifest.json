@@ -17,5 +17,8 @@
   "packages/lsp16-contracts": "0.15.0-rc.0",
   "packages/lsp17-contracts": "0.15.0-rc.0",
   "packages/lsp17contractextension-contracts": "0.15.0-rc.0",
-  "packages/lsp23-contracts": "0.15.0-rc.0"
+  "packages/lsp20-contracts": "0.15.0-rc.0",
+  "packages/lsp23-contracts": "0.15.0-rc.0",
+  "packages/lsp25-contracts": "0.15.0-rc.0",
+  "packages/universalprofile-contracts": "0.15.0-rc.0"
 }
