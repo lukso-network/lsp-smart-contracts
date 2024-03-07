@@ -6,7 +6,7 @@ The following folder contains files that are usually used as part of the CI/CD o
 
 - `ci/check-deployer-balance.ts`: check if the deployer address has at least 1 LYX to deploy the contract via `ci/deploy-verify.sh`.
 - `ci/deploy-verify.sh`: shell utility command to deploy + verify a smart contract on a specified network.
-- `ci/docs-generate.ts`: used to generate the user and dev docs into separate JSON files (this is used as part of our release CI to prepare the package when publoishing it on [npmjs.org](https://www.npmjs.com/package/@lukso/lsp-smart-contracts)).
+- `ci/docs-generate.ts`: used to generate the user and dev docs into separate JSON files (this is used as part of our release CI to prepare the package when publishing it on [npmjs.org](https://www.npmjs.com/package/@lukso/lsp-smart-contracts)).
 - `fix_flattener.js`: utility file to remove duplicate
 
 ## `deploy-verify.sh`

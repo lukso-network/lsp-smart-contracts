@@ -12,6 +12,10 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    environment: publish
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
+
     steps:
       - uses: google-github-actions/release-please-action@v3
         id: release
@@ -30,11 +34,11 @@ jobs:
       - uses: actions/checkout@v3
         if: ${{ steps.release.outputs.releases_created }}
 
-      - name: Use Node.js '16.15.0'
-        uses: actions/setup-node@v2
+      - name: Use Node.js v20
+        uses: actions/setup-node@v4
         if: ${{ steps.release.outputs.releases_created }}
         with:
-          node-version: "16.15.0"
+          node-version: "20.x"
           registry-url: "https://registry.npmjs.org"
           scope: "@lukso"
           cache: "npm"
@@ -61,5 +65,3 @@ jobs:
           END
           )
           node ./publish.mjs outputs.json
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
