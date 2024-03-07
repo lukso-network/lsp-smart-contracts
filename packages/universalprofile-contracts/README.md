@@ -2,6 +2,12 @@
 
 Smart Contract implementation for **Universal Profile**, a combination of LSP0 ERC725 Account and LSP3 Profile Metadata.
 
+## Installation
+
+```bash
+npm i @lukso/universalprofile-contracts
+```
+
 ## Solidity constants
 
 The constants related to LSP3 Profile Metadata can be directly imported from the `Constants.sol` file.
