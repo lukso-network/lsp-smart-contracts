@@ -30,6 +30,7 @@
     "build": "turbo build",
     "build:foundry": "turbo build:foundry",
     "build:js": "turbo build:js",
+    "build:types": "turbo build:types",
     "clean": "turbo clean",
     "format": "prettier --write .",
     "lint": "turbo lint",
@@ -96,7 +97,8 @@
     "unbuild": "^2.0.0",
     "vite-plugin-checker": "^0.5.6",
     "vite-tsconfig-paths": "^4.0.7",
-    "web3": "^1.5.2"
+    "web3": "^1.5.2",
+    "zx": "^7.2.3"
   },
   "workspaces": [
     "config/*",

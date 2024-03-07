@@ -1,3 +1,21 @@
 {
-  ".": "0.14.0"
+  "packages/lsp-smart-contracts": "0.15.0-rc.0",
+  "packages/lsp0-contracts": "0.15.0-rc.0",
+  "packages/lsp1-contracts": "0.15.0-rc.0",
+  "packages/lsp1delegate-contracts": "0.15.0-rc.0",
+  "packages/lsp2-contracts": "0.15.0-rc.0",
+  "packages/lsp3-contracts": "0.15.0-rc.0",
+  "packages/lsp4-contracts": "0.15.0-rc.0",
+  "packages/lsp5-contracts": "0.15.0-rc.0",
+  "packages/lsp6-contracts": "0.15.0-rc.0",
+  "packages/lsp7-contracts": "0.15.0-rc.0",
+  "packages/lsp8-contracts": "0.15.0-rc.0",
+  "packages/lsp9-contracts": "0.15.0-rc.0",
+  "packages/lsp10-contracts": "0.15.0-rc.0",
+  "packages/lsp12-contracts": "0.15.0-rc.0",
+  "packages/lsp14-contracts": "0.15.0-rc.0",
+  "packages/lsp16-contracts": "0.15.0-rc.0",
+  "packages/lsp17-contracts": "0.15.0-rc.0",
+  "packages/lsp17contractextension-contracts": "0.15.0-rc.0",
+  "packages/lsp23-contracts": "0.15.0-rc.0"
 }
