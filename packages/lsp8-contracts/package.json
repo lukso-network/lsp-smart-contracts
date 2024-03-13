@@ -48,9 +48,9 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp1-contracts": "*",
-    "@lukso/lsp2-contracts": "*",
-    "@lukso/lsp4-contracts": "*",
-    "@lukso/lsp17contractextension-contracts": "*"
+    "@lukso/lsp1-contracts": "~0.15.0-rc.0",
+    "@lukso/lsp2-contracts": "~0.15.0-rc.0",
+    "@lukso/lsp4-contracts": "~0.15.0-rc.0",
+    "@lukso/lsp17contractextension-contracts": "~0.15.0-rc.0"
   }
 }

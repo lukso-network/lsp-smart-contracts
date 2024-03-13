@@ -47,6 +47,6 @@
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
-    "@lukso/lsp2-contracts": "*"
+    "@lukso/lsp2-contracts": "~0.15.0-rc.0"
   }
 }
