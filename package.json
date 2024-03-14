@@ -3,7 +3,7 @@
   "version": "0.14.0",
   "description": "The reference smart contract implementation for the LUKSO LSP standards",
   "private": true,
-  "npmClient": "npm",
+  "npmClient": "pnpm",
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
@@ -98,12 +98,9 @@
     "vite-plugin-checker": "^0.5.6",
     "vite-tsconfig-paths": "^4.0.7",
     "web3": "^1.5.2",
-    "zx": "^7.2.3"
+    "zx": "^7.2.3",
+    "tsconfig": "*"
   },
-  "workspaces": [
-    "config/*",
-    "packages/*"
-  ],
   "resolutions": {
     "@typechain/hardhat": "9.1.0"
   }

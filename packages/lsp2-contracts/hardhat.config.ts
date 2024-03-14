@@ -3,6 +3,8 @@ import { NetworkUserConfig } from 'hardhat/types';
 import { config as dotenvConfig } from 'dotenv';
 import { resolve } from 'path';
 
+import '@nomicfoundation/hardhat-viem';
+
 /**
  * this package includes:
  *  - @nomiclabs/hardhat-ethers
