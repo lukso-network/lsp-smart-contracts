@@ -80,6 +80,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     // Mapping a `tokenId` to its authorized operator addresses.
     mapping(bytes32 => EnumerableSet.AddressSet) internal _operators;
 
+    // Mapping from `tokenId` to `dataKey` to `dataValue`
+    mapping(bytes32 => mapping(bytes32 => bytes)) internal _tokenIdData;
+
     // --- Token queries
 
     /**
@@ -671,8 +674,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     }
 
     /**
-     * @dev Sets data for a specific `tokenId` and `dataKey` in the ERC725Y storage
-     * The ERC725Y data key is the hash of the `tokenId` and `dataKey` concatenated
+     * @dev Sets data for a specific `tokenId` and `dataKey`
      * @param tokenId The unique identifier for a token.
      * @param dataKey The key for the data to set.
      * @param dataValue The value to set for the given data key.
@@ -683,13 +685,12 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bytes32 dataKey,
         bytes memory dataValue
     ) internal virtual {
-        _store[keccak256(bytes.concat(tokenId, dataKey))] = dataValue;
+        _tokenIdData[tokenId][dataKey] = dataValue;
         emit TokenIdDataChanged(tokenId, dataKey, dataValue);
     }
 
     /**
-     * @dev Retrieves data for a specific `tokenId` and `dataKey` from the ERC725Y storage
-     * The ERC725Y data key is the hash of the `tokenId` and `dataKey` concatenated
+     * @dev Retrieves data for a specific `tokenId` and `dataKey`
      * @param tokenId The unique identifier for a token.
      * @param dataKey The key for the data to retrieve.
      * @return dataValues The data value associated with the given `tokenId` and `dataKey`.
@@ -698,7 +699,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bytes32 tokenId,
         bytes32 dataKey
     ) internal view virtual returns (bytes memory dataValues) {
-        return _store[keccak256(bytes.concat(tokenId, dataKey))];
+        return _tokenIdData[tokenId][dataKey];
     }
 
     /**
