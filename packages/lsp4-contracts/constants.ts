@@ -5,6 +5,7 @@ export type LSP4DigitalAssetMetadataJSON = {
 };
 
 export type LSP4DigitalAssetMetadata = {
+  name: string;
   description: string;
   links: LinkMetadata[];
   images: ImageMetadata[][];
