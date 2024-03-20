@@ -92,9 +92,9 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     function balanceOf(address tokenOwner) external view returns (uint256);
 
     /**
-     * @dev Returns the list of `tokenIds` for the `tokenOwner` address.
+     * @dev Returns the address that owns a given `tokenId`.
      *
-     * @param tokenId tokenOwner The address to query owned tokens
+     * @param tokenId The token ID to query the owner for.
      * @return The owner address of the given `tokenId`.
      *
      * @custom:requirements `tokenId` must exist.
