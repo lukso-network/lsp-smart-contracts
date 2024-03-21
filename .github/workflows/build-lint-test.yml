@@ -22,19 +22,19 @@ jobs:
         run: npm ci
 
       - name: 🔍 Run Solidity Linter
-        run: npm run lint:solidity
+        run: pnpm run lint:solidity
 
       - name: 🎨 Run ESLint on JS/TS files
-        run: npm run lint
+        run: pnpm run lint
 
       # This will also generate the Typechain types used by the Chai tests
       - name: 🏗️ Build contract artifacts
         run: |
-          npm run build
-          npm run build:js
+          pnpm run build
+          pnpm run build:js
 
       # - name: 📚 generate ABI docs
-      #   run: npm run build:docs
+      #   run: pnpm run build:docs
 
       # - name: 🔍 check if ABI auto-generated docs need to be updated
       #   run: |-
@@ -45,4 +45,4 @@ jobs:
       #     fi
 
       - name: 🧪 Run tests for each package
-        run: npm run test
+        run: pnpm run test

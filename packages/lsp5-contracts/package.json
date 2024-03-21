@@ -43,6 +43,9 @@
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
-    "@lukso/lsp2-contracts": "*"
+    "@lukso/lsp2-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "hardhat": "^2.20.1"
   }
 }

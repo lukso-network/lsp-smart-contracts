@@ -15,12 +15,12 @@ npm install
 2. Build the contracts:
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 ## Running Tests
 
-To run the tests, use the `npm run test:{lsp}` command. Replace `{lsp}` with the specific test script you want to execute. Here are the available test script options with their descriptions:
+To run the tests, use the `pnpm run test:{lsp}` command. Replace `{lsp}` with the specific test script you want to execute. Here are the available test script options with their descriptions:
 
 - `test`: Runs all tests in order.
 - `test:benchmark`: Executes benchmark tests related to gas cost.
@@ -53,7 +53,7 @@ To run the tests, use the `npm run test:{lsp}` command. Replace `{lsp}` with the
 For example, to run the `test:lsp1` script, you would use:
 
 ```bash
-npm run test:lsp1
+pnpm run test:lsp1
 ```
 
 ## Running Foundry Tests
@@ -61,5 +61,5 @@ npm run test:lsp1
 To run the Foundry tests, use the following command:
 
 ```bash
-npm run test:foundry
+pnpm run test:foundry
 ```

@@ -39,7 +39,7 @@ Fixes #<Fill in with issue number>
 
 - [ ] Wrote Tests
 - [ ] Wrote & Generated Documentation (readme/natspec/dodoc)
-- [ ] Ran `npm run lint` && `npm run lint:solidity` (solhint)
-- [ ] Ran `npm run format` (prettier)
-- [ ] Ran `npm run build`
-- [ ] Ran `npm run test`
+- [ ] Ran `pnpm run lint` && `pnpm run lint:solidity` (solhint)
+- [ ] Ran `pnpm run format` (prettier)
+- [ ] Ran `pnpm run build`
+- [ ] Ran `pnpm run test`

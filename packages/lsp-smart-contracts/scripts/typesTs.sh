@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # This script will gather `types/` files from all pkgs & aggregate them into 1 `types/index.ts` file
-# This script runs automatically after each `npm run build`
+# This script runs automatically after each `pnpm run build`
 
 # output file
 outputFileType="./types/index.ts"

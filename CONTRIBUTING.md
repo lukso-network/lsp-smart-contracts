@@ -19,8 +19,8 @@ $ git clone --recurse-submodules https://github.com/lukso-network/lsp-smart-cont
 Run the linter and prettier from the _lsp-smart-contracts_ project root:
 
 ```bash
-npm run linter
-npm run prettier
+pnpm run linter
+pnpm run prettier
 ```
 
 The linter is configured to check your code for adherence to our guidelines defined in `.solcover.js`.

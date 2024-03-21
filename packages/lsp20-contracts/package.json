@@ -40,5 +40,8 @@
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
+  },
+  "devDependencies": {
+    "hardhat": "^2.20.1"
   }
 }

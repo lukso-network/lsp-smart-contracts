@@ -42,11 +42,14 @@
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
   },
   "dependencies": {
-    "@erc725/smart-contracts": "^7.0.0",
-    "@openzeppelin/contracts": "^4.9.3",
     "@account-abstraction/contracts": "^0.6.0",
-    "@lukso/lsp14-contracts": "*",
-    "@lukso/lsp17contractextension-contracts": "*",
-    "@lukso/lsp20-contracts": "*"
+    "@erc725/smart-contracts": "^7.0.0",
+    "@lukso/lsp14-contracts": "workspace:*",
+    "@lukso/lsp17contractextension-contracts": "workspace:*",
+    "@lukso/lsp20-contracts": "workspace:*",
+    "@openzeppelin/contracts": "^4.9.3"
+  },
+  "devDependencies": {
+    "hardhat": "^2.20.1"
   }
 }

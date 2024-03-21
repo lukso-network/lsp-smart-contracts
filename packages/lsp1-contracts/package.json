@@ -42,7 +42,10 @@
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp2-contracts": "*"
+    "@lukso/lsp2-contracts": "workspace:*",
+    "@openzeppelin/contracts": "^4.9.3"
+  },
+  "devDependencies": {
+    "hardhat": "^2.20.1"
   }
 }

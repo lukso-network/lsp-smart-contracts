@@ -25,11 +25,11 @@ jobs:
 
       - name: NPM build
         run: |
-          npm run build
-          npm run build:foundry
+          pnpm run build
+          pnpm run build:foundry
 
       - name: Run Foundry tests
-        run: npm run test:foundry
+        run: pnpm run test:foundry
 
         env:
           # make fuzzing semi-deterministic to avoid noisy gas cost estimation

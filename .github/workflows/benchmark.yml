@@ -44,13 +44,13 @@ jobs:
 
       - name: 🏗️ Build contract artifacts
         run: |
-          npm run build
-          npm run build:turbo
+          pnpm run build
+          pnpm run build:turbo
 
       - name: 🧪 Run Benchmark tests
         # Rename the file to be able to generate benchmark JSON report
         run: |
-          npm run test:benchmark
+          pnpm run test:benchmark
           mv gas_benchmark_result.json gas_benchmark_before.json
 
       - name: Checkout current branch
@@ -73,7 +73,7 @@ jobs:
 
       - name: 🧪 Run Benchmark tests
         run: |
-          npm run test:benchmark
+          pnpm run test:benchmark
           mv gas_benchmark_result.json gas_benchmark_after.json
 
       - name: 📊 Generate Benchmark Report

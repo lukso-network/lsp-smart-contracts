@@ -47,15 +47,15 @@ jobs:
         if: ${{ steps.release.outputs.releases_created }}
         run: npm ci
 
-      # `npm run build:js` will also generate the auto-generated constants for methods, errors and events,
+      # `pnpm run build:js` will also generate the auto-generated constants for methods, errors and events,
       # including extracting their devdocs and userdocs
       - name: Prepare artifacts to publish
         if: ${{ steps.release.outputs.releases_created }}
         run: |
-          npm run build
-          npm run build:js
-          npm run package
-          npm run build:types
+          pnpm run build
+          pnpm run build:js
+          pnpm run package
+          pnpm run build:types
 
       - name: Publish on NPM
         if: ${{ steps.release.outputs.releases_created }}

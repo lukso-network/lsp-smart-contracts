@@ -33,7 +33,7 @@ jobs:
         run: npm ci
 
       - name: Build contract artifacts
-        run: npm run build
+        run: pnpm run build
 
       - name: Verify Deployer Balance
         run: npx hardhat verify-balance --network ${{ matrix.network }}

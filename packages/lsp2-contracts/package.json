@@ -48,5 +48,8 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3"
+  },
+  "devDependencies": {
+    "hardhat": "^2.20.1"
   }
 }

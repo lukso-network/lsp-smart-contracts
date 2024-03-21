@@ -37,7 +37,7 @@ jobs:
         run: npx hardhat compile
 
       - name: Run tests with coverage
-        run: npm run test:coverage
+        run: pnpm run test:coverage
 
       - name: Upload to Coveralls
         uses: coverallsapp/github-action@master
