@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.24;
 
 import {
     Link,
@@ -8,6 +8,9 @@ import {
     Asset,
     LSP7Asset,
     LSP8Asset,
+    Icons,
+    Images,
+    Assets,
     LSP4Utils
 } from "../LSP4Utils.sol";
 
@@ -24,84 +27,128 @@ contract LSP4MetadataTester {
     using LSP4Utils for Asset[];
     using LSP4Utils for LSP7Asset;
     using LSP4Utils for LSP7Asset[];
+    using LSP4Utils for LSP7Asset[][];
     using LSP4Utils for LSP8Asset;
     using LSP4Utils for LSP8Asset[];
+    using LSP4Utils for LSP8Asset[][];
+    using LSP4Utils for Icons;
+    using LSP4Utils for Images;
+    using LSP4Utils for Assets;
 
-    function toJson(Link memory link) public pure returns (string memory) {
-        return link.toJson();
+    function toJSON(Link memory link) public pure returns (string memory) {
+        return link.toJSON();
     }
 
-    function toJson(Link[] memory links) public pure returns (string memory) {
-        return links.toJson();
+    function toJSON(Link[] memory links) public pure returns (string memory) {
+        return links.toJSON();
     }
 
-    function toJson(
+    function toJSON(
         Attribute memory attribute
     ) public pure returns (string memory) {
-        return attribute.toJson();
+        return attribute.toJSON();
     }
 
-    function toJson(
+    function toJSON(
         Attribute[] memory attributes
     ) public pure returns (string memory) {
-        return attributes.toJson();
+        return attributes.toJSON();
     }
 
-    function toJson(Image memory image) public pure returns (string memory) {
-        return image.toJson();
+    function toJSON(Image memory image) public pure returns (string memory) {
+        return image.toJSON();
     }
 
-    function toJson(Image[] memory images) public pure returns (string memory) {
-        return images.toJson();
+    function toJSON(Image[] memory images) public pure returns (string memory) {
+        return images.toJSON();
     }
 
-    function toJson(
+    function toJSON(
         Image[][] memory images
     ) public pure returns (string memory) {
-        return images.toJson();
+        return images.toJSON();
     }
 
-    function toJson(Asset memory asset) public pure returns (string memory) {
-        return asset.toJson();
+    function toJSON(Asset memory asset) public pure returns (string memory) {
+        return asset.toJSON();
     }
 
-    function toJson(Asset[] memory assets) public pure returns (string memory) {
-        return assets.toJson();
+    function toJSON(Asset[] memory assets) public pure returns (string memory) {
+        return assets.toJSON();
     }
 
-    function toJson(
+    function toJSON(
         LSP7Asset memory asset
     ) public pure returns (string memory) {
-        return asset.toJson();
+        return asset.toJSON();
     }
 
-    function toJson(
+    function toJSON(
         LSP7Asset[] memory assets
     ) public pure returns (string memory) {
-        return assets.toJson();
+        return assets.toJSON();
     }
 
-    function toJson(
+    function toJSON(
+        LSP7Asset[][] memory assets
+    ) public pure returns (string memory) {
+        return assets.toJSON();
+    }
+
+    function toJSON(
         LSP8Asset memory asset
     ) public pure returns (string memory) {
-        return asset.toJson();
+        return asset.toJSON();
     }
 
-    function toJson(
+    function toJSON(
         LSP8Asset[] memory assets
     ) public pure returns (string memory) {
-        return assets.toJson();
+        return assets.toJSON();
     }
 
-    function toVerifiableUri(
+    function toJSON(
+        LSP8Asset[][] memory assets
+    ) public pure returns (string memory) {
+        return assets.toJSON();
+    }
+
+    function toJSON(Icons memory icons) public pure returns (string memory) {
+        return icons.toJSON();
+    }
+
+    function toJSON(Images memory images) public pure returns (string memory) {
+        return images.toJSON();
+    }
+
+    function toJSON(Assets memory assets) public pure returns (string memory) {
+        return assets.toJSON();
+    }
+
+    function toLSP4MetadataJSON(
+        string memory name,
+        string memory description,
+        Link[] memory links,
+        Attribute[] memory attributes,
+        Icons memory icons,
+        Images memory images,
+        Assets memory assets
+    ) public pure returns (string memory) {
+        return
+            toLSP4MetadataJSON(
+                name,
+                description,
+                links,
+                attributes,
+                icons,
+                images,
+                assets
+            );
+    }
+
+    function toVerifiableURI(
         string memory data
     ) public pure returns (bytes memory verifiableUri) {
         return data.toVerifiableURI();
-    }
-
-    function toLsp4Metadata(
-        string memory data
-    ) public pure returns (string memory) {
-        return data.toLsp4Metadata();
     }
 }

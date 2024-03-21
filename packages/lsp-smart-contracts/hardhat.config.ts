@@ -36,6 +36,49 @@ import { dodocConfig } from './dodoc/config';
 
 dotenvConfig({ path: resolve(__dirname, './.env') });
 
+const DEFAULT_COMPILER_SETTINGS = {
+  version: '0.8.17',
+  settings: {
+    optimizer: {
+      enabled: true,
+      /**
+       * Optimize for how many times you intend to run the code.
+       * Lower values will optimize more for initial deployment cost, higher
+       * values will optimize more for high-frequency usage.
+       * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
+       */
+      runs: 1000,
+    },
+    outputSelection: {
+      '*': {
+        '*': ['storageLayout'],
+      },
+    },
+  },
+};
+
+const VIA_IR_SETTINGS = {
+  version: '0.8.24',
+  settings: {
+    viaIR: true,
+    optimizer: {
+      enabled: true,
+      /**
+       * Optimize for how many times you intend to run the code.
+       * Lower values will optimize more for initial deployment cost, higher
+       * values will optimize more for high-frequency usage.
+       * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
+       */
+      runs: 1000,
+    },
+    outputSelection: {
+      '*': {
+        '*': ['storageLayout'],
+      },
+    },
+  },
+};
+
 function getTestnetChainConfig(): NetworkUserConfig {
   const config: NetworkUserConfig = {
     live: true,
@@ -120,23 +163,10 @@ const config: HardhatUserConfig = {
     showMethodSig: true,
   },
   solidity: {
-    version: '0.8.17',
-    settings: {
-      optimizer: {
-        enabled: true,
-        /**
-         * Optimize for how many times you intend to run the code.
-         * Lower values will optimize more for initial deployment cost, higher
-         * values will optimize more for high-frequency usage.
-         * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
-         */
-        runs: 1000,
-      },
-      outputSelection: {
-        '*': {
-          '*': ['storageLayout'],
-        },
-      },
+    compilers: [DEFAULT_COMPILER_SETTINGS],
+    overrides: {
+      '@lukso/lsp4-contracts/contracts/LSP4Utils.sol': VIA_IR_SETTINGS,
+      'contracts/LSP4DigitalAssetMetadata/LSP4Utils.sol': VIA_IR_SETTINGS,
     },
   },
   mocha: {
