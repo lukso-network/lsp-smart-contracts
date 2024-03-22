@@ -39,5 +39,8 @@
     "clean": "hardhat clean && rm -Rf dist/",
     "format": "prettier --write .",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
+  },
+  "dependencies": {
+    "@lukso/lsp2-contracts": "~0.15.0-rc.0"
   }
 }
