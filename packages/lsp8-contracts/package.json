@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp8-contracts",
-  "version": "0.15.0-rc.0",
+  "version": "0.15.0-rc.1",
   "description": "Package for the LSP8 Identifiable Digital Asset standard",
   "license": "Apache-2.0",
   "author": "",
@@ -48,9 +48,9 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp1-contracts": "~0.15.0-rc.0",
-    "@lukso/lsp2-contracts": "~0.15.0-rc.0",
-    "@lukso/lsp4-contracts": "~0.15.0-rc.0",
-    "@lukso/lsp17contractextension-contracts": "~0.15.0-rc.0"
+    "@lukso/lsp1-contracts": "~0.15.0-rc.1",
+    "@lukso/lsp2-contracts": "~0.15.0-rc.1",
+    "@lukso/lsp4-contracts": "~0.15.0-rc.1",
+    "@lukso/lsp17contractextension-contracts": "~0.15.0-rc.1"
   }
 }

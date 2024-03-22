@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp12-contracts",
-  "version": "0.15.0-rc.0",
+  "version": "0.15.0-rc.1",
   "description": "Package for the LSP12 Issued Assets standard",
   "license": "Apache-2.0",
   "author": "",
@@ -42,6 +42,6 @@
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
   },
   "dependencies": {
-    "@lukso/lsp2-contracts": "~0.15.0-rc.0"
+    "@lukso/lsp2-contracts": "~0.15.0-rc.1"
   }
 }
