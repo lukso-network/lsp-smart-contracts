@@ -43,7 +43,7 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp0-contracts": "~0.15.0-rc.0",
-    "@lukso/lsp3-contracts": "~0.15.0-rc.0"
+    "@lukso/lsp0-contracts": "~0.15.0-rc.1",
+    "@lukso/lsp3-contracts": "~0.15.0-rc.1"
   }
 }
