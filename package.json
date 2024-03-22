@@ -36,6 +36,7 @@
     "lint": "turbo lint",
     "lint:solidity": "turbo lint:solidity",
     "package": "turbo package",
+    "release": "turbo run release",
     "test": "turbo test",
     "test:foundry": "turbo test:foundry --scope='!@lukso/lsp16-contracts'",
     "test:coverage": "turbo test:coverage",
@@ -63,6 +64,7 @@
   },
   "devDependencies": {
     "@b00ste/hardhat-dodoc": "^0.3.16",
+    "@changesets/cli": "^2.27.1",
     "@erc725/erc725.js": "0.23.0",
     "@lukso/eip191-signer.js": "^0.2.2",
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
