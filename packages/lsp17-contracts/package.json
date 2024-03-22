@@ -50,6 +50,35 @@
     "@openzeppelin/contracts": "^4.9.3"
   },
   "devDependencies": {
-    "hardhat": "^2.20.1"
+    "@b00ste/hardhat-dodoc": "^0.3.16",
+    "@erc725/erc725.js": "0.23.0",
+    "@lukso/eip191-signer.js": "^0.2.2",
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@nomiclabs/hardhat-web3": "^2.0.0",
+    "ethers": "^6.11.0",
+    "hardhat": "^2.20.1",
+    "hardhat-contract-sizer": "^2.8.0",
+    "hardhat-deploy": "^0.11.25",
+    "hardhat-deploy-ethers": "^0.4.1",
+    "hardhat-gas-reporter": "^1.0.9",
+    "hardhat-packager": "^1.4.2",
+    "tsconfig": "workspace:*",
+    "typechain": "^8.3.2",
+    "@typechain/ethers-v6": "^0.5.1",
+    "@typechain/hardhat": "9.1.0",
+    "@wagmi/cli": "^2.1.2",
+    "dotenv": "^16.0.3",
+    "esbuild": "^0.17.15",
+    "eth-create2-calculator": "^1.1.5",
+    "markdown-table-ts": "^1.0.3",
+    "pluralize": "^8.0.0",
+    "rollup-plugin-esbuild": "^5.0.0",
+    "solhint": "^3.6.2",
+    "solidity-bytes-utils": "^0.8.2",
+    "unbuild": "^2.0.0",
+    "vite-plugin-checker": "^0.5.6",
+    "vite-tsconfig-paths": "^4.0.7",
+    "web3": "^1.5.2",
+    "zx": "^7.2.3"
   }
 }
