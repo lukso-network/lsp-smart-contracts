@@ -108,14 +108,17 @@ const config: HardhatUserConfig = {
   packager: {
     // What contracts to keep the artifacts and the bindings for.
     contracts: [
+      'ILSP7DigitalAsset',
       // Standard version
       // ------------------
       'LSP7DigitalAsset',
+      'LSP7Burnable',
       'LSP7CappedSupply',
       'LSP7Mintable',
       // Proxy version
       // ------------------
       'LSP7DigitalAssetInitAbstract',
+      'LSP7BurnableInitAbstract',
       'LSP7CappedSupplyInitAbstract',
       'LSP7MintableInit',
     ],

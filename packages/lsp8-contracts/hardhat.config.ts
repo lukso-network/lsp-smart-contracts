@@ -108,15 +108,20 @@ const config: HardhatUserConfig = {
   packager: {
     // What contracts to keep the artifacts and the bindings for.
     contracts: [
+      'ILSP8IdentifiableDigitalAsset',
       // Standard version
       // ------------------
       'LSP8IdentifiableDigitalAsset',
+      'LSP8Burnable',
       'LSP8CappedSupply',
+      'LSP8Enumerable',
       'LSP8Mintable',
       // Proxy version
       // ------------------
       'LSP8IdentifiableDigitalAssetInitAbstract',
+      'LSP8BurnableInitAbstract',
       'LSP8CappedSupplyInitAbstract',
+      'LSP8EnumerableInitAbstract',
       'LSP8MintableInit',
     ],
     // Whether to include the TypeChain factories or not.

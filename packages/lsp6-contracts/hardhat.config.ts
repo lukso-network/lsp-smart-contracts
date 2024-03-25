@@ -108,6 +108,7 @@ const config: HardhatUserConfig = {
   packager: {
     // What contracts to keep the artifacts and the bindings for.
     contracts: [
+      'ILSP6KeyManager',
       'LSP6KeyManager', // Standard version
       'LSP6KeyManagerInit', // Proxy version
     ],
