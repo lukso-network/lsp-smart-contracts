@@ -1,5 +1,5 @@
 import { HardhatUserConfig } from 'hardhat/config';
-import { NetworkUserConfig } from 'hardhat/types';
+import { NetworkUserConfig, SolidityConfig, SolidityUserConfig } from 'hardhat/types';
 import { config as dotenvConfig } from 'dotenv';
 import { resolve } from 'path';
 
@@ -24,6 +24,49 @@ import 'hardhat-deploy';
 // can be imported here (e.g: docs generation, gas benchmark, etc...)
 
 dotenvConfig({ path: resolve(__dirname, './.env') });
+
+const DEFAULT_COMPILER_SETTINGS: SolidityUserConfig = {
+  version: '0.8.17',
+  settings: {
+    optimizer: {
+      enabled: true,
+      /**
+       * Optimize for how many times you intend to run the code.
+       * Lower values will optimize more for initial deployment cost, higher
+       * values will optimize more for high-frequency usage.
+       * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
+       */
+      runs: 1000,
+    },
+    outputSelection: {
+      '*': {
+        '*': ['storageLayout'],
+      },
+    },
+  },
+};
+
+const VIA_IR_SETTINGS: SolidityUserConfig = {
+  version: '0.8.24',
+  settings: {
+    viaIR: true,
+    optimizer: {
+      enabled: true,
+      /**
+       * Optimize for how many times you intend to run the code.
+       * Lower values will optimize more for initial deployment cost, higher
+       * values will optimize more for high-frequency usage.
+       * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
+       */
+      runs: 1000,
+    },
+    outputSelection: {
+      '*': {
+        '*': ['storageLayout'],
+      },
+    },
+  },
+};
 
 function getTestnetChainConfig(): NetworkUserConfig {
   const config: NetworkUserConfig = {
@@ -86,23 +129,10 @@ const config: HardhatUserConfig = {
     showMethodSig: true,
   },
   solidity: {
-    version: '0.8.17',
-    settings: {
-      optimizer: {
-        enabled: true,
-        /**
-         * Optimize for how many times you intend to run the code.
-         * Lower values will optimize more for initial deployment cost, higher
-         * values will optimize more for high-frequency usage.
-         * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
-         */
-        runs: 1000,
-      },
-      outputSelection: {
-        '*': {
-          '*': ['storageLayout'],
-        },
-      },
+    compilers: [DEFAULT_COMPILER_SETTINGS],
+    overrides: {
+      'contracts/LSP4Utils.sol': VIA_IR_SETTINGS,
+      'contracts/mock/LSP4MetadataTester.sol': VIA_IR_SETTINGS,
     },
   },
   packager: {

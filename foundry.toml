@@ -5,7 +5,7 @@ libs = ['node_modules','lib']
 gas_reports = ["LSP6ExecuteRestrictedController", "LSP6ExecuteUnrestrictedController", "LSP6SetDataRestrictedController", "LSP6SetDataUnrestrictedController"]
 cache_path = 'forge-cache'
 test = 'tests/foundry'
-solc_version = "0.8.17"
+solc = "0.8.17"
 
 [fuzz]
 runs = 10_000
@@ -30,3 +30,4 @@ out = 'packages/lsp16-contracts/contracts/foundry_artifacts'
 src = 'packages/lsp-smart-contracts/contracts'
 test = 'packages/lsp-smart-contracts/tests/foundry'
 out = 'packages/lsp-smart-contracts/contracts/foundry_artifacts'
+solc = "0.8.24"
