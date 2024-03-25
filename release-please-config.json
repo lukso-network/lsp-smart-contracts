@@ -19,7 +19,7 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "prerelease-type": "rc",
-      "extra-files": ["packages/lsp0-contracts/contracts/Version.sol"]
+      "extra-files": ["contracts/Version.sol"]
     },
     "packages/lsp1-contracts": {
       "component": "lsp1-contracts",
@@ -40,7 +40,7 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "prerelease-type": "rc",
-      "extra-files": ["packages/lsp1delegate-contracts/contracts/Version.sol"]
+      "extra-files": ["contracts/Version.sol"]
     },
     "packages/lsp2-contracts": {
       "component": "lsp2-contracts",
@@ -91,7 +91,7 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "prerelease-type": "rc",
-      "extra-files": ["packages/lsp6-contracts/contracts/Version.sol"]
+      "extra-files": ["contracts/Version.sol"]
     },
     "packages/lsp7-contracts": {
       "component": "lsp7-contracts",
@@ -122,7 +122,7 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "prerelease-type": "rc",
-      "extra-files": ["packages/lsp9-contracts/contracts/Version.sol"]
+      "extra-files": ["contracts/Version.sol"]
     },
     "packages/lsp10-contracts": {
       "component": "lsp10-contracts",
@@ -183,9 +183,7 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "prerelease-type": "rc",
-      "extra-files": [
-        "packages/lsp17contractextension-contracts/contracts/Version.sol"
-      ]
+      "extra-files": ["contracts/Version.sol"]
     },
     "packages/lsp20-contracts": {
       "component": "lsp20-contracts",
@@ -225,7 +223,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease-type": "rc"
+      "prerelease-type": "rc",
+      "extra-files": ["contracts/Version.sol"]
     }
   },
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
