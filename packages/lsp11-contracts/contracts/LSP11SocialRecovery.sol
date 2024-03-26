@@ -501,6 +501,7 @@ contract LSP11SocialRecovery is
         ];
 
         if (recoveryTimestamp == 0) {
+            // solhint-disable not-rely-on-time
             _firstRecoveryTimestamp[account][accountRecoveryCounter] = block
                 .timestamp;
         }
@@ -637,6 +638,7 @@ contract LSP11SocialRecovery is
         address votedAddress,
         bytes32 commitment
     ) internal {
+        // solhint-disable not-rely-on-time
         CommitmentInfo memory _commitment = CommitmentInfo(
             commitment,
             block.timestamp
@@ -869,6 +871,7 @@ contract LSP11SocialRecovery is
         bytes memory calldataToExecute
     ) internal returns (bytes memory) {
         if (
+            // solhint-disable not-rely-on-time
             block.timestamp <
             _firstRecoveryTimestamp[account][recoveryCounter] +
                 getRecoveryDelayOf(account)
@@ -909,6 +912,7 @@ contract LSP11SocialRecovery is
             ) revert InvalidCommitment(account, votedAddress);
 
             // Check that the commitment is not too early
+            // solhint-disable not-rely-on-time
             if (
                 _commitmentInfoOf[account][recoveryCounter][votedAddress]
                     .timestamp +
