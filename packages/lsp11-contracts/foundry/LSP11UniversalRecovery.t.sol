@@ -7,19 +7,18 @@ import "forge-std/console.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {
-    LSP11UniversalSocialRecovery
-} from "../contracts/LSP11UniversalSocialRecovery.sol";
+import {LSP11SocialRecovery} from "../contracts/LSP11SocialRecovery.sol";
+import "../contracts/LSP11Errors.sol";
 
 contract LSP11AccountFunctionalities is Test {
-    LSP11UniversalSocialRecovery public lsp11;
+    LSP11SocialRecovery public lsp11;
 
     fallback() external payable {}
 
     receive() external payable {}
 
     function setUp() public {
-        lsp11 = new LSP11UniversalSocialRecovery();
+        lsp11 = new LSP11SocialRecovery();
     }
 
     function testAddGuardian() public {
@@ -246,28 +245,28 @@ contract LSP11AccountFunctionalities is Test {
 
         // Prepare calldata for addGuardian
         bytes memory addGuardianData = abi.encodeWithSelector(
-            LSP11UniversalSocialRecovery.addGuardian.selector,
+            LSP11SocialRecovery.addGuardian.selector,
             address(this),
             newGuardian
         );
 
         // Prepare calldata for setGuardiansThreshold
         bytes memory setThresholdData = abi.encodeWithSelector(
-            LSP11UniversalSocialRecovery.setGuardiansThreshold.selector,
+            LSP11SocialRecovery.setGuardiansThreshold.selector,
             address(this),
             newThreshold
         );
 
         // Prepare calldata for setRecoverySecretHash
         bytes memory setSecretData = abi.encodeWithSelector(
-            LSP11UniversalSocialRecovery.setRecoverySecretHash.selector,
+            LSP11SocialRecovery.setRecoverySecretHash.selector,
             address(this),
             newSecretHash
         );
 
         // Prepare calldata for setRecoveryDelay
         bytes memory setDelayData = abi.encodeWithSelector(
-            LSP11UniversalSocialRecovery.setRecoveryDelay.selector,
+            LSP11SocialRecovery.setRecoveryDelay.selector,
             address(this),
             newRecoveryDelay
         );
@@ -299,28 +298,28 @@ contract LSP11AccountFunctionalities is Test {
 
         // Prepare calldata for addGuardian
         bytes memory addGuardianData = abi.encodeWithSelector(
-            LSP11UniversalSocialRecovery.addGuardian.selector,
+            LSP11SocialRecovery.addGuardian.selector,
             address(this),
             newGuardian
         );
 
         // Prepare calldata for setGuardiansThreshold
         bytes memory setThresholdData = abi.encodeWithSelector(
-            LSP11UniversalSocialRecovery.setGuardiansThreshold.selector,
+            LSP11SocialRecovery.setGuardiansThreshold.selector,
             address(this),
             newThreshold
         );
 
         // Prepare calldata for setRecoverySecretHash
         bytes memory setSecretData = abi.encodeWithSelector(
-            LSP11UniversalSocialRecovery.setRecoverySecretHash.selector,
+            LSP11SocialRecovery.setRecoverySecretHash.selector,
             address(this),
             newSecretHash
         );
 
         // Prepare calldata for setRecoveryDelay
         bytes memory setDelayData = abi.encodeWithSelector(
-            LSP11UniversalSocialRecovery.setRecoveryDelay.selector,
+            LSP11SocialRecovery.setRecoveryDelay.selector,
             address(this),
             newRecoveryDelay
         );
@@ -347,7 +346,7 @@ contract LSP11AccountFunctionalities is Test {
 
         // Expect a revert when nonGuardian tries to vote
         vm.expectRevert();
-        lsp11.voteForRecoverer(
+        lsp11.voteForRecovery(
             recoveryAccount,
             nonGuardian,
             guardianVotedAddress
@@ -364,10 +363,10 @@ contract LSP11AccountFunctionalities is Test {
 
         // Simulate the guardian casting a vote
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, guardianVotedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian, guardianVotedAddress);
 
         // Verify the vote
-        address votedAddress = lsp11.getAddressVotedByGuardian(
+        address votedAddress = lsp11.getVotedAddressByGuardian(
             recoveryAccount,
             lsp11.getRecoveryCounterOf(recoveryAccount),
             guardian
@@ -395,15 +394,15 @@ contract LSP11AccountFunctionalities is Test {
 
         // Guardian1 casts a vote
         vm.prank(guardian1);
-        lsp11.voteForRecoverer(recoveryAccount, guardian1, votedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian1, votedAddress);
 
         // Guardian2 casts a vote
         vm.prank(guardian2);
-        lsp11.voteForRecoverer(recoveryAccount, guardian2, votedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian2, votedAddress);
 
         // Verify votes for each guardian
         assertEq(
-            lsp11.getAddressVotedByGuardian(
+            lsp11.getVotedAddressByGuardian(
                 recoveryAccount,
                 lsp11.getRecoveryCounterOf(recoveryAccount),
                 guardian1
@@ -411,7 +410,7 @@ contract LSP11AccountFunctionalities is Test {
             votedAddress
         );
         assertEq(
-            lsp11.getAddressVotedByGuardian(
+            lsp11.getVotedAddressByGuardian(
                 recoveryAccount,
                 lsp11.getRecoveryCounterOf(recoveryAccount),
                 guardian2
@@ -439,14 +438,14 @@ contract LSP11AccountFunctionalities is Test {
 
         // Guardian casts a vote for the first address
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, firstVotedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian, firstVotedAddress);
 
         // Guardian changes vote to the second address
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, secondVotedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian, secondVotedAddress);
 
         // Verify the updated vote
-        address currentVotedAddress = lsp11.getAddressVotedByGuardian(
+        address currentVotedAddress = lsp11.getVotedAddressByGuardian(
             recoveryAccount,
             lsp11.getRecoveryCounterOf(recoveryAccount),
             guardian
@@ -478,14 +477,14 @@ contract LSP11AccountFunctionalities is Test {
 
         // Guardian casts a vote
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, votedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian, votedAddress);
 
         // Guardian resets their vote by voting for address(0)
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, address(0));
+        lsp11.voteForRecovery(recoveryAccount, guardian, address(0));
 
         // Verify the vote is reset
-        address currentVotedAddress = lsp11.getAddressVotedByGuardian(
+        address currentVotedAddress = lsp11.getVotedAddressByGuardian(
             recoveryAccount,
             lsp11.getRecoveryCounterOf(recoveryAccount),
             guardian
@@ -521,9 +520,9 @@ contract LSP11AccountFunctionalities is Test {
 
         // Guardians cast their votes
         vm.prank(guardian1);
-        lsp11.voteForRecoverer(recoveryAccount, guardian1, votedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian1, votedAddress);
         vm.prank(guardian2);
-        lsp11.voteForRecoverer(recoveryAccount, guardian2, votedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian2, votedAddress);
 
         uint256 oldRecoveryCounter = lsp11.getRecoveryCounterOf(
             recoveryAccount
@@ -568,9 +567,9 @@ contract LSP11AccountFunctionalities is Test {
 
         // Guardians cast their votes
         vm.prank(guardian1);
-        lsp11.voteForRecoverer(recoveryAccount, guardian1, votedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian1, votedAddress);
         vm.prank(guardian2);
-        lsp11.voteForRecoverer(recoveryAccount, guardian2, votedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian2, votedAddress);
 
         // Check if threshold is met
         bool thresholdMet = lsp11.hasReachedThreshold(
@@ -595,7 +594,7 @@ contract LSP11AccountFunctionalities is Test {
 
         // Only one guardian casts a vote
         vm.prank(guardian1);
-        lsp11.voteForRecoverer(recoveryAccount, guardian1, votedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian1, votedAddress);
 
         // Check if threshold is met
         bool thresholdMet = lsp11.hasReachedThreshold(
@@ -616,12 +615,12 @@ contract LSP11AccountFunctionalities is Test {
 
         // Guardian casts a vote
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, votedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian, votedAddress);
 
         // Expect a revert when the same guardian tries to vote for the same address again
         vm.expectRevert();
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, votedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian, votedAddress);
     }
 
     function testRemovedGuardianCannotChangeVote() public {
@@ -633,7 +632,7 @@ contract LSP11AccountFunctionalities is Test {
         // Add a guardian and cast a vote
         lsp11.addGuardian(recoveryAccount, guardian);
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, firstVotedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian, firstVotedAddress);
 
         // Remove the guardian
         lsp11.removeGuardian(recoveryAccount, guardian);
@@ -641,7 +640,7 @@ contract LSP11AccountFunctionalities is Test {
         // Expect a revert when the removed guardian tries to change their vote
         vm.expectRevert();
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, secondVotedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian, secondVotedAddress);
     }
 
     function testVoteInvalidationAfterCounterIncrement() public {
@@ -652,13 +651,13 @@ contract LSP11AccountFunctionalities is Test {
         // Add a guardian and cast a vote
         lsp11.addGuardian(recoveryAccount, guardian);
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, votedAddress);
+        lsp11.voteForRecovery(recoveryAccount, guardian, votedAddress);
 
         // Increment the recovery counter, simulating a reset or progression in the recovery process
         lsp11.cancelRecoveryProcess(recoveryAccount);
 
         // Check if the vote made before the increment is still considered valid
-        address currentVotedAddress = lsp11.getAddressVotedByGuardian(
+        address currentVotedAddress = lsp11.getVotedAddressByGuardian(
             recoveryAccount,
             lsp11.getRecoveryCounterOf(recoveryAccount),
             guardian
@@ -730,7 +729,7 @@ contract LSP11AccountFunctionalities is Test {
 
         vm.expectRevert();
         vm.prank(address(0x123));
-        lsp11.commitPlainSecret(recoveryAccount, address(0xABC), 0x0);
+        lsp11.commitToRecover(recoveryAccount, address(0xABC), 0x0);
     }
 
     function testBehaviorWithZeroGuardiansThreshold() public {
@@ -746,59 +745,61 @@ contract LSP11AccountFunctionalities is Test {
         lsp11.recoverAccess(recoveryAccount, address(0xABC), 0x0, 0x0, "");
     }
 
-    function testCommitPlainSecretWithIncorrectRecoverer() public {
+    function testcommitToRecoverWithIncorrectVotedAddress() public {
         address recoveryAccount = address(this);
-        address fakeRecoverer = address(0xABC); // Fake recoverer
-        address realRecoverer = address(0xDEF); // Real recoverer
+        address fakeVotedAddress = address(0xABC); // Fake votedAddress
+        address realVotedAddress = address(0xDEF); // Real votedAddress
         bytes32 secret = keccak256(abi.encode(recoveryAccount, "secret"));
-        bytes32 commitment = keccak256(abi.encode(realRecoverer, secret));
+        bytes32 commitment = keccak256(abi.encode(realVotedAddress, secret));
 
-        // Expect a revert due to incorrect recoverer
+        // Expect a revert due to incorrect votedAddress
         vm.expectRevert();
-        lsp11.commitPlainSecret(recoveryAccount, fakeRecoverer, commitment);
+        lsp11.commitToRecover(recoveryAccount, fakeVotedAddress, commitment);
     }
 
-    function testSuccessfulCommitPlainSecret() public {
+    function testSuccessfulcommitToRecover() public {
         address recoveryAccount = address(this);
-        address recoverer = address(0xABC); // Valid recoverer
+        address votedAddress = address(0xABC); // Valid votedAddress
         bytes32 secret = keccak256(abi.encode(recoveryAccount, "secret"));
-        bytes32 commitment = keccak256(abi.encode(recoverer, secret));
+        bytes32 commitment = keccak256(abi.encode(votedAddress, secret));
 
         // Commit plain secret
-        vm.prank(recoverer); // Simulate call from the recoverer
-        lsp11.commitPlainSecret(recoveryAccount, recoverer, commitment);
+        vm.prank(votedAddress); // Simulate call from the votedAddress
+        lsp11.commitToRecover(recoveryAccount, votedAddress, commitment);
 
         // Validate that the commitment was correctly set
         (bytes32 returnedCommitment, uint256 timestamp) = lsp11
             .getCommitmentInfoOf(
                 recoveryAccount,
                 lsp11.getRecoveryCounterOf(recoveryAccount),
-                recoverer
+                votedAddress
             );
         assertEq(returnedCommitment, commitment);
         assertEq(timestamp, block.timestamp);
     }
 
-    function testCommitPlainSecretRelayCallWithInvalidSignature() public {
+    function testcommitToRecoverRelayCallWithInvalidSignature() public {
         address recoveryAccount = address(this);
-        address recoverer = address(0xABC);
+        address votedAddess = address(0xABC);
         bytes32 commitment = 0x0; // Example commitment
         bytes memory invalidSignature = new bytes(1); // Invalid signature
 
-        // Expect revert due to invalid signature
-        vm.expectRevert();
-        lsp11.commitPlainSecretRelayCall(
+        bytes memory commitPayload = abi.encodeWithSelector(
+            lsp11.commitToRecover.selector,
             recoveryAccount,
-            recoverer,
-            commitment,
-            invalidSignature
+            votedAddess,
+            commitment
         );
+
+        // Expect revert due to invalid signature
+        vm.expectRevert("ECDSA: invalid signature length");
+        lsp11.executeRelayCall(invalidSignature, 0, 0, commitPayload);
     }
 
-    function testCommitPlainSecretRelayCallWithDifferentRecoveryCounter()
-        public
-    {
-        (address recoverer, uint256 recovererPK) = makeAddrAndKey("recoverer");
+    function testcommitToRecoverRelayCallWithDifferentRecoveryCounter() public {
+        (address votedAddess, uint256 votedAddressPK) = makeAddrAndKey(
+            "votedAddress"
+        );
 
         address recoveryAccount = address(this);
         bytes32 commitment = 0x0; // Example commitment
@@ -806,89 +807,123 @@ contract LSP11AccountFunctionalities is Test {
             recoveryAccount
         ) + 1; // Incorrect recovery counter
 
-        bytes memory encodedMessage = abi.encodePacked(
-            "lsp11",
+        bytes memory commitPayload = abi.encodeWithSelector(
+            lsp11.commitToRecover.selector,
             recoveryAccount,
-            wrongRecoveryCounter,
-            block.chainid,
-            recoverer,
+            votedAddess,
             commitment
         );
-        bytes32 eip191Hash = ECDSA.toEthSignedMessageHash(encodedMessage);
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(recovererPK, eip191Hash); // Signature with wrong recovery counter
+
+        bytes memory encodedMessage = abi.encodePacked(
+            uint256(11),
+            block.chainid,
+            uint256(0),
+            uint256(0),
+            uint256(0),
+            wrongRecoveryCounter,
+            commitPayload
+        );
+
+        bytes32 eip191Hash = ECDSA.toDataWithIntendedValidatorHash(
+            address(lsp11),
+            encodedMessage
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(votedAddressPK, eip191Hash); // Signature with wrong recovery counter
         bytes memory signature = toBytesSignature(v, r, s);
         // Expect revert due to recovery counter mismatch
         vm.expectRevert();
-        lsp11.commitPlainSecretRelayCall(
-            recoveryAccount,
-            recoverer,
-            commitment,
-            signature
-        );
+        lsp11.executeRelayCall(signature, 0, 0, commitPayload);
     }
 
-    function testCommitPlainSecretRelayCallWithCorrectConfig() public {
-        (address recoverer, uint256 recovererPK) = makeAddrAndKey("recoverer");
+    function testcommitToRecoverRelayCallWithCorrectConfig() public {
+        (address votedAddress, uint256 votedAddressPK) = makeAddrAndKey(
+            "votedAddress"
+        );
 
-        address recoveryAccount = address(this);
-        uint256 recoveryCounter = lsp11.getRecoveryCounterOf(recoveryAccount);
+        bytes32 commitment = 0x2b58178172d258515ef1d9e7c467f6f6a09510e863ef5ad383dbfc50721183df; // Example commitment
+        uint256 recoveryCounter = lsp11.getRecoveryCounterOf(address(this));
+
+        bytes memory commitPayload = abi.encodeWithSelector(
+            lsp11.commitToRecover.selector,
+            address(this),
+            votedAddress,
+            commitment
+        );
 
         bytes memory encodedMessage = abi.encodePacked(
-            "lsp11",
-            recoveryAccount,
-            recoveryCounter,
+            uint256(11),
             block.chainid,
-            recoverer,
-            bytes32(0x0)
+            uint256(0),
+            uint256(0),
+            uint256(0),
+            recoveryCounter,
+            commitPayload
         );
-        bytes32 eip191Hash = ECDSA.toEthSignedMessageHash(encodedMessage);
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(recovererPK, eip191Hash); // Signature with wrong recovery counter
+        bytes32 eip191Hash = ECDSA.toDataWithIntendedValidatorHash(
+            address(lsp11),
+            encodedMessage
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(votedAddressPK, eip191Hash); // Signature with wrong recovery counter
         bytes memory signature = toBytesSignature(v, r, s);
         // Expect revert due to recovery counter mismatch
         // vm.expectRevert();
-        lsp11.commitPlainSecretRelayCall(
-            recoveryAccount,
-            recoverer,
-            bytes32(0x0),
-            signature
-        );
+        lsp11.executeRelayCall(signature, 0, 0, commitPayload);
 
         (bytes32 returnedCommitment, ) = lsp11.getCommitmentInfoOf(
-            recoveryAccount,
+            address(this),
             recoveryCounter,
-            recoverer
+            votedAddress
         );
 
-        assertEq(returnedCommitment, bytes32(0x0));
+        assertEq(returnedCommitment, commitment);
     }
 
-    function testCommitPlainSecretRelayCallWithDifferentSigner() public {
-        (address recoverer, ) = makeAddrAndKey("recoverer");
-        (, uint256 notRecovererPK) = makeAddrAndKey("notrecoverer");
+    function testcommitToRecoverRelayCallWithDifferentSigner() public {
+        (address votedAddress, ) = makeAddrAndKey("votedAddress");
+        (address notVotedAddress, uint256 notVotedAddressPK) = makeAddrAndKey(
+            "notvotedAddress"
+        );
 
         address recoveryAccount = address(this);
-        bytes32 commitment = 0x0; // Example commitment
+        bytes32 commitment = 0x2b58178172d258515ef1d9e7c467f6f6a09510e863ef5ad383dbfc50721183df; // Example commitment
+
         uint256 recoveryCounter = lsp11.getRecoveryCounterOf(recoveryAccount);
 
-        bytes memory encodedMessage = abi.encodePacked(
-            "lsp11",
-            recoveryAccount,
-            recoveryCounter,
-            block.chainid,
-            recoverer,
+        bytes memory commitPayload = abi.encodeWithSelector(
+            lsp11.commitToRecover.selector,
+            address(this),
+            votedAddress,
             commitment
         );
-        bytes32 eip191Hash = ECDSA.toEthSignedMessageHash(encodedMessage);
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(notRecovererPK, eip191Hash); // Signature with wrong recovery counter
+
+        bytes memory encodedMessage = abi.encodePacked(
+            uint256(11),
+            block.chainid,
+            uint256(0),
+            uint256(0),
+            uint256(0),
+            recoveryCounter,
+            commitPayload
+        );
+        bytes32 eip191Hash = ECDSA.toDataWithIntendedValidatorHash(
+            address(lsp11),
+            encodedMessage
+        );
+
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            notVotedAddressPK,
+            eip191Hash
+        ); // Signature with wrong recovery counter
         bytes memory signature = toBytesSignature(v, r, s);
         // Expect revert due to recovery counter mismatch
-        vm.expectRevert();
-        lsp11.commitPlainSecretRelayCall(
-            recoveryAccount,
-            recoverer,
-            commitment,
-            signature
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                SignerIsNotVotedAddress.selector,
+                votedAddress,
+                notVotedAddress
+            )
         );
+        lsp11.executeRelayCall(signature, 0, 0, commitPayload);
     }
 
     function testRecoveryFailsIfGuardianThresholdNotMet() public {
@@ -905,7 +940,7 @@ contract LSP11AccountFunctionalities is Test {
         lsp11.setGuardiansThreshold(recoveryAccount, threshold);
         // Add guardian and cast a vote
         vm.prank(guardian1);
-        lsp11.voteForRecoverer(recoveryAccount, guardian1, address(0xDEF));
+        lsp11.voteForRecovery(recoveryAccount, guardian1, address(0xDEF));
 
         // Attempt recovery with votes below threshold
         vm.expectRevert();
@@ -926,7 +961,7 @@ contract LSP11AccountFunctionalities is Test {
         lsp11.setGuardiansThreshold(recoveryAccount, threshold);
 
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, address(0xDEF));
+        lsp11.voteForRecovery(recoveryAccount, guardian, address(0xDEF));
 
         // Attempt recovery with votes equal to threshold
         vm.prank(address(0xDEF));
@@ -981,12 +1016,12 @@ contract LSP11AccountFunctionalities is Test {
         lsp11.setGuardiansThreshold(recoveryAccount, threshold);
 
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, address(0xDEF));
+        lsp11.voteForRecovery(recoveryAccount, guardian, address(0xDEF));
 
         bytes32 commitment = keccak256(abi.encode(address(0xDEF), wrongSecret));
 
         vm.prank(address(0xDEF));
-        lsp11.commitPlainSecret(recoveryAccount, address(0xDEF), commitment);
+        lsp11.commitToRecover(recoveryAccount, address(0xDEF), commitment);
 
         vm.warp(block.timestamp + 101);
         // Attempt recovery with votes equal to threshold
@@ -1021,12 +1056,12 @@ contract LSP11AccountFunctionalities is Test {
         lsp11.setGuardiansThreshold(recoveryAccount, threshold);
 
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, address(0xDEF));
+        lsp11.voteForRecovery(recoveryAccount, guardian, address(0xDEF));
 
         bytes32 commitment = keccak256(abi.encode(address(0xDEF), secret));
 
         vm.prank(address(0xDEF));
-        lsp11.commitPlainSecret(recoveryAccount, address(0xDEF), commitment);
+        lsp11.commitToRecover(recoveryAccount, address(0xDEF), commitment);
 
         // Attempt recovery with votes equal to threshold
         vm.expectRevert();
@@ -1059,12 +1094,12 @@ contract LSP11AccountFunctionalities is Test {
         lsp11.setGuardiansThreshold(recoveryAccount, threshold);
 
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, address(0xDEF));
+        lsp11.voteForRecovery(recoveryAccount, guardian, address(0xDEF));
 
         bytes32 commitment = keccak256(abi.encode(address(0xDEF), secret));
 
         vm.prank(address(0xDEF));
-        lsp11.commitPlainSecret(recoveryAccount, address(0xDEF), commitment);
+        lsp11.commitToRecover(recoveryAccount, address(0xDEF), commitment);
 
         vm.warp(block.timestamp + 101);
         // Attempt recovery with votes equal to threshold
@@ -1098,12 +1133,12 @@ contract LSP11AccountFunctionalities is Test {
         lsp11.setGuardiansThreshold(recoveryAccount, threshold);
 
         vm.prank(guardian);
-        lsp11.voteForRecoverer(recoveryAccount, guardian, address(0xDEF));
+        lsp11.voteForRecovery(recoveryAccount, guardian, address(0xDEF));
 
         bytes32 commitment = keccak256(abi.encode(address(0xDEF), secret));
 
         vm.prank(address(0xDEF));
-        lsp11.commitPlainSecret(recoveryAccount, address(0xDEF), commitment);
+        lsp11.commitToRecover(recoveryAccount, address(0xDEF), commitment);
 
         vm.warp(block.timestamp + 101);
         // Attempt recovery with votes equal to threshold
@@ -1124,23 +1159,108 @@ contract LSP11AccountFunctionalities is Test {
     }
 
     function testRecoverAccessRelayCallWithInvalidSignature() public {
-        address recoveryAccount = address(this);
-        address recoverer = address(0xABC);
-        bytes32 plainHash = 0x0;
-        bytes32 newSecretHash = 0x0;
-        bytes memory calldataToExecute = "";
-        bytes memory invalidSignature = "0x1234"; // Example of an invalid signature
-
-        // Expect revert due to invalid signature
-        vm.expectRevert();
-        lsp11.recoverAccessRelayCall(
-            recoveryAccount,
-            recoverer,
-            plainHash,
-            newSecretHash,
-            calldataToExecute,
-            invalidSignature
+        (address votedAddress, ) = makeAddrAndKey("votedAddress");
+        (address notVotedAddress, uint256 notVotedAddressPK) = makeAddrAndKey(
+            "notVotedAddress"
         );
+        address guardian = address(0x123);
+
+        address recoveryAccount = address(this);
+        lsp11.addGuardian(recoveryAccount, guardian);
+        lsp11.setRecoveryDelay(recoveryAccount, 0);
+
+        vm.prank(guardian);
+        lsp11.voteForRecovery(recoveryAccount, guardian, votedAddress);
+
+        uint256 recoveryCounter = lsp11.getRecoveryCounterOf(recoveryAccount);
+
+        bytes memory recoverPayload = abi.encodeWithSelector(
+            lsp11.recoverAccess.selector,
+            address(this),
+            votedAddress,
+            bytes32(0),
+            bytes32(0),
+            ""
+        );
+
+        bytes memory encodedMessage = abi.encodePacked(
+            uint256(11),
+            block.chainid,
+            uint256(0),
+            uint256(0),
+            uint256(0),
+            recoveryCounter,
+            recoverPayload
+        );
+        bytes32 eip191Hash = ECDSA.toDataWithIntendedValidatorHash(
+            address(lsp11),
+            encodedMessage
+        );
+
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            notVotedAddressPK,
+            eip191Hash
+        ); // Signature with wrong recovery counter
+        bytes memory signature = toBytesSignature(v, r, s);
+        // Expect revert due to recovery counter mismatch
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                SignerIsNotVotedAddress.selector,
+                votedAddress,
+                notVotedAddress
+            )
+        );
+        lsp11.executeRelayCall(signature, 0, 0, recoverPayload);
+    }
+
+    function testRecoverAccessRelayCallWithValidSignature() public {
+        (address votedAddress, uint256 votedAddressPK) = makeAddrAndKey(
+            "votedAddress"
+        );
+        address guardian = address(0x123);
+
+        address recoveryAccount = address(this);
+        lsp11.addGuardian(recoveryAccount, guardian);
+        lsp11.setRecoveryDelay(recoveryAccount, 0);
+        lsp11.setGuardiansThreshold(recoveryAccount, 1);
+
+        vm.prank(guardian);
+        lsp11.voteForRecovery(recoveryAccount, guardian, votedAddress);
+
+        uint256 recoveryCounter = lsp11.getRecoveryCounterOf(recoveryAccount);
+
+        bytes memory recoverPayload = abi.encodeWithSelector(
+            lsp11.recoverAccess.selector,
+            address(this),
+            votedAddress,
+            bytes32(0),
+            bytes32(0),
+            ""
+        );
+
+        bytes memory encodedMessage = abi.encodePacked(
+            uint256(11),
+            block.chainid,
+            uint256(0),
+            uint256(0),
+            uint256(0),
+            recoveryCounter,
+            recoverPayload
+        );
+        bytes32 eip191Hash = ECDSA.toDataWithIntendedValidatorHash(
+            address(lsp11),
+            encodedMessage
+        );
+
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(votedAddressPK, eip191Hash); // Signature with wrong recovery counter
+        bytes memory signature = toBytesSignature(v, r, s);
+        lsp11.executeRelayCall(signature, 0, 0, recoverPayload);
+
+        // Check if the recovery counter is incremented
+        uint256 newRecoveryCounter = lsp11.getRecoveryCounterOf(
+            recoveryAccount
+        );
+        assertEq(newRecoveryCounter, 1);
     }
 
     function toBytesSignature(

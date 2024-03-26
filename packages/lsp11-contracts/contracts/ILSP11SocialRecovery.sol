@@ -2,12 +2,10 @@
 pragma solidity ^0.8.9;
 
 /**
- * @title ILSP11UniversalSocialRecovery
+ * @title ILSP11SocialRecovery
  * @notice Contract providing a mechanism for account recovery through a designated set of guardians.
- * @dev Guardians can be regular Ethereum addresses or secret guardians represented by a salted hash of their address.
- * The contract allows for voting mechanisms where guardians can vote for a recovery address. Once the threshold is met, the recovery process can be initiated.
  */
-interface ILSP11UniversalSocialRecovery {
+interface ILSP11SocialRecovery {
     /**
      * @notice Event emitted when a guardian is added for an account.
      * @param account The account for which the guardian is being added.
@@ -39,7 +37,7 @@ interface ILSP11UniversalSocialRecovery {
     /**
      * @notice Event emitted when the recovery delay associated with an account is changed.
      * @param account The account for which the recovery delay is being changed.
-     * @param recoveryDelay The new recovery delay for the account.
+     * @param recoveryDelay The new recovery delay for the account in seconds.
      */
     event RecoveryDelayChanged(address account, uint256 recoveryDelay);
 
@@ -65,13 +63,13 @@ interface ILSP11UniversalSocialRecovery {
     event RecoveryCancelled(address account, uint256 previousRecoveryCounter);
 
     /**
-     * @notice Event emitted when an address commits a plain secret to recover an account.
-     * @param account The account for which the plain secret is being committed.
+     * @notice Event emitted when an address commits a secret hash to recover an account.
+     * @param account The account for which the secret hash is being committed.
      * @param recoveryCounter The recovery counter at the time of the commitment.
      * @param committedBy The address who made the commitment.
-     * @param commitment The commitment associated with the plain secret.
+     * @param commitment The commitment associated with the secret hash.
      */
-    event PlainSecretCommitted(
+    event SecretHashCommitted(
         address account,
         uint256 recoveryCounter,
         address committedBy,
@@ -83,11 +81,13 @@ interface ILSP11UniversalSocialRecovery {
      * @param account The account for which the recovery process was successful.
      * @param recoveryCounter The recovery counter at the time of successful recovery.
      * @param guardianVotedAddress The address voted by guardians for the successful recovery.
+     * @param calldataExecuted The calldata executed on the account recovered.
      */
     event RecoveryProcessSuccessful(
         address account,
         uint256 recoveryCounter,
-        address guardianVotedAddress
+        address guardianVotedAddress,
+        bytes calldataExecuted
     );
 
     /**
@@ -131,7 +131,9 @@ interface ILSP11UniversalSocialRecovery {
      * @param account The account for which the recovery delay is queried.
      * @return The recovery delay associated with the given account.
      */
-    function getRecoveryDelayOf(address account) external view returns (uint256);
+    function getRecoveryDelayOf(
+        address account
+    ) external view returns (uint256);
 
     /**
      * @notice Get the successful recovery counter for a specific account.
@@ -149,7 +151,7 @@ interface ILSP11UniversalSocialRecovery {
      * @param guardian The guardian whose vote is queried.
      * @return The address voted for recovery by the specified guardian for the given account and recovery counter.
      */
-    function getAddressVotedByGuardian(
+    function getVotedAddressByGuardian(
         address account,
         uint256 recoveryCounter,
         address guardian
@@ -245,10 +247,7 @@ interface ILSP11UniversalSocialRecovery {
      * @dev This function allows the account to set a new recovery delay for their account.
      * Emits a `RecoveryDelayChanged` event upon successful secret hash modification.
      */
-    function setRecoveryDelay(
-        address account,
-        uint256 recoveryDelay
-    ) external;
+    function setRecoveryDelay(address account, uint256 recoveryDelay) external;
 
     /**
      * @notice Allows a guardian to vote for an address to be recovered.
@@ -258,29 +257,29 @@ interface ILSP11UniversalSocialRecovery {
      * If the guardian has already voted for the provided address, the function will revert.
      * Emits a `GuardianVotedFor` event upon successful vote.
      */
-    function voteForRecoverer(
-        address guardian,
+    function voteForRecovery(
         address account,
+        address guardian,
         address guardianVotedAddress
     ) external;
 
     /**
-     * @notice Commits a plain secret for an address to be recovered.
-     * @param account The account for which the plain secret is being committed.
-     * @param commitment The commitment associated with the plain secret.
-     * @dev This function allows an address to commit a plain secret for the recovery process.
+     * @notice Commits a secret hash for an address to be recovered.
+     * @param account The account for which the secret hash is being committed.
+     * @param commitment The commitment associated with the secret hash.
+     * @dev This function allows an address to commit a secret hash for the recovery process.
      * If the guardian has not voted for the provided address, the function will revert.
      */
-    function commitPlainSecret(
-        address recoverer,
+    function commitToRecover(
         address account,
+        address votedAddress,
         bytes32 commitment
     ) external;
 
     /**
      * @notice Initiates the account recovery process.
      * @param account The account for which the recovery is being initiated.
-     * @param plainHash The plain hash associated with the recovery process.
+     * @param secretHash The hash associated with the recovery process.
      * @param newSecretHash The new secret hash to be set for the account.
      * @param calldataToExecute The calldata to be executed during the recovery process.
      * @dev This function initiates the account recovery process and executes the provided calldata.
@@ -288,12 +287,12 @@ interface ILSP11UniversalSocialRecovery {
      * Emits a `RecoveryProcessSuccessful` event upon successful recovery process.
      */
     function recoverAccess(
-        address recoverer,
+        address votedAddress,
         address account,
-        bytes32 plainHash,
+        bytes32 secretHash,
         bytes32 newSecretHash,
         bytes calldata calldataToExecute
-    ) external payable;
+    ) external payable returns (bytes memory);
 
     /**
      * @notice Cancels the ongoing recovery process for the account by increasing the recovery counter.

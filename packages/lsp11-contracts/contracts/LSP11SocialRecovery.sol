@@ -2,9 +2,7 @@
 pragma solidity ^0.8.9;
 
 // Interfaces
-import {
-    ILSP11UniversalSocialRecovery
-} from "./ILSP11UniversalSocialRecovery.sol";
+import {ILSP11SocialRecovery} from "./ILSP11SocialRecovery.sol";
 
 // Libraries
 import {
@@ -12,7 +10,12 @@ import {
 } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-
+import {
+    ILSP25ExecuteRelayCall
+} from "@lukso/lsp25-contracts/contracts/ILSP25ExecuteRelayCall.sol";
+import {
+    LSP25MultiChannelNonce
+} from "@lukso/lsp25-contracts/contracts/LSP25MultiChannelNonce.sol";
 // Constants
 // solhint-disable no-global-import
 import "./LSP11Constants.sol";
@@ -22,24 +25,29 @@ import "./LSP11Constants.sol";
 import "./LSP11Errors.sol";
 
 /**
- * @title LSP11UniversalSocialRecovery
+ * @title LSP11SocialRecovery
  * @notice Contract providing a mechanism for account recovery through a designated set of guardians.
- * @dev Guardians can be regular Ethereum addresses or secret guardians represented by a salted hash of their address.
- * The contract allows for voting mechanisms where guardians can vote for a recovery address. Once the threshold is met, the recovery process can be initiated.
  */
-contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
+contract LSP11SocialRecovery is
+    ILSP11SocialRecovery,
+    ILSP25ExecuteRelayCall,
+    LSP25MultiChannelNonce
+{
     using EnumerableSet for EnumerableSet.AddressSet;
+    using ECDSA for *;
 
-    /// @notice The default recovery delay set to 40 minutes.
-    uint256 constant DEFAULT_RECOVERY_DELAY = 40 minutes;
+    /// @dev The default recovery delay set to 40 minutes.
+    uint256 private constant _DEFAULT_RECOVERY_DELAY = 40 minutes;
 
     /**
      * @dev Stores the hash of a commitment along with a timestamp.
+     * The commitment is the keccak256 hash of the address to be recovered and
+     * the secret hash abi-encoded.
      */
     struct CommitmentInfo {
-        /// @notice The keccak256 hash of the commitment.
+        /// @dev The keccak256 hash of the commitment.
         bytes32 commitment;
-        /// @notice The timestamp when the commitment was made.
+        /// @dev The timestamp when the commitment was made.
         uint256 timestamp;
     }
 
@@ -74,7 +82,7 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
     mapping(address => uint256) internal _recoveryCounterOf;
 
     /**
-     * @dev This mapping stores the address voted for recovery by guardians for each account in a specific recovery counter.
+     * @dev This mapping stores the voted address for recovery by guardians for each account in a specific recovery counter.
      */
     mapping(address => mapping(uint256 => mapping(address => address)))
         internal _guardiansVotedFor;
@@ -162,6 +170,82 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
     }
 
     /**
+     * @inheritdoc ILSP25ExecuteRelayCall
+     */
+    function executeRelayCall(
+        bytes calldata signature,
+        uint256 nonce,
+        uint256 validityTimestamps,
+        bytes calldata payload
+    ) public payable returns (bytes memory) {
+        return
+            _executeRelayCall(
+                signature,
+                nonce,
+                validityTimestamps,
+                msg.value,
+                payload
+            );
+    }
+
+    /**
+     * @inheritdoc ILSP25ExecuteRelayCall
+     */
+    function executeRelayCallBatch(
+        bytes[] calldata signatures,
+        uint256[] calldata nonces,
+        uint256[] calldata validityTimestamps,
+        uint256[] calldata values,
+        bytes[] calldata payloads
+    ) public payable virtual override returns (bytes[] memory) {
+        if (
+            signatures.length != nonces.length ||
+            nonces.length != validityTimestamps.length ||
+            validityTimestamps.length != values.length ||
+            values.length != payloads.length
+        ) {
+            revert BatchExecuteRelayCallParamsLengthMismatch();
+        }
+
+        bytes[] memory results = new bytes[](payloads.length);
+        uint256 totalValues;
+
+        for (uint256 ii; ii < payloads.length; ) {
+            if ((totalValues += values[ii]) > msg.value) {
+                revert LSP11BatchInsufficientValueSent(totalValues, msg.value);
+            }
+
+            results[ii] = _executeRelayCall(
+                signatures[ii],
+                nonces[ii],
+                validityTimestamps[ii],
+                values[ii],
+                payloads[ii]
+            );
+
+            unchecked {
+                ++ii;
+            }
+        }
+
+        if (totalValues < msg.value) {
+            revert LSP11BatchExcessiveValueSent(totalValues, msg.value);
+        }
+
+        return results;
+    }
+
+    /**
+     * @inheritdoc ILSP25ExecuteRelayCall
+     */
+    function getNonce(
+        address from,
+        uint128 channelId
+    ) external view override returns (uint256) {
+        return _getNonce(from, channelId);
+    }
+
+    /**
      * @notice Get the array of addresses representing guardians associated with an account.
      * @param account The account for which guardians are queried.
      * @return An array of addresses representing guardians for the given account.
@@ -211,7 +295,7 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
      * @return The recovery delay associated with the given account.
      */
     function getRecoveryDelayOf(address account) public view returns (uint256) {
-        if (!_defaultRecoveryRemoved[account]) return DEFAULT_RECOVERY_DELAY;
+        if (!_defaultRecoveryRemoved[account]) return _DEFAULT_RECOVERY_DELAY;
         return _recoveryDelayOf[account];
     }
 
@@ -233,7 +317,7 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
      * @param guardian The guardian whose vote is queried.
      * @return The address voted for recovery by the specified guardian for the given account and recovery counter.
      */
-    function getAddressVotedByGuardian(
+    function getVotedAddressByGuardian(
         address account,
         uint256 recoveryCounter,
         address guardian
@@ -366,7 +450,8 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
      * @param account The address of the account to which the recovery secret hash will be set.
      * @param newRecoverSecretHash The new recovery secret hash to be set for the calling account.
      * @dev This function allows the account holder to set a new recovery secret hash for their account.
-     * If the provided secret hash is zero, the function will revert.
+     * In this implementation, the secret hash MUST be set salted with the account address, using
+     * keccak256(abi.encode(account, secretHash)).
      * Emits a `SecretHashChanged` event upon successful secret hash modification.
      */
     function setRecoverySecretHash(
@@ -380,7 +465,7 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
     /**
      * @notice Sets the recovery delay for the calling account.
      * @param account The address of the account to which the recovery delay will be set.
-     * @param recoveryDelay The new recovery delay to be set for the calling account.
+     * @param recoveryDelay The new recovery delay in seconds to be set for the calling account.
      * @dev This function allows the account to set a new recovery delay for their account.
      * Emits a `RecoveryDelayChanged` event upon successful secret hash modification.
      */
@@ -397,14 +482,14 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
     }
 
     /**
-     * @notice Allows a guardian to vote for an address to be recovered.
+     * @notice Allows a guardian to vote for an address for a recovery process
      * @param account The account for which the vote is being cast.
      * @param guardianVotedAddress The address voted by the guardian for recovery.
      * @dev This function allows a guardian to vote for an address to be recovered in a recovery process.
      * If the guardian has already voted for the provided address, the function will revert.
      * Emits a `GuardianVotedFor` event upon successful vote.
      */
-    function voteForRecoverer(
+    function voteForRecovery(
         address account,
         address guardian,
         address guardianVotedAddress
@@ -484,87 +569,30 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
     }
 
     /**
-     * @notice Commits a plain secret for an address to be recovered.
-     * @param account The account for which the plain secret is being committed.
-     * @param commitment The commitment associated with the plain secret.
-     * @dev This function allows an address to commit a plain secret for the recovery process.
+     * @notice Commits a secret hash for an address to be recovered.
+     * @param account The account for which the secret hash is being committed.
+     * @param commitment The commitment associated with the secret hash.
+     * @dev This function allows an address to commit a secret hash for the recovery process.
      * If the guardian has not voted for the provided address, the function will revert.
+     * The commitment in this implementation is `keccak256(abi.encode(votedAddress, secretHash)`.
      */
-    function commitPlainSecret(
+    function commitToRecover(
         address account,
-        address recoverer,
+        address votedAddress,
         bytes32 commitment
     ) public {
-        if (recoverer != msg.sender)
-            revert CallerIsNotRecoverer(recoverer, msg.sender);
+        if (votedAddress != msg.sender)
+            revert CallerIsNotVotedAddress(votedAddress, msg.sender);
 
         uint256 recoveryCounter = _recoveryCounterOf[account];
 
-        CommitmentInfo memory _commitment = CommitmentInfo(
-            commitment,
-            block.timestamp
-        );
-        _commitmentInfoOf[account][recoveryCounter][recoverer] = _commitment;
-
-        emit PlainSecretCommitted(
-            account,
-            recoveryCounter,
-            recoverer,
-            commitment
-        );
-    }
-
-    /**
-     * @notice Commits a plain secret for an address to be recovered.
-     * @param account The account for which the plain secret is being committed.
-     * @param commitment The commitment associated with the plain secret.
-     * @dev This function allows an address to commit a plain secret for the recovery process.
-     * If the guardian has not voted for the provided address, the function will revert.
-     */
-    function commitPlainSecretRelayCall(
-        address account,
-        address recoverer,
-        bytes32 commitment,
-        bytes memory signature
-    ) public {
-        // retreive current recovery counter
-        uint256 accountRecoveryCounter = _recoveryCounterOf[account];
-
-        bytes memory lsp11EncodedMessage = abi.encodePacked(
-            "lsp11",
-            account,
-            accountRecoveryCounter,
-            block.chainid,
-            recoverer,
-            commitment
-        );
-
-        bytes32 eip191Hash = ECDSA.toEthSignedMessageHash(lsp11EncodedMessage);
-
-        address recoveredAddress = ECDSA.recover(eip191Hash, signature);
-
-        if (recoverer != recoveredAddress) revert InvalidSignature();
-
-        uint256 recoveryCounter = _recoveryCounterOf[account];
-
-        CommitmentInfo memory _commitment = CommitmentInfo(
-            commitment,
-            block.timestamp
-        );
-        _commitmentInfoOf[account][recoveryCounter][recoverer] = _commitment;
-
-        emit PlainSecretCommitted(
-            account,
-            recoveryCounter,
-            recoverer,
-            commitment
-        );
+        _commitToRecover(account, recoveryCounter, votedAddress, commitment);
     }
 
     /**
      * @notice Initiates the account recovery process.
      * @param account The account for which the recovery is being initiated.
-     * @param plainHash The plain hash associated with the recovery process.
+     * @param secretHash The secret hash associated with the recovery process unsalted with the account address.
      * @param newSecretHash The new secret hash to be set for the account.
      * @param calldataToExecute The calldata to be executed during the recovery process.
      * @dev This function initiates the account recovery process and executes the provided calldata.
@@ -573,123 +601,324 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
      */
     function recoverAccess(
         address account,
-        address recoverer,
-        bytes32 plainHash,
+        address votedAddress,
+        bytes32 secretHash,
         bytes32 newSecretHash,
         bytes calldata calldataToExecute
-    ) public payable {
-        if (recoverer != msg.sender)
-            revert CallerIsNotRecoverer(recoverer, msg.sender);
+    ) public payable returns (bytes memory) {
+        if (votedAddress != msg.sender)
+            revert CallerIsNotVotedAddress(votedAddress, msg.sender);
 
-        // retreive current recovery counter
+        // retrieve current recovery counter
         uint256 accountRecoveryCounter = _recoveryCounterOf[account];
 
-        _recoverAccess(
-            account,
-            accountRecoveryCounter,
-            recoverer,
-            plainHash,
-            newSecretHash,
-            calldataToExecute
-        );
+        return
+            _recoverAccess(
+                account,
+                accountRecoveryCounter,
+                votedAddress,
+                secretHash,
+                newSecretHash,
+                msg.value,
+                calldataToExecute
+            );
     }
 
-    function recoverAccessRelayCall(
+    /**
+     * @dev Internal function to commit a new recovery process. It stores a new commitment for a recovery process.
+     * @param account The account for which recovery is being committed.
+     * @param recoveryCounter The current recovery counter for the account.
+     * @param votedAddress The address that is being proposed for recovery by the guardian.
+     * @param commitment The commitment hash representing the recovery process.
+     */
+    function _commitToRecover(
         address account,
-        address recoverer,
-        bytes32 plainHash,
-        bytes32 newSecretHash,
-        bytes calldata calldataToExecute,
-        bytes calldata signature
-    ) public payable {
-        // retreive current recovery counter
-        uint256 accountRecoveryCounter = _recoveryCounterOf[account];
-
-        bytes memory lsp11EncodedMessage = abi.encodePacked(
-            "lsp11",
-            account,
-            accountRecoveryCounter,
-            block.chainid,
-            msg.value,
-            recoverer,
-            plainHash,
-            newSecretHash,
-            calldataToExecute
+        uint256 recoveryCounter,
+        address votedAddress,
+        bytes32 commitment
+    ) internal {
+        CommitmentInfo memory _commitment = CommitmentInfo(
+            commitment,
+            block.timestamp
         );
+        _commitmentInfoOf[account][recoveryCounter][votedAddress] = _commitment;
 
-        bytes32 eip191Hash = ECDSA.toEthSignedMessageHash(lsp11EncodedMessage);
-
-        address recoveredAddress = ECDSA.recover(eip191Hash, signature);
-
-        if (recoverer != recoveredAddress) revert InvalidSignature();
-
-        _recoverAccess(
+        emit SecretHashCommitted(
             account,
-            accountRecoveryCounter,
-            recoverer,
-            plainHash,
-            newSecretHash,
-            calldataToExecute
+            recoveryCounter,
+            votedAddress,
+            commitment
         );
     }
 
+    /**
+     * @dev Internal function to execute relay calls for `commitToRecover` and `recoverAccess`.
+     * @param signature The signature of the relay call.
+     * @param nonce The nonce for replay protection.
+     * @param validityTimestamps Timestamps defining the validity period of the call.
+     * @param msgValue The message value (in ether).
+     * @param payload The payload of the call.
+     * @return result Returns the bytes memory result of the executed call.
+     */
+    function _executeRelayCall(
+        bytes calldata signature,
+        uint256 nonce,
+        uint256 validityTimestamps,
+        uint256 msgValue,
+        bytes calldata payload
+    ) internal returns (bytes memory result) {
+        bytes4 functionSelector = bytes4(payload);
+        if (functionSelector == this.commitToRecover.selector) {
+            _verifyCanCommitToRecover(
+                signature,
+                nonce,
+                validityTimestamps,
+                msgValue,
+                payload
+            );
+        } else if (functionSelector == this.recoverAccess.selector) {
+            return
+                _verifyCanRecoverAccess(
+                    signature,
+                    nonce,
+                    validityTimestamps,
+                    msgValue,
+                    payload
+                );
+        } else {
+            revert RelayCallNotSupported(functionSelector);
+        }
+    }
+
+    /**
+     * @dev Internal function to verify the signature and execute the `commitToRecover` function.
+     * @param signature The signature to verify.
+     * @param nonce The nonce used for replay protection.
+     * @param validityTimestamps Timestamps for the validity of the signature.
+     * @param msgValue The message value.
+     * @param commitToRecoverPayload The payload specific to the `commitToRecover` function.
+     */
+    function _verifyCanCommitToRecover(
+        bytes memory signature,
+        uint256 nonce,
+        uint256 validityTimestamps,
+        uint256 msgValue,
+        bytes calldata commitToRecoverPayload
+    ) internal {
+        (address account, address votedAddress, bytes32 commitment) = abi
+            .decode(commitToRecoverPayload[4:], (address, address, bytes32));
+
+        uint256 recoveryCounter = _recoveryCounterOf[account];
+
+        _sigChecks(
+            signature,
+            nonce,
+            validityTimestamps,
+            msgValue,
+            recoveryCounter,
+            commitToRecoverPayload,
+            votedAddress
+        );
+
+        _commitToRecover(account, recoveryCounter, votedAddress, commitment);
+    }
+
+    /**
+     * @dev Internal function to verify the signature and execute the `recoverAccess` function.
+     * @param signature The signature to verify.
+     * @param nonce The nonce used for replay protection.
+     * @param validityTimestamp The timestamp for the validity of the signature.
+     * @param msgValue The message value.
+     * @param recoverAccessPayload The payload specific to the `recoverAccess` function.
+     */
+    function _verifyCanRecoverAccess(
+        bytes memory signature,
+        uint256 nonce,
+        uint256 validityTimestamp,
+        uint256 msgValue,
+        bytes calldata recoverAccessPayload
+    ) internal returns (bytes memory) {
+        (
+            address account,
+            address votedAddress,
+            bytes32 secretHash,
+            bytes32 newSecretHash,
+            bytes memory calldataToExecute
+        ) = abi.decode(
+                recoverAccessPayload[4:],
+                (address, address, bytes32, bytes32, bytes)
+            );
+
+        uint256 recoveryCounter = _recoveryCounterOf[account];
+
+        _sigChecks(
+            signature,
+            nonce,
+            validityTimestamp,
+            msgValue,
+            recoveryCounter,
+            recoverAccessPayload,
+            votedAddress
+        );
+
+        return
+            _recoverAccess(
+                account,
+                recoveryCounter,
+                votedAddress,
+                secretHash,
+                newSecretHash,
+                msgValue,
+                calldataToExecute
+            );
+    }
+
+    /**
+     * @dev Internal function to perform signature and nonce checks, and to verify the validity timestamp.
+     * @param signature The signature to check.
+     * @param nonce The nonce for replay protection.
+     * @param validityTimestamp The validity timestamp for the signature.
+     * @param msgValue The message value.
+     * @param recoveryCounter The recovery counter.
+     * @param payload The payload of the call.
+     * @param votedAddress The address voted for recovery.
+     */
+    function _sigChecks(
+        bytes memory signature,
+        uint256 nonce,
+        uint256 validityTimestamp,
+        uint256 msgValue,
+        uint256 recoveryCounter,
+        bytes memory payload,
+        address votedAddress
+    ) internal {
+        address recoveredAddress = _recoverSignerFromLSP11Signature(
+            signature,
+            nonce,
+            validityTimestamp,
+            msgValue,
+            recoveryCounter,
+            payload
+        );
+
+        if (!_isValidNonce(recoveredAddress, nonce)) {
+            revert InvalidRelayNonce(recoveredAddress, nonce, signature);
+        }
+
+        // increase nonce after successful verification
+        _nonceStore[recoveredAddress][nonce >> 128]++;
+
+        LSP25MultiChannelNonce._verifyValidityTimestamps(validityTimestamp);
+
+        if (votedAddress != recoveredAddress)
+            revert SignerIsNotVotedAddress(votedAddress, recoveredAddress);
+    }
+
+    /**
+     * @dev Internal function to recover the signer from a LSP11 signature.
+     * @param signature The signature to recover from.
+     * @param nonce The nonce for the signature.
+     * @param validityTimestamps The validity timestamps for the signature.
+     * @param msgValue The message value.
+     * @param recoveryCounter The recovery counter.
+     * @param callData The call data.
+     * @return The address of the signer.
+     */
+    function _recoverSignerFromLSP11Signature(
+        bytes memory signature,
+        uint256 nonce,
+        uint256 validityTimestamps,
+        uint256 msgValue,
+        uint256 recoveryCounter,
+        bytes memory callData
+    ) internal view returns (address) {
+        bytes memory lsp25EncodedMessage = abi.encodePacked(
+            LSP11_VERSION,
+            block.chainid,
+            nonce,
+            validityTimestamps,
+            msgValue,
+            recoveryCounter,
+            callData
+        );
+
+        bytes32 eip191Hash = address(this).toDataWithIntendedValidatorHash(
+            lsp25EncodedMessage
+        );
+
+        return eip191Hash.recover(signature);
+    }
+
+    /**
+     * @dev Internal function to recover access to an account.
+     * @param account The account to recover.
+     * @param recoveryCounter The recovery counter.
+     * @param votedAddress The address voted by the guardian.
+     * @param secretHash The hash of the secret.
+     * @param newSecretHash The new secret hash for the account.
+     * @param msgValue The message value.
+     * @param calldataToExecute The call data to be executed as part of the recovery.
+     */
     function _recoverAccess(
         address account,
         uint256 recoveryCounter,
-        address recoverer,
-        bytes32 plainHash,
+        address votedAddress,
+        bytes32 secretHash,
         bytes32 newSecretHash,
-        bytes calldata calldataToExecute
-    ) internal {
+        uint256 msgValue,
+        bytes memory calldataToExecute
+    ) internal returns (bytes memory) {
         if (
             block.timestamp <
             _firstRecoveryTimestamp[account][recoveryCounter] +
                 getRecoveryDelayOf(account)
         ) revert CannotRecoverBeforeDelay(account, getRecoveryDelayOf(account));
 
-        // retreive current secret hash
+        // retrieve current secret hash
         bytes32 _secretHash = _secretHashOf[account];
 
-        // retreive current guardians threshold
+        // retrieve current guardians threshold
         uint256 guardiansThresholdOfAccount = _guardiansThresholdOf[account];
 
         // if there is no guardians, disallow recovering
         if (guardiansThresholdOfAccount == 0) revert AccountNotSetupYet();
 
-        // retreive number of votes caller have
+        // retrieve number of votes caller have
         uint256 votesOfGuardianVotedAddress_ = _votesOfguardianVotedAddress[
             account
-        ][recoveryCounter][recoverer];
+        ][recoveryCounter][votedAddress];
 
         // votes validation
         // if the threshold is 0, and the caller does not have votes
         // will rely on the hash
         if (votesOfGuardianVotedAddress_ < guardiansThresholdOfAccount)
-            revert CallerVotesHaveNotReachedThreshold(account, recoverer);
+            revert CallerVotesHaveNotReachedThreshold(account, votedAddress);
 
         // if there is a secret require a commitment first
         if (_secretHash != bytes32(0)) {
-            bytes32 saltedHash = keccak256(abi.encode(account, plainHash));
-            bytes32 commitment = keccak256(abi.encode(recoverer, saltedHash));
+            bytes32 saltedHash = keccak256(abi.encode(account, secretHash));
+            bytes32 commitment = keccak256(
+                abi.encode(votedAddress, saltedHash)
+            );
 
             // Check that the commitment is valid
             if (
                 commitment !=
-                _commitmentInfoOf[account][recoveryCounter][recoverer]
+                _commitmentInfoOf[account][recoveryCounter][votedAddress]
                     .commitment
-            ) revert InvalidCommitment(account, recoverer);
+            ) revert InvalidCommitment(account, votedAddress);
 
             // Check that the commitment is not too early
             if (
-                _commitmentInfoOf[account][recoveryCounter][recoverer]
+                _commitmentInfoOf[account][recoveryCounter][votedAddress]
                     .timestamp +
-                    100 >
+                    60 >
                 block.timestamp
-            ) revert CannotRecoverAfterDirectCommit(account, recoverer);
+            ) revert CannotRecoverAfterDirectCommit(account, votedAddress);
 
             // Check that the secret hash is valid
             if (saltedHash != _secretHash)
-                revert InvalidSecretHash(account, plainHash);
+                revert InvalidSecretHash(account, secretHash);
         }
 
         _recoveryCounterOf[account]++;
@@ -697,7 +926,7 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
         emit SecretHashChanged(account, newSecretHash);
 
         (bool success, bytes memory returnedData) = account.call{
-            value: msg.value
+            value: msgValue
         }(calldataToExecute);
 
         Address.verifyCallResult(
@@ -706,6 +935,13 @@ contract LSP11UniversalSocialRecovery is ILSP11UniversalSocialRecovery {
             "LSP11: Failed to call function on account"
         );
 
-        emit RecoveryProcessSuccessful(account, recoveryCounter, recoverer);
+        emit RecoveryProcessSuccessful(
+            account,
+            recoveryCounter,
+            votedAddress,
+            calldataToExecute
+        );
+
+        return returnedData;
     }
 }
