@@ -37,10 +37,10 @@ error BatchCallsFailed(uint256 iteration);
 
 /**
  * @dev The caller is not the expected recoverer.
- * @param recoverer Expected recoverer address.
+ * @param votedAddress Expected voted address.
  * @param caller Address of the caller.
  */
-error CallerIsNotRecoverer(address recoverer, address caller);
+error CallerIsNotVotedAddress(address votedAddress, address caller);
 
 /**
  * @dev The specified threshold exceeds the number of guardians.
@@ -129,6 +129,53 @@ error InvalidSecretHash(address account, bytes32 secretHash);
  */
 error CannotRecoverAfterDirectCommit(address account, address committer);
 
-error InvalidSignature();
+/**
+ * @notice The relay call failed because an invalid nonce was provided for the address `signer` that signed the execute relay call.
+ * Invalid nonce: `invalidNonce`, signature of signer: `signature`.
+ *
+ * @dev Reverts when the `signer` address retrieved from the `signature` has an invalid nonce: `invalidNonce`.
+ *
+ * @param signer The address of the signer.
+ * @param invalidNonce The nonce retrieved for the `signer` address.
+ * @param signature The signature used to retrieve the `signer` address.
+ */
+error InvalidRelayNonce(address signer, uint256 invalidNonce, bytes signature);
 
-error CannotRecoverBeforeDelay(address, uint256);
+/**
+ * @dev Thrown when an attempt to recover is made before a specified delay period.
+ * @param account The account address.
+ * @param delay The delay of the account.
+ */
+error CannotRecoverBeforeDelay(address account, uint256 delay);
+
+/**
+ * @dev Thrown when the signer is not the voted address for a particular operation.
+ * @param votedAddress The address passed as a parameter as voted address.
+ * @param recoveredAddress The recovered address from the signature.
+ */
+error SignerIsNotVotedAddress(address votedAddress, address recoveredAddress);
+
+/**
+ * @dev Thrown when a relay call is not supported.
+ * @param functionSelector The unsupported function selector.
+ */
+error RelayCallNotSupported(bytes4 functionSelector);
+
+/**
+ * @dev Thrown when the total value sent in an LSP11 batch call is insufficient.
+ * @param totalValues The total value required.
+ * @param msgValue The value actually sent in the message.
+ */
+error LSP11BatchInsufficientValueSent(uint256 totalValues, uint256 msgValue);
+
+/**
+ * @dev Thrown when the total value sent in an LSP11 batch call exceeds the required amount.
+ * @param totalValues The total value required.
+ * @param msgValue The value actually sent in the message.
+ */
+error LSP11BatchExcessiveValueSent(uint256 totalValues, uint256 msgValue);
+
+/**
+ * @dev Thrown when there's a length mismatch in batch execute relay call parameters.
+ */
+error BatchExecuteRelayCallParamsLengthMismatch();
