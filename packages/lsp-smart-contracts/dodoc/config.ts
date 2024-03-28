@@ -135,79 +135,106 @@ export const dodocConfig = {
 };
 
 const linkBase = 'https://github.com/lukso-network/';
-const SPECS_BASE_URI = 'https://github.com/lukso-network/LIPs/blob/main/LSPs';
+const SPECS_BASE_URL = 'https://github.com/lukso-network/LIPs/blob/main/LSPs';
+const CONTRACTS_BASE_URL =
+  'https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages';
+
 const specs = {
   ERC725: {
     specsName: 'ERC-725',
     specsLink: 'https://github.com/ethereum/EIPs/blob/master/EIPS/eip-725.md',
+    contractsLink:
+      'https://github.com/ERC725Alliance/ERC725/blob/main/implementations/contracts/ERC725.sol',
   },
   UniversalProfile: {
     specsName: 'UniversalProfile',
-    specsLink: `${SPECS_BASE_URI}/LSP-3-UniversalProfile-Metadata.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-3-UniversalProfile-Metadata.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/universalprofile-contracts/contracts/UniversalProfile.sol`,
   },
   LSP0ERC725Account: {
     specsName: 'LSP-0-ERC725Account',
-    specsLink: `${SPECS_BASE_URI}/LSP-0-ERC725Account.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-0-ERC725Account.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp0-contracts/contracts/LSP0ERC725Account.sol`,
   },
   LSP1UniversalReceiver: {
     specsName: 'LSP-1-UniversalReceiver',
-    specsLink: `${SPECS_BASE_URI}/LSP-1-UniversalReceiver.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-1-UniversalReceiver.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol`,
   },
   LSP2ERC725YJSONSchema: {
     specsName: 'LSP-2-ERC725YJSONSchema',
-    specsLink: `${SPECS_BASE_URI}/LSP-2-ERC725YJSONSchema.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-2-ERC725YJSONSchema.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp2-contracts/contracts/LSP2Utils.sol`,
   },
   LSP4DigitalAssetMetadata: {
     specsName: 'LSP-4-DigitalAsset-Metadata',
-    specsLink: `${SPECS_BASE_URI}/LSP-4-DigitalAsset-Metadata.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-4-DigitalAsset-Metadata.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp4-contracts/contracts/LSP4DigitalAssetMetadata.sol`,
   },
   LSP5ReceivedAssets: {
     specsName: 'LSP-5-ReceivedAssets',
-    specsLink: `${SPECS_BASE_URI}/LSP-5-ReceivedAssets.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-5-ReceivedAssets.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp5-contracts/contracts/LSP5Utils.sol`,
   },
   LSP6KeyManager: {
     specsName: 'LSP-6-KeyManager',
-    specsLink: `${SPECS_BASE_URI}/LSP-6-KeyManager.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-6-KeyManager.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp6-contracts/contracts/LSP6KeyManager.sol`,
   },
   LSP7DigitalAsset: {
     specsName: 'LSP-7-DigitalAsset',
-    specsLink: `${SPECS_BASE_URI}/LSP-7-DigitalAsset.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-7-DigitalAsset.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp7-contracts/contracts/LSP7DigitalAsset.sol`,
   },
   LSP8IdentifiableDigitalAsset: {
     specsName: 'LSP-8-IdentifiableDigitalAsset',
-    specsLink: `${SPECS_BASE_URI}/LSP-8-IdentifiableDigitalAsset.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-8-IdentifiableDigitalAsset.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp8-contracts/contracts/LSP8IdentifiableDigitalAsset.sol`,
   },
   LSP9Vault: {
     specsName: 'LSP-9-Vault',
-    specsLink: `${SPECS_BASE_URI}/LSP-9-Vault.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-9-Vault.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp9-contracts/contracts/LSP9Vault.sol`,
   },
   LSP10ReceivedVaults: {
     specsName: 'LSP-10-ReceivedVaults',
-    specsLink: `${SPECS_BASE_URI}/LSP-10-ReceivedVaults.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-10-ReceivedVaults.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp10-contracts/contracts/LSP10Utils.sol`,
   },
   LSP11BasicSocialRecovery: {
     specsName: 'LSP-11-BasicSocialRecovery',
-    specsLink: `${SPECS_BASE_URI}/LSP-11-BasicSocialRecovery.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-11-BasicSocialRecovery.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp-smart-contracts/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol`,
   },
   LSP14Ownable2Step: {
     specsName: 'LSP-14-Ownable2Step',
-    specsLink: `${SPECS_BASE_URI}/LSP-14-Ownable2Step.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-14-Ownable2Step.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp14-contracts/contracts/LSP14Ownable2Step.sol`,
+  },
+  LSP16UniversalFactory: {
+    specsName: 'LSP-16-UniversalFactory',
+    specsLink: `${SPECS_BASE_URL}/LSP-16-UniversalFactory.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp16-contracts/contracts/LSP16UniversalFactory.sol`,
   },
   LSP17ContractExtension: {
     specsName: 'LSP-17-ContractExtension',
-    specsLink: `${SPECS_BASE_URI}/LSP-17-ContractExtension.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-17-ContractExtension.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp17contractextension-contracts/contracts/LSP17Extendable.sol`,
   },
   LSP20CallVerification: {
     specsName: 'LSP-20-CallVerification',
-    specsLink: `${SPECS_BASE_URI}/LSP-20-CallVerification.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-20-CallVerification.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp20-contracts/contracts/LSP20CallVerification.sol`,
   },
   LSP23LinkedContractsFactory: {
     specsName: 'LSP-23-LinkedContractsFactory',
-    specsLink: `${SPECS_BASE_URI}/LSP-23-LinkedContractsFactory.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-23-LinkedContractsFactory.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol`,
   },
   LSP25ExecuteRelayCall: {
     specsName: 'LSP-25-ExecuteRelayCall',
-    specsLink: `${SPECS_BASE_URI}/LSP-25-ExecuteRelayCall.md`,
+    specsLink: `${SPECS_BASE_URL}/LSP-25-ExecuteRelayCall.md`,
+    contractsLink: `${CONTRACTS_BASE_URL}/lsp25-contracts/contracts/ILSP25ExecuteRelayCall.sol`,
   },
 };
 
@@ -368,19 +395,37 @@ const generateAdditionalErrorInfo = (contract: string, code: string) => {
 };
 
 const generateContractLink = (contractName: string) => {
-  if (contractName === 'UniversalProfile') {
-    return `${linkBase}lsp-smart-contracts/blob/develop/contracts/UniversalProfile.sol`;
+  const lspN = contractName.match(/LSP\d+/);
+
+  if (specs[contractName]) {
+    return specs[contractName];
+  } else if (lspN && lspN[0] === 'LSP1') {
+    return specs['LSP1UniversalReceiver'].contractsLink;
+  } else if (lspN && lspN[0] === 'LSP2') {
+    return specs['LSP2ERC725YJSONSchema'].contractsLink;
+  } else if (lspN && lspN[0] === 'LSP5') {
+    return specs['LSP5ReceivedAssets'].contractsLink;
+  } else if (lspN && lspN[0] === 'LSP6') {
+    return specs['LSP6KeyManager'].contractsLink;
+  } else if (lspN && lspN[0] === 'LSP7') {
+    return specs['LSP7DigitalAsset'].contractsLink;
+  } else if (lspN && lspN[0] === 'LSP8') {
+    return specs['LSP8IdentifiableDigitalAsset'].contractsLink;
+  } else if (lspN && lspN[0] === 'LSP10') {
+    return specs['LSP10ReceivedVaults'].contractsLink;
+  } else if (lspN && lspN[0] === 'LSP16') {
+    return specs['LSP16UniversalFactory'].contractsLink;
+  } else if (lspN && lspN[0] === 'LSP17') {
+    return specs['LSP17ContractExtension'].contractsLink;
+  } else if (lspN && lspN[0] === 'LSP23') {
+    return specs['LSP23LinkedContractsFactory'].contractsLink;
+  } else if (lspN && lspN[0] === 'LSP25') {
+    return specs['LSP25ExecuteRelayCall'].contractsLink;
+  } else if (contractName === 'IPostDeploymentModule') {
+    return specs['LSP23LinkedContractsFactory'].contractsLink;
+  } else {
+    console.error(`Specs for '${contractName}' not found.`);
   }
-
-  if (contractName === 'ERC725') {
-    return 'https://github.com/ERC725Alliance/ERC725/blob/main/implementations/contracts/ERC725.sol';
-  }
-
-  const contractPath = dodocConfig.include.filter((value) => {
-    if (value.endsWith(`${contractName}.sol`)) return value;
-  })[0];
-
-  return `${linkBase}lsp-smart-contracts/blob/develop/${contractPath}`;
 };
 
 const generateContractSpecsDetails = (contractName: string) => {
@@ -402,6 +447,8 @@ const generateContractSpecsDetails = (contractName: string) => {
     return specs['LSP8IdentifiableDigitalAsset'];
   } else if (lspN && lspN[0] === 'LSP10') {
     return specs['LSP10ReceivedVaults'];
+  } else if (lspN && lspN[0] === 'LSP16') {
+    return specs['LSP16UniversalFactory'];
   } else if (lspN && lspN[0] === 'LSP17') {
     return specs['LSP17ContractExtension'];
   } else if (lspN && lspN[0] === 'LSP23') {
