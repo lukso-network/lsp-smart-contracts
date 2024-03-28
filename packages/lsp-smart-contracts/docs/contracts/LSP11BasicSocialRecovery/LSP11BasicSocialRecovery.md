@@ -10,7 +10,7 @@
 :::
 :::info Solidity implementation
 
-[`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+[`LSP11BasicSocialRecovery.sol`]([object Object])
 
 :::
 
@@ -28,7 +28,7 @@ When marked as 'public', a method can be called both externally and internally, 
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#constructor)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 
 :::
 
@@ -52,7 +52,7 @@ _Sets the target and the owner addresses_
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#addguardian)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `addGuardian(address)`
 - Function selector: `0xa526d83b`
 
@@ -77,7 +77,7 @@ Adds a guardian of the targetCan be called only by the owner
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#getguardianchoice)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `getGuardianChoice(address)`
 - Function selector: `0xf6a22f02`
 
@@ -108,7 +108,7 @@ Returns the address of a controller that a `guardian` selected for in order to r
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#getguardians)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `getGuardians()`
 - Function selector: `0x0665f04b`
 
@@ -133,7 +133,7 @@ Returns the addresses of all guardians The guardians will select an address to b
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#getguardiansthreshold)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `getGuardiansThreshold()`
 - Function selector: `0x187c5348`
 
@@ -158,7 +158,7 @@ Returns the guardian threshold The guardian threshold represents the minimum num
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#getrecoverycounter)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `getRecoveryCounter()`
 - Function selector: `0xf79c8b77`
 
@@ -183,7 +183,7 @@ Returns the current recovery counter When a recovery process is successfully fin
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#getrecoverysecrethash)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `getRecoverySecretHash()`
 - Function selector: `0x8f9083bb`
 
@@ -208,7 +208,7 @@ Returns the recovery secret hash
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#isguardian)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `isGuardian(address)`
 - Function selector: `0x0c68ba21`
 
@@ -239,7 +239,7 @@ Returns TRUE if the address provided is a guardian, FALSE otherwise
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#owner)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `owner()`
 - Function selector: `0x8da5cb5b`
 
@@ -264,7 +264,7 @@ Returns the address of the current owner.
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#recoverownership)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `recoverOwnership(address,string,bytes32)`
 - Function selector: `0xae8481b2`
 
@@ -299,7 +299,7 @@ Recovers the ownership permissions of an address in the linked target and increm
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#removeguardian)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `removeGuardian(address)`
 - Function selector: `0x71404156`
 
@@ -324,7 +324,7 @@ Removes a guardian of the targetCan be called only by the owner
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#renounceownership)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `renounceOwnership()`
 - Function selector: `0x715018a6`
 
@@ -343,7 +343,7 @@ Leaves the contract without owner. It will not be possible to call `onlyOwner` f
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#selectnewcontroller)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `selectNewController(address)`
 - Function selector: `0xaa7806d6`
 
@@ -370,7 +370,7 @@ select an address to be a potentiel controller address if he reaches the guardia
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#setguardiansthreshold)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `setGuardiansThreshold(uint256)`
 - Function selector: `0x6bfed20b`
 
@@ -395,7 +395,7 @@ Sets the minimum number of selection by the guardians required so that an addres
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#setrecoverysecrethash)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `setRecoverySecretHash(bytes32)`
 - Function selector: `0xf799e38d`
 
@@ -422,7 +422,7 @@ Throws if hash provided is bytes32(0)
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#supportsinterface)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `supportsInterface(bytes4)`
 - Function selector: `0x01ffc9a7`
 
@@ -453,7 +453,7 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#target)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `target()`
 - Function selector: `0xd4b83992`
 
@@ -478,7 +478,7 @@ The address of an ERC725 contract where we want to recover and set permissions f
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#transferownership)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Function signature: `transferOwnership(address)`
 - Function selector: `0xf2fde38b`
 
@@ -571,7 +571,7 @@ To avoid keeping unnecessary state
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#guardianadded)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Event signature: `GuardianAdded(address)`
 - Event topic hash: `0x038596bb31e2e7d3d9f184d4c98b310103f6d7f5830e5eec32bffe6f1728f969`
 
@@ -596,7 +596,7 @@ _Emitted when setting a new guardian for the target_
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#guardianremoved)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Event signature: `GuardianRemoved(address)`
 - Event topic hash: `0xb8107d0c6b40be480ce3172ee66ba6d64b71f6b1685a851340036e6e2e3e3c52`
 
@@ -621,7 +621,7 @@ _Emitted when removing an existing guardian for the target_
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#guardiansthresholdchanged)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Event signature: `GuardiansThresholdChanged(uint256)`
 - Event topic hash: `0x7146d20a2c7b7c75c203774c9f241b61698fac43a4a81ccd828f0d8162392790`
 
@@ -646,7 +646,7 @@ _Emitted when changing the guardian threshold_
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#ownershiptransferred)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Event signature: `OwnershipTransferred(address,address)`
 - Event topic hash: `0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0`
 
@@ -673,7 +673,7 @@ event OwnershipTransferred(
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#recoveryprocesssuccessful)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Event signature: `RecoveryProcessSuccessful(uint256,address,bytes32,address[])`
 - Event topic hash: `0xf4ff8803d6b43af46d48c200977209829c2f42f19f27eda1c89dbf26a28009cd`
 
@@ -706,7 +706,7 @@ _Emitted when the recovery process is finished by the controller who reached the
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#secrethashchanged)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Event signature: `SecretHashChanged(bytes32)`
 - Event topic hash: `0x2e8c5419a62207ade549fe0b66c1c85c16f5e1ed654815dee3a3f3ac41770df3`
 
@@ -731,7 +731,7 @@ _Emitted when changing the secret hash_
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#selectednewcontroller)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Event signature: `SelectedNewController(uint256,address,address)`
 - Event topic hash: `0xe43f3c1093c69ab76b2cf6246090acb2f8eab7f19ba9942dfc8b8ec446e3a3de`
 
@@ -764,7 +764,7 @@ _Emitted when a guardian select a new potentiel controller address for the targe
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#addresszeronotallowed)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Error signature: `AddressZeroNotAllowed()`
 - Error hash: `0x0855380c`
 
@@ -783,7 +783,7 @@ reverts when the address zero calls `recoverOwnership(..)` function
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#callerisnotguardian)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Error signature: `CallerIsNotGuardian(address)`
 - Error hash: `0x5560e16d`
 
@@ -808,7 +808,7 @@ reverts when the caller is not a guardian
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#guardianalreadyexist)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Error signature: `GuardianAlreadyExist(address)`
 - Error hash: `0xd52858db`
 
@@ -833,7 +833,7 @@ reverts when adding an already existing guardian
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#guardiandonotexist)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Error signature: `GuardianDoNotExist(address)`
 - Error hash: `0x3d8e524e`
 
@@ -858,7 +858,7 @@ reverts when removing a non-existing guardian
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#guardiansnumbercannotgobelowthreshold)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Error signature: `GuardiansNumberCannotGoBelowThreshold(uint256)`
 - Error hash: `0x27113777`
 
@@ -883,7 +883,7 @@ reverts when removing a guardian and the threshold is equal to the number of gua
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#ownablecallernottheowner)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Error signature: `OwnableCallerNotTheOwner(address)`
 - Error hash: `0xbf1169c5`
 
@@ -908,7 +908,7 @@ Reverts when only the owner is allowed to call the function.
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#ownablecannotsetzeroaddressasowner)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Error signature: `OwnableCannotSetZeroAddressAsOwner()`
 - Error hash: `0x1ad8836c`
 
@@ -927,7 +927,7 @@ Reverts when trying to set `address(0)` as the contract owner when deploying the
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#secrethashcannotbezero)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Error signature: `SecretHashCannotBeZero()`
 - Error hash: `0x7f617002`
 
@@ -946,7 +946,7 @@ reverts when the secret hash provided is equal to bytes32(0)
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#thresholdcannotbehigherthanguardiansnumber)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Error signature: `ThresholdCannotBeHigherThanGuardiansNumber(uint256,uint256)`
 - Error hash: `0xe3db80bd`
 
@@ -975,7 +975,7 @@ reverts when setting the guardians threshold to a number higher than the guardia
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#thresholdnotreachedforrecoverer)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Error signature: `ThresholdNotReachedForRecoverer(address,uint256,uint256)`
 - Error hash: `0xf78f0507`
 
@@ -1006,7 +1006,7 @@ reverts when `recoverOwnership(..)` is called with a recoverer that didn't reach
 :::note References
 
 - Specification details: [**LSP-11-BasicSocialRecovery**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md#wrongplainsecret)
-- Solidity implementation: [`LSP11BasicSocialRecovery.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/contracts/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.sol)
+- Solidity implementation: [`LSP11BasicSocialRecovery.sol`]([object Object])
 - Error signature: `WrongPlainSecret()`
 - Error hash: `0x6fa723c3`
 
