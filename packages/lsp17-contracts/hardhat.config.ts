@@ -107,7 +107,7 @@ const config: HardhatUserConfig = {
   },
   packager: {
     // What contracts to keep the artifacts and the bindings for.
-    contracts: [],
+    contracts: ['Extension4337', 'OnERC721ReceivedExtension'],
     // Whether to include the TypeChain factories or not.
     // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
     includeFactories: true,

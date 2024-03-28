@@ -1,6 +1,6 @@
 // ERC165 Interface ID
 // ----------
-export const INTERFACE_ID_LSP0ERC725Account = '0x24871b3d';
+export const INTERFACE_ID_LSP0 = '0x24871b3d';
 
 // ERC1271
 // ----------

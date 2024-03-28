@@ -1,6 +1,6 @@
 import { LSP2ArrayKey } from '@lukso/lsp2-contracts';
 
-export const INTERFACE_ID_LSP6KEYMANAGER = '0x23f34c62';
+export const INTERFACE_ID_LSP6 = '0x23f34c62';
 
 /**
  * @dev values returned by the `isValidSignature` function of the ERC1271 standard.

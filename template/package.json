@@ -36,7 +36,6 @@
     "./README.md"
   ],
   "scripts": {
-    "package": "hardhat prepare-package",
     "build": "hardhat compile --show-stack-traces",
     "build:foundry": "forge build",
     "build:js": "unbuild",
@@ -47,7 +46,8 @@
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "test": "hardhat test --no-compile tests/*.test.ts",
     "test:foundry": "FOUNDRY_PROFILE=lspN forge test --no-match-test Skip -vvv",
-    "test:coverage": "hardhat coverage"
+    "test:coverage": "hardhat coverage",
+    "package": "hardhat prepare-package"
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",

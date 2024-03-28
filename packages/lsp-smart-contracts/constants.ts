@@ -4,13 +4,13 @@
  */
 // export * from './contracts';
 
-import { INTERFACE_ID_LSP0ERC725Account, LSP0_TYPE_IDS } from '@lukso/lsp0-contracts';
+import { INTERFACE_ID_LSP0, LSP0_TYPE_IDS } from '@lukso/lsp0-contracts';
 import { INTERFACE_ID_LSP1, LSP1DataKeys } from '@lukso/lsp1-contracts';
 import { INTERFACE_ID_LSP1DELEGATE } from '@lukso/lsp1delegate-contracts';
 import { LSP3DataKeys } from '@lukso/lsp3-contracts';
 import { LSP4DataKeys } from '@lukso/lsp4-contracts';
 import { LSP5DataKeys } from '@lukso/lsp5-contracts';
-import { INTERFACE_ID_LSP6KEYMANAGER, LSP6DataKeys } from '@lukso/lsp6-contracts';
+import { INTERFACE_ID_LSP6, LSP6DataKeys } from '@lukso/lsp6-contracts';
 import { INTERFACE_ID_LSP7, LSP7_TYPE_IDS } from '@lukso/lsp7-contracts';
 import { INTERFACE_ID_LSP8, LSP8DataKeys, LSP8_TYPE_IDS } from '@lukso/lsp8-contracts';
 import { INTERFACE_ID_LSP9, LSP9DataKeys, LSP9_TYPE_IDS } from '@lukso/lsp9-contracts';
@@ -58,10 +58,10 @@ export const INTERFACE_IDS = {
   ERC1155: '0xd9b67a26',
   ERC725X: '0x7545acac',
   ERC725Y: '0x629aa694',
-  LSP0ERC725Account: INTERFACE_ID_LSP0ERC725Account,
+  LSP0ERC725Account: INTERFACE_ID_LSP0,
   LSP1UniversalReceiver: INTERFACE_ID_LSP1,
   LSP1UniversalReceiverDelegate: INTERFACE_ID_LSP1DELEGATE,
-  LSP6KeyManager: INTERFACE_ID_LSP6KEYMANAGER,
+  LSP6KeyManager: INTERFACE_ID_LSP6,
   LSP7DigitalAsset: INTERFACE_ID_LSP7,
   LSP8IdentifiableDigitalAsset: INTERFACE_ID_LSP8,
   LSP9Vault: INTERFACE_ID_LSP9,
