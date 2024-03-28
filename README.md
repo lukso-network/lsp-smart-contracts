@@ -39,10 +39,15 @@ This repo contains packages for the Solidity implementation of the LSP smart con
 
 ### npm
 
-LSP smart contracts are available as a [npm package](https://www.npmjs.com/package/@lukso/lsp-smart-contracts).
+All the LSP smart contracts are available as **npm packages**. You can either install all the LSP smart contracts by installing [`@lukso/lsp-smart-contracts`](https://www.npmjs.com/package/@lukso/lsp-smart-contracts)
+or install the specific LSP that you might want from the list above. For instance, `@lukso/lsp7-contracts` to install only the LSP7 token contracts.
 
 ```bash
+# Install all the LSPs
 npm install @lukso/lsp-smart-contracts
+
+# Install only the LSP7 tokens
+npm install @lukso/lsp7-contracts
 ```
 
 ### cloning the repository
