@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.1-rc.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp16-contracts-v0.15.0-rc.1...lsp16-contracts-v0.15.1-rc.1) (2024-03-28)
+
+
+### Bug Fixes
+
+* add missing `"package"` script and missing artifacts ([f713935](https://github.com/lukso-network/lsp-smart-contracts/commit/f713935b0dfdb022dc8b3fd008203a894654cc66))
+
 ## [0.15.0-rc.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp16-contracts-v0.15.0-rc.0...lsp16-contracts-v0.15.0-rc.1) (2024-03-22)
 
 
