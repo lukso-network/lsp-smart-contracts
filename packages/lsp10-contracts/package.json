@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp10-contracts",
-  "version": "0.15.0-rc.1",
+  "version": "0.15.0-rc.2",
   "description": "Package for the LSP10 Received Vaults standard",
   "license": "Apache-2.0",
   "author": "",

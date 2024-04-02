@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.15.0-rc.2](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp25-contracts-v0.15.0-rc.1...lsp25-contracts-v0.15.0-rc.2) (2024-04-02)
+
+
+### Bug Fixes
+
+* add missing `"package"` script and missing artifacts ([f713935](https://github.com/lukso-network/lsp-smart-contracts/commit/f713935b0dfdb022dc8b3fd008203a894654cc66))
+
+
+### Miscellaneous Chores
+
+* release lsp-smart-contracts 0.15.0-rc.2 ([138f2bb](https://github.com/lukso-network/lsp-smart-contracts/commit/138f2bb132bd98d600f3bd408acf8eca3b978402))
+
 ## [0.15.0-rc.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp25-contracts-v0.15.0-rc.0...lsp25-contracts-v0.15.0-rc.1) (2024-03-22)
 
 

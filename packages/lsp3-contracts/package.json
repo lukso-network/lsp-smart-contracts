@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp3-contracts",
-  "version": "0.15.0-rc.1",
+  "version": "0.15.0-rc.2",
   "description": "Package for the LSP3 Profile Metadata standard",
   "license": "Apache-2.0",
   "author": "",
