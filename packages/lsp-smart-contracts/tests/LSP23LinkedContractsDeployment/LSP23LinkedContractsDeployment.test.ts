@@ -22,8 +22,12 @@ describe('UniversalProfileDeployer', function () {
     it('should deploy both contract (with no value)', async function () {
       const [allPermissionsSigner, universalReceiver, recoverySigner] = await ethers.getSigners();
 
-      const KeyManagerFactory = await ethers.getContractFactory('LSP6KeyManager');
-      const UniversalProfileFactory = await ethers.getContractFactory('UniversalProfile');
+      const KeyManagerFactory = await ethers.getContractFactory(
+        '@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol:LSP6KeyManager',
+      );
+      const UniversalProfileFactory = await ethers.getContractFactory(
+        '@lukso/universalprofile-contracts/contracts/UniversalProfile.sol:UniversalProfile',
+      );
 
       const keyManagerBytecode = KeyManagerFactory.bytecode;
       const universalProfileBytecode = UniversalProfileFactory.bytecode;
@@ -149,9 +153,16 @@ describe('UniversalProfileDeployer', function () {
 
       const universalProfileFundAmount = ethers.parseEther('1');
 
-      const keyManagerBytecode = (await ethers.getContractFactory('LSP6KeyManager')).bytecode;
-      const universalProfileBytecode = (await ethers.getContractFactory('UniversalProfile'))
-        .bytecode;
+      const keyManagerBytecode = (
+        await ethers.getContractFactory(
+          '@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol:LSP6KeyManager',
+        )
+      ).bytecode;
+      const universalProfileBytecode = (
+        await ethers.getContractFactory(
+          '@lukso/universalprofile-contracts/contracts/UniversalProfile.sol:UniversalProfile',
+        )
+      ).bytecode;
 
       const { upPostDeploymentModule, LSP23LinkedContractsFactory } =
         await deployImplementationContracts();
@@ -250,9 +261,16 @@ describe('UniversalProfileDeployer', function () {
 
       const universalProfileFundAmount = ethers.parseEther('1');
 
-      const keyManagerBytecode = (await ethers.getContractFactory('LSP6KeyManager')).bytecode;
-      const universalProfileBytecode = (await ethers.getContractFactory('UniversalProfile'))
-        .bytecode;
+      const keyManagerBytecode = (
+        await ethers.getContractFactory(
+          '@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol:LSP6KeyManager',
+        )
+      ).bytecode;
+      const universalProfileBytecode = (
+        await ethers.getContractFactory(
+          '@lukso/universalprofile-contracts/contracts/UniversalProfile.sol:UniversalProfile',
+        )
+      ).bytecode;
 
       const { upPostDeploymentModule, LSP23LinkedContractsFactory } =
         await deployImplementationContracts();
@@ -339,7 +357,9 @@ describe('UniversalProfileDeployer', function () {
       const [allPermissionsSigner, universalReceiver, recoverySigner] = await ethers.getSigners();
 
       const KeyManagerFactory = await ethers.getContractFactory('KeyManagerWithExtraParams');
-      const UniversalProfileFactory = await ethers.getContractFactory('UniversalProfile');
+      const UniversalProfileFactory = await ethers.getContractFactory(
+        '@lukso/universalprofile-contracts/contracts/UniversalProfile.sol:UniversalProfile',
+      );
 
       let keyManagerBytecode = KeyManagerFactory.bytecode;
       const universalProfileBytecode = UniversalProfileFactory.bytecode;
