@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
 /**
@@ -11,35 +11,44 @@ interface ILSP11SocialRecovery {
      * @param account The account for which the guardian is being added.
      * @param guardian The address of the new guardian being added.
      */
-    event GuardianAdded(address account, address guardian);
+    event GuardianAdded(address indexed account, address indexed guardian);
 
     /**
      * @notice Event emitted when a guardian is removed for an account.
      * @param account The account from which the guardian is being removed.
      * @param guardian The address of the guardian being removed.
      */
-    event GuardianRemoved(address account, address guardian);
+    event GuardianRemoved(address indexed account, address indexed guardian);
 
     /**
      * @notice Event emitted when the guardian threshold for an account is changed.
      * @param account The account for which the guardian threshold is being changed.
      * @param guardianThreshold The new guardian threshold for the account.
      */
-    event GuardiansThresholdChanged(address account, uint256 guardianThreshold);
+    event GuardiansThresholdChanged(
+        address indexed account,
+        uint256 indexed guardianThreshold
+    );
 
     /**
      * @notice Event emitted when the secret hash associated with an account is changed.
      * @param account The account for which the secret hash is being changed.
      * @param secretHash The new secret hash for the account.
      */
-    event SecretHashChanged(address account, bytes32 secretHash);
+    event SecretHashChanged(
+        address indexed account,
+        bytes32 indexed secretHash
+    );
 
     /**
      * @notice Event emitted when the recovery delay associated with an account is changed.
      * @param account The account for which the recovery delay is being changed.
      * @param recoveryDelay The new recovery delay for the account in seconds.
      */
-    event RecoveryDelayChanged(address account, uint256 recoveryDelay);
+    event RecoveryDelayChanged(
+        address indexed account,
+        uint256 indexed recoveryDelay
+    );
 
     /**
      * @notice Event emitted when a guardian votes for an address to be recovered.
@@ -49,10 +58,10 @@ interface ILSP11SocialRecovery {
      * @param guardianVotedAddress The address voted by the guardian for recovery.
      */
     event GuardianVotedFor(
-        address account,
+        address indexed account,
         uint256 recoveryCounter,
-        address guardian,
-        address guardianVotedAddress
+        address indexed guardian,
+        address indexed guardianVotedAddress
     );
 
     /**
@@ -60,7 +69,10 @@ interface ILSP11SocialRecovery {
      * @param account The account for which the recovery process was cancelled.
      * @param previousRecoveryCounter The recovery counter before cancellation.
      */
-    event RecoveryCancelled(address account, uint256 previousRecoveryCounter);
+    event RecoveryCancelled(
+        address indexed account,
+        uint256 indexed previousRecoveryCounter
+    );
 
     /**
      * @notice Event emitted when an address commits a secret hash to recover an account.
@@ -70,10 +82,10 @@ interface ILSP11SocialRecovery {
      * @param commitment The commitment associated with the secret hash.
      */
     event SecretHashCommitted(
-        address account,
+        address indexed account,
         uint256 recoveryCounter,
-        address committedBy,
-        bytes32 commitment
+        address indexed committedBy,
+        bytes32 indexed commitment
     );
 
     /**
@@ -84,9 +96,9 @@ interface ILSP11SocialRecovery {
      * @param calldataExecuted The calldata executed on the account recovered.
      */
     event RecoveryProcessSuccessful(
-        address account,
-        uint256 recoveryCounter,
-        address guardianVotedAddress,
+        address indexed account,
+        uint256 indexed recoveryCounter,
+        address indexed guardianVotedAddress,
         bytes calldataExecuted
     );
 

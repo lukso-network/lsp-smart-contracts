@@ -205,6 +205,16 @@
       "draft": false,
       "prerelease-type": "rc"
     },
+    "packages/lsp11-contracts": {
+      "component": "lsp11-contracts",
+      "package-name": "@lukso/lsp11-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease-type": "rc"
+    },
     "packages/lsp25-contracts": {
       "component": "lsp25-contracts",
       "package-name": "@lukso/lsp25-contracts",
