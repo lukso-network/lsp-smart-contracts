@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.15.0-rc.2](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp8-contracts-v0.15.0-rc.1...lsp8-contracts-v0.15.0-rc.2) (2024-04-02)
+
+
+### Features
+
+* add JSON ABIs for old LSP7 and LSP8 interface IDs ([71cd129](https://github.com/lukso-network/lsp-smart-contracts/commit/71cd129b9143d2e052d65665241afb6ba5c81c2b))
+
+
+### Bug Fixes
+
+* add missing `"package"` script and missing artifacts ([f713935](https://github.com/lukso-network/lsp-smart-contracts/commit/f713935b0dfdb022dc8b3fd008203a894654cc66))
+
+
+### Miscellaneous Chores
+
+* release lsp-smart-contracts 0.15.0-rc.2 ([138f2bb](https://github.com/lukso-network/lsp-smart-contracts/commit/138f2bb132bd98d600f3bd408acf8eca3b978402))
+
 ## [0.15.0-rc.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp8-contracts-v0.15.0-rc.0...lsp8-contracts-v0.15.0-rc.1) (2024-03-22)
 
 
