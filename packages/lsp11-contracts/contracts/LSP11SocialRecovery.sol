@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
 // Interfaces
@@ -16,9 +16,11 @@ import {
 import {
     LSP25MultiChannelNonce
 } from "@lukso/lsp25-contracts/contracts/LSP25MultiChannelNonce.sol";
+import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+
 // Constants
 // solhint-disable no-global-import
-import "./LSP11Constants.sol";
+import {_INTERFACEID_LSP11, LSP11_VERSION} from "./LSP11Constants.sol";
 
 // Errors
 // solhint-disable no-global-import
@@ -29,6 +31,7 @@ import "./LSP11Errors.sol";
  * @notice Contract providing a mechanism for account recovery through a designated set of guardians.
  */
 contract LSP11SocialRecovery is
+    ERC165,
     ILSP11SocialRecovery,
     ILSP25ExecuteRelayCall,
     LSP25MultiChannelNonce
@@ -37,7 +40,10 @@ contract LSP11SocialRecovery is
     using ECDSA for *;
 
     /// @dev The default recovery delay set to 40 minutes.
-    uint256 private constant _DEFAULT_RECOVERY_DELAY = 40 minutes;
+    uint256 public constant DEFAULT_RECOVERY_DELAY = 40 minutes;
+
+    /// @dev The delay between the commitment and the recovery process.
+    uint256 public constant COMMITMEMT_DELAY = 1 minutes;
 
     /**
      * @dev Stores the hash of a commitment along with a timestamp.
@@ -45,9 +51,7 @@ contract LSP11SocialRecovery is
      * the secret hash abi-encoded.
      */
     struct CommitmentInfo {
-        /// @dev The keccak256 hash of the commitment.
         bytes32 commitment;
-        /// @dev The timestamp when the commitment was made.
         uint256 timestamp;
     }
 
@@ -115,7 +119,7 @@ contract LSP11SocialRecovery is
             revert CallerIsNotGuardian(guardian, msg.sender);
 
         if (!(_guardiansOf[account].contains(guardian)))
-            revert CallerIsNotAGuardianOfTheAccount(account, guardian);
+            revert NotAGuardianOfTheAccount(account, guardian);
         _;
     }
 
@@ -245,6 +249,15 @@ contract LSP11SocialRecovery is
         return _getNonce(from, channelId);
     }
 
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view override returns (bool) {
+        return
+            interfaceId == _INTERFACEID_LSP11 ||
+            interfaceId == type(ILSP25ExecuteRelayCall).interfaceId ||
+            super.supportsInterface(interfaceId);
+    }
+
     /**
      * @notice Get the array of addresses representing guardians associated with an account.
      * @param account The account for which guardians are queried.
@@ -295,7 +308,7 @@ contract LSP11SocialRecovery is
      * @return The recovery delay associated with the given account.
      */
     function getRecoveryDelayOf(address account) public view returns (uint256) {
-        if (!_defaultRecoveryRemoved[account]) return _DEFAULT_RECOVERY_DELAY;
+        if (!_defaultRecoveryRemoved[account]) return DEFAULT_RECOVERY_DELAY;
         return _recoveryDelayOf[account];
     }
 
@@ -394,10 +407,8 @@ contract LSP11SocialRecovery is
         address account,
         address newGuardian
     ) public virtual accountIsCaller(account) {
-        if (_guardiansOf[account].contains(newGuardian))
-            revert GuardianAlreadyExists(account, newGuardian);
-
-        _guardiansOf[account].add(newGuardian);
+        bool guardianAdded = _guardiansOf[account].add(newGuardian);
+        if (!guardianAdded) revert GuardianAlreadyExists(account, newGuardian);
         emit GuardianAdded(account, newGuardian);
     }
 
@@ -494,20 +505,17 @@ contract LSP11SocialRecovery is
         address guardian,
         address guardianVotedAddress
     ) public virtual onlyGuardians(account, guardian) {
-        uint256 accountRecoveryCounter = _recoveryCounterOf[account];
+        uint256 counter = _recoveryCounterOf[account];
 
-        uint256 recoveryTimestamp = _firstRecoveryTimestamp[account][
-            accountRecoveryCounter
-        ];
+        uint256 recoveryTimestamp = _firstRecoveryTimestamp[account][counter];
 
         if (recoveryTimestamp == 0) {
             // solhint-disable not-rely-on-time
-            _firstRecoveryTimestamp[account][accountRecoveryCounter] = block
-                .timestamp;
+            _firstRecoveryTimestamp[account][counter] = block.timestamp;
         }
 
         address previousVotedForAddressByGuardian = _guardiansVotedFor[account][
-            accountRecoveryCounter
+            counter
         ][guardian];
 
         // Cannot vote to the same person twice
@@ -520,10 +528,10 @@ contract LSP11SocialRecovery is
 
         // If didn't vote before or reset
         if (previousVotedForAddressByGuardian == address(0)) {
-            _guardiansVotedFor[account][accountRecoveryCounter][
+            _guardiansVotedFor[account][counter][
                 guardian
             ] = guardianVotedAddress;
-            _votesOfguardianVotedAddress[account][accountRecoveryCounter][
+            _votesOfguardianVotedAddress[account][counter][
                 guardianVotedAddress
             ]++;
         }
@@ -532,27 +540,22 @@ contract LSP11SocialRecovery is
             guardianVotedAddress != previousVotedForAddressByGuardian &&
             previousVotedForAddressByGuardian != address(0)
         ) {
-            _guardiansVotedFor[account][accountRecoveryCounter][
+            _guardiansVotedFor[account][counter][
                 guardian
             ] = guardianVotedAddress;
-            _votesOfguardianVotedAddress[account][accountRecoveryCounter][
+            _votesOfguardianVotedAddress[account][counter][
                 previousVotedForAddressByGuardian
             ]--;
 
             // If the voted address for is address(0) the intention is to reset, not vote for address 0
             if (guardianVotedAddress != address(0)) {
-                _votesOfguardianVotedAddress[account][accountRecoveryCounter][
+                _votesOfguardianVotedAddress[account][counter][
                     guardianVotedAddress
                 ]++;
             }
         }
 
-        emit GuardianVotedFor(
-            account,
-            accountRecoveryCounter,
-            guardian,
-            guardianVotedAddress
-        );
+        emit GuardianVotedFor(account, counter, guardian, guardianVotedAddress);
     }
 
     /**
@@ -564,8 +567,7 @@ contract LSP11SocialRecovery is
     function cancelRecoveryProcess(
         address account
     ) public accountIsCaller(account) {
-        uint256 previousRecoveryCounter = _recoveryCounterOf[account];
-        _recoveryCounterOf[account]++;
+        uint256 previousRecoveryCounter = _recoveryCounterOf[account]++;
         emit RecoveryCancelled(account, previousRecoveryCounter);
     }
 
@@ -878,7 +880,7 @@ contract LSP11SocialRecovery is
         ) revert CannotRecoverBeforeDelay(account, getRecoveryDelayOf(account));
 
         // retrieve current secret hash
-        bytes32 _secretHash = _secretHashOf[account];
+        bytes32 currentSecretHash = _secretHashOf[account];
 
         // retrieve current guardians threshold
         uint256 guardiansThresholdOfAccount = _guardiansThresholdOf[account];
@@ -891,14 +893,12 @@ contract LSP11SocialRecovery is
             account
         ][recoveryCounter][votedAddress];
 
-        // votes validation
-        // if the threshold is 0, and the caller does not have votes
-        // will rely on the hash
+        // if the threshold is 0, and the caller does not have votes will rely on the hash
         if (votesOfGuardianVotedAddress_ < guardiansThresholdOfAccount)
             revert CallerVotesHaveNotReachedThreshold(account, votedAddress);
 
         // if there is a secret require a commitment first
-        if (_secretHash != bytes32(0)) {
+        if (currentSecretHash != bytes32(0)) {
             bytes32 saltedHash = keccak256(abi.encode(account, secretHash));
             bytes32 commitment = keccak256(
                 abi.encode(votedAddress, saltedHash)
@@ -921,13 +921,20 @@ contract LSP11SocialRecovery is
             ) revert CannotRecoverAfterDirectCommit(account, votedAddress);
 
             // Check that the secret hash is valid
-            if (saltedHash != _secretHash)
+            if (saltedHash != currentSecretHash)
                 revert InvalidSecretHash(account, secretHash);
         }
 
         _recoveryCounterOf[account]++;
         _secretHashOf[account] = newSecretHash;
         emit SecretHashChanged(account, newSecretHash);
+
+        emit RecoveryProcessSuccessful(
+            account,
+            recoveryCounter,
+            votedAddress,
+            calldataToExecute
+        );
 
         (bool success, bytes memory returnedData) = account.call{
             value: msgValue
@@ -937,13 +944,6 @@ contract LSP11SocialRecovery is
             success,
             returnedData,
             "LSP11: Failed to call function on account"
-        );
-
-        emit RecoveryProcessSuccessful(
-            account,
-            recoveryCounter,
-            votedAddress,
-            calldataToExecute
         );
 
         return returnedData;

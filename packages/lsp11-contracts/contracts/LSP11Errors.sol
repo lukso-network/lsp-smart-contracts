@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
 /**
@@ -16,7 +16,7 @@ error GuardianAlreadyExists(address account, address guardian);
 error GuardianNotFound(address account, address guardian);
 
 /**
- * @dev The caller is not a guardian for the account.
+ * @dev The caller is not a guardian address provided.
  * @param guardian Expected guardian address.
  * @param caller Address of the caller.
  */
@@ -83,11 +83,11 @@ error CallerVotesHaveNotReachedThreshold(address account, address recoverer);
 error AccountNotSetupYet();
 
 /**
- * @dev The caller is not a guardian for the account.
+ * @dev The address provided as a guardian is not registered as a guardian for the account.
  * @param account The account in question.
- * @param caller Address of the caller.
+ * @param nonGuardian Address of a non-guardian .
  */
-error CallerIsNotAGuardianOfTheAccount(address account, address caller);
+error NotAGuardianOfTheAccount(address account, address nonGuardian);
 
 /**
  * @dev A guardian cannot vote for the same address twice.

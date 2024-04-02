@@ -8,7 +8,12 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP11SocialRecovery} from "../contracts/LSP11SocialRecovery.sol";
+import {ILSP11SocialRecovery} from "../contracts/ILSP11SocialRecovery.sol";
+import {
+    ILSP25ExecuteRelayCall
+} from "@lukso/lsp25-contracts/contracts/ILSP25ExecuteRelayCall.sol";
 import "../contracts/LSP11Errors.sol";
+import {_INTERFACEID_LSP11} from "../contracts/LSP11Constants.sol";
 
 contract LSP11AccountFunctionalities is Test {
     LSP11SocialRecovery public lsp11;
@@ -23,10 +28,6 @@ contract LSP11AccountFunctionalities is Test {
 
     function testAddGuardian() public {
         address newGuardian = address(0xABC);
-
-        // // Expect GuardianAdded event
-        // vm.expectEmit(true, true, true, true);
-        // emit GuardianAdded(address(this), newGuardian);
 
         // Call addGuardian
         lsp11.addGuardian(address(this), newGuardian);
@@ -72,10 +73,6 @@ contract LSP11AccountFunctionalities is Test {
 
         // Add a guardian first
         lsp11.addGuardian(address(this), existingGuardian);
-
-        // Expect GuardianRemoved event
-        // vm.expectEmit(true, true, true, true);
-        // emit GuardianRemoved(address(this), existingGuardian);
 
         // Remove the guardian
         lsp11.removeGuardian(address(this), existingGuardian);
@@ -123,10 +120,6 @@ contract LSP11AccountFunctionalities is Test {
         address guardian1 = address(0xABC);
         address guardian2 = address(0xDEF);
 
-        // Expect GuardiansThresholdChanged event
-        // vm.expectEmit(true, true, true, true);
-        // emit GuardiansThresholdChanged(address(this), newThreshold);
-
         // Add two guardians
         lsp11.addGuardian(address(this), guardian1);
         lsp11.addGuardian(address(this), guardian2);
@@ -166,10 +159,6 @@ contract LSP11AccountFunctionalities is Test {
     function testAddSecretHash() public {
         bytes32 newSecretHash = keccak256("newSecret");
 
-        // Expect SecretHashChanged event
-        // vm.expectEmit(true, true, true, true);
-        // emit SecretHashChanged(address(this), newSecretHash);
-
         // Set the secret hash
         lsp11.setRecoverySecretHash(address(this), newSecretHash);
 
@@ -180,10 +169,6 @@ contract LSP11AccountFunctionalities is Test {
 
     function testAddRecoveryDelay() public {
         uint256 newRecoveryDelay = 3600; // Example delay of 1 hour
-
-        // Expect RecoveryDelayChanged event
-        // vm.expectEmit(true, true, true, true);
-        // emit RecoveryDelayChanged(address(this), newRecoveryDelay);
 
         // Set the recovery delay
         lsp11.setRecoveryDelay(address(this), newRecoveryDelay);
@@ -216,10 +201,6 @@ contract LSP11AccountFunctionalities is Test {
     function testCancelRecoveryIncrementsCounter() public {
         // First, check the initial recovery counter value
         uint256 initialCounter = lsp11.getRecoveryCounterOf(address(this));
-
-        // Expect RecoveryCancelled event
-        // vm.expectEmit(true, true, true, true);
-        // emit RecoveryCancelled(address(this), initialCounter);
 
         // Call cancelRecoveryProcess
         lsp11.cancelRecoveryProcess(address(this));
@@ -1261,6 +1242,20 @@ contract LSP11AccountFunctionalities is Test {
             recoveryAccount
         );
         assertEq(newRecoveryCounter, 1);
+    }
+
+    function testLSP11InterfaceIdConstruction() public {
+        bytes4 lsp11InterfaceId = type(ILSP11SocialRecovery).interfaceId ^
+            type(ILSP25ExecuteRelayCall).interfaceId;
+        assertEq(
+            abi.encodePacked(lsp11InterfaceId),
+            abi.encodePacked(_INTERFACEID_LSP11)
+        );
+    }
+
+    function testLSP11SupportsInterfaceId() public {
+        bool isSupported = lsp11.supportsInterface(_INTERFACEID_LSP11);
+        assertTrue(isSupported);
     }
 
     function toBytesSignature(
