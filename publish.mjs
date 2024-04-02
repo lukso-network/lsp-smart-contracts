@@ -10,10 +10,14 @@ for (const key in outputs) {
   // Skip if no release was created for this LSP package
   if (!match || !value) continue;
 
-  const version = key.match(/^(.*\/.*)--version$/);
+  let tag = "latest";
+
+  const version = outputs[`${match[1]}--version`];
 
   // Do not publish as latest on npm if we are doing a release candidate
-  const tag = version.includes("-rc") ? "rc" : "latest";
+  if (version != null && version.includes("-rc")) {
+    tag = "rc";
+  }
 
   const workspace = match[1];
   await $`npm publish --workspace=./${workspace} --tag ${tag} --no-git-checks --access public`;
