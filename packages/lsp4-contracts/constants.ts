@@ -5,12 +5,13 @@ export type LSP4DigitalAssetMetadataJSON = {
 };
 
 export type LSP4DigitalAssetMetadata = {
+  name: string;
   description: string;
   links: LinkMetadata[];
   images: ImageMetadata[][];
   assets: AssetMetadata[];
   icon: ImageMetadata[];
-  attributes: AttributeMetadata[];
+  attributes?: AttributeMetadata[];
 };
 
 export type LinkMetadata = {
