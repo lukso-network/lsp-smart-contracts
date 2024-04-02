@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp25-contracts",
-  "version": "0.15.0-rc.3",
+  "version": "0.15.0-rc.4",
   "description": "Package for the LSP25 Execute Relay Call standard",
   "license": "Apache-2.0",
   "author": "",

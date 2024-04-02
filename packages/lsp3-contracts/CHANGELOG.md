@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.0-rc.4](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp3-contracts-v0.15.0-rc.3...lsp3-contracts-v0.15.0-rc.4) (2024-04-02)
+
+
+### Miscellaneous Chores
+
+* release lsp-smart-contracts 0.15.0-rc.4 ([adac8fe](https://github.com/lukso-network/lsp-smart-contracts/commit/adac8fe1df9b962dbb648d40c5c70de561fe7f88))
+
 ## [0.15.0-rc.3](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp3-contracts-v0.15.0-rc.2...lsp3-contracts-v0.15.0-rc.3) (2024-04-02)
 
 
