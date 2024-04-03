@@ -1,38 +1,22 @@
 <!-- This file is auto-generated. Do not edit! -->
 <!-- Check `@lukso-network/lsp-smart-contracts/CONTRIBUTING.md#solidity-code-comments` for more information. -->
 
-# LSP0ERC725Account
+# LSP9Vault
 
 :::info Standard Specifications
 
-[`LSP-0-ERC725Account`](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md)
+[`LSP-9-Vault`](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md)
 
 :::
 :::info Solidity implementation
 
-[`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+[`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 
 :::
 
-> Deployable Implementation of [LSP-0-ERC725Account] Standard.
+> Implementation of LSP9Vault built on top of [ERC725], [LSP-1-UniversalReceiver]
 
-A smart contract account including basic functionalities such as:
-
-- Detecting supported standards using [ERC-165]
-
-- Executing several operation on other addresses including creating contracts using [ERC-725X]
-
-- A generic data key-value store using [ERC-725Y]
-
-- Validating signatures using [ERC-1271]
-
-- Receiving notification and react on them using [LSP-1-UniversalReceiver]
-
-- Safer ownership management through 2-steps transfer using [LSP-14-Ownable2Step]
-
-- Extending the account with new functions and interfaceIds of future standards using [LSP-17-ContractExtension]
-
-- Verifying calls on the owner to make it easier to interact with the account directly using [LSP-20-CallVerification]
+Could be owned by an EOA or by a contract and is able to receive and send assets. Also allows for registering received assets by leveraging the key-value storage.
 
 ## Public Methods
 
@@ -43,22 +27,18 @@ When marked as 'public', a method can be called both externally and internally, 
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#constructor)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#constructor)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 
 :::
 
 ```solidity
-constructor(address initialOwner);
+constructor(address newOwner);
 ```
 
-_Deploying a LSP0ERC725Account contract with owner set to address `initialOwner`._
+_Deploying a LSP9Vault contract with owner set to address `initialOwner`._
 
-Set `initialOwner` as the contract owner.
-
-- The `constructor` also allows funding the contract on deployment.
-
-- The `initialOwner` will then be allowed to call protected functions marked with the `onlyOwner` modifier.
+Sets `initialOwner` as the contract owner and the `SupportedStandards:LSP9Vault` Data Key. The `constructor` also allows funding the contract on deployment.
 
 <blockquote>
 
@@ -66,14 +46,16 @@ Set `initialOwner` as the contract owner.
 
 - [`UniversalReceiver`](#universalreceiver) event when funding the contract on deployment.
 - [`OwnershipTransferred`](#ownershiptransferred) event when `initialOwner` is set as the contract [`owner`](#owner).
+- [`DataChanged`](#datachanged) event when setting the [`_LSP9_SUPPORTED_STANDARDS_KEY`](#_lsp9_supported_standards_key).
+- [`UniversalReceiver`](#universalreceiver) event when notifying the `initialOwner`.
 
 </blockquote>
 
 #### Parameters
 
-| Name           |   Type    | Description                |
-| -------------- | :-------: | -------------------------- |
-| `initialOwner` | `address` | The owner of the contract. |
+| Name       |   Type    | Description                    |
+| ---------- | :-------: | ------------------------------ |
+| `newOwner` | `address` | The new owner of the contract. |
 
 <br/>
 
@@ -81,15 +63,8 @@ Set `initialOwner` as the contract owner.
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#fallback)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
-
-:::
-
-:::info
-
-Whenever the call is associated with native tokens, the function will delegate the handling of native tokens internally to the [`universalReceiver`](#universalreceiver) function
-passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and the calldata as received data, except when the native token will be sent directly to the extension.
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#fallback)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 
 :::
 
@@ -131,15 +106,8 @@ This function is executed when:
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#receive)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
-
-:::
-
-:::info
-
-This function internally delegates the handling of native tokens to the [`universalReceiver`](#universalreceiver) function
-passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and an empty bytes array as received data.
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#receive)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 
 :::
 
@@ -157,7 +125,7 @@ Executed:
 
 **Emitted events:**
 
-- Emits a [`UniversalReceiver`](#universalreceiver) event when the `universalReceiver` logic is executed upon receiving native tokens.
+- [`UniversalReceiver`](#universalreceiver) when receiving native tokens.
 
 </blockquote>
 
@@ -167,8 +135,8 @@ Executed:
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#renounce_ownership_confirmation_delay)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#renounce_ownership_confirmation_delay)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY()`
 - Function selector: `0xead3fbdf`
 
@@ -193,8 +161,8 @@ function RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY()
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#renounce_ownership_confirmation_period)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#renounce_ownership_confirmation_period)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD()`
 - Function selector: `0x01bfba61`
 
@@ -219,8 +187,8 @@ function RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD()
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#version)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#version)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `VERSION()`
 - Function selector: `0xffa1ad74`
 
@@ -244,8 +212,8 @@ _Contract version._
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#acceptownership)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#acceptownership)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `acceptOwnership()`
 - Function selector: `0x79ba5097`
 
@@ -279,8 +247,8 @@ Transfer ownership of the contract from the current [`owner()`](#owner) to the [
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#batchcalls)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#batchcalls)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `batchCalls(bytes[])`
 - Function selector: `0x6963d438`
 
@@ -318,10 +286,16 @@ Allows a caller to batch different function calls in one call. Perform a `delega
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#execute)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#execute)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `execute(uint256,address,uint256,bytes)`
 - Function selector: `0x44c028fe`
+
+:::
+
+:::info
+
+The `operationType` 4 `DELEGATECALL` is disabled by default in the LSP9 Vault.
 
 :::
 
@@ -351,7 +325,7 @@ Generic executor function to:
 - Can be only called by the [`owner`](#owner) or by an authorised address that pass the verification check performed on the owner.
 - If a `value` is provided, the contract must have at least this amount in its balance to execute successfully.
 - If the operation type is `CREATE` (1) or `CREATE2` (2), `target` must be `address(0)`.
-- If the operation type is `STATICCALL` (3) or `DELEGATECALL` (4), `value` transfer is disallowed and must be 0.
+- If the operation type is `STATICCALL` (3), `value` transfer is disallowed and must be 0.
 
 </blockquote>
 
@@ -359,7 +333,7 @@ Generic executor function to:
 
 **Emitted events:**
 
-- [`Executed`](#executed) event for each call that uses under `operationType`: `CALL` (0), `STATICCALL` (3) and `DELEGATECALL` (4).
+- [`Executed`](#executed) event for each call that uses under `operationType`: `CALL` (0) and `STATICCALL` (3).
 - [`ContractCreated`](#contractcreated) event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2).
 - [`UniversalReceiver`](#universalreceiver) event when receiving native tokens.
 
@@ -386,16 +360,16 @@ Generic executor function to:
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#executebatch)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#executebatch)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `executeBatch(uint256[],address[],uint256[],bytes[])`
 - Function selector: `0x31858452`
 
 :::
 
-:::caution Warning
+:::info
 
-- The `msg.value` should not be trusted for any method called within the batch with `operationType`: `DELEGATECALL` (4).
+The `operationType` 4 `DELEGATECALL` is disabled by default in the LSP9 Vault.
 
 :::
 
@@ -420,7 +394,7 @@ Batch executor function that behaves the same as [`execute`](#execute) but allow
 - Can be only called by the [`owner`](#owner) or by an authorised address that pass the verification check performed on the owner.
 - If a `value` is provided, the contract must have at least this amount in its balance to execute successfully.
 - If the operation type is `CREATE` (1) or `CREATE2` (2), `target` must be `address(0)`.
-- If the operation type is `STATICCALL` (3) or `DELEGATECALL` (4), `value` transfer is disallowed and must be 0.
+- If the operation type is `STATICCALL` (3), `value` transfer is disallowed and must be 0.
 
 </blockquote>
 
@@ -428,8 +402,8 @@ Batch executor function that behaves the same as [`execute`](#execute) but allow
 
 **Emitted events:**
 
-- [`Executed`](#executed) event for each call that uses under `operationType`: `CALL` (0), `STATICCALL` (3) and `DELEGATECALL` (4). (each iteration)
-- [`ContractCreated`](#contractcreated) event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2) (each iteration)
+- [`Executed`](#executed) event for each call that uses under `operationType`: `CALL` (0) and `STATICCALL` (3). (each iteration)
+- [`ContractCreated`](#contractcreated) event, when a contract is created under `operationType`: `CREATE` (1) and `CREATE2` (2). (each iteration)
 - [`UniversalReceiver`](#universalreceiver) event when receiving native tokens.
 
 </blockquote>
@@ -455,8 +429,8 @@ Batch executor function that behaves the same as [`execute`](#execute) but allow
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#getdata)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#getdata)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `getData(bytes32)`
 - Function selector: `0x54f6127f`
 
@@ -488,8 +462,8 @@ Get in the ERC725Y storage the bytes data stored at a specific data key `dataKey
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#getdatabatch)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#getdatabatch)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `getDataBatch(bytes32[])`
 - Function selector: `0xdedff9c6`
 
@@ -519,67 +493,12 @@ Get in the ERC725Y storage the bytes data stored at multiple data keys `dataKeys
 
 <br/>
 
-### isValidSignature
-
-:::note References
-
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#isvalidsignature)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
-- Function signature: `isValidSignature(bytes32,bytes)`
-- Function selector: `0x1626ba7e`
-
-:::
-
-:::caution Warning
-
-This function does not enforce by default the inclusion of the address of this contract in the signature digest. It is recommended that protocols or applications using this contract include the targeted address (= this contract) in the data to sign. To ensure that a signature is valid for a specific LSP0ERC725Account and prevent signatures from the same EOA to be replayed across different LSP0ERC725Accounts.
-
-:::
-
-```solidity
-function isValidSignature(
-  bytes32 dataHash,
-  bytes signature
-) external view returns (bytes4 returnedStatus);
-```
-
-_Achieves the goal of [EIP-1271] by validating signatures of smart contracts according to their own logic._
-
-Handles two cases:
-
-1. If the owner is an EOA, recovers an address from the hash and the signature provided:
-
-- Returns the `_ERC1271_SUCCESSVALUE` if the address recovered is the same as the owner, indicating that it was a valid signature.
-
-- If the address is different, it returns the `_ERC1271_FAILVALUE` indicating that the signature is not valid.
-
-2. If the owner is a smart contract, it forwards the call of [`isValidSignature()`](#isvalidsignature) to the owner contract:
-
-- If the contract fails or returns the `_ERC1271_FAILVALUE`, the [`isValidSignature()`](#isvalidsignature) on the account returns the `_ERC1271_FAILVALUE`, indicating that the signature is not valid.
-
-- If the [`isValidSignature()`](#isvalidsignature) on the owner returned the `_ERC1271_SUCCESSVALUE`, the [`isValidSignature()`](#isvalidsignature) on the account returns the `_ERC1271_SUCCESSVALUE`, indicating that it's a valid signature.
-
-#### Parameters
-
-| Name        |   Type    | Description                                                  |
-| ----------- | :-------: | ------------------------------------------------------------ |
-| `dataHash`  | `bytes32` | The hash of the data to be validated.                        |
-| `signature` |  `bytes`  | A signature that can validate the previous parameter (Hash). |
-
-#### Returns
-
-| Name             |   Type   | Description                                                       |
-| ---------------- | :------: | ----------------------------------------------------------------- |
-| `returnedStatus` | `bytes4` | A `bytes4` value that indicates if the signature is valid or not. |
-
-<br/>
-
 ### owner
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#owner)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#owner)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `owner()`
 - Function selector: `0x8da5cb5b`
 
@@ -603,8 +522,8 @@ Returns the address of the current owner.
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#pendingowner)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#pendingowner)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `pendingOwner()`
 - Function selector: `0xe30c3978`
 
@@ -634,8 +553,8 @@ The address that ownership of the contract is transferred to. This address may u
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#renounceownership)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#renounceownership)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `renounceOwnership()`
 - Function selector: `0x715018a6`
 
@@ -643,7 +562,7 @@ The address that ownership of the contract is transferred to. This address may u
 
 :::danger
 
-Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner or an address allowed by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
+Leaves the contract without an owner. Once ownership of the contract has been renounced, any functions that are restricted to be called by the owner will be permanently inaccessible, making these functions not callable anymore and unusable.
 
 :::
 
@@ -673,8 +592,8 @@ Renounce ownership of the contract in a 2-step process.
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#setdata)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#setdata)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `setData(bytes32,bytes)`
 - Function selector: `0x7f23690c`
 
@@ -700,7 +619,6 @@ Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data
 
 **Emitted events:**
 
-- [`UniversalReceiver`](#universalreceiver) event when receiving native tokens.
 - [`DataChanged`](#datachanged) event.
 
 </blockquote>
@@ -718,8 +636,8 @@ Sets a single bytes value `dataValue` in the ERC725Y storage for a specific data
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#setdatabatch)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#setdatabatch)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `setDataBatch(bytes32[],bytes[])`
 - Function selector: `0x97902421`
 
@@ -745,7 +663,6 @@ Batch data setting function that behaves the same as [`setData`](#setdata) but a
 
 **Emitted events:**
 
-- [`UniversalReceiver`](#universalreceiver) event when receiving native tokens.
 - [`DataChanged`](#datachanged) event. (on each iteration of setting data)
 
 </blockquote>
@@ -763,8 +680,8 @@ Batch data setting function that behaves the same as [`setData`](#setdata) but a
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#supportsinterface)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#supportsinterface)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `supportsInterface(bytes4)`
 - Function selector: `0x01ffc9a7`
 
@@ -796,15 +713,15 @@ Achieves the goal of [ERC-165] to detect supported interfaces and [LSP-17-Contra
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#transferownership)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#transferownership)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `transferOwnership(address)`
 - Function selector: `0xf2fde38b`
 
 :::
 
 ```solidity
-function transferOwnership(address pendingNewOwner) external nonpayable;
+function transferOwnership(address newOwner) external nonpayable;
 ```
 
 _Transfer ownership initiated by `newOwner`._
@@ -823,9 +740,9 @@ Initiate the process of transferring ownership of the contract by setting the ne
 
 #### Parameters
 
-| Name              |   Type    | Description |
-| ----------------- | :-------: | ----------- |
-| `pendingNewOwner` | `address` | -           |
+| Name       |   Type    | Description                   |
+| ---------- | :-------: | ----------------------------- |
+| `newOwner` | `address` | The address of the new owner. |
 
 <br/>
 
@@ -833,8 +750,8 @@ Initiate the process of transferring ownership of the contract by setting the ne
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#universalreceiver)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#universalreceiver)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Function signature: `universalReceiver(bytes32,bytes)`
 - Function selector: `0x6bb56a14`
 
@@ -861,13 +778,12 @@ Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be not
 
 - If there is an address stored under the data key, check if this address supports the LSP1 interfaceId.
 
-- If yes, call this address with the typeId and data (params), along with additional calldata consisting of 20 bytes of `msg.sender` and 32 bytes of `msg.value`. If not, continue the execution of the function. This function delegates internally the handling of native tokens to the [`universalReceiver`](#universalreceiver) function itself passing `_TYPEID_LSP0_VALUE_RECEIVED` as typeId and the calldata as received data.
+- If yes, call this address with the typeId and data (params), along with additional calldata consisting of 20 bytes of `msg.sender` and 32 bytes of `msg.value`. If not, continue the execution of the function.
 
 <blockquote>
 
 **Emitted events:**
 
-- [`UniversalReceiver`](#universalreceiver) when receiving native tokens.
 - [`UniversalReceiver`](#universalreceiver) event with the function parameters, call options, and the response of the UniversalReceiverDelegates (URD) contract that was called.
 
 </blockquote>
@@ -916,6 +832,12 @@ This pattern is useful in inheritance.
 
 ### \_execute
 
+:::caution Warning
+
+Providing operation type DELEGATECALL (4) as argument will result in custom error [`ERC725X_UnknownOperationType(4)`](#erc725x_unknownoperationtype)
+
+:::
+
 ```solidity
 function _execute(
   uint256 operationType,
@@ -925,7 +847,16 @@ function _execute(
 ) internal nonpayable returns (bytes);
 ```
 
-check the `operationType` provided and perform the associated low-level opcode after checking for requirements (see [`execute`](#execute)).
+This function overrides the [`ERC725XCore`](#erc725xcore) internal [`_execute`](#_execute) function to disable operation type DELEGATECALL (4).
+
+#### Parameters
+
+| Name            |   Type    | Description                                                                                            |
+| --------------- | :-------: | ------------------------------------------------------------------------------------------------------ |
+| `operationType` | `uint256` | The operation type used: CALL = 0; CREATE = 1; CREATE2 = 2; STATICCALL = 3.                            |
+| `target`        | `address` | The address of the EOA or smart contract. (unused if a contract is created via operation type 1 or 2). |
+| `value`         | `uint256` | The amount of native tokens to transfer (in Wei).                                                      |
+| `data`          |  `bytes`  | The call data, or the creation bytecode of the contract to deploy if `operationType` is `1` or `2`.    |
 
 <br/>
 
@@ -1207,13 +1138,11 @@ function _getExtensionAndForwardValue(
 ) internal view returns (address, bool);
 ```
 
-Returns the extension address and the boolean indicating whether to forward the value received to the extension, stored under the following data key:
+Returns the extension address stored under the following data key:
 
 - [`_LSP17_EXTENSION_PREFIX`](#_lsp17_extension_prefix) + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
 
 - If no extension is stored, returns the address(0).
-
-- If the stored value is 20 bytes, return false for the boolean
 
 <br/>
 
@@ -1221,7 +1150,14 @@ Returns the extension address and the boolean indicating whether to forward the 
 
 :::tip Hint
 
-If you would like to forward the `msg.value` to the extension contract, you should store an additional `0x01` byte after the address of the extension under the corresponding LSP17 data key.
+This function does not forward to the extension contract the `msg.value` received by the contract that inherits `LSP17Extendable`.
+If you would like to forward the `msg.value` to the extension contract, you can override the code of this internal function as follow:
+
+```solidity
+(bool success, bytes memory result) = extension.call{value: msg.value}(
+    abi.encodePacked(callData, msg.sender, msg.value)
+);
+```
 
 :::
 
@@ -1234,46 +1170,20 @@ function _fallbackLSP17Extendable(
 Forwards the call to an extension mapped to a function selector.
 Calls [`_getExtensionAndForwardValue`](#_getextensionandforwardvalue) to get the address of the extension mapped to the function selector being
 called on the account. If there is no extension, the `address(0)` will be returned.
-Forwards the value sent with the call to the extension if the function selector is mapped to a payable extension.
+Forwards the value if the extension is payable.
 Reverts if there is no extension for the function being called, except for the `bytes4(0)` function selector, which passes even if there is no extension for it.
 If there is an extension for the function selector being called, it calls the extension with the
 `CALL` opcode, passing the `msg.data` appended with the 20 bytes of the [`msg.sender`](#msg.sender) and 32 bytes of the `msg.value`.
 
 <br/>
 
-### \_verifyCall
+### \_validateAndIdentifyCaller
 
 ```solidity
-function _verifyCall(
-  address logicVerifier
-) internal nonpayable returns (bool verifyAfter);
+function _validateAndIdentifyCaller() internal view returns (bool isURD);
 ```
 
-Calls [`lsp20VerifyCall`](#lsp20verifycall) function on the logicVerifier.
-
-<br/>
-
-### \_verifyCallResult
-
-```solidity
-function _verifyCallResult(
-  address logicVerifier,
-  bytes callResult
-) internal nonpayable;
-```
-
-Calls [`lsp20VerifyCallResult`](#lsp20verifycallresult) function on the logicVerifier.
-
-<br/>
-
-### \_revertWithLSP20DefaultError
-
-```solidity
-function _revertWithLSP20DefaultError(
-  bool postCall,
-  bytes returnedData
-) internal pure;
-```
+Internal method restricting the call to the owner of the contract and the UniversalReceiverDelegate
 
 <br/>
 
@@ -1283,8 +1193,8 @@ function _revertWithLSP20DefaultError(
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#contractcreated)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#contractcreated)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Event signature: `ContractCreated(uint256,address,uint256,bytes32)`
 - Event topic hash: `0xa1fb700aaee2ae4a2ff6f91ce7eba292f89c2f5488b8ec4c5c5c8150692595c3`
 
@@ -1318,8 +1228,8 @@ Emitted when a new contract was created and deployed.
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#datachanged)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#datachanged)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Event signature: `DataChanged(bytes32,bytes)`
 - Event topic hash: `0xece574603820d07bc9b91f2a932baadf4628aabcb8afba49776529c14a6104b2`
 
@@ -1346,8 +1256,8 @@ Emitted when data at a specific `dataKey` was changed to a new value `dataValue`
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#executed)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#executed)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Event signature: `Executed(uint256,address,uint256,bytes4)`
 - Event topic hash: `0x4810874456b8e6487bd861375cf6abd8e1c8bb5858c8ce36a86a04dabfac199e`
 
@@ -1381,8 +1291,8 @@ Emitted when calling an address `target` (EOA or contract) with `value`.
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#ownershiprenounced)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#ownershiprenounced)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Event signature: `OwnershipRenounced()`
 - Event topic hash: `0xd1f66c3d2bc1993a86be5e3d33709d98f0442381befcedd29f578b9b2506b1ce`
 
@@ -1402,8 +1312,8 @@ Emitted when the ownership of the contract has been renounced.
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#ownershiptransferstarted)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#ownershiptransferstarted)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Event signature: `OwnershipTransferStarted(address,address)`
 - Event topic hash: `0x38d16b8cac22d99fc7c124b9cd0de2d3fa1faef420bfe791d8c362d765e22700`
 
@@ -1433,8 +1343,8 @@ Emitted when [`transferOwnership(..)`](#transferownership) was called and the fi
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#ownershiptransferred)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#ownershiptransferred)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Event signature: `OwnershipTransferred(address,address)`
 - Event topic hash: `0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0`
 
@@ -1460,8 +1370,8 @@ event OwnershipTransferred(
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#renounceownershipstarted)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#renounceownershipstarted)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Event signature: `RenounceOwnershipStarted()`
 - Event topic hash: `0x81b7f830f1f0084db6497c486cbe6974c86488dcc4e3738eab94ab6d6b1653e7`
 
@@ -1481,8 +1391,8 @@ Emitted when starting the [`renounceOwnership(..)`](#renounceownership) 2-step p
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#universalreceiver)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#universalreceiver)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Event signature: `UniversalReceiver(address,uint256,bytes32,bytes,bytes)`
 - Event topic hash: `0x9c3ba68eb5742b8e3961aea0afc7371a71bf433c8a67a831803b64c064a178c2`
 
@@ -1522,8 +1432,8 @@ Emitted when the [`universalReceiver`](#universalreceiver) function was called w
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#erc725x_contractdeploymentfailed)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#erc725x_contractdeploymentfailed)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Error signature: `ERC725X_ContractDeploymentFailed()`
 - Error hash: `0x0b07489b`
 
@@ -1541,8 +1451,8 @@ Reverts when contract deployment failed via [`execute`](#execute) or [`executeBa
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#erc725x_createoperationsrequireemptyrecipientaddress)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#erc725x_createoperationsrequireemptyrecipientaddress)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Error signature: `ERC725X_CreateOperationsRequireEmptyRecipientAddress()`
 - Error hash: `0x3041824a`
 
@@ -1560,8 +1470,8 @@ Reverts when passing a `to` address that is not `address(0)` (= address zero) wh
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#erc725x_executeparametersemptyarray)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#erc725x_executeparametersemptyarray)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Error signature: `ERC725X_ExecuteParametersEmptyArray()`
 - Error hash: `0xe9ad2b5f`
 
@@ -1579,8 +1489,8 @@ Reverts when one of the array parameter provided to the [`executeBatch`](#execut
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#erc725x_executeparameterslengthmismatch)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#erc725x_executeparameterslengthmismatch)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Error signature: `ERC725X_ExecuteParametersLengthMismatch()`
 - Error hash: `0x3ff55f4d`
 
@@ -1598,8 +1508,8 @@ Reverts when there is not the same number of elements in the `operationTypes`, `
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#erc725x_insufficientbalance)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#erc725x_insufficientbalance)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Error signature: `ERC725X_InsufficientBalance(uint256,uint256)`
 - Error hash: `0x0df9a8f8`
 
@@ -1620,31 +1530,12 @@ Reverts when trying to send more native tokens `value` than available in current
 
 <br/>
 
-### ERC725X_MsgValueDisallowedInDelegateCall
-
-:::note References
-
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#erc725x_msgvaluedisallowedindelegatecall)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
-- Error signature: `ERC725X_MsgValueDisallowedInDelegateCall()`
-- Error hash: `0x5ac83135`
-
-:::
-
-```solidity
-error ERC725X_MsgValueDisallowedInDelegateCall();
-```
-
-Reverts when trying to send native tokens (`value` / `values[]` parameter of [`execute`](#execute) or [`executeBatch`](#executebatch) functions) while making a `delegatecall` (`operationType == 4`). Sending native tokens via `staticcall` is not allowed because `msg.value` is persisting.
-
-<br/>
-
 ### ERC725X_MsgValueDisallowedInStaticCall
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#erc725x_msgvaluedisallowedinstaticcall)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#erc725x_msgvaluedisallowedinstaticcall)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Error signature: `ERC725X_MsgValueDisallowedInStaticCall()`
 - Error hash: `0x72f2bc6a`
 
@@ -1662,8 +1553,8 @@ Reverts when trying to send native tokens (`value` / `values[]` parameter of [`e
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#erc725x_nocontractbytecodeprovided)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#erc725x_nocontractbytecodeprovided)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Error signature: `ERC725X_NoContractBytecodeProvided()`
 - Error hash: `0xb81cd8d9`
 
@@ -1681,8 +1572,8 @@ Reverts when no contract bytecode was provided as parameter when trying to deplo
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#erc725x_unknownoperationtype)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#erc725x_unknownoperationtype)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Error signature: `ERC725X_UnknownOperationType(uint256)`
 - Error hash: `0x7583b3bc`
 
@@ -1702,31 +1593,12 @@ Reverts when the `operationTypeProvided` is none of the default operation types 
 
 <br/>
 
-### ERC725Y_DataKeysValuesEmptyArray
-
-:::note References
-
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#erc725y_datakeysvaluesemptyarray)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
-- Error signature: `ERC725Y_DataKeysValuesEmptyArray()`
-- Error hash: `0x97da5f95`
-
-:::
-
-```solidity
-error ERC725Y_DataKeysValuesEmptyArray();
-```
-
-Reverts when one of the array parameter provided to [`setDataBatch`](#setdatabatch) function is an empty array.
-
-<br/>
-
 ### ERC725Y_DataKeysValuesLengthMismatch
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#erc725y_datakeysvalueslengthmismatch)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#erc725y_datakeysvalueslengthmismatch)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Error signature: `ERC725Y_DataKeysValuesLengthMismatch()`
 - Error hash: `0x3bcc8979`
 
@@ -1740,12 +1612,31 @@ Reverts when there is not the same number of elements in the `datakeys` and `dat
 
 <br/>
 
+### ERC725Y_MsgValueDisallowed
+
+:::note References
+
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#erc725y_msgvaluedisallowed)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
+- Error signature: `ERC725Y_MsgValueDisallowed()`
+- Error hash: `0xf36ba737`
+
+:::
+
+```solidity
+error ERC725Y_MsgValueDisallowed();
+```
+
+Reverts when sending value to the [`setData`](#setdata) or [`setDataBatch`](#setdatabatch) function.
+
+<br/>
+
 ### LSP14CallerNotPendingOwner
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#lsp14callernotpendingowner)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#lsp14callernotpendingowner)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Error signature: `LSP14CallerNotPendingOwner(address)`
 - Error hash: `0x451e4528`
 
@@ -1769,8 +1660,8 @@ Reverts when the `caller` that is trying to accept ownership of the contract is 
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#lsp14cannottransferownershiptoself)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#lsp14cannottransferownershiptoself)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Error signature: `LSP14CannotTransferOwnershipToSelf()`
 - Error hash: `0xe052a6f8`
 
@@ -1790,8 +1681,8 @@ Reverts when trying to transfer ownership to the `address(this)`.
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#lsp14mustacceptownershipinseparatetransaction)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#lsp14mustacceptownershipinseparatetransaction)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Error signature: `LSP14MustAcceptOwnershipInSeparateTransaction()`
 - Error hash: `0x5758dd07`
 
@@ -1811,8 +1702,8 @@ Reverts when pending owner accept ownership in the same transaction of transferr
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#lsp14notinrenounceownershipinterval)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#lsp14notinrenounceownershipinterval)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Error signature: `LSP14NotInRenounceOwnershipInterval(uint256,uint256)`
 - Error hash: `0x1b080942`
 
@@ -1838,79 +1729,30 @@ Reverts when trying to renounce ownership before the initial confirmation delay.
 
 <br/>
 
-### LSP20CallVerificationFailed
+### LSP1DelegateNotAllowedToSetDataKey
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#lsp20callverificationfailed)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
-- Error signature: `LSP20CallVerificationFailed(bool,bytes4)`
-- Error hash: `0x9d6741e3`
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#lsp1delegatenotallowedtosetdatakey)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
+- Error signature: `LSP1DelegateNotAllowedToSetDataKey(bytes32)`
+- Error hash: `0x199611f1`
 
 :::
 
 ```solidity
-error LSP20CallVerificationFailed(bool postCall, bytes4 returnedStatus);
+error LSP1DelegateNotAllowedToSetDataKey(bytes32 dataKey);
 ```
 
-reverts when the call to the owner does not return the LSP20 success value
+_The `LSP1UniversalReceiverDelegate` is not allowed to set the following data key: `dataKey`._
+
+Reverts when the Vault version of [LSP1UniversalReceiverDelegate] sets @lukso/lsp1-contracts/6/17 Data Keys.
 
 #### Parameters
 
-| Name             |   Type   | Description                                             |
-| ---------------- | :------: | ------------------------------------------------------- |
-| `postCall`       |  `bool`  | True if the execution call was done, False otherwise    |
-| `returnedStatus` | `bytes4` | The bytes4 decoded data returned by the logic verifier. |
-
-<br/>
-
-### LSP20CallingVerifierFailed
-
-:::note References
-
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#lsp20callingverifierfailed)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
-- Error signature: `LSP20CallingVerifierFailed(bool)`
-- Error hash: `0x8c6a8ae3`
-
-:::
-
-```solidity
-error LSP20CallingVerifierFailed(bool postCall);
-```
-
-reverts when the call to the owner fail with no revert reason
-
-#### Parameters
-
-| Name       |  Type  | Description                                          |
-| ---------- | :----: | ---------------------------------------------------- |
-| `postCall` | `bool` | True if the execution call was done, False otherwise |
-
-<br/>
-
-### LSP20EOACannotVerifyCall
-
-:::note References
-
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#lsp20eoacannotverifycall)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
-- Error signature: `LSP20EOACannotVerifyCall(address)`
-- Error hash: `0x0c392301`
-
-:::
-
-```solidity
-error LSP20EOACannotVerifyCall(address logicVerifier);
-```
-
-Reverts when the logic verifier is an Externally Owned Account (EOA) that cannot return the LSP20 success value.
-
-#### Parameters
-
-| Name            |   Type    | Description                       |
-| --------------- | :-------: | --------------------------------- |
-| `logicVerifier` | `address` | The address of the logic verifier |
+| Name      |   Type    | Description                                                                                   |
+| --------- | :-------: | --------------------------------------------------------------------------------------------- |
+| `dataKey` | `bytes32` | The data key that the Vault version of [LSP1UniversalReceiverDelegate] is not allowed to set. |
 
 <br/>
 
@@ -1918,8 +1760,8 @@ Reverts when the logic verifier is an Externally Owned Account (EOA) that cannot
 
 :::note References
 
-- Specification details: [**LSP-0-ERC725Account**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-0-ERC725Account.md#noextensionfoundforfunctionselector)
-- Solidity implementation: [`LSP0ERC725Account.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp0-contracts/contracts/LSP0ERC725Account.sol)
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#noextensionfoundforfunctionselector)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
 - Error signature: `NoExtensionFoundForFunctionSelector(bytes4)`
 - Error hash: `0xbb370b2b`
 
@@ -1936,5 +1778,30 @@ reverts when there is no extension for the function selector being called with
 | Name               |   Type   | Description |
 | ------------------ | :------: | ----------- |
 | `functionSelector` | `bytes4` | -           |
+
+<br/>
+
+### OwnableCallerNotTheOwner
+
+:::note References
+
+- Specification details: [**LSP-9-Vault**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#ownablecallernottheowner)
+- Solidity implementation: [`LSP9Vault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp9-contracts/contracts/LSP9Vault.sol)
+- Error signature: `OwnableCallerNotTheOwner(address)`
+- Error hash: `0xbf1169c5`
+
+:::
+
+```solidity
+error OwnableCallerNotTheOwner(address callerAddress);
+```
+
+Reverts when only the owner is allowed to call the function.
+
+#### Parameters
+
+| Name            |   Type    | Description                              |
+| --------------- | :-------: | ---------------------------------------- |
+| `callerAddress` | `address` | The address that tried to make the call. |
 
 <br/>

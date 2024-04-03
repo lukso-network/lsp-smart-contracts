@@ -398,7 +398,7 @@ const generateContractLink = (contractName: string) => {
   const lspN = contractName.match(/LSP\d+/);
 
   if (specs[contractName]) {
-    return specs[contractName];
+    return specs[contractName].contractsLink;
   } else if (lspN && lspN[0] === 'LSP1') {
     return specs['LSP1UniversalReceiver'].contractsLink;
   } else if (lspN && lspN[0] === 'LSP2') {
