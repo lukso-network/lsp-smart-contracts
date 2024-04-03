@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp6-contracts",
-  "version": "0.15.0-rc.4",
+  "version": "0.15.0-rc.5",
   "description": "Package for the LSP6 Key Manager standard",
   "license": "Apache-2.0",
   "author": "",
@@ -50,11 +50,11 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp1-contracts": "~0.15.0-rc.4",
-    "@lukso/lsp2-contracts": "~0.15.0-rc.4",
-    "@lukso/lsp14-contracts": "~0.15.0-rc.4",
-    "@lukso/lsp17contractextension-contracts": "~0.15.0-rc.4",
-    "@lukso/lsp20-contracts": "~0.15.0-rc.4",
-    "@lukso/lsp25-contracts": "~0.15.0-rc.4"
+    "@lukso/lsp1-contracts": "~0.15.0-rc.5",
+    "@lukso/lsp2-contracts": "~0.15.0-rc.5",
+    "@lukso/lsp14-contracts": "~0.15.0-rc.5",
+    "@lukso/lsp17contractextension-contracts": "~0.15.0-rc.5",
+    "@lukso/lsp20-contracts": "~0.15.0-rc.5",
+    "@lukso/lsp25-contracts": "~0.15.0-rc.5"
   }
 }

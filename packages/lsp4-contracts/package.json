@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp4-contracts",
-  "version": "0.15.0-rc.4",
+  "version": "0.15.0-rc.5",
   "description": "Package for the LSP4 Digital Asset Metadata standard",
   "license": "Apache-2.0",
   "author": "",
@@ -49,6 +49,6 @@
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
-    "@lukso/lsp2-contracts": "~0.15.0-rc.4"
+    "@lukso/lsp2-contracts": "~0.15.0-rc.5"
   }
 }
