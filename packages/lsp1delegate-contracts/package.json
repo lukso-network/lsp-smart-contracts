@@ -48,11 +48,11 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp1-contracts": "~0.15.0-rc.1",
-    "@lukso/lsp5-contracts": "~0.15.0-rc.1",
-    "@lukso/lsp7-contracts": "~0.15.0-rc.1",
-    "@lukso/lsp8-contracts": "~0.15.0-rc.1",
-    "@lukso/lsp9-contracts": "~0.15.0-rc.1",
-    "@lukso/lsp10-contracts": "~0.15.0-rc.1"
+    "@lukso/lsp1-contracts": "~0.15.0-rc.4",
+    "@lukso/lsp5-contracts": "~0.15.0-rc.4",
+    "@lukso/lsp7-contracts": "~0.15.0-rc.4",
+    "@lukso/lsp8-contracts": "~0.15.0-rc.4",
+    "@lukso/lsp9-contracts": "~0.15.0-rc.4",
+    "@lukso/lsp10-contracts": "~0.15.0-rc.4"
   }
 }

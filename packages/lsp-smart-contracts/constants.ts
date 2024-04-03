@@ -4,29 +4,67 @@
  */
 export * from './contracts';
 
-import { INTERFACE_ID_LSP0, LSP0_TYPE_IDS } from '@lukso/lsp0-contracts';
-import { INTERFACE_ID_LSP1, LSP1DataKeys } from '@lukso/lsp1-contracts';
+// Typescript types from each LSP package
+export type { Verification, LSP2ArrayKey } from '@lukso/lsp2-contracts';
+export type {
+  LSP3ProfileMetadataJSON,
+  LSP3ProfileMetadata,
+  ImageMetadata,
+  LinkMetadata,
+  AssetMetadata,
+} from '@lukso/lsp3-contracts';
+export type {
+  LSP4DigitalAssetMetadataJSON,
+  LSP4DigitalAssetMetadata,
+  AttributeMetadata,
+} from '@lukso/lsp4-contracts';
+export type { LSP6PermissionName } from '@lukso/lsp6-contracts';
+
+// Generic constants and types from each LSP package
+export { ERC1271_VALUES, OPERATION_TYPES } from '@lukso/lsp0-contracts';
+export { CALLTYPE, ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
+export { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+export { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
+export { LSP20_SUCCESS_VALUES } from '@lukso/lsp20-contracts';
+export { LSP25_VERSION } from '@lukso/lsp25-contracts';
+
+// ERC165 interface IDs of each LSP
+import { INTERFACE_ID_LSP0 } from '@lukso/lsp0-contracts';
+import { INTERFACE_ID_LSP1 } from '@lukso/lsp1-contracts';
 import { INTERFACE_ID_LSP1DELEGATE } from '@lukso/lsp1delegate-contracts';
-import { LSP3DataKeys } from '@lukso/lsp3-contracts';
-import { LSP4DataKeys } from '@lukso/lsp4-contracts';
-import { LSP5DataKeys } from '@lukso/lsp5-contracts';
-import { INTERFACE_ID_LSP6, LSP6DataKeys } from '@lukso/lsp6-contracts';
-import { INTERFACE_ID_LSP7, LSP7_TYPE_IDS } from '@lukso/lsp7-contracts';
-import { INTERFACE_ID_LSP8, LSP8DataKeys, LSP8_TYPE_IDS } from '@lukso/lsp8-contracts';
-import { INTERFACE_ID_LSP9, LSP9DataKeys, LSP9_TYPE_IDS } from '@lukso/lsp9-contracts';
-import { LSP10DataKeys } from '@lukso/lsp10-contracts';
-import { LSP12DataKeys } from '@lukso/lsp12-contracts';
-import { INTERFACE_ID_LSP14, LSP14_TYPE_IDS } from '@lukso/lsp14-contracts';
+import { INTERFACE_ID_LSP6 } from '@lukso/lsp6-contracts';
+import { INTERFACE_ID_LSP7 } from '@lukso/lsp7-contracts';
+import { INTERFACE_ID_LSP8 } from '@lukso/lsp8-contracts';
+import { INTERFACE_ID_LSP9 } from '@lukso/lsp9-contracts';
+import { INTERFACE_ID_LSP14 } from '@lukso/lsp14-contracts';
 import {
   INTERFACE_ID_LSP17Extendable,
   INTERFACE_ID_LSP17Extension,
-  LSP17DataKeys,
 } from '@lukso/lsp17contractextension-contracts';
 import {
   INTERFACE_ID_LSP20CallVerification,
   INTERFACE_ID_LSP20CallVerifier,
 } from '@lukso/lsp20-contracts';
 import { INTERFACE_ID_LSP25 } from '@lukso/lsp25-contracts';
+
+// LSP1 Type IDs of each LSP
+import { LSP0_TYPE_IDS } from '@lukso/lsp0-contracts';
+import { LSP7_TYPE_IDS } from '@lukso/lsp7-contracts';
+import { LSP8_TYPE_IDS } from '@lukso/lsp8-contracts';
+import { LSP9_TYPE_IDS } from '@lukso/lsp9-contracts';
+import { LSP14_TYPE_IDS } from '@lukso/lsp14-contracts';
+
+// ERC725Y Data Keys of each LSP
+import { LSP1DataKeys } from '@lukso/lsp1-contracts';
+import { LSP3DataKeys } from '@lukso/lsp3-contracts';
+import { LSP4DataKeys } from '@lukso/lsp4-contracts';
+import { LSP5DataKeys } from '@lukso/lsp5-contracts';
+import { LSP6DataKeys } from '@lukso/lsp6-contracts';
+import { LSP8DataKeys } from '@lukso/lsp8-contracts';
+import { LSP9DataKeys } from '@lukso/lsp9-contracts';
+import { LSP10DataKeys } from '@lukso/lsp10-contracts';
+import { LSP12DataKeys } from '@lukso/lsp12-contracts';
+import { LSP17DataKeys } from '@lukso/lsp17contractextension-contracts';
 
 import { LSP3SupportedStandard } from '@lukso/lsp3-contracts';
 import { LSP4SupportedStandard } from '@lukso/lsp4-contracts';
