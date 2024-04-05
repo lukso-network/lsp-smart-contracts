@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp0-contracts",
-  "version": "0.15.0-rc.5",
+  "version": "0.15.0",
   "description": "Package for the LSP0ERC725Account standard",
   "license": "Apache-2.0",
   "author": "",
@@ -49,10 +49,10 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp1-contracts": "~0.15.0-rc.5",
-    "@lukso/lsp2-contracts": "~0.15.0-rc.5",
-    "@lukso/lsp14-contracts": "~0.15.0-rc.5",
-    "@lukso/lsp17contractextension-contracts": "~0.15.0-rc.5",
-    "@lukso/lsp20-contracts": "~0.15.0-rc.5"
+    "@lukso/lsp1-contracts": "~0.15.0",
+    "@lukso/lsp2-contracts": "~0.15.0",
+    "@lukso/lsp14-contracts": "~0.15.0",
+    "@lukso/lsp17contractextension-contracts": "~0.15.0",
+    "@lukso/lsp20-contracts": "~0.15.0"
   }
 }
