@@ -1,4 +1,4 @@
-import { LSP2ArrayKey } from '@lukso/lsp2-contracts';
+import type { LSP2ArrayKey } from '@lukso/lsp2-contracts';
 
 export const LSP5DataKeys = {
   // LSP5ReceivedAssetsMap:<address>  + bytes2(0)
