@@ -10,11 +10,13 @@ The `@lukso/lsp-smart-contracts` npm package contains useful constants such as I
 import {
   INTERFACE_IDS,
   LSP8_TOKEN_ID_FORMAT,
+  LSP1_TYPE_IDS,
   OPERATIONS,
   SupportedStandards,
   ERC725YDataKeys,
   INTERFACE_ID_LSP1DELEGATE,
   LSP6DataKeys,
   LSP25_VERSION,
+  LSPSupportedStandard,
 } from "@lukso/lsp-smart-contracts";
 ```

@@ -13,5 +13,9 @@ npm install @lukso/lsp7-contracts
 The `@lukso/lsp7-contracts` npm package contains useful constants such as InterfaceIds or ERC725Y Data Keys related to the LSP7 Standard. You can import and access them as follow:
 
 ```js
-import { INTERFACE_ID_LSP7, LSP7_TYPE_IDS } from "@lukso/lsp7-contracts";
+import {
+  INTERFACE_ID_LSP7,
+  INTERFACE_ID_LSP7_PREVIOUS,
+  LSP7_TYPE_IDS,
+} from "@lukso/lsp7-contracts";
 ```

@@ -13,5 +13,11 @@ npm install @lukso/lsp8-contracts
 The `@lukso/lsp8-contracts` npm package contains useful constants such as InterfaceIds or ERC725Y Data Keys related to the LSP8 Standard. You can import and access them as follow:
 
 ```js
-import { INTERFACE_ID_LSP8, LSP8_TOKEN_ID_FORMAT } from "@lukso/lsp8-contracts";
+import {
+  INTERFACE_ID_LSP8,
+  INTERFACE_ID_LSP8_PREVIOUS,
+  LSP8DataKeys,
+  LSP8_TYPE_IDS,
+  LSP8_TOKEN_ID_FORMAT,
+} from "@lukso/lsp8-contracts";
 ```

@@ -13,5 +13,13 @@ npm install @lukso/lsp3-contracts
 The `@lukso/lsp3-contracts` npm package contains useful constants such as ERC725Y Data Keys related to the LSP3 Standard. You can import and access them as follow:
 
 ```js
-import { LSP3DataKeys, LSP3SupportedStandard } from "@lukso/lsp3-contracts";
+import {
+  LSP3DataKeys,
+  LSP3SupportedStandard,
+  LSP3ProfileMetadataJSON,
+  LSP3ProfileMetadata,
+  LinkMetadata,
+  ImageMetadata,
+  AssetMetadata,
+} from "@lukso/lsp3-contracts";
 ```
