@@ -69,11 +69,6 @@
   },
   {
     "inputs": [],
-    "name": "LSP8CannotSendToSelf",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "LSP8CannotUseAddressZeroAsOperator",
     "type": "error"
   },
@@ -185,6 +180,27 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "tokenOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "tokenId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "LSP8RevokeOperatorNotAuthorized",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "LSP8TokenContractCannotHoldValue",
     "type": "error"
@@ -207,6 +223,27 @@
   {
     "inputs": [],
     "name": "LSP8TokenOwnerCannotBeOperator",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "tokenId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "oldOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "LSP8TokenOwnerChanged",
     "type": "error"
   },
   {

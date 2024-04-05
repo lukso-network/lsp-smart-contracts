@@ -1,4 +1,4 @@
-import { LSP2ArrayKey } from '@lukso/lsp2-contracts';
+import type { LSP2ArrayKey } from '@lukso/lsp2-contracts';
 
 export const INTERFACE_ID_LSP6 = '0x23f34c62';
 

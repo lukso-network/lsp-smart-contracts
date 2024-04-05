@@ -1,21 +1,17 @@
-import { Verification, LSP2ArrayKey } from '@lukso/lsp2-contracts';
+import type { Verification, LSP2ArrayKey } from '@lukso/lsp2-contracts';
 
 export type LSP4DigitalAssetMetadataJSON = {
   LSP4Metadata: LSP4DigitalAssetMetadata;
 };
 
 export type LSP4DigitalAssetMetadata = {
+  name: string;
   description: string;
   links: LinkMetadata[];
   images: ImageMetadata[][];
   assets: AssetMetadata[];
   icon: ImageMetadata[];
-  attributes: AttributeMetadata[];
-};
-
-export type LinkMetadata = {
-  title: string;
-  url: string;
+  attributes?: AttributeMetadata[];
 };
 
 export type ImageMetadata = {
@@ -25,16 +21,28 @@ export type ImageMetadata = {
   url: string;
 };
 
-export type AssetMetadata = {
-  verification?: Verification;
+export type LinkMetadata = {
+  title: string;
   url: string;
-  fileType: string;
 };
 
 export type AttributeMetadata = {
   key: string;
   value: string;
   type: string | number | boolean;
+};
+
+export type AssetMetadata = AssetFile | DigitalAsset;
+
+export type AssetFile = {
+  url: string;
+  verification?: Verification;
+  fileType?: string;
+};
+
+export type DigitalAsset = {
+  address: string;
+  tokenId?: string;
 };
 
 export const LSP4SupportedStandard = {

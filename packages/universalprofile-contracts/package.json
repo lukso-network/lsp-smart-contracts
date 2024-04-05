@@ -30,6 +30,7 @@
     "contracts/**/*.sol",
     "!contracts/Mocks/**/*.sol",
     "artifacts/*.json",
+    "compatibility-abis",
     "dist",
     "./README.md"
   ],
