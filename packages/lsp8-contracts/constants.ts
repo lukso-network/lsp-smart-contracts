@@ -1,8 +1,8 @@
 export const INTERFACE_ID_LSP8 = '0x3a271706';
 
 export const INTERFACE_ID_LSP8_PREVIOUS = {
-  '0xecad9f75': 'v0.13.0',
-  '0x30dc5278': 'v0.12.0',
+  'v0.14.0': '0xecad9f75',
+  'v0.12.0': '0x30dc5278',
 };
 
 export const LSP8DataKeys = {
