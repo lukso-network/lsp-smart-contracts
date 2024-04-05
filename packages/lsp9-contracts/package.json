@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp9-contracts",
-  "version": "0.15.0-rc.5",
+  "version": "0.15.0",
   "description": "Package for the LSP9 Vault standard",
   "license": "Apache-2.0",
   "author": "",
@@ -48,7 +48,7 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp1-contracts": "~0.15.0-rc.5",
-    "@lukso/lsp6-contracts": "~0.15.0-rc.5"
+    "@lukso/lsp1-contracts": "~0.15.0",
+    "@lukso/lsp6-contracts": "~0.15.0"
   }
 }

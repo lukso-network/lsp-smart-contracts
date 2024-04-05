@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp10-contracts",
-  "version": "0.15.0-rc.5",
+  "version": "0.15.0",
   "description": "Package for the LSP10 Received Vaults standard",
   "license": "Apache-2.0",
   "author": "",
@@ -43,6 +43,6 @@
   },
   "dependencies": {
     "@erc725/smart-contracts": "^6.0.0",
-    "@lukso/lsp2-contracts": "~0.15.0-rc.5"
+    "@lukso/lsp2-contracts": "~0.15.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@lukso/universalprofile-contracts",
-  "version": "0.15.0-rc.5",
+  "version": "0.15.0",
   "description": "Package for Universal Profile, an implementation of LSP0 ERC725 Account & LSP3 Profile Metadata standards combined together.",
   "license": "Apache-2.0",
   "author": "",
@@ -46,7 +46,7 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp0-contracts": "~0.15.0-rc.5",
-    "@lukso/lsp3-contracts": "~0.15.0-rc.5"
+    "@lukso/lsp0-contracts": "~0.15.0",
+    "@lukso/lsp3-contracts": "~0.15.0"
   }
 }
