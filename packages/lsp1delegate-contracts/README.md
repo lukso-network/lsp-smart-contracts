@@ -16,3 +16,11 @@ Currently there are Universal Receiver Delegate contracts for:
 ```bash
 npm install @lukso/lsp1delegate-contracts
 ```
+
+## Available Constants & Types
+
+The `@lukso/lsp1delegate-contracts` npm package contains useful constants such as InterfaceIds related to the LSP1Delegate Standard. You can import and access them as follow:
+
+```js
+import { INTERFACE_ID_LSP1DELEGATE } from "@lukso/lsp1delegate-contracts";
+```

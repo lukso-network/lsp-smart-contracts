@@ -7,3 +7,17 @@ Package for the LSP8 Identifiable Digital Asset Standard.
 ```bash
 npm install @lukso/lsp8-contracts
 ```
+
+## Available Constants & Types
+
+The `@lukso/lsp8-contracts` npm package contains useful constants such as InterfaceIds or ERC725Y Data Keys related to the LSP8 Standard. You can import and access them as follow:
+
+```js
+import {
+  INTERFACE_ID_LSP8,
+  INTERFACE_ID_LSP8_PREVIOUS,
+  LSP8DataKeys,
+  LSP8_TYPE_IDS,
+  LSP8_TOKEN_ID_FORMAT,
+} from "@lukso/lsp8-contracts";
+```

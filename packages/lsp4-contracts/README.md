@@ -7,3 +7,21 @@ Package for the LSP4 Digital Asset Metadata standard.
 ```bash
 npm install @lukso/lsp4-contracts
 ```
+
+## Available Constants & Types
+
+The `@lukso/lsp4-contracts` npm package contains useful constants such as ERC725Y Data Keys related to the LSP4 Standard. You can import and access them as follow:
+
+```js
+import {
+  LSP4_TOKEN_TYPES,
+  LSP4SupportedStandard,
+  LSP4DataKeys,
+  LSP4DigitalAssetMetadataJSON,
+  LSP4DigitalAssetMetadata,
+  LinkMetadata,
+  ImageMetadata,
+  AssetMetadata,
+  AttributeMetadata,
+} from "@lukso/lsp4-contracts";
+```

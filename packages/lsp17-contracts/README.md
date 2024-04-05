@@ -10,3 +10,11 @@ Package for the LSP17 Extensions, that includes the following extensions:
 ```bash
 npm install @lukso/lsp17-contracts
 ```
+
+## Available Constants & Types
+
+The `@lukso/lsp17-contracts` npm package contains useful constants such as InterfaceIds related to the LSP17 Extensions. You can import and access them as follow:
+
+```js
+import { INTERFACE_ID_LSP17Extension } from "@lukso/lsp17-contracts";
+```
