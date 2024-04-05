@@ -7,3 +7,11 @@ Package for the LSP12 Issued Assets standard.
 ```bash
 npm install @lukso/lsp12-contracts
 ```
+
+## Available Constants & Types
+
+The `@lukso/lsp12-contracts` npm package contains useful constants such as ERC725Y Data Keys related to the LSP12 Standard. You can import and access them as follow:
+
+```js
+import { LSP12DataKeys } from "@lukso/lsp12-contracts";
+```

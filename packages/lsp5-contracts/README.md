@@ -7,3 +7,11 @@ Package for the LSP5 Received Assets standard.
 ```bash
 npm install @lukso/lsp5-contracts
 ```
+
+## Available Constants & Types
+
+The `@lukso/lsp5-contracts` npm package contains useful constants such as ERC725Y Data Keys related to the LSP5 Standard. You can import and access them as follow:
+
+```js
+import { LSP5DataKeys } from "@lukso/lsp5-contracts";
+```
