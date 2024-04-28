@@ -324,6 +324,19 @@ contract LSP11SocialRecovery is
     }
 
     /**
+     * @notice Get the timestamp of the first recovery timestamp of the vote for a specific account and recovery counter.
+     * @param account The account for which the vote is queried.
+     * @param recoveryCounter The recovery counter for which the vote is queried.
+     * @return The timestamp of the first recovery timestamp of the vote for a specific account and recovery counter.
+     */
+    function getFirstRecoveryTimestampOf(
+        address account,
+        uint256 recoveryCounter
+    ) public view returns (uint256) {
+        return _firstRecoveryTimestamp[account][recoveryCounter];
+    }
+
+    /**
      * @notice Get the address voted for recovery by a guardian for a specific account and recovery counter.
      * @param account The account for which the vote is queried.
      * @param recoveryCounter The recovery counter for which the vote is queried.
