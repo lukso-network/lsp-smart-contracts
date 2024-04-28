@@ -363,6 +363,59 @@ contract LSP11AccountFunctionalities is Test {
         assertEq(voteCount, 1);
     }
 
+    function testGuardianFirstRecoveryTimestamp() public {
+        address guardian = address(0xABC);
+        address recoveryAccount = address(this); // The account for which recovery is being attempted
+        address guardianVotedAddress = address(0xDEF);
+
+        // Add guardian
+        lsp11.addGuardian(recoveryAccount, guardian);
+
+        // Simulate the guardian casting a vote
+        vm.prank(guardian);
+        lsp11.voteForRecovery(recoveryAccount, guardian, guardianVotedAddress);
+
+        // Verify the vote
+        uint256 timestamp = lsp11.getFirstRecoveryTimestampOf(
+            recoveryAccount,
+            lsp11.getRecoveryCounterOf(recoveryAccount)
+        );
+
+        assertEq(block.timestamp, timestamp);
+    }
+
+    function testSeveralGuardianVotesWontChangeFirstRecoveryTimestamp() public {
+        address guardian1 = address(0xABC);
+        address guardian2 = address(0xCDE);
+        address recoveryAccount = address(this); // The account for which recovery is being attempted
+        address guardianVotedAddress = address(0xDEF);
+
+        // Add guardian
+        lsp11.addGuardian(recoveryAccount, guardian1);
+        lsp11.addGuardian(recoveryAccount, guardian2);
+
+        // Simulate the guardian casting a vote
+        uint256 firstVoteTimestamp = block.timestamp;
+        vm.prank(guardian1);
+        lsp11.voteForRecovery(recoveryAccount, guardian1, guardianVotedAddress);
+
+        vm.warp(firstVoteTimestamp + 100);
+
+        uint256 secondVoteTimestamp = block.timestamp;
+        vm.prank(guardian2);
+        lsp11.voteForRecovery(recoveryAccount, guardian2, guardianVotedAddress);
+
+        // Verify the vote
+        uint256 FirstTimestampFetched = lsp11.getFirstRecoveryTimestampOf(
+            recoveryAccount,
+            lsp11.getRecoveryCounterOf(recoveryAccount)
+        );
+
+        assertEq(firstVoteTimestamp, FirstTimestampFetched);
+        assertEq(block.timestamp, secondVoteTimestamp);
+        assertTrue(block.timestamp > firstVoteTimestamp);
+    }
+
     function testTwoGuardiansVoteAndStateCheck() public {
         address guardian1 = address(0xABC);
         address guardian2 = address(0xDEF);
