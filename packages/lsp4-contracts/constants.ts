@@ -1,4 +1,4 @@
-import { Verification, LSP2ArrayKey } from '@lukso/lsp2-contracts';
+import type { Verification, LSP2ArrayKey } from '@lukso/lsp2-contracts';
 
 export type LSP4DigitalAssetMetadataJSON = {
   LSP4Metadata: LSP4DigitalAssetMetadata;
@@ -26,10 +26,17 @@ export type ImageMetadata = {
   url: string;
 };
 
-export type AssetMetadata = {
+export type AssetMetadata = FileAsset | ContractAsset;
+
+export type FileAsset = {
   verification?: Verification;
   url: string;
   fileType: string;
+};
+
+export type ContractAsset = {
+  address: string;
+  tokenId?: string;
 };
 
 export type AttributeMetadata = {

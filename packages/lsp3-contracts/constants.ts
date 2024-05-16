@@ -1,4 +1,4 @@
-import { Verification } from '@lukso/lsp2-contracts';
+import type { Verification } from '@lukso/lsp2-contracts';
 
 export type LSP3ProfileMetadataJSON = {
   LSP3Profile: LSP3ProfileMetadata;
@@ -26,10 +26,17 @@ export type LinkMetadata = {
   url: string;
 };
 
-export type AssetMetadata = {
+export type AssetMetadata = FileAsset | ContractAsset;
+
+export type FileAsset = {
   verification?: Verification;
   url: string;
   fileType: string;
+};
+
+export type ContractAsset = {
+  address: string;
+  tokenId?: string;
 };
 
 export const LSP3SupportedStandard = {
