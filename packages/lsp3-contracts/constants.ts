@@ -26,15 +26,20 @@ export type LinkMetadata = {
   url: string;
 };
 
-export type AssetMetadata = AssetFile | DigitalAsset;
+export type AssetMetadata = FileAsset | ContractAsset;
 
-export type AssetFile = {
-  url: string;
+export type FileAsset = {
   verification?: Verification;
+  url: string;
   fileType?: string;
 };
 
 export type DigitalAsset = {
+  address: string;
+  tokenId?: string;
+};
+
+export type ContractAsset = {
   address: string;
   tokenId?: string;
 };

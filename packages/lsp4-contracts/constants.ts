@@ -14,6 +14,11 @@ export type LSP4DigitalAssetMetadata = {
   attributes?: AttributeMetadata[];
 };
 
+export type LinkMetadata = {
+  title: string;
+  url: string;
+};
+
 export type ImageMetadata = {
   width: number;
   height: number;
@@ -21,28 +26,22 @@ export type ImageMetadata = {
   url: string;
 };
 
-export type LinkMetadata = {
-  title: string;
+export type AssetMetadata = FileAsset | ContractAsset;
+
+export type FileAsset = {
+  verification?: Verification;
   url: string;
+};
+
+export type ContractAsset = {
+  address: string;
+  tokenId?: string;
 };
 
 export type AttributeMetadata = {
   key: string;
   value: string;
   type: string | number | boolean;
-};
-
-export type AssetMetadata = AssetFile | DigitalAsset;
-
-export type AssetFile = {
-  url: string;
-  verification?: Verification;
-  fileType?: string;
-};
-
-export type DigitalAsset = {
-  address: string;
-  tokenId?: string;
 };
 
 export const LSP4SupportedStandard = {
