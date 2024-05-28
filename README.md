@@ -2,7 +2,7 @@
 
 The smart contracts reference implementation of the [LUKSO Standard Proposals (LSPs)](https://github.com/lukso-network/LIPs/tree/main/LSPs).
 
-For more information see [Documentation](https://docs.lukso.tech/standards/smart-contracts/introduction) on _[docs.lukso.tech](https://docs.lukso.tech/standards/introduction)._
+For more information see [Documentation](https://docs.lukso.tech/contracts/introduction) on _[docs.lukso.tech](https://docs.lukso.tech/standards/introduction)._
 
 | :warning: | _This package is currently in early stages of development,<br/> use for testing or experimentation purposes only._ |
 | :-------: | :----------------------------------------------------------------------------------------------------------------- |
