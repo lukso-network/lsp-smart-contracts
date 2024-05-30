@@ -10,7 +10,7 @@
 :::
 :::info Solidity implementation
 
-[`LSP20CallVerification.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp20-contracts/contracts/LSP20CallVerification.sol)
+[`LSP20CallVerification.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp20-contracts/contracts/LSP20CallVerification.sol)
 
 :::
 

@@ -10,7 +10,7 @@
 :::
 :::info Solidity implementation
 
-[`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateVault.sol)
+[`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateVault.sol)
 
 :::
 
@@ -30,7 +30,7 @@ When marked as 'public', a method can be called both externally and internally, 
 :::note References
 
 - Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md#version)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateVault.sol)
+- Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateVault.sol)
 - Function signature: `VERSION()`
 - Function selector: `0xffa1ad74`
 
@@ -55,7 +55,7 @@ _Contract version._
 :::note References
 
 - Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md#supportsinterface)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateVault.sol)
+- Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateVault.sol)
 - Function signature: `supportsInterface(bytes4)`
 - Function selector: `0x01ffc9a7`
 
@@ -86,7 +86,7 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 :::note References
 
 - Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md#universalreceiverdelegate)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateVault.sol)
+- Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateVault.sol)
 - Function signature: `universalReceiverDelegate(address,uint256,bytes32,bytes)`
 - Function selector: `0xa245bbda`
 
@@ -212,7 +212,7 @@ Calls `bytes4(keccak256(setDataBatch(bytes32[],bytes[])))` without checking for 
 :::note References
 
 - Specification details: [**LSP-1-UniversalReceiver**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md#cannotregistereoasasassets)
-- Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateVault.sol)
+- Solidity implementation: [`LSP1UniversalReceiverDelegateVault.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateVault.sol)
 - Error signature: `CannotRegisterEOAsAsAssets(address)`
 - Error hash: `0xa5295345`
 

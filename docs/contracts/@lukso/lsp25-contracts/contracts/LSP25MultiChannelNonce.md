@@ -10,7 +10,7 @@
 :::
 :::info Solidity implementation
 
-[`LSP25MultiChannelNonce.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp25-contracts/contracts/LSP25MultiChannelNonce.sol)
+[`LSP25MultiChannelNonce.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp25-contracts/contracts/LSP25MultiChannelNonce.sol)
 
 :::
 

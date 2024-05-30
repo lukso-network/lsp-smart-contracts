@@ -10,7 +10,7 @@
 :::
 :::info Solidity implementation
 
-[`LSP17Extendable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol)
+[`LSP17Extendable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/packages/lsp17contractextension-contracts/contracts/LSP17Extendable.sol)
 
 :::
 
@@ -30,7 +30,7 @@ When marked as 'public', a method can be called both externally and internally, 
 :::note References
 
 - Specification details: [**LSP-17-ContractExtension**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-17-ContractExtension.md#supportsinterface)
-- Solidity implementation: [`LSP17Extendable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol)
+- Solidity implementation: [`LSP17Extendable.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/packages/lsp17contractextension-contracts/contracts/LSP17Extendable.sol)
 - Function signature: `supportsInterface(bytes4)`
 - Function selector: `0x01ffc9a7`
 

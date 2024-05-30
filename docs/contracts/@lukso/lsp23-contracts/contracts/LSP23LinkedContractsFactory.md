@@ -10,7 +10,7 @@
 :::
 :::info Solidity implementation
 
-[`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
+[`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
 
 :::
 
@@ -24,7 +24,7 @@ When marked as 'public', a method can be called both externally and internally, 
 :::note References
 
 - Specification details: [**LSP-23-LinkedContractsFactory**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-23-LinkedContractsFactory.md#computeaddresses)
-- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
+- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
 - Function signature: `computeAddresses(ILSP23LinkedContractsFactory.PrimaryContractDeployment,ILSP23LinkedContractsFactory.SecondaryContractDeployment,address,bytes)`
 - Function selector: `0xdecfb0b9`
 
@@ -67,7 +67,7 @@ Computes the addresses of a primary contract and a secondary linked contract
 :::note References
 
 - Specification details: [**LSP-23-LinkedContractsFactory**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-23-LinkedContractsFactory.md#computeerc1167addresses)
-- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
+- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
 - Function signature: `computeERC1167Addresses(ILSP23LinkedContractsFactory.PrimaryContractDeploymentInit,ILSP23LinkedContractsFactory.SecondaryContractDeploymentInit,address,bytes)`
 - Function selector: `0x8da85898`
 
@@ -110,7 +110,7 @@ Computes the addresses of a primary and a secondary linked contracts ERC1167 pro
 :::note References
 
 - Specification details: [**LSP-23-LinkedContractsFactory**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-23-LinkedContractsFactory.md#deploycontracts)
-- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
+- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
 - Function signature: `deployContracts(ILSP23LinkedContractsFactory.PrimaryContractDeployment,ILSP23LinkedContractsFactory.SecondaryContractDeployment,address,bytes)`
 - Function selector: `0xf830c0ab`
 
@@ -155,7 +155,7 @@ Deploys a primary and a secondary linked contract.
 :::note References
 
 - Specification details: [**LSP-23-LinkedContractsFactory**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-23-LinkedContractsFactory.md#deployerc1167proxies)
-- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
+- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
 - Function signature: `deployERC1167Proxies(ILSP23LinkedContractsFactory.PrimaryContractDeploymentInit,ILSP23LinkedContractsFactory.SecondaryContractDeploymentInit,address,bytes)`
 - Function selector: `0x17c042c4`
 
@@ -256,7 +256,7 @@ function _generatePrimaryContractProxySalt(struct ILSP23LinkedContractsFactory.P
 :::note References
 
 - Specification details: [**LSP-23-LinkedContractsFactory**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-23-LinkedContractsFactory.md#deployedcontracts)
-- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
+- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
 - Event signature: `DeployedContracts(address,address,ILSP23LinkedContractsFactory.PrimaryContractDeployment,ILSP23LinkedContractsFactory.SecondaryContractDeployment,address,bytes)`
 - Event topic hash: `0x1ea27dabd8fd1508e844ab51c2fd3d9081f2684346857f9187da6d4a1aa7d3e6`
 
@@ -293,7 +293,7 @@ Emitted when a primary and secondary contract are deployed.
 :::note References
 
 - Specification details: [**LSP-23-LinkedContractsFactory**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-23-LinkedContractsFactory.md#deployederc1167proxies)
-- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
+- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
 - Event signature: `DeployedERC1167Proxies(address,address,ILSP23LinkedContractsFactory.PrimaryContractDeploymentInit,ILSP23LinkedContractsFactory.SecondaryContractDeploymentInit,address,bytes)`
 - Event topic hash: `0xb03dbe7a02c063899f863d542410b5b038c8f537045be3a26e7144e0074e1c7b`
 
@@ -332,7 +332,7 @@ Emitted when proxies of a primary and secondary contract are deployed.
 :::note References
 
 - Specification details: [**LSP-23-LinkedContractsFactory**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-23-LinkedContractsFactory.md#invalidvaluesum)
-- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
+- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
 - Error signature: `InvalidValueSum()`
 - Error hash: `0x2fd9ca91`
 
@@ -353,7 +353,7 @@ Reverts when the `msg.value` sent is not equal to the sum of value used for the 
 :::note References
 
 - Specification details: [**LSP-23-LinkedContractsFactory**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-23-LinkedContractsFactory.md#primarycontractproxyinitfailureerror)
-- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
+- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
 - Error signature: `PrimaryContractProxyInitFailureError(bytes)`
 - Error hash: `0x4364b6ee`
 
@@ -380,7 +380,7 @@ Reverts when the deployment & intialization of the contract has failed.
 :::note References
 
 - Specification details: [**LSP-23-LinkedContractsFactory**](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-23-LinkedContractsFactory.md#secondarycontractproxyinitfailureerror)
-- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/blob/develop/@lukso/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
+- Solidity implementation: [`LSP23LinkedContractsFactory.sol`](https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages/lsp23-contracts/contracts/LSP23LinkedContractsFactory.sol)
 - Error signature: `SecondaryContractProxyInitFailureError(bytes)`
 - Error hash: `0x9654a854`
 
