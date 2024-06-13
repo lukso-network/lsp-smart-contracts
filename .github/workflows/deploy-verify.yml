@@ -38,21 +38,10 @@ jobs:
       - name: Verify Deployer Balance
         run: npx hardhat verify-balance --network ${{ matrix.network }}
 
-      # We do not deploy the standard contracts on mainnet for the following reasons:
-      # 1) standard contracts are expensive to deploy on mainnet
-      # 2) user's universal profiles use the minimal proxy pattern,
-      #
-      # therefore we only need the base contracts to be deployed on mainnet.
-      - name: Select tags based on network to deploy
-        run: |
-          TAGS="base"
-          if [[ ${{ matrix.network }} == "luksoTestnet"]]; then
-            TAGS+=",standard"
-          fi
-
+      # The array of `tags` under each network in `hardhat.config.ts` specify which contracts to deploy
       - name: Deploy contracts on network
         run: npx hardhat deploy --network ${{ matrix.network }} --tags $TAGS --write true
 
       # Loop through deployment files and recover address of deployed contracts to verify
-      - name: Verify deployed contracts on mainnet
+      - name: Verify deployed contracts on network
         run: npx hardhat verify-all --network ${{ matrix.network }}
