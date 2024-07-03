@@ -1,7 +1,7 @@
 {
-  "name": "lspN",
+  "name": "@lukso/lsp26-contracts",
   "version": "0.15.0",
-  "description": "Package for the LSPN <write the standard name here> standard",
+  "description": "Package for the LSP26 Following System standard",
   "license": "Apache-2.0",
   "author": "",
   "main": "./dist/index.cjs",
@@ -37,8 +37,6 @@
   ],
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
-    "build:foundry": "forge build",
-    "build:js": "unbuild",
     "build:types": "npx wagmi generate",
     "clean": "hardhat clean && rm -Rf dist/",
     "format": "prettier --write .",
@@ -50,7 +48,8 @@
     "package": "hardhat prepare-package"
   },
   "dependencies": {
-    "@erc725/smart-contracts": "^7.0.0",
-    "@openzeppelin/contracts": "^4.9.3"
+    "@openzeppelin/contracts": "^4.9.3",
+    "@lukso/lsp0-contracts": "*",
+    "@lukso/lsp1-contracts": "*"
   }
 }
