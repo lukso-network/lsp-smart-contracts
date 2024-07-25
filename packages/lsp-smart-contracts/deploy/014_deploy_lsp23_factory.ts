@@ -1,4 +1,4 @@
-import { getCreate2Address, hexConcat, keccak256 } from 'ethers/lib/utils';
+import { getCreate2Address, concat, keccak256 } from 'ethers';
 
 import { config, ethers } from 'hardhat';
 import { DeployFunction } from 'hardhat-deploy/types';
@@ -47,7 +47,7 @@ const deployLSP23Factory: DeployFunction = async ({ getNamedAccounts }) => {
 
   const deploysLsp23Tx = {
     to: nickFactoryAddress,
-    data: hexConcat([LSP23_SALT, LSP23_BYTECODE]),
+    data: concat([LSP23_SALT, LSP23_BYTECODE]),
   };
 
   const tx = await deployer.sendTransaction(deploysLsp23Tx);
