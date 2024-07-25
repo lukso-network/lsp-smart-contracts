@@ -1,0 +1,51 @@
+{
+  "name": "@lukso/lsp16-contracts",
+  "version": "0.15.0-rc.0",
+  "description": "Package for the LSP16 Universal Factory standard",
+  "license": "Apache-2.0",
+  "author": "",
+  "keywords": [
+    "LUKSO",
+    "LSP",
+    "Blockchain",
+    "Standards",
+    "Smart Contracts",
+    "Ethereum",
+    "EVM",
+    "Solidity"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "typings": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./artifacts/*": "./artifacts/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "contracts/**/*.sol",
+    "!contracts/Mocks/**/*.sol",
+    "artifacts/*.json",
+    "./README.md"
+  ],
+  "scripts": {
+    "build": "hardhat compile --show-stack-traces",
+    "build:foundry": "forge build",
+    "clean": "hardhat clean && rm -Rf dist/",
+    "format": "prettier --write .",
+    "lint": "eslint . --ext .ts,.js",
+    "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
+    "test": "hardhat test --no-compile tests/*.test.ts",
+    "test:foundry": "FOUNDRY_PROFILE=lsp16 forge test --no-match-test Skip -vvv",
+    "test:coverage": "hardhat coverage"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.2",
+    "@erc725/smart-contracts": "^7.0.0",
+    "@openzeppelin/contracts-upgradeable": "^4.9.2"
+  }
+}

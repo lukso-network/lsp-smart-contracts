@@ -6,6 +6,27 @@ gas_reports = ["LSP6ExecuteRestrictedController", "LSP6ExecuteUnrestrictedContro
 cache_path = 'forge-cache'
 test = 'tests/foundry'
 solc_version = "0.8.17"
+
 [fuzz]
 runs = 10_000
 max_test_rejects = 200_000
+
+[profile.lsp2]
+src = 'packages/lsp2-contracts/contracts'
+test = 'packages/lsp2-contracts/foundry'
+out = 'packages/lsp2-contracts/contracts/foundry_artifacts'
+
+[profile.lsp6]
+src = 'packages/lsp6-contracts/contracts'
+test = 'packages/lsp6-contracts/foundry'
+out = 'packages/lsp6-contracts/contracts/foundry_artifacts'
+
+[profile.lsp16]
+src = 'packages/lsp16-contracts/contracts'
+test = 'packages/lsp16-contracts/foundry'
+out = 'packages/lsp16-contracts/contracts/foundry_artifacts'
+
+[profile.lsp_smart_contracts]
+src = 'packages/lsp-smart-contracts/contracts'
+test = 'packages/lsp-smart-contracts/tests/foundry'
+out = 'packages/lsp-smart-contracts/contracts/foundry_artifacts'

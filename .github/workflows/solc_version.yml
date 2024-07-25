@@ -11,15 +11,18 @@ on:
       - "develop"
     # Only run when `.sol` files have been changed
     paths:
-      - "contracts/**/*.sol"
+      - "*.sol"
 
   pull_request:
     paths:
-      - "contracts/**/*.sol"
+      - "*.sol"
 
 jobs:
   solc_version:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/lsp-smart-contracts
     strategy:
       matrix:
         solc: [
@@ -75,12 +78,12 @@ jobs:
       - name: Compile Smart Contracts
         run: |
           if [[ "<" == "${{ steps.comparison.outputs.comparison-result }}" ]]
-          then 
+          then
             solc $(ls contracts/**/*.sol | grep -v "Extension4337\|contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset") \
-              --allow-paths $(pwd)/node_modules/ \
+              --allow-paths $(pwd)/node_modules/,$(pwd)/packages/ \
+              ../=$(pwd)/contracts/ \
               @=node_modules/@ \
-              solidity-bytes-utils/=node_modules/solidity-bytes-utils/ \
-              ../=$(pwd)/contracts/
+              solidity-bytes-utils/=node_modules/solidity-bytes-utils/
           else
             solc contracts/**/*.sol \
               @=node_modules/@ \

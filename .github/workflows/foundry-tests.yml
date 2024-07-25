@@ -4,8 +4,8 @@ on:
   pull_request:
     # compare gas diff only when editing Solidity smart contract code
     paths:
-      - "contracts/**/*.sol"
-      - "tests/foundry/**/*.sol"
+      - "packages/**/*.sol"
+      - "packages/lsp-smart-contracts/tests/foundry/**/*.sol"
 
 jobs:
   foundry-tests:
@@ -24,7 +24,9 @@ jobs:
         run: npm ci
 
       - name: NPM build
-        run: npx hardhat compile
+        run: |
+          npm run build
+          npm run build:foundry
 
       - name: Run Foundry tests
         run: npm run test:foundry
@@ -34,18 +36,18 @@ jobs:
           # due to non-deterministic fuzzing (but still use pseudo-random fuzzing seeds)
           FOUNDRY_FUZZ_SEED: 0x${{ github.event.pull_request.base.sha || github.sha }}
 
-      - name: Compare gas reports
-        uses: Rubilmax/foundry-gas-diff@v3.13.1
-        with:
-          summaryQuantile: 0.9 # only display the 10% most significant gas diffs in the summary (defaults to 20%)
-          sortCriteria: avg,max # sort diff rows by criteria
-          sortOrders: desc,asc # and directions
-        id: gas_diff
+      # - name: Compare gas reports
+      #   uses: Rubilmax/foundry-gas-diff@v3.13.1
+      #   with:
+      #     summaryQuantile: 0.9 # only display the 10% most significant gas diffs in the summary (defaults to 20%)
+      #     sortCriteria: avg,max # sort diff rows by criteria
+      #     sortOrders: desc,asc # and directions
+      #   id: gas_diff
 
-      - name: Add gas diff to sticky comment
-        if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          # delete the comment in case changes no longer impact gas costs
-          delete: ${{ !steps.gas_diff.outputs.markdown }}
-          message: ${{ steps.gas_diff.outputs.markdown }}
+      # - name: Add gas diff to sticky comment
+      #   if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
+      #   uses: marocchino/sticky-pull-request-comment@v2
+      #   with:
+      #     # delete the comment in case changes no longer impact gas costs
+      #     delete: ${{ !steps.gas_diff.outputs.markdown }}
+      #     message: ${{ steps.gas_diff.outputs.markdown }}
