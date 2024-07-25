@@ -1,6 +1,5 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
-import { ethers } from 'hardhat';
 
 const deployUniversalProfile: DeployFunction = async ({
   deployments,
@@ -9,12 +8,9 @@ const deployUniversalProfile: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
-  const gasPrice = await ethers.provider.getGasPrice();
-
   await deploy('UniversalProfile', {
     from: owner,
     args: [owner],
-    gasPrice,
     log: true,
   });
 };

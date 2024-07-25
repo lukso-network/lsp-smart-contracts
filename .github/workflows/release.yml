@@ -12,6 +12,10 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    environment: publish
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
+
     steps:
       - uses: google-github-actions/release-please-action@v3
         id: release
@@ -28,32 +32,36 @@ jobs:
       # a new release is created:
 
       - uses: actions/checkout@v3
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.releases_created }}
 
-      - name: Use Node.js '16.15.0'
-        uses: actions/setup-node@v2
-        if: ${{ steps.release.outputs.release_created }}
+      - name: Use Node.js v20
+        uses: actions/setup-node@v4
+        if: ${{ steps.release.outputs.releases_created }}
         with:
-          node-version: "16.15.0"
+          node-version: "20.x"
           registry-url: "https://registry.npmjs.org"
           scope: "@lukso"
           cache: "npm"
 
       - name: Install Dependencies
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.releases_created }}
         run: npm ci
 
       # `npm run build:js` will also generate the auto-generated constants for methods, errors and events,
       # including extracting their devdocs and userdocs
       - name: Prepare artifacts to publish
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.releases_created }}
         run: |
           npm run build
           npm run build:js
           npm run package
+          npm run build:types
 
       - name: Publish on NPM
-        if: ${{ steps.release.outputs.release_created }}
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
+        if: ${{ steps.release.outputs.releases_created }}
+        run: |
+          (cat <<END > outputs.json
+          ${{toJSON(steps.release.outputs)}}
+          END
+          )
+          node ./publish.mjs outputs.json
