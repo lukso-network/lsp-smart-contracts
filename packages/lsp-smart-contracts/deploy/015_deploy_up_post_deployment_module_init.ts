@@ -1,4 +1,4 @@
-import { getCreate2Address, hexConcat, keccak256 } from 'ethers/lib/utils';
+import { getCreate2Address, concat, keccak256 } from 'ethers';
 import { config, ethers } from 'hardhat';
 import { DeployFunction } from 'hardhat-deploy/types';
 
@@ -49,7 +49,7 @@ const deployUpPostDeploymentModuleInit: DeployFunction = async ({ getNamedAccoun
 
   const deployUpInitPostDeploymentModuleTx = {
     to: nickFactoryAddress,
-    data: hexConcat([STANDARD_SALT, UP_INIT_POST_DEPLOYMENT_MODULE_BYTEODE]),
+    data: concat([STANDARD_SALT, UP_INIT_POST_DEPLOYMENT_MODULE_BYTEODE]),
   };
 
   const tx = await deployer.sendTransaction(deployUpInitPostDeploymentModuleTx);
