@@ -378,7 +378,7 @@ contract LSP23LinkedContractsFactory is ILSP23LinkedContractsFactory {
          *  - the secondary contract addPrimaryContractAddress boolean
          *  - the secondary contract extra initialization params (if any)
          *  - the postDeploymentModule address
-         *  - the callda to the post deployment module
+         *  - the calldata to the post deployment module
          *
          */
         primaryContractProxyGeneratedSalt = keccak256(
