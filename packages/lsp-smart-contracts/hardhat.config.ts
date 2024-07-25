@@ -98,7 +98,7 @@ function getTestnetChainConfig(): NetworkUserConfig {
 function getMainnetChainConfig(): NetworkUserConfig {
   const config: NetworkUserConfig = {
     live: true,
-    url: 'https://rpc.lukso.gateway.fm',
+    url: 'https://42.rpc.thirdweb.com',
     chainId: 42,
     saveDeployments: true,
     // We do not deploy the standard contracts on mainnet for the following reasons:
