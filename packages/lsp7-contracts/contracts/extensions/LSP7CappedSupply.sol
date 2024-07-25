@@ -50,7 +50,7 @@ abstract contract LSP7CappedSupply is LSP7DigitalAsset {
      * @notice The maximum supply amount of tokens allowed to exist is `_TOKEN_SUPPLY_CAP`.
      *
      * @dev Get the maximum number of tokens that can exist to circulate. Once {totalSupply} reaches
-     * reaches {totalSuuplyCap}, it is not possible to mint more tokens.
+     * reaches {totalSupplyCap}, it is not possible to mint more tokens.
      *
      * @return The maximum number of tokens that can exist in the contract.
      */

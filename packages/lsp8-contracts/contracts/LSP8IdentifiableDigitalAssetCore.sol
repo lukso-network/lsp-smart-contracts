@@ -703,7 +703,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
     /**
      * @dev Hook that is called before any token transfer, including minting and burning.
-     * Allows to run custom logic before updating balances and notifiying sender/recipient by overriding this function.
+     * Allows to run custom logic before updating balances and notifying sender/recipient by overriding this function.
      *
      * @param from The sender address
      * @param to The recipient address
@@ -719,7 +719,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
     /**
      * @dev Hook that is called after any token transfer, including minting and burning.
-     * Allows to run custom logic after updating balances, but **before notifiying sender/recipient via LSP1** by overriding this function.
+     * Allows to run custom logic after updating balances, but **before notifying sender/recipient via LSP1** by overriding this function.
      *
      * @param from The sender address
      * @param to The recipient address
