@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp-smart-contracts",
-  "version": "0.12.1",
+  "version": "0.15.0-rc.0",
   "description": "The reference smart contract implementation for the LUKSO LSP standards",
   "license": "Apache-2.0",
   "author": "",
@@ -56,7 +56,7 @@
     "build:foundry": "forge build",
     "build:js": "unbuild",
     "build:types": "npx typechain --target=ethers-v6 ./artifacts/*.json --out-dir types",
-    "build:docs": "hardhat dodoc && prettier -w ./docs",
+    "build:docs": "hardhat dodoc && prettier -w ./docs && bash dodoc/postProcessingContracts.sh && dodoc/postProcessingLibraries.sh",
     "clean": "hardhat clean && rm -Rf dist/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",

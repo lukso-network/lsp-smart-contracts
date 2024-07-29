@@ -42,6 +42,7 @@ function getTestnetChainConfig(): NetworkUserConfig {
     url: 'https://rpc.testnet.lukso.network',
     chainId: 4201,
     saveDeployments: true,
+    tags: ['standard', 'base'],
   };
 
   if (process.env.CONTRACT_VERIFICATION_TESTNET_PK !== undefined) {
@@ -54,9 +55,15 @@ function getTestnetChainConfig(): NetworkUserConfig {
 function getMainnetChainConfig(): NetworkUserConfig {
   const config: NetworkUserConfig = {
     live: true,
-    url: 'https://rpc.lukso.gateway.fm',
+    url: 'https://42.rpc.thirdweb.com',
     chainId: 42,
     saveDeployments: true,
+    // We do not deploy the standard contracts on mainnet for the following reasons:
+    // 1) standard contracts are expensive to deploy on mainnet
+    // 2) user's universal profiles use the minimal proxy pattern,
+    //
+    // therefore we only need the base contracts to be deployed on mainnet.
+    tags: ['base'],
   };
 
   if (process.env.CONTRACT_VERIFICATION_MAINNET_PK !== undefined) {

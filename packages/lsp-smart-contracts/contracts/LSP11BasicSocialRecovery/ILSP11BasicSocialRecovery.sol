@@ -33,7 +33,7 @@ interface ILSP11BasicSocialRecovery {
     event SecretHashChanged(bytes32 indexed secretHash);
 
     /**
-     * @notice Emitted when a guardian select a new potentiel controller address for the target
+     * @notice Emitted when a guardian select a new potential controller address for the target
      * @param recoveryCounter The current recovery process counter
      * @param guardian The address of the guardian
      * @param addressSelected The address selected by the guardian
@@ -119,7 +119,7 @@ interface ILSP11BasicSocialRecovery {
      *
      * Requirements:
      *
-     * - The guardians count should be higher or equal to the guardain threshold
+     * - The guardians count should be higher or equal to the guardian threshold
      */
     function removeGuardian(address currentGuardian) external;
 
@@ -147,7 +147,7 @@ interface ILSP11BasicSocialRecovery {
     function setGuardiansThreshold(uint256 guardiansThreshold) external;
 
     /**
-     * @dev select an address to be a potentiel controller address if he reaches
+     * @dev select an address to be a potential controller address if he reaches
      * the guardian threshold and provide the correct secret string
      *
      * Requirements:
