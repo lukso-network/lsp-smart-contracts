@@ -12,7 +12,7 @@ interface ILSP1UniversalReceiver {
      *
      * @param from The address of the EOA or smart contract that called the {universalReceiver(...)} function.
      * @param value The amount sent to the {universalReceiver(...)} function.
-     * @param typeId A `bytes32` unique identifier (= _"hook"_)that describe the type of notification, information or transaction received by the contract. Can be related to a specific standard or a hook.
+     * @param typeId A `bytes32` unique identifier (= _"hook"_) that describe the type of notification, information or transaction received by the contract. Can be related to a specific standard or a hook.
      * @param receivedData Any arbitrary data that was sent to the {universalReceiver(...)} function.
      * @param returnedValue The value returned by the {universalReceiver(...)} function.
      */
