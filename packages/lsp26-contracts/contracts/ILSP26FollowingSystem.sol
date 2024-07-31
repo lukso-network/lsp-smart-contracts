@@ -2,20 +2,37 @@
 pragma solidity ^0.8.17;
 
 interface ILSP26FollowingSystem {
+    /// @notice Emitted when following an address.
+    /// @param follower The address that follows `addr`
+    /// @param addr The address that is followed by `follower`
     event Follow(address follower, address addr);
+
+    /// @notice Emitted when unfollowing an address.
+    /// @param unfollower The address that unfollows `addr`
+    /// @param addr The address that is unfollowed by `follower`
     event Unfollow(address unfollower, address addr);
 
     /// @notice Follow an specific address.
-    /// @custom:events {Follow} event when following someone.
+    /// @custom:events {Follow} event when following an address.
     /// @param addr The address to start following.
     function follow(address addr) external;
 
+    /// @notice Follow a list of addresses.
+    /// @custom:events {Follow} event when following each address in the list.
+    /// @param addresses The list of addresses to follow.
+    function followBatch(address[] memory addresses) external;
+
     /// @notice Unfollow a specific address.
-    /// @custom:events {Unfollow} event when unfollowing someone.
+    /// @custom:events {Unfollow} event when unfollowing an address.
     /// @param addr The address to stop following.
     function unfollow(address addr) external;
 
-    /// @notice Checks if an address is following a specific address.
+    /// @notice Unfollow a list of addresses.
+    /// @custom:events {Follow} event when unfollowing each address in the list.
+    /// @param addresses The list of addresses to unfollow.
+    function unfollowBatch(address[] memory addresses) external;
+
+    /// @notice Check if an address is following a specific address.
     /// @param follower The address of the follower to check.
     /// @param addr The address being followed.
     /// @return True if `follower` is following `addr`, false otherwise.
@@ -29,12 +46,12 @@ interface ILSP26FollowingSystem {
     /// @return The number of followers of `addr`.
     function followerCount(address addr) external view returns (uint256);
 
-    /// @notice Get the number an address is following.
-    /// @param addr The address whose following count is requested.
-    /// @return The number of users that `addr` is following.
+    /// @notice Get the number of addresses an address is following.
+    /// @param addr The address of the follower whose following count is requested.
+    /// @return The number of addresses that `addr` is following.
     function followingCount(address addr) external view returns (uint256);
 
-    /// @notice Get a list of addresses, the given address is following within a specified range.
+    /// @notice Get the list of addresses the given address is following within a specified range.
     /// @param addr The address whose followed addresses are requested.
     /// @param startIndex The start index of the range (inclusive).
     /// @param endIndex The end index of the range (exclusive).
@@ -45,7 +62,7 @@ interface ILSP26FollowingSystem {
         uint256 endIndex
     ) external view returns (address[] memory);
 
-    /// @notice Get a list of addresses that follow an address within a specified range.
+    /// @notice Get the list of addresses that follow an address within a specified range.
     /// @param addr The address whose followers are requested.
     /// @param startIndex The start index of the range (inclusive).
     /// @param endIndex The end index of the range (exclusive).
