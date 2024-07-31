@@ -53,29 +53,14 @@ contract LSP26FollowingSystem is ILSP26FollowingSystem {
 
     // @inheritdoc ILSP26FollowingSystem
     function unfollow(address addr) public {
-        if (msg.sender == addr) {
-            revert LSP26CannotSelfUnfollow();
+        _unfollow(addr);
+    }
+
+    // @inheritdoc ILSP26FollowingSystem
+    function unfollowBatch(address[] memory addresses) public {
+        for (uint256 index = 0; index < addresses.length; index++) {
+            _unfollow(addresses[index]);
         }
-
-        if (!_followingsOf[msg.sender].contains(addr)) {
-            revert LSP26NotFollowing(addr);
-        }
-
-        _followingsOf[msg.sender].add(addr);
-        _followersOf[addr].remove(msg.sender);
-
-        if (addr.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
-            // solhint-disable no-empty-blocks
-            try
-                ILSP1UniversalReceiver(addr).universalReceiver(
-                    _TYPEID_LSP26_UNFOLLOW,
-                    abi.encodePacked(msg.sender)
-                )
-            {} catch {}
-            // returns (bytes memory data) {} catch {}
-        }
-
-        emit Unfollow(msg.sender, addr);
     }
 
     // @inheritdoc ILSP26FollowingSystem
@@ -97,7 +82,7 @@ contract LSP26FollowingSystem is ILSP26FollowingSystem {
     }
 
     // @inheritdoc ILSP26FollowingSystem
-    function getFollowingByIndex(
+    function getFollowsByIndex(
         address addr,
         uint256 startIndex,
         uint256 endIndex
@@ -150,5 +135,31 @@ contract LSP26FollowingSystem is ILSP26FollowingSystem {
         }
 
         emit Follow(msg.sender, addr);
+    }
+
+    function _unfollow(address addr) internal {
+        if (msg.sender == addr) {
+            revert LSP26CannotSelfUnfollow();
+        }
+
+        if (!_followingsOf[msg.sender].contains(addr)) {
+            revert LSP26NotFollowing(addr);
+        }
+
+        _followingsOf[msg.sender].remove(addr);
+        _followersOf[addr].remove(msg.sender);
+
+        if (addr.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
+            // solhint-disable no-empty-blocks
+            try
+                ILSP1UniversalReceiver(addr).universalReceiver(
+                    _TYPEID_LSP26_UNFOLLOW,
+                    abi.encodePacked(msg.sender)
+                )
+            {} catch {}
+            // returns (bytes memory data) {} catch {}
+        }
+
+        emit Unfollow(msg.sender, addr);
     }
 }
