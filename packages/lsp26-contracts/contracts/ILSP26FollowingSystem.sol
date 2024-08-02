@@ -13,23 +13,23 @@ interface ILSP26FollowingSystem {
     event Unfollow(address unfollower, address addr);
 
     /// @notice Follow an specific address.
-    /// @custom:events {Follow} event when following an address.
     /// @param addr The address to start following.
+    /// @custom:events {Follow} event when following an address.
     function follow(address addr) external;
 
     /// @notice Follow a list of addresses.
-    /// @custom:events {Follow} event when following each address in the list.
     /// @param addresses The list of addresses to follow.
+    /// @custom:events {Follow} event when following each address in the list.
     function followBatch(address[] memory addresses) external;
 
     /// @notice Unfollow a specific address.
-    /// @custom:events {Unfollow} event when unfollowing an address.
     /// @param addr The address to stop following.
+    /// @custom:events {Unfollow} event when unfollowing an address.
     function unfollow(address addr) external;
 
     /// @notice Unfollow a list of addresses.
-    /// @custom:events {Follow} event when unfollowing each address in the list.
     /// @param addresses The list of addresses to unfollow.
+    /// @custom:events {Follow} event when unfollowing each address in the list.
     function unfollowBatch(address[] memory addresses) external;
 
     /// @notice Check if an address is following a specific address.

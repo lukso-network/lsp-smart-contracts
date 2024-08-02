@@ -64,6 +64,9 @@ import {
 import {
     ILSP25ExecuteRelayCall as ILSP25
 } from "@lukso/lsp25-contracts/contracts/ILSP25ExecuteRelayCall.sol";
+import {
+    ILSP26FollowingSystem as ILSP26
+} from "@lukso/lsp26-contracts/contracts/ILSP26FollowingSystem.sol";
 
 // constants
 import {
@@ -102,6 +105,9 @@ import {
 import {
     _INTERFACEID_LSP25
 } from "@lukso/lsp25-contracts/contracts/LSP25Constants.sol";
+import {
+    _INTERFACEID_LSP26
+} from "@lukso/lsp26-contracts/contracts/LSP26Constants.sol";
 
 // libraries
 import {
@@ -298,6 +304,16 @@ contract CalculateLSPInterfaces {
         require(
             interfaceId == _INTERFACEID_LSP25,
             "hardcoded _INTERFACEID_LSP25 does not match type(ILSP25).interfaceId"
+        );
+
+        return interfaceId;
+    }
+
+    function calculateInterfaceLSP26() public pure returns (bytes4) {
+        bytes4 interfaceId = type(ILSP26).interfaceId;
+        require(
+            interfaceId == _INTERFACEID_LSP26,
+            "hardcoded _INTERFACEID_LSP26 does not match type(ILSP26).interfaceId"
         );
 
         return interfaceId;

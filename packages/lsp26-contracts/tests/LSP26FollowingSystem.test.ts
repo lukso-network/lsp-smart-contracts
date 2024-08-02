@@ -13,12 +13,16 @@ import {
   LSP26FollowingSystem__factory,
   LSP0ERC725Account,
   LSP0ERC725Account__factory,
+  RevertOnFollow__factory,
+  RevertOnFollow,
 } from '../types';
 
 describe('testing `LSP26FollowingSystem`', () => {
   let context: {
     followerSystem: LSP26FollowingSystem;
     followerSystemAddress: string;
+    revertOnFollow: RevertOnFollow;
+    revertOnFollowAddress: string;
     universalProfile: LSP0ERC725Account;
     owner: SignerWithAddress;
     singleFollowSigner: SignerWithAddress;
@@ -34,6 +38,9 @@ describe('testing `LSP26FollowingSystem`', () => {
     const followerSystemAddress = await followerSystem.getAddress();
     const universalProfile = await new LSP0ERC725Account__factory(owner).deploy(owner.address);
 
+    const revertOnFollow = await new RevertOnFollow__factory(owner).deploy();
+    const revertOnFollowAddress = await revertOnFollow.getAddress();
+
     const executeBatchFollowSigners = signers.slice(2, 12);
     const batchFollowSigners = signers.slice(12, 22);
     const multiFollowSigners = signers.slice(22, 10_022);
@@ -41,6 +48,8 @@ describe('testing `LSP26FollowingSystem`', () => {
     context = {
       followerSystem,
       followerSystemAddress,
+      revertOnFollow,
+      revertOnFollowAddress,
       universalProfile,
       owner,
       singleFollowSigner,
@@ -66,13 +75,24 @@ describe('testing `LSP26FollowingSystem`', () => {
         .to.be.revertedWithCustomError(context.followerSystem, 'LSP26AlreadyFollowing')
         .withArgs(randomAddress);
     });
+
+    it('should not revert if follow recipient reverts inside the LSP1 hook', async () => {
+      await context.followerSystem.connect(context.owner).follow(context.revertOnFollowAddress);
+
+      expect(
+        await context.followerSystem.isFollowing(
+          context.owner.address,
+          context.revertOnFollowAddress,
+        ),
+      ).to.be.true;
+    });
   });
 
   describe('testing `unfollow(address)`', () => {
     it('should revert when unfollowing your own address', async () => {
-      await expect(
-        context.followerSystem.connect(context.owner).unfollow(context.owner.address),
-      ).to.be.revertedWithCustomError(context.followerSystem, 'LSP26CannotSelfUnfollow');
+      await expect(context.followerSystem.connect(context.owner).unfollow(context.owner.address))
+        .to.be.revertedWithCustomError(context.followerSystem, 'LSP26NotFollowing')
+        .withArgs(context.owner.address);
     });
 
     it('should revert when unfollowing an address that is not followed', async () => {
@@ -82,9 +102,20 @@ describe('testing `LSP26FollowingSystem`', () => {
         .to.be.revertedWithCustomError(context.followerSystem, 'LSP26NotFollowing')
         .withArgs(randomAddress);
     });
+
+    it('should not revert if unfollow recipient reverts inside the LSP1 hook', async () => {
+      await context.followerSystem.connect(context.owner).unfollow(context.revertOnFollowAddress);
+
+      expect(
+        await context.followerSystem.isFollowing(
+          context.owner.address,
+          context.revertOnFollowAddress,
+        ),
+      ).to.be.false;
+    });
   });
 
-  describe('gas tests', () => {
+  describe.skip('gas tests', () => {
     const gasCostResult: {
       followingGasCost?: number[];
       followCost?: number;

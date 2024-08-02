@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.17;
 
-// interafces
+// interfaces
 import {ILSP26FollowingSystem} from "./ILSP26FollowingSystem.sol";
 import {
     ILSP1UniversalReceiver
@@ -27,7 +27,6 @@ import {
 // errors
 import {
     LSP26CannotSelfFollow,
-    LSP26CannotSelfUnfollow,
     LSP26AlreadyFollowing,
     LSP26NotFollowing
 } from "./LSP26Errors.sol";
@@ -46,7 +45,7 @@ contract LSP26FollowingSystem is ILSP26FollowingSystem {
 
     // @inheritdoc ILSP26FollowingSystem
     function followBatch(address[] memory addresses) public {
-        for (uint256 index = 0; index < addresses.length; index++) {
+        for (uint256 index = 0; index < addresses.length; ++index) {
             _follow(addresses[index]);
         }
     }
@@ -58,7 +57,7 @@ contract LSP26FollowingSystem is ILSP26FollowingSystem {
 
     // @inheritdoc ILSP26FollowingSystem
     function unfollowBatch(address[] memory addresses) public {
-        for (uint256 index = 0; index < addresses.length; index++) {
+        for (uint256 index = 0; index < addresses.length; ++index) {
             _unfollow(addresses[index]);
         }
     }
@@ -87,9 +86,11 @@ contract LSP26FollowingSystem is ILSP26FollowingSystem {
         uint256 startIndex,
         uint256 endIndex
     ) public view returns (address[] memory) {
-        address[] memory followings = new address[](endIndex - startIndex);
+        uint256 sliceLength = endIndex - startIndex;
 
-        for (uint256 index = 0; index < endIndex - startIndex; index++) {
+        address[] memory followings = new address[](sliceLength);
+
+        for (uint256 index = 0; index < sliceLength; ++index) {
             followings[index] = _followingsOf[addr].at(startIndex + index);
         }
 
@@ -102,9 +103,11 @@ contract LSP26FollowingSystem is ILSP26FollowingSystem {
         uint256 startIndex,
         uint256 endIndex
     ) public view returns (address[] memory) {
-        address[] memory followers = new address[](endIndex - startIndex);
+        uint256 sliceLength = endIndex - startIndex;
 
-        for (uint256 index = 0; index < endIndex - startIndex; index++) {
+        address[] memory followers = new address[](sliceLength);
+
+        for (uint256 index = 0; index < sliceLength; ++index) {
             followers[index] = _followersOf[addr].at(startIndex + index);
         }
 
@@ -116,12 +119,15 @@ contract LSP26FollowingSystem is ILSP26FollowingSystem {
             revert LSP26CannotSelfFollow();
         }
 
-        if (_followingsOf[msg.sender].contains(addr)) {
+        bool isAdded = _followingsOf[msg.sender].add(addr);
+
+        if (!isAdded) {
             revert LSP26AlreadyFollowing(addr);
         }
 
-        _followingsOf[msg.sender].add(addr);
         _followersOf[addr].add(msg.sender);
+
+        emit Follow(msg.sender, addr);
 
         if (addr.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
             // solhint-disable no-empty-blocks
@@ -131,23 +137,19 @@ contract LSP26FollowingSystem is ILSP26FollowingSystem {
                     abi.encodePacked(msg.sender)
                 )
             {} catch {}
-            // returns (bytes memory data) {} catch {}
         }
-
-        emit Follow(msg.sender, addr);
     }
 
     function _unfollow(address addr) internal {
-        if (msg.sender == addr) {
-            revert LSP26CannotSelfUnfollow();
-        }
+        bool isRemoved = _followingsOf[msg.sender].remove(addr);
 
-        if (!_followingsOf[msg.sender].contains(addr)) {
+        if (!isRemoved) {
             revert LSP26NotFollowing(addr);
         }
 
-        _followingsOf[msg.sender].remove(addr);
         _followersOf[addr].remove(msg.sender);
+
+        emit Unfollow(msg.sender, addr);
 
         if (addr.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
             // solhint-disable no-empty-blocks
@@ -157,9 +159,6 @@ contract LSP26FollowingSystem is ILSP26FollowingSystem {
                     abi.encodePacked(msg.sender)
                 )
             {} catch {}
-            // returns (bytes memory data) {} catch {}
         }
-
-        emit Unfollow(msg.sender, addr);
     }
 }

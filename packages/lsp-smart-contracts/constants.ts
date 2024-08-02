@@ -53,6 +53,7 @@ import {
   INTERFACE_ID_LSP20CallVerifier,
 } from '@lukso/lsp20-contracts';
 import { INTERFACE_ID_LSP25 } from '@lukso/lsp25-contracts';
+import { INTERFACE_ID_LSP26 } from '@lukso/lsp26-contracts';
 
 // LSP1 Type IDs of each LSP
 import { LSP0_TYPE_IDS } from '@lukso/lsp0-contracts';
@@ -60,6 +61,7 @@ import { LSP7_TYPE_IDS } from '@lukso/lsp7-contracts';
 import { LSP8_TYPE_IDS } from '@lukso/lsp8-contracts';
 import { LSP9_TYPE_IDS } from '@lukso/lsp9-contracts';
 import { LSP14_TYPE_IDS } from '@lukso/lsp14-contracts';
+import { LSP26_TYPE_IDS } from '@lukso/lsp26-contracts';
 
 // ERC725Y Data Keys of each LSP
 import { LSP1DataKeys } from '@lukso/lsp1-contracts';
@@ -117,6 +119,7 @@ export const INTERFACE_IDS = {
   LSP20CallVerifier: INTERFACE_ID_LSP20CallVerifier,
   LSP11BasicSocialRecovery: '0x049a28f1',
   LSP25ExecuteRelayCall: INTERFACE_ID_LSP25,
+  LSP26FollowingSystem: INTERFACE_ID_LSP26,
 };
 
 // ERC725Y
@@ -147,4 +150,5 @@ export const LSP1_TYPE_IDS = {
   ...LSP8_TYPE_IDS,
   ...LSP9_TYPE_IDS,
   ...LSP14_TYPE_IDS,
+  ...LSP26_TYPE_IDS,
 };
