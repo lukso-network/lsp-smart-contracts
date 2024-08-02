@@ -98,6 +98,11 @@ describe('Calculate LSP interfaces', () => {
     const result = await contract.calculateInterfaceLSP25ExecuteRelayCall();
     expect(result).to.equal(INTERFACE_IDS.LSP25ExecuteRelayCall);
   });
+
+  it('LSP26FollowingSystem', async () => {
+    const result = await contract.calculateInterfaceLSP26();
+    expect(result).to.equal(INTERFACE_IDS.LSP26FollowingSystem);
+  });
 });
 
 describe('Calculate ERC interfaces', () => {

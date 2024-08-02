@@ -37,13 +37,13 @@
   ],
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
+    "build:js": "unbuild",
     "build:types": "npx wagmi generate",
     "clean": "hardhat clean && rm -Rf dist/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "test": "hardhat test --no-compile tests/*.test.ts",
-    "test:foundry": "FOUNDRY_PROFILE=lspN forge test --no-match-test Skip -vvv",
     "test:coverage": "hardhat coverage",
     "package": "hardhat prepare-package"
   },
