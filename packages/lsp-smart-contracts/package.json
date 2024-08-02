@@ -81,6 +81,7 @@
     "@lukso/lsp20-contracts": "~0.15.0",
     "@lukso/lsp23-contracts": "~0.15.0",
     "@lukso/lsp25-contracts": "~0.15.0",
+    "@lukso/lsp26-contracts": "~0.15.0",
     "@lukso/lsp3-contracts": "~0.15.0",
     "@lukso/lsp4-contracts": "~0.15.0",
     "@lukso/lsp5-contracts": "~0.15.0",
