@@ -215,6 +215,16 @@
       "draft": false,
       "prerelease-type": "rc"
     },
+    "packages/lsp26-contracts": {
+      "component": "lsp26-contracts",
+      "package-name": "@lukso/lsp26-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease-type": "rc"
+    },
     "packages/universalprofile-contracts": {
       "component": "universalprofile-contracts",
       "package-name": "@lukso/universalprofile-contracts",
