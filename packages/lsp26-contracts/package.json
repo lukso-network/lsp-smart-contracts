@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp0-contracts": "*",
-    "@lukso/lsp1-contracts": "*"
+    "@lukso/lsp0-contracts": "~0.15.0",
+    "@lukso/lsp1-contracts": "~0.15.0"
   }
 }
