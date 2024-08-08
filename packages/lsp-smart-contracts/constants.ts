@@ -2,11 +2,39 @@
  * Set of constants values as defined in each LUKSO Standards Proposals (LSPs).
  * @see https://github.com/lukso-network/LIPs/tree/main/LSPs
  */
-// export * from './contracts';
+export * from './contracts';
+
+// Typescript types from each LSP package
+export type { Verification, LSP2ArrayKey } from '@lukso/lsp2-contracts';
+export type {
+  LSP3ProfileMetadataJSON,
+  LSP3ProfileMetadata,
+  ImageMetadata,
+  LinkMetadata,
+  AssetMetadata,
+} from '@lukso/lsp3-contracts';
+export type {
+  LSP4DigitalAssetMetadataJSON,
+  LSP4DigitalAssetMetadata,
+  AttributeMetadata,
+  AssetFile,
+  DigitalAsset,
+} from '@lukso/lsp4-contracts';
+export type { LSP6PermissionName } from '@lukso/lsp6-contracts';
+
+// Generic constants and types from each LSP package
+export { ERC1271_VALUES, OPERATION_TYPES } from '@lukso/lsp0-contracts';
+export { CALLTYPE, ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
+export { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+export { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
+export { LSP20_SUCCESS_VALUES } from '@lukso/lsp20-contracts';
+export { LSP25_VERSION } from '@lukso/lsp25-contracts';
+
 // Old interface Ids of previous releases of LSP7/8 Tokens
 // for backward compatibilities for dApps and interfaces
 export { INTERFACE_ID_LSP7_PREVIOUS } from '@lukso/lsp7-contracts';
 export { INTERFACE_ID_LSP8_PREVIOUS } from '@lukso/lsp8-contracts';
+
 // ERC165 interface IDs of each LSP
 import { INTERFACE_ID_LSP0 } from '@lukso/lsp0-contracts';
 import { INTERFACE_ID_LSP1 } from '@lukso/lsp1-contracts';
@@ -25,7 +53,6 @@ import {
   INTERFACE_ID_LSP20CallVerifier,
 } from '@lukso/lsp20-contracts';
 import { INTERFACE_ID_LSP25 } from '@lukso/lsp25-contracts';
-import { INTERFACE_ID_LSP26 } from '@lukso/lsp26-contracts';
 
 // LSP1 Type IDs of each LSP
 import { LSP0_TYPE_IDS } from '@lukso/lsp0-contracts';
@@ -33,7 +60,6 @@ import { LSP7_TYPE_IDS } from '@lukso/lsp7-contracts';
 import { LSP8_TYPE_IDS } from '@lukso/lsp8-contracts';
 import { LSP9_TYPE_IDS } from '@lukso/lsp9-contracts';
 import { LSP14_TYPE_IDS } from '@lukso/lsp14-contracts';
-import { LSP26_TYPE_IDS } from '@lukso/lsp26-contracts';
 
 // ERC725Y Data Keys of each LSP
 import { LSP1DataKeys } from '@lukso/lsp1-contracts';
@@ -91,7 +117,6 @@ export const INTERFACE_IDS = {
   LSP20CallVerifier: INTERFACE_ID_LSP20CallVerifier,
   LSP11BasicSocialRecovery: '0x049a28f1',
   LSP25ExecuteRelayCall: INTERFACE_ID_LSP25,
-  LSP26FollowingSystem: INTERFACE_ID_LSP26,
 };
 
 // ERC725Y
@@ -122,5 +147,4 @@ export const LSP1_TYPE_IDS = {
   ...LSP8_TYPE_IDS,
   ...LSP9_TYPE_IDS,
   ...LSP14_TYPE_IDS,
-  ...LSP26_TYPE_IDS,
 };
