@@ -28,6 +28,10 @@ import {
     _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP14_OwnershipTransferred_RecipientNotification
 } from "@lukso/lsp14-contracts/contracts/LSP14Constants.sol";
+import {
+    _TYPEID_LSP26_FOLLOW,
+    _TYPEID_LSP26_UNFOLLOW
+} from "@lukso/lsp26-contracts/contracts/LSP26Constants.sol";
 
 error LSP1TypeIdHashIsWrong(bytes32 typeIdHash, string typeIdname);
 
@@ -91,6 +95,15 @@ contract LSP1TypeIDsTester {
         _typeIds[
             "LSP14OwnershipTransferred_RecipientNotification"
         ] = _TYPEID_LSP14_OwnershipTransferred_RecipientNotification;
+        // -------------------
+
+        // ------ LSP26 ------
+        _typeIds[
+            "LSP26FollowerSystem_FollowNotification"
+        ] = _TYPEID_LSP26_FOLLOW;
+        _typeIds[
+            "LSP26FollowerSystem_UnfollowNotification"
+        ] = _TYPEID_LSP26_UNFOLLOW;
         // -------------------
     }
 
