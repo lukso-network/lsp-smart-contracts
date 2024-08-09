@@ -53,6 +53,7 @@ import {
   INTERFACE_ID_LSP20CallVerifier,
 } from '@lukso/lsp20-contracts';
 import { INTERFACE_ID_LSP25 } from '@lukso/lsp25-contracts';
+import { INTERFACE_ID_LSP26 } from '@lukso/lsp26-contracts';
 
 // LSP1 Type IDs of each LSP
 import { LSP0_TYPE_IDS } from '@lukso/lsp0-contracts';
@@ -117,6 +118,7 @@ export const INTERFACE_IDS = {
   LSP20CallVerifier: INTERFACE_ID_LSP20CallVerifier,
   LSP11BasicSocialRecovery: '0x049a28f1',
   LSP25ExecuteRelayCall: INTERFACE_ID_LSP25,
+  LSP26FollowingSystem: INTERFACE_ID_LSP26,
 };
 
 // ERC725Y
