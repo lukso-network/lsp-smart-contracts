@@ -99,9 +99,9 @@ describe('Calculate LSP interfaces', () => {
     expect(result).to.equal(INTERFACE_IDS.LSP25ExecuteRelayCall);
   });
 
-  it('LSP26FollowingSystem', async () => {
+  it('LSP26FollowerSystem', async () => {
     const result = await contract.calculateInterfaceLSP26();
-    expect(result).to.equal(INTERFACE_IDS.LSP26FollowingSystem);
+    expect(result).to.equal(INTERFACE_IDS.LSP26FollowerSystem);
   });
 });
 

@@ -9,17 +9,17 @@ import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 
 // types
 import {
-  LSP26FollowingSystem,
-  LSP26FollowingSystem__factory,
+  LSP26FollowerSystem,
+  LSP26FollowerSystem__factory,
   LSP0ERC725Account,
   LSP0ERC725Account__factory,
   RevertOnFollow__factory,
   RevertOnFollow,
 } from '../types';
 
-describe('testing `LSP26FollowingSystem`', () => {
+describe('testing `LSP26FollowerSystem`', () => {
   let context: {
-    followerSystem: LSP26FollowingSystem;
+    followerSystem: LSP26FollowerSystem;
     followerSystemAddress: string;
     revertOnFollow: RevertOnFollow;
     revertOnFollowAddress: string;
@@ -34,7 +34,7 @@ describe('testing `LSP26FollowingSystem`', () => {
   before(async () => {
     const signers = await ethers.getSigners();
     const [owner, singleFollowSigner] = signers;
-    const followerSystem = await new LSP26FollowingSystem__factory(owner).deploy();
+    const followerSystem = await new LSP26FollowerSystem__factory(owner).deploy();
     const followerSystemAddress = await followerSystem.getAddress();
     const universalProfile = await new LSP0ERC725Account__factory(owner).deploy(owner.address);
 

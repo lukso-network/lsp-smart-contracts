@@ -65,8 +65,8 @@ import {
     ILSP25ExecuteRelayCall as ILSP25
 } from "@lukso/lsp25-contracts/contracts/ILSP25ExecuteRelayCall.sol";
 import {
-    ILSP26FollowingSystem as ILSP26
-} from "@lukso/lsp26-contracts/contracts/ILSP26FollowingSystem.sol";
+    ILSP26FollowerSystem as ILSP26
+} from "@lukso/lsp26-contracts/contracts/ILSP26FollowerSystem.sol";
 
 // constants
 import {

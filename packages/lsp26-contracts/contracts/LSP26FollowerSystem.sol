@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 // interfaces
-import {ILSP26FollowingSystem} from "./ILSP26FollowingSystem.sol";
+import {ILSP26FollowerSystem} from "./ILSP26FollowerSystem.sol";
 import {
     ILSP1UniversalReceiver
 } from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
@@ -31,38 +31,38 @@ import {
     LSP26NotFollowing
 } from "./LSP26Errors.sol";
 
-contract LSP26FollowingSystem is ILSP26FollowingSystem {
+contract LSP26FollowerSystem is ILSP26FollowerSystem {
     using EnumerableSet for EnumerableSet.AddressSet;
     using ERC165Checker for address;
 
     mapping(address => EnumerableSet.AddressSet) private _followersOf;
     mapping(address => EnumerableSet.AddressSet) private _followingsOf;
 
-    // @inheritdoc ILSP26FollowingSystem
+    // @inheritdoc ILSP26FollowerSystem
     function follow(address addr) public {
         _follow(addr);
     }
 
-    // @inheritdoc ILSP26FollowingSystem
+    // @inheritdoc ILSP26FollowerSystem
     function followBatch(address[] memory addresses) public {
         for (uint256 index = 0; index < addresses.length; ++index) {
             _follow(addresses[index]);
         }
     }
 
-    // @inheritdoc ILSP26FollowingSystem
+    // @inheritdoc ILSP26FollowerSystem
     function unfollow(address addr) public {
         _unfollow(addr);
     }
 
-    // @inheritdoc ILSP26FollowingSystem
+    // @inheritdoc ILSP26FollowerSystem
     function unfollowBatch(address[] memory addresses) public {
         for (uint256 index = 0; index < addresses.length; ++index) {
             _unfollow(addresses[index]);
         }
     }
 
-    // @inheritdoc ILSP26FollowingSystem
+    // @inheritdoc ILSP26FollowerSystem
     function isFollowing(
         address follower,
         address addr
@@ -70,17 +70,17 @@ contract LSP26FollowingSystem is ILSP26FollowingSystem {
         return _followingsOf[follower].contains(addr);
     }
 
-    // @inheritdoc ILSP26FollowingSystem
+    // @inheritdoc ILSP26FollowerSystem
     function followerCount(address addr) public view returns (uint256) {
         return _followersOf[addr].length();
     }
 
-    // @inheritdoc ILSP26FollowingSystem
+    // @inheritdoc ILSP26FollowerSystem
     function followingCount(address addr) public view returns (uint256) {
         return _followingsOf[addr].length();
     }
 
-    // @inheritdoc ILSP26FollowingSystem
+    // @inheritdoc ILSP26FollowerSystem
     function getFollowsByIndex(
         address addr,
         uint256 startIndex,
@@ -97,7 +97,7 @@ contract LSP26FollowingSystem is ILSP26FollowingSystem {
         return followings;
     }
 
-    // @inheritdoc ILSP26FollowingSystem
+    // @inheritdoc ILSP26FollowerSystem
     function getFollowersByIndex(
         address addr,
         uint256 startIndex,
