@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.17;
 
-interface ILSP26FollowingSystem {
+interface ILSP26FollowerSystem {
     /// @notice Emitted when following an address.
     /// @param follower The address that follows `addr`
     /// @param addr The address that is followed by `follower`

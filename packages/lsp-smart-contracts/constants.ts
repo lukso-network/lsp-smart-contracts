@@ -118,7 +118,7 @@ export const INTERFACE_IDS = {
   LSP20CallVerifier: INTERFACE_ID_LSP20CallVerifier,
   LSP11BasicSocialRecovery: '0x049a28f1',
   LSP25ExecuteRelayCall: INTERFACE_ID_LSP25,
-  LSP26FollowingSystem: INTERFACE_ID_LSP26,
+  LSP26FollowerSystem: INTERFACE_ID_LSP26,
 };
 
 // ERC725Y
