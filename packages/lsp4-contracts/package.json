@@ -46,7 +46,7 @@
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
   },
   "dependencies": {
-    "@erc725/smart-contracts": "^7.0.0",
+    "@erc725/smart-contracts": "./erc725-smart-contracts-8.0.0.tgz",
     "@lukso/lsp2-contracts": "*"
   }
 }
