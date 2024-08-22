@@ -15,6 +15,12 @@ import {
   LSP0ERC725Account__factory,
   RevertOnFollow__factory,
   RevertOnFollow,
+  ReturnBomb__factory,
+  ReturnBomb,
+  SelfDestructOnInterfaceCheck__factory,
+  SelfDestructOnInterfaceCheck,
+  InfiniteLoopURD,
+  InfiniteLoopURD__factory,
 } from '../types';
 
 describe('testing `LSP26FollowerSystem`', () => {
@@ -110,6 +116,96 @@ describe('testing `LSP26FollowerSystem`', () => {
         await context.followerSystem.isFollowing(
           context.owner.address,
           context.revertOnFollowAddress,
+        ),
+      ).to.be.false;
+    });
+  });
+
+  describe('testing follow/unfollow a contract that self destructs on interface check', async () => {
+    let selfDestruct: SelfDestructOnInterfaceCheck;
+
+    before(async () => {
+      selfDestruct = await new SelfDestructOnInterfaceCheck__factory(context.owner).deploy();
+    });
+
+    it('should pass following', async () => {
+      await context.followerSystem.connect(context.owner).follow(await selfDestruct.getAddress());
+
+      expect(
+        await context.followerSystem.isFollowing(
+          context.owner.address,
+          await selfDestruct.getAddress(),
+        ),
+      ).to.be.true;
+    });
+
+    it('should pass unfollowing', async () => {
+      await context.followerSystem.connect(context.owner).unfollow(await selfDestruct.getAddress());
+
+      expect(
+        await context.followerSystem.isFollowing(
+          context.owner.address,
+          await selfDestruct.getAddress(),
+        ),
+      ).to.be.false;
+    });
+  });
+
+  describe('testing follow/unfollow a contract with return bomb', () => {
+    let returnBomb: ReturnBomb;
+
+    before(async () => {
+      returnBomb = await new ReturnBomb__factory(context.owner).deploy();
+    });
+
+    it('should pass following', async () => {
+      await context.followerSystem.connect(context.owner).follow(await returnBomb.getAddress());
+
+      expect(
+        await context.followerSystem.isFollowing(
+          context.owner.address,
+          await returnBomb.getAddress(),
+        ),
+      ).to.be.true;
+    });
+
+    it('should pass unfollowing', async () => {
+      await context.followerSystem.connect(context.owner).unfollow(await returnBomb.getAddress());
+
+      expect(
+        await context.followerSystem.isFollowing(
+          context.owner.address,
+          await returnBomb.getAddress(),
+        ),
+      ).to.be.false;
+    });
+  });
+
+  describe('testing follow/unfollow a contract that has an infinite loop in urd', () => {
+    let infiniteLoop: InfiniteLoopURD;
+
+    before(async () => {
+      infiniteLoop = await new InfiniteLoopURD__factory(context.owner).deploy();
+    });
+
+    it('should pass following', async () => {
+      await context.followerSystem.connect(context.owner).follow(await infiniteLoop.getAddress());
+
+      expect(
+        await context.followerSystem.isFollowing(
+          context.owner.address,
+          await infiniteLoop.getAddress(),
+        ),
+      ).to.be.true;
+    });
+
+    it('should pass unfollowing', async () => {
+      await context.followerSystem.connect(context.owner).unfollow(await infiniteLoop.getAddress());
+
+      expect(
+        await context.followerSystem.isFollowing(
+          context.owner.address,
+          await infiniteLoop.getAddress(),
         ),
       ).to.be.false;
     });
