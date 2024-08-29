@@ -11,6 +11,8 @@ error LSP26CannotRemoveNonFollower(address addr);
 
 error LSP26CannotRemoveSelf();
 
+error LSP26BlockedFromFollowing(address addr);
+
 error LSP26CannotBlockSelf();
 
 error LSP26CannotUnblockSelf();

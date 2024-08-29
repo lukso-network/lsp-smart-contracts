@@ -38,11 +38,12 @@ import {
     LSP26NotFollowing,
     LSP26CannotRemoveSelf,
     LSP26CannotBlockSelf,
+    LSP26BlockedFromFollowing,
     LSP26CannotUnblockSelf,
     LSP26AlreadyBlocked,
     LSP26NotBlocked,
     LSP26NoFollowRequestPending,
-    LSP26FollowRequestAlreadyPending,
+    LSP26FollowRequestAlreadyPending
 } from "./LSP26Errors.sol";
 
 contract LSP26FollowerSystem is ILSP26FollowerSystem {
@@ -54,6 +55,8 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
 
     mapping(address => bool) private _requiresApproval;
     mapping(address => EnumerableSet.AddressSet) private _pendingFollowRequests;
+
+    mapping(address => EnumerableSet.AddressSet) private _blockedAddresses;
 
     // @inheritdoc ILSP26FollowerSystem
     function setRequiresApproval(bool requiresApproval) external {
@@ -158,8 +161,37 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
     }
 
     // @inheritdoc ILSP26FollowerSystem
+    function blockAddress(address addr) external {
+        _block(addr);
+    }
+
+    // @inheritdoc ILSP26FollowerSystem
+    function blockBatch(address[] memory addresses) external {
+        for (uint256 i = 0; i < addresses.length; i++) {
+            _block(addresses[i]);
+        }
+    }
+
+    // @inheritdoc ILSP26FollowerSystem
+    function unblock(address addr) external {
+        _unblock(addr);
+    }
+
+    // @inheritdoc ILSP26FollowerSystem
+    function unblockBatch(address[] memory addresses) external {
+        for (uint256 i = 0; i < addresses.length; i++) {
+            _unblock(addresses[i]);
+        }
+    }
+
+    // @inheritdoc ILSP26FollowerSystem
     function isApprovalRequired(address addr) external view returns (bool) {
         return _requiresApproval[addr];
+    }
+
+    // @inheritdoc ILSP26FollowerSystem
+    function isBlocked(address blocker, address blocked) public view returns (bool) {
+        return _blockedAddresses[blocker].contains(blocked);
     }
 
     // @inheritdoc ILSP26FollowerSystem
@@ -214,9 +246,47 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
         return followers;
     }
 
+    // @inheritdoc ILSP26FollowerSystem
+    function getPendingFollowRequests(
+        address addr,
+        uint256 startIndex,
+        uint256 endIndex
+    ) public view returns (address[] memory) {
+        uint256 sliceLength = endIndex - startIndex;
+
+        address[] memory pendingRequests = new address[](sliceLength);
+
+        for (uint256 i = 0; i < sliceLength; i++) {
+            pendingRequests[i] = _pendingFollowRequests[addr].at(startIndex + i);
+        }
+
+        return pendingRequests;
+    }
+
+    // @inheritdoc ILSP26FollowerSystem
+    function getBlockedAddresses(
+        address addr,
+        uint256 startIndex,
+        uint256 endIndex
+    ) public view returns (address[] memory) {
+        uint256 sliceLength = endIndex - startIndex;
+
+        address[] memory blockedAddrs = new address[](sliceLength);
+
+        for (uint256 i = 0; i < sliceLength; i++) {
+            blockedAddrs[i] = _blockedAddresses[addr].at(startIndex + i);
+        }
+        
+        return blockedAddrs;
+    }
+
     function _follow(address addr) internal {
         if (msg.sender == addr) {
             revert LSP26CannotSelfFollow();
+        }
+
+        if (_blockedAddresses[addr].contains(msg.sender)) {
+            revert LSP26BlockedFromFollowing(addr);
         }
 
         if (_requiresApproval[addr]) {
@@ -298,5 +368,38 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
                 )
             {} catch {}
         }
+    }
+
+    function _block(address addr) internal {
+        if (addr == msg.sender) {
+            revert LSP26CannotBlockSelf();
+        }
+
+        bool isAdded = _blockedAddresses[msg.sender].add(addr);
+
+        if (!isAdded) {
+            revert LSP26AlreadyBlocked(addr);
+        }
+
+        // If the address is a follower, remove it first
+        if (_followersOf[msg.sender].contains(addr)) {
+            _removeFollower(addr);
+        }
+
+        emit Block(msg.sender, addr);
+    }
+
+    function _unblock(address addr) internal {
+        if (addr == msg.sender) {
+            revert LSP26CannotUnblockSelf();
+        }
+
+        bool isRemoved = _blockedAddresses[msg.sender].remove(addr);
+
+        if (!isRemoved) {
+            revert LSP26NotBlocked(addr);
+        }
+
+        emit Unblock(msg.sender, addr);
     }
 }

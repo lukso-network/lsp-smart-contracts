@@ -92,14 +92,14 @@ interface ILSP26FollowerSystem {
     function remove(address follower) external;
 
     /// @notice Removes an array of followers from follower's list.
-    /// @param folowers The addresses to be removed.
+    /// @param followers The addresses to be removed.
     /// @custom:events {RemoveFollower} event when removing a follower in the list.
     function removeBatch(address[] memory followers) external;
 
     /// @notice Block a specific address. If the address is a follower, remove first, then block.
     /// @param addr The address to block.
     /// @custom:events {Block} event when blocking an address.
-    function block(address addr) external;
+    function blockAddress(address addr) external;
 
     /// @notice Block an array of addresses.
     /// @param addresses The addresses to block.
@@ -120,6 +120,12 @@ interface ILSP26FollowerSystem {
     /// @param addr The address to check.
     /// @return True if the address requires approval for following, false otherwise.
     function isApprovalRequired(address addr) external view returns (bool);
+
+    /// @notice Check if an address is blocked.
+    /// @param blocker The address that might have blocked the other address.
+    /// @param blocked The address that might be blocked.
+    /// @return True if the address is blocked, false otherwise.
+    function isBlocked(address blocker, address blocked) external view returns (bool);
 
     /// @notice Check if an address is following a specific address.
     /// @param follower The address of the follower to check.
@@ -157,6 +163,28 @@ interface ILSP26FollowerSystem {
     /// @param endIndex The end index of the range (exclusive).
     /// @return An array of addresses that are following an addresses.
     function getFollowersByIndex(
+        address addr,
+        uint256 startIndex,
+        uint256 endIndex
+    ) external view returns (address[] memory);
+
+    /// @notice Get the list of pending follow requests for an address within a specified range.
+    /// @param addr The address whose pending follow requests are requested.
+    /// @param startIndex The start index of the range (inclusive).
+    /// @param endIndex The end index of the range (exclusive).
+    /// @return An array of addresses that have sent follow requests to `addr`.
+    function getPendingFollowRequests(
+        address addr,
+        uint256 startIndex,
+        uint256 endIndex
+    ) external view returns (address[] memory);
+
+    /// @notice Get the list of blocked addresses for an address within a specified range.
+    /// @param addr The address whose blocked addresses are requested.
+    /// @param startIndex The start index of the range (inclusive).
+    /// @param endIndex The end index of the range (exclusive).
+    /// @return An array of addresses that are blocked by `addr`.
+    function getBlockedAddresses(
         address addr,
         uint256 startIndex,
         uint256 endIndex
