@@ -5,12 +5,52 @@ interface ILSP26FollowerSystem {
     /// @notice Emitted when following an address.
     /// @param follower The address that follows `addr`
     /// @param addr The address that is followed by `follower`
-    event Follow(address follower, address addr);
+    event Follow(address indexed follower, address indexed addr);
 
     /// @notice Emitted when unfollowing an address.
     /// @param unfollower The address that unfollows `addr`
     /// @param addr The address that is unfollowed by `follower`
-    event Unfollow(address unfollower, address addr);
+    event Unfollow(address indexed unfollower, address indexed addr);
+
+    /// @notice Emitted when a follower is removed.
+    /// @param followee The address that removed the follower.
+    /// @param follower The address that was removed.
+    event RemoveFollower(address indexed followee, address indexed follower);
+
+    /// @notice Emitted when an address is blocked.
+    /// @param initiator The address that blocked the other address.
+    /// @param addr The address that was blocked.
+    event Block(address indexed initiator, address indexed addr);
+
+    /// @notice Emitted when an address is unblocked.
+    /// @param initiator The address that unblocked the other address.
+    /// @param addr The address that was unblocked.
+    event Unblock(address indexed initiator, address indexed addr);
+
+    /// @notice Emitted when the `requiresApproval` setting is toggled.
+    /// @param owner The address that toggled the approval setting.
+    /// @param requiresApproval The new state of the `requiresApproval` setting.
+    event RequiresApprovalSet(address indexed owner, bool requiresApproval);
+
+    /// @notice Emitted when a follow request is sent.
+    /// @param requester The address that sent the follow request.
+    /// @param target The address that received the follow request.
+    event FollowRequestSent(address indexed requester, address indexed target);
+
+    /// @notice Emitted when a follow request is approved.
+    /// @param approver The address that approved the follow request.
+    /// @param follower The address that sent the follow request.
+    event FollowRequestApproved(address indexed approver, address indexed follower);
+
+    /// @notice Emitted when a follow request is rejected.
+    /// @param rejector The address that rejected the follow request.
+    /// @param follower The address that sent the follow request.
+    event FollowRequestRejected(address indexed rejector, address indexed follower);
+
+    /// @notice Set whether following requires approval from the followee.
+    /// @param requiresApproval True if following requires approval from the followee, false otherwise.
+    /// @custom:events {RequiresApprovalSet} event when toggling the approval setting.
+    function setRequiresApproval(bool requiresApproval) external;
 
     /// @notice Follow an specific address.
     /// @param addr The address to start following.
@@ -29,8 +69,57 @@ interface ILSP26FollowerSystem {
 
     /// @notice Unfollow a list of addresses.
     /// @param addresses The list of addresses to unfollow.
-    /// @custom:events {Follow} event when unfollowing each address in the list.
+    /// @custom:events {Unfollow} event when unfollowing each address in the list.
     function unfollowBatch(address[] memory addresses) external;
+
+    /// @notice Handles follow request pending approval/rejection.
+    /// @param follower Address that requested follow, pending approval/rejection.
+    /// @param isApproved True if follower is approved, false if rejected.
+    /// @custom:events {FollowRequestApproved} event when a follow request is approved.
+    /// @custom:events {FollowRequestRejected} event when a follow request is rejected.
+    function handleFollowRequest(address follower, bool isApproved) external;
+
+    /// @notice Handles multiple follow requests in a batch operation.
+    /// @param followers An array of addresses that sent follow requests.
+    /// @param approvals An array of booleans indicating whether each corresponding follow request is approved (true) or rejected (false).
+    /// @custom:events {FollowRequestApproved} event when a follow request is approved.
+    /// @custom:events {FollowRequestRejected} event when a follow request is rejected.
+    function handleFollowRequestBatch(address[] calldata followers, bool[] calldata approvals) external;
+
+    /// @notice Removes specific follower from follower's list.
+    /// @param follower The address to be removed.
+    /// @custom:events {RemoveFollower} event when removing a follower.
+    function remove(address follower) external;
+
+    /// @notice Removes an array of followers from follower's list.
+    /// @param folowers The addresses to be removed.
+    /// @custom:events {RemoveFollower} event when removing a follower in the list.
+    function removeBatch(address[] memory followers) external;
+
+    /// @notice Block a specific address. If the address is a follower, remove first, then block.
+    /// @param addr The address to block.
+    /// @custom:events {Block} event when blocking an address.
+    function block(address addr) external;
+
+    /// @notice Block an array of addresses.
+    /// @param addresses The addresses to block.
+    /// @custom:events {Block} event when blocking an address in the list.
+    function blockBatch(address[] memory addresses) external;
+
+    /// @notice Unblock a specific address.
+    /// @param addr The address to unblock.
+    /// @custom:events {Unblock} event when unblocking an address.
+    function unblock(address addr) external;
+
+    /// @notice Unblock an array of addresses.
+    /// @param addresses The addresses to unblock.
+    /// @custom:events {Unblock} event when unblocking an address in the list.
+    function unblockBatch(address[] memory addresses) external;
+
+    /// @notice Get if the following requires approval from the followee.
+    /// @param addr The address to check.
+    /// @return True if the address requires approval for following, false otherwise.
+    function isApprovalRequired(address addr) external view returns (bool);
 
     /// @notice Check if an address is following a specific address.
     /// @param follower The address of the follower to check.

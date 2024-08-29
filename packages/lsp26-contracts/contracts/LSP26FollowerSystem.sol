@@ -18,7 +18,14 @@ import {
 // constants
 import {
     _TYPEID_LSP26_FOLLOW,
-    _TYPEID_LSP26_UNFOLLOW
+    _TYPEID_LSP26_UNFOLLOW,
+    _TYPEID_LSP26_REMOVE_FOLLOWER,
+    _TYPEID_LSP26_BLOCK,
+    _TYPEID_LSP26_UNBLOCK,
+    _TYPEID_LSP26_REQUIRES_APPROVAL_SET,
+    _TYPEID_LSP26_FOLLOW_REQUEST_SENT,
+    _TYPEID_LSP26_FOLLOW_REQUEST_APPROVED,
+    _TYPEID_LSP26_FOLLOW_REQUEST_REJECTED
 } from "./LSP26Constants.sol";
 import {
     _INTERFACEID_LSP1
@@ -28,7 +35,14 @@ import {
 import {
     LSP26CannotSelfFollow,
     LSP26AlreadyFollowing,
-    LSP26NotFollowing
+    LSP26NotFollowing,
+    LSP26CannotRemoveSelf,
+    LSP26CannotBlockSelf,
+    LSP26CannotUnblockSelf,
+    LSP26AlreadyBlocked,
+    LSP26NotBlocked,
+    LSP26NoFollowRequestPending,
+    LSP26FollowRequestAlreadyPending,
 } from "./LSP26Errors.sol";
 
 contract LSP26FollowerSystem is ILSP26FollowerSystem {
@@ -37,6 +51,26 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
 
     mapping(address => EnumerableSet.AddressSet) private _followersOf;
     mapping(address => EnumerableSet.AddressSet) private _followingsOf;
+
+    mapping(address => bool) private _requiresApproval;
+    mapping(address => EnumerableSet.AddressSet) private _pendingFollowRequests;
+
+    // @inheritdoc ILSP26FollowerSystem
+    function setRequiresApproval(bool requiresApproval) external {
+        _requiresApproval[msg.sender] = requiresApproval;
+
+        emit RequiresApprovalSet(msg.sender, requiresApproval);
+
+        if (msg.sender.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
+            // solhint-disable no-empty-blocks
+            try
+                ILSP1UniversalReceiver(msg.sender).universalReceiver(
+                    _TYPEID_LSP26_REQUIRES_APPROVAL_SET,
+                    abi.encodePacked(requiresApproval)
+                )
+            {} catch {}
+        }
+    }
 
     // @inheritdoc ILSP26FollowerSystem
     function follow(address addr) public {
@@ -60,6 +94,60 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
         for (uint256 index = 0; index < addresses.length; ++index) {
             _unfollow(addresses[index]);
         }
+    }
+
+    // @inheritdoc ILSP26FollowerSystem
+    function handleFollowRequest(address follower, bool isApproved) external {
+        bool isRemoved = _pendingFollowRequests[msg.sender].remove(follower);
+
+        if (!isRemoved) {
+            revert LSP26NoFollowRequestPending(follower);
+        }
+
+        if (isApproved) {
+            _addFollower(follower);
+            emit FollowRequestApproved(msg.sender, follower);
+        } else {
+            emit FollowRequestRejected(msg.sender, follower);
+        }
+    }
+
+    // @inheritdoc ILSP26FollowerSystem
+    function handleFollowRequestBatch(address[] calldata followers, bool[] calldata approvals) external {
+        uint256 batchSize = followers.length < approvals.length ? followers.length : approvals.length;
+
+        for (uint256 i = 0; i < batchSize; i++) {
+            address follower = followers[i];
+            bool isApproved = approvals[i];
+
+            bool isRemoved = _pendingFollowRequests[msg.sender].remove(follower);
+
+            if (isRemoved) {
+                if (isApproved) {
+                    _addFollower(follower);
+                    emit FollowRequestApproved(msg.sender, follower);
+                } else {
+                    emit FollowRequestRejected(msg.sender, follower);
+                }
+
+                if (follower.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
+                    // solhint-disable no-empty-blocks
+                    try
+                        ILSP1UniversalReceiver(follower).universalReceiver(
+                            isApproved ? _TYPEID_LSP26_FOLLOW_REQUEST_APPROVED : _TYPEID_LSP26_FOLLOW_REQUEST_REJECTED,
+                            abi.encodePacked(msg.sender)
+                        )
+                    {} catch {}
+                }
+            } else {
+                revert LSP26NoFollowRequestPending(follower);
+            }
+        }
+    }
+
+    // @inheritdoc ILSP26FollowerSystem
+    function isApprovalRequired(address addr) external view returns (bool) {
+        return _requiresApproval[addr];
     }
 
     // @inheritdoc ILSP26FollowerSystem
@@ -119,6 +207,28 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
             revert LSP26CannotSelfFollow();
         }
 
+        if (_requiresApproval[addr]) {
+            _createFollowRequest(addr);
+        } else {
+            _addFollower(addr);
+        }
+    }
+
+    function _createFollowRequest(address addr) internal {
+        if (_followingsOf[msg.sender].contains(addr)) {
+            revert LSP26AlreadyFollowing(addr);
+        }
+
+        bool isAdded = _pendingFollowRequests[addr].add(msg.sender);
+
+        if (!isAdded) {
+            revert LSP26FollowRequestAlreadyPending(addr);
+        }
+        
+        emit FollowRequestSent(msg.sender, addr);
+    }
+
+    function _addFollower(address addr) internal {
         bool isAdded = _followingsOf[msg.sender].add(addr);
 
         if (!isAdded) {
