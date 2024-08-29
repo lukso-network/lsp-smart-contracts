@@ -146,6 +146,18 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
     }
 
     // @inheritdoc ILSP26FollowerSystem
+    function remove(address follower) external {
+        _removeFollower(follower);
+    }
+
+    // @inheritdoc ILSP26FollowerSystem
+    function removeBatch(address[] memory followers) external {
+        for (uint256 i = 0; i < followers.length; i++) {
+            _removeFollower(followers[i]);
+        }
+    }
+
+    // @inheritdoc ILSP26FollowerSystem
     function isApprovalRequired(address addr) external view returns (bool) {
         return _requiresApproval[addr];
     }
@@ -248,6 +260,22 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
                 )
             {} catch {}
         }
+    }
+
+    function _removeFollower(address follower) internal {
+        if (follower == msg.sender) {
+            revert LSP26CannotRemoveSelf();
+        }
+
+        bool isRemoved = _followersOf[msg.sender].remove(follower);
+
+        if (!isRemoved) {
+            revert LSP26NotFollowing(follower);
+        }
+
+        _followingsOf[follower].remove(msg.sender);
+
+        emit RemoveFollower(msg.sender, follower);
     }
 
     function _unfollow(address addr) internal {
