@@ -109,7 +109,7 @@ interface ILSP26FollowerSystem {
     /// @notice Unblock a specific address.
     /// @param addr The address to unblock.
     /// @custom:events {Unblock} event when unblocking an address.
-    function unblock(address addr) external;
+    function unblockAddress(address addr) external;
 
     /// @notice Unblock an array of addresses.
     /// @param addresses The addresses to unblock.
@@ -133,7 +133,7 @@ interface ILSP26FollowerSystem {
     /// @return True if `follower` is following `addr`, false otherwise.
     function isFollowing(
         address follower,
-        address addr
+        address followee
     ) external view returns (bool);
 
     /// @notice Get the number of followers for an address.
@@ -168,6 +168,11 @@ interface ILSP26FollowerSystem {
         uint256 endIndex
     ) external view returns (address[] memory);
 
+    /// @notice Get the number of pending requests for an address.
+    /// @param addr The address whose pending requests count is requested.
+    /// @return The number of pending requests for `addr`.
+    function pendingRequestCount(address addr) external view returns (uint256);
+
     /// @notice Get the list of pending follow requests for an address within a specified range.
     /// @param addr The address whose pending follow requests are requested.
     /// @param startIndex The start index of the range (inclusive).
@@ -178,6 +183,11 @@ interface ILSP26FollowerSystem {
         uint256 startIndex,
         uint256 endIndex
     ) external view returns (address[] memory);
+
+    /// @notice Get the number of blocked addresses for an address.
+    /// @param addr The address whose blocked addresses count is requested.
+    /// @return The number of blocked addresses for `addr`.
+    function blockedCount(address addr) external view returns (uint256);
 
     /// @notice Get the list of blocked addresses for an address within a specified range.
     /// @param addr The address whose blocked addresses are requested.

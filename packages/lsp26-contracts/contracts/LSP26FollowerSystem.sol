@@ -100,7 +100,7 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
     }
 
     // @inheritdoc ILSP26FollowerSystem
-    function handleFollowRequest(address follower, bool isApproved) external {
+    function respondToFollowRequest(address follower, bool isApproved) external {
         bool isRemoved = _pendingFollowRequests[msg.sender].remove(follower);
 
         if (!isRemoved) {
@@ -108,7 +108,7 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
         }
 
         if (isApproved) {
-            _addFollower(follower);
+            _addFollower(follower, msg.sender);
             emit FollowRequestApproved(msg.sender, follower);
         } else {
             emit FollowRequestRejected(msg.sender, follower);
@@ -116,7 +116,7 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
     }
 
     // @inheritdoc ILSP26FollowerSystem
-    function handleFollowRequestBatch(address[] calldata followers, bool[] calldata approvals) external {
+    function respondToFollowRequestBatch(address[] calldata followers, bool[] calldata approvals) external {
         uint256 batchSize = followers.length < approvals.length ? followers.length : approvals.length;
 
         for (uint256 i = 0; i < batchSize; i++) {
@@ -127,7 +127,7 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
 
             if (isRemoved) {
                 if (isApproved) {
-                    _addFollower(follower);
+                    _addFollower(follower, msg.sender);
                     emit FollowRequestApproved(msg.sender, follower);
                 } else {
                     emit FollowRequestRejected(msg.sender, follower);
@@ -173,7 +173,7 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
     }
 
     // @inheritdoc ILSP26FollowerSystem
-    function unblock(address addr) external {
+    function unblockAddress(address addr) external {
         _unblock(addr);
     }
 
@@ -197,9 +197,9 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
     // @inheritdoc ILSP26FollowerSystem
     function isFollowing(
         address follower,
-        address addr
+        address followee
     ) public view returns (bool) {
-        return _followingsOf[follower].contains(addr);
+        return _followingsOf[follower].contains(followee);
     }
 
     // @inheritdoc ILSP26FollowerSystem
@@ -247,6 +247,11 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
     }
 
     // @inheritdoc ILSP26FollowerSystem
+    function pendingRequestCount(address addr) public view returns (uint256) {
+        return _pendingFollowRequests[addr].length();
+    }
+
+    // @inheritdoc ILSP26FollowerSystem
     function getPendingFollowRequests(
         address addr,
         uint256 startIndex,
@@ -261,6 +266,11 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
         }
 
         return pendingRequests;
+    }
+
+    // @inheritdoc ILSP26FollowerSystem
+    function blockedCount(address addr) public view returns (uint256) {
+        return _blockedAddresses[addr].length();
     }
 
     // @inheritdoc ILSP26FollowerSystem
@@ -292,7 +302,7 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
         if (_requiresApproval[addr]) {
             _createFollowRequest(addr);
         } else {
-            _addFollower(addr);
+            _addFollower(msg.sender, addr);
         }
     }
 
@@ -310,23 +320,23 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
         emit FollowRequestSent(msg.sender, addr);
     }
 
-    function _addFollower(address addr) internal {
-        bool isAdded = _followingsOf[msg.sender].add(addr);
+    function _addFollower(address follower, address followee) internal {
+        bool isAdded = _followingsOf[follower].add(followee);
 
         if (!isAdded) {
-            revert LSP26AlreadyFollowing(addr);
+            revert LSP26AlreadyFollowing(followee);
         }
 
-        _followersOf[addr].add(msg.sender);
+        _followersOf[followee].add(follower);
 
-        emit Follow(msg.sender, addr);
+        emit Follow(follower, followee);
 
-        if (addr.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
+        if (followee.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
             // solhint-disable no-empty-blocks
             try
-                ILSP1UniversalReceiver(addr).universalReceiver(
+                ILSP1UniversalReceiver(followee).universalReceiver(
                     _TYPEID_LSP26_FOLLOW,
-                    abi.encodePacked(msg.sender)
+                    abi.encodePacked(follower)
                 )
             {} catch {}
         }
