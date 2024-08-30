@@ -17,6 +17,8 @@ error LSP26CannotBlockSelf();
 
 error LSP26CannotUnblockSelf();
 
+error LSP26UserBlocked(address addr);
+
 error LSP26AlreadyBlocked(address addr);
 
 error LSP26NotBlocked(address addr);

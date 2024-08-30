@@ -299,6 +299,10 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
             revert LSP26BlockedFromFollowing(addr);
         }
 
+        if(_blockedAddresses[msg.sender].contains(addr)) {
+            revert LSP26UserBlocked(addr);
+        }
+
         if (_requiresApproval[addr]) {
             _createFollowRequest(addr);
         } else {
@@ -391,7 +395,7 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
             revert LSP26AlreadyBlocked(addr);
         }
 
-        // If the address is a follower, remove it first
+        // If the address is a follower, remove it
         if (_followersOf[msg.sender].contains(addr)) {
             _removeFollower(addr);
         }
