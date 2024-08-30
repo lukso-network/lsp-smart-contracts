@@ -129,7 +129,7 @@ interface ILSP26FollowerSystem {
 
     /// @notice Check if an address is following a specific address.
     /// @param follower The address of the follower to check.
-    /// @param addr The address being followed.
+    /// @param followee The address being followed.
     /// @return True if `follower` is following `addr`, false otherwise.
     function isFollowing(
         address follower,
