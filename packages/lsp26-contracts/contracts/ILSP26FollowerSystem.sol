@@ -77,14 +77,14 @@ interface ILSP26FollowerSystem {
     /// @param isApproved True if follower is approved, false if rejected.
     /// @custom:events {FollowRequestApproved} event when a follow request is approved.
     /// @custom:events {FollowRequestRejected} event when a follow request is rejected.
-    function handleFollowRequest(address follower, bool isApproved) external;
+    function respondToFollowRequest(address follower, bool isApproved) external;
 
     /// @notice Handles multiple follow requests in a batch operation.
     /// @param followers An array of addresses that sent follow requests.
     /// @param approvals An array of booleans indicating whether each corresponding follow request is approved (true) or rejected (false).
     /// @custom:events {FollowRequestApproved} event when a follow request is approved.
     /// @custom:events {FollowRequestRejected} event when a follow request is rejected.
-    function handleFollowRequestBatch(address[] calldata followers, bool[] calldata approvals) external;
+    function respondToFollowRequestBatch(address[] calldata followers, bool[] calldata approvals) external;
 
     /// @notice Removes specific follower from follower's list.
     /// @param follower The address to be removed.
