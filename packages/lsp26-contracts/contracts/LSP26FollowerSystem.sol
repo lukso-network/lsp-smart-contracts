@@ -40,6 +40,7 @@ import {
     LSP26CannotBlockSelf,
     LSP26BlockedFromFollowing,
     LSP26CannotUnblockSelf,
+    LSP26UserBlocked,
     LSP26AlreadyBlocked,
     LSP26NotBlocked,
     LSP26NoFollowRequestPending,
