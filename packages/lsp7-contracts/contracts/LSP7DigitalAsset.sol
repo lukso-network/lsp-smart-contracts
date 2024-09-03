@@ -2,7 +2,6 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {
     ILSP1UniversalReceiver as ILSP1
 } from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
@@ -231,7 +230,7 @@ abstract contract LSP7DigitalAsset is
     }
 
     /**
-     * @inheritdoc IERC165
+     * @inheritdoc LSP17Extendable
      */
     function supportsInterface(
         bytes4 interfaceId
