@@ -3,8 +3,7 @@ pragma solidity ^0.8.12;
 
 // modules
 import {
-    LSP8IdentifiableDigitalAsset,
-    LSP8IdentifiableDigitalAssetCore
+    LSP8IdentifiableDigitalAsset
 } from "../LSP8IdentifiableDigitalAsset.sol";
 
 /**
@@ -31,7 +30,7 @@ abstract contract LSP8Enumerable is LSP8IdentifiableDigitalAsset {
     }
 
     /**
-     * @inheritdoc LSP8IdentifiableDigitalAssetCore
+     * @inheritdoc LSP8IdentifiableDigitalAsset
      *
      * @param from The address sending the `tokenId` (`address(0)` when `tokenId` is being minted).
      * @param to The address receiving the `tokenId` (`address(0)` when `tokenId` is being burnt).
@@ -43,7 +42,7 @@ abstract contract LSP8Enumerable is LSP8IdentifiableDigitalAsset {
         address to,
         bytes32 tokenId,
         bytes memory data
-    ) internal virtual override(LSP8IdentifiableDigitalAssetCore) {
+    ) internal virtual override {
         // `tokenId` being minted
         if (from == address(0)) {
             uint256 index = totalSupply();
