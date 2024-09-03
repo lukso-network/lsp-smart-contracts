@@ -46,7 +46,6 @@
     "test:coverage": "hardhat coverage"
   },
   "dependencies": {
-    "@erc725/smart-contracts": "./erc725-smart-contracts-8.0.0.tgz",
-    "@openzeppelin/contracts": "^4.9.6"
+    "@erc725/smart-contracts": "^7.0.0"
   }
 }
