@@ -7,13 +7,13 @@ import {
 } from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
 import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 
-
 // modules
 import {
     EnumerableSet
 } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+// TODO: define if we inherit the upgradable version `ERC165CheckerUpgradeable`
 import {
-    ERC165Checker // TODO: define if we inherit the upgradable version
+    ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {
     LSP4DigitalAssetMetadataInitAbstract,
@@ -68,7 +68,7 @@ import {
 /**
  * @title Proxy Implementation of the LSP7 Digital Asset standard, a contract that represents a fungible token.
  * @author Matthew Stevens
- * 
+ *
  * @dev This contract implement the core logic of the functions for the {ILSP7DigitalAsset} interface.
  * Minting and transferring are supplied with a `uint256` amount.
  * This implementation is agnostic to the way tokens are created.
