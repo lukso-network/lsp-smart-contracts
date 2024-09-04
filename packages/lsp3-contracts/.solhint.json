@@ -20,6 +20,7 @@
     "reason-string": ["warn", { "maxLength": 120 }],
     "avoid-low-level-calls": "off",
     "no-empty-blocks": ["error", { "ignoreConstructors": true }],
-    "custom-errors": "off"
+    "gas-custom-errors": "off",
+    "quotes": "off"
   }
 }

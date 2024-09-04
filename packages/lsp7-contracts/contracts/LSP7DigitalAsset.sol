@@ -64,18 +64,8 @@ import {
 } from "./LSP7Errors.sol";
 
 /**
- * @title LSP7DigitalAsset contract
- * @author Matthew Stevens
- * @dev Core Implementation of a LSP7 compliant contract.
- *
- * This contract implement the core logic of the functions for the {ILSP7DigitalAsset} interface.
- */
-
-/**
  * @title Implementation of the LSP7 Digital Asset standard, a contract that represents a fungible token.
  * @author Matthew Stevens
- *
-j
  */
 abstract contract LSP7DigitalAsset is
     ILSP7DigitalAsset,
@@ -153,6 +143,7 @@ abstract contract LSP7DigitalAsset is
      * @dev Reverts whenever someone tries to send native tokens to a LSP7 contract.
      * @notice LSP7 contract cannot receive native tokens.
      */
+    // solhint-disable-next-line no-complex-fallback
     receive() external payable virtual {
         // revert on empty calls with no value
         if (msg.value == 0) {
