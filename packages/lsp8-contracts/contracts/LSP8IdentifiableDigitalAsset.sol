@@ -244,7 +244,7 @@ abstract contract LSP8IdentifiableDigitalAsset is
     }
 
     /**
-     * @inheritdoc IERC165
+     * @inheritdoc LSP17Extendable
      */
     function supportsInterface(
         bytes4 interfaceId
