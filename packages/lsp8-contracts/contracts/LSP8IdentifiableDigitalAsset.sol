@@ -168,6 +168,7 @@ abstract contract LSP8IdentifiableDigitalAsset is
      * @dev Reverts whenever someone tries to send native tokens to a LSP8 contract.
      * @notice LSP8 contract cannot receive native tokens.
      */
+    // solhint-disable-next-line no-complex-fallback
     receive() external payable virtual {
         // revert on empty calls with no value
         if (msg.value == 0) {
