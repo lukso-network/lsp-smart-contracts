@@ -558,7 +558,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             operator
         ];
 
-        if (amountToSpend > authorizedAmount) {
+        if (authorizedAmount == 0 || amountToSpend > authorizedAmount) {
             revert LSP7AmountExceedsAuthorizedAmount(
                 tokenOwner,
                 authorizedAmount,
