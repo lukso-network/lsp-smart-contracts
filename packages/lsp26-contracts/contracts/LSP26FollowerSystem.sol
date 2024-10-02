@@ -150,12 +150,12 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
     }
 
     // @inheritdoc ILSP26FollowerSystem
-    function remove(address follower) external {
+    function removeFollower(address follower) external {
         _removeFollower(follower);
     }
 
     // @inheritdoc ILSP26FollowerSystem
-    function removeBatch(address[] memory followers) external {
+    function removeFollowerBatch(address[] memory followers) external {
         for (uint256 i = 0; i < followers.length; i++) {
             _removeFollower(followers[i]);
         }
@@ -360,7 +360,7 @@ contract LSP26FollowerSystem is ILSP26FollowerSystem {
 
         _followingsOf[follower].remove(msg.sender);
 
-        emit RemoveFollower(msg.sender, follower);
+        emit RemovedFollower(msg.sender, follower);
     }
 
     function _unfollow(address addr) internal {

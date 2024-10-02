@@ -15,7 +15,7 @@ interface ILSP26FollowerSystem {
     /// @notice Emitted when a follower is removed.
     /// @param followee The address that removed the follower.
     /// @param follower The address that was removed.
-    event RemoveFollower(address indexed followee, address indexed follower);
+    event RemovedFollower(address indexed followee, address indexed follower);
 
     /// @notice Emitted when an address is blocked.
     /// @param initiator The address that blocked the other address.
@@ -89,12 +89,12 @@ interface ILSP26FollowerSystem {
     /// @notice Removes specific follower from follower's list.
     /// @param follower The address to be removed.
     /// @custom:events {RemoveFollower} event when removing a follower.
-    function remove(address follower) external;
+    function removeFollower(address follower) external;
 
     /// @notice Removes an array of followers from follower's list.
     /// @param followers The addresses to be removed.
     /// @custom:events {RemoveFollower} event when removing a follower in the list.
-    function removeBatch(address[] memory followers) external;
+    function removeFollowerBatch(address[] memory followers) external;
 
     /// @notice Block a specific address. If the address is a follower, remove first, then block.
     /// @param addr The address to block.
