@@ -180,7 +180,7 @@ The following audits and formal verification were conducted. All high-level issu
 
 ## Contribute
 
-The implementation contracts of the [LSPs](https://github.com/lukso-network/LIPs) exist thanks to their contributors. There are many ways you can participate and help build high quality software. Check out the [contribution guide](./CONTRIBUTING.md)!
+The implementation contracts of the [LSPs](https://github.com/lukso-network/LIPs) exist thanks to their contributors. There are many ways you can participate and help build high quality software. Check out the [contribution guidelines](./CONTRIBUTING.md)!
 
 ## Contributors ✨
 
