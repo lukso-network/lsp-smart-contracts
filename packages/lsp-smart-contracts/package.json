@@ -62,7 +62,7 @@
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "package": "hardhat prepare-package",
-    "test": "hardhat test --no-compile tests/**/*.test.ts",
+    "test": "hardhat test --no-compile tests/**/*.test.ts tests/LSP7DigitalAsset/**/*.ts tests/LSP8IdentifiableDigitalAsset/**/*.ts",
     "test:foundry": "FOUNDRY_PROFILE=lsp_smart_contracts forge test --no-match-test Skip -vvv",
     "test:coverage": "hardhat coverage",
     "test:benchmark": "hardhat test --no-compile tests/Benchmark.test.ts"
