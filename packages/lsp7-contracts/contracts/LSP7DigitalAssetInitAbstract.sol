@@ -733,7 +733,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
             operator
         ];
 
-        if (amountToSpend > authorizedAmount) {
+        if (authorizedAmount == 0 || amountToSpend > authorizedAmount) {
             revert LSP7AmountExceedsAuthorizedAmount(
                 tokenOwner,
                 authorizedAmount,
