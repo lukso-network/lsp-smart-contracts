@@ -6,6 +6,8 @@ Since the `@lukso/lsp-smart-contracts` is an Open Source project, we welcome con
 - report bug and issues.
 - introduce new features or bug fixes.
 
+Any non-trivial code contribution **must be first discussed with the maintainers and the developer community in an [issue](https://github.com/lukso-network/lsp-smart-contracts/issues/new/choose)**. Only very minor changes are accepted without prior discussion.
+
 ## **Clone project**
 
 Our project uses submodules, we recommend you to clone our repository using the following command:
