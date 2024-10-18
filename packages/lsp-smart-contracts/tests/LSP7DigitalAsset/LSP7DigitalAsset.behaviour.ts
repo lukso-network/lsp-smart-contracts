@@ -2207,6 +2207,80 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
     });
   });
 
+  describe('when transferring 0 as amount', () => {
+    describe('when the caller is the tokenOwner', () => {
+      it('should succeed', async () => {
+        const tokenOwner = context.accounts.owner.address;
+        const recipient = context.accounts.anyone.address;
+        const amount = 0;
+
+        await expect(
+          context.lsp7
+            .connect(context.accounts.owner)
+            .transfer(tokenOwner, recipient, amount, true, '0x'),
+        )
+          .to.emit(context.lsp7, 'Transfer')
+          .withArgs(tokenOwner, tokenOwner, recipient, amount, true, '0x');
+      });
+    });
+
+    describe('when the caller is the operator', () => {
+      describe("when the caller doesn't have an authorized amount", () => {
+        it('should revert', async () => {
+          const operator = context.accounts.operator.address;
+          const tokenOwner = context.accounts.owner.address;
+          const recipient = context.accounts.anyone.address;
+          const amount = 0;
+
+          await expect(
+            context.lsp7
+              .connect(context.accounts.operator)
+              .transfer(tokenOwner, recipient, amount, true, '0x'),
+          )
+            .to.be.revertedWithCustomError(context.lsp7, 'LSP7AmountExceedsAuthorizedAmount')
+            .withArgs(tokenOwner, 0, operator, amount);
+        });
+      });
+      describe('when the caller have an authorized amount', () => {
+        it('should succeed', async () => {
+          const operator = context.accounts.operator.address;
+          const tokenOwner = context.accounts.owner.address;
+          const recipient = context.accounts.anyone.address;
+          const amountAuthorized = 100;
+          const amount = 0;
+
+          // pre-conditions
+          await context.lsp7
+            .connect(context.accounts.owner)
+            .authorizeOperator(operator, amountAuthorized, '0x');
+          expect(await context.lsp7.authorizedAmountFor(operator, tokenOwner)).to.equal(
+            amountAuthorized,
+          );
+
+          await expect(
+            context.lsp7
+              .connect(context.accounts.operator)
+              .transfer(tokenOwner, recipient, amount, true, '0x'),
+          )
+            .to.emit(context.lsp7, 'Transfer')
+            .withArgs(operator, tokenOwner, recipient, amount, true, '0x');
+        });
+      });
+    });
+
+    describe('when making a call with sending value', () => {
+      it('should revert', async () => {
+        const amountSent = 200;
+        await expect(
+          context.accounts.anyone.sendTransaction({
+            to: await context.lsp7.getAddress(),
+            value: amountSent,
+          }),
+        ).to.be.revertedWithCustomError(context.lsp7, 'LSP7TokenContractCannotHoldValue');
+      });
+    });
+  });
+
   describe('batchCalls', () => {
     describe('when using one function', () => {
       describe('using `mint(...)`', () => {
