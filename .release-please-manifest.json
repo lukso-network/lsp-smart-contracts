@@ -20,5 +20,6 @@
   "packages/lsp20-contracts": "0.15.0",
   "packages/lsp23-contracts": "0.15.0",
   "packages/lsp25-contracts": "0.15.0",
+  "packages/lsp26-contracts": "0.15.0",
   "packages/universalprofile-contracts": "0.15.0"
 }

@@ -12,7 +12,6 @@ const deployBaseKeyManagerDeterministic: DeployFunction = async ({
   await deploy('LSP6KeyManagerInit', {
     from: deployer,
     log: true,
-    gasLimit: 5_000_000,
     deterministicDeployment: SALT,
   });
 };

@@ -129,13 +129,15 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP25
      *
+     * @custom:info For more details, see the internal function {`_getNonce`}.
+     *
      * @custom:hint A signer can choose its channel number arbitrarily. The recommended practice is to:
      * - use `channelId == 0` for transactions for which the ordering of execution matters.abi
      *
      * _Example: you have two transactions A and B, and transaction A must be executed first and complete successfully before
      * transaction B should be executed)._
      *
-     * - use any other `channelId` number for transactions that you want to be order independant (out-of-order execution, execution _"in parallel"_).
+     * - use any other `channelId` number for transactions that you want to be order independent (out-of-order execution, execution _"in parallel"_).
      *
      * _Example: you have two transactions A and B. You want transaction B to be executed a) without having to wait for transaction A to complete,
      * or b) regardless if transaction A completed successfully or not.
@@ -240,7 +242,7 @@ abstract contract LSP6KeyManagerCore is
      * @custom:events {PermissionsVerified} event when the permissions related to `payload` have been verified successfully.
      *
      * @custom:hint If you are looking to learn how to sign and execute relay transactions via the Key Manager,
-     * see our Javascript step by step guide [_"Execute Relay Transactions"_](../../../learn/expert-guides/key-manager/execute-relay-transactions.md).
+     * see our Javascript step by step guide [_"Execute Relay Transactions"_](../../../learn/universal-profile/key-manager/execute-relay-transactions.md).
      * See the LSP6 Standard page for more details on how to
      * [generate a valid signature for Execute Relay Call](../../../standards/universal-profile/lsp6-key-manager.md#how-to-sign-relay-transactions).
      */
@@ -265,7 +267,7 @@ abstract contract LSP6KeyManagerCore is
      *
      * @dev Same as {executeRelayCall} but execute a batch of signed calldata payloads (abi-encoded function calls) in a single transaction.
      *
-     * The `signatures` can be from multiple controllers, not necessarely the same controller, as long as each of these controllers
+     * The `signatures` can be from multiple controllers, not necessarily the same controller, as long as each of these controllers
      * that signed have the right permissions related to the calldata `payload` they signed.
      *
      * @custom:requirements

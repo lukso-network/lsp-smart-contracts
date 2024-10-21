@@ -178,6 +178,10 @@ The following audits and formal verification were conducted. All high-level issu
 - MiloTruck, 2023-11-31, Final Result: [MiloTruck_audit_2023_11_31.pdf](./audits/MiloTruck_audit_2023_11_31.pdf)
 - MiloTruck, 2024-01-24, Final Result: [MiloTruck_audit_2024_01_24.pdf](./audits/MiloTruck_audit_2024_01_24.pdf)
 
+## Contribute
+
+The implementation contracts of the [LSPs](https://github.com/lukso-network/LIPs) exist thanks to their contributors. There are many ways you can participate and help build high quality software. Check out the [contribution guidelines](./CONTRIBUTING.md)!
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
