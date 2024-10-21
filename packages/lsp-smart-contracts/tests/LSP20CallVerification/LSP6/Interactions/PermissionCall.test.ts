@@ -9,7 +9,7 @@ import {
   FallbackRevert__factory,
   TargetContract,
   TargetContract__factory,
-} from '../../types';
+} from '../../../../types';
 
 // constants
 import { ERC725YDataKeys } from '../../../../constants';

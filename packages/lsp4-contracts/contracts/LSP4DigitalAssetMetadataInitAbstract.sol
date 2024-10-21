@@ -6,10 +6,6 @@ import {
     ERC725YInitAbstract
 } from "@erc725/smart-contracts/contracts/ERC725YInitAbstract.sol";
 
-import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
-
-import {LSP4DigitalAssetMetadataCore} from "./LSP4DigitalAssetMetadataCore.sol";
-
 // constants
 import {
     _LSP4_SUPPORTED_STANDARDS_KEY,
@@ -19,15 +15,19 @@ import {
     _LSP4_TOKEN_TYPE_KEY
 } from "./LSP4Constants.sol";
 
+// errors
+import {
+    LSP4TokenNameNotEditable,
+    LSP4TokenSymbolNotEditable,
+    LSP4TokenTypeNotEditable
+} from "./LSP4Errors.sol";
+
 /**
  * @title Implementation of a LSP4DigitalAssetMetadata contract that stores the **Token-Metadata** (`LSP4TokenName` and `LSP4TokenSymbol`) in its ERC725Y data store.
  * @author Matthew Stevens
  * @dev Inheritable Proxy Implementation of the LSP4 standard.
  */
-abstract contract LSP4DigitalAssetMetadataInitAbstract is
-    LSP4DigitalAssetMetadataCore,
-    ERC725YInitAbstract
-{
+abstract contract LSP4DigitalAssetMetadataInitAbstract is ERC725YInitAbstract {
     /**
      * @notice Initializing a digital asset `name_` with the `symbol_` symbol.
      *
@@ -45,14 +45,17 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is
         ERC725YInitAbstract._initialize(initialOwner_);
 
         // set data key SupportedStandards:LSP4DigitalAsset
-        ERC725YCore._setData(
+        ERC725YInitAbstract._setData(
             _LSP4_SUPPORTED_STANDARDS_KEY,
             _LSP4_SUPPORTED_STANDARDS_VALUE
         );
 
-        ERC725YCore._setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
-        ERC725YCore._setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
-        ERC725YCore._setData(_LSP4_TOKEN_TYPE_KEY, abi.encode(lsp4TokenType_));
+        ERC725YInitAbstract._setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
+        ERC725YInitAbstract._setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
+        ERC725YInitAbstract._setData(
+            _LSP4_TOKEN_TYPE_KEY,
+            abi.encode(lsp4TokenType_)
+        );
     }
 
     /**
@@ -62,7 +65,17 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is
     function _setData(
         bytes32 dataKey,
         bytes memory dataValue
-    ) internal virtual override(ERC725YCore, LSP4DigitalAssetMetadataCore) {
-        LSP4DigitalAssetMetadataCore._setData(dataKey, dataValue);
+    ) internal virtual override {
+        if (dataKey == _LSP4_TOKEN_NAME_KEY) {
+            revert LSP4TokenNameNotEditable();
+        } else if (dataKey == _LSP4_TOKEN_SYMBOL_KEY) {
+            revert LSP4TokenSymbolNotEditable();
+        } else if (dataKey == _LSP4_TOKEN_TYPE_KEY) {
+            revert LSP4TokenTypeNotEditable();
+        } else {
+            _store[dataKey] = dataValue;
+
+            emit DataChanged(dataKey, dataValue);
+        }
     }
 }

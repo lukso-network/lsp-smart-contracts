@@ -22,6 +22,7 @@ import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } fro
 
 import { abiCoder } from '../utils/helpers';
 import { AddressZero } from '../LSP17Extensions/helpers/utils';
+import { build } from 'unbuild';
 
 export type LSP7TestAccounts = {
   owner: SignerWithAddress;
@@ -444,8 +445,8 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
       });
 
       describe('when `operator` param is the zero address', () => {
-        const tokenOwner = context.accounts.owner.address;
         it('should revert', async () => {
+          const tokenOwner = context.accounts.owner.address;
           const subtractedAmount = toBigInt(1);
 
           await expect(
