@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp7-contracts",
-  "version": "0.15.0-rc.0",
+  "version": "0.16.0",
   "description": "Package for the LSP7 Digital Asset standard",
   "license": "Apache-2.0",
   "author": "",
@@ -48,8 +48,8 @@
   "dependencies": {
     "@erc725/smart-contracts": "^8.0.0",
     "@openzeppelin/contracts": "^4.9.6",
-    "@lukso/lsp1-contracts": "~0.15.0",
-    "@lukso/lsp2-contracts": "~0.15.0",
+    "@lukso/lsp1-contracts": "*",
+    "@lukso/lsp2-contracts": "*",
     "@lukso/lsp4-contracts": "*",
     "@lukso/lsp17contractextension-contracts": "*"
   }

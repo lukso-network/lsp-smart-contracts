@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp17contractextension-contracts",
-  "version": "0.15.0-rc.0",
+  "version": "0.16.0",
   "description": "Package for the LSP17 Contract Extension standard",
   "license": "Apache-2.0",
   "author": "",
