@@ -43,7 +43,8 @@
     "clean": "hardhat clean && rm -Rf dist/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
-    "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
+    "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
+    "test:foundry": "FOUNDRY_PROFILE=lsp0 forge test -vvv"
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
