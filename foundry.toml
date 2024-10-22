@@ -11,6 +11,11 @@ solc = "0.8.17"
 runs = 10_000
 max_test_rejects = 200_000
 
+[profile.lsp0]
+src = 'packages/lsp0-contracts/contracts'
+test = 'packages/lsp0-contracts/foundry'
+out = 'packages/lsp0-contracts/contracts/foundry_artifacts'
+
 [profile.lsp2]
 src = 'packages/lsp2-contracts/contracts'
 test = 'packages/lsp2-contracts/foundry'
