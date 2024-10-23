@@ -87,7 +87,7 @@ export const shouldBehaveLikeLSP7Mintable = (
 
       await expect(
         context.lsp7Mintable.connect(nonOwner).mint(nonOwner.address, amountToMint, true, '0x'),
-      ).to.be.revertedWithCustomError(context.lsp7Mintable, 'OwnableCallerNotTheOwner');
+      ).to.be.revertedWith('Ownable: caller is not the owner');
     });
   });
 
