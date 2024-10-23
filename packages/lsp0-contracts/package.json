@@ -43,15 +43,16 @@
     "clean": "hardhat clean && rm -Rf dist/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
-    "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
+    "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
+    "test:foundry": "FOUNDRY_PROFILE=lsp0 forge test -vvv"
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.6",
-    "@lukso/lsp1-contracts": "~0.15.0",
-    "@lukso/lsp2-contracts": "~0.15.0",
-    "@lukso/lsp14-contracts": "~0.15.0",
-    "@lukso/lsp17contractextension-contracts": "~0.15.0",
-    "@lukso/lsp20-contracts": "~0.15.0"
+    "@lukso/lsp1-contracts": "*",
+    "@lukso/lsp2-contracts": "*",
+    "@lukso/lsp14-contracts": "*",
+    "@lukso/lsp17contractextension-contracts": "*",
+    "@lukso/lsp20-contracts": "*"
   }
 }

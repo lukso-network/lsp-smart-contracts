@@ -119,7 +119,7 @@ export const shouldBehaveLikeLSP8 = (
         context.lsp8
           .connect(context.accounts.anyone)
           .setDataForTokenId(tokenId, dataKey, dataValue),
-      ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCallerNotTheOwner');
+      ).to.be.revertedWith('Ownable: caller is not the owner');
     });
 
     it('TokenIdDataChanged emitted when data is set for a specific tokenId', async () => {
@@ -1795,7 +1795,7 @@ export const shouldBehaveLikeLSP8 = (
       const newOwner = context.accounts.anyone;
       await expect(
         context.lsp8.connect(newOwner).transferOwnership(newOwner.address),
-      ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCallerNotTheOwner');
+      ).to.be.revertedWith('Ownable: caller is not the owner');
     });
 
     it('should transfer ownership of the contract', async () => {
@@ -1814,21 +1814,21 @@ export const shouldBehaveLikeLSP8 = (
         const randomAddress = context.accounts.anyone.address;
         await expect(
           context.lsp8.connect(oldOwner).transferOwnership(randomAddress),
-        ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCallerNotTheOwner');
+        ).to.be.revertedWith('Ownable: caller is not the owner');
       });
 
       it('old owner should not be allowed to use `renounceOwnership(..)`', async () => {
-        await expect(
-          context.lsp8.connect(oldOwner).renounceOwnership(),
-        ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCallerNotTheOwner');
+        await expect(context.lsp8.connect(oldOwner).renounceOwnership()).to.be.revertedWith(
+          'Ownable: caller is not the owner',
+        );
       });
 
       it('old owner should not be allowed to use `setData(..)`', async () => {
         const key = ethers.keccak256(ethers.toUtf8Bytes('key'));
         const value = ethers.keccak256(ethers.toUtf8Bytes('value'));
-        await expect(
-          context.lsp8.connect(oldOwner).setData(key, value),
-        ).to.be.revertedWithCustomError(context.lsp8, 'OwnableCallerNotTheOwner');
+        await expect(context.lsp8.connect(oldOwner).setData(key, value)).to.be.revertedWith(
+          'Ownable: caller is not the owner',
+        );
       });
 
       it('new owner should be allowed to use `transferOwnership(..)`', async () => {

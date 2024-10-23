@@ -1,5 +1,10 @@
 export const INTERFACE_ID_LSP7 = '0xc52d6008';
 
+export const INTERFACE_ID_LSP7_PREVIOUS = {
+  'v0.14.0': '0xb3c4928f',
+  'v0.12.0': '0xdaa746b7',
+};
+
 export const LSP7_TYPE_IDS = {
   // keccak256('LSP7Tokens_SenderNotification')
   LSP7Tokens_SenderNotification:
