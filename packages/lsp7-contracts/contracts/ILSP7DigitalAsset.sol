@@ -1,17 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
-
 pragma solidity ^0.8.4;
-
-// interfaces
-import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 /**
  * @title Interface of the LSP7 - Digital Asset standard, a fungible digital asset.
  */
-interface ILSP7DigitalAsset is IERC165, IERC725Y {
+interface ILSP7DigitalAsset {
     // --- Events
 
     /**

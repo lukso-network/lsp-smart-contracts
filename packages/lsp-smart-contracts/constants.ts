@@ -17,8 +17,8 @@ export type {
   LSP4DigitalAssetMetadataJSON,
   LSP4DigitalAssetMetadata,
   AttributeMetadata,
-  AssetFile,
-  DigitalAsset,
+  FileAsset,
+  ContractAsset,
 } from '@lukso/lsp4-contracts';
 export type { LSP6PermissionName } from '@lukso/lsp6-contracts';
 
