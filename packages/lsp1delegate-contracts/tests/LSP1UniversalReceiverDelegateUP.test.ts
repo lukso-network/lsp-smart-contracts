@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat';
-import { LSP1UniversalReceiverDelegateUP, UniversalProfile, LSP6KeyManager } from '../../types';
+import { LSP1UniversalReceiverDelegateUP, UniversalProfile, LSP6KeyManager } from '../../../types';
 
-import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
+import { setupProfileWithKeyManagerWithURD } from '../../lsp-smart-contracts/tests/utils/fixtures';
 
 import {
   LSP1DelegateTestContext,
@@ -25,6 +25,7 @@ describe('LSP1UniversalReceiverDelegateUP', () => {
     const buildLSP1DelegateTestContext = async (): Promise<LSP1DelegateTestContext> => {
       const accounts = await getNamedAccounts();
 
+      // TODO: move this inside the `lsp-test-helpers` library
       const [UP1, KM1, LSP1_URD_UP] = await setupProfileWithKeyManagerWithURD(accounts.owner1);
 
       const [UP2, KM2] = await setupProfileWithKeyManagerWithURD(accounts.owner2);

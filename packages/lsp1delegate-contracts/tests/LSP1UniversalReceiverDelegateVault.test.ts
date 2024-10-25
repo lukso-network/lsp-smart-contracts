@@ -1,11 +1,11 @@
-import { ERC725YDataKeys } from '../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { LSP1DataKeys } from '@lukso/lsp1-contracts';
 
 import {
   LSP1UniversalReceiverDelegateVault__factory,
   UniversalProfile__factory,
   LSP9Vault__factory,
-} from '../../types';
+} from '../../../types';
 
 import {
   LSP1TestContext,
@@ -38,10 +38,11 @@ describe('LSP1UniversalReceiverDelegateVault', () => {
       // Setting lsp1UniversalReceiverDelegateVault as URD for the Vault
 
       const abi = lsp9Vault1.interface.encodeFunctionData('setData', [
-        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+        LSP1DataKeys.LSP1UniversalReceiverDelegate,
         await lsp1universalReceiverDelegateVault.getAddress(),
       ]);
 
+      // TODO: should this be an integration test?
       await universalProfile
         .connect(accounts.owner1)
         .execute(OPERATION_TYPES.CALL, await lsp9Vault1.getAddress(), 0, abi);

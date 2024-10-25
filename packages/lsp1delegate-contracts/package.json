@@ -54,5 +54,8 @@
     "@lukso/lsp8-contracts": "*",
     "@lukso/lsp9-contracts": "*",
     "@lukso/lsp10-contracts": "*"
+  },
+  "devDependencies": {
+    "@lukso/lsp14-contracts": "*"
   }
 }
