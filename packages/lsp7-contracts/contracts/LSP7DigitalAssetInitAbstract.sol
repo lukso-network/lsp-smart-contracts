@@ -136,7 +136,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
      *
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), revert.
      */
-    // solhint-disable-next-line no-complex-fallback
+    // solhint-disable no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
