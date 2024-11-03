@@ -2,7 +2,11 @@
 
 pragma solidity ^0.8.0;
 
-import "../extensions/LSP8Votes.sol";
+import {
+    LSP8Votes,
+    LSP8IdentifiableDigitalAsset
+} from "../extensions/LSP8Votes.sol";
+import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
 /**
  * @dev Mock of an LSP8Votes token

@@ -2,8 +2,10 @@
 
 pragma solidity ^0.8.0;
 
-import "../LSP8IdentifiableDigitalAsset.sol";
-import "@openzeppelin/contracts/governance/utils/Votes.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../LSP8IdentifiableDigitalAsset.sol";
+import {Votes} from "@openzeppelin/contracts/governance/utils/Votes.sol";
 
 /**
  * @dev Extension of LSP8 to support voting and delegation as implemented by {Votes}, where each individual NFT counts

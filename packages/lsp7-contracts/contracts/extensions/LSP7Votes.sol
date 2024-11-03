@@ -2,13 +2,13 @@
 
 pragma solidity ^0.8.0;
 
-import "../LSP7DigitalAsset.sol";
-import "@openzeppelin/contracts/interfaces/IERC5805.sol";
-import "@openzeppelin/contracts/utils/math/Math.sol";
-import "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
+import {IERC5805} from "@openzeppelin/contracts/interfaces/IERC5805.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 
 /**
  * @dev Extension of LSP7 to support Compound-like voting and delegation. This version is more generic than Compound's,
@@ -194,6 +194,7 @@ abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
         bytes32 r,
         bytes32 s
     ) public virtual override {
+        // solhint-disable-next-line not-rely-on-time
         require(block.timestamp <= expiry, "LSP7Votes: signature expired");
         address signer = ECDSA.recover(
             _hashTypedDataV4(
@@ -344,6 +345,7 @@ abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
         Checkpoint[] storage ckpts,
         uint256 pos
     ) private pure returns (Checkpoint storage result) {
+        // solhint-disable-next-line no-inline-assembly
         assembly {
             mstore(0, ckpts.slot)
             result.slot := add(keccak256(0, 0x20), pos)
