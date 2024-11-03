@@ -22,6 +22,7 @@ import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } fro
 
 import { abiCoder } from '../utils/helpers';
 import { AddressZero } from '../LSP17Extensions/helpers/utils';
+import { build } from 'unbuild';
 
 export type LSP7TestAccounts = {
   owner: SignerWithAddress;
@@ -444,8 +445,8 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
       });
 
       describe('when `operator` param is the zero address', () => {
-        const tokenOwner = context.accounts.owner.address;
         it('should revert', async () => {
+          const tokenOwner = context.accounts.owner.address;
           const subtractedAmount = toBigInt(1);
 
           await expect(
@@ -2127,7 +2128,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
       const newOwner = context.accounts.anyone;
       await expect(
         context.lsp7.connect(newOwner).transferOwnership(newOwner.address),
-      ).to.be.revertedWithCustomError(context.lsp7, 'OwnableCallerNotTheOwner');
+      ).to.be.revertedWith('Ownable: caller is not the owner');
     });
 
     describe('after transferring ownership of the contract', () => {
@@ -2139,21 +2140,21 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         const randomAddress = context.accounts.anyone.address;
         await expect(
           context.lsp7.connect(oldOwner).transferOwnership(randomAddress),
-        ).to.be.revertedWithCustomError(context.lsp7, 'OwnableCallerNotTheOwner');
+        ).to.be.revertedWith('Ownable: caller is not the owner');
       });
 
       it('old owner should not be allowed to use `renounceOwnership(..)`', async () => {
-        await expect(
-          context.lsp7.connect(oldOwner).renounceOwnership(),
-        ).to.be.revertedWithCustomError(context.lsp7, 'OwnableCallerNotTheOwner');
+        await expect(context.lsp7.connect(oldOwner).renounceOwnership()).to.be.revertedWith(
+          'Ownable: caller is not the owner',
+        );
       });
 
       it('old owner should not be allowed to use `setData(..)`', async () => {
         const key = ethers.keccak256(ethers.toUtf8Bytes('key'));
         const value = ethers.keccak256(ethers.toUtf8Bytes('value'));
-        await expect(
-          context.lsp7.connect(oldOwner).setData(key, value),
-        ).to.be.revertedWithCustomError(context.lsp7, 'OwnableCallerNotTheOwner');
+        await expect(context.lsp7.connect(oldOwner).setData(key, value)).to.be.revertedWith(
+          'Ownable: caller is not the owner',
+        );
       });
 
       it('new owner should be allowed to use `transferOwnership(..)`', async () => {
