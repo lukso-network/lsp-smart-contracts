@@ -3,7 +3,10 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { MyVotingToken, MyVotingToken__factory, MyGovernor, MyGovernor__factory } from '../types';
 import { time, mine } from '@nomicfoundation/hardhat-network-helpers';
-import { bigint } from 'hardhat/internal/core/params/argumentTypes';
+import {
+  LSP7_TYPE_IDS
+} from '../constants';
+
 
 describe('Comprehensive Governor and Token Tests', () => {
   let token: MyVotingToken;
@@ -120,13 +123,73 @@ describe('Comprehensive Governor and Token Tests', () => {
         .transfer(voter2.address, voter1.address, ethers.parseEther('5'), true, '0x');
       expect(await token.getVotes(voter1.address)).to.equal(ethers.parseEther('15'));
     });
+
+    describe('Delegation Notifications', () => {
+      let mockUniversalReceiver;
+
+      beforeEach(async () => {
+        const MockUniversalReceiver = await ethers.getContractFactory('MockUniversalReceiver');
+        mockUniversalReceiver = await MockUniversalReceiver.deploy();
+      });
+
+      it('should notify delegator with correct data format', async () => {
+        await voter1.setUniversalReceiver(mockUniversalReceiver.address);
+        
+        const expectedData = ethers.AbiCoder.defaultAbiCoder().encode(
+          ['address', 'address', 'uint256'],
+          [voter1.address, voter2.address, ethers.parseEther('10')]
+        );
+
+        await expect(token.connect(voter1).delegate(voter2.address))
+          .to.emit(mockUniversalReceiver, 'UniversalReceiverCalled')
+          .withArgs(
+            token.target,
+            LSP7_TYPE_IDS.LSP7Tokens_DelegatorNotification,
+            expectedData
+          );
+      });
+
+      it('should notify delegatee with correct data format', async () => {
+        await voter2.setUniversalReceiver(mockUniversalReceiver.address);
+        
+        const expectedData = ethers.AbiCoder.defaultAbiCoder().encode(
+          ['address', 'address', 'uint256'],
+          [voter1.address, voter1.address, ethers.parseEther('10')]
+        );
+
+        await expect(token.connect(voter1).delegate(voter2.address))
+          .to.emit(mockUniversalReceiver, 'UniversalReceiverCalled')
+          .withArgs(
+            token.target,
+            LSP7_TYPE_IDS.LSP7Tokens_DelegateeNotification,
+            expectedData
+          );
+      });
+
+      it('should not notify delegatee when delegator has zero balance', async () => {
+        await voter2.setUniversalReceiver(mockUniversalReceiver.address);
+
+        const [zeroBalanceAccount] = await ethers.getSigners();
+
+        await expect(token.connect(zeroBalanceAccount).delegate(voter2.address)).to.not.emit(
+          mockUniversalReceiver,
+          'UniversalReceiverCalled',
+        );
+      });
+
+      it('should not notify address(0)', async () => {
+        await expect(token.connect(voter1).delegate(ethers.ZeroAddress)).to.not.emit(
+          mockUniversalReceiver,
+          'UniversalReceiverCalled',
+        );
+      });
+    });
   });
 
   describe('Voting Process and Proposal Lifecycle', () => {
-    let proposalId;
+    let proposalId: string;
 
     beforeEach(async () => {
-      // Setup for voting tests
       await token.connect(proposer).delegate(proposer.address);
       await token.connect(voter1).delegate(voter1.address);
       await token.connect(voter2).delegate(voter2.address);
@@ -185,15 +248,12 @@ describe('Comprehensive Governor and Token Tests', () => {
       await mine(VOTING_DELAY + 1);
       await governor.connect(voter3).castVote(proposalId, 1); // Ensure quorum and pass
 
-      // Try to execute immediately after voting period
       await expect(
         governor.execute([randomEOA.address], [0], ['0xaabbccdd'], ethers.id('Proposal #1')),
       ).to.be.revertedWith('Governor: proposal not successful');
 
-      // Move past timelock period
       await mine(await governor.votingPeriod());
 
-      // Now execution should succeed
       await expect(
         governor.execute([randomEOA.address], [0], ['0xaabbccdd'], ethers.id('Proposal #1')),
       ).to.emit(governor, 'ProposalExecuted');

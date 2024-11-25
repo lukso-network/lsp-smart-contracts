@@ -3,12 +3,16 @@
 pragma solidity ^0.8.0;
 
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
+import { LSP1Utils } from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
+import { _TYPEID_LSP7_DELEGATOR, _TYPEID_LSP7_DELEGATEE } from "../LSP7Constants.sol";
 import {IERC5805} from "@openzeppelin/contracts/interfaces/IERC5805.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
+
+
 
 /**
  * @dev Extension of LSP7 to support Compound-like voting and delegation. This version is more generic than Compound's,
@@ -272,6 +276,35 @@ abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
         emit DelegateChanged(delegator, currentDelegate, delegatee);
 
         _moveVotingPower(currentDelegate, delegatee, delegatorBalance);
+
+        // Notify the delegator if it's not address(0)
+        if (delegator != address(0)) {
+            bytes memory delegatorNotificationData = abi.encode(
+                msg.sender,
+                delegatee,
+                delegatorBalance
+            );
+            LSP1Utils.notifyUniversalReceiver(
+                delegator,
+                _TYPEID_LSP7_DELEGATOR,
+                delegatorNotificationData
+            );
+        }
+
+        // Only notify the new delegatee if it's not address(0) and if there's actual voting power
+        if (delegatee != address(0) && delegatorBalance > 0) {
+            bytes memory delegateeNotificationData = abi.encode(
+                msg.sender,
+                delegator,
+                delegatorBalance
+            );
+
+            LSP1Utils.notifyUniversalReceiver(
+                delegatee,
+                _TYPEID_LSP7_DELEGATEE,
+                delegateeNotificationData
+            );
+        }
     }
 
     function _moveVotingPower(
