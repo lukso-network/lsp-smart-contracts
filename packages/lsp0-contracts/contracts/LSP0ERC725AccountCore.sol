@@ -424,7 +424,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @notice Notifying the contract by calling its `universalReceiver` function with the following informations: typeId: `typeId`; data: `data`.
+     * @notice Notifying the contract by calling its `universalReceiver` function with the following information: typeId: `typeId`; data: `data`.
      *
      * @dev Achieves the goal of [LSP-1-UniversalReceiver] by allowing the account to be notified about incoming/outgoing transactions and enabling reactions to these actions.
      * The reaction is achieved by having two external contracts ([LSP1UniversalReceiverDelegate]) that react on the whole transaction and on the specific typeId, respectively.

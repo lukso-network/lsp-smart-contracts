@@ -353,7 +353,7 @@ Leaves the contract without owner. It will not be possible to call `onlyOwner` f
 function selectNewController(address addressSelected) external nonpayable;
 ```
 
-select an address to be a potentiel controller address if he reaches the guardian threshold and provide the correct secret string Requirements:
+select an address to be a potential controller address if he reaches the guardian threshold and provide the correct secret string Requirements:
 
 - only guardians can select an address
 
@@ -559,7 +559,7 @@ function _cleanStorage(
 ) internal nonpayable;
 ```
 
-Remove the guardians choice after a successfull recovery process
+Remove the guardians choice after a successful recovery process
 To avoid keeping unnecessary state
 
 <br/>
@@ -745,7 +745,7 @@ event SelectedNewController(
 );
 ```
 
-_Emitted when a guardian select a new potentiel controller address for the target_
+_Emitted when a guardian select a new potential controller address for the target_
 
 #### Parameters
 

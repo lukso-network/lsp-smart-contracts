@@ -61,8 +61,8 @@ abstract contract LSP17ExtendableInitAbstract is ERC165Upgradeable {
     /**
      * @dev Returns the extension mapped to a specific function selector
      * If no extension was found, return the address(0)
-     * To be overrided.
-     * Up to the implementor contract to return an extension based on a function selector
+     * To be overridden.
+     * Up to the implementer contract to return an extension based on a function selector
      */
     function _getExtensionAndForwardValue(
         bytes4 functionSelector

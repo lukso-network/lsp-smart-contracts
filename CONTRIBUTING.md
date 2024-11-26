@@ -145,7 +145,7 @@ Which is is not the intended output.
 
 3. `@return` tag is mandatory if the function has any return value.
 
-4. Make sure to use one of the custom tags below to document any additional informations of different kinds:
+4. Make sure to use one of the custom tags below to document any additional information of different kinds:
 
 - Use `@custom:requirements` for all the requirements to use a function.
 - Use `@custom:events` for all the emited events during the function execution.
