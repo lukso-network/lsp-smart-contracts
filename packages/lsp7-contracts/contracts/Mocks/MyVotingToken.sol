@@ -6,7 +6,7 @@ import {LSP7Votes, LSP7DigitalAsset} from "../extensions/LSP7Votes.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
 /**
- * @dev Mock of an LSP7Votes token
+ * @dev Mock of a LSP7Votes token
  */
 contract MyVotingToken is LSP7Votes {
     constructor()

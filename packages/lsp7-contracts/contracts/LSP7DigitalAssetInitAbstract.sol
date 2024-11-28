@@ -789,13 +789,55 @@ abstract contract LSP7DigitalAssetInitAbstract is
 
         _beforeTokenTransfer(from, to, amount, data);
 
-        uint256 balance = _tokenOwnerBalances[from];
-        if (amount > balance) {
-            revert LSP7AmountExceedsBalance(balance, from, amount);
+        _update(from, to, amount, force, data);
+
+        _afterTokenTransfer(from, to, amount, data);
+
+        bytes memory lsp1Data = abi.encode(msg.sender, from, to, amount, data);
+
+        _notifyTokenSender(from, lsp1Data);
+        _notifyTokenReceiver(to, force, lsp1Data);
+    }
+
+    /**
+     * @dev Transfers a `value` amount of tokens from `from` to `to`, or alternatively mints (or burns) if `from`
+     * (or `to`) is the zero address. All customizations to transfers, mints, and burns should be done by overriding
+     * this function.
+     *
+     * Emits a {Transfer} event.
+     */
+    function _update(
+        address from,
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) internal virtual {
+        if (from == address(0)) {
+            // Overflow check required: The rest of the code assumes that totalSupply never overflows
+            _existingTokens += amount;
+        } else {
+            uint256 fromBalance = _tokenOwnerBalances[from];
+            if (fromBalance < amount) {
+                revert LSP7AmountExceedsBalance(fromBalance, from, amount);
+            }
+            unchecked {
+                // Overflow not possible: amount <= fromBalance <= totalSupply.
+                _tokenOwnerBalances[from] = fromBalance - amount;
+            }
         }
 
-        _tokenOwnerBalances[from] -= amount;
-        _tokenOwnerBalances[to] += amount;
+        if (to == address(0)) {
+            unchecked {
+                // Overflow not possible: amount <= totalSupply or amount <= fromBalance <= totalSupply.
+                _existingTokens -= amount;
+            }
+        } else {
+            unchecked {
+                // Overflow not possible: balance + amount is at most totalSupply, which we know fits into a uint256.
+                _tokenOwnerBalances[to] += amount;
+            }
+        }
 
         emit Transfer({
             operator: msg.sender,
