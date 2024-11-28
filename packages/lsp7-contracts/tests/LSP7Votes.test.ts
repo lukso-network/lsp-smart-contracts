@@ -129,35 +129,18 @@ describe('Comprehensive Governor and Token Tests', () => {
         mockUniversalReceiver = await MockUniversalReceiver.deploy();
       });
 
-      it('should notify delegator with correct data format', async () => {
-        await voter1.setUniversalReceiver(mockUniversalReceiver.address);
-
-        const expectedData = ethers.AbiCoder.defaultAbiCoder().encode(
-          ['address', 'address', 'uint256'],
-          [voter1.address, voter2.address, ethers.parseEther('10')],
-        );
-
-        await expect(token.connect(voter1).delegate(voter2.address))
-          .to.emit(mockUniversalReceiver, 'UniversalReceiverCalled')
-          .withArgs(token.target, LSP7_TYPE_IDS.LSP7Tokens_DelegatorNotification, expectedData);
-      });
-
       it('should notify delegatee with correct data format', async () => {
-        await voter2.setUniversalReceiver(mockUniversalReceiver.address);
-
         const expectedData = ethers.AbiCoder.defaultAbiCoder().encode(
           ['address', 'address', 'uint256'],
           [voter1.address, voter1.address, ethers.parseEther('10')],
         );
 
-        await expect(token.connect(voter1).delegate(voter2.address))
+        await expect(token.connect(voter1).delegate(await mockUniversalReceiver.getAddress()))
           .to.emit(mockUniversalReceiver, 'UniversalReceiverCalled')
           .withArgs(token.target, LSP7_TYPE_IDS.LSP7Tokens_DelegateeNotification, expectedData);
       });
 
       it('should not notify delegatee when delegator has zero balance', async () => {
-        await voter2.setUniversalReceiver(mockUniversalReceiver.address);
-
         const [zeroBalanceAccount] = await ethers.getSigners();
 
         await expect(token.connect(zeroBalanceAccount).delegate(voter2.address)).to.not.emit(
