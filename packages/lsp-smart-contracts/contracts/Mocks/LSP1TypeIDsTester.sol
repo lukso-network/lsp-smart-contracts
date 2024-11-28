@@ -13,6 +13,10 @@ import {
     _TYPEID_LSP7_TOKENOPERATOR
 } from "@lukso/lsp7-contracts/contracts/LSP7Constants.sol";
 import {
+    _TYPEID_LSP7_VOTESDELEGATOR,
+    _TYPEID_LSP7_VOTESDELEGATEE
+} from "@lukso/lsp7-contracts/contracts/extensions/LSP7VotesConstants.sol";
+import {
     _TYPEID_LSP8_TOKENSSENDER,
     _TYPEID_LSP8_TOKENSRECIPIENT,
     _TYPEID_LSP8_TOKENOPERATOR
@@ -60,6 +64,12 @@ contract LSP1TypeIDsTester {
         _typeIds[
             "LSP7Tokens_OperatorNotification"
         ] = _TYPEID_LSP7_TOKENOPERATOR;
+        _typeIds[
+            "LSP7Votes_VotesDelegatorNotification"
+        ] = _TYPEID_LSP7_VOTESDELEGATOR;
+        _typeIds[
+            "LSP7Votes_VotesDelegateeNotification"
+        ] = _TYPEID_LSP7_VOTESDELEGATEE;
         // ------------------
 
         // ------ LSP8 ------
