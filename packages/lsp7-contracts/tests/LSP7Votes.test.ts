@@ -3,10 +3,7 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { MyVotingToken, MyVotingToken__factory, MyGovernor, MyGovernor__factory } from '../types';
 import { time, mine } from '@nomicfoundation/hardhat-network-helpers';
-import {
-  LSP7_TYPE_IDS
-} from '../constants';
-
+import { LSP7_TYPE_IDS } from '../constants';
 
 describe('Comprehensive Governor and Token Tests', () => {
   let token: MyVotingToken;
@@ -134,36 +131,28 @@ describe('Comprehensive Governor and Token Tests', () => {
 
       it('should notify delegator with correct data format', async () => {
         await voter1.setUniversalReceiver(mockUniversalReceiver.address);
-        
+
         const expectedData = ethers.AbiCoder.defaultAbiCoder().encode(
           ['address', 'address', 'uint256'],
-          [voter1.address, voter2.address, ethers.parseEther('10')]
+          [voter1.address, voter2.address, ethers.parseEther('10')],
         );
 
         await expect(token.connect(voter1).delegate(voter2.address))
           .to.emit(mockUniversalReceiver, 'UniversalReceiverCalled')
-          .withArgs(
-            token.target,
-            LSP7_TYPE_IDS.LSP7Tokens_DelegatorNotification,
-            expectedData
-          );
+          .withArgs(token.target, LSP7_TYPE_IDS.LSP7Tokens_DelegatorNotification, expectedData);
       });
 
       it('should notify delegatee with correct data format', async () => {
         await voter2.setUniversalReceiver(mockUniversalReceiver.address);
-        
+
         const expectedData = ethers.AbiCoder.defaultAbiCoder().encode(
           ['address', 'address', 'uint256'],
-          [voter1.address, voter1.address, ethers.parseEther('10')]
+          [voter1.address, voter1.address, ethers.parseEther('10')],
         );
 
         await expect(token.connect(voter1).delegate(voter2.address))
           .to.emit(mockUniversalReceiver, 'UniversalReceiverCalled')
-          .withArgs(
-            token.target,
-            LSP7_TYPE_IDS.LSP7Tokens_DelegateeNotification,
-            expectedData
-          );
+          .withArgs(token.target, LSP7_TYPE_IDS.LSP7Tokens_DelegateeNotification, expectedData);
       });
 
       it('should not notify delegatee when delegator has zero balance', async () => {
