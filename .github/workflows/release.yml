@@ -49,10 +49,10 @@ jobs:
 
       # `npm run build:js` will also generate the auto-generated constants for methods, errors and events,
       # including extracting their devdocs and userdocs
-      # `npm run build:types` will generate: 
+      # `npm run build:types` will generate:
       # - the artifacts with abis for release (artifacts/*.json)
-      # - the wagmi hooks 
-      # - the typed abis 
+      # - the wagmi hooks (types/index.ts)
+      # - the typed abis (types/index.ts)
       - name: Prepare artifacts to publish
         if: ${{ steps.release.outputs.releases_created }}
         run: |
