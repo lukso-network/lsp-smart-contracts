@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
 import {
     LSP7DigitalAssetInitAbstract
 } from "../LSP7DigitalAssetInitAbstract.sol";
+import {
+    _TYPEID_LSP7_VOTESDELEGATOR,
+    _TYPEID_LSP7_VOTESDELEGATEE
+} from "./LSP7VotesConstants.sol";
+
 import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
 import {IERC5805} from "@openzeppelin/contracts/interfaces/IERC5805.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -39,16 +43,8 @@ abstract contract LSP7VotesInitAbstract is
         uint224 votes;
     }
 
-    bytes32 private constant _DELEGATION_TYPEHASH =
+    bytes32 internal constant _DELEGATION_TYPEHASH =
         keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
-
-    // keccak256('LSP7Tokens_VotesDelegatorNotification')
-    bytes32 constant _TYPEID_LSP7_VOTESDELEGATOR =
-        0x6117a486162c4ba8e38d646ef52b1e0e1be6bef05a980c041e232eba8c95e16f;
-
-    // keccak256('LSP7Tokens_VotesDelegateeNotification')
-    bytes32 constant _TYPEID_LSP7_VOTESDELEGATEE =
-        0x72cad372b29cde295ff0839b7b194597766b88f5fad4f7d6aef013e0c55dc492;
 
     mapping(address => address) private _delegates;
     mapping(address => Checkpoint[]) private _checkpoints;
