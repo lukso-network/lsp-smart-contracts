@@ -28,7 +28,7 @@
   ],
   "scripts": {
     "preinstall": "npx --yes force-resolutions",
-    "build": "turbo build",
+    "build": "turbo build && turbo build:js",
     "build:foundry": "turbo build:foundry",
     "build:js": "turbo build:js",
     "build:types": "turbo build:types",
