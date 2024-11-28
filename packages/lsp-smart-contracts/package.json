@@ -55,7 +55,7 @@
     "build": "hardhat compile --show-stack-traces",
     "build:foundry": "forge build",
     "build:js": "unbuild",
-    "build:types": "npx typechain --target=ethers-v6 ./artifacts/*.json --out-dir types",
+    "build:types": "npx wagmi generate",
     "build:docs": "hardhat dodoc && prettier -w ./docs && bash dodoc/postProcessingContracts.sh && dodoc/postProcessingLibraries.sh",
     "clean": "hardhat clean && rm -Rf dist/",
     "format": "prettier --write .",

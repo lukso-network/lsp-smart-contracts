@@ -147,3 +147,5 @@ gas_benchmark.md
 
 # Custom setup
 foundry_artifacts/
+
+wagmi.config.bundled_*.mjs
