@@ -781,33 +781,33 @@ abstract contract LSP7DigitalAssetInitAbstract is
     function _update(
         address from,
         address to,
-        uint256 value,
+        uint256 amount,
         bool force,
         bytes memory data
     ) internal virtual {
         if (from == address(0)) {
             // Overflow check required: The rest of the code assumes that totalSupply never overflows
-            _existingTokens += value;
+            _existingTokens += amount;
         } else {
             uint256 fromBalance = _tokenOwnerBalances[from];
-            if (fromBalance < value) {
-                revert LSP7AmountExceedsBalance(fromBalance, from, value);
+            if (fromBalance < amount) {
+                revert LSP7AmountExceedsBalance(fromBalance, from, amount);
             }
             unchecked {
-                // Overflow not possible: value <= fromBalance <= totalSupply.
-                _tokenOwnerBalances[from] = fromBalance - value;
+                // Overflow not possible: amount <= fromBalance <= totalSupply.
+                _tokenOwnerBalances[from] = fromBalance - amount;
             }
         }
 
         if (to == address(0)) {
             unchecked {
-                // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
-                _existingTokens -= value;
+                // Overflow not possible: amount <= totalSupply or amount <= fromBalance <= totalSupply.
+                _existingTokens -= amount;
             }
         } else {
             unchecked {
-                // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
-                _tokenOwnerBalances[to] += value;
+                // Overflow not possible: balance + amount is at most totalSupply, which we know fits into a uint256.
+                _tokenOwnerBalances[to] += amount;
             }
         }
 
@@ -815,7 +815,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
             operator: msg.sender,
             from: from,
             to: to,
-            amount: value,
+            amount: amount,
             force: force,
             data: data
         });

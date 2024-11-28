@@ -137,7 +137,11 @@ describe('Comprehensive Governor and Token Tests', () => {
 
         await expect(token.connect(voter1).delegate(await mockUniversalReceiver.getAddress()))
           .to.emit(mockUniversalReceiver, 'UniversalReceiverCalled')
-          .withArgs(token.target, LSP7_TYPE_IDS.LSP7Tokens_DelegateeNotification, expectedData);
+          .withArgs(
+            token.target,
+            LSP7_TYPE_IDS.LSP7Tokens_VotesDelegateeNotification,
+            expectedData,
+          );
       });
 
       it('should not notify delegatee when delegator has zero balance', async () => {
