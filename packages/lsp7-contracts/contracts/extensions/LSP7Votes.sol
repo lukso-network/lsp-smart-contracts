@@ -106,7 +106,7 @@ abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
     /**
      * @dev Retrieve the number of votes for `account` at the end of `timepoint`.
      *
-     * @custom:requirement
+     * @custom:requirements
      * - `timepoint` must be in the past
      */
     function getPastVotes(
@@ -121,7 +121,7 @@ abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
      * @dev Retrieve the `totalSupply` at the end of `timepoint`. Note, this value is the sum of all balances.
      * It is NOT the sum of all the delegated votes!
      *
-     * @custom:requirement
+     * @custom:requirements
      * - `timepoint` must be in the past
      */
     function getPastTotalSupply(
@@ -240,9 +240,9 @@ abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
     /**
      * @dev Move voting power when tokens are transferred.
      *
-     * @custom:event
-     * - {IVotes-DelegateVotesChanged} when voting power is removed from source address
-     * - {IVotes-DelegateVotesChanged} when voting power is added to destination address
+     * @custom:events
+     * - {DelegateVotesChanged} when voting power is removed from source address
+     * - {DelegateVotesChanged} when voting power is added to destination address
      */
     function _update(
         address from,
@@ -266,9 +266,9 @@ abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
     /**
      * @dev Change delegation for `delegator` to `delegatee`.
      *
-     * @custom:event
-     * - {IVotes-DelegateChanged}
-     * - {IVotes-DelegateVotesChanged}
+     * @custom:events
+     * - {DelegateChanged}
+     * - {DelegateVotesChanged}
      */
     function _delegate(address delegator, address delegatee) internal virtual {
         address currentDelegate = delegates(delegator);
@@ -312,9 +312,9 @@ abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
     /**
      * @dev Moves voting power from one address to another.
      *
-     * @custom:event
-     * - {IVotes-DelegateVotesChanged} when voting power is removed from source address
-     * - {IVotes-DelegateVotesChanged} when voting power is added to destination address
+     * @custom:events
+     * - {DelegateVotesChanged} when voting power is removed from source address.
+     * - {DelegateVotesChanged} when voting power is added to destination address
      */
     function _moveVotingPower(
         address src,
