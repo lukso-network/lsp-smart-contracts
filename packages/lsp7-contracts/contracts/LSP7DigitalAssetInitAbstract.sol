@@ -136,7 +136,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
      *
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), revert.
      */
-    // solhint-disable no-complex-fallback
+    // solhint-disable-next-line no-complex-fallback
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
@@ -772,11 +772,11 @@ abstract contract LSP7DigitalAssetInitAbstract is
     }
 
     /**
-     * @dev Transfers a `value` amount of tokens from `from` to `to`, or alternatively mints (or burns) if `from`
+     * @dev Transfers `amount` of tokens from `from` to `to`, or alternatively mints (or burns) if `from`
      * (or `to`) is the zero address. All customizations to transfers, mints, and burns should be done by overriding
      * this function.
      *
-     * Emits a {Transfer} event.
+     * @custom:events {Transfer} event.
      */
     function _update(
         address from,
