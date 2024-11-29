@@ -17,4 +17,12 @@ export const LSP7_TYPE_IDS = {
   // keccak256('LSP7Tokens_OperatorNotification')
   LSP7Tokens_OperatorNotification:
     '0x386072cc5a58e61263b434c722725f21031cd06e7c552cfaa06db5de8a320dbc',
+
+  // keccak256('LSP7Tokens_VotesDelegatorNotification')
+  LSP7Tokens_VotesDelegatorNotification:
+    '0x6117a486162c4ba8e38d646ef52b1e0e1be6bef05a980c041e232eba8c95e16f',
+
+  // keccak256('LSP7Tokens_VotesDelegateeNotification')
+  LSP7Tokens_VotesDelegateeNotification:
+    '0x72cad372b29cde295ff0839b7b194597766b88f5fad4f7d6aef013e0c55dc492',
 };
