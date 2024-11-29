@@ -65,10 +65,10 @@ contract LSP1TypeIDsTester {
             "LSP7Tokens_OperatorNotification"
         ] = _TYPEID_LSP7_TOKENOPERATOR;
         _typeIds[
-            "LSP7Votes_VotesDelegatorNotification"
+            "LSP7Tokens_VotesDelegatorNotification"
         ] = _TYPEID_LSP7_VOTESDELEGATOR;
         _typeIds[
-            "LSP7Votes_VotesDelegateeNotification"
+            "LSP7Tokens_VotesDelegateeNotification"
         ] = _TYPEID_LSP7_VOTESDELEGATEE;
         // ------------------
 
