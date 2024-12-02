@@ -286,7 +286,7 @@ Same as [`executeRelayCall`](#executerelaycall) but execute a batch of signed ca
 A signer can choose its channel number arbitrarily. The recommended practice is to:
 
 - use `channelId == 0` for transactions for which the ordering of execution matters.abi _Example: you have two transactions A and B, and transaction A must be executed first and complete successfully before transaction B should be executed)._
-- use any other `channelId` number for transactions that you want to be order independant (out-of-order execution, execution _"in parallel"_). \_Example: you have two transactions A and B. You want transaction B to be executed a) without having to wait for transaction A to complete, or b) regardless if transaction A completed successfully or not.
+- use any other `channelId` number for transactions that you want to be order independent (out-of-order execution, execution _"in parallel"_). \_Example: you have two transactions A and B. You want transaction B to be executed a) without having to wait for transaction A to complete, or b) regardless if transaction A completed successfully or not.
 
 :::
 
@@ -401,7 +401,7 @@ function lsp20VerifyCall(
 
 | Name |   Type   | Description                                                                                                                                                                                                                                                                                                                                     |
 | ---- | :------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `0`  | `bytes4` | MUST return the first 3 bytes of `lsp20VerifyCall(address,uint256,bytes)` function selector if the call to the function is allowed, concatened with a byte that determines if the lsp20VerifyCallResult function should be called after the original function call. The byte that invoke the lsp20VerifyCallResult function is strictly `0x01`. |
+| `0`  | `bytes4` | MUST return the first 3 bytes of `lsp20VerifyCall(address,uint256,bytes)` function selector if the call to the function is allowed, concatenated with a byte that determines if the lsp20VerifyCallResult function should be called after the original function call. The byte that invoke the lsp20VerifyCallResult function is strictly `0x01`. |
 
 <br/>
 

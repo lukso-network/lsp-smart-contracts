@@ -21,7 +21,7 @@ import {
  * @title LSP1 Utility library.
  * @author Jean Cavallera <CJ42>, Yamen Merhi <YamenMerhi>, Daniel Afteni <B00ste>
  * @dev LSP1Utils is a library of utility functions that can be used to notify the `universalReceiver` function of a contract
- * that implements LSP1 and retrieve informations related to LSP1 `typeId`.
+ * that implements LSP1 and retrieve information related to LSP1 `typeId`.
  * Based on LSP1 Universal Receiver standard.
  */
 library LSP1Utils {

@@ -15,7 +15,7 @@ import {RelayCallBeforeStartTime, RelayCallExpired} from "./LSP25Errors.sol";
  * @author Jean Cavallera (CJ42)
  * @dev This contract can be used as a backbone for other smart contracts to implement meta-transactions via the LSP25 Execute Relay Call interface.
  *
- * It contains a storage of nonces for signer addresses across various channel IDs, enabling these signers to submit signed transactions that order-independant.
+ * It contains a storage of nonces for signer addresses across various channel IDs, enabling these signers to submit signed transactions that order-independent.
  * (transactions that do not need to be submitted one after the other in a specific order).
  *
  * Finally, it contains internal functions to verify signatures for specific calldata according the signature format specified in the LSP25 standard.

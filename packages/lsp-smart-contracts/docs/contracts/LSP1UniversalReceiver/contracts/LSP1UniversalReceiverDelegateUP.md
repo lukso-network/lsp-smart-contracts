@@ -96,8 +96,8 @@ See [`IERC165-supportsInterface`](#ierc165-supportsinterface).
 
 :::info
 
-- If some issues occured with generating the `dataKeys` or `dataValues` the `returnedMessage` will be an error message, otherwise it will be empty.
-- If an error occured when trying to use `setDataBatch(dataKeys,dataValues)`, it will return the raw error data back to the caller.
+- If some issues occurred with generating the `dataKeys` or `dataValues` the `returnedMessage` will be an error message, otherwise it will be empty.
+- If an error occurred when trying to use `setDataBatch(dataKeys,dataValues)`, it will return the raw error data back to the caller.
 
 :::
 
