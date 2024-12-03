@@ -3,7 +3,7 @@ export const INTERFACE_ID_LSP7 = '0xc52d6008';
 export const INTERFACE_ID_LSP7_PREVIOUS = {
   'v0.14.0': '0xb3c4928f',
   'v0.12.0': '0xdaa746b7',
-};
+} as const;
 
 export const LSP7_TYPE_IDS = {
   // keccak256('LSP7Tokens_SenderNotification')
@@ -25,4 +25,4 @@ export const LSP7_TYPE_IDS = {
   // keccak256('LSP7Tokens_VotesDelegateeNotification')
   LSP7Tokens_VotesDelegateeNotification:
     '0x72cad372b29cde295ff0839b7b194597766b88f5fad4f7d6aef013e0c55dc492',
-};
+} as const;

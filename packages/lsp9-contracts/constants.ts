@@ -15,7 +15,7 @@ export const OPERATION_TYPES = {
   CREATE2: 2,
   STATICCALL: 3,
   DELEGATECALL: 4,
-};
+} as const;
 
 /**
  * @dev list of ERC725Y keys from the LSP standards.
@@ -25,11 +25,11 @@ export const OPERATION_TYPES = {
 export const LSP9SupportedStandard = {
   key: '0xeafec4d89fa9619884b600007c0334a14085fefa8b51ae5a40895018882bdb90',
   value: '0x7c0334a1',
-};
+} as const;
 
 export const LSP9DataKeys = {
   SupportedStandards_LSP9: LSP9SupportedStandard.key,
-};
+} as const;
 
 /**
  * @dev list of standard type IDs ("hooks") defined in the LSPs that can be used to notify
@@ -51,4 +51,4 @@ export const LSP9_TYPE_IDS = {
   // keccak256('LSP9OwnershipTransferred_RecipientNotification')
   LSP9OwnershipTransferred_RecipientNotification:
     '0x79855c97dbc259ce395421d933d7bc0699b0f1561f988f09a9e8633fd542fe5c',
-};
+} as const;
