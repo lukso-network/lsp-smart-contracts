@@ -42,10 +42,10 @@ export type ContractAsset = {
 export const LSP3SupportedStandard = {
   key: '0xeafec4d89fa9619884b600005ef83ad9559033e6e941db7d7c495acdce616347',
   value: '0x5ef83ad9',
-};
+} as const;
 
 export const LSP3DataKeys = {
   SupportedStandards_LSP3: LSP3SupportedStandard.key,
   // keccak256('LSP3Profile')
   LSP3Profile: '0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5',
-};
+} as const;

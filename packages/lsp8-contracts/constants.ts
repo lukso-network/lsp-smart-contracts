@@ -3,13 +3,13 @@ export const INTERFACE_ID_LSP8 = '0x3a271706';
 export const INTERFACE_ID_LSP8_PREVIOUS = {
   'v0.14.0': '0xecad9f75',
   'v0.12.0': '0x30dc5278',
-};
+} as const;
 
 export const LSP8DataKeys = {
   LSP8TokenIdFormat: '0xf675e9361af1c1664c1868cfa3eb97672d6b1a513aa5b81dec34c9ee330e818d',
   LSP8TokenMetadataBaseURI: '0x1a7628600c3bac7101f53697f48df381ddc36b9015e7d7c9c5633d1252aa2843',
   LSP8ReferenceContract: '0x708e7b881795f2e6b6c2752108c177ec89248458de3bf69d0d43480b3e5034e6',
-};
+} as const;
 
 export const LSP8_TYPE_IDS = {
   // keccak256('LSP8Tokens_SenderNotification')
@@ -23,7 +23,7 @@ export const LSP8_TYPE_IDS = {
   // keccak256('LSP8Tokens_OperatorNotification')
   LSP8Tokens_OperatorNotification:
     '0x8a1c15a8799f71b547e08e2bcb2e85257e81b0a07eee2ce6712549eef1f00970',
-};
+} as const;
 
 /**
  * @dev List of LSP8 Token ID Formats that can be used to create different types of NFTs and represent each NFT identifiers (= tokenIds) differently.
@@ -40,4 +40,4 @@ export const LSP8_TOKEN_ID_FORMAT = {
   MIXED_DEFAULT_ADDRESS: 102,
   MIXED_DEFAULT_UNIQUE_ID: 103,
   MIXED_DEFAULT_HASH: 104,
-};
+} as const;

@@ -12,7 +12,7 @@ export const INTERFACE_ID_LSP0 = '0x24871b3d';
 export const ERC1271_VALUES = {
   SUCCESS_VALUE: '0x1626ba7e',
   FAIL_VALUE: '0xffffffff',
-};
+} as const;
 
 /**
  * @dev list of ERC725X operation types.
@@ -24,7 +24,7 @@ export const OPERATION_TYPES = {
   CREATE2: 2,
   STATICCALL: 3,
   DELEGATECALL: 4,
-};
+} as const;
 
 export const LSP0_TYPE_IDS = {
   // keccak256('LSP0ValueReceived')
@@ -41,4 +41,4 @@ export const LSP0_TYPE_IDS = {
   // keccak256('LSP0OwnershipTransferred_RecipientNotification')
   LSP0OwnershipTransferred_RecipientNotification:
     '0xceca317f109c43507871523e82dc2a3cc64dfa18f12da0b6db14f6e23f995538',
-};
+} as const;

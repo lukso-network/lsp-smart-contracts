@@ -9,4 +9,4 @@ export const LSP12DataKeys = {
     length: '0x7c8c3416d6cda87cd42c71ea1843df28ac4850354f988d55ee2eaa47b6dc05cd',
     index: '0x7c8c3416d6cda87cd42c71ea1843df28',
   } as LSP2ArrayKey,
-};
+} as const;

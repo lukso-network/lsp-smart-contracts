@@ -82,7 +82,7 @@ export const SupportedStandards = {
   LSP3Profile: LSP3SupportedStandard as LSPSupportedStandard,
   LSP4DigitalAsset: LSP4SupportedStandard as LSPSupportedStandard,
   LSP9Vault: LSP9SupportedStandard as LSPSupportedStandard,
-};
+} as const;
 
 // ERC165
 // ---------
@@ -119,7 +119,7 @@ export const INTERFACE_IDS = {
   LSP11BasicSocialRecovery: '0x049a28f1',
   LSP25ExecuteRelayCall: INTERFACE_ID_LSP25,
   LSP26FollowerSystem: INTERFACE_ID_LSP26,
-};
+} as const;
 
 // ERC725Y
 // ----------
@@ -141,7 +141,7 @@ export const ERC725YDataKeys = {
   LSP10: { ...LSP10DataKeys },
   LSP12: { ...LSP12DataKeys },
   LSP17: { ...LSP17DataKeys },
-};
+} as const;
 
 export const LSP1_TYPE_IDS = {
   ...LSP0_TYPE_IDS,
@@ -149,4 +149,4 @@ export const LSP1_TYPE_IDS = {
   ...LSP8_TYPE_IDS,
   ...LSP9_TYPE_IDS,
   ...LSP14_TYPE_IDS,
-};
+} as const;

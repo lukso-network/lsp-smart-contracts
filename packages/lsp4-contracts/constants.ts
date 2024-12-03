@@ -48,7 +48,7 @@ export type AttributeMetadata = {
 export const LSP4SupportedStandard = {
   key: '0xeafec4d89fa9619884b60000a4d96624a38f7ac2d8d9a604ecf07c12c77e480c',
   value: '0xa4d96624',
-};
+} as const;
 
 export const LSP4DataKeys = {
   SupportedStandards_LSP4: LSP4SupportedStandard.key,
@@ -73,7 +73,7 @@ export const LSP4DataKeys = {
     length: '0x114bd03b3a46d48759680d81ebb2b414fda7d030a7105a851867accf1c2352e7',
     index: '0x114bd03b3a46d48759680d81ebb2b414',
   } as LSP2ArrayKey,
-};
+} as const;
 
 /**
  * @dev List of LSP4 Token types to describe the type of token a digital asset contract represents.
@@ -83,4 +83,4 @@ export const LSP4_TOKEN_TYPES = {
   TOKEN: 0,
   NFT: 1,
   COLLECTION: 2,
-};
+} as const;
