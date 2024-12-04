@@ -8,4 +8,4 @@ export const LSP26_TYPE_IDS = {
   // keccak256('LSP26FollowerSystem_UnfollowNotification')
   LSP26FollowerSystem_UnfollowNotification:
     '0x9d3c0b4012b69658977b099bdaa51eff0f0460f421fba96d15669506c00d1c4f',
-};
+} as const;

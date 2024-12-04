@@ -9,4 +9,4 @@ export const LSP5DataKeys = {
     length: '0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b',
     index: '0x6460ee3c0aac563ccbf76d6e1d07bada',
   } as LSP2ArrayKey,
-};
+} as const;

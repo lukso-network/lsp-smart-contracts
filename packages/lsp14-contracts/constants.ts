@@ -12,4 +12,4 @@ export const LSP14_TYPE_IDS = {
   // keccak256('LSP14OwnershipTransferred_RecipientNotification')
   LSP14OwnershipTransferred_RecipientNotification:
     '0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
-};
+} as const;
