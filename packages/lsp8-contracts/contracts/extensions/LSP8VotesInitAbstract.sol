@@ -11,7 +11,9 @@ import {
     _TYPEID_LSP8_VOTESDELEGATOR,
     _TYPEID_LSP8_VOTESDELEGATEE
 } from "./LSP8VotesConstants.sol";
-import {LSP1Utils} from "@lukso/lsp-smart-contracts/contracts/LSP1UniversalReceiver/LSP1Utils.sol";
+import {
+    LSP1Utils
+} from "@lukso/lsp-smart-contracts/contracts/LSP1UniversalReceiver/LSP1Utils.sol";
 /**
  * @dev Extension of LSP8 to support voting and delegation as implemented by {Votes}, where each individual NFT counts
  * as 1 vote unit.
@@ -68,11 +70,14 @@ abstract contract LSP8VotesInitAbstract is
         return balanceOf(account);
     }
 
-        /**
+    /**
      * @dev Override of the {Votes-_delegate} function to add LSP1 notifications.
      * Notifies both the delegator and delegatee through LSP1.
      */
-    function _delegate(address delegator, address delegatee) internal virtual override {
+    function _delegate(
+        address delegator,
+        address delegatee
+    ) internal virtual override {
         address currentDelegate = delegates(delegator);
         uint256 delegatorBalance = balanceOf(delegator);
 
