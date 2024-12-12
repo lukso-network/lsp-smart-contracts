@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Checkout base branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 0
@@ -53,7 +53,7 @@ jobs:
           mv gas_benchmark_result.json gas_benchmark_before.json
 
       - name: Checkout current branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         # Do not run `git clean -ffdx && git reset --hard HEAD` to prevent removing `gas_benchmark_before.json`
         with:
           clean: false
