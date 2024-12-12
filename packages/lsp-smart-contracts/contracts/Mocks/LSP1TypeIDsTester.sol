@@ -22,6 +22,10 @@ import {
     _TYPEID_LSP8_TOKENOPERATOR
 } from "@lukso/lsp8-contracts/contracts/LSP8Constants.sol";
 import {
+    _TYPEID_LSP8_VOTESDELEGATOR,
+    _TYPEID_LSP8_VOTESDELEGATEE
+} from "@lukso/lsp8-contracts/contracts/extensions/LSP8VotesConstants.sol";
+import {
     _TYPEID_LSP9_VALUE_RECEIVED,
     _TYPEID_LSP9_OwnershipTransferStarted,
     _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
@@ -80,6 +84,12 @@ contract LSP1TypeIDsTester {
         _typeIds[
             "LSP8Tokens_OperatorNotification"
         ] = _TYPEID_LSP8_TOKENOPERATOR;
+        _typeIds[
+            "LSP8Tokens_VotesDelegatorNotification"
+        ] = _TYPEID_LSP8_VOTESDELEGATOR;
+        _typeIds[
+            "LSP8Tokens_VotesDelegateeNotification"
+        ] = _TYPEID_LSP8_VOTESDELEGATEE;
         // ------------------
 
         // ------ LSP9 ------
