@@ -7,7 +7,11 @@ import {
 import {
     VotesUpgradeable
 } from "@openzeppelin/contracts-upgradeable/governance/utils/VotesUpgradeable.sol";
-
+import {
+    _TYPEID_LSP8_VOTESDELEGATOR,
+    _TYPEID_LSP8_VOTESDELEGATEE
+} from "./LSP8VotesConstants.sol";
+import {LSP1Utils} from "@lukso/lsp-smart-contracts/contracts/LSP1UniversalReceiver/LSP1Utils.sol";
 /**
  * @dev Extension of LSP8 to support voting and delegation as implemented by {Votes}, where each individual NFT counts
  * as 1 vote unit.
@@ -62,5 +66,45 @@ abstract contract LSP8VotesInitAbstract is
         address account
     ) internal view virtual override returns (uint256) {
         return balanceOf(account);
+    }
+
+        /**
+     * @dev Override of the {Votes-_delegate} function to add LSP1 notifications.
+     * Notifies both the delegator and delegatee through LSP1.
+     */
+    function _delegate(address delegator, address delegatee) internal virtual override {
+        address currentDelegate = delegates(delegator);
+        uint256 delegatorBalance = balanceOf(delegator);
+
+        super._delegate(delegator, delegatee);
+
+        // Notify the delegator if it's not address(0)
+        if (delegator != address(0)) {
+            bytes memory delegatorNotificationData = abi.encode(
+                msg.sender,
+                delegatee,
+                delegatorBalance
+            );
+            LSP1Utils.notifyUniversalReceiver(
+                delegator,
+                _TYPEID_LSP8_VOTESDELEGATOR,
+                delegatorNotificationData
+            );
+        }
+
+        // Only notify the new delegatee if it's not address(0) and if there's actual voting power
+        if (delegatee != address(0) && delegatorBalance > 0) {
+            bytes memory delegateeNotificationData = abi.encode(
+                msg.sender,
+                delegator,
+                delegatorBalance
+            );
+
+            LSP1Utils.notifyUniversalReceiver(
+                delegatee,
+                _TYPEID_LSP8_VOTESDELEGATEE,
+                delegateeNotificationData
+            );
+        }
     }
 }
