@@ -23,6 +23,14 @@ export const LSP8_TYPE_IDS = {
   // keccak256('LSP8Tokens_OperatorNotification')
   LSP8Tokens_OperatorNotification:
     '0x8a1c15a8799f71b547e08e2bcb2e85257e81b0a07eee2ce6712549eef1f00970',
+
+  // keccak256('LSP8Tokens_VotesDelegateeNotification')
+  LSP8Tokens_VotesDelegateeNotification:
+    '0x4aab908d8f4bc502ab79ddf13d56eb08e6ef25ebab36358bc42e5527adb08b8b',
+
+  // keccak256('LSP8Tokens_VotesDelegatorNotification')
+  LSP8Tokens_VotesDelegatorNotification:
+    '0x54a91786b7c126f5ca201cf70323711e2b609e1259aab5cea150cfde4b9a748c',
 } as const;
 
 /**
