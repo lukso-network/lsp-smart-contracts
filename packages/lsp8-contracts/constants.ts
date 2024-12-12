@@ -3,7 +3,7 @@ export const INTERFACE_ID_LSP8 = '0x3a271706';
 export const INTERFACE_ID_LSP8_PREVIOUS = {
   'v0.14.0': '0xecad9f75',
   'v0.12.0': '0x30dc5278',
-} as const;
+};
 
 export const LSP8DataKeys = {
   LSP8TokenIdFormat: '0xf675e9361af1c1664c1868cfa3eb97672d6b1a513aa5b81dec34c9ee330e818d',
