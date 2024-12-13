@@ -1,9 +1,8 @@
 export const INTERFACE_ID_LSP8 = '0x3a271706';
 
-export const INTERFACE_ID_LSP8_PREVIOUS = {
-  'v0.14.0': '0xecad9f75',
-  'v0.12.0': '0x30dc5278',
-} as const;
+export const INTERFACE_ID_LSP8_V0_12_0 = '0x30dc5278';
+
+export const INTERFACE_ID_LSP8_V0_14_0 = '0xecad9f75';
 
 export const LSP8DataKeys = {
   LSP8TokenIdFormat: '0xf675e9361af1c1664c1868cfa3eb97672d6b1a513aa5b81dec34c9ee330e818d',
@@ -23,6 +22,14 @@ export const LSP8_TYPE_IDS = {
   // keccak256('LSP8Tokens_OperatorNotification')
   LSP8Tokens_OperatorNotification:
     '0x8a1c15a8799f71b547e08e2bcb2e85257e81b0a07eee2ce6712549eef1f00970',
+
+  // keccak256('LSP8Tokens_VotesDelegateeNotification')
+  LSP8Tokens_VotesDelegateeNotification:
+    '0x19419598f788eae88574bbb83ec563ad0cb43cd7ddbbc88857b2efa2d8faa8eb',
+
+  // keccak256('LSP8Tokens_VotesDelegatorNotification')
+  LSP8Tokens_VotesDelegatorNotification:
+    '0x2f6d3f668c2e57dbae4c255f2d9e0b69d47a8848d69a2251cce137529e34743e',
 } as const;
 
 /**

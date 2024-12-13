@@ -3,6 +3,7 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { MyVotingNFT, MyVotingNFT__factory, MyGovernor, MyGovernor__factory } from '../types';
 import { time, mine } from '@nomicfoundation/hardhat-network-helpers';
+import { LSP8_TYPE_IDS } from '../constants';
 
 describe('Comprehensive Governor and NFT Tests', () => {
   let nft: MyVotingNFT;
@@ -171,6 +172,42 @@ describe('Comprehensive Governor and NFT Tests', () => {
 
       expect(await nft.getPastTotalSupply(blockNumber1)).to.equal(initialSupply);
       expect(await nft.getPastTotalSupply(blockNumber2 - 1)).to.equal(initialSupply + BigInt(1));
+    });
+  });
+
+  describe('Delegation Notifications', () => {
+    let mockUniversalReceiver;
+
+    beforeEach(async () => {
+      const MockUniversalReceiver = await ethers.getContractFactory('MockUniversalReceiver');
+      mockUniversalReceiver = await MockUniversalReceiver.deploy();
+    });
+
+    it('should notify delegatee with correct data format', async () => {
+      const expectedDelegateeData = ethers.AbiCoder.defaultAbiCoder().encode(
+        ['address', 'address', 'uint256'],
+        [voter1.address, voter1.address, 1],
+      );
+
+      const expectedDelegatorData = ethers.AbiCoder.defaultAbiCoder().encode(
+        ['address', 'address', 'uint256'],
+        [voter1.address, voter1.address, 1],
+      );
+
+      await expect(nft.connect(voter1).delegate(await mockUniversalReceiver.getAddress()))
+        .to.emit(mockUniversalReceiver, 'UniversalReceiverCalled')
+        .withArgs(
+          await nft.getAddress(),
+          LSP8_TYPE_IDS.LSP8Tokens_VotesDelegateeNotification,
+          expectedDelegateeData,
+        );
+    });
+
+    it('should not notify when delegating to address(0)', async () => {
+      await expect(nft.connect(voter1).delegate(ethers.ZeroAddress)).to.not.emit(
+        mockUniversalReceiver,
+        'UniversalReceiverCalled',
+      );
     });
   });
 });

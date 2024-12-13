@@ -32,8 +32,9 @@ export { LSP25_VERSION } from '@lukso/lsp25-contracts';
 
 // Old interface Ids of previous releases of LSP7/8 Tokens
 // for backward compatibilities for dApps and interfaces
-export { INTERFACE_ID_LSP7_PREVIOUS } from '@lukso/lsp7-contracts';
-export { INTERFACE_ID_LSP8_PREVIOUS } from '@lukso/lsp8-contracts';
+
+export { INTERFACE_ID_LSP7_V0_12_0 } from '@lukso/lsp7-contracts';
+export { INTERFACE_ID_LSP7_V0_14_0 } from '@lukso/lsp7-contracts';
 
 // ERC165 interface IDs of each LSP
 import { INTERFACE_ID_LSP0 } from '@lukso/lsp0-contracts';

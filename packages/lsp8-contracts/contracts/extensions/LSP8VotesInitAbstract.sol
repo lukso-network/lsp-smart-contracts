@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
 import {
-    LSP8IdentifiableDigitalAsset
-} from "../LSP8IdentifiableDigitalAsset.sol";
-import {Votes} from "@openzeppelin/contracts/governance/utils/Votes.sol";
+    LSP8IdentifiableDigitalAssetInitAbstract
+} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {
+    VotesUpgradeable
+} from "@openzeppelin/contracts-upgradeable/governance/utils/VotesUpgradeable.sol";
 import {
     _TYPEID_LSP8_VOTESDELEGATOR,
     _TYPEID_LSP8_VOTESDELEGATEE
@@ -22,11 +23,32 @@ import {
  * on every transfer. Token holders can either delegate to a trusted representative who will decide how to make use of
  * the votes in governance decisions, or they can delegate to themselves to be their own representative.
  */
-abstract contract LSP8Votes is LSP8IdentifiableDigitalAsset, Votes {
+abstract contract LSP8VotesInitAbstract is
+    LSP8IdentifiableDigitalAssetInitAbstract,
+    VotesUpgradeable
+{
+    function _initialize(
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 tokenIdType_,
+        uint256 tokenIdFormat_,
+        string memory version_
+    ) internal virtual onlyInitializing {
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            tokenIdType_,
+            tokenIdFormat_
+        );
+        __EIP712_init(name_, version_);
+    }
+
     /**
      * @dev Adjusts votes when tokens are transferred.
      *
-     * @custom:events {DelegateVotesChanged} event.
+     * Emits a {IVotes-DelegateVotesChanged} event.
      */
     function _afterTokenTransfer(
         address from,
