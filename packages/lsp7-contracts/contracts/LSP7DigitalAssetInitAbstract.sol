@@ -11,7 +11,6 @@ import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 import {
     EnumerableSet
 } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-// TODO: define if we inherit the upgradable version `ERC165CheckerUpgradeable`
 import {
     ERC165Checker
 } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
