@@ -174,6 +174,7 @@ describe('Comprehensive Governor and NFT Tests', () => {
       expect(await nft.getPastTotalSupply(blockNumber2 - 1)).to.equal(initialSupply + BigInt(1));
     });
   });
+
   describe('Delegation Notifications', () => {
     let mockUniversalReceiver;
 

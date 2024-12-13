@@ -26,7 +26,7 @@ abstract contract LSP8Votes is LSP8IdentifiableDigitalAsset, Votes {
     /**
      * @dev Adjusts votes when tokens are transferred.
      *
-     * Emits a {IVotes-DelegateVotesChanged} event.
+     * @custom:events {DelegateVotesChanged} event.
      */
     function _afterTokenTransfer(
         address from,
@@ -41,7 +41,7 @@ abstract contract LSP8Votes is LSP8IdentifiableDigitalAsset, Votes {
     /**
      * @dev Returns the balance of `account`.
      *
-     * WARNING: Overriding this function will likely result in incorrect vote tracking.
+     * @custom:warning Overriding this function will likely result in incorrect vote tracking.
      */
     function _getVotingUnits(
         address account
@@ -50,14 +50,15 @@ abstract contract LSP8Votes is LSP8IdentifiableDigitalAsset, Votes {
     }
 
     /**
-     * @dev Override of the {Votes-_delegate} function to add LSP1 notifications.
-     * Notifies both the delegator and delegatee through LSP1.
+     * @dev Override of the {_delegate} function that includes notification via LSP1.
+     * The delegator and delegatee are both notified via their `universalReceiver(...)` function if they contracts implementing the LSP1 interface.
+     *
+     * @custom:events {DelegateChanged} event.
      */
     function _delegate(
         address delegator,
         address delegatee
     ) internal virtual override {
-        address currentDelegate = delegates(delegator);
         uint256 delegatorBalance = balanceOf(delegator);
 
         super._delegate(delegator, delegatee);
