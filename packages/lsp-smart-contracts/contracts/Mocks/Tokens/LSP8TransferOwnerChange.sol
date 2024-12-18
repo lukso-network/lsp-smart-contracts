@@ -41,6 +41,7 @@ contract LSP8TransferOwnerChange is LSP8IdentifiableDigitalAsset, LSP8Burnable {
         address,
         address,
         bytes32 tokenId,
+        bool,
         bytes memory
     ) internal override {
         // if tokenID exist transfer token ownership to this contract

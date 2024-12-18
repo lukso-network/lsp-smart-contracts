@@ -728,7 +728,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
             revert LSP8TokenIdAlreadyMinted(tokenId);
         }
 
-        _beforeTokenTransfer(address(0), to, tokenId, data);
+        _beforeTokenTransfer(address(0), to, tokenId, force, data);
 
         // Check that `tokenId` was not minted inside the `_beforeTokenTransfer` hook
         if (_exists(tokenId)) {
@@ -743,7 +743,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
 
         emit Transfer(msg.sender, address(0), to, tokenId, force, data);
 
-        _afterTokenTransfer(address(0), to, tokenId, data);
+        _afterTokenTransfer(address(0), to, tokenId, force, data);
 
         bytes memory lsp1Data = abi.encode(
             msg.sender,
@@ -780,7 +780,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
     function _burn(bytes32 tokenId, bytes memory data) internal virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
 
-        _beforeTokenTransfer(tokenOwner, address(0), tokenId, data);
+        _beforeTokenTransfer(tokenOwner, address(0), tokenId, false, data);
 
         // Re-fetch and update `tokenOwner` in case `tokenId`
         // was transferred inside the `_beforeTokenTransfer` hook
@@ -796,7 +796,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
 
         emit Transfer(msg.sender, tokenOwner, address(0), tokenId, false, data);
 
-        _afterTokenTransfer(tokenOwner, address(0), tokenId, data);
+        _afterTokenTransfer(tokenOwner, address(0), tokenId, false, data);
 
         bytes memory lsp1Data = abi.encode(
             msg.sender,
@@ -850,7 +850,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
             revert LSP8CannotSendToAddressZero();
         }
 
-        _beforeTokenTransfer(from, to, tokenId, data);
+        _beforeTokenTransfer(from, to, tokenId, force, data);
 
         // Check that `tokenId`'s owner was not changed inside the `_beforeTokenTransfer` hook
         address currentTokenOwner = tokenOwnerOf(tokenId);
@@ -870,7 +870,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
 
         emit Transfer(msg.sender, from, to, tokenId, force, data);
 
-        _afterTokenTransfer(from, to, tokenId, data);
+        _afterTokenTransfer(from, to, tokenId, force, data);
 
         bytes memory lsp1Data = abi.encode(msg.sender, from, to, tokenId, data);
 
@@ -916,12 +916,14 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
      * @param from The sender address
      * @param to The recipient address
      * @param tokenId The tokenId to transfer
+     * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
      * @param data The data sent alongside the transfer
      */
     function _beforeTokenTransfer(
         address from,
         address to,
         bytes32 tokenId,
+        bool force,
         bytes memory data // solhint-disable-next-line no-empty-blocks
     ) internal virtual {}
 
@@ -932,12 +934,14 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
      * @param from The sender address
      * @param to The recipient address
      * @param tokenId The tokenId to transfer
+     * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
      * @param data The data sent alongside the transfer
      */
     function _afterTokenTransfer(
         address from,
         address to,
         bytes32 tokenId,
+        bool force,
         bytes memory data // solhint-disable-next-line no-empty-blocks
     ) internal virtual {}
 
