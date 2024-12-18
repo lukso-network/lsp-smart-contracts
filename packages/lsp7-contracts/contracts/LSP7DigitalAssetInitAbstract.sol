@@ -613,7 +613,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
             revert LSP7CannotSendWithAddressZero();
         }
 
-        _beforeTokenTransfer(address(0), to, amount, data);
+        _beforeTokenTransfer(address(0), to, amount, force, data);
 
         // tokens being minted
         _existingTokens += amount;
@@ -629,7 +629,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
             data: data
         });
 
-        _afterTokenTransfer(address(0), to, amount, data);
+        _afterTokenTransfer(address(0), to, amount, force, data);
 
         bytes memory lsp1Data = abi.encode(
             msg.sender,
@@ -675,7 +675,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
             revert LSP7CannotSendWithAddressZero();
         }
 
-        _beforeTokenTransfer(from, address(0), amount, data);
+        _beforeTokenTransfer(from, address(0), amount, false, data);
 
         uint256 balance = _tokenOwnerBalances[from];
         if (amount > balance) {
@@ -695,7 +695,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
             data: data
         });
 
-        _afterTokenTransfer(from, address(0), amount, data);
+        _afterTokenTransfer(from, address(0), amount, false, data);
 
         bytes memory lsp1Data = abi.encode(
             msg.sender,
@@ -786,11 +786,11 @@ abstract contract LSP7DigitalAssetInitAbstract is
             revert LSP7CannotSendWithAddressZero();
         }
 
-        _beforeTokenTransfer(from, to, amount, data);
+        _beforeTokenTransfer(from, to, amount, force, data);
 
         _update(from, to, amount, force, data);
 
-        _afterTokenTransfer(from, to, amount, data);
+        _afterTokenTransfer(from, to, amount, force, data);
 
         bytes memory lsp1Data = abi.encode(msg.sender, from, to, amount, data);
 
@@ -847,7 +847,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
             data: data
         });
 
-        _afterTokenTransfer(from, to, amount, data);
+        _afterTokenTransfer(from, to, amount, force, data);
 
         bytes memory lsp1Data = abi.encode(msg.sender, from, to, amount, data);
 
@@ -862,12 +862,14 @@ abstract contract LSP7DigitalAssetInitAbstract is
      * @param from The sender address
      * @param to The recipient address
      * @param amount The amount of token to transfer
+     * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
      * @param data The data sent alongside the transfer
      */
     function _beforeTokenTransfer(
         address from,
         address to,
         uint256 amount,
+        bool force,
         bytes memory data // solhint-disable-next-line no-empty-blocks
     ) internal virtual {}
 
@@ -878,12 +880,14 @@ abstract contract LSP7DigitalAssetInitAbstract is
      * @param from The sender address
      * @param to The recipient address
      * @param amount The amount of token to transfer
+     * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
      * @param data The data sent alongside the transfer
      */
     function _afterTokenTransfer(
         address from,
         address to,
         uint256 amount,
+        bool force,
         bytes memory data // solhint-disable-next-line no-empty-blocks
     ) internal virtual {}
 
