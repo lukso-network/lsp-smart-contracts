@@ -41,6 +41,7 @@ abstract contract LSP8EnumerableInitAbstract is
         address from,
         address to,
         bytes32 tokenId,
+        bool force,
         bytes memory data
     ) internal virtual override {
         if (from == address(0)) {
@@ -58,6 +59,6 @@ abstract contract LSP8EnumerableInitAbstract is
             delete _indexToken[lastIndex];
             delete _tokenIndex[tokenId];
         }
-        super._beforeTokenTransfer(from, to, tokenId, data);
+        super._beforeTokenTransfer(from, to, tokenId, force, data);
     }
 }

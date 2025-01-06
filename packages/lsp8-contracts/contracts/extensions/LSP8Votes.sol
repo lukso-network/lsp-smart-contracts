@@ -32,10 +32,11 @@ abstract contract LSP8Votes is LSP8IdentifiableDigitalAsset, Votes {
         address from,
         address to,
         bytes32 tokenId,
+        bool force,
         bytes memory data
     ) internal virtual override {
         _transferVotingUnits(from, to, 1);
-        super._afterTokenTransfer(from, to, tokenId, data);
+        super._afterTokenTransfer(from, to, tokenId, force, data);
     }
 
     /**
