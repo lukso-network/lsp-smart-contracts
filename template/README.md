@@ -25,7 +25,7 @@ cp -r template packages/lsp-name
 If this LSP uses external dependencies like `@openzeppelin/contracts`, put them under `dependencies` with the version number.
 
 ```json
-"@openzeppelin/contracts": "^4.9.3"
+"@openzeppelin/contracts": "^4.9.6"
 ```
 
 If this LSP uses other LSP as dependencies, put each LSP dependency as shown below. This will use the current code in the package:

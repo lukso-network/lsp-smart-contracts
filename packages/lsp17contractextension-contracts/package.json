@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp17contractextension-contracts",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "description": "Package for the LSP17 Contract Extension standard",
   "license": "Apache-2.0",
   "author": "",
@@ -37,13 +37,13 @@
     "build": "hardhat compile --show-stack-traces",
     "build:js": "unbuild",
     "build:types": "npx wagmi generate",
-    "clean": "hardhat clean && rm -Rf dist/",
+    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "package": "hardhat prepare-package"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.3"
+    "@openzeppelin/contracts": "^4.9.6"
   }
 }

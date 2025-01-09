@@ -213,7 +213,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease-type": "rc"
+      "prerelease-type": "rc",
+      "release-as": "0.1.0"
     },
     "packages/lsp25-contracts": {
       "component": "lsp25-contracts",
@@ -233,7 +234,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease-type": "rc"
+      "prerelease-type": "rc",
+      "release-as": "0.1.0"
     },
     "packages/universalprofile-contracts": {
       "component": "universalprofile-contracts",

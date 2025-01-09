@@ -37,7 +37,7 @@
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
     "build:types": "npx wagmi generate",
-    "clean": "hardhat clean && rm -Rf dist/",
+    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
@@ -45,8 +45,8 @@
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
-    "@openzeppelin/contracts": "^4.9.6",
-    "@lukso/lsp0-contracts": "*",
-    "@lukso/lsp3-contracts": "*"
+    "@openzeppelin/contracts": "^4.9.3",
+    "@lukso/lsp0-contracts": "~0.15.0",
+    "@lukso/lsp3-contracts": "~0.15.0"
   }
 }

@@ -1,6 +1,5 @@
 {
   "name": "@lukso/lsp-smart-contracts-monorepo",
-  "version": "0.14.0",
   "description": "The reference smart contract implementation for the LUKSO LSP standards",
   "private": true,
   "packageManager": "^npm@10.1.0",
