@@ -37,13 +37,13 @@
     "build": "hardhat compile --show-stack-traces",
     "build:js": "unbuild",
     "build:types": "npx wagmi generate",
-    "clean": "hardhat clean && rm -Rf dist/",
+    "package": "hardhat prepare-package",
+    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "test": "hardhat test --no-compile tests/*.test.ts",
-    "test:coverage": "hardhat coverage",
-    "package": "hardhat prepare-package"
+    "test:coverage": "hardhat coverage"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.3"

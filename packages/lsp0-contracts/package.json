@@ -40,10 +40,11 @@
     "build": "hardhat compile --show-stack-traces",
     "build:js": "unbuild",
     "build:types": "npx wagmi generate",
-    "clean": "hardhat clean && rm -Rf dist/",
+    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
+    "test:foundry": "FOUNDRY_PROFILE=lsp0 forge test -vvv",
     "package": "hardhat prepare-package"
   },
   "dependencies": {

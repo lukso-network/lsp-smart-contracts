@@ -3,7 +3,7 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { encodeData, ERC725JSONSchema } from '@erc725/erc725.js';
 
-import { ExecutorLSP20, ExecutorLSP20__factory } from '../../types';
+import { ExecutorLSP20, ExecutorLSP20__factory } from '../../../../types';
 
 // constants
 import { ERC725YDataKeys } from '../../../../constants';

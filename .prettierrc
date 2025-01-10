@@ -2,7 +2,7 @@
   "plugins": ["prettier-plugin-solidity"],
   "overrides": [
     {
-      "files": ["*.js", "*.ts"],
+      "files": ["*.js", "*.ts", "*.mjs"],
       "options": {
         "tabWidth": 2,
         "printWidth": 100,

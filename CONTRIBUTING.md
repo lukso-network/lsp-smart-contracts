@@ -6,6 +6,8 @@ Since the `@lukso/lsp-smart-contracts` is an Open Source project, we welcome con
 - report bug and issues.
 - introduce new features or bug fixes.
 
+Any non-trivial code contribution **must be first discussed with the maintainers and the developer community in an [issue](https://github.com/lukso-network/lsp-smart-contracts/issues/new/choose)**. Only very minor changes are accepted without prior discussion.
+
 ## **Clone project**
 
 Our project uses submodules, we recommend you to clone our repository using the following command:
@@ -143,7 +145,7 @@ Which is is not the intended output.
 
 3. `@return` tag is mandatory if the function has any return value.
 
-4. Make sure to use one of the custom tags below to document any additional informations of different kinds:
+4. Make sure to use one of the custom tags below to document any additional information of different kinds:
 
 - Use `@custom:requirements` for all the requirements to use a function.
 - Use `@custom:events` for all the emited events during the function execution.

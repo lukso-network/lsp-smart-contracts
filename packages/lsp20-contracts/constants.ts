@@ -14,4 +14,4 @@ export const LSP20_SUCCESS_VALUES = {
   },
   // bytes4(keccak256("lsp20VerifyCallResult(bytes32,bytes)"))
   VERIFY_CALL_RESULT: '0xd3fc45d3',
-};
+} as const;

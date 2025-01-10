@@ -13,10 +13,18 @@ import {
     _TYPEID_LSP7_TOKENOPERATOR
 } from "@lukso/lsp7-contracts/contracts/LSP7Constants.sol";
 import {
+    _TYPEID_LSP7_VOTESDELEGATOR,
+    _TYPEID_LSP7_VOTESDELEGATEE
+} from "@lukso/lsp7-contracts/contracts/extensions/LSP7VotesConstants.sol";
+import {
     _TYPEID_LSP8_TOKENSSENDER,
     _TYPEID_LSP8_TOKENSRECIPIENT,
     _TYPEID_LSP8_TOKENOPERATOR
 } from "@lukso/lsp8-contracts/contracts/LSP8Constants.sol";
+import {
+    _TYPEID_LSP8_VOTESDELEGATOR,
+    _TYPEID_LSP8_VOTESDELEGATEE
+} from "@lukso/lsp8-contracts/contracts/extensions/LSP8VotesConstants.sol";
 import {
     _TYPEID_LSP9_VALUE_RECEIVED,
     _TYPEID_LSP9_OwnershipTransferStarted,
@@ -28,6 +36,10 @@ import {
     _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP14_OwnershipTransferred_RecipientNotification
 } from "@lukso/lsp14-contracts/contracts/LSP14Constants.sol";
+import {
+    _TYPEID_LSP26_FOLLOW,
+    _TYPEID_LSP26_UNFOLLOW
+} from "@lukso/lsp26-contracts/contracts/LSP26Constants.sol";
 
 error LSP1TypeIdHashIsWrong(bytes32 typeIdHash, string typeIdname);
 
@@ -56,6 +68,12 @@ contract LSP1TypeIDsTester {
         _typeIds[
             "LSP7Tokens_OperatorNotification"
         ] = _TYPEID_LSP7_TOKENOPERATOR;
+        _typeIds[
+            "LSP7Tokens_VotesDelegatorNotification"
+        ] = _TYPEID_LSP7_VOTESDELEGATOR;
+        _typeIds[
+            "LSP7Tokens_VotesDelegateeNotification"
+        ] = _TYPEID_LSP7_VOTESDELEGATEE;
         // ------------------
 
         // ------ LSP8 ------
@@ -66,6 +84,12 @@ contract LSP1TypeIDsTester {
         _typeIds[
             "LSP8Tokens_OperatorNotification"
         ] = _TYPEID_LSP8_TOKENOPERATOR;
+        _typeIds[
+            "LSP8Tokens_VotesDelegatorNotification"
+        ] = _TYPEID_LSP8_VOTESDELEGATOR;
+        _typeIds[
+            "LSP8Tokens_VotesDelegateeNotification"
+        ] = _TYPEID_LSP8_VOTESDELEGATEE;
         // ------------------
 
         // ------ LSP9 ------
@@ -91,6 +115,15 @@ contract LSP1TypeIDsTester {
         _typeIds[
             "LSP14OwnershipTransferred_RecipientNotification"
         ] = _TYPEID_LSP14_OwnershipTransferred_RecipientNotification;
+        // -------------------
+
+        // ------ LSP26 ------
+        _typeIds[
+            "LSP26FollowerSystem_FollowNotification"
+        ] = _TYPEID_LSP26_FOLLOW;
+        _typeIds[
+            "LSP26FollowerSystem_UnfollowNotification"
+        ] = _TYPEID_LSP26_UNFOLLOW;
         // -------------------
     }
 

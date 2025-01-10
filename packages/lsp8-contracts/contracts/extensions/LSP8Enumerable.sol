@@ -3,8 +3,7 @@ pragma solidity ^0.8.12;
 
 // modules
 import {
-    LSP8IdentifiableDigitalAsset,
-    LSP8IdentifiableDigitalAssetCore
+    LSP8IdentifiableDigitalAsset
 } from "../LSP8IdentifiableDigitalAsset.sol";
 
 /**
@@ -31,19 +30,21 @@ abstract contract LSP8Enumerable is LSP8IdentifiableDigitalAsset {
     }
 
     /**
-     * @inheritdoc LSP8IdentifiableDigitalAssetCore
+     * @inheritdoc LSP8IdentifiableDigitalAsset
      *
      * @param from The address sending the `tokenId` (`address(0)` when `tokenId` is being minted).
      * @param to The address receiving the `tokenId` (`address(0)` when `tokenId` is being burnt).
      * @param tokenId The bytes32 identifier of the token being transferred.
+     * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
      * @param data The data sent alongside the the token transfer.
      */
     function _beforeTokenTransfer(
         address from,
         address to,
         bytes32 tokenId,
+        bool force,
         bytes memory data
-    ) internal virtual override(LSP8IdentifiableDigitalAssetCore) {
+    ) internal virtual override {
         // `tokenId` being minted
         if (from == address(0)) {
             uint256 index = totalSupply();
@@ -64,6 +65,6 @@ abstract contract LSP8Enumerable is LSP8IdentifiableDigitalAsset {
             delete _tokenIndex[tokenId];
         }
 
-        super._beforeTokenTransfer(from, to, tokenId, data);
+        super._beforeTokenTransfer(from, to, tokenId, force, data);
     }
 }

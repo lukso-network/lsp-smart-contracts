@@ -13,3 +13,4 @@
 /module
 packages/*/types/
 packages/*/artifacts/
+packages/*/CHANGELOG.md

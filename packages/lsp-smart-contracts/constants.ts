@@ -17,8 +17,8 @@ export type {
   LSP4DigitalAssetMetadataJSON,
   LSP4DigitalAssetMetadata,
   AttributeMetadata,
-  AssetFile,
-  DigitalAsset,
+  FileAsset,
+  ContractAsset,
 } from '@lukso/lsp4-contracts';
 export type { LSP6PermissionName } from '@lukso/lsp6-contracts';
 
@@ -43,6 +43,7 @@ import { INTERFACE_ID_LSP6 } from '@lukso/lsp6-contracts';
 import { INTERFACE_ID_LSP7 } from '@lukso/lsp7-contracts';
 import { INTERFACE_ID_LSP8 } from '@lukso/lsp8-contracts';
 import { INTERFACE_ID_LSP9 } from '@lukso/lsp9-contracts';
+import { INTERFACE_ID_LSP11 } from '@lukso/lsp11-contracts';
 import { INTERFACE_ID_LSP14 } from '@lukso/lsp14-contracts';
 import {
   INTERFACE_ID_LSP17Extendable,
@@ -53,6 +54,7 @@ import {
   INTERFACE_ID_LSP20CallVerifier,
 } from '@lukso/lsp20-contracts';
 import { INTERFACE_ID_LSP25 } from '@lukso/lsp25-contracts';
+import { INTERFACE_ID_LSP26 } from '@lukso/lsp26-contracts';
 
 // LSP1 Type IDs of each LSP
 import { LSP0_TYPE_IDS } from '@lukso/lsp0-contracts';
@@ -81,7 +83,7 @@ export const SupportedStandards = {
   LSP3Profile: LSP3SupportedStandard as LSPSupportedStandard,
   LSP4DigitalAsset: LSP4SupportedStandard as LSPSupportedStandard,
   LSP9Vault: LSP9SupportedStandard as LSPSupportedStandard,
-};
+} as const;
 
 // ERC165
 // ---------
@@ -110,14 +112,15 @@ export const INTERFACE_IDS = {
   LSP7DigitalAsset: INTERFACE_ID_LSP7,
   LSP8IdentifiableDigitalAsset: INTERFACE_ID_LSP8,
   LSP9Vault: INTERFACE_ID_LSP9,
+  LSP11SocialRecovery: INTERFACE_ID_LSP11,
   LSP14Ownable2Step: INTERFACE_ID_LSP14,
   LSP17Extendable: INTERFACE_ID_LSP17Extendable,
   LSP17Extension: INTERFACE_ID_LSP17Extension,
   LSP20CallVerification: INTERFACE_ID_LSP20CallVerification,
   LSP20CallVerifier: INTERFACE_ID_LSP20CallVerifier,
-  LSP11BasicSocialRecovery: '0x049a28f1',
   LSP25ExecuteRelayCall: INTERFACE_ID_LSP25,
-};
+  LSP26FollowerSystem: INTERFACE_ID_LSP26,
+} as const;
 
 // ERC725Y
 // ----------
@@ -139,7 +142,7 @@ export const ERC725YDataKeys = {
   LSP10: { ...LSP10DataKeys },
   LSP12: { ...LSP12DataKeys },
   LSP17: { ...LSP17DataKeys },
-};
+} as const;
 
 export const LSP1_TYPE_IDS = {
   ...LSP0_TYPE_IDS,
@@ -147,4 +150,4 @@ export const LSP1_TYPE_IDS = {
   ...LSP8_TYPE_IDS,
   ...LSP9_TYPE_IDS,
   ...LSP14_TYPE_IDS,
-};
+} as const;

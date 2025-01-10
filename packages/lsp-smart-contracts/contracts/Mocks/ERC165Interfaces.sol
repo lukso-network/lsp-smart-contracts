@@ -53,8 +53,8 @@ import {
     ILSP9Vault as ILSP9
 } from "@lukso/lsp9-contracts/contracts/ILSP9Vault.sol";
 import {
-    ILSP11BasicSocialRecovery as ILSP11
-} from "../LSP11BasicSocialRecovery/ILSP11BasicSocialRecovery.sol";
+    ILSP11SocialRecovery as ILSP11
+} from "../LSP11SocialRecovery/ILSP11SocialRecovery.sol";
 import {
     ILSP14Ownable2Step as ILSP14
 } from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
@@ -64,6 +64,9 @@ import {
 import {
     ILSP25ExecuteRelayCall as ILSP25
 } from "@lukso/lsp25-contracts/contracts/ILSP25ExecuteRelayCall.sol";
+import {
+    ILSP26FollowerSystem as ILSP26
+} from "@lukso/lsp26-contracts/contracts/ILSP26FollowerSystem.sol";
 
 // constants
 import {
@@ -85,9 +88,7 @@ import {
 import {
     _INTERFACEID_LSP9
 } from "@lukso/lsp9-contracts/contracts/LSP9Constants.sol";
-import {
-    _INTERFACEID_LSP11
-} from "../LSP11BasicSocialRecovery/LSP11Constants.sol";
+import {_INTERFACEID_LSP11} from "../LSP11SocialRecovery/LSP11Constants.sol";
 import {
     _INTERFACEID_LSP14
 } from "@lukso/lsp14-contracts/contracts/LSP14Constants.sol";
@@ -102,6 +103,9 @@ import {
 import {
     _INTERFACEID_LSP25
 } from "@lukso/lsp25-contracts/contracts/LSP25Constants.sol";
+import {
+    _INTERFACEID_LSP26
+} from "@lukso/lsp26-contracts/contracts/LSP26Constants.sol";
 
 // libraries
 import {
@@ -155,7 +159,9 @@ contract CalculateLSPInterfaces {
     }
 
     function calculateInterfaceLSP6KeyManager() public pure returns (bytes4) {
-        bytes4 interfaceId = type(ILSP6).interfaceId ^
+        // prettier-ignore
+        bytes4 interfaceId = 
+            type(ILSP6).interfaceId ^
             type(IERC1271).interfaceId ^
             calculateInterfaceLSP20CallVerifier() ^
             calculateInterfaceLSP25ExecuteRelayCall();
@@ -169,7 +175,9 @@ contract CalculateLSPInterfaces {
     }
 
     function calculateInterfaceLSP7() public pure returns (bytes4) {
-        bytes4 interfaceId = type(ILSP7).interfaceId ^
+        // prettier-ignore
+        bytes4 interfaceId = 
+            type(ILSP7).interfaceId ^
             type(IERC725Y).interfaceId ^
             calculateInterfaceLSP17Extendable();
 
@@ -182,7 +190,9 @@ contract CalculateLSPInterfaces {
     }
 
     function calculateInterfaceLSP8() public pure returns (bytes4) {
-        bytes4 interfaceId = type(ILSP8).interfaceId ^
+        // prettier-ignore
+        bytes4 interfaceId = 
+            type(ILSP8).interfaceId ^
             type(IERC725Y).interfaceId ^
             calculateInterfaceLSP17Extendable();
 
@@ -213,11 +223,14 @@ contract CalculateLSPInterfaces {
     }
 
     function calculateInterfaceLSP11() public pure returns (bytes4) {
-        bytes4 interfaceId = type(ILSP11).interfaceId;
+        // prettier-ignore
+        bytes4 interfaceId = 
+            type(ILSP11).interfaceId ^
+            type(ILSP25).interfaceId;
 
         require(
             interfaceId == _INTERFACEID_LSP11,
-            "_LSP11_INTERFACE_ID does not match XOR of the functions"
+            "hardcoded _LSP11_INTERFACE_ID does not match XOR of the functions"
         );
 
         return interfaceId;
@@ -298,6 +311,16 @@ contract CalculateLSPInterfaces {
         require(
             interfaceId == _INTERFACEID_LSP25,
             "hardcoded _INTERFACEID_LSP25 does not match type(ILSP25).interfaceId"
+        );
+
+        return interfaceId;
+    }
+
+    function calculateInterfaceLSP26() public pure returns (bytes4) {
+        bytes4 interfaceId = type(ILSP26).interfaceId;
+        require(
+            interfaceId == _INTERFACEID_LSP26,
+            "hardcoded _INTERFACEID_LSP26 does not match type(ILSP26).interfaceId"
         );
 
         return interfaceId;

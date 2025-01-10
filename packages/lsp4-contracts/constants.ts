@@ -14,6 +14,11 @@ export type LSP4DigitalAssetMetadata = {
   attributes?: AttributeMetadata[];
 };
 
+export type LinkMetadata = {
+  title: string;
+  url: string;
+};
+
 export type ImageMetadata = {
   width: number;
   height: number;
@@ -21,9 +26,16 @@ export type ImageMetadata = {
   url: string;
 };
 
-export type LinkMetadata = {
-  title: string;
+export type AssetMetadata = FileAsset | ContractAsset;
+
+export type FileAsset = {
+  verification?: Verification;
   url: string;
+};
+
+export type ContractAsset = {
+  address: string;
+  tokenId?: string;
 };
 
 export type AttributeMetadata = {
@@ -32,23 +44,10 @@ export type AttributeMetadata = {
   type: string | number | boolean;
 };
 
-export type AssetMetadata = AssetFile | DigitalAsset;
-
-export type AssetFile = {
-  url: string;
-  verification?: Verification;
-  fileType?: string;
-};
-
-export type DigitalAsset = {
-  address: string;
-  tokenId?: string;
-};
-
 export const LSP4SupportedStandard = {
   key: '0xeafec4d89fa9619884b60000a4d96624a38f7ac2d8d9a604ecf07c12c77e480c',
   value: '0xa4d96624',
-};
+} as const;
 
 export const LSP4DataKeys = {
   SupportedStandards_LSP4: LSP4SupportedStandard.key,
@@ -73,7 +72,7 @@ export const LSP4DataKeys = {
     length: '0x114bd03b3a46d48759680d81ebb2b414fda7d030a7105a851867accf1c2352e7',
     index: '0x114bd03b3a46d48759680d81ebb2b414',
   } as LSP2ArrayKey,
-};
+} as const;
 
 /**
  * @dev List of LSP4 Token types to describe the type of token a digital asset contract represents.
@@ -83,4 +82,4 @@ export const LSP4_TOKEN_TYPES = {
   TOKEN: 0,
   NFT: 1,
   COLLECTION: 2,
-};
+} as const;

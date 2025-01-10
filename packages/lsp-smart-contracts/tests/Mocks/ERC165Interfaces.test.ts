@@ -66,7 +66,7 @@ describe('Calculate LSP interfaces', () => {
 
   it('LSP11', async () => {
     const result = await contract.calculateInterfaceLSP11();
-    expect(result).to.equal(INTERFACE_IDS.LSP11BasicSocialRecovery);
+    expect(result).to.equal(INTERFACE_IDS.LSP11SocialRecovery);
   });
 
   it('LSP14', async () => {
@@ -97,6 +97,11 @@ describe('Calculate LSP interfaces', () => {
   it('LSP25ExecuteRelayCall', async () => {
     const result = await contract.calculateInterfaceLSP25ExecuteRelayCall();
     expect(result).to.equal(INTERFACE_IDS.LSP25ExecuteRelayCall);
+  });
+
+  it('LSP26FollowerSystem', async () => {
+    const result = await contract.calculateInterfaceLSP26();
+    expect(result).to.equal(INTERFACE_IDS.LSP26FollowerSystem);
   });
 });
 

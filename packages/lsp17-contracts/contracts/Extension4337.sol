@@ -18,7 +18,7 @@ import {
     LSP17Extension
 } from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extension.sol";
 
-// librairies
+// libraries
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {LSP6Utils} from "@lukso/lsp6-contracts/contracts/LSP6Utils.sol";
 

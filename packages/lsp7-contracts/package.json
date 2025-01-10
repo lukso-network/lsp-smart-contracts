@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp7-contracts",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "description": "Package for the LSP7 Digital Asset standard",
   "license": "Apache-2.0",
   "author": "",
@@ -40,18 +40,18 @@
     "build": "hardhat compile --show-stack-traces",
     "build:js": "unbuild",
     "build:types": "npx wagmi generate",
-    "clean": "hardhat clean && rm -Rf dist/",
+    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "package": "hardhat prepare-package"
   },
   "dependencies": {
-    "@erc725/smart-contracts": "^7.0.0",
-    "@openzeppelin/contracts": "^4.9.3",
+    "@erc725/smart-contracts": "^8.0.0",
+    "@openzeppelin/contracts": "^4.9.6",
     "@lukso/lsp1-contracts": "~0.15.0",
     "@lukso/lsp2-contracts": "~0.15.0",
-    "@lukso/lsp4-contracts": "~0.15.0",
-    "@lukso/lsp17contractextension-contracts": "~0.15.0"
+    "@lukso/lsp4-contracts": "~0.16.0",
+    "@lukso/lsp17contractextension-contracts": "~0.16.0"
   }
 }

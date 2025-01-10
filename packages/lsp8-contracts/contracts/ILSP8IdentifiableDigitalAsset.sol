@@ -1,16 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
-// interfaces
-import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-
 /**
  * @title Interface of the LSP8 - Identifiable Digital Asset standard, a non-fungible digital asset.
  */
-interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
+interface ILSP8IdentifiableDigitalAsset {
     // --- Events
 
     /**
@@ -254,7 +248,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param from The address that owns the given `tokenId`.
      * @param to The address that will receive the `tokenId`.
      * @param tokenId The token ID to transfer.
-     * @param force When set to `true`, the `to` address CAN be any addres.
+     * @param force When set to `true`, the `to` address CAN be any address.
      * When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard.
      * @param data Any additional data the caller wants included in the emitted event, and sent in the hooks of the `from` and `to` addresses.
      *

@@ -28,55 +28,56 @@ jobs:
 
     steps:
       - name: Checkout base branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 0
 
-      - name: Use Node.js '16.15.0'
-        uses: actions/setup-node@v2
+      - name: Use Node.js v20
+        uses: actions/setup-node@v4
         with:
-          node-version: "16.15.0"
+          node-version: "20.x"
           cache: "npm"
 
       - name: 📦 Install dependencies
         run: npm ci
 
       - name: 🏗️ Build contract artifacts
-        run: |
-          npm run build
-          npm run build:turbo
+        run: npm run build
 
       - name: 🧪 Run Benchmark tests
+        working-directory: ./packages/lsp-smart-contracts
         # Rename the file to be able to generate benchmark JSON report
         run: |
           npm run test:benchmark
           mv gas_benchmark_result.json gas_benchmark_before.json
 
       - name: Checkout current branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         # Do not run `git clean -ffdx && git reset --hard HEAD` to prevent removing `gas_benchmark_before.json`
         with:
           clean: false
 
-      - name: Use Node.js '16.15.0'
-        uses: actions/setup-node@v2
+      - name: Use Node.js '20.x'
+        uses: actions/setup-node@v4
         with:
-          node-version: "16.15.0"
+          node-version: "20.x"
           cache: "npm"
 
       - name: 📦 Install dependencies
         run: npm ci
 
       - name: 🏗️ Build contract artifacts
-        run: npx hardhat compile
+        run: npm run build
 
       - name: 🧪 Run Benchmark tests
+        working-directory: ./packages/lsp-smart-contracts
         run: |
           npm run test:benchmark
           mv gas_benchmark_result.json gas_benchmark_after.json
 
       - name: 📊 Generate Benchmark Report
+        working-directory: ./packages/lsp-smart-contracts
         run: npx hardhat gas-benchmark --compare gas_benchmark_after.json --against gas_benchmark_before.json
 
       - name: 💬 Add Gas Report as comment in PR
@@ -84,4 +85,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
-          body-file: "./gas_benchmark.md"
+          body-file: "./packages/lsp-smart-contracts/gas_benchmark.md"

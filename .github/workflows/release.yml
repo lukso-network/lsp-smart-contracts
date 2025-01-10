@@ -31,7 +31,7 @@ jobs:
       # The `if` statements ensure that a publication only occurs when
       # a new release is created:
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.releases_created }}
 
       - name: Use Node.js v20
@@ -49,12 +49,14 @@ jobs:
 
       # `npm run build:js` will also generate the auto-generated constants for methods, errors and events,
       # including extracting their devdocs and userdocs
+      # `npm run build:types` will generate:
+      # - the artifacts with abis for release (artifacts/*.json)
+      # - the wagmi hooks (types/index.ts)
+      # - the typed abis (types/index.ts)
       - name: Prepare artifacts to publish
         if: ${{ steps.release.outputs.releases_created }}
         run: |
-          npm run build
           npm run build:js
-          npm run package
           npm run build:types
 
       - name: Publish on NPM
