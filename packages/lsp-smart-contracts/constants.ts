@@ -43,6 +43,7 @@ import { INTERFACE_ID_LSP6 } from '@lukso/lsp6-contracts';
 import { INTERFACE_ID_LSP7 } from '@lukso/lsp7-contracts';
 import { INTERFACE_ID_LSP8 } from '@lukso/lsp8-contracts';
 import { INTERFACE_ID_LSP9 } from '@lukso/lsp9-contracts';
+import { INTERFACE_ID_LSP11 } from '@lukso/lsp11-contracts';
 import { INTERFACE_ID_LSP14 } from '@lukso/lsp14-contracts';
 import {
   INTERFACE_ID_LSP17Extendable,
@@ -111,12 +112,12 @@ export const INTERFACE_IDS = {
   LSP7DigitalAsset: INTERFACE_ID_LSP7,
   LSP8IdentifiableDigitalAsset: INTERFACE_ID_LSP8,
   LSP9Vault: INTERFACE_ID_LSP9,
+  LSP11SocialRecovery: INTERFACE_ID_LSP11,
   LSP14Ownable2Step: INTERFACE_ID_LSP14,
   LSP17Extendable: INTERFACE_ID_LSP17Extendable,
   LSP17Extension: INTERFACE_ID_LSP17Extension,
   LSP20CallVerification: INTERFACE_ID_LSP20CallVerification,
   LSP20CallVerifier: INTERFACE_ID_LSP20CallVerifier,
-  LSP11BasicSocialRecovery: '0x049a28f1',
   LSP25ExecuteRelayCall: INTERFACE_ID_LSP25,
   LSP26FollowerSystem: INTERFACE_ID_LSP26,
 } as const;

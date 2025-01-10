@@ -901,14 +901,20 @@ contract LSP11SocialRecovery is
         // if there is no guardians, disallow recovering
         if (guardiansThresholdOfAccount == 0) revert AccountNotSetupYet();
 
-        // retrieve number of votes caller have
-        uint256 votesOfGuardianVotedAddress_ = _votesOfguardianVotedAddress[
-            account
-        ][recoveryCounter][votedAddress];
+        // use block scope to discard local variable after check and prevent stack too deep
+        {
+            // retrieve number of votes caller have
+            uint256 votesOfGuardianVotedAddress_ = _votesOfguardianVotedAddress[
+                account
+            ][recoveryCounter][votedAddress];
 
-        // if the threshold is 0, and the caller does not have votes will rely on the hash
-        if (votesOfGuardianVotedAddress_ < guardiansThresholdOfAccount)
-            revert CallerVotesHaveNotReachedThreshold(account, votedAddress);
+            // if the threshold is 0, and the caller does not have votes will rely on the hash
+            if (votesOfGuardianVotedAddress_ < guardiansThresholdOfAccount)
+                revert CallerVotesHaveNotReachedThreshold(
+                    account,
+                    votedAddress
+                );
+        }
 
         // if there is a secret require a commitment first
         if (currentSecretHash != bytes32(0)) {
