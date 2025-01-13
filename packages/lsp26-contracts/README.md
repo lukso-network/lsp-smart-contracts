@@ -10,7 +10,7 @@ npm i @lukso/lsp26-contracts
 
 ## Available Constants & Types
 
-The `@lukso/lsp26-contracts` npm package contains useful constants such as InterfaceIds, and specific constants related to the LSP26 Standard. You can import and access them as follow:
+The `@lukso/lsp26-contracts` npm package contains useful constants such as interface IDs, and specific constants related to the LSP26 Standard. You can import and access them as follows:
 
 ```js
 import { INTERFACE_ID_LSP26, LSP26_TYPE_IDS } from "@lukso/lsp26-contracts";
