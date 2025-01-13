@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp17contractextension-contracts-v0.16.0...lsp17contractextension-contracts-v0.16.1) (2025-01-13)
+
+
+### Bug Fixes
+
+* dependencies and build to trigger 0.16.1 patch release ([ce2e962](https://github.com/lukso-network/lsp-smart-contracts/commit/ce2e962741f8e18cabd15f786fffd2229ff41ab0))
+
 ## [0.16.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp17contractextension-contracts-v0.15.0...lsp17contractextension-contracts-v0.16.0) (2025-01-13)
 
 
