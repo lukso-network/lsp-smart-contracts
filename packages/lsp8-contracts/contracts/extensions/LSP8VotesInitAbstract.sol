@@ -11,9 +11,7 @@ import {
     _TYPEID_LSP8_VOTESDELEGATOR,
     _TYPEID_LSP8_VOTESDELEGATEE
 } from "./LSP8VotesConstants.sol";
-import {
-    LSP1Utils
-} from "@lukso/lsp-smart-contracts/contracts/LSP1UniversalReceiver/LSP1Utils.sol";
+import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
 
 /**
  * @dev Extension of LSP8 to support voting and delegation as implemented by {Votes}, where each individual NFT counts

@@ -2,22 +2,32 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.local"],
   "tasks": {
+    "clean": {
+      "cache": false
+    },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["**/artifacts/**", "types/**", "**/types/**"],
+      "outputs": ["artifacts/**", "types/**"],
       "cache": true
     },
     "build:foundry": {
+      "dependsOn": ["^build:foundry"],
       "cache": true
     },
     "build:js": {
-      "outputs": ["**/dist/**"],
+      "dependsOn": ["^build", "^build:js"],
+      "outputs": ["dist/**"],
       "cache": true
     },
-    "clean": {},
+
     "build:types": {
-      "outputs": ["**/types/**"],
+      "dependsOn": ["^package", "^build:types"],
+      "outputs": ["types/**"],
       "cache": true
+    },
+    "package": {
+      "dependsOn": ["^package"],
+      "outputs": ["artifacts/**"]
     },
     "lint": {
       "env": [
@@ -26,7 +36,6 @@
       ]
     },
     "lint:solidity": {},
-    "package": {},
     "test": {
       "cache": true,
       "env": ["COVERAGE"]

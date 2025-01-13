@@ -39,7 +39,7 @@
     "build": "hardhat compile --show-stack-traces",
     "build:js": "unbuild",
     "build:types": "npx wagmi generate",
-    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/",
+    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",

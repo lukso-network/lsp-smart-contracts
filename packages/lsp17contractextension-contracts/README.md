@@ -10,7 +10,7 @@ npm install @lukso/lsp17contractextension-contracts
 
 ## Available Constants & Types
 
-The `@lukso/lsp17contractextension-contracts` npm package contains useful constants such as InterfaceIds, and ERC725Y Data Keys related to the LSP17 Standard. You can import and access them as follow:
+The `@lukso/lsp17contractextension-contracts` npm package contains useful constants such as interface IDs, and ERC725Y data keys related to the LSP17 Standard. You can import and access them as follows:
 
 ```js
 import {

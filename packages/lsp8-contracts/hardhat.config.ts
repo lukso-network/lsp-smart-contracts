@@ -115,6 +115,7 @@ const config: HardhatUserConfig = {
       'LSP8Burnable',
       'LSP8CappedSupply',
       'LSP8Enumerable',
+      'LSP8Votes',
       'LSP8Mintable',
       // Proxy version
       // ------------------
@@ -122,6 +123,7 @@ const config: HardhatUserConfig = {
       'LSP8BurnableInitAbstract',
       'LSP8CappedSupplyInitAbstract',
       'LSP8EnumerableInitAbstract',
+      'LSP8VotesInitAbstract',
       'LSP8MintableInit',
     ],
     // Whether to include the TypeChain factories or not.
