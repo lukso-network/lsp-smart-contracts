@@ -36,7 +36,7 @@
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
     "build:js": "unbuild",
-    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/",
+    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/",
     "format": "prettier --write .",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
   },

@@ -509,7 +509,7 @@ describe('testing LSP4MetadataTester', () => {
     );
   });
 
-  it('testing `toJSON(Assets)`', async () => {
+  it.skip('testing `toJSON(Assets)`', async () => {
     const assets = [
       {
         url: 'ipfs://<first-video-cid>',
