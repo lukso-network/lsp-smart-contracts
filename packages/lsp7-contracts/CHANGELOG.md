@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.16.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.16.0...lsp7-contracts-v0.16.1) (2025-01-13)
+
+
+### Bug Fixes
+
+* add missing `LSP7/8Votes` folders in lsp-smart-contracts package ([6f34a1c](https://github.com/lukso-network/lsp-smart-contracts/commit/6f34a1c8241e9aeae19918aa8c9052c9491a4e63))
+* dependencies and build to trigger 0.16.1 patch release ([ce2e962](https://github.com/lukso-network/lsp-smart-contracts/commit/ce2e962741f8e18cabd15f786fffd2229ff41ab0))
+
 ## [0.16.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.15.0...lsp7-contracts-v0.16.0) (2025-01-13)
 
 
