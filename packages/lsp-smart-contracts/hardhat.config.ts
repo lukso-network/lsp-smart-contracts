@@ -191,13 +191,17 @@ const config: HardhatUserConfig = {
       'LSP4DigitalAssetMetadata',
       'LSP6KeyManager',
       'LSP7DigitalAsset',
+      'LSP7Votes',
       'LSP7CappedSupply',
       'LSP7Mintable',
       'LSP8IdentifiableDigitalAsset',
+      'LSP8Burnable',
       'LSP8CappedSupply',
+      'LSP8Enumerable',
+      'LSP8Votes',
       'LSP8Mintable',
       'LSP9Vault',
-      'LSP11BasicSocialRecovery',
+      'LSP11SocialRecovery',
       // Proxy version
       // ------------------
       'UniversalProfileInit',
@@ -208,10 +212,12 @@ const config: HardhatUserConfig = {
       'LSP7CappedSupplyInitAbstract',
       'LSP7MintableInit',
       'LSP8IdentifiableDigitalAssetInitAbstract',
+      'LSP8BurnableInitAbstract',
       'LSP8CappedSupplyInitAbstract',
+      'LSP8EnumerableInitAbstract',
+      'LSP8VotesInitAbstract',
       'LSP8MintableInit',
       'LSP9VaultInit',
-      'LSP11BasicSocialRecoveryInit',
       // Tools
       // ------------------
       'LSP23LinkedContractsFactory',

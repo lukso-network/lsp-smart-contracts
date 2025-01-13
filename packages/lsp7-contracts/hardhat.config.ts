@@ -114,12 +114,14 @@ const config: HardhatUserConfig = {
       'LSP7DigitalAsset',
       'LSP7Burnable',
       'LSP7CappedSupply',
+      'LSP7Votes',
       'LSP7Mintable',
       // Proxy version
       // ------------------
       'LSP7DigitalAssetInitAbstract',
       'LSP7BurnableInitAbstract',
       'LSP7CappedSupplyInitAbstract',
+      'LSP7VotesInitAbstract',
       'LSP7MintableInit',
     ],
     // Whether to include the TypeChain factories or not.
