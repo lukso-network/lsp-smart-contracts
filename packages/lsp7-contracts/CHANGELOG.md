@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.16.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.15.0...lsp7-contracts-v0.16.0) (2025-01-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade LPS4, 7 and 8 Tokens to `@erc725/smart-contracts` v8.0.0
+* remove `Core` contract from LSP7 package
+
+### Features
+
+* add force to internal functions LSP7 ([c2f7909](https://github.com/lukso-network/lsp-smart-contracts/commit/c2f79091a1919422f6d9e160c13e0accf321a747))
+* Add LSP7Votes and LSP8Votes extensions ([3571355](https://github.com/lukso-network/lsp-smart-contracts/commit/35713557e132c7c347ddd380dfb19a500a621ec4))
+* add old interfaces ids as Solidity constants for lsp7 & lsp8 ([8e1e93e](https://github.com/lukso-network/lsp-smart-contracts/commit/8e1e93e3cb63956614d906bb08d6a91566afbaf9))
+* create LSP7VotesConstants.sol ([0818c94](https://github.com/lukso-network/lsp-smart-contracts/commit/0818c94939cdd0aeb2bd8fb0d78cc04410f63a34))
+* create LSP7VotesInitAbstract contract ([fed8f18](https://github.com/lukso-network/lsp-smart-contracts/commit/fed8f18c8b6674623d3de5ab2172858b833bfee0))
+
+
+### Bug Fixes
+
+* disallow arbitrary sending of 0 amount in LSP7 ([e21f431](https://github.com/lukso-network/lsp-smart-contracts/commit/e21f431fbdaeaab90391923c9d1ea4baf55aa918))
+
+
+### Code Refactoring
+
+* remove `Core` contract from LSP7 package ([ddc5d7f](https://github.com/lukso-network/lsp-smart-contracts/commit/ddc5d7f2f02f7ff3711bb2acbec5be73420e80c5))
+* upgrade LPS4, 7 and 8 Tokens to `@erc725/smart-contracts` v8.0.0 ([fde66b8](https://github.com/lukso-network/lsp-smart-contracts/commit/fde66b80d90f4789cce76021136b9e065e561579))
+
 ## [0.15.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.15.0-rc.5...lsp7-contracts-v0.15.0) (2024-04-05)
 
 

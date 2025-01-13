@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp3-contracts-v0.15.0...lsp3-contracts-v0.16.0) (2025-01-13)
+
+
+### Features
+
+* Allow contract assets as TS type ([dc637df](https://github.com/lukso-network/lsp-smart-contracts/commit/dc637df9b531fd9064e094eca466ca440004c86e))
+
 ## [0.15.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp3-contracts-v0.15.0-rc.5...lsp3-contracts-v0.15.0) (2024-04-05)
 
 
