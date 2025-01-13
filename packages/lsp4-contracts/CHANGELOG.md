@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.16.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp4-contracts-v0.15.0...lsp4-contracts-v0.16.0) (2025-01-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade LPS4, 7 and 8 Tokens to `@erc725/smart-contracts` v8.0.0
+* remove `Core` contract from LSP8 package
+* remove `Core` contract from LSP4 package
+
+### Features
+
+* Allow contract assets as TS type ([dc637df](https://github.com/lukso-network/lsp-smart-contracts/commit/dc637df9b531fd9064e094eca466ca440004c86e))
+* create InitAbstract version of LSP17Extendable ([9fbafe9](https://github.com/lukso-network/lsp-smart-contracts/commit/9fbafe98e09305c11b26e71a2f29fbed813efd74))
+
+
+### Code Refactoring
+
+* remove `Core` contract from LSP4 package ([bef48cf](https://github.com/lukso-network/lsp-smart-contracts/commit/bef48cfb0a52ba0c2ffc27ea74557bbdc9b1361a))
+* remove `Core` contract from LSP8 package ([d499453](https://github.com/lukso-network/lsp-smart-contracts/commit/d499453612dfe687aef15c7b26d52c15555fe98f))
+* upgrade LPS4, 7 and 8 Tokens to `@erc725/smart-contracts` v8.0.0 ([fde66b8](https://github.com/lukso-network/lsp-smart-contracts/commit/fde66b80d90f4789cce76021136b9e065e561579))
+
 ## [0.15.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp4-contracts-v0.15.0-rc.5...lsp4-contracts-v0.15.0) (2024-04-05)
 
 

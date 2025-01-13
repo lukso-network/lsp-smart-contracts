@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp17-contracts-v0.15.0...lsp17-contracts-v0.16.0) (2025-01-13)
+
+
+### Features
+
+* add ERCTokenCallbacks Extension ([e78a490](https://github.com/lukso-network/lsp-smart-contracts/commit/e78a490ae42fae9f50b57cf7843304fe36588731))
+
 ## [0.15.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp17-contracts-v0.15.0-rc.5...lsp17-contracts-v0.15.0) (2024-04-05)
 
 

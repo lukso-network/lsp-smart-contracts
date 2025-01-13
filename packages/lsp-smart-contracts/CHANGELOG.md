@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.16.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.15.0...lsp-smart-contracts-v0.16.0) (2025-01-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove LSP4, 7 and 8 `Core` contracts imported in `@lukso/lsp-smart-contracts` package
+
+### Features
+
+* add force to internal function on lsp8 ([2085039](https://github.com/lukso-network/lsp-smart-contracts/commit/2085039521d856362cb3be2a211253d51b28a450))
+* create LSP7VotesConstants.sol ([0818c94](https://github.com/lukso-network/lsp-smart-contracts/commit/0818c94939cdd0aeb2bd8fb0d78cc04410f63a34))
+* create script to deploy LSP26 Follower System ([e483c92](https://github.com/lukso-network/lsp-smart-contracts/commit/e483c92ac1ea0ac2690b2407aa26b6a74ed0e27d))
+
+
+### Code Refactoring
+
+* remove LSP4, 7 and 8 `Core` contracts imported in `@lukso/lsp-smart-contracts` package ([6c66b9e](https://github.com/lukso-network/lsp-smart-contracts/commit/6c66b9e2b9b9513cead6e8a33c4e3a65c9c33eaa))
+
 ## [0.15.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.15.0-rc.5...lsp-smart-contracts-v0.15.0) (2024-04-05)
 
 

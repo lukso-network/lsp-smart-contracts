@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.16.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp8-contracts-v0.15.0...lsp8-contracts-v0.16.0) (2025-01-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade LPS4, 7 and 8 Tokens to `@erc725/smart-contracts` v8.0.0
+* remove `Core` contract from LSP8 package
+
+### Features
+
+* add force to internal function on lsp8 ([2085039](https://github.com/lukso-network/lsp-smart-contracts/commit/2085039521d856362cb3be2a211253d51b28a450))
+* Add LSP7Votes and LSP8Votes extensions ([3571355](https://github.com/lukso-network/lsp-smart-contracts/commit/35713557e132c7c347ddd380dfb19a500a621ec4))
+* add old interfaces ids as Solidity constants for lsp7 & lsp8 ([8e1e93e](https://github.com/lukso-network/lsp-smart-contracts/commit/8e1e93e3cb63956614d906bb08d6a91566afbaf9))
+* create LSP8VotesInitAbstract ([721c872](https://github.com/lukso-network/lsp-smart-contracts/commit/721c872b9ed870f190e3e59493ca2c4b66309982))
+
+
+### Code Refactoring
+
+* remove `Core` contract from LSP8 package ([d499453](https://github.com/lukso-network/lsp-smart-contracts/commit/d499453612dfe687aef15c7b26d52c15555fe98f))
+* upgrade LPS4, 7 and 8 Tokens to `@erc725/smart-contracts` v8.0.0 ([fde66b8](https://github.com/lukso-network/lsp-smart-contracts/commit/fde66b80d90f4789cce76021136b9e065e561579))
+
 ## [0.15.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp8-contracts-v0.15.0-rc.5...lsp8-contracts-v0.15.0) (2024-04-05)
 
 

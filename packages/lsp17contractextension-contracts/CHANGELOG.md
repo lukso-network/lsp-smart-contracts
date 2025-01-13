@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp17contractextension-contracts-v0.15.0...lsp17contractextension-contracts-v0.16.0) (2025-01-13)
+
+
+### Features
+
+* create InitAbstract version of LSP17Extendable ([9fbafe9](https://github.com/lukso-network/lsp-smart-contracts/commit/9fbafe98e09305c11b26e71a2f29fbed813efd74))
+
 ## [0.15.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp17contractextension-contracts-v0.15.0-rc.5...lsp17contractextension-contracts-v0.15.0) (2024-04-05)
 
 
