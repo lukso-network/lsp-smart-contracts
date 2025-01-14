@@ -4,7 +4,7 @@ Package for the [LSP11 Social Recovery](https://github.com/lukso-network/LIPs/bl
 
 ## Installation
 
-```bash
+```console
 npm install @lukso/lsp11-contracts
 ```
 

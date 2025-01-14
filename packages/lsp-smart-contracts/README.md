@@ -1,10 +1,16 @@
 # `@lukso/lsp-smart-contracts`
 
-Package for the LSP Smart Contracts.
+This is the _"umbrella"_ package for the LSP smart contracts. It contains all the individual `@lukso/lspN-contracts` packages (where `N` is an LSP number) as dependencies.
+
+## Installation
+
+```console
+npm install @lukso/lsp-smart-contracts
+```
 
 ## Available Constants & Types
 
-The `@lukso/lsp-smart-contracts` npm package contains useful constants such as InterfaceIds, and ERC725Y Data Keys related to the LSP Standards. You can import and access them as follow:
+The `@lukso/lsp-smart-contracts` npm package contains useful constants such as interface IDs, and ERC725Y data keys related to the LSP Standards. You can import and access them as follows:
 
 ```js
 import {

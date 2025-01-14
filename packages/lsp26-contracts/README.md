@@ -4,7 +4,7 @@ Package for the LSP26 Follower System standard.
 
 ## Installation
 
-```bash
+```console
 npm i @lukso/lsp26-contracts
 ```
 
