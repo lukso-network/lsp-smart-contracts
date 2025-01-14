@@ -4,7 +4,7 @@ Package for the LSP17 Contract Extension
 
 ## Installation
 
-```bash
+```console
 npm install @lukso/lsp17contractextension-contracts
 ```
 

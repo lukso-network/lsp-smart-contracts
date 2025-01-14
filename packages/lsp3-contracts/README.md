@@ -4,7 +4,7 @@ Package for the LSP3 Profile Metadata standard.
 
 ## Installation
 
-```bash
+```console
 npm install @lukso/lsp3-contracts
 ```
 

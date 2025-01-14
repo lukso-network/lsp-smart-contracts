@@ -4,7 +4,7 @@ Package for the LSP8 Identifiable Digital Asset Standard.
 
 ## Installation
 
-```bash
+```console
 npm install @lukso/lsp8-contracts
 ```
 

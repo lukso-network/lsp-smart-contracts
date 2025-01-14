@@ -4,7 +4,7 @@ Package for the LSP7 Digital Asset standard.
 
 ## Installation
 
-```bash
+```console
 npm install @lukso/lsp7-contracts
 ```
 

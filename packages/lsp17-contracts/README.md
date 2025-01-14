@@ -2,12 +2,13 @@
 
 Package for the LSP17 Extensions, that includes the following extensions:
 
-- the `Extension4337` extension, which contains the `validateUserOp` function from the [`ERC4337` standard](https://eips.ethereum.org/EIPS/eip-4337).
-- the `OnERC721ReceivedExtension` extension that contains the `onERC721Received` function from the [`ERC721` standard](https://eips.ethereum.org/EIPS/eip-721).
+- `Extension4337` extension, which contains the `validateUserOp` function from the [`ERC4337` standard](https://eips.ethereum.org/EIPS/eip-4337).
+- `OnERC721ReceivedExtension` extension that contains the `onERC721Received` function from the [`ERC721` standard](https://eips.ethereum.org/EIPS/eip-721).
+- `ERCTokenCallbacks` extension that contains implemented callback functions with valid returned values from ERC721, ERC1155 and ERC777 to support receiving tokens via the transfer functions that trigger these callbacks.
 
 ## Installation
 
-```bash
+```console
 npm install @lukso/lsp17-contracts
 ```
 
