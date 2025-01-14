@@ -4,7 +4,7 @@ import {
   UniversalReceiverTester__factory,
   UniversalProfileInit__factory,
   LSP0ERC725Account,
-} from '../../../types';
+} from '../../../typechain';
 import { deployProxy } from './utils/fixtures';
 
 import {

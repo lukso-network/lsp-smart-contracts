@@ -13,7 +13,7 @@ import {
   OwnerWithURD__factory,
   OwnerWithURD,
   UniversalProfile,
-} from '../../../types';
+} from '../../../typechain';
 
 // helpers
 import { LSP1_HOOK_PLACEHOLDER, abiCoder, getRandomAddresses } from './utils/helpers';

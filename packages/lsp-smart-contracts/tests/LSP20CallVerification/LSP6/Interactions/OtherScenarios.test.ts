@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import { TargetContract__factory, TargetContract } from '../../../../types';
+import { TargetContract__factory, TargetContract } from '../../../../typechain';
 
 // constants
 import { ERC725YDataKeys } from '../../../../constants';

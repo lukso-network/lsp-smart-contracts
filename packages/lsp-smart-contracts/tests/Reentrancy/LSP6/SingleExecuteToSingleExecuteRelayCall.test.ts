@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 // types
 import { BytesLike, hexlify, keccak256, parseEther, toUtf8Bytes } from 'ethers';
-import { SingleReentrancyRelayer__factory, UniversalProfile__factory } from '../../../types';
+import { SingleReentrancyRelayer__factory, UniversalProfile__factory } from '../../../typechain';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';

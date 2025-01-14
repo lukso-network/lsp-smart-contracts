@@ -9,7 +9,7 @@ import {
   LSP7Mintable__factory,
   LSP8Mintable,
   LSP8Mintable__factory,
-} from '../../../../types';
+} from '../../../../typechain';
 
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS } from '../../../../constants';

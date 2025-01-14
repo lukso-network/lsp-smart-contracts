@@ -5,13 +5,13 @@ import {
   UniversalProfileInit__factory,
   LSP6KeyManagerInit__factory,
   LSP6KeyManagerInit,
-} from '../../../types';
+} from '../../../typechain';
 
 import { LSP6TestContext } from '../../utils/context';
 import { deployProxy } from '../../utils/fixtures';
 
 import { shouldBehaveLikeLSP6 } from './LSP20WithLSP6.behaviour';
-import { UniversalProfileInit } from '@lukso/universalprofile-contracts/types';
+import { UniversalProfileInit } from '@lukso/universalprofile-contracts/typechain';
 
 describe('LSP20 Init + LSP6 Init with proxy', () => {
   const buildProxyTestContext = async (initialFunding?: bigint): Promise<LSP6TestContext> => {

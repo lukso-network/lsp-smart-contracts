@@ -26,7 +26,7 @@ import {
   loadTestCase,
 } from './reentrancyHelpers';
 
-import { LSP20ReentrantContractBatch__factory } from '../../../types';
+import { LSP20ReentrantContractBatch__factory } from '../../../typechain';
 import { Interface } from 'ethers';
 import { provider } from '../../utils/helpers';
 

@@ -10,7 +10,7 @@ import {
   UniversalProfile,
   UniversalProfile__factory,
   Extension4337__factory,
-} from '../../../types';
+} from '../../../typechain';
 import { deployEntryPoint, getBalance, isDeployed } from '../helpers/utils';
 import { ERC725YDataKeys } from '../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';

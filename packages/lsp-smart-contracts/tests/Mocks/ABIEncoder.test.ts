@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { ABIEncoder, ABIEncoder__factory } from '../../types';
+import { ABIEncoder, ABIEncoder__factory } from '../../typechain';
 
 describe('ABI Encoder Contract', () => {
   let accounts: SignerWithAddress[];

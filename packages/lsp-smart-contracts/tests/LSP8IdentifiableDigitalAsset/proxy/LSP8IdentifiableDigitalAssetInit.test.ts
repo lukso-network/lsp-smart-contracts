@@ -1,7 +1,11 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LSP8InitTester__factory, LSP8IdentifiableDigitalAsset, LSP8Tester } from '../../../types';
+import {
+  LSP8InitTester__factory,
+  LSP8IdentifiableDigitalAsset,
+  LSP8Tester,
+} from '../../../typechain';
 
 import {
   getNamedAccounts,

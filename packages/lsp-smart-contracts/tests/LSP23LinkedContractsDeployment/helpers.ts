@@ -7,7 +7,7 @@ import {
   LSP23LinkedContractsFactory__factory,
   UniversalProfileInitPostDeploymentModule__factory,
   UniversalProfilePostDeploymentModule__factory,
-} from '../../types';
+} from '../../typechain';
 
 export async function calculateProxiesAddresses(
   salt: PromiseOrValue<BytesLike>,

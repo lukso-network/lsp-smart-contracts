@@ -7,7 +7,7 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["artifacts/**", "types/**"],
+      "outputs": ["artifacts/**", "!artifacts/*.json", "typechain/**"],
       "cache": true
     },
     "build:foundry": {
@@ -15,19 +15,18 @@
       "cache": true
     },
     "build:js": {
-      "dependsOn": ["^build", "^build:js"],
+      "dependsOn": ["build", "^build", "^build:js"],
       "outputs": ["dist/**"],
       "cache": true
     },
-
     "build:types": {
-      "dependsOn": ["^package", "^build:types"],
+      "dependsOn": ["^package", "package", "^build:types"],
       "outputs": ["types/**"],
       "cache": true
     },
     "package": {
       "dependsOn": ["^package"],
-      "outputs": ["artifacts/**"]
+      "outputs": ["artifacts/*.json"]
     },
     "lint": {
       "env": [
@@ -37,15 +36,16 @@
     },
     "lint:solidity": {},
     "test": {
+      "dependsOn": ["build:js", "^test"],
       "cache": true,
       "env": ["COVERAGE"]
     },
     "test:coverage": {
-      "dependsOn": ["test"],
+      "dependsOn": ["build:js", "^test"],
       "cache": false
     },
     "test:foundry": {
-      "dependsOn": ["^build", "^build:foundry"],
+      "dependsOn": ["build", "^build:foundry"],
       "cache": true
     }
   }

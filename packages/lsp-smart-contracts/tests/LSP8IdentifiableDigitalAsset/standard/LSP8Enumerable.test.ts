@@ -1,4 +1,4 @@
-import { LSP8EnumerableTester, LSP8EnumerableTester__factory } from '../../../types';
+import { LSP8EnumerableTester, LSP8EnumerableTester__factory } from '../../../typechain';
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {

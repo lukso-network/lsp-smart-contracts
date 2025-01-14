@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { ERCTokenCallbacks, ERCTokenCallbacks__factory } from '../types';
+import { ERCTokenCallbacks, ERCTokenCallbacks__factory } from '../typechain';
 import { INTERFACE_ID_LSP17Extension } from '../constants.ts';
 
 describe('testing `ERCTokenCallbacks`', () => {

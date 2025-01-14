@@ -53,6 +53,8 @@ jobs:
       # - the artifacts with abis for release (artifacts/*.json)
       # - the wagmi hooks (types/index.ts)
       # - the typed abis (types/index.ts)
+      #
+      # # The turbo configs in `turbo.json` is setup to run `npm run package` command first before `npm run build:types`.
       - name: Prepare artifacts to publish
         if: ${{ steps.release.outputs.releases_created }}
         run: |

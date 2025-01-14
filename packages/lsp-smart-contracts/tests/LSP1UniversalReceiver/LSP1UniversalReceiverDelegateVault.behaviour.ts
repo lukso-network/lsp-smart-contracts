@@ -14,7 +14,7 @@ import {
   LSP7MintWhenDeployed__factory,
   LSP7MintWhenDeployed,
   LSP1UniversalReceiverDelegateVault__factory,
-} from '../../types';
+} from '../../typechain';
 
 import { ARRAY_LENGTH, LSP1_HOOK_PLACEHOLDER, abiCoder } from '../utils/helpers';
 

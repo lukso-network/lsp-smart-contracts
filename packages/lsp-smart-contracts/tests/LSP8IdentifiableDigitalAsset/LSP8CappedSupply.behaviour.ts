@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { LSP8CappedSupplyTester } from '../../types';
+import { LSP8CappedSupplyTester } from '../../typechain';
 
 import type { BytesLike } from 'ethers';
 

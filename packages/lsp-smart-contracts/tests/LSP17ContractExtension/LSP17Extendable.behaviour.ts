@@ -27,7 +27,7 @@ import {
   RequireCallbackToken__factory,
   RevertFallbackExtension,
   RevertFallbackExtension__factory,
-} from '../../types';
+} from '../../typechain';
 
 // helpers
 import { abiCoder, provider } from '../utils/helpers';

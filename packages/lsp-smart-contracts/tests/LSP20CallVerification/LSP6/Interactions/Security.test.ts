@@ -12,7 +12,7 @@ import {
   TargetContract,
   TargetContract__factory,
   UniversalReceiverDelegateDataUpdater__factory,
-} from '../../../../types';
+} from '../../../../typechain';
 
 // constants
 import { ERC725YDataKeys, LSP1_TYPE_IDS } from '../../../../constants';

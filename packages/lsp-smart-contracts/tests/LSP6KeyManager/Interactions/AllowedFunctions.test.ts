@@ -10,7 +10,7 @@ import {
   LSP8Mintable__factory,
   TargetContract,
   TargetContract__factory,
-} from '../../../types';
+} from '../../../typechain';
 
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants';

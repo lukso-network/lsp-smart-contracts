@@ -13,7 +13,7 @@ import {
   LSP6KeyManager__factory,
   LSP8Mintable__factory,
   LSP8Mintable,
-} from '../types';
+} from '../typechain';
 
 import { ERC725YDataKeys, INTERFACE_IDS } from '../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';

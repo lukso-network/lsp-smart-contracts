@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { shouldBehaveLikeLSP14 } from '../LSP14Ownable2Step/LSP14Ownable2Step.behaviour';
 
-import { UniversalProfile, LSP6KeyManager, LSP9VaultInit__factory } from '../../types';
+import { UniversalProfile, LSP6KeyManager, LSP9VaultInit__factory } from '../../typechain';
 
 import {
   getNamedAccounts,

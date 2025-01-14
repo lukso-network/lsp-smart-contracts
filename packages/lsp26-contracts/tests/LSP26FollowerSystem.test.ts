@@ -21,7 +21,7 @@ import {
   SelfDestructOnInterfaceCheck,
   InfiniteLoopURD,
   InfiniteLoopURD__factory,
-} from '../types';
+} from '../typechain';
 
 describe('testing `LSP26FollowerSystem`', () => {
   let context: {

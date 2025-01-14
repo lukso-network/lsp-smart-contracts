@@ -8,7 +8,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease-type": "rc"
+      "prerelease-type": "rc",
+      "release-as": "0.16.2"
     },
     "packages/lsp0-contracts": {
       "component": "lsp0-contracts",
@@ -60,7 +61,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease-type": "rc"
+      "prerelease-type": "rc",
+      "release-as": "0.16.2"
     },
     "packages/lsp4-contracts": {
       "component": "lsp4-contracts",
@@ -70,7 +72,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease-type": "rc"
+      "prerelease-type": "rc",
+      "release-as": "0.16.2"
     },
     "packages/lsp5-contracts": {
       "component": "lsp5-contracts",
@@ -101,7 +104,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease-type": "rc"
+      "prerelease-type": "rc",
+      "release-as": "0.16.2"
     },
     "packages/lsp8-contracts": {
       "component": "lsp8-contracts",
@@ -111,7 +115,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease-type": "rc"
+      "prerelease-type": "rc",
+      "release-as": "0.16.2"
     },
     "packages/lsp9-contracts": {
       "component": "lsp9-contracts",
@@ -172,7 +177,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease-type": "rc"
+      "prerelease-type": "rc",
+      "release-as": "0.16.2"
     },
     "packages/lsp17contractextension-contracts": {
       "component": "lsp17contractextension-contracts",
@@ -183,7 +189,8 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "prerelease-type": "rc",
-      "extra-files": ["contracts/Version.sol"]
+      "extra-files": ["contracts/Version.sol"],
+      "release-as": "0.16.2"
     },
     "packages/lsp20-contracts": {
       "component": "lsp20-contracts",
@@ -205,15 +212,16 @@
       "draft": false,
       "prerelease-type": "rc"
     },
-    "packages/lsp11-contracts": {
-      "component": "lsp11-contracts",
-      "package-name": "@lukso/lsp11-contracts",
+    "packages/universalprofile-contracts": {
+      "component": "universalprofile-contracts",
+      "package-name": "@lukso/universalprofile-contracts",
       "include-component-in-tag": true,
       "release-type": "node",
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease-type": "rc"
+      "prerelease-type": "rc",
+      "extra-files": ["contracts/Version.sol"]
     },
     "packages/lsp25-contracts": {
       "component": "lsp25-contracts",
@@ -225,6 +233,18 @@
       "draft": false,
       "prerelease-type": "rc"
     },
+    "packages/lsp11-contracts": {
+      "component": "lsp11-contracts",
+      "package-name": "@lukso/lsp11-contracts",
+      "include-component-in-tag": true,
+      "release-type": "node",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease-type": "rc",
+      "release-as": "0.1.2"
+    },
+
     "packages/lsp26-contracts": {
       "component": "lsp26-contracts",
       "package-name": "@lukso/lsp26-contracts",
@@ -233,18 +253,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease-type": "rc"
-    },
-    "packages/universalprofile-contracts": {
-      "component": "universalprofile-contracts",
-      "package-name": "@lukso/universalprofile-contracts",
-      "include-component-in-tag": true,
-      "release-type": "node",
-      "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": false,
-      "draft": false,
       "prerelease-type": "rc",
-      "extra-files": ["contracts/Version.sol"]
+      "release-as": "0.1.2"
     }
   },
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
