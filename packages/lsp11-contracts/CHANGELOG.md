@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp11-contracts-v0.1.1...lsp11-contracts-v0.1.2) (2025-01-14)
+
+
+### Bug Fixes
+
+* installation instructions in README ([3390a6f](https://github.com/lukso-network/lsp-smart-contracts/commit/3390a6fe659efecb0c6c12e88263c1996d714fae))
+
 ## [0.1.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp11-contracts-v0.1.0...lsp11-contracts-v0.1.1) (2025-01-13)
 
 
