@@ -29,8 +29,11 @@ jobs:
 
       # This will also generate the Typechain types and the files with the constants used by the Chai tests
       # The turbo configs in `turbo.json` is setup to run `npm run build` command first before `npm run build:js`.
+      # Also test to generate the typed ABIs with `npm run build:types` to ensure the `release.yml` workflow will pass successfully.
       - name: 🏗️ Build contract artifacts
-        run: npm run build:js
+        run: |
+          npm run build:js
+          npm run build:types
 
       # - name: 📚 generate ABI docs
       #   run: npm run build:docs
