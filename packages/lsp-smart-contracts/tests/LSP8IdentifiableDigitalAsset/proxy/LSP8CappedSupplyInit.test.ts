@@ -1,6 +1,9 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { LSP8CappedSupplyInitTester, LSP8CappedSupplyInitTester__factory } from '../../../types';
+import {
+  LSP8CappedSupplyInitTester,
+  LSP8CappedSupplyInitTester__factory,
+} from '../../../typechain';
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {

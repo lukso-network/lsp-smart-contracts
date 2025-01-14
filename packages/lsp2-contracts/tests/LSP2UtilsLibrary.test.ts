@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { LSP2UtilsLibraryTester, LSP2UtilsLibraryTester__factory } from '../types';
+import { LSP2UtilsLibraryTester, LSP2UtilsLibraryTester__factory } from '../typechain';
 import { BytesLike } from 'ethers';
 
 function encodeCompactBytesArray(inputKeys: BytesLike[]) {

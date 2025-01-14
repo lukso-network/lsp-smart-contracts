@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { UniversalReceiverTester__factory, UniversalProfile__factory } from '../../../types';
+import { UniversalReceiverTester__factory, UniversalProfile__factory } from '../../../typechain';
 
 import {
   LSP1TestContext,

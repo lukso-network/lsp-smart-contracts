@@ -3,7 +3,7 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { calculateCreate2 } from 'eth-create2-calculator';
 
-import { TargetContract__factory } from '../../../../types';
+import { TargetContract__factory } from '../../../../typechain';
 
 // constants
 import { ERC725YDataKeys } from '../../../../constants';

@@ -9,7 +9,7 @@ import {
   OnERC721ReceivedExtension,
   SignatureValidator__factory,
   OnERC721ReceivedExtension__factory,
-} from '../../../types';
+} from '../../../typechain';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';

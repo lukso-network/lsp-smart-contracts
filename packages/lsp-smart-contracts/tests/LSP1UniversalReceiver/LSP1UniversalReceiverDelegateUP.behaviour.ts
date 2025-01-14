@@ -24,7 +24,7 @@ import {
   LSP7MintWhenDeployed,
   GenericExecutorWithBalanceOfFunction,
   GenericExecutorWithBalanceOfFunction__factory,
-} from '../../types';
+} from '../../typechain';
 
 // helpers
 import { ARRAY_LENGTH, LSP1_HOOK_PLACEHOLDER, abiCoder } from '../utils/helpers';

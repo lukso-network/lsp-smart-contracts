@@ -15,7 +15,7 @@ import {
   TokenReceiverWithLSP1Revert,
   TokenReceiverWithLSP1Revert__factory,
   LSP7DigitalAsset,
-} from '../../types';
+} from '../../typechain';
 
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } from '../../constants';

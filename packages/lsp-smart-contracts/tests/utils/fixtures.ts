@@ -6,7 +6,7 @@ import {
   LSP1UniversalReceiverDelegateUP__factory,
   LSP6KeyManager__factory,
   UniversalProfile__factory,
-} from '../../types';
+} from '../../typechain';
 
 import { ERC725YDataKeys } from '../../constants';
 import { PERMISSIONS, ALL_PERMISSIONS } from '@lukso/lsp6-contracts';

@@ -4,7 +4,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { calculateCreate2 } from 'eth-create2-calculator';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import { TargetContract__factory, UniversalProfile__factory } from '../../../types';
+import { TargetContract__factory, UniversalProfile__factory } from '../../../typechain';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';

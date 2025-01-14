@@ -1,7 +1,12 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { MyVotingToken, MyVotingToken__factory, MyGovernor, MyGovernor__factory } from '../types';
+import {
+  MyVotingToken,
+  MyVotingToken__factory,
+  MyGovernor,
+  MyGovernor__factory,
+} from '../typechain';
 import { time, mine } from '@nomicfoundation/hardhat-network-helpers';
 import { LSP7_TYPE_IDS } from '../constants';
 

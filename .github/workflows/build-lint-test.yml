@@ -28,8 +28,9 @@ jobs:
         run: npm run lint
 
       # This will also generate the Typechain types and the files with the constants used by the Chai tests
+      # The turbo configs in `turbo.json` is setup to run `npm run build` command first before `npm run build:js`.
       - name: 🏗️ Build contract artifacts
-        run: npm run build
+        run: npm run build:js
 
       # - name: 📚 generate ABI docs
       #   run: npm run build:docs

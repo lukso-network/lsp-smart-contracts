@@ -8,7 +8,7 @@ import {
   UniversalProfileInit,
   LSP6KeyManagerInit,
   UniversalReceiverDelegateTokenReentrant,
-} from '../../types';
+} from '../../typechain';
 
 import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 

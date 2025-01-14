@@ -11,7 +11,7 @@ import {
   TargetContract__factory,
   UniversalProfile__factory,
   UniversalProfile,
-} from '../../../types';
+} from '../../../typechain';
 
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants';

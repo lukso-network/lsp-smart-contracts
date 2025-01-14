@@ -22,7 +22,7 @@ import {
   NameExtension,
   AgeExtension__factory,
   AgeExtension,
-} from '../../types';
+} from '../../typechain';
 
 // helpers
 import { abiCoder, provider } from '../utils/helpers';

@@ -8,7 +8,7 @@ import {
   EmitEventExtension__factory,
   RevertErrorsTestExtension,
   RevertErrorsTestExtension__factory,
-} from '../../types';
+} from '../../typechain';
 
 describe('LSP17Extendable - Basic Implementation', () => {
   let accounts;

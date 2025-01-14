@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { LSP6TestContext } from '../utils/context';
-import { LSP6KeyManagerInit__factory, UniversalProfileInit__factory } from '../../types';
+import { LSP6KeyManagerInit__factory, UniversalProfileInit__factory } from '../../typechain';
 import { deployProxy } from '../utils/fixtures';
 import { shouldBehaveLikeLSP6, shouldInitializeLikeLSP6 } from './LSP6KeyManager.behaviour';
 

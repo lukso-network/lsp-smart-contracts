@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { LSP25_VERSION } from '../constants';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import { LSP25MultiChannelNonceTester, LSP25MultiChannelNonceTester__factory } from '../types';
+import { LSP25MultiChannelNonceTester, LSP25MultiChannelNonceTester__factory } from '../typechain';
 
 /**
  * Private keys for the accounts used in the tests.

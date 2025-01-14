@@ -27,10 +27,10 @@
   ],
   "scripts": {
     "preinstall": "npx --yes force-resolutions",
-    "build": "turbo build && turbo build:js",
+    "build": "turbo build",
     "build:foundry": "turbo build:foundry",
     "build:js": "turbo build:js",
-    "build:types": "turbo package && turbo build:types",
+    "build:types": "turbo build:types",
     "clean": "turbo clean",
     "format": "prettier --write .",
     "lint": "turbo lint",

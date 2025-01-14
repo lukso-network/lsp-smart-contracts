@@ -16,7 +16,7 @@ import {
   UniversalProfile,
   FallbackContract__factory,
   FallbackContract,
-} from '../../../../types';
+} from '../../../../typechain';
 
 // constants
 import { ERC725YDataKeys } from '../../../../constants';

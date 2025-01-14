@@ -27,7 +27,7 @@ import {
   BothCallReturnSuccessValue__factory,
   SecondCallReturnExpandedSuccessValue,
   SecondCallReturnExpandedSuccessValue__factory,
-} from '../../types';
+} from '../../typechain';
 
 // constants
 import { LSP1_TYPE_IDS } from '../../constants';

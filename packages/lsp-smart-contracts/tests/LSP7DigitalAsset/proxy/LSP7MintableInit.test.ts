@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { LSP7MintableInit, LSP7MintableInit__factory } from '../../../types';
+import { LSP7MintableInit, LSP7MintableInit__factory } from '../../../typechain';
 
 import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour';
 import {

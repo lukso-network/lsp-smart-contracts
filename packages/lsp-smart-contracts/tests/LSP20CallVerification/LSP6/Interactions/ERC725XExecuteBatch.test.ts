@@ -15,7 +15,7 @@ import {
   LSP7MintableInit,
   LSP7MintableInit__factory,
   LSP7Mintable__factory,
-} from '../../../../types';
+} from '../../../../typechain';
 
 export const shouldBehaveLikeBatchExecute = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,

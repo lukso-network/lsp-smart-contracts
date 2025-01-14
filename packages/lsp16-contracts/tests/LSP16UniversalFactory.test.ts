@@ -20,9 +20,9 @@ import {
   ContractNoConstructor,
   FallbackContract,
   FallbackContract__factory,
-} from '../types';
+} from '../typechain';
 
-import { UniversalProfile } from '../../../types';
+import { UniversalProfile } from '../../../typechain';
 import { AbiCoder, concat } from 'ethers';
 
 const abiCoder = new AbiCoder();

@@ -3,7 +3,7 @@ import { ethers } from 'hardhat';
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 // LSP7 + LSP8
-import { LSP7DigitalAsset, LSP8IdentifiableDigitalAsset, LSP9Vault } from '../../types';
+import { LSP7DigitalAsset, LSP8IdentifiableDigitalAsset, LSP9Vault } from '../../typechain';
 
 // constants
 import { ERC725YDataKeys } from '../../constants';
