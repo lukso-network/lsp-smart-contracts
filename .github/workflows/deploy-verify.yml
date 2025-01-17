@@ -9,9 +9,11 @@ env:
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - "main"
+
+  # This workflow is temporarily disabled until refactored to deploy for particular packages with the new monorepo structure
+  # push:
+  #   branches:
+  #     - "main"
 
 jobs:
   deploy-verify:
