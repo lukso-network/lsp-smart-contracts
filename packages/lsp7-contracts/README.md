@@ -19,3 +19,13 @@ import {
   LSP7_TYPE_IDS,
 } from "@lukso/lsp7-contracts";
 ```
+
+The `LSP7_TYPE_IDS` includes type IDs for the following type of notifications:
+
+```console
+'LSP7Tokens_SenderNotification';
+'LSP7Tokens_RecipientNotification';
+'LSP7Tokens_OperatorNotification';
+'LSP7Tokens_VotesDelegatorNotification';
+'LSP7Tokens_VotesDelegateeNotification';
+```
