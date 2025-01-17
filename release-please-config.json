@@ -101,7 +101,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "prerelease-type": "rc"
+      "prerelease-type": "rc",
+      "release-as": "0.16.3"
     },
     "packages/lsp8-contracts": {
       "component": "lsp8-contracts",
