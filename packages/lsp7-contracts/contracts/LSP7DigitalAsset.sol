@@ -602,19 +602,7 @@ abstract contract LSP7DigitalAsset is
 
         _beforeTokenTransfer(address(0), to, amount, force, data);
 
-        // tokens being minted
-        _existingTokens += amount;
-
-        _tokenOwnerBalances[to] += amount;
-
-        emit Transfer({
-            operator: msg.sender,
-            from: address(0),
-            to: to,
-            amount: amount,
-            force: force,
-            data: data
-        });
+        _update(address(0), to, amount, force, data);
 
         _afterTokenTransfer(address(0), to, amount, force, data);
 
@@ -664,23 +652,7 @@ abstract contract LSP7DigitalAsset is
 
         _beforeTokenTransfer(from, address(0), amount, false, data);
 
-        uint256 balance = _tokenOwnerBalances[from];
-        if (amount > balance) {
-            revert LSP7AmountExceedsBalance(balance, from, amount);
-        }
-        // tokens being burnt
-        _existingTokens -= amount;
-
-        _tokenOwnerBalances[from] -= amount;
-
-        emit Transfer({
-            operator: msg.sender,
-            from: from,
-            to: address(0),
-            amount: amount,
-            force: false,
-            data: data
-        });
+        _update(from, address(0), amount, false, data);
 
         _afterTokenTransfer(from, address(0), amount, false, data);
 
@@ -786,9 +758,10 @@ abstract contract LSP7DigitalAsset is
     }
 
     /**
-     * @dev Transfers `amount` of tokens from `from` to `to`, or alternatively mints (or burns) if `from`
-     * (or `to`) is the zero address. All customizations to transfers, mints, and burns should be done by overriding
-     * this function.
+     * @dev Transfers `amount` of tokens from `from` to `to`.
+     * Alternatively mints or burns if `from` or `to` is the zero address.
+     *
+     * @custom:info All customizations to transfers, mints, and burns should be done by overriding this function.
      *
      * @custom:events {Transfer} event.
      */
@@ -804,9 +777,11 @@ abstract contract LSP7DigitalAsset is
             _existingTokens += amount;
         } else {
             uint256 fromBalance = _tokenOwnerBalances[from];
+
             if (fromBalance < amount) {
                 revert LSP7AmountExceedsBalance(fromBalance, from, amount);
             }
+
             unchecked {
                 // Overflow not possible: amount <= fromBalance <= totalSupply.
                 _tokenOwnerBalances[from] = fromBalance - amount;
@@ -833,13 +808,6 @@ abstract contract LSP7DigitalAsset is
             force: force,
             data: data
         });
-
-        _afterTokenTransfer(from, to, amount, force, data);
-
-        bytes memory lsp1Data = abi.encode(msg.sender, from, to, amount, data);
-
-        _notifyTokenSender(from, lsp1Data);
-        _notifyTokenReceiver(to, force, lsp1Data);
     }
 
     /**
