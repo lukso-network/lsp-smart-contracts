@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.3](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.16.2...lsp7-contracts-v0.16.3) (2025-01-17)
+
+
+### Bug Fixes
+
+* remove duplicate callback to LSP1 `universalReceiver(...)` in LSP7 ([aaa90b6](https://github.com/lukso-network/lsp-smart-contracts/commit/aaa90b6d9f0b10b3dd0e01bbe2a99422c5c005cc))
+
 ## [0.16.2](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.16.1...lsp7-contracts-v0.16.2) (2025-01-14)
 
 
