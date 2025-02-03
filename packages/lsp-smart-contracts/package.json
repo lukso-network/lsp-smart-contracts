@@ -68,6 +68,8 @@
     "test:benchmark": "hardhat test --no-compile tests/Benchmark.test.ts"
   },
   "dependencies": {
+    "@erc725/smart-contracts": "7.0.0",
+    "@erc725/smart-contracts-v8": "npm:@erc725/smart-contracts@8.0.0",
     "@lukso/lsp0-contracts": "~0.15.0",
     "@lukso/lsp1-contracts": "~0.15.0",
     "@lukso/lsp10-contracts": "~0.15.0",
