@@ -10,8 +10,22 @@ npm install @lukso/lsp1-contracts
 
 ## Available Constants & Types
 
-The `@lukso/lsp1-contracts` npm package contains useful constants such as InterfaceIds, and ERC725Y Data Keys related to the LSP1 Standard. You can import and access them as follow:
+The `@lukso/lsp1-contracts` npm package contains useful constants such as interface IDs, and ERC725Y data keys related to the LSP1 Standard. You can import and access them as follows.
+
+In Javascript.
 
 ```js
 import { INTERFACE_ID_LSP1, LSP1DataKeys } from "@lukso/lsp1-contracts";
+```
+
+In Solidity.
+
+<!-- prettier-ignore -->
+```solidity
+import {
+    _INTERFACEID_LSP1,
+    _INTERFACEID_LSP1_DELEGATE,
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
+} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 ```

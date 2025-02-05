@@ -10,7 +10,7 @@ npm install @lukso/lsp-smart-contracts
 
 ## Available Constants & Types
 
-The `@lukso/lsp-smart-contracts` npm package contains useful constants such as interface IDs, and ERC725Y data keys related to the LSP Standards. You can import and access them as follows:
+The `@lukso/lsp-smart-contracts` npm package contains useful constants such as interface IDs, and ERC725Y data keys related to the LSP Standards. You can import and access them as follows.
 
 ```js
 import {

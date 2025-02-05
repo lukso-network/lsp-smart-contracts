@@ -10,7 +10,9 @@ npm install @lukso/lsp0-contracts
 
 ## Available Constants & Types
 
-The `@lukso/lsp0-contracts` npm package contains useful constants such as InterfaceIds, and ERC725Y Data Keys related to the LSP0 Standard. You can import and access them as follow:
+The `@lukso/lsp0-contracts` npm package contains useful constants such as interface Ids, and ERC725Y data keys related to the LSP0 Standard. You can import and access them as follows.
+
+In Javascript.
 
 ```js
 import {
@@ -19,4 +21,20 @@ import {
   LSP0_TYPE_IDS,
   ERC1271_VALUES,
 } from "@lukso/lsp0-contracts";
+```
+
+In Solidity.
+
+<!-- prettier-ignore -->
+```solidity
+import {
+  _INTERFACEID_LSP0,
+  _INTERFACEID_ERC1271,
+  _ERC1271_SUCCESSVALUE,
+  _ERC1271_FAILVALUE,
+  _TYPEID_LSP0_VALUE_RECEIVED,
+  _TYPEID_LSP0_OwnershipTransferStarted,
+  _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
+  _TYPEID_LSP0_OwnershipTransferred_RecipientNotification
+} from "@lukso/lsp0-contracts/contracts/LSP0Constants.sol";
 ```
