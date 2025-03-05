@@ -1,15 +1,28 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { concat, hexlify, keccak256, randomBytes, toBeHex, toUtf8Bytes } from 'ethers';
+import {
+  concat,
+  ContractFactory,
+  hexlify,
+  keccak256,
+  randomBytes,
+  toBeHex,
+  toUtf8Bytes,
+} from 'ethers';
 
-import { LSP4MetadataTester, LSP4MetadataTester__factory } from '../typechain';
+import LSP4MetadataTesterArtifacts from '../artifacts/contracts/mock/LSP4MetadataTester.sol/LSP4MetadataTester.json';
+
+const LSP4MetadataTester__factory = new ContractFactory(
+  LSP4MetadataTesterArtifacts.abi,
+  LSP4MetadataTesterArtifacts.bytecode,
+);
 
 describe('testing LSP4MetadataTester', () => {
-  let lspMetadataTester: LSP4MetadataTester;
+  let lspMetadataTester: any; // TODO: improve typings
 
   before(async () => {
     const signers = await ethers.getSigners();
-    lspMetadataTester = await new LSP4MetadataTester__factory(signers[0]).deploy();
+    lspMetadataTester = await LSP4MetadataTester__factory.connect(signers[0]).deploy();
   });
 
   it('testing `toJSON(Link)`', async () => {

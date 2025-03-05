@@ -1,8 +1,14 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { LSP2UtilsLibraryTester, LSP2UtilsLibraryTester__factory } from '../typechain';
-import { BytesLike } from 'ethers';
+import { BytesLike, ContractFactory } from 'ethers';
+
+import LSP2UtilsLibraryTesterArtifacts from '../artifacts/contracts/Mocks/LSP2UtilsLibraryTester.sol/LSP2UtilsLibraryTester.json';
+
+const LSP2UtilsLibraryTester__factory = new ContractFactory(
+  LSP2UtilsLibraryTesterArtifacts.abi,
+  LSP2UtilsLibraryTesterArtifacts.bytecode,
+);
 
 function encodeCompactBytesArray(inputKeys: BytesLike[]) {
   let compactBytesArray = '0x';
@@ -18,11 +24,11 @@ function encodeCompactBytesArray(inputKeys: BytesLike[]) {
 
 describe('LSP2Utils', () => {
   let accounts: SignerWithAddress[];
-  let lsp2Utils: LSP2UtilsLibraryTester;
+  let lsp2Utils: any;
 
   before(async () => {
     accounts = await ethers.getSigners();
-    lsp2Utils = await new LSP2UtilsLibraryTester__factory(accounts[0]).deploy();
+    lsp2Utils = await LSP2UtilsLibraryTester__factory.connect(accounts[0]).deploy();
   });
 
   describe('`isCompactBytesArray(...)`', () => {
