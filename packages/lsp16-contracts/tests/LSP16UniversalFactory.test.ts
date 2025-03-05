@@ -1,33 +1,60 @@
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
+import { AbiCoder, concat, ContractFactory, Contract } from 'ethers';
 
-import {
-  LSP16UniversalFactory,
-  LSP16UniversalFactory__factory,
-  Account,
-  Account__factory,
-  AccountInit,
-  AccountInit__factory,
-  PayableContract,
-  PayableContract__factory,
-  NonPayableContract__factory,
-  ImplementationTester,
-  ImplementationTester__factory,
-  FallbackInitializer,
-  FallbackInitializer__factory,
-  ContractNoConstructor__factory,
-  ContractNoConstructor,
-  FallbackContract,
-  FallbackContract__factory,
-} from '../typechain';
+import UniversalProfileArtifacts from '@lukso/universalprofile-contracts/artifacts/UniversalProfile.json';
 
-import { UniversalProfile } from '../../../typechain';
-import { AbiCoder, concat } from 'ethers';
+import LSP16UniversalFactoryArtifacts from '../artifacts/LSP16UniversalFactory.json';
+import AccountArtifacts from '../artifacts/contracts/Mocks/Account.sol/Account.json';
+import AccountInitArtifacts from '../artifacts/contracts/Mocks/AccountInit.sol/AccountInit.json';
+import PayableContractArtifacts from '../artifacts/contracts/Mocks/PayableContract.sol/PayableContract.json';
+import NonPayableContractArtifacts from '../artifacts/contracts/Mocks/NonPayableContract.sol/NonPayableContract.json';
+import ImplementationTesterArtifacts from '../artifacts/contracts/Mocks/ImplementationTester.sol/ImplementationTester.json';
+import FallbackInitializerArtifacts from '../artifacts/contracts/Mocks/FallbackInitializer.sol/FallbackInitializer.json';
+import ContractNoConstructorArtifacts from '../artifacts/contracts/Mocks/ContractNoConstructor.sol/ContractNoConstructor.json';
+import FallbackContractArtifacts from '../artifacts/contracts/Mocks/FallbackContract.sol/FallbackContract.json';
+
+const Account__factory = new ContractFactory(AccountArtifacts.abi, AccountArtifacts.bytecode);
+
+const AccountInit__factory = new ContractFactory(
+  AccountInitArtifacts.abi,
+  AccountInitArtifacts.bytecode,
+);
+
+const PayableContract__factory = new ContractFactory(
+  PayableContractArtifacts.abi,
+  PayableContractArtifacts.bytecode,
+);
+
+const NonPayableContract__factory = new ContractFactory(
+  NonPayableContractArtifacts.abi,
+  NonPayableContractArtifacts.bytecode,
+);
+
+const ImplementationTester__factory = new ContractFactory(
+  ImplementationTesterArtifacts.abi,
+  ImplementationTesterArtifacts.bytecode,
+);
+
+const FallbackInitializer__factory = new ContractFactory(
+  FallbackInitializerArtifacts.abi,
+  FallbackInitializerArtifacts.bytecode,
+);
+
+const ContractNoConstructor__factory = new ContractFactory(
+  ContractNoConstructorArtifacts.abi,
+  ContractNoConstructorArtifacts.bytecode,
+);
+
+const FallbackContract__factory = new ContractFactory(
+  FallbackContractArtifacts.abi,
+  FallbackContractArtifacts.bytecode,
+);
 
 const abiCoder = new AbiCoder();
 
-const AccountBytecode = Account__factory.bytecode;
+const AccountBytecode = AccountArtifacts.bytecode;
 const NonPayableConstructorBytecode = NonPayableContract__factory.bytecode;
 const ImplementationTesterBytecode = ImplementationTester__factory.bytecode;
 const FallbackInitializerBytecode = FallbackInitializer__factory.bytecode;
@@ -47,50 +74,56 @@ const getNamedAccounts = async () => {
 
 type UniversalFactoryTestContext = {
   accounts: UniversalFactoryTestAccounts;
-  universalFactory: LSP16UniversalFactory;
+  universalFactory: any; // TODO: improve typing
 };
 
 describe('UniversalFactory contract', () => {
   const buildTestContext = async (): Promise<UniversalFactoryTestContext> => {
     const accounts = await getNamedAccounts();
 
-    const universalFactory = await new LSP16UniversalFactory__factory(accounts.random).deploy();
+    const LSP16UniversalFactory__factory = new ethers.ContractFactory(
+      LSP16UniversalFactoryArtifacts.abi,
+      LSP16UniversalFactoryArtifacts.bytecode,
+      accounts.deployer1,
+    );
+
+    const universalFactory = await LSP16UniversalFactory__factory.deploy();
 
     return { accounts, universalFactory };
   };
 
   describe('When using LSP16UniversalFactory', () => {
     let context: UniversalFactoryTestContext;
-    let accountConstructor: Account;
-    let accountBaseContract: AccountInit;
-    let contractNoConstructor: ContractNoConstructor;
-    let payableContract: PayableContract;
-    let fallbackContract: FallbackContract;
-    let implementationTester: ImplementationTester;
-    let fallbackInitializer: FallbackInitializer;
+    let accountConstructor: any;
+    let accountBaseContract: any;
+    let contractNoConstructor: any;
+    let payableContract: any;
+    let fallbackContract: any;
+    let implementationTester: any;
+    let fallbackInitializer: any;
 
     before(async () => {
       context = await buildTestContext();
 
-      accountConstructor = await new Account__factory(context.accounts.random).deploy(
+      accountConstructor = await Account__factory.connect(context.accounts.random).deploy(
         context.accounts.random.address,
       );
 
-      accountBaseContract = await new AccountInit__factory(context.accounts.random).deploy();
+      accountBaseContract = await AccountInit__factory.connect(context.accounts.random).deploy();
 
-      contractNoConstructor = await new ContractNoConstructor__factory(
+      contractNoConstructor = await ContractNoConstructor__factory.connect(
         context.accounts.random,
       ).deploy();
 
-      payableContract = await new PayableContract__factory(context.accounts.random).deploy();
+      payableContract = await PayableContract__factory.connect(context.accounts.random).deploy();
 
-      fallbackContract = await new FallbackContract__factory(context.accounts.random).deploy();
+      fallbackContract = await FallbackContract__factory.connect(context.accounts.random).deploy();
 
-      implementationTester = await new ImplementationTester__factory(
+      implementationTester = await ImplementationTester__factory.connect(
         context.accounts.random,
       ).deploy();
 
-      fallbackInitializer = await new FallbackInitializer__factory(
+      fallbackInitializer = await FallbackInitializer__factory.connect(
         context.accounts.random,
       ).deploy();
     });
@@ -292,9 +325,11 @@ describe('UniversalFactory contract', () => {
           .to.emit(context.universalFactory, 'ContractCreated')
           .withArgs(contractCreatedAddress, salt, generatedSalt, false, '0x');
 
-        const universalProfile = accountConstructor.attach(
+        const universalProfile = new ethers.Contract(
           contractCreatedAddress,
-        ) as UniversalProfile;
+          UniversalProfileArtifacts.abi,
+          context.accounts.random, // runner
+        );
 
         const owner = await universalProfile.owner();
         expect(owner).to.equal(context.accounts.deployer3.address);
@@ -512,9 +547,11 @@ describe('UniversalFactory contract', () => {
           0,
         );
 
-        const fallbackInitializerCreated = fallbackInitializer.attach(
+        const fallbackInitializerCreated = new Contract(
           contractCreated,
-        ) as FallbackInitializer;
+          FallbackInitializerArtifacts.abi,
+          context.accounts.random,
+        );
 
         const caller = await fallbackInitializerCreated.caller();
         expect(caller).to.equal(await context.universalFactory.getAddress());
@@ -589,9 +626,11 @@ describe('UniversalFactory contract', () => {
           .to.emit(context.universalFactory, 'ContractCreated')
           .withArgs(contractCreatedAddress, salt, generatedSalt, true, initializeCallData);
 
-        const factoryTesterContract = implementationTester.attach(
+        const factoryTesterContract = new Contract(
           contractCreatedAddress,
-        ) as ImplementationTester;
+          ImplementationTesterArtifacts.abi,
+          context.accounts.random,
+        );
         const owner = await factoryTesterContract.owner();
         expect(owner).to.equal(context.accounts.deployer1.address);
       });
@@ -713,9 +752,11 @@ describe('UniversalFactory contract', () => {
           .to.emit(context.universalFactory, 'ContractCreated')
           .withArgs(contractCreatedAddress, salt, generatedSalt, false, '0x');
 
-        const universalProfile = accountBaseContract.attach(
+        const universalProfile = new Contract(
           contractCreatedAddress,
-        ) as UniversalProfile;
+          UniversalProfileArtifacts.abi,
+          context.accounts.random,
+        );
 
         const owner = await universalProfile.owner();
         expect(owner).to.equal(ethers.ZeroAddress);
@@ -875,9 +916,11 @@ describe('UniversalFactory contract', () => {
             value: ethers.parseEther('1300'),
           });
 
-        const fallbackInitializerCreated = fallbackInitializer.attach(
+        const fallbackInitializerCreated = new Contract(
           contractCreated,
-        ) as FallbackInitializer;
+          FallbackInitializerArtifacts.abi,
+          context.accounts.random,
+        );
 
         const caller = await fallbackInitializerCreated.caller();
         expect(caller).to.equal(await context.universalFactory.getAddress());
@@ -976,9 +1019,11 @@ describe('UniversalFactory contract', () => {
           .to.emit(context.universalFactory, 'ContractCreated')
           .withArgs(contractCreatedAddress, salt, generatedSalt, true, initializeCallData);
 
-        const universalProfile = accountBaseContract.attach(
+        const universalProfile = new Contract(
           contractCreatedAddress,
-        ) as UniversalProfile;
+          UniversalProfileArtifacts.abi,
+          context.accounts.random, // runner
+        );
 
         const owner = await universalProfile.owner();
         expect(owner).to.equal(context.accounts.deployer4.address);
