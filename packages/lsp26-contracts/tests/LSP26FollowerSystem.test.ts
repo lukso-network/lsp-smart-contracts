@@ -1,35 +1,60 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { ContractTransactionResponse, getAddress, hexlify, randomBytes } from 'ethers';
+import {
+  ContractFactory,
+  ContractTransactionResponse,
+  getAddress,
+  hexlify,
+  randomBytes,
+} from 'ethers';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { writeFileSync } from 'fs';
+
+import LSP0ER725AccountArtifacts from '../artifacts/@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol/LSP0ERC725Account.json';
+import LSP26FollowerSystemArtifacts from '../artifacts/contracts/LSP26FollowerSystem.sol/LSP26FollowerSystem.json';
+
+import RevertOnFollowArtifacts from '../artifacts/contracts/mock/RevertOnFollow.sol/RevertOnFollow.json';
+import ReturnBombArtifacts from '../artifacts/contracts/mock/ReturnBomb.sol/ReturnBomb.json';
+import SelfDestructOnInterfaceCheckArtifacts from '../artifacts/contracts/mock/SelfDestructOnInterfaceCheck.sol/SelfDestructOnInterfaceCheck.json';
+import InfiniteLoopURDArtifacts from '../artifacts/contracts/mock/InfiniteLoopURD.sol/InfiniteLoopURD.json';
 
 // constants
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 
-// types
-import {
-  LSP26FollowerSystem,
-  LSP26FollowerSystem__factory,
-  LSP0ERC725Account,
-  LSP0ERC725Account__factory,
-  RevertOnFollow__factory,
-  RevertOnFollow,
-  ReturnBomb__factory,
-  ReturnBomb,
-  SelfDestructOnInterfaceCheck__factory,
-  SelfDestructOnInterfaceCheck,
-  InfiniteLoopURD,
-  InfiniteLoopURD__factory,
-} from '../typechain';
+const LSP26FollowerSystem__factory = new ContractFactory(
+  LSP26FollowerSystemArtifacts.abi,
+  LSP26FollowerSystemArtifacts.bytecode,
+);
+
+const LSP0ERC725Account__factory = new ContractFactory(
+  LSP0ER725AccountArtifacts.abi,
+  LSP0ER725AccountArtifacts.bytecode,
+);
+
+const RevertOnFollow__factory = new ContractFactory(
+  RevertOnFollowArtifacts.abi,
+  RevertOnFollowArtifacts.bytecode,
+);
+const ReturnBomb__factory = new ContractFactory(
+  ReturnBombArtifacts.abi,
+  ReturnBombArtifacts.bytecode,
+);
+const SelfDestructOnInterfaceCheck__factory = new ContractFactory(
+  SelfDestructOnInterfaceCheckArtifacts.abi,
+  SelfDestructOnInterfaceCheckArtifacts.bytecode,
+);
+const InfiniteLoopURD__factory = new ContractFactory(
+  InfiniteLoopURDArtifacts.abi,
+  InfiniteLoopURDArtifacts.bytecode,
+);
 
 describe('testing `LSP26FollowerSystem`', () => {
   let context: {
-    followerSystem: LSP26FollowerSystem;
+    followerSystem;
     followerSystemAddress: string;
-    revertOnFollow: RevertOnFollow;
+    revertOnFollow;
     revertOnFollowAddress: string;
-    universalProfile: LSP0ERC725Account;
+    universalProfile;
     owner: SignerWithAddress;
     singleFollowSigner: SignerWithAddress;
     executeBatchFollowSigners: SignerWithAddress[];
@@ -40,11 +65,11 @@ describe('testing `LSP26FollowerSystem`', () => {
   before(async () => {
     const signers = await ethers.getSigners();
     const [owner, singleFollowSigner] = signers;
-    const followerSystem = await new LSP26FollowerSystem__factory(owner).deploy();
+    const followerSystem = await LSP26FollowerSystem__factory.connect(signers[0]).deploy();
     const followerSystemAddress = await followerSystem.getAddress();
-    const universalProfile = await new LSP0ERC725Account__factory(owner).deploy(owner.address);
+    const universalProfile = await LSP0ERC725Account__factory.connect(owner).deploy(owner.address);
 
-    const revertOnFollow = await new RevertOnFollow__factory(owner).deploy();
+    const revertOnFollow = await RevertOnFollow__factory.connect(signers[0]).deploy();
     const revertOnFollowAddress = await revertOnFollow.getAddress();
 
     const executeBatchFollowSigners = signers.slice(2, 12);
@@ -122,10 +147,10 @@ describe('testing `LSP26FollowerSystem`', () => {
   });
 
   describe('testing follow/unfollow a contract that self destructs on interface check', async () => {
-    let selfDestruct: SelfDestructOnInterfaceCheck;
+    let selfDestruct;
 
     before(async () => {
-      selfDestruct = await new SelfDestructOnInterfaceCheck__factory(context.owner).deploy();
+      selfDestruct = await SelfDestructOnInterfaceCheck__factory.connect(context.owner).deploy();
     });
 
     it('should pass following', async () => {
@@ -152,10 +177,10 @@ describe('testing `LSP26FollowerSystem`', () => {
   });
 
   describe('testing follow/unfollow a contract with return bomb', () => {
-    let returnBomb: ReturnBomb;
+    let returnBomb;
 
     before(async () => {
-      returnBomb = await new ReturnBomb__factory(context.owner).deploy();
+      returnBomb = await ReturnBomb__factory.connect(context.owner).deploy();
     });
 
     it('should pass following', async () => {
@@ -182,10 +207,10 @@ describe('testing `LSP26FollowerSystem`', () => {
   });
 
   describe('testing follow/unfollow a contract that has an infinite loop in urd', () => {
-    let infiniteLoop: InfiniteLoopURD;
+    let infiniteLoop;
 
     before(async () => {
-      infiniteLoop = await new InfiniteLoopURD__factory(context.owner).deploy();
+      infiniteLoop = await InfiniteLoopURD__factory.connect(context.owner).deploy();
     });
 
     it('should pass following', async () => {

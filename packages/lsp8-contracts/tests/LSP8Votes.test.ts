@@ -1,13 +1,27 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
+import { ContractFactory } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { MyVotingNFT, MyVotingNFT__factory, MyGovernor, MyGovernor__factory } from '../typechain';
+
 import { time, mine } from '@nomicfoundation/hardhat-network-helpers';
 import { LSP8_TYPE_IDS } from '../constants';
 
+import MyVotingNFTArtifacts from '../artifacts/contracts/Mocks/MyVotingNFT.sol/MyVotingNFT.json';
+import MyGovernorArtifacts from '../artifacts/contracts/Mocks/MyGovernor.sol/MyGovernor.json';
+
+const MyVotingNFT__factory = new ContractFactory(
+  MyVotingNFTArtifacts.abi,
+  MyVotingNFTArtifacts.bytecode,
+);
+
+const MyGovernor__factory = new ContractFactory(
+  MyGovernorArtifacts.abi,
+  MyGovernorArtifacts.bytecode,
+);
+
 describe('Comprehensive Governor and NFT Tests', () => {
-  let nft: MyVotingNFT;
-  let governor: MyGovernor;
+  let nft;
+  let governor;
   let owner: SignerWithAddress;
   let proposer: SignerWithAddress;
   let voter1: SignerWithAddress;
@@ -23,8 +37,8 @@ describe('Comprehensive Governor and NFT Tests', () => {
   beforeEach(async () => {
     [owner, proposer, voter1, voter2, voter3, randomEOA] = await ethers.getSigners();
 
-    nft = await new MyVotingNFT__factory(owner).deploy();
-    governor = await new MyGovernor__factory(owner).deploy(nft.target);
+    nft = await MyVotingNFT__factory.connect(owner).deploy();
+    governor = await MyGovernor__factory.connect(owner).deploy(nft.target);
 
     // Mint initial NFTs
     await nft.mint(proposer.address, ethers.id('1'));

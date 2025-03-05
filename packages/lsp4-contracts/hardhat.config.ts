@@ -141,9 +141,6 @@ const config: HardhatUserConfig = {
       'LSP4DigitalAssetMetadata', // Standard version
       'LSP4DigitalAssetMetadataInitAbstract', // Proxy version
     ],
-    // Whether to include the TypeChain factories or not.
-    // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
-    includeFactories: false,
   },
   paths: {
     artifacts: 'artifacts',

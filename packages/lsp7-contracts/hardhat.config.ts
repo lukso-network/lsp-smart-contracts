@@ -124,9 +124,6 @@ const config: HardhatUserConfig = {
       'LSP7VotesInitAbstract',
       'LSP7MintableInit',
     ],
-    // Whether to include the TypeChain factories or not.
-    // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
-    includeFactories: true,
   },
   paths: {
     artifacts: 'artifacts',
