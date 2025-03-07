@@ -131,10 +131,6 @@ const config: HardhatUserConfig = {
     artifacts: 'artifacts',
     tests: 'tests',
   },
-  typechain: {
-    outDir: 'typechain',
-    target: 'ethers-v6',
-  },
   mocha: {
     timeout: 10000000,
   },

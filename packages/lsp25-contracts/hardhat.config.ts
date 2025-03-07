@@ -109,14 +109,6 @@ const config: HardhatUserConfig = {
     // What contracts to keep the artifacts and the bindings for.
     contracts: ['ILSP25ExecuteRelayCall'],
   },
-  paths: {
-    artifacts: 'artifacts',
-    tests: 'tests',
-  },
-  typechain: {
-    outDir: 'typechain',
-    target: 'ethers-v6',
-  },
   mocha: {
     timeout: 10000000,
   },
