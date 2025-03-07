@@ -1,14 +1,9 @@
 import { expect } from 'chai';
-import { parseEther } from 'ethers';
+import { ContractFactory, parseEther } from 'ethers';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { ethers } from 'hardhat';
 
-// types
-import {
-  UniversalProfile,
-  UniversalReceiverTester,
-  UniversalReceiverDelegateRevert__factory,
-  UniversalReceiverDelegateRevert,
-} from '../../typechain';
+import UniversalReceiverDelegateRevertArtifacts from '../../artifacts/contracts/Mocks/UniversalReceivers/UniversalReceiverDelegateRevert.sol/UniversalReceiverDelegateRevert.json';
 
 // helpers
 import { abiCoder, LSP1_HOOK_PLACEHOLDER } from '../utils/helpers';
@@ -19,10 +14,15 @@ import { ERC725YDataKeys } from '../../constants';
 export type LSP1TestContext = {
   accounts: SignerWithAddress[];
   // contract that implement the LSP1 - Universal Receiver interface
-  lsp1Implementation: UniversalProfile;
+  lsp1Implementation;
   // contract that call the `universalReceiver(...)` function (for testing)
-  lsp1Checker: UniversalReceiverTester;
+  lsp1Checker;
 };
+
+const UniversalReceiverDelegateRevert__factory = new ContractFactory(
+  UniversalReceiverDelegateRevertArtifacts.abi,
+  UniversalReceiverDelegateRevertArtifacts.bytecode,
+);
 
 export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext>) => {
   let context: LSP1TestContext;
@@ -125,13 +125,13 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
     });
 
     describe('to test typeId delegate feature', () => {
-      let revertableURD: UniversalReceiverDelegateRevert;
+      let revertableURD;
 
       describe('when setting a revertable typeId', () => {
         before(async () => {
           context = await buildContext();
 
-          revertableURD = await new UniversalReceiverDelegateRevert__factory(
+          revertableURD = await UniversalReceiverDelegateRevert__factory.connect(
             context.accounts[1],
           ).deploy();
 

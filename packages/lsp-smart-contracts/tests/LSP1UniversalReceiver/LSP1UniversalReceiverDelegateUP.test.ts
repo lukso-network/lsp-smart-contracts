@@ -1,5 +1,4 @@
 import { ethers } from 'hardhat';
-import { LSP1UniversalReceiverDelegateUP, UniversalProfile, LSP6KeyManager } from '../../typechain';
 
 import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 
@@ -28,12 +27,12 @@ describe('LSP1UniversalReceiverDelegateUP', () => {
       const [UP1, KM1, LSP1_URD_UP] = await setupProfileWithKeyManagerWithURD(accounts.owner1);
 
       const [UP2, KM2] = await setupProfileWithKeyManagerWithURD(accounts.owner2);
-      const lsp1universalReceiverDelegateUP = LSP1_URD_UP as LSP1UniversalReceiverDelegateUP;
+      const lsp1universalReceiverDelegateUP = LSP1_URD_UP;
 
-      const universalProfile1 = UP1 as UniversalProfile;
-      const universalProfile2 = UP2 as UniversalProfile;
-      const lsp6KeyManager1 = KM1 as LSP6KeyManager;
-      const lsp6KeyManager2 = KM2 as LSP6KeyManager;
+      const universalProfile1 = UP1;
+      const universalProfile2 = UP2;
+      const lsp6KeyManager1 = KM1;
+      const lsp6KeyManager2 = KM2;
 
       return {
         accounts,

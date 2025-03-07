@@ -1,30 +1,7 @@
 import { ethers, network } from 'hardhat';
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-
-// types
-import {
-  LSP1UniversalReceiverDelegateUP,
-  UniversalProfile,
-  LSP6KeyManager,
-  LSP7Tester,
-  LSP7Tester__factory,
-  LSP8Tester,
-  LSP8Tester__factory,
-  LSP9Vault,
-  LSP9Vault__factory,
-  LSP0ERC725Account,
-  LSP0ERC725Account__factory,
-  GenericExecutor,
-  GenericExecutor__factory,
-  UniversalProfile__factory,
-  LSP6KeyManager__factory,
-  LSP1UniversalReceiverDelegateUP__factory,
-  LSP7MintWhenDeployed__factory,
-  LSP7MintWhenDeployed,
-  GenericExecutorWithBalanceOfFunction,
-  GenericExecutorWithBalanceOfFunction__factory,
-} from '../../typechain';
+import { BytesLike, ContractFactory, ContractTransaction } from 'ethers';
 
 // helpers
 import { ARRAY_LENGTH, LSP1_HOOK_PLACEHOLDER, abiCoder } from '../utils/helpers';
@@ -38,7 +15,58 @@ import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 // fixtures
 import { callPayload, getLSP5MapAndArrayKeysValue, setupKeyManager } from '../utils/fixtures';
 import { LSP6TestContext } from '../utils/context';
-import { BytesLike, ContractTransaction } from 'ethers';
+
+import LSP0ERC725AccountArtifacts from '../../artifacts/@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol/LSP0ERC725Account.json';
+import UniversalProfileArtifacts from '../../artifacts/@lukso/universalprofile-contracts/contracts/UniversalProfile.sol/UniversalProfile.json';
+import LSP6KeyManagerArtifacts from '../../artifacts/@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol/LSP6KeyManager.json';
+import LSP1UniversalReceiverDelegateUPArtifacts from '../../artifacts/@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol/LSP1UniversalReceiverDelegateUP.json';
+import LSP9VaultArtifacts from '../../artifacts/@lukso/lsp9-contracts/contracts/LSP9Vault.sol/LSP9Vault.json';
+
+import LSP7TesterArtifacts from '../../artifacts/contracts/Mocks/Tokens/LSP7Tester.sol/LSP7Tester.json';
+import LSP7MintWhenDeployedArtifacts from '../../artifacts/contracts/Mocks/Tokens/LSP7MintWhenDeployed.sol/LSP7MintWhenDeployed.json';
+import LSP8TesterArtifacts from '../../artifacts/contracts/Mocks/Tokens/LSP8Tester.sol/LSP8Tester.json';
+
+import GenericExecutor from '../../artifacts/contracts/Mocks/GenericExecutor.sol/GenericExecutor.json';
+import GenericExecutorWithBalanceOfFunction from '../../artifacts/contracts/Mocks/GenericExecutorWithBalanceOfFunction.sol/GenericExecutorWithBalanceOfFunction.json';
+
+// factories
+
+const LSP0ERC725Account__factory = new ContractFactory(
+  LSP0ERC725AccountArtifacts.abi,
+  LSP0ERC725AccountArtifacts.bytecode,
+);
+const UniversalProfile__factory = new ContractFactory(
+  UniversalProfileArtifacts.abi,
+  UniversalProfileArtifacts.bytecode,
+);
+const LSP6KeyManager__factory = new ContractFactory(
+  LSP6KeyManagerArtifacts.abi,
+  LSP6KeyManagerArtifacts.bytecode,
+);
+const LSP1UniversalReceiverDelegateUP__factory = new ContractFactory(
+  LSP1UniversalReceiverDelegateUPArtifacts.abi,
+  LSP1UniversalReceiverDelegateUPArtifacts.bytecode,
+);
+const LSP9Vault__factory = new ContractFactory(LSP9VaultArtifacts.abi, LSP9VaultArtifacts.bytecode);
+
+const LSP7Tester__factory = new ContractFactory(
+  LSP7TesterArtifacts.abi,
+  LSP7TesterArtifacts.bytecode,
+);
+const LSP7MintWhenDeployed__factory = new ContractFactory(
+  LSP7MintWhenDeployedArtifacts.abi,
+  LSP7MintWhenDeployedArtifacts.bytecode,
+);
+const LSP8Tester__factory = new ContractFactory(
+  LSP8TesterArtifacts.abi,
+  LSP8TesterArtifacts.bytecode,
+);
+
+const GenericExecutor__factory = new ContractFactory(GenericExecutor.abi, GenericExecutor.bytecode);
+const GenericExecutorWithBalanceOfFunction__factory = new ContractFactory(
+  GenericExecutorWithBalanceOfFunction.abi,
+  GenericExecutorWithBalanceOfFunction.bytecode,
+);
 
 export type LSP1TestAccounts = {
   owner1: SignerWithAddress;
@@ -49,11 +77,11 @@ export type LSP1TestAccounts = {
 
 export type LSP1DelegateTestContext = {
   accounts: LSP1TestAccounts;
-  universalProfile1: UniversalProfile;
-  lsp6KeyManager1: LSP6KeyManager;
-  universalProfile2: UniversalProfile;
-  lsp6KeyManager2: LSP6KeyManager;
-  lsp1universalReceiverDelegateUP: LSP1UniversalReceiverDelegateUP;
+  universalProfile1;
+  lsp6KeyManager1;
+  universalProfile2;
+  lsp6KeyManager2;
+  lsp1universalReceiverDelegateUP;
 };
 
 /**
@@ -192,16 +220,17 @@ export const shouldBehaveLikeLSP1Delegate = (
 
   describe('when testing LSP0-ERC725Account', () => {
     describe('when accepting ownership of an LSP0', () => {
-      let sentUniversalProfile: LSP0ERC725Account;
+      let sentUniversalProfile;
+
       before(async () => {
-        sentUniversalProfile = await new LSP0ERC725Account__factory(context.accounts.owner1).deploy(
-          context.accounts.owner1.address,
-        );
+        sentUniversalProfile = await LSP0ERC725Account__factory.connect(
+          context.accounts.owner1,
+        ).deploy(context.accounts.owner1.address);
       });
 
       it('should not register universal profile as received vault', async () => {
-        const acceptingUniversalProfile: LSP0ERC725Account = context.universalProfile1;
-        const acceptingUniversalProfileKM: LSP6KeyManager = context.lsp6KeyManager1;
+        const acceptingUniversalProfile = context.universalProfile1;
+        const acceptingUniversalProfileKM = context.lsp6KeyManager1;
 
         await sentUniversalProfile
           .connect(context.accounts.owner1)
@@ -236,24 +265,24 @@ export const shouldBehaveLikeLSP1Delegate = (
   });
 
   describe('when testing LSP7-DigitalAsset', () => {
-    let lsp7TokenA: LSP7Tester, lsp7TokenB: LSP7Tester, lsp7TokenC: LSP7Tester;
+    let lsp7TokenA, lsp7TokenB, lsp7TokenC;
 
     before(async () => {
-      lsp7TokenA = await new LSP7Tester__factory(context.accounts.random).deploy(
+      lsp7TokenA = await LSP7Tester__factory.connect(context.accounts.random).deploy(
         'TokenAlpha',
         'TA',
         context.accounts.random.address,
         LSP4_TOKEN_TYPES.TOKEN,
       );
 
-      lsp7TokenB = await new LSP7Tester__factory(context.accounts.random).deploy(
+      lsp7TokenB = await LSP7Tester__factory.connect(context.accounts.random).deploy(
         'TokenBeta',
         'TB',
         context.accounts.random.address,
         LSP4_TOKEN_TYPES.TOKEN,
       );
 
-      lsp7TokenC = await new LSP7Tester__factory(context.accounts.random).deploy(
+      lsp7TokenC = await LSP7Tester__factory.connect(context.accounts.random).deploy(
         'TokenGamma',
         'TA',
         context.accounts.random.address,
@@ -263,10 +292,12 @@ export const shouldBehaveLikeLSP1Delegate = (
 
     describe('when minting tokens', () => {
       describe('when tokens are minted through the constructor (on LSP7 deployment)', () => {
-        let deployedLSP7Token: LSP7MintWhenDeployed;
+        let deployedLSP7Token;
 
         before('deploy LSP7 token which mint tokens in `constructor`', async () => {
-          deployedLSP7Token = await new LSP7MintWhenDeployed__factory(context.accounts.any).deploy(
+          deployedLSP7Token = await LSP7MintWhenDeployed__factory.connect(
+            context.accounts.any,
+          ).deploy(
             'LSP7 Token',
             'TKN',
             await context.universalProfile1.getAddress(),
@@ -932,10 +963,10 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
 
     describe('when UP does not have any balance of a LSP7 token and transfer with amount == 0', () => {
-      let lsp7Token: LSP7Tester;
+      let lsp7Token;
 
       before(async () => {
-        lsp7Token = await new LSP7Tester__factory(context.accounts.random).deploy(
+        lsp7Token = await LSP7Tester__factory.connect(context.accounts.random).deploy(
           'Example LSP7 token',
           'EL7T',
           context.accounts.random.address,
@@ -1002,14 +1033,16 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
 
     describe('when a non-LSP7 token contract calls the `universalReceiver(...)` function', () => {
-      let notTokenContract: GenericExecutor;
-      let notTokenContractWithBalanceOfFunction: GenericExecutorWithBalanceOfFunction;
+      let notTokenContract;
+      let notTokenContractWithBalanceOfFunction;
 
       before(async () => {
-        notTokenContract = await new GenericExecutor__factory(context.accounts.random).deploy();
+        notTokenContract = await GenericExecutor__factory.connect(context.accounts.random).deploy();
 
         notTokenContractWithBalanceOfFunction =
-          await new GenericExecutorWithBalanceOfFunction__factory(context.accounts.random).deploy();
+          await GenericExecutorWithBalanceOfFunction__factory.connect(
+            context.accounts.random,
+          ).deploy();
       });
 
       describe('when a non-LSP7 token contract has `balanceOf(address)` functions', () => {
@@ -1116,8 +1149,8 @@ export const shouldBehaveLikeLSP1Delegate = (
   });
 
   describe('testing values set under `LSP5ReceivedAssets[]`', () => {
-    let context: LSP1DelegateTestContext;
-    let token: LSP7Tester;
+    let context;
+    let token;
     let arrayKey: BytesLike;
     let arrayIndexKey: BytesLike;
     let assetMapKey: BytesLike;
@@ -1126,7 +1159,7 @@ export const shouldBehaveLikeLSP1Delegate = (
       // start with a fresh empty context
       context = await buildContext();
 
-      token = await new LSP7Tester__factory(context.accounts.random).deploy(
+      token = await LSP7Tester__factory.connect(context.accounts.random).deploy(
         'Example LSP7 token',
         'EL7T',
         context.accounts.random.address,
@@ -1521,7 +1554,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
   describe('testing values set under `LSP10ReceivedVaults[]`', () => {
     let context: LSP1DelegateTestContext;
-    let vault: LSP9Vault;
+    let vault;
     let arrayKey: BytesLike;
     let arrayIndexKey: BytesLike;
     let vaultMapKey: BytesLike;
@@ -1530,7 +1563,7 @@ export const shouldBehaveLikeLSP1Delegate = (
       // start with a fresh empty context
       context = await buildContext();
 
-      vault = await new LSP9Vault__factory(context.accounts.random).deploy(
+      vault = await LSP9Vault__factory.connect(context.accounts.random).deploy(
         context.accounts.owner1.address,
       );
 
@@ -1781,10 +1814,10 @@ export const shouldBehaveLikeLSP1Delegate = (
   });
 
   describe('when testing LSP8-IdentifiableDigitalAsset', () => {
-    let lsp8TokenA: LSP8Tester, lsp8TokenB: LSP8Tester, lsp8TokenC: LSP8Tester;
+    let lsp8TokenA, lsp8TokenB, lsp8TokenC;
 
     before(async () => {
-      lsp8TokenA = await new LSP8Tester__factory(context.accounts.random).deploy(
+      lsp8TokenA = await LSP8Tester__factory.connect(context.accounts.random).deploy(
         'TokenAlpha',
         'TA',
         context.accounts.random.address,
@@ -1792,7 +1825,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
       );
 
-      lsp8TokenB = await new LSP8Tester__factory(context.accounts.random).deploy(
+      lsp8TokenB = await LSP8Tester__factory.connect(context.accounts.random).deploy(
         'TokenBeta',
         'TB',
         context.accounts.random.address,
@@ -1800,7 +1833,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
       );
 
-      lsp8TokenC = await new LSP8Tester__factory(context.accounts.random).deploy(
+      lsp8TokenC = await LSP8Tester__factory.connect(context.accounts.random).deploy(
         'TokenGamma',
         'TA',
         context.accounts.random.address,
@@ -2276,14 +2309,16 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
 
     describe('when a non-LSP8 token contract calls the `universalReceiver(...)` function', () => {
-      let notTokenContract: GenericExecutor;
-      let notTokenContractWithBalanceOfFunction: GenericExecutorWithBalanceOfFunction;
+      let notTokenContract;
+      let notTokenContractWithBalanceOfFunction;
 
       before(async () => {
-        notTokenContract = await new GenericExecutor__factory(context.accounts.random).deploy();
+        notTokenContract = await GenericExecutor__factory.connect(context.accounts.random).deploy();
 
         notTokenContractWithBalanceOfFunction =
-          await new GenericExecutorWithBalanceOfFunction__factory(context.accounts.random).deploy();
+          await GenericExecutorWithBalanceOfFunction__factory.connect(
+            context.accounts.random,
+          ).deploy();
       });
 
       describe('when a non-LSP8 token contract has `balanceOf(address)` functions', () => {
@@ -2390,18 +2425,18 @@ export const shouldBehaveLikeLSP1Delegate = (
   });
 
   describe('when testing LSP9-Vault', () => {
-    let lsp9VaultA: LSP9Vault, lsp9VaultB: LSP9Vault, lsp9VaultC: LSP9Vault;
+    let lsp9VaultA, lsp9VaultB, lsp9VaultC;
 
     before(async () => {
-      lsp9VaultA = await new LSP9Vault__factory(context.accounts.random).deploy(
+      lsp9VaultA = await LSP9Vault__factory.connect(context.accounts.random).deploy(
         context.accounts.random.address,
       );
 
-      lsp9VaultB = await new LSP9Vault__factory(context.accounts.random).deploy(
+      lsp9VaultB = await LSP9Vault__factory.connect(context.accounts.random).deploy(
         context.accounts.random.address,
       );
 
-      lsp9VaultC = await new LSP9Vault__factory(context.accounts.random).deploy(
+      lsp9VaultC = await LSP9Vault__factory.connect(context.accounts.random).deploy(
         context.accounts.random.address,
       );
     });
@@ -2669,7 +2704,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
     describe('When renouncing ownership of a vault from UP2', () => {
       let tx: ContractTransaction;
-      let someVault: LSP9Vault;
+      let someVault;
       let dataKeys: string[];
       let dataValues: string[];
 
@@ -2682,7 +2717,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           LSP10ArrayLength = ARRAY_LENGTH.ZERO;
         }
 
-        someVault = await new LSP9Vault__factory(context.accounts.random).deploy(
+        someVault = await LSP9Vault__factory.connect(context.accounts.random).deploy(
           await context.universalProfile2.getAddress(),
         );
 
@@ -2758,10 +2793,10 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
 
     describe('when deploying vault to a UP directly', () => {
-      let lsp9VaultD: LSP9Vault;
+      let lsp9VaultD;
 
       before(async () => {
-        lsp9VaultD = await new LSP9Vault__factory(context.accounts.random).deploy(
+        lsp9VaultD = await LSP9Vault__factory.connect(context.accounts.random).deploy(
           await context.universalProfile1.getAddress(),
         );
       });
@@ -2800,7 +2835,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         // deploy a Vault setting the UP as owner
         // this should revert because the UP has already the max number of vaults allowed
 
-        const tx = await new LSP9Vault__factory(context.accounts.random).deploy(
+        const tx = await LSP9Vault__factory.connect(context.accounts.random).deploy(
           await context.universalProfile1.getAddress(),
         );
 
@@ -2822,18 +2857,18 @@ export const shouldBehaveLikeLSP1Delegate = (
 
   describe('when a UP owns a LSP9Vault before having a URD set', () => {
     let testContext: LSP6TestContext;
-    let vault: LSP9Vault;
-    let lsp1Delegate: LSP1UniversalReceiverDelegateUP;
+    let vault;
+    let lsp1Delegate;
 
     before(async () => {
       const signerAddresses = await ethers.getSigners();
       const profileOwner = signerAddresses[0];
 
       //   1. deploy a UP with a Key Manager but NOT a URD
-      const deployedUniversalProfile = await new UniversalProfile__factory(profileOwner).deploy(
+      const deployedUniversalProfile = await UniversalProfile__factory.connect(profileOwner).deploy(
         profileOwner.address,
       );
-      const deployedKeyManager = await new LSP6KeyManager__factory(profileOwner).deploy(
+      const deployedKeyManager = await LSP6KeyManager__factory.connect(profileOwner).deploy(
         await deployedUniversalProfile.getAddress(),
       );
 
@@ -2847,12 +2882,12 @@ export const shouldBehaveLikeLSP1Delegate = (
       await setupKeyManager(testContext, [], []);
 
       // 2. deploy a Vault owned by the UP
-      vault = await new LSP9Vault__factory(profileOwner).deploy(
+      vault = await LSP9Vault__factory.connect(profileOwner).deploy(
         await deployedUniversalProfile.getAddress(),
       );
 
       // 3. deploy a URD and set its address on the UP storage under the LSP1Delegate data key
-      lsp1Delegate = await new LSP1UniversalReceiverDelegateUP__factory(profileOwner).deploy();
+      lsp1Delegate = await LSP1UniversalReceiverDelegateUP__factory.connect(profileOwner).deploy();
 
       const setLSP1DelegatePayload = testContext.universalProfile.interface.encodeFunctionData(
         'setData',
@@ -2955,7 +2990,7 @@ export const shouldBehaveLikeLSP1Delegate = (
   });
 
   describe("when having a Vault set in LSP10 before it's ownership was transfered", () => {
-    let vault: LSP9Vault;
+    let vault;
     let vaultOwner: SignerWithAddress;
     const bytes16Value1 = '0x' + '00'.repeat(15) + '01';
 
@@ -2963,7 +2998,7 @@ export const shouldBehaveLikeLSP1Delegate = (
       vaultOwner = context.accounts.any;
 
       // 1. deploy a Vault owned by someone else
-      vault = await new LSP9Vault__factory(vaultOwner).deploy(vaultOwner.address);
+      vault = await LSP9Vault__factory.connect(vaultOwner).deploy(vaultOwner.address);
 
       // 2. set the address of the Vault in the UP's storage under the LSP10 data keys
       const lsp10DataKeys = [
@@ -3102,7 +3137,7 @@ export const shouldBehaveLikeLSP1Delegate = (
     describe('when receiving LSP7', () => {
       it('should not revert', async () => {
         // Deploy LSP7 (mint on SC level 1000 tokens)
-        const LSP7 = await new LSP7MintWhenDeployed__factory(context.accounts.owner1).deploy(
+        const LSP7 = await LSP7MintWhenDeployed__factory.connect(context.accounts.owner1).deploy(
           'MyToken',
           'MTK',
           await context.universalProfile1.getAddress(),
@@ -3134,7 +3169,7 @@ export const shouldBehaveLikeLSP1Delegate = (
     describe('when receiving LSP8', () => {
       it('should not revert', async () => {
         // Deploy LSP8
-        const LSP8 = await new LSP8Tester__factory(context.accounts.owner1).deploy(
+        const LSP8 = await LSP8Tester__factory.connect(context.accounts.owner1).deploy(
           'MyToken',
           'MTK',
           await context.universalProfile1.getAddress(),
@@ -3176,7 +3211,7 @@ export const shouldBehaveLikeLSP1Delegate = (
     describe('when becoming the owner of the LSP9 Vault', () => {
       it('should not revert', async () => {
         // Deploy LSP9 (UP1 ownwer)
-        const LSP9 = await new LSP9Vault__factory(context.accounts.owner1).deploy(
+        const LSP9 = await LSP9Vault__factory.connect(context.accounts.owner1).deploy(
           await context.universalProfile1.getAddress(),
         );
 
@@ -3211,7 +3246,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 };
 
 export type LSP1DelegateInitializeTestContext = {
-  lsp1universalReceiverDelegateUP: LSP1UniversalReceiverDelegateUP;
+  lsp1universalReceiverDelegateUP;
 };
 
 export const shouldInitializeLikeLSP1Delegate = (
