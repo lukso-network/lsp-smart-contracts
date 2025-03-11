@@ -1,9 +1,5 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import {
-  LSP8CappedSupplyInitTester,
-  LSP8CappedSupplyInitTester__factory,
-} from '../../../typechain';
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {
@@ -27,16 +23,18 @@ describe('LSP8CappedSupplyInit with proxy', () => {
       lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
       tokenSupplyCap: ethers.toBigInt('2'),
     };
-    const lsp8CappedSupplyInit = await new LSP8CappedSupplyInitTester__factory(
+
+    const LSP8CappedSupplyInitTester__factory = await ethers.getContractFactory(
+      'LSP8CappedSupplyInitTester',
       accounts.owner,
-    ).deploy();
+    );
+
+    const lsp8CappedSupplyInit = await LSP8CappedSupplyInitTester__factory.deploy();
     const lsp8CappedSupplyProxy = await deployProxy(
       await lsp8CappedSupplyInit.getAddress(),
       accounts.owner,
     );
-    const lsp8CappedSupply = lsp8CappedSupplyInit.attach(
-      lsp8CappedSupplyProxy,
-    ) as LSP8CappedSupplyInitTester;
+    const lsp8CappedSupply = lsp8CappedSupplyInit.attach(lsp8CappedSupplyProxy);
 
     return { accounts, lsp8CappedSupply, deployParams };
   };

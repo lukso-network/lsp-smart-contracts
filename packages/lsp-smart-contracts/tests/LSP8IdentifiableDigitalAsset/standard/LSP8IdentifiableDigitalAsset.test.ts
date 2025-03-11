@@ -1,8 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LSP8Tester__factory, LSP8IdentifiableDigitalAsset } from '../../../typechain';
-
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP8,
@@ -32,7 +30,10 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       lsp8TokenIdFormat: nftType,
     };
-    const lsp8 = await new LSP8Tester__factory(accounts.owner).deploy(
+
+    const LSP8Tester__factory = await ethers.getContractFactory('LSP8Tester', accounts.owner);
+
+    const lsp8 = await LSP8Tester__factory.deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
@@ -54,7 +55,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
       };
 
       return {
-        contract: lsp8 as LSP8IdentifiableDigitalAsset,
+        contract: lsp8,
         accounts,
         deployParams,
       };
@@ -70,7 +71,10 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
     };
-    const contract = await new LSP8Tester__factory(accounts[0]).deploy(
+
+    const LSP8Tester__factory = await ethers.getContractFactory('LSP8Tester', accounts[0]);
+
+    const contract = await LSP8Tester__factory.deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.owner.address,
@@ -92,7 +96,7 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
         lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       };
 
-      const contractToDeploy = new LSP8Tester__factory(accounts[0]);
+      const contractToDeploy = await ethers.getContractFactory('LSP8Tester', accounts[0]);
 
       await expect(
         contractToDeploy.deploy(

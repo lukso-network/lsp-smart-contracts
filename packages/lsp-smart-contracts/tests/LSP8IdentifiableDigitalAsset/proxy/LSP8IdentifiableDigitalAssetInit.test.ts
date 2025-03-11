@@ -2,12 +2,6 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
 import {
-  LSP8InitTester__factory,
-  LSP8IdentifiableDigitalAsset,
-  LSP8Tester,
-} from '../../../typechain';
-
-import {
   getNamedAccounts,
   shouldBehaveLikeLSP8,
   shouldInitializeLikeLSP8,
@@ -33,11 +27,16 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
       lsp8TokenIdFormat: nftType,
     };
 
-    const lsp8TesterInit = await new LSP8InitTester__factory(accounts.owner).deploy();
-    const lsp8Proxy = await deployProxy(await lsp8TesterInit.getAddress(), accounts.owner);
-    const lsp8 = lsp8TesterInit.attach(lsp8Proxy) as LSP8Tester;
+    const LSP8InitTester__factory = await ethers.getContractFactory(
+      'LSP8InitTester',
+      accounts.owner,
+    );
 
-    return { accounts, lsp8, deployParams };
+    const lsp8TesterInit = await LSP8InitTester__factory.deploy();
+    const lsp8Proxy = await deployProxy(await lsp8TesterInit.getAddress(), accounts.owner);
+    const lsp8 = lsp8TesterInit.attach(lsp8Proxy);
+
+    return { accounts, lsp8: lsp8 as any, deployParams };
   };
 
   const buildLSP4DigitalAssetMetadataTestContext =
@@ -51,7 +50,7 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
       };
 
       return {
-        contract: lsp8 as LSP8IdentifiableDigitalAsset,
+        contract: lsp8,
         accounts,
         deployParams,
       };

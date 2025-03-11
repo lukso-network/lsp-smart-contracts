@@ -1,7 +1,5 @@
 import { ethers } from 'hardhat';
 
-import { LSP8CappedSupplyTester__factory } from '../../../typechain';
-
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {
   shouldBehaveLikeLSP8CappedSupply,
@@ -22,7 +20,13 @@ describe('LSP8CappedSupply with constructor', () => {
       lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
       tokenSupplyCap: ethers.toBigInt('2'),
     };
-    const lsp8CappedSupply = await new LSP8CappedSupplyTester__factory(accounts.owner).deploy(
+
+    const LSP8CappedSupplyTester__factory = await ethers.getContractFactory(
+      'LSP8CappedSupplyTester',
+      accounts.owner,
+    );
+
+    const lsp8CappedSupply = await LSP8CappedSupplyTester__factory.deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,

@@ -1,6 +1,5 @@
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
-import { LSP8Mintable, LSP8Mintable__factory } from '../../../typechain';
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {
@@ -8,6 +7,7 @@ import {
   LSP8MintableTestContext,
   getNamedAccounts,
 } from '../LSP8Mintable.behaviour';
+import { ethers } from 'hardhat';
 
 describe('LSP8Mintable with constructor', () => {
   const buildTestContext = async () => {
@@ -21,7 +21,9 @@ describe('LSP8Mintable with constructor', () => {
       lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
     };
 
-    const lsp8Mintable: LSP8Mintable = await new LSP8Mintable__factory(accounts.owner).deploy(
+    const LSP8Mintable__factory = await ethers.getContractFactory('LSP8Mintable', accounts.owner);
+
+    const lsp8Mintable = await LSP8Mintable__factory.deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,

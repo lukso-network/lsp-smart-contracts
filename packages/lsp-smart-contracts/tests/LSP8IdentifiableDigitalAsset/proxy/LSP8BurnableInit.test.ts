@@ -2,8 +2,6 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import { LSP8BurnableInitTester, LSP8BurnableInitTester__factory } from '../../../typechain';
-
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 
 import { deployProxy } from '../../utils/fixtures';
@@ -12,7 +10,7 @@ import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 
 type LSP8BurnableInitTestContext = {
   accounts: SignerWithAddress[];
-  lsp8Burnable: LSP8BurnableInitTester;
+  lsp8Burnable;
   deployParams: {
     name: string;
     symbol: string;
@@ -33,16 +31,17 @@ describe('LSP8BurnableInit with proxy', () => {
       lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
     };
 
-    const lsp8BurnableImplementation = await new LSP8BurnableInitTester__factory(
+    const LSP8BurnableInitTester__factory = await ethers.getContractFactory(
+      'LSP8BurnableInitTester',
       accounts[0],
-    ).deploy();
+    );
+
+    const lsp8BurnableImplementation = await LSP8BurnableInitTester__factory.deploy();
     const lsp8BurnableProxy = await deployProxy(
       await lsp8BurnableImplementation.getAddress(),
       accounts[0],
     );
-    const lsp8Burnable = lsp8BurnableImplementation.attach(
-      lsp8BurnableProxy,
-    ) as LSP8BurnableInitTester;
+    const lsp8Burnable = lsp8BurnableImplementation.attach(lsp8BurnableProxy);
 
     return { accounts, lsp8Burnable, deployParams };
   };
