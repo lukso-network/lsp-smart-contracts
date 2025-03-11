@@ -2,14 +2,6 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import {
-  UniversalReceiverDelegateTokenReentrant__factory,
-  LSP7Mintable,
-  UniversalProfileInit,
-  LSP6KeyManagerInit,
-  UniversalReceiverDelegateTokenReentrant,
-} from '../../typechain';
-
 import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 
 import { ERC725YDataKeys } from '../../constants';
@@ -38,7 +30,7 @@ export type LSP7MintableDeployParams = {
 
 export type LSP7MintableTestContext = {
   accounts: LSP7MintableTestAccounts;
-  lsp7Mintable: LSP7Mintable;
+  lsp7Mintable;
   deployParams: LSP7MintableDeployParams;
 };
 
@@ -98,16 +90,19 @@ export const shouldBehaveLikeLSP7Mintable = (
     before(async () => {
       const [UP, KM] = await setupProfileWithKeyManagerWithURD(context.accounts.profileOwner);
 
-      universalProfile = UP as UniversalProfileInit;
-      lsp6KeyManager = KM as LSP6KeyManagerInit;
+      universalProfile = UP;
+      lsp6KeyManager = KM;
 
       await context.lsp7Mintable
         .connect(context.accounts.owner)
         .transferOwnership(await universalProfile.getAddress());
 
-      const URDTokenReentrant = (await new UniversalReceiverDelegateTokenReentrant__factory(
+      const UniversalReceiverDelegateTokenReentrant__factory = await ethers.getContractFactory(
+        'UniversalReceiverDelegateTokenReentrant',
+      );
+      const URDTokenReentrant = await UniversalReceiverDelegateTokenReentrant__factory.connect(
         context.accounts.profileOwner,
-      ).deploy()) as UniversalReceiverDelegateTokenReentrant;
+      ).deploy();
 
       const setDataPayload = universalProfile.interface.encodeFunctionData('setDataBatch', [
         [

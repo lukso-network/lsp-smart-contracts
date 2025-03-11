@@ -1,7 +1,5 @@
 import { ethers } from 'hardhat';
 
-import { LSP7CappedSupplyTester__factory } from '../../../typechain';
-
 import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour';
 import {
   shouldBehaveLikeLSP7CappedSupply,
@@ -21,7 +19,12 @@ describe('LSP7CappedSupply with constructor', () => {
       tokenSupplyCap: ethers.toBigInt('2'),
     };
 
-    const lsp7CappedSupply = await new LSP7CappedSupplyTester__factory(accounts.owner).deploy(
+    const LSP7CappedSupplyTester__factory = await ethers.getContractFactory(
+      'LSP7CappedSupplyTester',
+      accounts.owner,
+    );
+
+    const lsp7CappedSupply = await LSP7CappedSupplyTester__factory.deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
