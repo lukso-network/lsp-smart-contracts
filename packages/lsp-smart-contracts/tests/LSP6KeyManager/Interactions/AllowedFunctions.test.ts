@@ -3,15 +3,6 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import {
-  LSP7Mintable,
-  LSP7Mintable__factory,
-  LSP8Mintable,
-  LSP8Mintable__factory,
-  TargetContract,
-  TargetContract__factory,
-} from '../../../typechain';
-
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -33,7 +24,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
   let addressWithNoAllowedFunctions: SignerWithAddress,
     addressCanCallOnlyOneFunction: SignerWithAddress;
 
-  let targetContract: TargetContract;
+  let targetContract;
 
   before(async () => {
     context = await buildContext();
@@ -41,7 +32,8 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
     addressWithNoAllowedFunctions = context.accounts[1];
     addressCanCallOnlyOneFunction = context.accounts[2];
 
-    targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+    const TargetContract = await ethers.getContractFactory('TargetContract', context.accounts[0]);
+    targetContract = await TargetContract.deploy();
 
     const permissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -314,8 +306,8 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
     let addressCanCallOnlyTransferOnLSP8: SignerWithAddress;
     let addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8: SignerWithAddress;
 
-    let lsp7Contract: LSP7Mintable;
-    let lsp8Contract: LSP8Mintable;
+    let lsp7Contract;
+    let lsp8Contract;
 
     const tokenIdToTransfer = '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef';
 
@@ -327,7 +319,9 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
       addressCanCallOnlyTransferOnLSP8 = context.accounts[1];
       addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8 = context.accounts[2];
 
-      lsp7Contract = await new LSP7Mintable__factory(context.accounts[0]).deploy(
+      const LSP7Mintable__factory = await ethers.getContractFactory("LSP7Mintable", context.accounts[0])
+
+      lsp7Contract = await LSP7Mintable__factory.deploy(
         'LSP7 Token',
         'TKN',
         context.accounts[0].address,
@@ -335,7 +329,9 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
         false,
       );
 
-      lsp8Contract = await new LSP8Mintable__factory(context.accounts[0]).deploy(
+      const LSP8Mintable__factory = await ethers.getContractFactory("LSP8Mintable", context.accounts[0])
+
+      lsp8Contract = await LSP8Mintable__factory.deploy(
         'LSP8 NFT',
         'NFT',
         context.accounts[0].address,

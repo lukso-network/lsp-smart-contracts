@@ -4,13 +4,6 @@ import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import {
-  TargetContract,
-  TargetContract__factory,
-  LSP7Mintable,
-  LSP7Mintable__factory,
-} from '../../../typechain';
-
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -38,6 +31,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
   let context: LSP6TestContext;
 
   describe('`executeRelayCall(..)`', () => {
+    let TargetContract__factory;
+
     let signer: SignerWithAddress,
       relayer: SignerWithAddress,
       random: SignerWithAddress,
@@ -46,10 +41,15 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
     const signerPrivateKey = LOCAL_PRIVATE_KEYS.ACCOUNT1;
 
-    let targetContract: TargetContract;
+    let targetContract;
 
     before(async () => {
       context = await buildContext();
+
+      TargetContract__factory = await ethers.getContractFactory(
+        'TargetContract',
+        context.accounts[0],
+      );
 
       signer = context.accounts[1];
       relayer = context.accounts[2];
@@ -57,7 +57,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
       random = context.accounts[4];
       signerWithoutExecuteRelayCall = context.accounts[5];
 
-      targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+      targetContract = await TargetContract__factory.deploy();
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -1366,7 +1366,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
     let minter: SignerWithAddress;
     let tokenRecipient: SignerWithAddress;
 
-    let tokenContract: LSP7Mintable;
+    let tokenContract;
 
     before(async () => {
       context = await buildContext(ethers.parseEther('10'));
@@ -1374,8 +1374,13 @@ export const shouldBehaveLikeExecuteRelayCall = (
       minter = context.accounts[1];
       tokenRecipient = context.accounts[2];
 
+      const LSP7Mintable__factory = await ethers.getContractFactory(
+        'LSP7Mintable',
+        context.accounts[0],
+      );
+
       // deploy token contract
-      tokenContract = await new LSP7Mintable__factory(context.accounts[0]).deploy(
+      tokenContract = await LSP7Mintable__factory.deploy(
         'My LSP7 Token',
         'LSP7',
         await context.universalProfile.getAddress(),

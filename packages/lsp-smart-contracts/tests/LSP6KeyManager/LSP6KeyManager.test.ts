@@ -1,13 +1,5 @@
 import { ethers } from 'hardhat';
-
-import {
-  KeyManagerInternalTester__factory,
-  UniversalProfile__factory,
-  LSP6KeyManager__factory,
-} from '../../typechain';
-
 import { LSP6TestContext } from '../utils/context';
-
 import {
   shouldInitializeLikeLSP6,
   shouldBehaveLikeLSP6,
@@ -19,16 +11,13 @@ describe('LSP6KeyManager with constructor', () => {
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
-    const universalProfile = await new UniversalProfile__factory(mainController).deploy(
-      mainController.address,
-      {
-        value: initialFunding,
-      },
-    );
+    const UniversalProfile = await ethers.getContractFactory('UniversalProfile', mainController);
+    const universalProfile = await UniversalProfile.deploy(mainController.address, {
+      value: initialFunding,
+    });
 
-    const keyManager = await new LSP6KeyManager__factory(mainController).deploy(
-      universalProfile.target,
-    );
+    const LSP6KeyManager = await ethers.getContractFactory('LSP6KeyManager', mainController);
+    const keyManager = await LSP6KeyManager.deploy(await universalProfile.getAddress());
 
     return { accounts, mainController, universalProfile, keyManager, initialFunding };
   };
@@ -48,12 +37,11 @@ describe('LSP6KeyManager with constructor', () => {
       const accounts = await ethers.getSigners();
       const mainController = accounts[0];
 
-      const universalProfile = await new UniversalProfile__factory(mainController).deploy(
-        mainController.address,
-      );
-      const keyManagerInternalTester = await new KeyManagerInternalTester__factory(
-        mainController,
-      ).deploy(universalProfile.target);
+      const UniversalProfile = await ethers.getContractFactory('UniversalProfile', mainController);
+      const universalProfile = await UniversalProfile.deploy(mainController.address);
+
+      const KeyManagerInternalTester = await ethers.getContractFactory('KeyManagerInternalTester', mainController);
+      const keyManagerInternalTester = await KeyManagerInternalTester.deploy(universalProfile.target);
 
       return { mainController, accounts, universalProfile, keyManagerInternalTester };
     });

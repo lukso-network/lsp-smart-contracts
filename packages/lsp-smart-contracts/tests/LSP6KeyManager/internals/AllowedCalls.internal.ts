@@ -2,8 +2,6 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import { TargetContract, TargetContract__factory } from '../../../typechain';
-
 // constants
 import { ERC725YDataKeys } from '../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -33,8 +31,15 @@ export const testAllowedCallsInternals = (
 ) => {
   let context: LSP6InternalsTestContext;
 
+  let TargetContract__factory;
+
   before(async () => {
     context = await buildContext();
+
+    TargetContract__factory = await ethers.getContractFactory(
+      'TargetContract',
+      context.accounts[0],
+    );
   });
 
   describe('`isCompactBytesArrayOfAllowedCalls`', () => {
@@ -126,7 +131,7 @@ export const testAllowedCallsInternals = (
   describe('testing 2 x addresses encoded as LSP2 CompactBytesArray under `AllowedCalls`', () => {
     let canCallOnlyTwoAddresses: SignerWithAddress, canCallNoAllowedCalls: SignerWithAddress;
 
-    let allowedEOA: SignerWithAddress, allowedTargetContract: TargetContract;
+    let allowedEOA: SignerWithAddress, allowedTargetContract;
 
     let encodedAllowedCalls: string;
 
@@ -276,23 +281,23 @@ export const testAllowedCallsInternals = (
     // we are just testing that the `verifyAllowedCall(...)` function works as expected
     const randomPayload = '0xcafecafe';
 
-    let targetContractValue: TargetContract,
-      targetContractCall: TargetContract,
-      targetContractStaticCall: TargetContract,
-      targetContractDelegateCall: TargetContract;
+    let targetContractValue,
+      targetContractCall,
+      targetContractStaticCall,
+      targetContractDelegateCall;
 
     let allowedCalls: string;
 
     before('setup AllowedCalls', async () => {
       context = await buildContext();
 
-      targetContractValue = await new TargetContract__factory(context.accounts[0]).deploy();
+      targetContractValue = await TargetContract__factory.deploy();
 
-      targetContractCall = await new TargetContract__factory(context.accounts[0]).deploy();
+      targetContractCall = await TargetContract__factory.deploy();
 
-      targetContractStaticCall = await new TargetContract__factory(context.accounts[0]).deploy();
+      targetContractStaticCall = await TargetContract__factory.deploy();
 
-      targetContractDelegateCall = await new TargetContract__factory(context.accounts[0]).deploy();
+      targetContractDelegateCall = await TargetContract__factory.deploy();
 
       allowedCalls = combineAllowedCalls(
         [CALLTYPE.VALUE, CALLTYPE.CALL, CALLTYPE.STATICCALL, CALLTYPE.DELEGATECALL],

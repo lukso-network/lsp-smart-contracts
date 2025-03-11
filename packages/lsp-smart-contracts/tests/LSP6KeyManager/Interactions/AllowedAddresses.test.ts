@@ -2,8 +2,6 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import { TargetContract, TargetContract__factory } from '../../../typechain';
-
 // constants
 import { ERC725YDataKeys } from '../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -30,8 +28,8 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
 
   let allowedEOA: SignerWithAddress,
     notAllowedEOA: SignerWithAddress,
-    allowedTargetContract: TargetContract,
-    notAllowedTargetContract: TargetContract;
+    allowedTargetContract,
+    notAllowedTargetContract;
 
   const invalidEncodedAllowedCallsValue = '0xbadbadbadbad';
 
@@ -44,9 +42,10 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
     allowedEOA = context.accounts[3];
     notAllowedEOA = context.accounts[4];
 
-    allowedTargetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+    const TargetContract = await ethers.getContractFactory('TargetContract', context.accounts[0]);
+    allowedTargetContract = await TargetContract.deploy();
 
-    notAllowedTargetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+    notAllowedTargetContract = await TargetContract.deploy();
 
     const permissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +

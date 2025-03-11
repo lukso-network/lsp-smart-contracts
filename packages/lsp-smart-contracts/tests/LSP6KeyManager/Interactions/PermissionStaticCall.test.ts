@@ -1,15 +1,7 @@
 import { expect } from 'chai';
 import { hashMessage, parseEther, toUtf8Bytes } from 'ethers';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-
-import {
-  TargetContract,
-  TargetContract__factory,
-  SignatureValidator,
-  OnERC721ReceivedExtension,
-  SignatureValidator__factory,
-  OnERC721ReceivedExtension__factory,
-} from '../../../typechain';
+import { ethers } from 'hardhat';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';
@@ -32,29 +24,38 @@ export const shouldBehaveLikePermissionStaticCall = (
   buildContext: () => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
+  let TargetContract__factory;
 
   let addressCanMakeStaticCall: SignerWithAddress,
     addressCannotMakeStaticCall: SignerWithAddress,
     addressCanMakeStaticCallNoAllowedCalls: SignerWithAddress;
 
-  let targetContract: TargetContract,
-    signatureValidator: SignatureValidator,
-    onERC721ReceivedContract: OnERC721ReceivedExtension;
+  let targetContract, signatureValidator, onERC721ReceivedContract;
 
   before(async () => {
     context = await buildContext();
+
+    TargetContract__factory = await ethers.getContractFactory(
+      'TargetContract',
+      context.accounts[0],
+    );
+    targetContract = await TargetContract__factory.deploy();
 
     addressCanMakeStaticCall = context.accounts[1];
     addressCannotMakeStaticCall = context.accounts[2];
     addressCanMakeStaticCallNoAllowedCalls = context.accounts[3];
 
-    targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
-
-    signatureValidator = await new SignatureValidator__factory(context.accounts[0]).deploy();
-
-    onERC721ReceivedContract = await new OnERC721ReceivedExtension__factory(
+    const SignatureValidator__factory = await ethers.getContractFactory(
+      'SignatureValidator',
       context.accounts[0],
-    ).deploy();
+    );
+    signatureValidator = await SignatureValidator__factory.deploy();
+
+    const OnERC721ReceivedExtension__factory = await ethers.getContractFactory(
+      'OnERC721ReceivedExtension',
+      context.accounts[0],
+    );
+    onERC721ReceivedContract = OnERC721ReceivedExtension__factory.deploy();
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -395,7 +396,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
   describe('when caller has permission STATICCALL + 2 x allowed addresses', () => {
     let caller: SignerWithAddress;
-    let allowedTargetContracts: [TargetContract, TargetContract];
+    let allowedTargetContracts;
 
     before(async () => {
       context = await buildContext();
@@ -403,8 +404,8 @@ export const shouldBehaveLikePermissionStaticCall = (
       caller = context.accounts[1];
 
       allowedTargetContracts = [
-        await new TargetContract__factory(context.accounts[0]).deploy(),
-        await new TargetContract__factory(context.accounts[0]).deploy(),
+        await TargetContract__factory.deploy(),
+        await TargetContract__factory.deploy(),
       ];
 
       const permissionKeys = [
@@ -429,7 +430,7 @@ export const shouldBehaveLikePermissionStaticCall = (
     });
 
     it('should revert when trying to interact with a non-allowed address', async () => {
-      const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+      const targetContract = await TargetContract__factory.deploy();
 
       const payload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.STATICCALL,
@@ -594,7 +595,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
   describe('when caller has permission SUPER_STATICCALL + 2 allowed addresses', () => {
     let addressWithSuperStaticCall: SignerWithAddress;
-    let allowedTargetContracts: [TargetContract, TargetContract];
+    let allowedTargetContracts;
 
     before(async () => {
       context = await buildContext();
@@ -602,8 +603,8 @@ export const shouldBehaveLikePermissionStaticCall = (
       addressWithSuperStaticCall = context.accounts[1];
 
       allowedTargetContracts = [
-        await new TargetContract__factory(context.accounts[0]).deploy(),
-        await new TargetContract__factory(context.accounts[0]).deploy(),
+        await TargetContract__factory.deploy(),
+        await TargetContract__factory.deploy(),
       ];
 
       const permissionKeys = [
@@ -631,7 +632,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
     describe('when interacting with random contracts', () => {
       it('should bypass allowed calls check + allow ton interact with a random contract', async () => {
-        const randomContract = await new TargetContract__factory(context.accounts[0]).deploy();
+        const randomContract = await TargetContract__factory.deploy();
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.STATICCALL,
@@ -653,7 +654,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       });
 
       it('should revert with error `ERC725X_MsgValueDisallowedInStaticCall` when `value` param is not 0', async () => {
-        const randomContract = await new TargetContract__factory(context.accounts[0]).deploy();
+        const randomContract = await TargetContract__factory.deploy();
 
         const lyxAmount = parseEther('3');
 
@@ -676,7 +677,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
   describe('when caller has permission SUPER_CALL + 2 allowed addresses', () => {
     let addressWithSuperCall: SignerWithAddress;
-    let allowedTargetContracts: [TargetContract, TargetContract];
+    let allowedTargetContracts;
 
     before(async () => {
       context = await buildContext();
@@ -684,8 +685,8 @@ export const shouldBehaveLikePermissionStaticCall = (
       addressWithSuperCall = context.accounts[1];
 
       allowedTargetContracts = [
-        await new TargetContract__factory(context.accounts[0]).deploy(),
-        await new TargetContract__factory(context.accounts[0]).deploy(),
+        await TargetContract__factory.deploy(),
+        await TargetContract__factory.deploy(),
       ];
 
       const permissionKeys = [
@@ -748,7 +749,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
   describe('when caller has permission SUPER_CALL + STATICCALL + 2 allowed addresses', () => {
     let addressWithSuperCallAndStaticCall: SignerWithAddress;
-    let allowedTargetContracts: [TargetContract, TargetContract];
+    let allowedTargetContracts;
 
     before(async () => {
       context = await buildContext();
@@ -756,8 +757,8 @@ export const shouldBehaveLikePermissionStaticCall = (
       addressWithSuperCallAndStaticCall = context.accounts[1];
 
       allowedTargetContracts = [
-        await new TargetContract__factory(context.accounts[0]).deploy(),
-        await new TargetContract__factory(context.accounts[0]).deploy(),
+        await TargetContract__factory.deploy(),
+        await TargetContract__factory.deploy(),
       ];
 
       const permissionKeys = [

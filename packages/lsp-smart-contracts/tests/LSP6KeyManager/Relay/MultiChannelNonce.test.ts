@@ -3,8 +3,6 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import { TargetContract, TargetContract__factory } from '../../../typechain';
-
 // constants
 import { ERC725YDataKeys } from '../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -20,7 +18,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
   let context: LSP6TestContext;
 
   let signer: SignerWithAddress, relayer: SignerWithAddress;
-  let targetContract: TargetContract;
+  let targetContract;
 
   before(async () => {
     context = await buildContext();
@@ -28,7 +26,11 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
     signer = context.accounts[1];
     relayer = context.accounts[2];
 
-    targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+    const TargetContract__factory = await ethers.getContractFactory(
+      'TargetContract',
+      context.accounts[0],
+    );
+    targetContract = await TargetContract__factory.deploy();
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
