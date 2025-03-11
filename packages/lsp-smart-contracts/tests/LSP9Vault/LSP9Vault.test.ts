@@ -1,12 +1,15 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
+import { ContractFactory } from 'ethers';
+
+// helpers + fixtures
+import { provider } from '../utils/helpers';
+import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 
 import {
   LSP14TestContext,
   shouldBehaveLikeLSP14,
 } from '../LSP14Ownable2Step/LSP14Ownable2Step.behaviour';
-
-import { UniversalProfile, LSP6KeyManager, LSP9Vault__factory } from '../../typechain';
 
 import {
   getNamedAccounts,
@@ -20,10 +23,13 @@ import {
   shouldBehaveLikeLSP17,
 } from '../LSP17ContractExtension/LSP17Extendable.behaviour';
 
-import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
-import { provider } from '../utils/helpers';
-
 describe('LSP9Vault with constructor', () => {
+  let LSP9Vault__factory;
+
+  before(async () => {
+    LSP9Vault__factory = await ethers.getContractFactory('LSP9Vault');
+  });
+
   const buildTestContext = async (initialFunding?: number): Promise<LSP9TestContext> => {
     const accounts = await getNamedAccounts();
 
@@ -31,14 +37,17 @@ describe('LSP9Vault with constructor', () => {
       newOwner: accounts.owner.address,
       initialFunding,
     };
-    const lsp9Vault = await new LSP9Vault__factory(accounts.owner).deploy(deployParams.newOwner, {
-      value: initialFunding,
-    });
+    const lsp9Vault = await LSP9Vault__factory.connect(accounts.owner).deploy(
+      deployParams.newOwner,
+      {
+        value: initialFunding,
+      },
+    );
 
     const [UP1, KM1] = await setupProfileWithKeyManagerWithURD(accounts.owner);
 
-    const universalProfile = UP1 as UniversalProfile;
-    const lsp6KeyManager = KM1 as LSP6KeyManager;
+    const universalProfile = UP1;
+    const lsp6KeyManager = KM1;
 
     return {
       accounts,
@@ -55,9 +64,12 @@ describe('LSP9Vault with constructor', () => {
     const accounts = await ethers.getSigners();
     const deployParams = { owner: accounts[0], initialFunding };
 
-    const lsp9Vault = await new LSP9Vault__factory(accounts[0]).deploy(deployParams.owner.address, {
-      value: initialFunding,
-    });
+    const lsp9Vault = await LSP9Vault__factory.connect(accounts[0]).deploy(
+      deployParams.owner.address,
+      {
+        value: initialFunding,
+      },
+    );
 
     const onlyOwnerCustomError = 'Only Owner or reentered Universal Receiver Delegate allowed';
 
@@ -74,7 +86,9 @@ describe('LSP9Vault with constructor', () => {
     const deployParams = {
       owner: accounts[0],
     };
-    const contract = await new LSP9Vault__factory(accounts[0]).deploy(deployParams.owner.address);
+    const contract = await LSP9Vault__factory.connect(accounts[0]).deploy(
+      deployParams.owner.address,
+    );
 
     return { accounts, contract, deployParams };
   };

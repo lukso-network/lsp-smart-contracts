@@ -1,9 +1,10 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
+import { ContractFactory } from 'ethers';
 
+// fixtures
+import { deployProxy, setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 import { shouldBehaveLikeLSP14 } from '../LSP14Ownable2Step/LSP14Ownable2Step.behaviour';
-
-import { UniversalProfile, LSP6KeyManager, LSP9VaultInit__factory } from '../../typechain';
 
 import {
   getNamedAccounts,
@@ -17,9 +18,13 @@ import {
   shouldBehaveLikeLSP17,
 } from '../LSP17ContractExtension/LSP17Extendable.behaviour';
 
-import { deployProxy, setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
-
 describe('LSP9VaultInit with proxy', () => {
+  let LSP9VaultInit__factory;
+
+  before(async () => {
+    LSP9VaultInit__factory = await ethers.getContractFactory('LSP9VaultInit');
+  });
+
   const buildTestContext = async (initialFunding?: number | bigint): Promise<LSP9TestContext> => {
     const accounts = await getNamedAccounts();
     const deployParams = {
@@ -27,14 +32,14 @@ describe('LSP9VaultInit with proxy', () => {
       initialFunding,
     };
 
-    const lsp9VaultInit = await new LSP9VaultInit__factory(accounts.owner).deploy();
+    const lsp9VaultInit = await LSP9VaultInit__factory.connect(accounts.owner).deploy();
     const lsp9VaultProxy = await deployProxy(await lsp9VaultInit.getAddress(), accounts.owner);
-    const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy) as LSP9VaultInit;
+    const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy);
 
     const [UP1, KM1] = await setupProfileWithKeyManagerWithURD(accounts.owner);
 
-    const universalProfile = UP1 as UniversalProfile;
-    const lsp6KeyManager = KM1 as LSP6KeyManager;
+    const universalProfile = UP1;
+    const lsp6KeyManager = KM1;
 
     return {
       accounts,
@@ -51,7 +56,7 @@ describe('LSP9VaultInit with proxy', () => {
       owner: accounts[0],
     };
 
-    const lsp9VaultInit = await new LSP9VaultInit__factory(accounts[0]).deploy();
+    const lsp9VaultInit = await LSP9VaultInit__factory.connect(accounts[0]).deploy();
 
     const lsp9VaultProxy = await deployProxy(await lsp9VaultInit.getAddress(), accounts[0]);
 
@@ -70,7 +75,7 @@ describe('LSP9VaultInit with proxy', () => {
     it('`owner()` of the base contract MUST be `address(0)`', async () => {
       const accounts = await ethers.getSigners();
 
-      const lsp9VaultInit = await new LSP9VaultInit__factory(accounts[0]).deploy();
+      const lsp9VaultInit = await LSP9VaultInit__factory.connect(accounts[0]).deploy();
 
       const owner = await lsp9VaultInit.owner();
 
@@ -80,7 +85,7 @@ describe('LSP9VaultInit with proxy', () => {
     it('prevent any address from calling the initialize(...) function on the implementation', async () => {
       const accounts = await ethers.getSigners();
 
-      const lsp9VaultInit = await new LSP9VaultInit__factory(accounts[0]).deploy();
+      const lsp9VaultInit = await LSP9VaultInit__factory.connect(accounts[0]).deploy();
 
       const randomCaller = accounts[1];
 

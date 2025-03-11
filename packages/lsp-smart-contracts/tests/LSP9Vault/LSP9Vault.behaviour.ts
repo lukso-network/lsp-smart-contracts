@@ -1,17 +1,7 @@
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { expect } from 'chai';
-
-// types
-import {
-  LSP6KeyManager,
-  UniversalProfile,
-  UniversalReceiverDelegateVaultSetter__factory,
-  UniversalReceiverDelegateVaultReentrantA__factory,
-  UniversalReceiverDelegateVaultReentrantB__factory,
-  UniversalReceiverDelegateVaultMalicious__factory,
-  LSP9Vault,
-} from '../../typechain';
+import { ContractFactory, ContractTransactionResponse } from 'ethers';
 
 // helpers
 import { ARRAY_LENGTH, abiCoder, combineAllowedCalls } from '../utils/helpers';
@@ -23,6 +13,9 @@ import { callPayload } from '../utils/fixtures';
 import { ERC725YDataKeys, INTERFACE_IDS, SupportedStandards, LSP1_TYPE_IDS } from '../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
+import { LSP7_TYPE_IDS } from '@lukso/lsp7-contracts';
+
+// factories
 
 export type LSP9TestAccounts = {
   owner: SignerWithAddress;
@@ -43,10 +36,10 @@ export type LSP9DeployParams = {
 
 export type LSP9TestContext = {
   accounts: LSP9TestAccounts;
-  lsp9Vault: LSP9Vault;
+  lsp9Vault;
   deployParams: LSP9DeployParams;
-  universalProfile: UniversalProfile;
-  lsp6KeyManager: LSP6KeyManager;
+  universalProfile;
+  lsp6KeyManager;
 };
 
 export const shouldBehaveLikeLSP9 = (
@@ -54,8 +47,30 @@ export const shouldBehaveLikeLSP9 = (
 ) => {
   let context: LSP9TestContext;
 
+  let UniversalReceiverDelegateVaultSetter__factory;
+  let UniversalReceiverDelegateVaultReentrantA__factory;
+  let UniversalReceiverDelegateVaultReentrantB__factory;
+  let UniversalReceiverDelegateVaultMalicious__factory;
+
   before(async () => {
     context = await buildContext(100);
+
+    UniversalReceiverDelegateVaultSetter__factory = await ethers.getContractFactory(
+      'UniversalReceiverDelegateVaultSetter',
+      context.accounts.owner,
+    );
+    UniversalReceiverDelegateVaultReentrantA__factory = await ethers.getContractFactory(
+      'UniversalReceiverDelegateVaultReentrantA',
+      context.accounts.owner,
+    );
+    UniversalReceiverDelegateVaultReentrantB__factory = await ethers.getContractFactory(
+      'UniversalReceiverDelegateVaultReentrantB',
+      context.accounts.owner,
+    );
+    UniversalReceiverDelegateVaultMalicious__factory = await ethers.getContractFactory(
+      'UniversalReceiverDelegateVaultMalicious',
+      context.accounts.owner,
+    );
   });
 
   describe('when testing setting data', () => {
@@ -81,7 +96,9 @@ export const shouldBehaveLikeLSP9 = (
     it("UniversalReceiverDelegate shouldn't be able to setData in a call not passing by the universalReceiver", async () => {
       // setting UniversalReceiverDelegate that setData
       const lsp1UniversalReceiverDelegateVaultSetter =
-        await new UniversalReceiverDelegateVaultSetter__factory(context.accounts.anyone).deploy();
+        await UniversalReceiverDelegateVaultSetter__factory.connect(
+          context.accounts.anyone,
+        ).deploy();
 
       await context.lsp9Vault
         .connect(context.accounts.owner)
@@ -103,7 +120,7 @@ export const shouldBehaveLikeLSP9 = (
     it('Main UniversalReceiverDelegate A should be able to setData in a universalReceiver reentrant call', async () => {
       // setting UniversalReceiverDelegate that setData
       const lsp1UniversalReceiverDelegateVaultReentrantA =
-        await new UniversalReceiverDelegateVaultReentrantA__factory(
+        await UniversalReceiverDelegateVaultReentrantA__factory.connect(
           context.accounts.anyone,
         ).deploy();
 
@@ -132,7 +149,7 @@ export const shouldBehaveLikeLSP9 = (
     it('Mapped UniversalReceiverDelegate B should be able to setData in a universalReceiver reentrant call', async () => {
       // setting UniversalReceiverDelegate that setData
       const lsp1UniversalReceiverDelegateVaultReentrantB =
-        await new UniversalReceiverDelegateVaultReentrantB__factory(
+        await UniversalReceiverDelegateVaultReentrantB__factory.connect(
           context.accounts.anyone,
         ).deploy();
 
@@ -163,7 +180,7 @@ export const shouldBehaveLikeLSP9 = (
       before(async () => {
         // setting UniversalReceiverDelegate that setData
         const lsp1UniversalReceiverDelegateVaultMalicious =
-          await new UniversalReceiverDelegateVaultMalicious__factory(
+          await UniversalReceiverDelegateVaultMalicious__factory.connect(
             context.accounts.anyone,
           ).deploy();
 
@@ -834,7 +851,7 @@ export const shouldBehaveLikeLSP9 = (
 };
 
 export type LSP9InitializeTestContext = {
-  lsp9Vault: LSP9Vault;
+  lsp9Vault;
   initializeTransaction: ContractTransactionResponse;
   deployParams: LSP9DeployParams;
 };
