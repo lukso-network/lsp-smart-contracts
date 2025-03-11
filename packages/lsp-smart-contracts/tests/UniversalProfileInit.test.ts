@@ -1,10 +1,5 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import {
-  UniversalReceiverTester__factory,
-  UniversalProfileInit__factory,
-  LSP0ERC725Account,
-} from '../../../typechain';
 import { deployProxy } from './utils/fixtures';
 
 import {
@@ -39,7 +34,11 @@ describe('UniversalProfileInit with proxy', () => {
 
   before(async () => {
     accounts = await ethers.getSigners();
-    universalProfileInit = await new UniversalProfileInit__factory(accounts[0]).deploy();
+    const UniversalProfileInit__factory = await ethers.getContractFactory(
+      'UniversalProfileInit',
+      accounts[0],
+    );
+    universalProfileInit = await UniversalProfileInit__factory.deploy();
   });
 
   const buildLSP3TestContext = async (initialFunding?: number): Promise<LSP3TestContext> => {
@@ -74,7 +73,12 @@ describe('UniversalProfileInit with proxy', () => {
 
     await lsp1Implementation.initialize(accounts[0].address);
 
-    const lsp1Checker = await new UniversalReceiverTester__factory(accounts[0]).deploy();
+    const UniversalReceiverTester__factory = await ethers.getContractFactory(
+      'UniversalReceiverTester',
+      accounts[0],
+    );
+
+    const lsp1Checker = await UniversalReceiverTester__factory.deploy();
 
     return { accounts, lsp1Implementation, lsp1Checker };
   };
@@ -125,7 +129,12 @@ describe('UniversalProfileInit with proxy', () => {
       owner: accounts[0],
     };
 
-    const universalProfileInit = await new UniversalProfileInit__factory(accounts[0]).deploy();
+    const UniversalProfileInit__factory = await ethers.getContractFactory(
+      'UniversalProfileInit',
+      accounts[0],
+    );
+
+    const universalProfileInit = await UniversalProfileInit__factory.deploy();
 
     const universalProfileProxy = await deployProxy(
       await universalProfileInit.getAddress(),
@@ -134,7 +143,7 @@ describe('UniversalProfileInit with proxy', () => {
 
     const universalProfile = universalProfileInit.attach(universalProfileProxy);
 
-    return { accounts, universalProfile: universalProfile as UniversalProfile, deployParams };
+    return { accounts, universalProfile: universalProfile as any, deployParams };
   };
 
   describe('when deploying the base implementation contract', () => {
@@ -204,7 +213,7 @@ describe('UniversalProfileInit with proxy', () => {
 
       await initializeProxy({
         accounts: claimOwnershipContext.accounts,
-        universalProfile: claimOwnershipContext.contract as LSP0ERC725Account,
+        universalProfile: claimOwnershipContext.contract,
         deployParams: claimOwnershipContext.deployParams,
       });
 
@@ -216,7 +225,7 @@ describe('UniversalProfileInit with proxy', () => {
 
       await initializeProxy({
         accounts: fallbackExtensionContext.accounts,
-        universalProfile: fallbackExtensionContext.contract as LSP0ERC725Account,
+        universalProfile: fallbackExtensionContext.contract,
         deployParams: fallbackExtensionContext.deployParams,
       });
 

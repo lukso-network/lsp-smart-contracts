@@ -2,19 +2,6 @@ import { expect } from 'chai';
 import { ethers, network } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-// types
-import {
-  GenericExecutor__factory,
-  ERC1271MaliciousMock__factory,
-  UniversalReceiverDelegateDataLYX__factory,
-  UniversalReceiverDelegateDataLYX,
-  EmitEventExtension,
-  EmitEventExtension__factory,
-  OwnerWithURD__factory,
-  OwnerWithURD,
-  UniversalProfile,
-} from '../../../typechain';
-
 // helpers
 import { LSP1_HOOK_PLACEHOLDER, abiCoder, getRandomAddresses } from './utils/helpers';
 
@@ -24,7 +11,7 @@ import { ERC1271_VALUES, OPERATION_TYPES } from '@lukso/lsp0-contracts';
 
 export type LSP3TestContext = {
   accounts: SignerWithAddress[];
-  universalProfile: UniversalProfile;
+  universalProfile;
   deployParams: { owner: SignerWithAddress; initialFunding?: number };
 };
 
@@ -71,7 +58,12 @@ export const shouldBehaveLikeLSP3 = (
     it("should return failValue when the owner doesn't have isValidSignature function", async () => {
       const signer = context.accounts[1];
 
-      const genericExecutor = await new GenericExecutor__factory(context.accounts[0]).deploy();
+      const GenericExecutor__factory = await ethers.getContractFactory(
+        'GenericExecutor',
+        context.accounts[0],
+      );
+
+      const genericExecutor = await GenericExecutor__factory.deploy();
       const genericExecutorAddress = await genericExecutor.getAddress();
 
       await context.universalProfile
@@ -94,9 +86,12 @@ export const shouldBehaveLikeLSP3 = (
     it("should return failValue when the owner call isValidSignature function that doesn't return bytes4", async () => {
       const signer = context.accounts[1];
 
-      const maliciousERC1271Wallet = await new ERC1271MaliciousMock__factory(
+      const ERC1271MaliciousMock__factory = await ethers.getContractFactory(
+        'ERC1271MaliciousMock',
         context.accounts[0],
-      ).deploy();
+      );
+
+      const maliciousERC1271Wallet = await ERC1271MaliciousMock__factory.deploy();
       const maliciousERC1271WalletAddress = await maliciousERC1271Wallet.getAddress();
 
       await context.universalProfile
@@ -592,11 +587,15 @@ export const shouldBehaveLikeLSP3 = (
   });
 
   describe('when setting a UniversalReceiverDelegate for typeId of LYX receiving', () => {
-    let universalReceiverDelegateLYX: UniversalReceiverDelegateDataLYX;
+    let universalReceiverDelegateLYX;
+
     before(async () => {
-      universalReceiverDelegateLYX = await new UniversalReceiverDelegateDataLYX__factory(
+      const UniversalReceiverDelegateDataLYX__factory = await ethers.getContractFactory(
+        'UniversalReceiverDelegateDataLYX',
         context.accounts[1],
-      ).deploy();
+      );
+
+      universalReceiverDelegateLYX = await UniversalReceiverDelegateDataLYX__factory.deploy();
 
       await context.universalProfile
         .connect(context.deployParams.owner)
@@ -659,11 +658,15 @@ export const shouldBehaveLikeLSP3 = (
     });
 
     describe('when calling an extension with value', () => {
-      let emitEventExtension: EmitEventExtension;
+      let emitEventExtension;
       let emitEventFunctionSelector;
 
       before(async () => {
-        emitEventExtension = await new EmitEventExtension__factory(context.accounts[0]).deploy();
+        const EmitEventExtension__factory = await ethers.getContractFactory(
+          'EmitEventExtension',
+          context.accounts[0],
+        );
+        emitEventExtension = await EmitEventExtension__factory.deploy();
 
         emitEventFunctionSelector = '0x7b0cb839';
 
@@ -735,12 +738,14 @@ export const shouldBehaveLikeLSP3 = (
 
   describe('when using `renounceOwnership()`', () => {
     describe('when caller is owner', () => {
-      let newContractOwner: OwnerWithURD;
+      let newContractOwner;
 
       before('Use custom owner that implements LSP1', async () => {
-        newContractOwner = await new OwnerWithURD__factory(context.accounts[0]).deploy(
-          universalProfileAddress,
+        const OwnerWithURD__factory = await ethers.getContractFactory(
+          'OwnerWithURD',
+          context.accounts[0],
         );
+        newContractOwner = await OwnerWithURD__factory.deploy(universalProfileAddress);
 
         await context.universalProfile
           .connect(context.deployParams.owner)
