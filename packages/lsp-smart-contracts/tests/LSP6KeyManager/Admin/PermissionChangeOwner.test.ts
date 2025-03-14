@@ -9,8 +9,6 @@ import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { PERMISSIONS } from '@lukso/lsp6-contracts';
 import { LSP25_VERSION } from '@lukso/lsp25-contracts';
 
-import { LSP6KeyManager, LSP6KeyManager__factory } from '../../../typechain';
-
 // setup
 import { LSP6TestContext } from '../../utils/context';
 import { setupKeyManager } from '../../utils/fixtures';
@@ -24,7 +22,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
   let canChangeOwner: SignerWithAddress, cannotChangeOwner: SignerWithAddress;
 
-  let newKeyManager: LSP6KeyManager;
+  let newKeyManager;
 
   let transferOwnershipPayload: string;
   let resetOwnershipPayload: string;
@@ -38,9 +36,8 @@ export const shouldBehaveLikePermissionChangeOwner = (
     canChangeOwner = context.accounts[1];
     cannotChangeOwner = context.accounts[2];
 
-    newKeyManager = await new LSP6KeyManager__factory(context.mainController).deploy(
-      await context.universalProfile.getAddress(),
-    );
+    const LSP6KeyManager = await ethers.getContractFactory('LSP6KeyManager', context.mainController);
+    newKeyManager = await LSP6KeyManager.deploy(context.universalProfile.target);
 
     transferOwnershipPayload = context.universalProfile.interface.encodeFunctionData(
       'transferOwnership',
@@ -201,9 +198,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       });
 
       it('should override the pendingOwner when transferOwnership(...) is called twice', async () => {
-        const overridenPendingOwner = await new LSP6KeyManager__factory(
-          context.mainController,
-        ).deploy(await context.universalProfile.getAddress());
+        const overridenPendingOwner = await newKeyManager.deploy(await context.universalProfile.getAddress());
 
         await context.keyManager
           .connect(canChangeOwner)
@@ -225,9 +220,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
     });
 
     it('should revert', async () => {
-      const notPendingKeyManager = await new LSP6KeyManager__factory(context.accounts[5]).deploy(
-        await context.universalProfile.getAddress(),
-      );
+      const notPendingKeyManager = await newKeyManager.deploy(await context.universalProfile.getAddress());
 
       const payload = context.universalProfile.interface.getFunction('acceptOwnership').selector;
 
@@ -266,7 +259,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
   describe('after KeyManager has been upgraded via acceptOwnership(...)', () => {
     // to improve readability of tests
-    let oldKeyManager: LSP6KeyManager;
+    let oldKeyManager;
 
     before(async () => {
       oldKeyManager = context.keyManager;

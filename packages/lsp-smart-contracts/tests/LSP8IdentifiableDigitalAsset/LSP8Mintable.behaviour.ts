@@ -1,13 +1,6 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import {
-  LSP8TransferOwnerChange,
-  UniversalProfile,
-  LSP6KeyManager,
-  UniversalReceiverDelegateTokenReentrant__factory,
-  LSP8Mintable,
-} from '../../typechain';
 
 import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
 
@@ -37,7 +30,7 @@ export type LSP8MintableDeployParams = {
 
 export type LSP8MintableTestContext = {
   accounts: LSP8MintableTestAccounts;
-  lsp8Mintable: LSP8Mintable;
+  lsp8Mintable;
   deployParams: LSP8MintableDeployParams;
 };
 
@@ -98,16 +91,18 @@ export const shouldBehaveLikeLSP8Mintable = (
     before(async () => {
       const [UP, KM] = await setupProfileWithKeyManagerWithURD(context.accounts.profileOwner);
 
-      universalProfile = UP as UniversalProfile;
-      lsp6KeyManager = KM as LSP6KeyManager;
+      universalProfile = UP;
+      lsp6KeyManager = KM;
 
       await context.lsp8Mintable
         .connect(context.accounts.owner)
         .transferOwnership(await universalProfile.getAddress());
 
-      const URDTokenReentrant = await new UniversalReceiverDelegateTokenReentrant__factory(
+      const UniversalReceiverDelegateTokenReentrant__factory = await ethers.getContractFactory(
+        '',
         context.accounts.profileOwner,
-      ).deploy();
+      );
+      const URDTokenReentrant = await UniversalReceiverDelegateTokenReentrant__factory.deploy();
 
       const setDataPayload = universalProfile.interface.encodeFunctionData('setDataBatch', [
         [
@@ -170,14 +165,16 @@ export const shouldBehaveLikeLSP8Mintable = (
   describe('when there is an owner change in the _beforeTokenTransfer hook', () => {
     it('should revert', async () => {
       // deploy LSP8TransferOwnerChange contract
-      const LSP8TransferOwnerChange = await ethers.getContractFactory('LSP8TransferOwnerChange');
-      const lsp8TransferOwnerChange = (await LSP8TransferOwnerChange.deploy(
+      const LSP8TransferOwnerChange__factory = await ethers.getContractFactory(
+        'LSP8TransferOwnerChange',
+      );
+      const lsp8TransferOwnerChange = await LSP8TransferOwnerChange__factory.deploy(
         'RandomName',
         'RandomSymbol',
         context.accounts.owner.address,
         0, // token type
         0, // token id format
-      )) as unknown as LSP8TransferOwnerChange;
+      );
 
       const randomTokenId = ethers.hexlify(ethers.randomBytes(32));
 

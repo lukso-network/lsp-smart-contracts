@@ -1,7 +1,6 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { LSP7CappedSupplyTester } from '../../typechain';
 
 export type LSP7CappedSupplyTestAccounts = {
   owner: SignerWithAddress;
@@ -15,7 +14,7 @@ export const getNamedAccounts = async (): Promise<LSP7CappedSupplyTestAccounts> 
 
 export type LSP7CappedSupplyTestContext = {
   accounts: LSP7CappedSupplyTestAccounts;
-  lsp7CappedSupply: LSP7CappedSupplyTester;
+  lsp7CappedSupply;
   deployParams: {
     name: string;
     symbol: string;

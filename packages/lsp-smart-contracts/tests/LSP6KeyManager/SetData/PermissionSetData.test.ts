@@ -3,8 +3,6 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { encodeData, ERC725JSONSchema } from '@erc725/erc725.js';
 
-import { Executor, Executor__factory } from '../../../typechain';
-
 // constants
 import { ERC725YDataKeys } from '../../../constants';
 import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
@@ -550,7 +548,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
   });
 
   describe('when caller is a contract', () => {
-    let contractCanSetData: Executor;
+    let contractCanSetData;
 
     const hardcodedDataKey = '0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1';
     const hardcodedDataValue = ethers.hexlify(ethers.toUtf8Bytes('Some value'));
@@ -565,7 +563,9 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
     before(async () => {
       context = await buildContext();
 
-      contractCanSetData = await new Executor__factory(context.mainController).deploy(
+      const Executor__factory = await ethers.getContractFactory('Executor', context.mainController);
+
+      contractCanSetData = await Executor__factory.deploy(
         await context.universalProfile.getAddress(),
         await context.keyManager.getAddress(),
       );

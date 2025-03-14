@@ -1,6 +1,5 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { UniversalReceiverTester__factory, UniversalProfile__factory } from '../../../typechain';
 
 import {
   LSP1TestContext,
@@ -35,12 +34,15 @@ describe('UniversalProfile with constructor', () => {
       owner: accounts[0],
       initialFunding,
     };
-    const universalProfile = await new UniversalProfile__factory(accounts[0]).deploy(
-      deployParams.owner.address,
-      {
-        value: initialFunding,
-      },
+
+    const UniversalProfile__factory = await ethers.getContractFactory(
+      'UniversalProfile',
+      accounts[0],
     );
+
+    const universalProfile = await UniversalProfile__factory.deploy(deployParams.owner.address, {
+      value: initialFunding,
+    });
 
     await universalProfile.waitForDeployment();
 
@@ -50,11 +52,19 @@ describe('UniversalProfile with constructor', () => {
   const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
     const accounts = await ethers.getSigners();
 
-    const lsp1Implementation = await new UniversalProfile__factory(accounts[0]).deploy(
-      accounts[0].address,
+    const UniversalProfile__factory = await ethers.getContractFactory(
+      'UniversalProfile',
+      accounts[0],
     );
 
-    const lsp1Checker = await new UniversalReceiverTester__factory(accounts[0]).deploy();
+    const lsp1Implementation = await UniversalProfile__factory.deploy(accounts[0].address);
+
+    const UniversalReceiverTester__factory = await ethers.getContractFactory(
+      'UniversalReceiverTester',
+      accounts[0],
+    );
+
+    const lsp1Checker = await UniversalReceiverTester__factory.deploy();
 
     return { accounts, lsp1Implementation, lsp1Checker };
   };
@@ -68,10 +78,14 @@ describe('UniversalProfile with constructor', () => {
       initialFunding,
     };
 
-    const contract = await new UniversalProfile__factory(accounts[0]).deploy(
-      deployParams.owner.address,
-      { value: initialFunding },
+    const UniversalProfile__factory = await ethers.getContractFactory(
+      'UniversalProfile',
+      accounts[0],
     );
+
+    const contract = await UniversalProfile__factory.deploy(deployParams.owner.address, {
+      value: initialFunding,
+    });
 
     const onlyOwnerCustomError = 'OwnableCallerNotTheOwner';
 
@@ -83,9 +97,13 @@ describe('UniversalProfile with constructor', () => {
     const deployParams = {
       owner: accounts[0],
     };
-    const contract = await new UniversalProfile__factory(accounts[0]).deploy(
-      deployParams.owner.address,
+
+    const UniversalProfile__factory = await ethers.getContractFactory(
+      'UniversalProfile',
+      accounts[0],
     );
+
+    const contract = await UniversalProfile__factory.deploy(deployParams.owner.address);
 
     return { accounts, contract, deployParams };
   };
@@ -95,9 +113,13 @@ describe('UniversalProfile with constructor', () => {
     const deployParams = {
       owner: accounts[0],
     };
-    const universalProfile = await new UniversalProfile__factory(accounts[0]).deploy(
-      deployParams.owner.address,
+
+    const UniversalProfile__factory = await ethers.getContractFactory(
+      'UniversalProfile',
+      accounts[0],
     );
+
+    const universalProfile = await UniversalProfile__factory.deploy(deployParams.owner.address);
 
     return { accounts, universalProfile, deployParams };
   };

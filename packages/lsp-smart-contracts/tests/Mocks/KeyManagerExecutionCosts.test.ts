@@ -1,11 +1,7 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import {
-  UniversalProfile__factory,
-  LSP6KeyManager__factory,
-  UniversalProfile,
-} from '../../typechain';
 import { ERC725YDataKeys, INTERFACE_IDS } from '../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
@@ -19,18 +15,25 @@ import {
 } from '../utils/helpers';
 
 import { setupKeyManager } from '../utils/fixtures';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 describe('Key Manager gas cost interactions', () => {
+  let UniversalProfile__factory;
+  let LSP6KeyManager__factory;
+
+  before(async () => {
+    UniversalProfile__factory = await ethers.getContractFactory('UniversalProfile');
+    LSP6KeyManager__factory = await ethers.getContractFactory('LSP6KeyManager');
+  });
+
   describe('when using LSP6KeyManager with constructor', () => {
     const buildLSP6TestContext = async (): Promise<LSP6TestContext> => {
       const accounts = await ethers.getSigners();
       const mainController = accounts[0];
 
-      const universalProfile = await new UniversalProfile__factory(mainController).deploy(
+      const universalProfile = await UniversalProfile__factory.connect(mainController).deploy(
         mainController.address,
       );
-      const keyManager = await new LSP6KeyManager__factory(mainController).deploy(
+      const keyManager = await LSP6KeyManager__factory.connect(mainController).deploy(
         await universalProfile.getAddress(),
       );
 
@@ -43,7 +46,7 @@ describe('Key Manager gas cost interactions', () => {
       let restrictedToOneAddress: SignerWithAddress,
         restrictedToOneAddressAndStandard: SignerWithAddress;
 
-      let contractImplementsERC1271: UniversalProfile;
+      let contractImplementsERC1271;
 
       before(async () => {
         context = await buildLSP6TestContext();
@@ -51,9 +54,9 @@ describe('Key Manager gas cost interactions', () => {
         restrictedToOneAddress = context.accounts[1];
         restrictedToOneAddressAndStandard = context.accounts[2];
 
-        contractImplementsERC1271 = await new UniversalProfile__factory(context.accounts[3]).deploy(
-          context.accounts[3].address,
-        );
+        contractImplementsERC1271 = await UniversalProfile__factory.connect(
+          context.accounts[3],
+        ).deploy(context.accounts[3].address);
 
         const permissionKeys = [
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +

@@ -1,5 +1,3 @@
-import { LSP8EnumerableTester, LSP8EnumerableTester__factory } from '../../../typechain';
-
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {
   shouldBehaveLikeLSP8Enumerable,
@@ -8,6 +6,7 @@ import {
 } from '../LSP8Enumerable.behaviour';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
+import { ethers } from 'hardhat';
 
 describe('LSP8Enumerable with constructor', () => {
   const buildTestContext = async () => {
@@ -21,9 +20,12 @@ describe('LSP8Enumerable with constructor', () => {
       lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
     };
 
-    const lsp8Enumerable: LSP8EnumerableTester = await new LSP8EnumerableTester__factory(
+    const LSP8EnumerableTester__factory = await ethers.getContractFactory(
+      'LSP8EnumerableTester',
       accounts.owner,
-    ).deploy(
+    );
+
+    const lsp8Enumerable = await LSP8EnumerableTester__factory.deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
