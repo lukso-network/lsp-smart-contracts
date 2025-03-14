@@ -10,7 +10,9 @@ npm i @lukso/lsp20-contracts
 
 ## Available Constants & Types
 
-The `@lukso/lsp20-contracts` npm package contains useful constants such as InterfaceIds, and specific constants related to the LSP20 Standard. You can import and access them as follow:
+The `@lukso/lsp20-contracts` npm package contains useful constants such as interface IDs, and specific constants related to the LSP20 Standard. You can import and access them as follows.
+
+In Javascript.
 
 ```js
 import {
@@ -18,4 +20,17 @@ import {
   INTERFACE_ID_LSP20CallVerifier,
   INTERFACE_ID_LSP20CallVerification,
 } from "@lukso/lsp20-contracts";
+```
+
+In Solidity.
+
+<!-- prettier-ignore -->
+```solidity
+import {
+  _INTERFACEID_LSP20_CALL_VERIFICATION,
+  _INTERFACEID_LSP20_CALL_VERIFIER,
+  _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITH_POST_VERIFICATION,
+  _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITHOUT_POST_VERIFICATION,
+  _LSP20_VERIFY_CALL_RESULT_SUCCESS_VALUE
+} from "@lukso/lsp20-contracts/contracts/LSP20Constants.sol";
 ```
