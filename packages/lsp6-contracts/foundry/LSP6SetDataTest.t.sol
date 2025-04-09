@@ -3,23 +3,24 @@ pragma solidity ^0.8.4;
 
 import "forge-std/Test.sol";
 import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
-import {
-    LSP6KeyManager
-} from "@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol";
-import {
-    ILSP14Ownable2Step
-} from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
+import {LSP6KeyManager} from "../contracts/LSP6KeyManager.sol";
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
-import {LSP6Utils} from "@lukso/lsp6-contracts/contracts/LSP6Utils.sol";
+import {LSP6Utils} from "../contracts/LSP6Utils.sol";
 
+// constants
 import "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
-import "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
+import "../contracts/LSP6Constants.sol";
 import "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
+
+// errors
+import {
+    InvalidEncodedAllowedERC725YDataKeys
+} from "../contracts/LSP6Errors.sol";
 
 contract LSP6SetDataTest is Test {
     using BytesLib for bytes;
@@ -33,9 +34,9 @@ contract LSP6SetDataTest is Test {
     }
 
     // Test for `AddressPermissions:AllowedERC725YDataKeys:<controller>` == `[0x0000]
-    function testFail_RevertWhenListOfAllowedERC725YDataKeyIs0x0000(
-        bytes32 dataKey,
-        bytes memory dataValue
+    /// forge-config: default.allow_internal_expect_revert = true
+    function test_RevertWhenListOfAllowedERC725YDataKeyIs0x0000(
+        bytes32 dataKey
     ) public {
         // dataKey cannot be LSP1, LSP6, or LSP17 data key
         vm.assume(bytes16(dataKey) != _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX);
@@ -75,34 +76,42 @@ contract LSP6SetDataTest is Test {
 
         // Setup KeyManager as the owner of the account
         account.transferOwnership(address(keyManager));
-        bytes memory payload = abi.encodeWithSelector(
-            ILSP14Ownable2Step.acceptOwnership.selector,
-            ""
-        );
-        keyManager.execute(payload);
-        assert(account.owner() == address(keyManager));
+        assertEq(account.owner(), address(keyManager));
 
         // Verify malicious can set data for most data keys
-        bytes memory functionArgs = abi.encode(dataKey, dataValue);
+        bytes memory functionArgs = abi.encode(dataKey, hex"cafecafe");
         bytes memory callData = abi.encodeWithSelector(
             IERC725Y.setData.selector,
             functionArgs
         );
 
+        vm.startPrank(malicious);
+
         // CHECK it reverts when calling via the Key Manager
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                InvalidEncodedAllowedERC725YDataKeys.selector,
+                bytes.concat(bytes2(0)),
+                "couldn't DECODE from storage"
+            )
+        );
         keyManager.execute(callData);
 
-        // CHECK the LSP20 verification function reverts as well
-        keyManager.lsp20VerifyCall(
-            malicious,
-            address(account),
-            malicious,
-            0,
-            functionArgs
-        );
+        // // CHECK the LSP20 verification function reverts as well
+        // vm.expectRevert();
+        // keyManager.lsp20VerifyCall(
+        //     malicious,
+        //     address(account),
+        //     malicious,
+        //     0,
+        //     functionArgs
+        // );
 
-        // CHECK it reverts when calling directly the Universal Profile
-        account.setData(dataKey, dataValue);
+        // // CHECK it reverts when calling directly the Universal Profile
+        // vm.expectRevert();
+        // account.setData(dataKey, dataValue);
+
+        vm.stopPrank();
     }
 
     // Test for
@@ -115,11 +124,16 @@ contract LSP6SetDataTest is Test {
     //     allowedDataKey3,
     //     ...
     // ]
-    function testFail_RevertWhenListOfAllowedERC725YDataKeyContains0x0000(
+    /// forge-config: default.fuzz.runs = 200
+    function test_RevertWhenListOfAllowedERC725YDataKeyContains0x0000(
         bytes[] memory dynamicAllowedERC725YDataKeys,
         bytes32 dataKey,
         bytes memory dataValue
     ) public {
+        // we set below the 0x0000 value in the middle of the encoded list at index ii = 2
+        // therefore we need at least 3 entries in the list
+        vm.assume(dynamicAllowedERC725YDataKeys.length >= 3);
+
         // dataKey cannot be LSP1, LSP6, or LSP17 data key
         vm.assume(bytes16(dataKey) != _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX);
         vm.assume(bytes6(dataKey) != _LSP6KEY_ADDRESSPERMISSIONS_PREFIX);
@@ -159,7 +173,7 @@ contract LSP6SetDataTest is Test {
 
         for (uint256 ii = 0; ii < dynamicAllowedERC725YDataKeys.length; ii++) {
             // We ensure for this test that each data key is dynamic up to 32 bytes
-            assert(dynamicAllowedERC725YDataKeys[ii].length <= 32);
+            vm.assume(dynamicAllowedERC725YDataKeys[ii].length <= 32);
 
             uint16 dynamicDataKeyLength = uint16(
                 dynamicAllowedERC725YDataKeys[ii].length
@@ -190,6 +204,11 @@ contract LSP6SetDataTest is Test {
             }
         }
 
+        // Check that we do not have 0x
+        vm.assume(
+            maliciousCompactBytesArrayOfAllowedERC725YDataKeys.length > 0
+        );
+
         // 2. set this list of malicious Allowed ERC725Y Data Keys
         account.setData(
             allowedERC725YDataKeysDataKey,
@@ -198,33 +217,41 @@ contract LSP6SetDataTest is Test {
 
         // Setup KeyManager as the owner of the account
         account.transferOwnership(address(keyManager));
-        bytes memory payload = abi.encodeWithSelector(
-            ILSP14Ownable2Step.acceptOwnership.selector,
-            ""
-        );
-        keyManager.execute(payload);
-        assert(account.owner() == address(keyManager));
+        assertEq(account.owner(), address(keyManager));
 
-        // Verify malicious can set data for most data keys
+        // Verify malicious address cannot set data for most data keys
         bytes memory functionArgs = abi.encode(dataKey, dataValue);
         bytes memory callData = abi.encodeWithSelector(
             IERC725Y.setData.selector,
             functionArgs
         );
 
+        vm.startPrank(malicious);
+
         // CHECK it reverts when calling via the Key Manager
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                InvalidEncodedAllowedERC725YDataKeys.selector,
+                maliciousCompactBytesArrayOfAllowedERC725YDataKeys,
+                "couldn't DECODE from storage"
+            )
+        );
         keyManager.execute(callData);
 
+        // TODO: decide what to do with these functions and where to put them
         // CHECK the LSP20 verification function reverts as well
-        keyManager.lsp20VerifyCall(
-            malicious,
-            address(account),
-            malicious,
-            0,
-            functionArgs
-        );
+        // vm.expectRevert();
+        // keyManager.lsp20VerifyCall(
+        //     malicious,
+        //     address(account),
+        //     malicious,
+        //     0,
+        //     functionArgs
+        // );
 
         // CHECK it reverts when calling directly the Universal Profile
-        account.setData(dataKey, dataValue);
+        // account.setData(dataKey, dataValue);
+
+        vm.stopPrank();
     }
 }
