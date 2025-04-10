@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.4](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.16.3...lsp7-contracts-v0.16.4) (2025-04-10)
+
+
+### Bug Fixes
+
+* use correct contract `LSP17ExtendableInitAbstract` in inheritance of LSP7 Init ([1cf2726](https://github.com/lukso-network/lsp-smart-contracts/commit/1cf27267784fa0f8aa79214bf1acc89dbbbd7a03))
+
 ## [0.16.3](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.16.2...lsp7-contracts-v0.16.3) (2025-01-17)
 
 
