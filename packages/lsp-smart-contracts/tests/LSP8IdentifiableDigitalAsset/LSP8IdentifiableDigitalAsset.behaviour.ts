@@ -3,20 +3,6 @@ import { expect } from 'chai';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import type { BytesLike, ContractTransaction, ContractTransactionResponse } from 'ethers';
 
-// types
-import {
-  LSP8IdentifiableDigitalAsset,
-  LSP8Tester,
-  TokenReceiverWithLSP1,
-  TokenReceiverWithLSP1__factory,
-  TokenReceiverWithoutLSP1,
-  TokenReceiverWithoutLSP1__factory,
-  UniversalReceiverDelegateRevert,
-  UniversalReceiverDelegateRevert__factory,
-  TokenReceiverWithLSP1Revert,
-  TokenReceiverWithLSP1Revert__factory,
-} from '../../typechain';
-
 // helpers
 import { tokenIdAsBytes32 } from '../utils/tokens';
 import { abiCoder } from '../utils/helpers';
@@ -49,7 +35,7 @@ export type LSP8DeployParams = {
 
 export type LSP8TestContext = {
   accounts: LSP8TestAccounts;
-  lsp8: LSP8Tester;
+  lsp8;
   deployParams: LSP8DeployParams;
 };
 
@@ -67,8 +53,15 @@ export const shouldBehaveLikeLSP8 = (
   let context: LSP8TestContext;
   let expectedTotalSupply = 0;
 
+  let TokenReceiverWithLSP1__factory;
+
   before(async () => {
     context = await buildContext(0);
+
+    TokenReceiverWithLSP1__factory = await ethers.getContractFactory(
+      'TokenReceiverWithLSP1',
+      context.accounts.owner,
+    );
   });
 
   describe('when setting data', () => {
@@ -411,8 +404,7 @@ export const shouldBehaveLikeLSP8 = (
           });
 
           it('should succeed and inform the operator', async () => {
-            const tokenReceiverWithLSP1: TokenReceiverWithLSP1 =
-              await new TokenReceiverWithLSP1__factory(context.accounts.owner).deploy();
+            const tokenReceiverWithLSP1 = await TokenReceiverWithLSP1__factory.deploy();
             const operator = await tokenReceiverWithLSP1.getAddress();
             const tokenOwner = context.accounts.owner.address;
             const tokenId = newMintedTokenId;
@@ -431,8 +423,12 @@ export const shouldBehaveLikeLSP8 = (
           });
 
           it('should succeed and inform the operator even if the operator revert', async () => {
-            const operatorThatReverts: UniversalReceiverDelegateRevert =
-              await new UniversalReceiverDelegateRevert__factory(context.accounts.owner).deploy();
+            const UniversalReceiverDelegateRevert__factory = await ethers.getContractFactory(
+              'UniversalReceiverDelegateRevert',
+              context.accounts.owner,
+            );
+
+            const operatorThatReverts = await UniversalReceiverDelegateRevert__factory.deploy();
             const operator = await operatorThatReverts.getAddress();
             const tokenOwner = context.accounts.owner.address;
             const tokenId = newMintedTokenId;
@@ -542,8 +538,7 @@ export const shouldBehaveLikeLSP8 = (
         });
 
         it('should succeed and inform the operator', async () => {
-          const tokenReceiverWithLSP1: TokenReceiverWithLSP1 =
-            await new TokenReceiverWithLSP1__factory(context.accounts.owner).deploy();
+          const tokenReceiverWithLSP1 = await TokenReceiverWithLSP1__factory.deploy();
           const operator = await tokenReceiverWithLSP1.getAddress();
           const tokenOwner = context.accounts.owner.address;
           const tokenId = newMintedTokenId;
@@ -565,8 +560,11 @@ export const shouldBehaveLikeLSP8 = (
         });
 
         it('should inform the operator and revert when the operator revert', async () => {
-          const operatorThatReverts: TokenReceiverWithLSP1Revert =
-            await new TokenReceiverWithLSP1Revert__factory(context.accounts.owner).deploy();
+          const TokenReceiverWithLSP1Revert__factory = await ethers.getContractFactory(
+            'TokenReceiverWithLSP1Revert',
+            context.accounts.owner,
+          );
+          const operatorThatReverts = await TokenReceiverWithLSP1Revert__factory.deploy();
 
           const operator = await operatorThatReverts.getAddress();
           const tokenId = newMintedTokenId;
@@ -748,19 +746,20 @@ export const shouldBehaveLikeLSP8 = (
 
   describe('transfers', () => {
     type HelperContracts = {
-      tokenReceiverWithLSP1: TokenReceiverWithLSP1;
-      tokenReceiverWithoutLSP1: TokenReceiverWithoutLSP1;
+      tokenReceiverWithLSP1;
+      tokenReceiverWithoutLSP1;
     };
     let helperContracts: HelperContracts;
 
     before(async () => {
+      const TokenReceiverWithoutLSP1__factory = await ethers.getContractFactory(
+        'TokenReceiverWithoutLSP1',
+        context.accounts.owner,
+      );
+
       helperContracts = {
-        tokenReceiverWithLSP1: await new TokenReceiverWithLSP1__factory(
-          context.accounts.owner,
-        ).deploy(),
-        tokenReceiverWithoutLSP1: await new TokenReceiverWithoutLSP1__factory(
-          context.accounts.owner,
-        ).deploy(),
+        tokenReceiverWithLSP1: await TokenReceiverWithLSP1__factory.deploy(),
+        tokenReceiverWithoutLSP1: await TokenReceiverWithoutLSP1__factory.deploy(),
       };
     });
 
@@ -2196,7 +2195,7 @@ export const shouldBehaveLikeLSP8 = (
 };
 
 export type LSP8InitializeTestContext = {
-  lsp8: LSP8IdentifiableDigitalAsset;
+  lsp8;
   initializeTransaction: ContractTransactionResponse;
   deployParams: LSP8DeployParams;
 };

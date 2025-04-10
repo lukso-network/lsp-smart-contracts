@@ -3,15 +3,6 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import {
-  FallbackInitializer,
-  FallbackInitializer__factory,
-  FallbackRevert,
-  FallbackRevert__factory,
-  TargetContract,
-  TargetContract__factory,
-} from '../../../typechain';
-
 // constants
 import { ERC725YDataKeys } from '../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -38,6 +29,8 @@ export const shouldBehaveLikePermissionCall = (
   let context: LSP6TestContext;
 
   describe('when making an empty call via `ERC25X.execute(...)` -> (`data` = `0x`, `value` = 0)', () => {
+    let TargetContract__factory, FallbackInitializer__factory, FallbackRevert__factory;
+
     let addressCanMakeCallNoAllowedCalls: SignerWithAddress,
       addressCanMakeCallWithAllowedCalls: SignerWithAddress,
       addressCannotMakeCallNoAllowedCalls: SignerWithAddress,
@@ -46,11 +39,24 @@ export const shouldBehaveLikePermissionCall = (
 
     let allowedEOA: string;
 
-    let allowedContractWithFallback: FallbackInitializer,
-      allowedContractWithFallbackRevert: FallbackRevert;
+    let allowedContractWithFallback, allowedContractWithFallbackRevert;
 
     before(async () => {
       context = await buildContext();
+
+      TargetContract__factory = await ethers.getContractFactory(
+        'TargetContract',
+        context.accounts[0],
+      );
+
+      FallbackInitializer__factory = await ethers.getContractFactory(
+        'FallbackInitializer',
+        context.accounts[0],
+      );
+      FallbackRevert__factory = await ethers.getContractFactory(
+        'FallbackRevert',
+        context.accounts[0],
+      );
 
       addressCannotMakeCallNoAllowedCalls = context.accounts[1];
       addressCannotMakeCallWithAllowedCalls = context.accounts[2];
@@ -60,13 +66,9 @@ export const shouldBehaveLikePermissionCall = (
 
       allowedEOA = context.accounts[6].address;
 
-      allowedContractWithFallback = await new FallbackInitializer__factory(
-        context.accounts[0],
-      ).deploy();
+      allowedContractWithFallback = await FallbackInitializer__factory.deploy();
 
-      allowedContractWithFallbackRevert = await new FallbackRevert__factory(
-        context.accounts[0],
-      ).deploy();
+      allowedContractWithFallbackRevert = await FallbackRevert__factory.deploy();
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -128,7 +130,7 @@ export const shouldBehaveLikePermissionCall = (
       });
 
       it('should fail with `NotAuthorised` error when `to` is a contract', async () => {
-        const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+        const targetContract = await TargetContract__factory.deploy();
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -164,7 +166,7 @@ export const shouldBehaveLikePermissionCall = (
       });
 
       it('should fail with `NotAuthorised` error when `to` is a contract', async () => {
-        const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+        const targetContract = await TargetContract__factory.deploy();
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -198,7 +200,7 @@ export const shouldBehaveLikePermissionCall = (
       });
 
       it('should fail with `NoCallsAllowed` error when `to` is a contract', async () => {
-        const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+        const targetContract = await TargetContract__factory.deploy();
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -253,7 +255,7 @@ export const shouldBehaveLikePermissionCall = (
       describe('when `to` is a contract', () => {
         describe('when `to` is NOT in the list of Allowed Calls', () => {
           it('should fail with `NotAllowedCall` error', async () => {
-            const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+            const targetContract = await TargetContract__factory.deploy();
 
             const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
@@ -369,20 +371,27 @@ export const shouldBehaveLikePermissionCall = (
   });
 
   describe('when making a ERC25X.execute(...) call with some `data` payload', () => {
+    let TargetContract__factory;
+
     let addressCanMakeCallNoAllowedCalls: SignerWithAddress,
       addressCanMakeCallWithAllowedCalls: SignerWithAddress,
       addressCannotMakeCall: SignerWithAddress;
 
-    let targetContract: TargetContract;
+    let targetContract;
 
     before(async () => {
       context = await buildContext();
+
+      TargetContract__factory = await ethers.getContractFactory(
+        'TargetContract',
+        context.accounts[0],
+      );
 
       addressCanMakeCallNoAllowedCalls = context.accounts[1];
       addressCanMakeCallWithAllowedCalls = context.accounts[2];
       addressCannotMakeCall = context.accounts[3];
 
-      targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+      targetContract = await TargetContract__factory.deploy();
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -984,15 +993,22 @@ export const shouldBehaveLikePermissionCall = (
   });
 
   describe('`execute(...)` edge cases', async () => {
-    let targetContract: TargetContract;
+    let TargetContract__factory;
+
+    let targetContract;
     let addressWithNoPermissions: SignerWithAddress;
 
     before(async () => {
       context = await buildContext();
 
+      TargetContract__factory = await ethers.getContractFactory(
+        'TargetContract',
+        context.accounts[0],
+      );
+
       addressWithNoPermissions = context.accounts[1];
 
-      targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+      targetContract = await TargetContract__factory.deploy();
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -1057,12 +1073,17 @@ export const shouldBehaveLikePermissionCall = (
         let controllerCanSuperCall;
         let controllerCanSuperTransferValue;
 
-        let targetContract: FallbackInitializer;
+        let targetContract;
 
         let executePayload;
 
         before(async () => {
           context = await buildContext(ethers.parseEther('50'));
+
+          const FallbackInitializer__factory = await ethers.getContractFactory(
+            'FallbackInitializer',
+            context.accounts[0],
+          );
 
           const accounts = await ethers.getSigners();
 
@@ -1075,7 +1096,7 @@ export const shouldBehaveLikePermissionCall = (
           controllerCanSuperCall = accounts[5];
           controllerCanSuperTransferValue = accounts[6];
 
-          targetContract = await new FallbackInitializer__factory(context.accounts[0]).deploy();
+          targetContract = await FallbackInitializer__factory.deploy();
 
           const permissionKeys = [
             // permissions
@@ -1247,7 +1268,7 @@ export const shouldBehaveLikePermissionCall = (
         let controllerCanSuperCall;
         let controllerCanOnlySign;
 
-        let targetContract: FallbackInitializer;
+        let targetContract;
 
         let executePayload;
 
@@ -1260,7 +1281,12 @@ export const shouldBehaveLikePermissionCall = (
           controllerCanSuperCall = accounts[2];
           controllerCanOnlySign = accounts[3];
 
-          targetContract = await new FallbackInitializer__factory(context.accounts[0]).deploy();
+          const FallbackInitializer__factory = await ethers.getContractFactory(
+            'FallbackInitializer',
+            context.accounts[0],
+          );
+
+          targetContract = await FallbackInitializer__factory.deploy();
 
           const permissionKeys = [
             // permissions

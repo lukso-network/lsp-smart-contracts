@@ -2,17 +2,6 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import {
-  LSP7Mintable,
-  LSP7Mintable__factory,
-  SignatureValidator,
-  SignatureValidator__factory,
-  TargetContract,
-  TargetContract__factory,
-  UniversalProfile__factory,
-  UniversalProfile,
-} from '../../../typechain';
-
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants';
 import { OPERATION_TYPES, ERC1271_VALUES } from '@lukso/lsp0-contracts';
@@ -38,9 +27,9 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
   let addressCanInteractOnlyWithERC1271: SignerWithAddress,
     addressCanInteractOnlyWithLSP7: SignerWithAddress;
 
-  let targetContract: TargetContract,
-    signatureValidatorContract: SignatureValidator,
-    otherUniversalProfile: UniversalProfile;
+  let targetContract,
+    signatureValidatorContract,
+    otherUniversalProfile;
 
   before(async () => {
     context = await buildContext();
@@ -48,10 +37,11 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
     addressCanInteractOnlyWithERC1271 = context.accounts[1];
     addressCanInteractOnlyWithLSP7 = context.accounts[2];
 
-    targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
-    signatureValidatorContract = await new SignatureValidator__factory(
-      context.accounts[0],
-    ).deploy();
+    const TargetContract = await ethers.getContractFactory('TargetContract', context.accounts[0]);
+    targetContract = await TargetContract.deploy();
+
+    const SignatureValidator = await ethers.getContractFactory('SignatureValidator', context.accounts[0]);
+    signatureValidatorContract = await SignatureValidator.deploy();
 
     // test to interact with an other UniversalProfile (e.g.: transfer LYX)
     otherUniversalProfile = await new UniversalProfile__factory(context.accounts[3]).deploy(
@@ -280,12 +270,13 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
     });
 
     describe('should be allowed to interact with any LSP7 token contracts', () => {
-      let lsp7TokenA: LSP7Mintable;
-      let lsp7TokenB: LSP7Mintable;
-      let lsp7TokenC: LSP7Mintable;
+      let lsp7TokenA;
+      let lsp7TokenB;
+      let lsp7TokenC;
 
       before(async () => {
-        lsp7TokenA = await new LSP7Mintable__factory(context.accounts[0]).deploy(
+        const LSP7Mintable__factory = await ethers.getContractFactory('LSP7Mintable', context.accounts[0]);
+        lsp7TokenA = await LSP7Mintable__factory.deploy(
           'LSP7 Token A',
           'TKNA',
           context.accounts[0].address,
@@ -293,7 +284,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           false,
         );
 
-        lsp7TokenB = await new LSP7Mintable__factory(context.accounts[0]).deploy(
+        lsp7TokenB = await LSP7Mintable__factory.deploy(
           'LSP7 Token B',
           'TKNB',
           context.accounts[0].address,
@@ -301,7 +292,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           false,
         );
 
-        lsp7TokenC = await new LSP7Mintable__factory(context.accounts[0]).deploy(
+        lsp7TokenC = await LSP7Mintable__factory.deploy(
           'LSP7 Token C',
           'TKNC',
           context.accounts[0].address,

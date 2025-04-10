@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { LSP8EnumerableInitTester, LSP8EnumerableInitTester__factory } from '../../../typechain';
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {
@@ -11,6 +10,7 @@ import {
 import { deployProxy } from '../../utils/fixtures';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
+import { ethers } from 'hardhat';
 
 describe('LSP8EnumerableInit with proxy', () => {
   const buildTestContext = async () => {
@@ -23,16 +23,18 @@ describe('LSP8EnumerableInit with proxy', () => {
       lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
     };
 
-    const LSP8EnumerableInit: LSP8EnumerableInitTester =
-      await new LSP8EnumerableInitTester__factory(accounts.owner).deploy();
+    const LSP8EnumerableInitTester__factory = await ethers.getContractFactory(
+      'LSP8EnumerableInitTester',
+      accounts.owner,
+    );
+
+    const LSP8EnumerableInit = await LSP8EnumerableInitTester__factory.deploy();
 
     const lsp8EnumerableProxy = await deployProxy(
       await LSP8EnumerableInit.getAddress(),
       accounts.owner,
     );
-    const lsp8Enumerable: LSP8EnumerableInitTester = LSP8EnumerableInit.attach(
-      lsp8EnumerableProxy,
-    ) as LSP8EnumerableInitTester;
+    const lsp8Enumerable = LSP8EnumerableInit.attach(lsp8EnumerableProxy);
 
     return { accounts, lsp8Enumerable, deployParams };
   };

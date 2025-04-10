@@ -112,17 +112,10 @@ const config: HardhatUserConfig = {
       'LSP6KeyManager', // Standard version
       'LSP6KeyManagerInit', // Proxy version
     ],
-    // Whether to include the TypeChain factories or not.
-    // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
-    includeFactories: true,
   },
   paths: {
     artifacts: 'artifacts',
     tests: 'tests',
-  },
-  typechain: {
-    outDir: 'typechain',
-    target: 'ethers-v6',
   },
   mocha: {
     timeout: 10000000,

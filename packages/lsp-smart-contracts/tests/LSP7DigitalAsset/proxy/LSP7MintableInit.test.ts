@@ -1,6 +1,5 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { LSP7MintableInit, LSP7MintableInit__factory } from '../../../typechain';
 
 import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour';
 import {
@@ -26,17 +25,18 @@ describe('LSP7MintableInit with proxy', () => {
       lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
     };
 
-    const LSP7MintableInit: LSP7MintableInit = await new LSP7MintableInit__factory(
+    const LSP7MintableInit__factory = await ethers.getContractFactory(
+      'LSP7MintableInit',
       accounts.owner,
-    ).deploy();
+    );
+
+    const LSP7MintableInit = await LSP7MintableInit__factory.deploy();
 
     const lsp7MintableProxy = await deployProxy(
       await LSP7MintableInit.getAddress(),
       accounts.owner,
     );
-    const lsp7Mintable: LSP7MintableInit = LSP7MintableInit.attach(
-      lsp7MintableProxy,
-    ) as LSP7MintableInit;
+    const lsp7Mintable = LSP7MintableInit.attach(lsp7MintableProxy);
 
     return { accounts, lsp7Mintable, deployParams };
   };
@@ -55,7 +55,12 @@ describe('LSP7MintableInit with proxy', () => {
     it('should have initialized the tokenName + tokenSymbol to "" and contract owner to `address(0)`', async () => {
       const accounts = await ethers.getSigners();
 
-      const lsp7MintableInit = await new LSP7MintableInit__factory(accounts[0]).deploy();
+      const LSP7MintableInit__factory = await ethers.getContractFactory(
+        'LSP7MintableInit',
+        accounts[0],
+      );
+
+      const lsp7MintableInit = await LSP7MintableInit__factory.deploy();
 
       expect(await lsp7MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenName)).to.equal('0x');
       expect(await lsp7MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenSymbol)).to.equal('0x');
@@ -68,7 +73,12 @@ describe('LSP7MintableInit with proxy', () => {
     it('prevent any address from calling the initialize(...) function on the implementation', async () => {
       const accounts = await ethers.getSigners();
 
-      const lsp7MintableInit = await new LSP7MintableInit__factory(accounts[0]).deploy();
+      const LSP7MintableInit__factory = await ethers.getContractFactory(
+        'LSP7MintableInit',
+        accounts[0],
+      );
+
+      const lsp7MintableInit = await LSP7MintableInit__factory.deploy();
 
       const randomCaller = accounts[1];
 

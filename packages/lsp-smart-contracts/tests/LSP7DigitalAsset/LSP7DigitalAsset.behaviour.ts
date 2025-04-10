@@ -3,26 +3,11 @@ import { assert, expect } from 'chai';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { toBigInt, type BytesLike, type ContractTransactionResponse } from 'ethers';
 
-// types
-import {
-  LSP7Tester,
-  TokenReceiverWithLSP1,
-  TokenReceiverWithLSP1__factory,
-  TokenReceiverWithoutLSP1,
-  TokenReceiverWithoutLSP1__factory,
-  UniversalReceiverDelegateRevert,
-  UniversalReceiverDelegateRevert__factory,
-  TokenReceiverWithLSP1Revert,
-  TokenReceiverWithLSP1Revert__factory,
-  LSP7DigitalAsset,
-} from '../../typechain';
-
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } from '../../constants';
 
 import { abiCoder } from '../utils/helpers';
 import { AddressZero } from '../LSP17Extensions/helpers/utils';
-import { build } from 'unbuild';
 
 export type LSP7TestAccounts = {
   owner: SignerWithAddress;
@@ -62,7 +47,7 @@ export type LSP7DeployParams = {
 
 export type LSP7TestContext = {
   accounts: LSP7TestAccounts;
-  lsp7: LSP7Tester;
+  lsp7;
   deployParams: LSP7DeployParams;
   initialSupply: bigint;
 };
@@ -74,9 +59,32 @@ export type ExpectedError = {
 
 export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext>) => {
   let context: LSP7TestContext;
+  let TokenReceiverWithLSP1__factory;
+  let TokenReceiverWithoutLSP1__factory;
+  let UniversalReceiverDelegateRevert__factory;
+  let TokenReceiverWithLSP1Revert__factory;
 
   beforeEach(async () => {
     context = await buildContext();
+
+    TokenReceiverWithLSP1__factory = await ethers.getContractFactory(
+      'TokenReceiverWithLSP1',
+      context.accounts.owner,
+    );
+
+    TokenReceiverWithoutLSP1__factory = await ethers.getContractFactory(
+      'TokenReceiverWithoutLSP1',
+      context.accounts.owner,
+    );
+    TokenReceiverWithLSP1Revert__factory = await ethers.getContractFactory(
+      'TokenReceiverWithLSP1Revert',
+      context.accounts.owner,
+    );
+
+    UniversalReceiverDelegateRevert__factory = await ethers.getContractFactory(
+      'UniversalReceiverDelegateRevert',
+      context.accounts.owner,
+    );
   });
 
   describe('when minting tokens', () => {
@@ -265,8 +273,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 
       describe('with sending data and notifying an LSP1 contract', () => {
         it('should succeed and inform the operator', async () => {
-          const tokenReceiverWithLSP1: TokenReceiverWithLSP1 =
-            await new TokenReceiverWithLSP1__factory(context.accounts.owner).deploy();
+          const tokenReceiverWithLSP1 = await TokenReceiverWithLSP1__factory.deploy();
           const operator = await tokenReceiverWithLSP1.getAddress();
           const tokenOwner = context.accounts.owner.address;
           const amount = context.initialSupply;
@@ -285,8 +292,8 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         });
 
         it('should succeed and inform the operator even if the operator revert', async () => {
-          const operatorThatReverts: UniversalReceiverDelegateRevert =
-            await new UniversalReceiverDelegateRevert__factory(context.accounts.owner).deploy();
+          const operatorThatReverts = await UniversalReceiverDelegateRevert__factory.deploy();
+
           const operator = await operatorThatReverts.getAddress();
           const tokenOwner = context.accounts.owner.address;
           const amount = context.initialSupply;
@@ -691,9 +698,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 
   describe('with sending data and notifying an LSP1 contract', () => {
     it('should succeed and inform the operator', async () => {
-      const tokenReceiverWithLSP1: TokenReceiverWithLSP1 = await new TokenReceiverWithLSP1__factory(
-        context.accounts.owner,
-      ).deploy();
+      const tokenReceiverWithLSP1 = await TokenReceiverWithLSP1__factory.deploy();
       const operator = await tokenReceiverWithLSP1.getAddress();
       const tokenOwner = context.accounts.owner.address;
 
@@ -713,8 +718,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
     });
 
     it('should inform the operator and revert when the operator universalReceiver revert', async () => {
-      const operatorThatReverts: TokenReceiverWithLSP1Revert =
-        await new TokenReceiverWithLSP1Revert__factory(context.accounts.owner).deploy();
+      const operatorThatReverts = await TokenReceiverWithLSP1Revert__factory.deploy();
 
       const tokenOwner = context.accounts.owner.address;
       const operator = await operatorThatReverts.getAddress();
@@ -729,8 +733,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
     });
 
     it('should inform the operator and revert when the operator universalReceiver revert', async () => {
-      const operatorThatReverts: TokenReceiverWithLSP1Revert =
-        await new TokenReceiverWithLSP1Revert__factory(context.accounts.owner).deploy();
+      const operatorThatReverts = await TokenReceiverWithLSP1Revert__factory.deploy();
 
       const tokenOwner = context.accounts.owner.address;
       const operator = await operatorThatReverts.getAddress();
@@ -818,19 +821,15 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 
   describe('transfers', () => {
     type HelperContracts = {
-      tokenReceiverWithLSP1: TokenReceiverWithLSP1;
-      tokenReceiverWithoutLSP1: TokenReceiverWithoutLSP1;
+      tokenReceiverWithLSP1;
+      tokenReceiverWithoutLSP1;
     };
     let helperContracts: HelperContracts;
 
     beforeEach(async () => {
       helperContracts = {
-        tokenReceiverWithLSP1: await new TokenReceiverWithLSP1__factory(
-          context.accounts.owner,
-        ).deploy(),
-        tokenReceiverWithoutLSP1: await new TokenReceiverWithoutLSP1__factory(
-          context.accounts.owner,
-        ).deploy(),
+        tokenReceiverWithLSP1: await TokenReceiverWithLSP1__factory.deploy(),
+        tokenReceiverWithoutLSP1: await TokenReceiverWithoutLSP1__factory.deploy(),
       };
     });
 
@@ -2600,7 +2599,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 };
 
 export type LSP7InitializeTestContext = {
-  lsp7: LSP7DigitalAsset;
+  lsp7;
   deployParams: LSP7DeployParams;
   initializeTransaction: ContractTransactionResponse;
 };

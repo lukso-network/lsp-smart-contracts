@@ -3,16 +3,6 @@ import { expect } from 'chai';
 import { BytesLike } from 'ethers';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import {
-  LSP7Tester__factory,
-  LSP0ERC725Account__factory,
-  LSP6KeyManager,
-  LSP6KeyManager__factory,
-  LSP7Mintable,
-  LSP7Mintable__factory,
-  LSP8Mintable,
-} from '../../typechain';
-
 import { ERC725YDataKeys } from '../../constants';
 import { ERC1271_VALUES } from '@lukso/lsp0-contracts';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
@@ -21,15 +11,16 @@ import { ARRAY_LENGTH, encodeCompactBytesArray } from '../utils/helpers';
 
 export type LSP6ControlledToken = {
   accounts: SignerWithAddress[];
-  token: LSP7Mintable | LSP8Mintable;
-  keyManager: LSP6KeyManager;
+  token: any;
+  keyManager: any;
   mainController: SignerWithAddress;
 };
 
 const buildContext = async () => {
   const accounts = await ethers.getSigners();
 
-  const lsp7 = await new LSP7Mintable__factory(accounts[0]).deploy(
+  const LSP7Mintable = await ethers.getContractFactory('LSP7Mintable', accounts[0]);
+  const lsp7 = await LSP7Mintable.deploy(
     'name',
     'symbol',
     accounts[0].address,
@@ -37,7 +28,8 @@ const buildContext = async () => {
     true,
   );
 
-  const keyManager = await new LSP6KeyManager__factory(accounts[0]).deploy(lsp7.target);
+  const LSP6KeyManager = await ethers.getContractFactory('LSP6KeyManager', accounts[0]);
+  const keyManager = await LSP6KeyManager.deploy(lsp7.target);
 
   const keys = [
     ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
@@ -122,7 +114,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
 
   describe('when trying to call mint(..) function on  in LSP7 through LSP6', () => {
     it('should revert because function does not exist on LSP6', async () => {
-      const LSP7 = context.token as LSP7Mintable;
+      const LSP7 = context.token;
       const mintPayload = LSP7.interface.encodeFunctionData('mint', [
         context.mainController.address,
         1,
@@ -153,7 +145,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
     });
 
     it('should change the owner of LSP7 contract', async () => {
-      const LSP7 = context.token as LSP7Mintable;
+      const LSP7 = context.token;
       const transferOwnershipPayload = LSP7.interface.encodeFunctionData('transferOwnership', [
         newOwner.address,
       ]);
@@ -183,7 +175,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
     });
 
     it("`mint(..)` -> should revert with 'InvalidERC725Function' error.", async () => {
-      const LSP7 = context.token as LSP7Mintable;
+      const LSP7 = context.token;
       const mintPayload = LSP7.interface.encodeFunctionData('mint', [
         context.mainController.address,
         1,
@@ -197,7 +189,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
     });
 
     it('should allow the new owner to call mint(..)', async () => {
-      const LSP7 = context.token as LSP7Mintable;
+      const LSP7 = context.token;
 
       await LSP7.connect(newOwner).mint(context.mainController.address, 1, true, '0x');
 
@@ -590,8 +582,9 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
      */
     describe('when trying to call execute(..) function on LSP7 through LSP6', () => {
       it('should revert because function does not exist on LSP7', async () => {
+        const LSP7Tester__factory = await ethers.getContractFactory('LSP7Tester', context.mainController);
         // deploying a dummy token contract with public mint function
-        const newTokenContract = await new LSP7Tester__factory(context.mainController).deploy(
+        const newTokenContract = await LSP7Tester__factory.deploy(
           'NewTokenName',
           'NewTokenSymbol',
           context.mainController.address,
@@ -605,7 +598,8 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
           '0x',
         ]);
 
-        const payload = LSP0ERC725Account__factory.createInterface().encodeFunctionData('execute', [
+    
+        const payload = (await ethers.getContractFactory("LSP0ERC725Account")).interface.encodeFunctionData('execute', [
           0,
           await newTokenContract.getAddress(),
           0,

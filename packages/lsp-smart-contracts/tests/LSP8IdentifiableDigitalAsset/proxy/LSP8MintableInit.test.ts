@@ -1,6 +1,5 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { LSP8MintableInit, LSP8MintableInit__factory } from '../../../typechain';
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {
@@ -25,17 +24,18 @@ describe('LSP8MintableInit with proxy', () => {
       lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
     };
 
-    const LSP8MintableInit: LSP8MintableInit = await new LSP8MintableInit__factory(
+    const LSP8MintableInit__factory = await ethers.getContractFactory(
+      'LSP8MintableInit',
       accounts.owner,
-    ).deploy();
+    );
+
+    const LSP8MintableInit = await LSP8MintableInit__factory.deploy();
 
     const lsp8MintableProxy = await deployProxy(
       await LSP8MintableInit.getAddress(),
       accounts.owner,
     );
-    const lsp8Mintable: LSP8MintableInit = LSP8MintableInit.attach(
-      lsp8MintableProxy,
-    ) as LSP8MintableInit;
+    const lsp8Mintable = LSP8MintableInit.attach(lsp8MintableProxy);
 
     return { accounts, lsp8Mintable, deployParams };
   };
@@ -54,7 +54,12 @@ describe('LSP8MintableInit with proxy', () => {
     it('should have initialized the tokenName + tokenSymbol to "" and contract owner to `address(0)`', async () => {
       const accounts = await ethers.getSigners();
 
-      const lsp8MintableInit = await new LSP8MintableInit__factory(accounts[0]).deploy();
+      const LSP8MintableInit__factory = await ethers.getContractFactory(
+        'LSP8MintableInit',
+        accounts[0],
+      );
+
+      const lsp8MintableInit = await LSP8MintableInit__factory.deploy();
 
       expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenName)).to.equal('0x');
       expect(await lsp8MintableInit.getData(ERC725YDataKeys.LSP4.LSP4TokenSymbol)).to.equal('0x');
@@ -68,7 +73,12 @@ describe('LSP8MintableInit with proxy', () => {
     it('prevent any address from calling the initialize(...) function on the implementation', async () => {
       const accounts = await ethers.getSigners();
 
-      const lsp8Mintable = await new LSP8MintableInit__factory(accounts[0]).deploy();
+      const LSP8MintableInit__factory = await ethers.getContractFactory(
+        'LSP8MintableInit',
+        accounts[0],
+      );
+
+      const lsp8Mintable = await LSP8MintableInit__factory.deploy();
 
       const randomCaller = accounts[1];
 

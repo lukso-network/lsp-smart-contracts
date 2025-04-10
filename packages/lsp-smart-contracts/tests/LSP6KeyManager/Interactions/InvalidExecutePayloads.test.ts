@@ -1,7 +1,6 @@
 import { expect } from 'chai';
+import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-
-import { TargetContract__factory, TargetContract } from '../../../typechain';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';
@@ -15,14 +14,19 @@ export const testInvalidExecutePayloads = (buildContext: () => Promise<LSP6TestC
   let context: LSP6TestContext;
 
   let addressCanMakeCall: SignerWithAddress;
-  let targetContract: TargetContract;
+  let targetContract;
+
+  let TargetContract__factory;
 
   before(async () => {
     context = await buildContext();
 
     addressCanMakeCall = context.accounts[4];
 
-    targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+    TargetContract__factory = await ethers.getContractFactory(
+      'TargetContract',
+      context.accounts[0],
+    );
 
     const permissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
