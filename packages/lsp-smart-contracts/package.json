@@ -49,6 +49,7 @@
     },
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
+    "./types/*": "./types/*",
     "./package.json": "./package.json"
   },
   "scripts": {
