@@ -44,7 +44,7 @@
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
-    "test:foundry": "FOUNDRY_PROFILE=lsp6 forge test --no-match-test Skip -vvv",
+    "test:foundry": "FOUNDRY_PROFILE=lsp6 forge test -vvvv",
     "package": "hardhat prepare-package"
   },
   "dependencies": {

@@ -119,7 +119,7 @@ contract LSP6AllowedCallsTest is Test {
         );
     }
 
-    function testFail_ShouldRevertForAnyMessageCallToTargetWithNoCallTypeAllowed(
+    function test_RevertForAnyMessageCallToTargetWithNoCallTypeAllowed(
         uint8 operationType,
         uint256 value,
         bytes memory callData
@@ -131,6 +131,14 @@ contract LSP6AllowedCallsTest is Test {
         // we should use a valid operation type
         vm.assume(operationType <= 4);
 
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                NotAllowedCall.selector,
+                address(this),
+                targetContract,
+                bytes4(callData)
+            )
+        );
         keyManager.verifyAllowedCall(
             address(this),
             uint256(operationType),
@@ -140,7 +148,7 @@ contract LSP6AllowedCallsTest is Test {
         );
     }
 
-    function testFail_ShouldRevertWithEmptyCallNoValueWhenAssociatedCallTypeIsNotSet(
+    function test_RevertWithEmptyCallNoValueWhenAssociatedCallTypeIsNotSet(
         uint8 operationType,
         bytes4 callTypeToGrant
     ) public {
@@ -176,6 +184,7 @@ contract LSP6AllowedCallsTest is Test {
             bytes4(0xffffffff)
         ); // for any function
 
+        vm.expectRevert();
         keyManager.verifyAllowedCall(
             address(this),
             uint256(operationType),
@@ -278,7 +287,7 @@ contract LSP6AllowedCallsTest is Test {
         );
     }
 
-    function testFail_ShouldRevertWithCallDataAs0x00000000WhenCallTypeDoesNotAllowBytes4ZeroSelector(
+    function test_RevertWithCallDataAs0x00000000WhenCallTypeDoesNotAllowBytes4ZeroSelector(
         uint8 operationType,
         bytes4 callTypeToGrant,
         bytes4 randomFunctionSelectorToAllow
@@ -321,6 +330,7 @@ contract LSP6AllowedCallsTest is Test {
             randomFunctionSelectorToAllow
         );
 
+        vm.expectRevert();
         keyManager.verifyAllowedCall(
             address(this),
             uint256(operationType),

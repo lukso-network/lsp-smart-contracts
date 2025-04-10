@@ -8,6 +8,9 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import "../contracts/LSP2Utils.sol";
 
 contract LSP2UtilsTests is Test {
+    /// @dev Prevent error "FAIL: call didn't revert at a lower depth than cheatcode call depth;"
+    /// This is due to the new behaviour of Foundry
+    /// forge-config: default.allow_internal_expect_revert = true
     function testRevertsOnWrongLastBracket(string memory x) public {
         bytes memory dataKey = bytes(x);
         // check if x last char is not ]
@@ -18,6 +21,7 @@ contract LSP2UtilsTests is Test {
         }
     }
 
+    /// forge-config: default.allow_internal_expect_revert = true
     function testRevertsOnWrongSecondToLastBracket(string memory x) public {
         bytes memory dataKey = bytes(x);
         // check if x sencond to last char is not [
