@@ -849,27 +849,27 @@ export const shouldInitializeLikeLSP9 = (
   });
 
   describe('when the contract was initialized', () => {
-    it('should have registered the ERC165 interface', async () => {
+    it('should support the ERC165 interface', async () => {
       const result = await context.lsp9Vault.supportsInterface(INTERFACE_IDS.ERC165);
       expect(result).to.be.true;
     });
 
-    it('should have registered the ERC725X interface', async () => {
+    it('should support the ERC725X interface', async () => {
       const result = await context.lsp9Vault.supportsInterface(INTERFACE_IDS.ERC725X);
       expect(result).to.be.true;
     });
 
-    it('should have registered the ERC725Y interface', async () => {
+    it('should support the ERC725Y interface', async () => {
       const result = await context.lsp9Vault.supportsInterface(INTERFACE_IDS.ERC725Y);
       expect(result).to.be.true;
     });
 
-    it('should have registered the LSP9 interface', async () => {
+    it('should support the LSP9 interface', async () => {
       const result = await context.lsp9Vault.supportsInterface(INTERFACE_IDS.LSP9Vault);
       expect(result).to.be.true;
     });
 
-    it('should have registered the LSP1 interface', async () => {
+    it('should support the LSP1 interface', async () => {
       const result = await context.lsp9Vault.supportsInterface(INTERFACE_IDS.LSP1UniversalReceiver);
       expect(result).to.be.true;
     });

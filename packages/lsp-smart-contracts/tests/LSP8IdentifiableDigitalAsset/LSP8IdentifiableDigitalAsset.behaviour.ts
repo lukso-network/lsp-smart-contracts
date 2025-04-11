@@ -2211,20 +2211,26 @@ export const shouldInitializeLikeLSP8 = (
   });
 
   describe('when the contract was initialized', () => {
-    it('should have registered the ERC165 interface', async () => {
-      expect(await context.lsp8.supportsInterface(INTERFACE_IDS.ERC165));
+    it('should support the ERC165 interface', async () => {
+      const result = await context.lsp8.supportsInterface(INTERFACE_IDS.ERC165);
+      expect(result).to.be.true;
     });
 
-    it('should have registered the ERC725Y interface', async () => {
-      expect(await context.lsp8.supportsInterface(INTERFACE_IDS.ERC725Y));
+    it('should support the ERC725Y interface', async () => {
+      const result = await context.lsp8.supportsInterface(INTERFACE_IDS.ERC725Y);
+      expect(result).to.be.true;
     });
 
-    it('should have registered the LSP8 interface', async () => {
-      expect(await context.lsp8.supportsInterface(INTERFACE_IDS.LSP8IdentifiableDigitalAsset));
+    it('should support the LSP8 interface', async () => {
+      const result = await context.lsp8.supportsInterface(
+        INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
+      );
+      expect(result).to.be.true;
     });
 
-    it('should have registered the LSP17Extendable interface', async () => {
-      expect(await context.lsp8.supportsInterface(INTERFACE_IDS.LSP17Extendable));
+    it('should support the LSP17Extendable interface', async () => {
+      const result = await context.lsp8.supportsInterface(INTERFACE_IDS.LSP17Extendable);
+      expect(result).to.be.true;
     });
 
     it('should have set expected entries with ERC725Y.setData', async () => {
