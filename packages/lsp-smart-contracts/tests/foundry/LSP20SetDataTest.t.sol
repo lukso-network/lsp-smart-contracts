@@ -1,35 +1,46 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
+// Testing utilities
 import "forge-std/Test.sol";
-import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
-import {LSP6KeyManager} from "../contracts/LSP6KeyManager.sol";
+import {
+    UniversalProfile
+} from "@lukso/universalprofile-contracts/contracts/UniversalProfile.sol";
+import {
+    LSP6KeyManager
+} from "@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol";
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {
+    ILSP14Ownable2Step as ILSP14
+} from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
 
+// libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
-import {LSP6Utils} from "../contracts/LSP6Utils.sol";
+import {LSP6Utils} from "@lukso/lsp6-contracts/contracts/LSP6Utils.sol";
 
 // constants
 import "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
-import "../contracts/LSP6Constants.sol";
+import "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
 import "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
 
 // errors
 import {
     InvalidEncodedAllowedERC725YDataKeys
-} from "../contracts/LSP6Errors.sol";
+} from "@lukso/lsp6-contracts/contracts/LSP6Errors.sol";
 
-contract LSP6SetDataTest is Test {
+/// @dev Fuzzing tests to ensure that the expect revert errors from the Key Manager
+/// are also caught via the `LSP20` verification functions
+contract LSP20SetDataTest is Test {
     using BytesLib for bytes;
 
-    ERC725 account;
+    UniversalProfile account;
     LSP6KeyManager keyManager;
 
     function setUp() public {
-        account = new ERC725(address(this));
+        account = new UniversalProfile(address(this));
         keyManager = new LSP6KeyManager(address(account));
     }
 
@@ -44,6 +55,10 @@ contract LSP6SetDataTest is Test {
         vm.assume(bytes12(dataKey) != _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX);
         vm.assume(dataKey != _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
         vm.assume(bytes12(dataKey) != _LSP17_EXTENSION_PREFIX);
+
+        // bytes32 dataKey = bytes32(
+        //     0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe
+        // );
 
         // Give owner ability to transfer ownership
         bytes32 ownerDataKey = LSP2Utils.generateMappingWithGroupingKey(
@@ -77,26 +92,39 @@ contract LSP6SetDataTest is Test {
 
         // Setup KeyManager as the owner of the account
         account.transferOwnership(address(keyManager));
+
+        vm.prank(address(this));
+        keyManager.execute(bytes.concat(ILSP14.acceptOwnership.selector));
+
         assertEq(account.owner(), address(keyManager));
 
         // Verify malicious can set data for most data keys
-        bytes memory functionArgs = abi.encode(dataKey, hex"cafecafe");
-        bytes memory callData = abi.encodeWithSelector(
-            IERC725Y.setData.selector,
-            functionArgs
+        bytes memory callData = abi.encodeCall(
+            IERC725Y.setData,
+            (dataKey, hex"cafecafe")
+        );
+
+        bytes memory expectedError = abi.encodeWithSelector(
+            InvalidEncodedAllowedERC725YDataKeys.selector,
+            bytes.concat(bytes2(0)),
+            "couldn't DECODE from storage"
         );
 
         vm.startPrank(malicious);
 
-        // CHECK it reverts when calling via the Key Manager
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                InvalidEncodedAllowedERC725YDataKeys.selector,
-                bytes.concat(bytes2(0)),
-                "couldn't DECODE from storage"
-            )
+        // CHECK the LSP20 verification function reverts as well
+        vm.expectRevert(expectedError);
+        keyManager.lsp20VerifyCall(
+            malicious,
+            address(account),
+            malicious,
+            0,
+            callData
         );
-        keyManager.execute(callData);
+
+        // CHECK it reverts when calling directly the Universal Profile
+        vm.expectRevert(expectedError);
+        account.setData(dataKey, hex"cafecafe");
 
         vm.stopPrank();
     }
@@ -119,7 +147,10 @@ contract LSP6SetDataTest is Test {
     ) public {
         // we set below the 0x0000 value in the middle of the encoded list at index ii = 2
         // therefore we need at least 3 entries in the list
-        vm.assume(dynamicAllowedERC725YDataKeys.length >= 3);
+        vm.assume(
+            dynamicAllowedERC725YDataKeys.length >= 3 &&
+                dynamicAllowedERC725YDataKeys.length <= 10
+        );
 
         // dataKey cannot be LSP1, LSP6, or LSP17 data key
         vm.assume(bytes16(dataKey) != _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX);
@@ -205,26 +236,38 @@ contract LSP6SetDataTest is Test {
 
         // Setup KeyManager as the owner of the account
         account.transferOwnership(address(keyManager));
+
+        vm.prank(address(this));
+        keyManager.execute(bytes.concat(ILSP14.acceptOwnership.selector));
+
         assertEq(account.owner(), address(keyManager));
 
-        // Verify malicious address cannot set data for most data keys
-        bytes memory functionArgs = abi.encode(dataKey, dataValue);
-        bytes memory callData = abi.encodeWithSelector(
-            IERC725Y.setData.selector,
-            functionArgs
+        bytes memory callData = abi.encodeCall(
+            IERC725Y.setData,
+            (dataKey, dataValue)
         );
 
         vm.startPrank(malicious);
 
-        // CHECK it reverts when calling via the Key Manager
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                InvalidEncodedAllowedERC725YDataKeys.selector,
-                maliciousCompactBytesArrayOfAllowedERC725YDataKeys,
-                "couldn't DECODE from storage"
-            )
+        bytes memory expectedError = abi.encodeWithSelector(
+            InvalidEncodedAllowedERC725YDataKeys.selector,
+            maliciousCompactBytesArrayOfAllowedERC725YDataKeys,
+            "couldn't DECODE from storage"
         );
-        keyManager.execute(callData);
+
+        // CHECK the LSP20 verification function reverts as well
+        vm.expectRevert(expectedError);
+        keyManager.lsp20VerifyCall(
+            malicious,
+            address(account),
+            malicious,
+            0,
+            callData
+        );
+
+        // CHECK it reverts when calling directly the Universal Profile
+        vm.expectRevert(expectedError);
+        account.setData(dataKey, dataValue);
 
         vm.stopPrank();
     }

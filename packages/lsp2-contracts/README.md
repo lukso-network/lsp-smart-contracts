@@ -10,8 +10,21 @@ npm install @lukso/lsp2-contracts
 
 ## Available Constants & Types
 
-The `@lukso/lsp2-contracts` npm package contains useful constants such as ERC725Y Data Keys related to the LSP2 Standard. You can import and access them as follow:
+The `@lukso/lsp2-contracts` npm package contains useful constants such as ERC725Y Data Keys related to the LSP2 Standard. You can import and access them as follows.
+
+In Javascript.
 
 ```js
 import { LSP2ArrayKey, Verification } from "@lukso/lsp2-contracts";
+```
+
+In Solidity.
+
+<!-- prettier-ignore -->
+```solidity
+import {
+    _KECCAK256_UTF8,
+    _KECCAK256_BYTES,
+    _KECCAK256_ECDSA
+} from "@lukso/lsp2-contracts/contracts/LSP2Constants.sol";
 ```

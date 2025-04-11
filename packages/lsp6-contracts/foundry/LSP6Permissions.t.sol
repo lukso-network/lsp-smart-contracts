@@ -3,19 +3,17 @@ pragma solidity ^0.8.13;
 // Testing utilities
 import {Test} from "forge-std/Test.sol";
 import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
-import {LSP6Utils} from "@lukso/lsp6-contracts/contracts/LSP6Utils.sol";
+import {LSP6Utils} from "../contracts/LSP6Utils.sol";
 
 // Test setup
 import {
     IERC725Y
 } from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
-import {
-    LSP6KeyManager
-} from "@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol";
+import {LSP6KeyManager} from "../contracts/LSP6KeyManager.sol";
 
 // errors
-import {NotAuthorised} from "@lukso/lsp6-contracts/contracts/LSP6Errors.sol";
+import {NotAuthorised} from "../contracts/LSP6Errors.sol";
 
 // constants
 import {
@@ -24,7 +22,7 @@ import {
 import {
     _PERMISSION_DEPLOY,
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX
-} from "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
+} from "../contracts/LSP6Constants.sol";
 
 contract LSP6Permissions is Test {
     ERC725 public mainAccount;
@@ -45,7 +43,7 @@ contract LSP6Permissions is Test {
         mainAccount.transferOwnership(address(keyManagerForAccount));
     }
 
-    function testFail_evenWhenPermissionsGivenTwice() public {
+    function test_RevertWhenPermissionsGivenTwice() public {
         bytes32[] memory ownerPermissions = new bytes32[](3);
         ownerPermissions[0] = _PERMISSION_DEPLOY;
         ownerPermissions[1] = _PERMISSION_DEPLOY;
@@ -69,15 +67,28 @@ contract LSP6Permissions is Test {
         // - _PERMISSION_SUPER_SETDATA = 0x0000000000000000000000000000000000000000000000000000000000020000;
         assert(controllerPermissions == _PERMISSION_DEPLOY);
 
-        vm.prank(combineController);
+        vm.startPrank(combineController);
 
-        // This should revert as the controller does not have the permission to setData but is only authorised to deploy contracts
-        mainAccount.setData(
+        bytes memory setDataPayload = abi.encodeWithSignature(
+            "setData(bytes32,bytes)",
             bytes32(
                 0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe
             ),
             hex"deadbeef"
         );
+
+        // This should revert as the controller does not have the permission to setData but is only authorised to deploy contracts
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                NotAuthorised.selector,
+                combineController,
+                "SETDATA"
+            )
+        );
+
+        keyManagerForAccount.execute(setDataPayload);
+
+        vm.stopPrank();
     }
 
     function _givePermissionsToController(

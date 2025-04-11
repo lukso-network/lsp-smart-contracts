@@ -19,8 +19,8 @@ import {
     ERC725YInitAbstract
 } from "@lukso/lsp4-contracts/contracts/LSP4DigitalAssetMetadataInitAbstract.sol";
 import {
-    LSP17Extendable
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
+    LSP17ExtendableInitAbstract
+} from "@lukso/lsp17contractextension-contracts/contracts/LSP17ExtendableInitAbstract.sol";
 
 // libraries
 import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
@@ -77,7 +77,7 @@ import {
 abstract contract LSP7DigitalAssetInitAbstract is
     ILSP7DigitalAsset,
     LSP4DigitalAssetMetadataInitAbstract,
-    LSP17Extendable
+    LSP17ExtendableInitAbstract
 {
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -236,13 +236,15 @@ abstract contract LSP7DigitalAssetInitAbstract is
         public
         view
         virtual
-        override(ERC725YInitAbstract, LSP17Extendable)
+        override(ERC725YInitAbstract, LSP17ExtendableInitAbstract)
         returns (bool)
     {
         return
             interfaceId == _INTERFACEID_LSP7 ||
             super.supportsInterface(interfaceId) ||
-            LSP17Extendable._supportsInterfaceInERC165Extension(interfaceId);
+            LSP17ExtendableInitAbstract._supportsInterfaceInERC165Extension(
+                interfaceId
+            );
     }
 
     // --- Token queries
