@@ -53,7 +53,7 @@
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "test:foundry": "FOUNDRY_PROFILE=lsp0 forge test -vvv",
-    "package": "hardhat prepare-package"
+    "build:package": "hardhat prepare-package"
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",

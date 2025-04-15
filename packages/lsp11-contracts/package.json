@@ -54,7 +54,7 @@
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "test:foundry": "FOUNDRY_PROFILE=lsp11 forge test -vvvv",
     "test:coverage": "hardhat coverage",
-    "package": "hardhat prepare-package"
+    "build:package": "hardhat prepare-package"
   },
   "dependencies": {
     "@lukso/lsp25-contracts": "~0.15.0",

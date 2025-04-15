@@ -41,14 +41,14 @@
     "build:foundry": "forge build",
     "build:js": "unbuild",
     "build:types": "npx wagmi generate",
+    "build:package": "hardhat prepare-package",
     "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "test": "hardhat test --no-compile tests/*.test.ts",
     "test:foundry": "FOUNDRY_PROFILE=lspN forge test -vvvv",
-    "test:coverage": "hardhat coverage",
-    "package": "hardhat prepare-package"
+    "test:coverage": "hardhat coverage"
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",

@@ -20,12 +20,12 @@
       "cache": true
     },
     "build:types": {
-      "dependsOn": ["^package", "package", "^build:types"],
+      "dependsOn": ["^build:package", "build:package", "^build:types"],
       "outputs": ["types/**"],
       "cache": true
     },
-    "package": {
-      "dependsOn": ["^package"],
+    "build:package": {
+      "dependsOn": ["^build:package"],
       "outputs": ["artifacts/*.json"]
     },
     "lint": {

@@ -53,7 +53,7 @@
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "test": "hardhat test --no-compile tests/*.test.ts",
     "test:coverage": "hardhat coverage",
-    "package": "hardhat prepare-package"
+    "build:package": "hardhat prepare-package"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.6",
