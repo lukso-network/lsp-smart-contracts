@@ -38,3 +38,14 @@ import {
   _TYPEID_LSP0_OwnershipTransferred_RecipientNotification
 } from "@lukso/lsp0-contracts/contracts/LSP0Constants.sol";
 ```
+
+## Typescript types
+
+You can also import the [type-safe ABI](https://abitype.dev/) of each LSP smart contracts from the `/abi` path.
+
+```ts
+import {
+  lsp0Erc725AccountAbi,
+  lsp0Erc725AccountInitAbi,
+} from "@lukso/lsp0-contracts/abi";
+```

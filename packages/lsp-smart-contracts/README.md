@@ -104,3 +104,14 @@ import {
   AssetMetadata,
 } from "@lukso/lsp-smart-contracts";
 ```
+
+You can also import the [type-safe ABI](https://abitype.dev/) of each LSP smart contracts from the `/abi` path.
+
+```ts
+import {
+  lsp0Erc725AccountAbi,
+  lsp6KeyManagerAbi,
+  lsp7DigitalAssetAbi,
+  lsp8IdentifiableDigitalAssetAbi,
+} from "@lukso/lsp-smart-contracts/abi";
+```

@@ -20,3 +20,14 @@ import {
   _LSP3_PROFILE_KEY
 } from "@lukso/universalprofile-contracts/contracts/Constants.sol";
 ```
+
+## Typescript types
+
+You can also import the [type-safe ABI](https://abitype.dev/) of each LSP smart contracts from the `/abi` path.
+
+```ts
+import {
+  universalProfileAbi,
+  universalProfileInitAbi,
+} from "@lukso/universalprofile-contracts/abi";
+```

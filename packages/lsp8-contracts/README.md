@@ -50,3 +50,21 @@ import {
   _LSP8_TOKENID_FORMAT_MIXED_DEFAULT_HASH
 } from "@lukso/lsp8-contracts/contracts/LSP8Constants.sol";
 ```
+
+## Typescript types
+
+You can also import the [type-safe ABI](https://abitype.dev/) from the `/abi` path.
+
+```ts
+import {
+    // standard version
+    lsp8IdentifiableDigitalAssetAbi,
+    lsp8CappedSupplyAbi,
+    lsp8MintableAbi,
+    lsp8VotesAbi
+    // proxy version
+    lsp8CappedSupplyInitAbstractAbi,
+    lsp8IdentifiableDigitalAssetInitAbstractAbi,
+    lsp8MintableInitAbi,
+ } from '@lukso/lsp8-contracts/abi';
+```
