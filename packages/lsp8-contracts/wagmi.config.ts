@@ -1,5 +1,4 @@
 import { defineConfig } from '@wagmi/cli';
-import { react } from '@wagmi/cli/plugins';
 import fs from 'fs';
 
 const artifacts = fs.readdirSync('./artifacts', {});
@@ -13,7 +12,7 @@ const contractsWagmiInputs = artifacts.map((artifact) => {
 });
 
 export default defineConfig({
-  out: 'types/index.ts',
+  out: './abi.ts',
   contracts: contractsWagmiInputs,
-  plugins: [react()],
+  plugins: [],
 });
