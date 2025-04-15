@@ -25,7 +25,6 @@ import {
   // Functions
   loadTestCase,
 } from './reentrancyHelpers';
-import { LSP20ReentrantContract__factory } from '../../../typechain';
 import { provider } from '../../utils/helpers';
 
 export const testERC725XExecuteToERC725XExecute = (
@@ -35,9 +34,16 @@ export const testERC725XExecuteToERC725XExecute = (
   let context: LSP6TestContext;
   let reentrancyContext: ReentrancyContext;
 
+  let LSP20ReentrantContract__factory;
+
   before(async () => {
     context = await buildContext(ethers.parseEther('10'));
     reentrancyContext = await buildReentrancyContext(context);
+
+    LSP20ReentrantContract__factory = await ethers.getContractFactory(
+      'LSP20ReentrantContract',
+      context.accounts[0],
+    );
   });
 
   describe('when reentering and transferring value', () => {
@@ -49,7 +55,7 @@ export const testERC725XExecuteToERC725XExecute = (
     };
 
     before(async () => {
-      const reentrantCall = new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+      const reentrantCall = LSP20ReentrantContract__factory.interface.encodeFunctionData(
         'callThatReenters',
         ['TRANSFERVALUE'],
       );
@@ -156,7 +162,7 @@ export const testERC725XExecuteToERC725XExecute = (
     };
 
     before(async () => {
-      const reentrantCall = new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+      const reentrantCall = LSP20ReentrantContract__factory.interface.encodeFunctionData(
         'callThatReenters',
         ['SETDATA'],
       );
@@ -256,7 +262,7 @@ export const testERC725XExecuteToERC725XExecute = (
     };
 
     before(async () => {
-      const reentrantCall = new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+      const reentrantCall = LSP20ReentrantContract__factory.interface.encodeFunctionData(
         'callThatReenters',
         ['ADDCONTROLLER'],
       );
@@ -334,7 +340,7 @@ export const testERC725XExecuteToERC725XExecute = (
     };
 
     before(async () => {
-      const reentrantCall = new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+      const reentrantCall = LSP20ReentrantContract__factory.interface.encodeFunctionData(
         'callThatReenters',
         ['EDITPERMISSIONS'],
       );
@@ -413,7 +419,7 @@ export const testERC725XExecuteToERC725XExecute = (
     };
 
     before(async () => {
-      const reentrantCall = new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+      const reentrantCall = LSP20ReentrantContract__factory.interface.encodeFunctionData(
         'callThatReenters',
         ['ADDUNIVERSALRECEIVERDELEGATE'],
       );
@@ -493,7 +499,7 @@ export const testERC725XExecuteToERC725XExecute = (
     };
 
     before(async () => {
-      const reentrantCall = new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+      const reentrantCall = LSP20ReentrantContract__factory.interface.encodeFunctionData(
         'callThatReenters',
         ['CHANGEUNIVERSALRECEIVERDELEGATE'],
       );

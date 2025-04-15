@@ -2,38 +2,34 @@ import { ERC725YDataKeys } from '../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 
 import {
-  LSP1UniversalReceiverDelegateVault__factory,
-  UniversalProfile__factory,
-  LSP9Vault__factory,
-} from '../../typechain';
-
-import {
   LSP1TestContext,
   getNamedAccounts,
   shouldBehaveLikeLSP1Delegate,
 } from './LSP1UniversalReceiverDelegateVault.behaviour';
+import { ethers } from 'hardhat';
 
 describe('LSP1UniversalReceiverDelegateVault', () => {
   describe('when testing deployed contract', () => {
     const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
       const accounts = await getNamedAccounts();
 
+      const LSP1UniversalReceiverDelegateVault__factory = await ethers.getContractFactory(
+        'LSP1UniversalReceiverDelegateVault',
+        accounts[0],
+      );
+      const UniversalProfile__factory = await ethers.getContractFactory(
+        'UniversalProfile',
+        accounts[0],
+      );
+      const LSP9Vault__factory = await ethers.getContractFactory('LSP9Vault', accounts[0]);
+
       // deploying 1 UP, 2 Vaults
 
       const lsp1universalReceiverDelegateVault =
-        await new LSP1UniversalReceiverDelegateVault__factory(accounts.any).deploy();
-
-      const universalProfile = await new UniversalProfile__factory(accounts.any).deploy(
-        accounts.owner1.address,
-      );
-
-      const lsp9Vault1 = await new LSP9Vault__factory(accounts.any).deploy(
-        await universalProfile.getAddress(),
-      );
-
-      const lsp9Vault2 = await new LSP9Vault__factory(accounts.any).deploy(
-        await universalProfile.getAddress(),
-      );
+        await LSP1UniversalReceiverDelegateVault__factory.deploy();
+      const universalProfile = await UniversalProfile__factory.deploy(accounts.owner1.address);
+      const lsp9Vault1 = await LSP9Vault__factory.deploy(await universalProfile.getAddress());
+      const lsp9Vault2 = await LSP9Vault__factory.deploy(await universalProfile.getAddress());
 
       // Setting lsp1UniversalReceiverDelegateVault as URD for the Vault
 
@@ -44,11 +40,21 @@ describe('LSP1UniversalReceiverDelegateVault', () => {
 
       await universalProfile
         .connect(accounts.owner1)
-        .execute(OPERATION_TYPES.CALL, await lsp9Vault1.getAddress(), 0, abi);
+        ['execute(uint256,address,uint256,bytes)'](
+          OPERATION_TYPES.CALL,
+          await lsp9Vault1.getAddress(),
+          0,
+          abi,
+        );
 
       await universalProfile
         .connect(accounts.owner1)
-        .execute(OPERATION_TYPES.CALL, await lsp9Vault2.getAddress(), 0, abi);
+        ['execute(uint256,address,uint256,bytes)'](
+          OPERATION_TYPES.CALL,
+          await lsp9Vault2.getAddress(),
+          0,
+          abi,
+        );
 
       return {
         accounts,

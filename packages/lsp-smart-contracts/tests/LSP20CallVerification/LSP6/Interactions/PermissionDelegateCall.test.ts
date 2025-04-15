@@ -1,8 +1,6 @@
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import { ERC725YDelegateCall, ERC725YDelegateCall__factory } from '../../../../typechain';
-
 // constants
 import { ERC725YDataKeys } from '../../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -14,6 +12,7 @@ import { setupKeyManager } from '../../../utils/fixtures';
 
 // helpers
 import { combineAllowedCalls } from '../../../utils/helpers';
+import { ethers } from 'hardhat';
 
 export const shouldBehaveLikePermissionDelegateCall = (
   buildContext: () => Promise<LSP6TestContext>,
@@ -21,19 +20,26 @@ export const shouldBehaveLikePermissionDelegateCall = (
   let context: LSP6TestContext;
 
   describe('when trying to make a DELEGATECALL via UP, DELEGATECALL is disallowed', () => {
+    let ERC725YDelegateCall__factory;
+
     let addressCanDelegateCall: SignerWithAddress, addressCannotDelegateCall: SignerWithAddress;
 
-    let erc725YDelegateCallContract: ERC725YDelegateCall;
+    let erc725YDelegateCallContract;
 
     before(async () => {
       context = await buildContext();
 
+      ERC725YDelegateCall__factory = await ethers.getContractFactory(
+        'ERC725YDelegateCall',
+        context.accounts[0],
+      );
+
       addressCanDelegateCall = context.accounts[1];
       addressCannotDelegateCall = context.accounts[2];
 
-      erc725YDelegateCallContract = await new ERC725YDelegateCall__factory(
-        context.mainController,
-      ).deploy(await context.universalProfile.getAddress());
+      erc725YDelegateCallContract = await ERC725YDelegateCall__factory.deploy(
+        await context.universalProfile.getAddress(),
+      );
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -135,22 +141,25 @@ export const shouldBehaveLikePermissionDelegateCall = (
   });
 
   describe('when caller has permission SUPER_DELEGATECALL + 2 x allowed addresses', () => {
+    let ERC725YDelegateCall__factory;
+
     let caller: SignerWithAddress;
 
-    let allowedDelegateCallContracts: [ERC725YDelegateCall, ERC725YDelegateCall];
+    let allowedDelegateCallContracts;
 
     before(async () => {
       context = await buildContext();
 
+      ERC725YDelegateCall__factory = ethers.getContractFactory(
+        'ERC725YDelegateCall',
+        context.accounts[0],
+      );
+
       caller = context.accounts[1];
 
       allowedDelegateCallContracts = [
-        await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
-          context.accounts[0].address,
-        ),
-        await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
-          context.accounts[0].address,
-        ),
+        await ERC725YDelegateCall__factory.deploy(context.accounts[0].address),
+        await ERC725YDelegateCall__factory.deploy(context.accounts[0].address),
       ];
 
       const permissionKeys = [
@@ -175,25 +184,22 @@ export const shouldBehaveLikePermissionDelegateCall = (
     });
 
     describe('when calling a disallowed contract', () => {
-      let randomContracts: ERC725YDelegateCall[];
+      let randomContracts;
+
+      let ERC725YDelegateCall__factory;
 
       before(async () => {
+        ERC725YDelegateCall__factory = await ethers.getContractFactory(
+          'ERC725YDelegateCall',
+          context.accounts[0],
+        );
+
         randomContracts = [
-          await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
-            context.accounts[0].address,
-          ),
-          await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
-            context.accounts[0].address,
-          ),
-          await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
-            context.accounts[0].address,
-          ),
-          await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
-            context.accounts[0].address,
-          ),
-          await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
-            context.accounts[0].address,
-          ),
+          await ERC725YDelegateCall__factory.deploy(context.accounts[0].address),
+          await ERC725YDelegateCall__factory.deploy(context.accounts[0].address),
+          await ERC725YDelegateCall__factory.deploy(context.accounts[0].address),
+          await ERC725YDelegateCall__factory.deploy(context.accounts[0].address),
+          await ERC725YDelegateCall__factory.deploy(context.accounts[0].address),
         ];
       });
 

@@ -1,7 +1,5 @@
 import { ethers } from 'hardhat';
 
-import { UniversalProfileInit__factory, LSP6KeyManagerInit__factory } from '../../typechain';
-
 import { deployProxy } from '../utils/fixtures';
 import { LSP6TestContext } from '../utils/context';
 
@@ -13,13 +11,22 @@ describe('Reentrancy scenarios with proxy', () => {
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
-    const baseUP = await new UniversalProfileInit__factory(mainController).deploy();
-    const upProxy = await deployProxy(await baseUP.getAddress(), mainController);
-    const universalProfile = (await baseUP.attach(upProxy)) as UniversalProfileInit;
+    const UniversalProfileInit__factory = await ethers.getContractFactory(
+      'UniversalProfileInit',
+      accounts[0],
+    );
+    const LSP6KeyManagerInit__factory = await ethers.getContractFactory(
+      'LSP6KeyManagerInit',
+      accounts[0],
+    );
 
-    const baseKM = await new LSP6KeyManagerInit__factory(mainController).deploy();
+    const baseUP = await UniversalProfileInit__factory.deploy();
+    const upProxy = await deployProxy(await baseUP.getAddress(), mainController);
+    const universalProfile = baseUP.attach(upProxy);
+
+    const baseKM = await LSP6KeyManagerInit__factory.deploy();
     const kmProxy = await deployProxy(await baseKM.getAddress(), mainController);
-    const keyManager = (await baseKM.attach(kmProxy)) as unknown as LSP6KeyManagerInit;
+    const keyManager = baseKM.attach(kmProxy);
 
     return { accounts, mainController, universalProfile, keyManager, initialFunding };
   };

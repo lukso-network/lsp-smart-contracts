@@ -2,8 +2,6 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-// LSP7 + LSP8
-import { LSP7DigitalAsset, LSP8IdentifiableDigitalAsset, LSP9Vault } from '../../typechain';
 
 // constants
 import { ERC725YDataKeys } from '../../constants';
@@ -11,7 +9,7 @@ import { abiCoder } from '../utils/helpers';
 
 export type LS4DigitalAssetMetadataTestContext = {
   accounts: SignerWithAddress[];
-  contract: LSP7DigitalAsset | LSP8IdentifiableDigitalAsset | LSP9Vault;
+  contract;
   deployParams: { owner: SignerWithAddress; lsp4TokenType: number };
 };
 

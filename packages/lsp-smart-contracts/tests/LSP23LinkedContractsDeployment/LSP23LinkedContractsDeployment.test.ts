@@ -1,13 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import {
-  KeyManagerWithExtraParams,
-  LSP6KeyManager,
-  UniversalProfile,
-  ILSP23LinkedContractsFactory,
-} from '../../typechain';
-
 import { ERC725YDataKeys } from '../../constants';
 import {
   calculateProxiesAddresses,
@@ -44,20 +37,18 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.randomBytes(32);
 
-      const primaryContractDeployment: ILSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
-        {
-          salt,
-          fundingAmount: 0,
-          creationBytecode: universalProfileCreationCode,
-        };
+      const primaryContractDeployment = {
+        salt,
+        fundingAmount: 0,
+        creationBytecode: universalProfileCreationCode,
+      };
 
-      const secondaryContractDeployment: ILSP23LinkedContractsFactory.SecondaryContractDeploymentStruct =
-        {
-          fundingAmount: ethers.toBigInt(0),
-          creationBytecode: keyManagerBytecode,
-          addPrimaryContractAddress: true,
-          extraConstructorParams: '0x',
-        };
+      const secondaryContractDeployment = {
+        fundingAmount: ethers.toBigInt(0),
+        creationBytecode: keyManagerBytecode,
+        addPrimaryContractAddress: true,
+        extraConstructorParams: '0x',
+      };
 
       const recoveryAddressPermissionsKey = createDataKey(
         '0x4b80742de2bf82acb3630000',
@@ -134,12 +125,8 @@ describe('UniversalProfileDeployer', function () {
       expect(upContract).to.equal(expectedUpAddress);
       expect(keyManagerContract).to.equal(expectedKeyManagerAddress);
 
-      const keyManagerInstance = KeyManagerFactory.attach(
-        keyManagerContract,
-      ) as unknown as LSP6KeyManager;
-      const universalProfileInstance = UniversalProfileFactory.attach(
-        upContract,
-      ) as unknown as UniversalProfile;
+      const keyManagerInstance = KeyManagerFactory.attach(keyManagerContract);
+      const universalProfileInstance = UniversalProfileFactory.attach(upContract);
 
       // CHECK that the UP is owned by the KeyManager contract
       expect(await universalProfileInstance.owner()).to.equal(keyManagerContract);
@@ -176,20 +163,18 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.randomBytes(32);
 
-      const primaryContractDeployment: ILSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
-        {
-          salt,
-          fundingAmount: universalProfileFundAmount,
-          creationBytecode: universalProfileCreationCode,
-        };
+      const primaryContractDeployment = {
+        salt,
+        fundingAmount: universalProfileFundAmount,
+        creationBytecode: universalProfileCreationCode,
+      };
 
-      const secondaryContractDeployment: ILSP23LinkedContractsFactory.SecondaryContractDeploymentStruct =
-        {
-          fundingAmount: 0,
-          creationBytecode: keyManagerBytecode,
-          addPrimaryContractAddress: true,
-          extraConstructorParams: '0x',
-        };
+      const secondaryContractDeployment = {
+        fundingAmount: 0,
+        creationBytecode: keyManagerBytecode,
+        addPrimaryContractAddress: true,
+        extraConstructorParams: '0x',
+      };
 
       const recoveryAddressPermissionsKey = createDataKey(
         '0x4b80742de2bf82acb3630000',
@@ -284,20 +269,18 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.randomBytes(32);
 
-      const primaryContractDeployment: ILSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
-        {
-          salt,
-          fundingAmount: universalProfileFundAmount,
-          creationBytecode: universalProfileCreationCode,
-        };
+      const primaryContractDeployment = {
+        salt,
+        fundingAmount: universalProfileFundAmount,
+        creationBytecode: universalProfileCreationCode,
+      };
 
-      const secondaryContractDeployment: ILSP23LinkedContractsFactory.SecondaryContractDeploymentStruct =
-        {
-          fundingAmount: 0,
-          creationBytecode: keyManagerBytecode,
-          addPrimaryContractAddress: true,
-          extraConstructorParams: '0x',
-        };
+      const secondaryContractDeployment = {
+        fundingAmount: 0,
+        creationBytecode: keyManagerBytecode,
+        addPrimaryContractAddress: true,
+        extraConstructorParams: '0x',
+      };
 
       const recoveryAddressPermissionsKey = createDataKey(
         '0x4b80742de2bf82acb3630000',
@@ -376,12 +359,11 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.randomBytes(32);
 
-      const primaryContractDeployment: ILSP23LinkedContractsFactory.PrimaryContractDeploymentStruct =
-        {
-          salt,
-          fundingAmount: 0,
-          creationBytecode: universalProfileCreationCode,
-        };
+      const primaryContractDeployment = {
+        salt,
+        fundingAmount: 0,
+        creationBytecode: universalProfileCreationCode,
+      };
 
       const firstAddress = ethers.hexlify(ethers.randomBytes(20));
 
@@ -399,13 +381,12 @@ describe('UniversalProfileDeployer', function () {
 
       keyManagerBytecode = keyManagerBytecode + secondaryContractFirstParam.slice(2);
 
-      const secondaryContractDeployment: ILSP23LinkedContractsFactory.SecondaryContractDeploymentStruct =
-        {
-          fundingAmount: 0,
-          creationBytecode: keyManagerBytecode,
-          addPrimaryContractAddress: true,
-          extraConstructorParams: secondaryContractLastParam,
-        };
+      const secondaryContractDeployment = {
+        fundingAmount: 0,
+        creationBytecode: keyManagerBytecode,
+        addPrimaryContractAddress: true,
+        extraConstructorParams: secondaryContractLastParam,
+      };
 
       const recoveryAddressPermissionsKey = createDataKey(
         '0x4b80742de2bf82acb3630000',
@@ -482,12 +463,8 @@ describe('UniversalProfileDeployer', function () {
       expect(upContract).to.equal(expectedUpAddress);
       expect(keyManagerContract).to.equal(expectedKeyManagerAddress);
 
-      const keyManagerInstance = KeyManagerFactory.attach(
-        keyManagerContract,
-      ) as unknown as KeyManagerWithExtraParams;
-      const universalProfileInstance = UniversalProfileFactory.attach(
-        upContract,
-      ) as unknown as UniversalProfile;
+      const keyManagerInstance = KeyManagerFactory.attach(keyManagerContract);
+      const universalProfileInstance = UniversalProfileFactory.attach(upContract);
 
       // CHECK that the UP is owned by the KeyManager contract
       expect(await universalProfileInstance.owner()).to.equal(keyManagerContract);
@@ -514,24 +491,22 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.randomBytes(32);
 
-      const primaryContractDeploymentInit: ILSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
-        {
-          salt,
-          fundingAmount: 0,
-          implementationContract: await universalProfileInit.getAddress(),
-          initializationCalldata: universalProfileInit.interface.encodeFunctionData('initialize', [
-            await upInitPostDeploymentModule.getAddress(),
-          ]),
-        };
+      const primaryContractDeploymentInit = {
+        salt,
+        fundingAmount: 0,
+        implementationContract: await universalProfileInit.getAddress(),
+        initializationCalldata: universalProfileInit.interface.encodeFunctionData('initialize', [
+          await upInitPostDeploymentModule.getAddress(),
+        ]),
+      };
 
-      const secondaryContractDeploymentInit: ILSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
-        {
-          fundingAmount: 0,
-          implementationContract: await keyManagerInit.getAddress(),
-          addPrimaryContractAddress: true,
-          initializationCalldata: '0xc4d66de8',
-          extraInitializationParams: '0x',
-        };
+      const secondaryContractDeploymentInit = {
+        fundingAmount: 0,
+        implementationContract: await keyManagerInit.getAddress(),
+        addPrimaryContractAddress: true,
+        initializationCalldata: '0xc4d66de8',
+        extraInitializationParams: '0x',
+      };
 
       const recoveryAddressPermissionsKey = createDataKey(
         '0x4b80742de2bf82acb3630000',
@@ -592,10 +567,8 @@ describe('UniversalProfileDeployer', function () {
         encodedBytes,
       );
 
-      const upProxy = UniversalProfileInitFactory.attach(upAddress) as UniversalProfile;
-      const keyManagerProxy = KeyManagerInitFactory.attach(
-        keyManagerAddress,
-      ) as unknown as LSP6KeyManager;
+      const upProxy = UniversalProfileInitFactory.attach(upAddress);
+      const keyManagerProxy = KeyManagerInitFactory.attach(keyManagerAddress);
 
       const upProxyOwner = await upProxy.owner();
       const keyManagerProxyOwner = await keyManagerProxy['target()'].staticCall();
@@ -646,24 +619,22 @@ describe('UniversalProfileDeployer', function () {
 
       const salt = ethers.randomBytes(32);
 
-      const primaryContractDeploymentInit: ILSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
-        {
-          salt,
-          fundingAmount: primaryFundingAmount,
-          implementationContract: await universalProfileInit.getAddress(),
-          initializationCalldata: universalProfileInit.interface.encodeFunctionData('initialize', [
-            await upInitPostDeploymentModule.getAddress(),
-          ]),
-        };
+      const primaryContractDeploymentInit = {
+        salt,
+        fundingAmount: primaryFundingAmount,
+        implementationContract: await universalProfileInit.getAddress(),
+        initializationCalldata: universalProfileInit.interface.encodeFunctionData('initialize', [
+          await upInitPostDeploymentModule.getAddress(),
+        ]),
+      };
 
-      const secondaryContractDeploymentInit: ILSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
-        {
-          fundingAmount: secondaryFundingAmount,
-          implementationContract: await keyManagerInit.getAddress(),
-          addPrimaryContractAddress: true,
-          initializationCalldata: '0xc4d66de8',
-          extraInitializationParams: '0x',
-        };
+      const secondaryContractDeploymentInit = {
+        fundingAmount: secondaryFundingAmount,
+        implementationContract: await keyManagerInit.getAddress(),
+        addPrimaryContractAddress: true,
+        initializationCalldata: '0xc4d66de8',
+        extraInitializationParams: '0x',
+      };
 
       const types = ['bytes32[]', 'bytes[]'];
 
@@ -711,24 +682,22 @@ describe('UniversalProfileDeployer', function () {
       const primaryFundingAmount = ethers.parseEther('1');
       const secondaryFundingAmount = ethers.parseEther('0'); // key manager does not accept funds
 
-      const primaryContractDeploymentInit: ILSP23LinkedContractsFactory.PrimaryContractDeploymentInitStruct =
-        {
-          salt,
-          fundingAmount: primaryFundingAmount,
-          implementationContract: await universalProfileInit.getAddress(),
-          initializationCalldata: universalProfileInit.interface.encodeFunctionData('initialize', [
-            await upInitPostDeploymentModule.getAddress(),
-          ]),
-        };
+      const primaryContractDeploymentInit = {
+        salt,
+        fundingAmount: primaryFundingAmount,
+        implementationContract: await universalProfileInit.getAddress(),
+        initializationCalldata: universalProfileInit.interface.encodeFunctionData('initialize', [
+          await upInitPostDeploymentModule.getAddress(),
+        ]),
+      };
 
-      const secondaryContractDeploymentInit: ILSP23LinkedContractsFactory.SecondaryContractDeploymentInitStruct =
-        {
-          fundingAmount: secondaryFundingAmount,
-          implementationContract: await keyManagerInit.getAddress(),
-          addPrimaryContractAddress: true,
-          initializationCalldata: '0xc4d66de8',
-          extraInitializationParams: '0x',
-        };
+      const secondaryContractDeploymentInit = {
+        fundingAmount: secondaryFundingAmount,
+        implementationContract: await keyManagerInit.getAddress(),
+        addPrimaryContractAddress: true,
+        initializationCalldata: '0xc4d66de8',
+        extraInitializationParams: '0x',
+      };
 
       const types = ['bytes32[]', 'bytes[]'];
       const encodedBytes = ethers.AbiCoder.defaultAbiCoder().encode(types, [

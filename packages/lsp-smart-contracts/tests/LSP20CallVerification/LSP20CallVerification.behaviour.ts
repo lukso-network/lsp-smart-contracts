@@ -2,33 +2,6 @@ import { expect } from 'chai';
 import { ethers, network } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-// types
-import {
-  NotImplementingVerifyCall,
-  NotImplementingVerifyCall__factory,
-  ImplementingFallback,
-  ImplementingFallback__factory,
-  FallbackReturnSuccessValue,
-  FallbackReturnSuccessValue__factory,
-  LSP0ERC725Account,
-  OwnerWithURD,
-  OwnerWithURD__factory,
-  UniversalProfile,
-  UniversalProfile__factory,
-  FirstCallReturnExpandedInvalidValue,
-  FirstCallReturnExpandedInvalidValue__factory,
-  FirstCallReturnInvalidValue,
-  FirstCallReturnInvalidValue__factory,
-  SecondCallReturnFailureValue__factory,
-  SecondCallReturnFailureValue,
-  FirstCallReturnSuccessValue,
-  FirstCallReturnSuccessValue__factory,
-  BothCallReturnSuccessValue,
-  BothCallReturnSuccessValue__factory,
-  SecondCallReturnExpandedSuccessValue,
-  SecondCallReturnExpandedSuccessValue__factory,
-} from '../../typechain';
-
 // constants
 import { LSP1_TYPE_IDS } from '../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -36,15 +9,69 @@ import { abiCoder } from '../utils/helpers';
 
 export type LSP20TestContext = {
   accounts: SignerWithAddress[];
-  universalProfile: UniversalProfile | LSP0ERC725Account;
+  universalProfile;
   deployParams: { owner: SignerWithAddress };
 };
 
 export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestContext>) => {
   let context: LSP20TestContext;
 
+  let NotImplementingVerifyCall__factory,
+    ImplementingFallback__factory,
+    FallbackReturnSuccessValue__factory,
+    OwnerWithURD__factory,
+    UniversalProfile__factory,
+    FirstCallReturnExpandedInvalidValue__factory,
+    FirstCallReturnInvalidValue__factory,
+    SecondCallReturnFailureValue__factory,
+    FirstCallReturnSuccessValue__factory,
+    BothCallReturnSuccessValue__factory,
+    SecondCallReturnExpandedSuccessValue__factory;
+
   before(async () => {
     context = await buildContext();
+
+    NotImplementingVerifyCall__factory = await ethers.getContractFactory(
+      'NotImplementingVerifyCall',
+      context.accounts[0],
+    );
+    ImplementingFallback__factory = await ethers.getContractFactory(
+      'ImplementingFallback',
+      context.accounts[0],
+    );
+    FallbackReturnSuccessValue__factory = await ethers.getContractFactory(
+      'FallbackReturnSuccessValue',
+      context.accounts[0],
+    );
+    OwnerWithURD__factory = await ethers.getContractFactory('OwnerWithURD', context.accounts[0]);
+    UniversalProfile__factory = await ethers.getContractFactory(
+      'UniversalProfile',
+      context.accounts[0],
+    );
+    FirstCallReturnExpandedInvalidValue__factory = await ethers.getContractFactory(
+      'FirstCallReturnExpandedInvalidValue',
+      context.accounts[0],
+    );
+    FirstCallReturnInvalidValue__factory = await ethers.getContractFactory(
+      'FirstCallReturnInvalidValue',
+      context.accounts[0],
+    );
+    SecondCallReturnFailureValue__factory = await ethers.getContractFactory(
+      'SecondCallReturnFailureValue',
+      context.accounts[0],
+    );
+    FirstCallReturnSuccessValue__factory = await ethers.getContractFactory(
+      'FirstCallReturnSuccessValue',
+      context.accounts[0],
+    );
+    BothCallReturnSuccessValue__factory = await ethers.getContractFactory(
+      'BothCallReturnSuccessValue',
+      context.accounts[0],
+    );
+    SecondCallReturnExpandedSuccessValue__factory = await ethers.getContractFactory(
+      'SecondCallReturnExpandedSuccessValue',
+      context.accounts[0],
+    );
   });
 
   describe('when testing lsp20 integration', () => {
@@ -211,10 +238,10 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         describe('when caller is not owner', () => {
-          let newContractOwner: OwnerWithURD;
+          let newContractOwner;
 
           before('Use custom owner that implements LSP1', async () => {
-            newContractOwner = await new OwnerWithURD__factory(context.accounts[0]).deploy(
+            newContractOwner = await OwnerWithURD__factory.deploy(
               await context.universalProfile.getAddress(),
             );
 
@@ -257,12 +284,10 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
 
     describe('when the owner is a contract', () => {
       describe("that doesn't implement the verifyCall function", () => {
-        let ownerContract: NotImplementingVerifyCall;
+        let ownerContract;
 
         before('deploying a new owner', async () => {
-          ownerContract = await new NotImplementingVerifyCall__factory(
-            context.deployParams.owner,
-          ).deploy();
+          ownerContract = await NotImplementingVerifyCall__factory.deploy();
 
           await context.universalProfile
             .connect(context.deployParams.owner)
@@ -292,12 +317,10 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe("that implement the fallback function that doesn't return anything", () => {
-        let ownerContract: ImplementingFallback;
+        let ownerContract;
 
         before('deploying a new owner', async () => {
-          ownerContract = await new ImplementingFallback__factory(
-            context.deployParams.owner,
-          ).deploy();
+          ownerContract = await ImplementingFallback__factory.deploy();
 
           await context.universalProfile
             .connect(context.deployParams.owner)
@@ -325,12 +348,10 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe('that implement the fallback that return the success value', () => {
-        let ownerContract: FallbackReturnSuccessValue;
+        let ownerContract;
 
         before('deploying a new owner', async () => {
-          ownerContract = await new FallbackReturnSuccessValue__factory(
-            context.deployParams.owner,
-          ).deploy();
+          ownerContract = await FallbackReturnSuccessValue__factory.deploy();
 
           await context.universalProfile
             .connect(context.deployParams.owner)
@@ -359,7 +380,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe('that implements verifyCall but return an expanded bytes32 value', () => {
-        let ownerContract: FirstCallReturnExpandedInvalidValue;
+        let ownerContract;
 
         before('deploying a new owner', async () => {
           ownerContract = await new FirstCallReturnExpandedInvalidValue__factory(
@@ -392,12 +413,10 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe("that implements verifyCall but doesn't return success value", () => {
-        let ownerContract: FirstCallReturnInvalidValue;
+        let ownerContract;
 
         before('deploying a new owner', async () => {
-          ownerContract = await new FirstCallReturnInvalidValue__factory(
-            context.deployParams.owner,
-          ).deploy();
+          ownerContract = await FirstCallReturnInvalidValue__factory.deploy();
 
           await context.universalProfile
             .connect(context.deployParams.owner)
@@ -425,17 +444,13 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe("that implements verifyCall that returns a valid success value but doesn't invoke verifyCallResult", () => {
-        let firstCallReturnSuccessValueContract: FirstCallReturnSuccessValue;
-        let newUniversalProfile: UniversalProfile;
+        let firstCallReturnSuccessValueContract;
+        let newUniversalProfile;
 
         before(async () => {
-          firstCallReturnSuccessValueContract = await new FirstCallReturnSuccessValue__factory(
-            context.accounts[0],
-          ).deploy();
+          firstCallReturnSuccessValueContract = await FirstCallReturnSuccessValue__factory.deploy();
 
-          newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
-            firstCallReturnSuccessValueContract.target,
-          );
+          newUniversalProfile = await UniversalProfile__factory.deploy();
         });
 
         it('should pass when calling `setData(bytes32,bytes)`', async () => {
@@ -452,15 +467,13 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe('that implements verifyCall that returns a valid success value with additional data after the first 32 bytes', () => {
-        let firstCallReturnSuccessValueContract: FirstCallReturnSuccessValue;
-        let newUniversalProfile: UniversalProfile;
+        let firstCallReturnSuccessValueContract;
+        let newUniversalProfile;
 
         before(async () => {
-          firstCallReturnSuccessValueContract = await new FirstCallReturnSuccessValue__factory(
-            context.accounts[0],
-          ).deploy();
+          firstCallReturnSuccessValueContract = await FirstCallReturnSuccessValue__factory.deploy();
 
-          newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
+          newUniversalProfile = await UniversalProfile__factory.deploy(
             firstCallReturnSuccessValueContract.target,
           );
         });
@@ -481,15 +494,13 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe('that implements verifyCall and verifyCallResult and both return success value', () => {
-        let bothCallReturnSuccessValueContract: BothCallReturnSuccessValue;
-        let newUniversalProfile: UniversalProfile;
+        let bothCallReturnSuccessValueContract;
+        let newUniversalProfile;
 
         before(async () => {
-          bothCallReturnSuccessValueContract = await new BothCallReturnSuccessValue__factory(
-            context.accounts[0],
-          ).deploy();
+          bothCallReturnSuccessValueContract = await BothCallReturnSuccessValue__factory.deploy();
 
-          newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
+          newUniversalProfile = await UniversalProfile__factory.deploy(
             bothCallReturnSuccessValueContract.target,
           );
         });
@@ -508,15 +519,13 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe('that implements verifyCall and verifyCallResult and both return success value plus additional data', () => {
-        let bothCallReturnSuccessValueContract: BothCallReturnSuccessValue;
-        let newUniversalProfile: UniversalProfile;
+        let bothCallReturnSuccessValueContract;
+        let newUniversalProfile;
 
         before(async () => {
-          bothCallReturnSuccessValueContract = await new BothCallReturnSuccessValue__factory(
-            context.accounts[0],
-          ).deploy();
+          bothCallReturnSuccessValueContract = await BothCallReturnSuccessValue__factory.deploy();
 
-          newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
+          newUniversalProfile = await UniversalProfile__factory.deploy(
             bothCallReturnSuccessValueContract.target,
           );
         });
@@ -537,15 +546,13 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe('that implements verifyCallResult but return fail value', () => {
-        let secondCallReturnFailureContract: SecondCallReturnFailureValue;
-        let newUniversalProfile: UniversalProfile;
+        let secondCallReturnFailureContract;
+        let newUniversalProfile;
 
         before(async () => {
-          secondCallReturnFailureContract = await new SecondCallReturnFailureValue__factory(
-            context.accounts[0],
-          ).deploy();
+          secondCallReturnFailureContract = await SecondCallReturnFailureValue__factory.deploy();
 
-          newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
+          newUniversalProfile = await UniversalProfile__factory.deploy(
             secondCallReturnFailureContract.target,
           );
         });
@@ -561,14 +568,14 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe('that implements verifyCallResult but return an expanded success value', () => {
-        let secondCallReturnExpandedValueContract: SecondCallReturnExpandedSuccessValue;
-        let newUniversalProfile: UniversalProfile;
+        let secondCallReturnExpandedValueContract;
+        let newUniversalProfile;
 
         before(async () => {
           secondCallReturnExpandedValueContract =
-            await new SecondCallReturnExpandedSuccessValue__factory(context.accounts[0]).deploy();
+            await SecondCallReturnExpandedSuccessValue__factory.deploy();
 
-          newUniversalProfile = await new UniversalProfile__factory(context.accounts[0]).deploy(
+          newUniversalProfile = await UniversalProfile__factory.deploy(
             secondCallReturnExpandedValueContract.target,
           );
         });

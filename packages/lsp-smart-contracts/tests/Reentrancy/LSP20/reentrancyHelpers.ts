@@ -2,18 +2,7 @@ import { ethers } from 'hardhat';
 
 // types
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { BytesLike, Wallet } from 'ethers';
-import {
-  LSP20ReentrantContract__factory,
-  LSP20ReentrantContract,
-  LSP6KeyManager,
-  UniversalProfile,
-  BatchReentrancyRelayer,
-  SingleReentrancyRelayer,
-  SingleReentrancyRelayer__factory,
-  BatchReentrancyRelayer__factory,
-  UniversalProfile__factory,
-} from '../../../typechain';
+import { BytesLike, FunctionFragment, Wallet } from 'ethers';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';
@@ -61,10 +50,10 @@ export type ReentrancyContext = {
   signer: Wallet;
   newControllerAddress: string;
   newURDAddress: string;
-  reentrantContract: LSP20ReentrantContract;
+  reentrantContract;
   reentrantSigner: Wallet;
-  singleReentarncyRelayer: SingleReentrancyRelayer;
-  batchReentarncyRelayer: BatchReentrancyRelayer;
+  singleReentarncyRelayer;
+  batchReentarncyRelayer;
   randomLSP1TypeId: string;
 };
 
@@ -339,7 +328,20 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
   const newControllerAddress = context.accounts[3].address;
   const newURDAddress = context.accounts[4].address;
 
-  const reentrantContract = await new LSP20ReentrantContract__factory(owner).deploy(
+  const LSP20ReentrantContract__factory = await ethers.getContractFactory(
+    'LSP20ReentrantContract',
+    context.accounts[0],
+  );
+  const SingleReentrancyRelayer__factory = await ethers.getContractFactory(
+    'LSP20ReentrantContract',
+    context.accounts[0],
+  );
+  const BatchReentrancyRelayer__factory = await ethers.getContractFactory(
+    'LSP20ReentrantContract',
+    context.accounts[0],
+  );
+
+  const reentrantContract = await LSP20ReentrantContract__factory.deploy(
     newControllerAddress,
     ethers.keccak256(ethers.toUtf8Bytes('RandomLSP1TypeId')),
     newURDAddress,
@@ -347,8 +349,8 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
 
   const reentrantSigner = new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT5);
 
-  const singleReentarncyRelayer = await new SingleReentrancyRelayer__factory(owner).deploy();
-  const batchReentarncyRelayer = await new BatchReentrancyRelayer__factory(owner).deploy();
+  const singleReentarncyRelayer = await SingleReentrancyRelayer__factory.deploy();
+  const batchReentarncyRelayer = await BatchReentrancyRelayer__factory.deploy();
 
   const permissionKeys = [
     ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + owner.address.substring(2),
@@ -404,11 +406,7 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
   };
 };
 
-export const generateRelayCall = async (
-  keyManager: LSP6KeyManager,
-  payload: BytesLike,
-  signer: Wallet,
-) => {
+export const generateRelayCall = async (keyManager, payload: BytesLike, signer: Wallet) => {
   const nonce = await keyManager.getNonce(signer.address, 1);
 
   const validityTimestamps = 0;
@@ -439,10 +437,10 @@ export const generateRelayCall = async (
 };
 
 export const generateSingleRelayPayload = async (
-  universalProfile: UniversalProfile,
-  keyManager: LSP6KeyManager,
+  universalProfile,
+  keyManager,
   payloadType: string,
-  reentrancyRelayer: SingleReentrancyRelayer,
+  reentrancyRelayer,
   reentrantSigner: Wallet,
   newControllerAddress: string,
   newURDAddress: string,
@@ -512,10 +510,10 @@ export const generateSingleRelayPayload = async (
 };
 
 export const generateBatchRelayPayload = async (
-  universalProfile: UniversalProfile,
-  keyManager: LSP6KeyManager,
+  universalProfile,
+  keyManager,
   payloadType: string,
-  reentrancyRelayer: BatchReentrancyRelayer,
+  reentrancyRelayer,
   reentrantSigner: Wallet,
   newControllerAddress: string,
   newURDAddress: string,
@@ -590,17 +588,29 @@ export const generateBatchRelayPayload = async (
   );
 };
 
-export const generateExecutePayload = (
+export const generateExecutePayload = async (
   keyManagerAddress: string,
   reentrantContractAddress: string,
   payloadType: string,
 ) => {
-  const reentrantPayload = new LSP20ReentrantContract__factory().interface.encodeFunctionData(
-    'callThatReenters',
-    [keyManagerAddress, payloadType],
+  // Create FunctionFragment for the reentrant contract's function
+  const callThatReentersFunction = FunctionFragment.from(
+    'function callThatReenters(address keyManagerAddress, string payloadType) external',
+  );
+  const executeFunction = FunctionFragment.from(
+    'function execute(uint256,address,uint256,bytes) external',
   );
 
-  const executePayload = new UniversalProfile__factory().interface.encodeFunctionData('execute', [
+  // Create a minimal interface with just this function
+  const reentrantInterface = new ethers.Interface([callThatReentersFunction]);
+  const universalProfileInterface = new ethers.Interface([executeFunction]);
+
+  const reentrantPayload = reentrantInterface.encodeFunctionData('callThatReenters', [
+    keyManagerAddress,
+    payloadType,
+  ]);
+
+  const executePayload = universalProfileInterface.encodeFunctionData('execute', [
     0,
     reentrantContractAddress,
     0,
@@ -665,9 +675,14 @@ export const loadTestCase = async (
     }
   }
 
-  const permissionsPayload = new UniversalProfile__factory().interface.encodeFunctionData(
-    'setDataBatch',
-    [permissionKeys, permissionValues],
+  const setDataBatchFunction = FunctionFragment.from(
+    'function setDataBatch(bytes32[],bytes[]) external',
   );
+  const erc725YInterface = new ethers.Interface([setDataBatchFunction]);
+  const permissionsPayload = erc725YInterface.encodeFunctionData('setDataBatch', [
+    permissionKeys,
+    permissionValues,
+  ]);
+
   await context.keyManager.connect(context.mainController).execute(permissionsPayload);
 };

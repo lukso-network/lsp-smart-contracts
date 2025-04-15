@@ -10,34 +10,36 @@ import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP6TestContext } from '../../../utils/context';
 import { setupKeyManager } from '../../../utils/fixtures';
 import { abiCoder, provider } from '../../../utils/helpers';
-import {
-  LSP7Mintable,
-  LSP7MintableInit,
-  LSP7MintableInit__factory,
-  LSP7Mintable__factory,
-} from '../../../../typechain';
 
 export const shouldBehaveLikeBatchExecute = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
 
+  let LSP7MintableInit__factory, LSP7Mintable__factory;
+
   // a fictional DAI token on LUKSO
-  let lyxDaiToken: LSP7Mintable,
+  let lyxDaiToken,
     // a basic sample token
-    metaCoin: LSP7Mintable,
+    metaCoin,
     // a token that can be used as credits for a LUKSO relay service.
     // Inspired from https://github.com/lykhonis/relayer
-    rLyxToken: LSP7Mintable;
+    rLyxToken;
 
   before(async () => {
     context = await buildContext(ethers.parseEther('50'));
+
+    LSP7MintableInit__factory = await ethers.getContractFactory(
+      'LSP7MintableInit,',
+      context.accounts[0],
+    );
+    LSP7Mintable__factory = await ethers.getContractFactory('LSP7Mintable,', context.accounts[0]);
 
     // main controller permissions are already set in the fixture
     await setupKeyManager(context, [], []);
 
     // deploy some sample LSP7 tokens and mint some tokens to the UP
-    lyxDaiToken = await new LSP7Mintable__factory(context.accounts[0]).deploy(
+    lyxDaiToken = await LSP7Mintable__factory.deploy(
       'LYX DAI Invented Token',
       'LYXDAI',
       context.accounts[0].address,
@@ -45,7 +47,7 @@ export const shouldBehaveLikeBatchExecute = (
       false,
     );
 
-    metaCoin = await new LSP7Mintable__factory(context.accounts[0]).deploy(
+    metaCoin = await LSP7Mintable__factory.deploy(
       'Meta Coin',
       'MTC',
       context.accounts[0].address,
@@ -53,7 +55,7 @@ export const shouldBehaveLikeBatchExecute = (
       false,
     );
 
-    rLyxToken = await new LSP7Mintable__factory(context.accounts[0]).deploy(
+    rLyxToken = await LSP7Mintable__factory.deploy(
       'LUKSO Relay Token',
       'rLYX',
       context.accounts[0].address,
@@ -214,7 +216,7 @@ export const shouldBehaveLikeBatchExecute = (
     });
 
     it('should 1) deploy a LSP7 Token (as minimal proxy), 2) initialize it, and 3) set the token metadata', async () => {
-      const lsp7MintableBase = await new LSP7MintableInit__factory(context.accounts[0]).deploy();
+      const lsp7MintableBase = await LSP7MintableInit__factory.deploy();
 
       const lsp7TokenProxyBytecode = String(
         '0x3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3',
@@ -227,9 +229,7 @@ export const shouldBehaveLikeBatchExecute = (
         .connect(context.mainController)
         .execute.staticCall(OPERATION_TYPES.CREATE, ethers.ZeroAddress, 0, lsp7TokenProxyBytecode);
 
-      const futureTokenInstance = new LSP7MintableInit__factory(context.accounts[0]).attach(
-        futureTokenAddress,
-      ) as LSP7MintableInit;
+      const futureTokenInstance = await LSP7MintableInit__factory.attach(futureTokenAddress);
 
       const lsp7InitializePayload = futureTokenInstance.interface.encodeFunctionData('initialize', [
         'My LSP7 UP Token',
@@ -356,9 +356,7 @@ export const shouldBehaveLikeBatchExecute = (
       );
 
       // CHECK for tokens balances of recipients
-      const createdTokenContract = (await new LSP7Mintable__factory(context.accounts[0]).attach(
-        futureTokenAddress,
-      )) as LSP7Mintable;
+      const createdTokenContract = await LSP7Mintable__factory.attach(futureTokenAddress);
       expect([
         await createdTokenContract.balanceOf(recipients[0]),
         await createdTokenContract.balanceOf(recipients[1]),

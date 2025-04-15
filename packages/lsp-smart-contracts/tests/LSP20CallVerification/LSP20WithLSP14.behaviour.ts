@@ -2,11 +2,6 @@ import { expect } from 'chai';
 import { ethers, network, artifacts } from 'hardhat';
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import {
-  UPWithInstantAcceptOwnership__factory,
-  UPWithInstantAcceptOwnership,
-  LSP0ERC725Account,
-} from '../../typechain';
 
 // constants
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -17,7 +12,7 @@ import { ContractTransaction, ContractTransactionResponse } from 'ethers';
 
 export type LSP14CombinedWithLSP20TestContext = {
   accounts: SignerWithAddress[];
-  contract: LSP0ERC725Account;
+  contract;
   deployParams: { owner: SignerWithAddress };
   onlyOwnerCustomError: string;
 };
@@ -112,12 +107,16 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
     });
 
     describe('when `acceptOwnership(...)` is called in the same tx as `transferOwnership(...)`', () => {
-      let upWithCustomURD: UPWithInstantAcceptOwnership;
+      let upWithCustomURD;
 
       before(async () => {
-        upWithCustomURD = await new UPWithInstantAcceptOwnership__factory(
+        const UPWithInstantAcceptOwnership__factory = await ethers.getContractFactory(
+          'UPWithInstantAcceptOwnership',
           context.accounts[0],
-        ).deploy(context.accounts[0].address);
+        );
+        upWithCustomURD = await UPWithInstantAcceptOwnership__factory.deploy(
+          context.accounts[0].address,
+        );
       });
 
       it("should revert (e.g: if `universalReceiver(...)` function of `newOwner` calls directly `acceptOwnership(...)')", async () => {

@@ -1,8 +1,6 @@
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import { TargetContract__factory, TargetContract } from '../../../../typechain';
-
 // constants
 import { ERC725YDataKeys } from '../../../../constants';
 import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
@@ -10,19 +8,25 @@ import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 // setup
 import { LSP6TestContext } from '../../../utils/context';
 import { setupKeyManager } from '../../../utils/fixtures';
+import { ethers } from 'hardhat';
 
 export const otherTestScenarios = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
   let addressCanMakeCall: SignerWithAddress;
-  let targetContract: TargetContract;
+  let targetContract;
 
   before(async () => {
     context = await buildContext();
 
     addressCanMakeCall = context.accounts[4];
 
-    targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+    const TargetContract__factory = await ethers.getContractFactory(
+      'TargetContract',
+      context.accounts[0],
+    );
+
+    targetContract = await TargetContract__factory.deploy();
 
     const permissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
