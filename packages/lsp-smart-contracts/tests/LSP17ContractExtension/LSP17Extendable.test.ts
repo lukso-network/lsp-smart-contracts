@@ -1,48 +1,69 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
-import {
-  LSP17ExtendableTester,
-  LSP17ExtendableTester__factory,
-  EmitEventExtension,
-  EmitEventExtension__factory,
-  RevertErrorsTestExtension,
-  RevertErrorsTestExtension__factory,
-} from '../../typechain';
-
 describe('LSP17Extendable - Basic Implementation', () => {
   let accounts;
 
-  let lsp17Implementation: LSP17ExtendableTester;
-  let exampleExtension: EmitEventExtension;
-  let errorsExtension: RevertErrorsTestExtension;
+  let LSP17ExtendableTester__factory,
+    EmitEventExtension__factory,
+    RevertErrorsTestExtension__factory;
 
-  const selectorWithExtensionAndNoTransferValue =
-    EmitEventExtension__factory.createInterface().getFunction('emitEvent').selector;
+  let lsp17Implementation;
+  let exampleExtension;
+  let errorsExtension;
+
   const selectorWithNoExtension = '0xdeadbeef';
 
   // selectors to test that errors are bubbled up to the contract
-  const revertErrorsExtensionInterface = RevertErrorsTestExtension__factory.createInterface();
+  let selectorWithExtensionAndNoTransferValue;
 
-  const selectorRevertCustomError =
-    revertErrorsExtensionInterface.getFunction('revertWithCustomError').selector;
+  let selectorRevertCustomError;
 
-  const selectorRevertErrorString =
-    revertErrorsExtensionInterface.getFunction('revertWithErrorString').selector;
+  let selectorRevertErrorString;
 
-  const selectorRevertPanicError =
-    revertErrorsExtensionInterface.getFunction('revertWithPanicError').selector;
+  let selectorRevertPanicError;
 
-  const selectorRevertNoErrorData =
-    revertErrorsExtensionInterface.getFunction('revertWithNoErrorData').selector;
+  let selectorRevertNoErrorData;
 
   before('setup', async () => {
     accounts = await ethers.getSigners();
 
+    // factories
+    LSP17ExtendableTester__factory = await ethers.getContractFactory(
+      'LSP17ExtendableTester',
+      accounts[0],
+    );
+    EmitEventExtension__factory = await ethers.getContractFactory(
+      'EmitEventExtension',
+      accounts[0],
+    );
+    RevertErrorsTestExtension__factory = await ethers.getContractFactory(
+      'RevertErrorsTestExtension',
+      accounts[0],
+    );
+
+    // contracts
     lsp17Implementation = await new LSP17ExtendableTester__factory(accounts[0]).deploy();
     exampleExtension = await new EmitEventExtension__factory(accounts[0]).deploy();
     errorsExtension = await new RevertErrorsTestExtension__factory(accounts[0]).deploy();
 
+    // selectors
+    selectorWithExtensionAndNoTransferValue =
+      EmitEventExtension__factory.interacting.getFunction('emitEvent').selector;
+
+    selectorRevertCustomError =
+      RevertErrorsTestExtension__factory.interface.getFunction('revertWithCustomError').selector;
+
+    selectorRevertErrorString =
+      RevertErrorsTestExtension__factory.interface.getFunction('revertWithErrorString').selector;
+
+    selectorRevertPanicError =
+      RevertErrorsTestExtension__factory.interface.getFunction('revertWithPanicError').selector;
+
+    selectorRevertNoErrorData =
+      RevertErrorsTestExtension__factory.interface.getFunction('revertWithNoErrorData').selector;
+
+    // setup extension contracts
     await lsp17Implementation.setExtension(
       selectorWithExtensionAndNoTransferValue,
       await exampleExtension.getAddress(),

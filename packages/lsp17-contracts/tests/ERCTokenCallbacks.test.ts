@@ -1,15 +1,7 @@
 import { expect } from 'chai';
 import { ethers as hardhatEthers } from 'hardhat';
-import { ContractFactory } from 'ethers';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { INTERFACE_ID_LSP17Extension } from '../constants';
-
-import ERCTokenCallbacksArtifacts from '../artifacts/contracts/ERCTokenCallbacks.sol/ERCTokenCallbacks.json';
-
-const ERCTokenCallbacks__factory = new ContractFactory(
-  ERCTokenCallbacksArtifacts.abi,
-  ERCTokenCallbacksArtifacts.bytecode,
-);
 
 describe('testing `ERCTokenCallbacks`', () => {
   let context: {
@@ -18,6 +10,7 @@ describe('testing `ERCTokenCallbacks`', () => {
   };
 
   before(async () => {
+    const ERCTokenCallbacks__factory = await hardhatEthers.getContractFactory('ERCTokenCallbacks');
     const [owner] = await hardhatEthers.getSigners();
     const tokenCallbacks = await ERCTokenCallbacks__factory.connect(owner).deploy();
 

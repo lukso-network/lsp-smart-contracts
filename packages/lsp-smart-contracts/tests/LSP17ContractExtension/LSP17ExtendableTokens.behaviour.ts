@@ -1,28 +1,6 @@
 import { expect } from 'chai';
+import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-
-import {
-  LSP0ERC725Account,
-  LSP9Vault,
-  CheckerExtension__factory,
-  ERC165Extension,
-  ERC165Extension__factory,
-  RevertStringExtension__factory,
-  RevertCustomExtension,
-  RevertCustomExtension__factory,
-  EmitEventExtension,
-  EmitEventExtension__factory,
-  TransferExtension__factory,
-  TransferExtension,
-  ReenterAccountExtension__factory,
-  ReenterAccountExtension,
-  BuyExtension,
-  BuyExtension__factory,
-  NameExtension__factory,
-  NameExtension,
-  AgeExtension__factory,
-  AgeExtension,
-} from '../../typechain';
 
 // helpers
 import { abiCoder, provider } from '../utils/helpers';
@@ -32,12 +10,13 @@ import { ERC725YDataKeys } from '../../constants';
 
 export type LSP17TestContext = {
   accounts: SignerWithAddress[];
-  contract: LSP0ERC725Account | LSP9Vault | any;
+  contract;
   deployParams: any;
 };
 
 export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestContext>) => {
   let context: LSP17TestContext;
+
   let notExistingFunctionSignature,
     checkMsgVariableFunctionSelector,
     nameFunctionSelector,
@@ -61,8 +40,51 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
     buyFunctionExtensionHandlerKey,
     supportsInterfaceFunctionExtensionHandlerKey;
 
+  let CheckerExtension__factory,
+    ERC165Extension__factory,
+    RevertStringExtension__factory,
+    RevertCustomExtension__factory,
+    EmitEventExtension__factory,
+    TransferExtension__factory,
+    ReenterAccountExtension__factory,
+    BuyExtension__factory,
+    NameExtension__factory,
+    AgeExtension__factory;
+
   before(async () => {
     context = await buildContext();
+
+    CheckerExtension__factory = await ethers.getContractFactory(
+      'CheckerExtension',
+      context.accounts[0],
+    );
+    ERC165Extension__factory = await ethers.getContractFactory(
+      'ERC165Extension',
+      context.accounts[0],
+    );
+    RevertStringExtension__factory = await ethers.getContractFactory(
+      'RevertStringExtension',
+      context.accounts[0],
+    );
+    RevertCustomExtension__factory = await ethers.getContractFactory(
+      'RevertCustomExtension',
+      context.accounts[0],
+    );
+    EmitEventExtension__factory = await ethers.getContractFactory(
+      'EmitEventExtension',
+      context.accounts[0],
+    );
+    TransferExtension__factory = await ethers.getContractFactory(
+      'TransferExtension',
+      context.accounts[0],
+    );
+    ReenterAccountExtension__factory = await ethers.getContractFactory(
+      'ReenterAccountExtension',
+      context.accounts[0],
+    );
+    BuyExtension__factory = await ethers.getContractFactory('BuyExtension', context.accounts[0]);
+    NameExtension__factory = await ethers.getContractFactory('NameExtension', context.accounts[0]);
+    AgeExtension__factory = await ethers.getContractFactory('AgeExtension', context.accounts[0]);
 
     // withdraw()
     notExistingFunctionSignature = '0x3ccfd60b';
@@ -338,12 +360,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         });
 
         describe('when calling an extension that reverts with Custom error with tx.origin and msg.sender as parameters', () => {
-          let revertCustomExtension: RevertCustomExtension;
+          let revertCustomExtension;
 
           before(async () => {
-            revertCustomExtension = await new RevertCustomExtension__factory(
-              context.accounts[0],
-            ).deploy();
+            revertCustomExtension = await RevertCustomExtension__factory.deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
@@ -369,12 +389,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         });
 
         describe('when calling an extension that emits an event', () => {
-          let emitEventExtension: EmitEventExtension;
+          let emitEventExtension;
 
           before(async () => {
-            emitEventExtension = await new EmitEventExtension__factory(
-              context.accounts[0],
-            ).deploy();
+            emitEventExtension = await EmitEventExtension__factory.deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
@@ -393,10 +411,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         });
 
         describe('when calling an extension that returns a string', () => {
-          let nameExtension: NameExtension;
+          let nameExtension;
 
           before(async () => {
-            nameExtension = await new NameExtension__factory(context.accounts[0]).deploy();
+            nameExtension = await NameExtension__factory.deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
@@ -415,10 +433,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         });
 
         describe('when calling an extension that returns a number', () => {
-          let ageExtension: AgeExtension;
+          let ageExtension;
 
           before(async () => {
-            ageExtension = await new AgeExtension__factory(context.accounts[0]).deploy();
+            ageExtension = await AgeExtension__factory.deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
@@ -437,10 +455,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         });
 
         describe('when calling an extension that modify the state of the extension', () => {
-          let transferExtension: TransferExtension;
+          let transferExtension;
 
           before(async () => {
-            transferExtension = await new TransferExtension__factory(context.accounts[0]).deploy();
+            transferExtension = await TransferExtension__factory.deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
@@ -470,10 +488,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         });
 
         describe('when calling a payable extension with value', () => {
-          let buyExtension: BuyExtension;
+          let buyExtension;
 
           before(async () => {
-            buyExtension = await new BuyExtension__factory(context.accounts[0]).deploy();
+            buyExtension = await BuyExtension__factory.deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
@@ -498,12 +516,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         });
 
         describe('when calling an extension that reenter the fallback function of the account', () => {
-          let reenterAccountExtension: ReenterAccountExtension;
+          let reenterAccountExtension;
 
           before(async () => {
-            reenterAccountExtension = await new ReenterAccountExtension__factory(
-              context.accounts[0],
-            ).deploy();
+            reenterAccountExtension = await ReenterAccountExtension__factory.deploy();
 
             await context.contract
               .connect(context.deployParams.owner)
@@ -515,12 +531,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
           describe('when reentering with a call to an extension that emits an event', () => {
             describe('when reentering before setting the extension', () => {
-              let emitEventExtension: EmitEventExtension;
+              let emitEventExtension;
 
               before(async () => {
-                emitEventExtension = await new EmitEventExtension__factory(
-                  context.accounts[0],
-                ).deploy();
+                emitEventExtension = await EmitEventExtension__factory.deploy();
               });
 
               it('should not emit any event', async () => {
@@ -537,12 +551,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               });
             });
             describe('when reentering after setting the extension', () => {
-              let emitEventExtension: EmitEventExtension;
+              let emitEventExtension;
 
               before(async () => {
-                emitEventExtension = await new EmitEventExtension__factory(
-                  context.accounts[0],
-                ).deploy();
+                emitEventExtension = await EmitEventExtension__factory.deploy();
 
                 await context.contract
                   .connect(context.deployParams.owner)
@@ -576,9 +588,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
           });
 
           describe('when the ERC165 extension was set', () => {
-            let erc165Extension: ERC165Extension;
+            let erc165Extension;
+
             before(async () => {
-              erc165Extension = await new ERC165Extension__factory(context.accounts[0]).deploy();
+              erc165Extension = await ERC165Extension__factory.deploy();
 
               await context.contract
                 .connect(context.deployParams.owner)

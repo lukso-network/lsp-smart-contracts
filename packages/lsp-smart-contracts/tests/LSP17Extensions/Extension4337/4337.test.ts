@@ -4,13 +4,7 @@ import { EntryPoint__factory, EntryPoint } from '@account-abstraction/contracts'
 
 import { BytesLike, Signer, parseEther } from 'ethers';
 import { expect } from 'chai';
-import {
-  LSP6KeyManager,
-  LSP6KeyManager__factory,
-  UniversalProfile,
-  UniversalProfile__factory,
-  Extension4337__factory,
-} from '../../../typechain';
+
 import { deployEntryPoint, getBalance, isDeployed } from '../helpers/utils';
 import { ERC725YDataKeys } from '../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -23,9 +17,9 @@ import { fillAndSign } from '../helpers/UserOp';
 describe.skip('4337', function () {
   let bundler: SignerWithAddress;
   let deployer: Signer;
-  let universalProfile: UniversalProfile;
+  let universalProfile;
   let universalProfileAddress: string;
-  let keyManager: LSP6KeyManager;
+  let keyManager;
   let keyManagerAddress: string;
   let entryPoint: EntryPoint;
   let controllerWith4337Permission: SignerWithAddress;
@@ -36,10 +30,16 @@ describe.skip('4337', function () {
     '0x0000000000000000000000000000000000000000000000000000000000800000';
   const amountToTransfer = 1;
 
+  let LSP6KeyManager__factory, UniversalProfile__factory, Extension4337__factory;
+
   before('setup', async function () {
     const provider = ethers.provider;
     deployer = await provider.getSigner();
     const deployerAddress = await deployer.getAddress();
+
+    LSP6KeyManager__factory = await ethers.getContractFactory('LSP6KeyManager', deployer);
+    UniversalProfile__factory = await ethers.getContractFactory('UniversalProfile', deployer);
+    Extension4337__factory = await ethers.getContractFactory('Extension4337', deployer);
 
     [
       bundler,
