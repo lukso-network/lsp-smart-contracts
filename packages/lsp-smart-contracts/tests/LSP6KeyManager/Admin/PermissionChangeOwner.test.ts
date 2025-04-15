@@ -36,7 +36,10 @@ export const shouldBehaveLikePermissionChangeOwner = (
     canChangeOwner = context.accounts[1];
     cannotChangeOwner = context.accounts[2];
 
-    const LSP6KeyManager = await ethers.getContractFactory('LSP6KeyManager', context.mainController);
+    const LSP6KeyManager = await ethers.getContractFactory(
+      'LSP6KeyManager',
+      context.mainController,
+    );
     newKeyManager = await LSP6KeyManager.deploy(context.universalProfile.target);
 
     transferOwnershipPayload = context.universalProfile.interface.encodeFunctionData(
@@ -198,7 +201,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
       });
 
       it('should override the pendingOwner when transferOwnership(...) is called twice', async () => {
-        const overridenPendingOwner = await newKeyManager.deploy(await context.universalProfile.getAddress());
+        const overridenPendingOwner = await newKeyManager.deploy(
+          await context.universalProfile.getAddress(),
+        );
 
         await context.keyManager
           .connect(canChangeOwner)
@@ -220,7 +225,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
     });
 
     it('should revert', async () => {
-      const notPendingKeyManager = await newKeyManager.deploy(await context.universalProfile.getAddress());
+      const notPendingKeyManager = await newKeyManager.deploy(
+        await context.universalProfile.getAddress(),
+      );
 
       const payload = context.universalProfile.interface.getFunction('acceptOwnership').selector;
 

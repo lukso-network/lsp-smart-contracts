@@ -27,9 +27,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
   let addressCanInteractOnlyWithERC1271: SignerWithAddress,
     addressCanInteractOnlyWithLSP7: SignerWithAddress;
 
-  let targetContract,
-    signatureValidatorContract,
-    otherUniversalProfile;
+  let targetContract, signatureValidatorContract, otherUniversalProfile;
 
   before(async () => {
     context = await buildContext();
@@ -40,7 +38,10 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
     const TargetContract = await ethers.getContractFactory('TargetContract', context.accounts[0]);
     targetContract = await TargetContract.deploy();
 
-    const SignatureValidator = await ethers.getContractFactory('SignatureValidator', context.accounts[0]);
+    const SignatureValidator = await ethers.getContractFactory(
+      'SignatureValidator',
+      context.accounts[0],
+    );
     signatureValidatorContract = await SignatureValidator.deploy();
 
     // test to interact with an other UniversalProfile (e.g.: transfer LYX)
@@ -275,7 +276,10 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
       let lsp7TokenC;
 
       before(async () => {
-        const LSP7Mintable__factory = await ethers.getContractFactory('LSP7Mintable', context.accounts[0]);
+        const LSP7Mintable__factory = await ethers.getContractFactory(
+          'LSP7Mintable',
+          context.accounts[0],
+        );
         lsp7TokenA = await LSP7Mintable__factory.deploy(
           'LSP7 Token A',
           'TKNA',

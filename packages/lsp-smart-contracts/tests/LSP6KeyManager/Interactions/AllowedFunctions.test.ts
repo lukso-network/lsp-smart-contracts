@@ -319,7 +319,10 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
       addressCanCallOnlyTransferOnLSP8 = context.accounts[1];
       addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8 = context.accounts[2];
 
-      const LSP7Mintable__factory = await ethers.getContractFactory("LSP7Mintable", context.accounts[0])
+      const LSP7Mintable__factory = await ethers.getContractFactory(
+        'LSP7Mintable',
+        context.accounts[0],
+      );
 
       lsp7Contract = await LSP7Mintable__factory.deploy(
         'LSP7 Token',
@@ -329,7 +332,10 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
         false,
       );
 
-      const LSP8Mintable__factory = await ethers.getContractFactory("LSP8Mintable", context.accounts[0])
+      const LSP8Mintable__factory = await ethers.getContractFactory(
+        'LSP8Mintable',
+        context.accounts[0],
+      );
 
       lsp8Contract = await LSP8Mintable__factory.deploy(
         'LSP8 NFT',

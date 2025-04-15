@@ -11,12 +11,18 @@ describe('LSP6KeyManager with proxy', () => {
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
-    const UniversalProfileInit = await ethers.getContractFactory('UniversalProfileInit', mainController);
+    const UniversalProfileInit = await ethers.getContractFactory(
+      'UniversalProfileInit',
+      mainController,
+    );
     const baseUP = await UniversalProfileInit.deploy();
     const upProxy = await deployProxy(baseUP.target as string, mainController);
     const universalProfile = baseUP.attach(upProxy);
 
-    const LSP6KeyManagerInit = await ethers.getContractFactory('LSP6KeyManagerInit', mainController);
+    const LSP6KeyManagerInit = await ethers.getContractFactory(
+      'LSP6KeyManagerInit',
+      mainController,
+    );
     const baseKM = await LSP6KeyManagerInit.deploy();
     const kmProxy = await deployProxy(await baseKM.getAddress(), mainController);
     const keyManager = baseKM.attach(kmProxy);
@@ -37,7 +43,9 @@ describe('LSP6KeyManager with proxy', () => {
   describe('when deploying the base LSP6KeyManagerInit implementation', () => {
     it('`target()` of the base Key Manager contract MUST be `address(0)`', async () => {
       const accounts = await ethers.getSigners();
-      const keyManagerBaseContract = await (await ethers.getContractFactory('LSP6KeyManagerInit', accounts[0])).deploy();
+      const keyManagerBaseContract = await (
+        await ethers.getContractFactory('LSP6KeyManagerInit', accounts[0])
+      ).deploy();
 
       const linkedTarget = await keyManagerBaseContract['target()'].staticCall();
       expect(linkedTarget).to.equal(ethers.ZeroAddress);
@@ -46,7 +54,9 @@ describe('LSP6KeyManager with proxy', () => {
     it('should prevent any address from calling the `initialize(...)` function on the base contract', async () => {
       const context = await buildProxyTestContext();
 
-      const baseKM = await (await ethers.getContractFactory('LSP6KeyManagerInit', context.accounts[0])).deploy();
+      const baseKM = await (
+        await ethers.getContractFactory('LSP6KeyManagerInit', context.accounts[0])
+      ).deploy();
 
       await expect(baseKM.initialize(context.accounts[0].address)).to.be.revertedWith(
         'Initializable: contract is already initialized',

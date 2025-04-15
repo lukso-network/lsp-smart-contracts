@@ -7,7 +7,7 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["artifacts/**", "!artifacts/*.json", "typechain/**"],
+      "outputs": ["artifacts/**", "!artifacts/*.json"],
       "cache": true
     },
     "build:foundry": {

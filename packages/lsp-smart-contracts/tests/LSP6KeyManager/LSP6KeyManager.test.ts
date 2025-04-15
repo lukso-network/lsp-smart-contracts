@@ -40,8 +40,13 @@ describe('LSP6KeyManager with constructor', () => {
       const UniversalProfile = await ethers.getContractFactory('UniversalProfile', mainController);
       const universalProfile = await UniversalProfile.deploy(mainController.address);
 
-      const KeyManagerInternalTester = await ethers.getContractFactory('KeyManagerInternalTester', mainController);
-      const keyManagerInternalTester = await KeyManagerInternalTester.deploy(universalProfile.target);
+      const KeyManagerInternalTester = await ethers.getContractFactory(
+        'KeyManagerInternalTester',
+        mainController,
+      );
+      const keyManagerInternalTester = await KeyManagerInternalTester.deploy(
+        universalProfile.target,
+      );
 
       return { mainController, accounts, universalProfile, keyManagerInternalTester };
     });

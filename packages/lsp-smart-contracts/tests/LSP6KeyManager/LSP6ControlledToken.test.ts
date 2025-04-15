@@ -582,7 +582,10 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
      */
     describe('when trying to call execute(..) function on LSP7 through LSP6', () => {
       it('should revert because function does not exist on LSP7', async () => {
-        const LSP7Tester__factory = await ethers.getContractFactory('LSP7Tester', context.mainController);
+        const LSP7Tester__factory = await ethers.getContractFactory(
+          'LSP7Tester',
+          context.mainController,
+        );
         // deploying a dummy token contract with public mint function
         const newTokenContract = await LSP7Tester__factory.deploy(
           'NewTokenName',
@@ -598,8 +601,9 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
           '0x',
         ]);
 
-    
-        const payload = (await ethers.getContractFactory("LSP0ERC725Account")).interface.encodeFunctionData('execute', [
+        const payload = (
+          await ethers.getContractFactory('LSP0ERC725Account')
+        ).interface.encodeFunctionData('execute', [
           0,
           await newTokenContract.getAddress(),
           0,

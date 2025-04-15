@@ -40,7 +40,10 @@ export const shouldBehaveLikeBatchExecute = (
     await setupKeyManager(context, permissionKeys, permissionsValues);
 
     LSP7Mintable__factory = await ethers.getContractFactory('LSP7Mintable', context.accounts[0]);
-    LSP7MintableInit__factory = await ethers.getContractFactory('LSP7MintableInit', context.accounts[0]);
+    LSP7MintableInit__factory = await ethers.getContractFactory(
+      'LSP7MintableInit',
+      context.accounts[0],
+    );
 
     // deploy some sample LSP7 tokens and mint some tokens to the UP
     lyxDaiToken = await LSP7Mintable__factory.deploy(
@@ -395,7 +398,7 @@ export const shouldBehaveLikeBatchExecute = (
       const createdTokenContract = new LSP7Mintable__factory(context.accounts[0]).attach(
         futureTokenAddress,
       );
-      
+
       expect([
         await createdTokenContract.balanceOf(recipients[0]),
         await createdTokenContract.balanceOf(recipients[1]),
