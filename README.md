@@ -25,6 +25,7 @@ This repo contains packages for the Solidity implementation of the LSP smart con
 | [`@lukso/lsp8-contracts`](./packages/lsp8-contracts)                                     | [![npm version](https://img.shields.io/npm/v/@lukso/lsp8-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp8-contracts)                                     | LSP8 Identifiable Digital Asset  |
 | [`@lukso/lsp9-contracts`](./packages/lsp9-contracts)                                     | [![npm version](https://img.shields.io/npm/v/@lukso/lsp9-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp9-contracts)                                     | LSP9 Vault                       |
 | [`@lukso/lsp10-contracts`](./packages/lsp10-contracts)                                   | [![npm version](https://img.shields.io/npm/v/@lukso/lsp10-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp10-contracts)                                   | LSP10 Received Vaults            |
+| [`@lukso/lsp11-contracts`](./packages/lsp11-contracts)                                   | [![npm version](https://img.shields.io/npm/v/@lukso/lsp11-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp11-contracts)                                   | LSP11 Social Recovery            |
 | [`@lukso/lsp12-contracts`](./packages/lsp12-contracts)                                   | [![npm version](https://img.shields.io/npm/v/@lukso/lsp12-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp12-contracts)                                   | LSP12 Issued Assets              |
 | [`@lukso/lsp14-contracts`](./packages/lsp14-contracts)                                   | [![npm version](https://img.shields.io/npm/v/@lukso/lsp14-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp14-contracts)                                   | LSP14 Ownable 2 Step             |
 | [`@lukso/lsp16-contracts`](./packages/lsp16-contracts)                                   | [![npm version](https://img.shields.io/npm/v/@lukso/lsp16-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp16-contracts)                                   | LSP16 Universal Factory          |
@@ -33,6 +34,7 @@ This repo contains packages for the Solidity implementation of the LSP smart con
 | [`@lukso/lsp20-contracts`](./packages/lsp20-contracts)                                   | [![npm version](https://img.shields.io/npm/v/@lukso/lsp20-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp20-contracts)                                   | LSP20 Call Verification          |
 | [`@lukso/lsp23-contracts`](./packages/lsp23-contracts)                                   | [![npm version](https://img.shields.io/npm/v/@lukso/lsp23-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp23-contracts)                                   | LSP23 Linked Contracts Factory   |
 | [`@lukso/lsp25-contracts`](./packages/lsp25-contracts)                                   | [![npm version](https://img.shields.io/npm/v/@lukso/lsp25-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp25-contracts)                                   | LSP25 Execute Relay Call         |
+| [`@lukso/lsp26-contracts`](./packages/lsp26-contracts)                                   | [![npm version](https://img.shields.io/npm/v/@lukso/lsp26-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp26-contracts)                                   | LSP26 Follower System            |
 | [`@lukso/universalprofile-contracts`](./packages/universalprofile-contracts)             | [![npm version](https://img.shields.io/npm/v/@lukso/universalprofile-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/universalprofile-contracts)             | Universal Profile                |
 
 ## Installation
@@ -60,106 +62,19 @@ $ cd ./lsp-smart-contracts
 $ npm install
 ```
 
+## Usage
+
+See the `README.md` file of each individual package to learn more.
+
 ## Testing
 
 For detailed instructions on how to run tests, please refer to our [Testing Guide](./tests/README.md).
 
-## Usage
-
-### in Javascript
-
-You can use the contracts JSON ABI by importing them as follow:
-
-```javascript
-import LSP0ERC725Account from "@lukso/lsp-smart-contracts/artifacts/LSP0ERC725Account.json";
-
-const myContract = new web3.eth.Contract(
-  LSP0ERC725Account.abi,
-  "",
-  defaultOptions
-);
-```
-
-### in Solidity
-
-```sol
-import "@lukso/lsp-smart-contracts/contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
-
-contract MyAccount is LSP0ERC725Account {
-  constructor(address _newOwner) LSP0ERC725Account(_newOwner) {}
-}
-```
-
 ### Deployment via hardhat
 
-You can find more infos on how to deploy the contracts via hardhat in the [DEPLOYMENT](./DEPLOYMENT.md) page.
+You can find more infos on how to deploy the contracts via hardhat in the [DEPLOYMENT](./packages/lsp-smart-contracts/DEPLOYMENT.md) page.
 
-## Available Constants & Types
-
-The [`@lukso/lsp-smart-contracts` npm package](https://www.npmjs.com/package/@lukso/lsp-smart-contracts) contains useful constants such as Interface IDs or ERC725Y Data Keys related to the LSP Standards. You can import and access them as follow:
-
-```ts
-import {
-  INTERFACE_IDS,
-  ERC1271,
-  OPERATIONS,
-  SupportedStandards,
-  ERC725YDataKeys,
-  PERMISSIONS,
-  ALL_PERMISSIONS,
-  LSP8_TOKEN_ID_SCHEMA,
-  LSP25_VERSION,
-  ErrorSelectors,
-  EventSigHashes,
-  FunctionSelectors,
-  ContractsDocs,
-  StateVariables,
-} from "@lukso/lsp-smart-contracts";
-```
-
-> **Note:** we also export it as `@lukso/lsp-smart-contracts/constants` or `@lukso/lsp-smart-contracts/constants.js` to keep it backward compatible.
-
-It also includes constant values [Array data keys](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md#Array) to retrieve both the array length and for index access.
-
-```js
-'LSP5ReceivedAssets[]': {
-    length: '0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b',
-    index: '0x6460ee3c0aac563ccbf76d6e1d07bada',
-},
-```
-
-### Note for Hardhat Typescript projects
-
-If you are trying to import the constants in a Hardhat project that uses Typescript, you will need to import the constants from the `dist` folder directly, as shown in the code snippet:
-
-```js
-import { INTERFACE_IDS } from "@lukso/lsp-smart-contracts/dist/constants.cjs.js";
-
-// This will raise an error if you have ES Lint enabled,
-// but will allow you to import the constants in a Hardhat + Typescript based project.
-const LSP0InterfaceId = INTERFACE_IDS.LSP0ERC725Account;
-```
-
-See the [issue related to Hardhat Typescript + ES Modules](https://hardhat.org/hardhat-runner/docs/advanced/using-esm#esm-and-typescript-projects) in the Hardhat docs for more infos.
-
-### Typescript types
-
-The following additional typescript types are also available, including types for the JSON format of the LSP3 Profile and LSP4 Digital Asset metadata.
-
-```ts
-import {
-  LSP2ArrayKey,
-  LSPSupportedStandard,
-  LSP6PermissionName,
-  LSP3ProfileMetadataJSON,
-  LSP3ProfileMetadata,
-  LSP4DigitalAssetMetadataJSON,
-  LSP4DigitalAssetMetadata,
-  ImageMetadata,
-  LinkMetadata,
-  AssetMetadata,
-} from "@lukso/lsp-smart-contracts";
-```
+---
 
 ## Audits
 
