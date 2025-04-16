@@ -2,6 +2,8 @@
 
 Package for the LSP8 Identifiable Digital Asset Standard.
 
+> The contracts [`LSP8Votes`](contracts/extensions/LSP8Votes.sol) and [`LSP8VotesInitiAbstract`](contracts/extensions/LSP8VotesInitAbstract.sol) have not been formally audited by an external third party and are not recommended to be used in production without undergoing an independent security audit.
+
 ## Installation
 
 ```console
