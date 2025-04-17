@@ -452,6 +452,15 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
+     *
+     * @custom:hint Note that the operator will be notified in its `universalReceiver(bytes32,bytes)` functions with the following parameters:
+     * - `bytes32 typeId` = `_TYPEID_LSP8_TOKENOPERATOR`
+     * - `bytes data` = `abi.encode(msg.sender, tokenId, true, operatorNotificationData)`, where:
+     *      - `msg.sender` (caller) is the `tokenId` owner
+     *      - `true` means `operator` is authorized
+     *      - `operatorNotificationData` is the parameter that was passed to the {authorizeOperator} function.
+     * You can use this information to extract these parameters easily (like the `tokenId` this operator was authorized for) within the `universalReceiver(bytes32,bytes)` function
+     * of the operator notified by decoding them with the relevant types using `abi.decode(address,bytes32,bool,bytes)`.
      */
     function authorizeOperator(
         address operator,
@@ -494,6 +503,15 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
+     *
+     * @custom:hint Note that the operator will be notified in its `universalReceiver(bytes32,bytes)` functions with the following parameters:
+     * - `bytes32 typeId` = `_TYPEID_LSP8_TOKENOPERATOR`
+     * - `bytes data` = `abi.encode(msg.sender, tokenId, false, operatorNotificationData)`, where:
+     *      - `msg.sender` (caller) is the `tokenId` owner
+     *      - `false` means `operator` is unauthorized
+     *      - `operatorNotificationData` is the parameter that was passed to the {authorizeOperator} function.
+     * You can use this information to extract these parameters easily (like the `tokenId` this operator was revoked for) within the `universalReceiver(bytes32,bytes)` function
+     * of the operator notified by decoding them with the relevant types using `abi.decode(address,bytes32,bool,bytes)`.
      */
     function revokeOperator(
         address operator,
@@ -698,20 +716,29 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
     /**
      * @dev Create `tokenId` by minting it and transfers it to `to`.
      *
-     * @custom:info Any logic in the:
-     * - {_beforeTokenTransfer} function will run before updating the balances and ownership of `tokenId`s.
-     * - {_afterTokenTransfer} function will run after updating the balances and ownership of `tokenId`s, **but before notifying the recipient via LSP1**.
-     *
      * @param to The address that will receive the minted `tokenId`.
      * @param tokenId The token ID to create (= mint).
      * @param force When set to `true`, `to` may be any address. When set to `false`, `to` must be a contract that supports the LSP1 standard.
      * @param data Any additional data the caller wants included in the emitted event, and sent in the hook of the `to` address.
      *
+     * @custom:events {Transfer} event with `address(0)` as `from` address.
+     *
      * @custom:requirements
      * - `tokenId` must not exist and not have been already minted.
      * - `to` cannot be the zero address.
-
-     * @custom:events {Transfer} event with `address(0)` as `from` address.
+     *
+     * @custom:info Any logic in the:
+     * - {_beforeTokenTransfer} function will run before updating the balances and ownership of `tokenId`s.
+     * - {_afterTokenTransfer} function will run after updating the balances and ownership of `tokenId`s, **but before notifying the recipient via LSP1**.
+     *
+     * @custom:hint Note that the recipient address will be notified in its `universalReceiver(bytes32,bytes)` function with the following parameters:
+     * - `bytes32 typeId` = `_TYPEID_LSP8_TOKENSRECIPIENT`
+     * - `bytes data` = `abi.encode(msg.sender, address(0), to, tokenId, data)`, where:
+     *      - `msg.sender` (caller) is the operator
+     *      - `address(0)` is the `from` address (indicates minting)
+     *      - `data` is the parameter that was passed to the {_mint} function.
+     * You can use this information to extract the transfer parameters easily within the `universalReceiver(bytes32,bytes)` function of the recipient
+     * (_e.g: which tokenId was minted_) by decoding them with the relevant types using `abi.decode(address,address,address,bytes32,bytes)`.
      */
     function _mint(
         address to,
@@ -763,19 +790,22 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
      * function, if it is a contract that supports the LSP1 interface. Its {universalReceiver} function will receive
      * all the parameters in the calldata packed encoded.
      *
-     * @custom:info Any logic in the:
-     * - {_beforeTokenTransfer} function will run before updating the balances and ownership of `tokenId`s.
-     * - {_afterTokenTransfer} function will run after updating the balances and ownership of `tokenId`s, **but before notifying the sender via LSP1**.
-     *
      * @param tokenId The token to burn.
      * @param data Any additional data the caller wants included in the emitted event, and sent in the LSP1 hook on the token owner's address.
      *
-     * @custom:hint In dApps, you can know which addresses are burning tokens by listening for the `Transfer` event and filter with the zero address as `to`.
+     * @custom:events {Transfer} event with `address(0)` as the `to` address.
      *
      * @custom:requirements
      * - `tokenId` must exist.
      *
-     * @custom:events {Transfer} event with `address(0)` as the `to` address.
+     * @custom:info Any logic in the:
+     * - {_beforeTokenTransfer} function will run before updating the balances and ownership of `tokenId`s.
+     * - {_afterTokenTransfer} function will run after updating the balances and ownership of `tokenId`s, **but before notifying the sender via LSP1**.
+     *
+     *
+     * @custom:hint In dApps, you can know which addresses are burning tokens by listening for the `Transfer` event and filter with the zero address as `to`.
+     *
+     *
      */
     function _burn(bytes32 tokenId, bytes memory data) internal virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
