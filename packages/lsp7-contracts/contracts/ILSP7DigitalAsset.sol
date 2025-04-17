@@ -250,6 +250,9 @@ interface ILSP7DigitalAsset {
      *
      * @custom:info if the `to` address is a contract that implements LSP1, it will always be notified via its `universalReceiver(...)` function, regardless if `force` is set to `true` or `false`.
      *
+     * @custom:info Note that token transfers revert when no allowance is given, including when the `amount` is `0`.
+     * This is to prevent this function from being used maliciously, such as performing zero-value token transfer phishing attacks.
+     *
      * @custom:warning Be aware that when either the sender or the recipient can have logic that revert in their `universalReceiver(...)` function when being notified.
      * This even if the `force` was set to `true`.
      */
