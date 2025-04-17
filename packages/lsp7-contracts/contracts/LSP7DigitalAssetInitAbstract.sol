@@ -324,6 +324,14 @@ abstract contract LSP7DigitalAssetInitAbstract is
      *
      * For more information, see:
      * https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
+     *
+     * @custom:hint Note that the operator will be notified in its `universalReceiver(bytes32,bytes)` functions with the following parameters:
+     * - `bytes32 typeId` = `_TYPEID_LSP7_TOKENOPERATOR`
+     * - `bytes data` = `abi.encode(msg.sender, amount, operatorNotificationData)`, where:
+     *      - `msg.sender` (caller) is the token holder
+     *      - `operatorNotificationData` is the parameter that was passed to the {authorizeOperator} function.
+     * You can use this information to extract these parameters easily (like the amount that was authorized) within the `universalReceiver(bytes32,bytes)` function
+     * of the operator notified by decoding them with the relevant types using `abi.decode(address,uint256,bytes)`.
      */
     function authorizeOperator(
         address operator,
@@ -349,6 +357,15 @@ abstract contract LSP7DigitalAssetInitAbstract is
 
     /**
      * @inheritdoc ILSP7DigitalAsset
+     *
+     * @custom:hint Note that if the operator being revoked is notified (`notify == true`), its `universalReceiver(bytes32,bytes)` function will receive the following parameters:
+     * - `bytes32 typeId` = `_TYPEID_LSP7_TOKENOPERATOR`
+     * - `bytes data` = `abi.encode(msg.sender, 0, operatorNotificationData)`, where:
+     *      - `msg.sender` (caller) is the token holder
+     *      - `0` to indicate the operator does not have any allowance
+     *      - `operatorNotificationData` is the parameter that was passed to the {revokeOperator} function.
+     * You can use this information to extract these parameters easily within the `universalReceiver(bytes32,bytes)` function
+     * of the operator notified by decoding them with the relevant types using `abi.decode(address,uint256,bytes)`.
      */
     function revokeOperator(
         address operator,
@@ -591,19 +608,29 @@ abstract contract LSP7DigitalAssetInitAbstract is
     /**
      * @dev Mints `amount` of tokens and transfers it to `to`.
      *
-     * @custom:info Any logic in the:
-     * - {_beforeTokenTransfer} function will run before updating the balances.
-     * - {_afterTokenTransfer} function will run after updating the balances, **but before notifying the recipient via LSP1**.
      *
      * @param to The address to mint tokens for.
      * @param amount The amount of tokens to mint.
      * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
      * @param data Additional data the caller wants included in the emitted {Transfer} event, and sent in the LSP1 hook to the `to` address.
      *
+     * @custom:events {Transfer} event with `address(0)` as `from`.
+     *
      * @custom:requirements
      * - `to` cannot be the zero address.
      *
-     * @custom:events {Transfer} event with `address(0)` as `from`.
+     * @custom:hint Note that the recipient address will be notified in its `universalReceiver(bytes32,bytes)` function with the following parameters:
+     * - `bytes32 typeId` = `_TYPEID_LSP7_TOKENSRECIPIENT`
+     * - `bytes data` = `abi.encode(msg.sender, address(0), to, amount, data)`, where:
+     *      - `msg.sender` (caller) is the operator
+     *      - `address(0)` is the `from` address
+     *      - `data` is the parameter that was passed to the {_mint} function.
+     * You can use this information to extract the transfer parameters easily within the `universalReceiver(bytes32,bytes)` function of the recipient
+     * (_e.g: how many tokens were minted_) by decoding them with the relevant types using `abi.decode(address,address,address,uint256,bytes)`.
+     *
+     * @custom:info Any logic in the:
+     * - {_beforeTokenTransfer} function will run before updating the balances.
+     * - {_afterTokenTransfer} function will run after updating the balances, **but before notifying the recipient via LSP1**.
      */
     function _mint(
         address to,
@@ -632,21 +659,17 @@ abstract contract LSP7DigitalAssetInitAbstract is
     }
 
     /**
-     * @dev Burns (= destroys) `amount` of tokens, decrease the `from` balance. This is done by sending them to the zero address.
+     * @dev Burn (= destroys) `amount` of tokens, decrease the `from` balance. This is done by sending them to the zero address.
      *
-     * Both the sender and recipient will be notified of the token transfer through the LSP1 {universalReceiver}
+     * The sender will be notified of the token transfer through the LSP1 {universalReceiver}
      * function, if they are contracts that support the LSP1 interface. Their `universalReceiver` function will receive
      * all the parameters in the calldata packed encoded.
-     *
-     * @custom:info Any logic in the:
-     * - {_beforeTokenTransfer} function will run before updating the balances.
-     * - {_afterTokenTransfer} function will run after updating the balances, **but before notifying the sender via LSP1**.
      *
      * @param from The address to burn tokens from its balance.
      * @param amount The amount of tokens to burn.
      * @param data Additional data the caller wants included in the emitted event, and sent in the LSP1 hook to the `from` and `to` address.
      *
-     * @custom:hint In dApps, you can know which address is burning tokens by listening for the `Transfer` event and filter with the zero address as `to`.
+     * @custom:events {Transfer} event with `address(0)` as the `to` address
      *
      * @custom:requirements
      * - `from` cannot be the zero address.
@@ -654,7 +677,20 @@ abstract contract LSP7DigitalAssetInitAbstract is
      * - If the caller is not `from`, it must be an operator for `from` with access to at least
      * `amount` tokens.
      *
-     * @custom:events {Transfer} event with `address(0)` as the `to` address
+     * @custom:hint In dApps, you can know which address is burning tokens by listening for the `Transfer` event and filter with the zero address as `to`.
+     *
+     * @custom:hint Note that the sender address will be notified in its `universalReceiver(bytes32,bytes)` function with the following parameters:
+     * - `bytes32 typeId` = `_TYPEID_LSP7_TOKENSSENDER`
+     * - `bytes data` = `abi.encode(msg.sender, from, address(0), amount, data)`, where:
+     *      - `msg.sender` (caller) is the operator
+     *      - `address(0)` is the `to` address
+     *      - `data` is the parameter that was passed to the {_burn} function.
+     * You can use this information to extract the transfer parameters easily within the `universalReceiver(bytes32,bytes)` function of the sender
+     * (_e.g: how many tokens were burnt_) by decoding them with the relevant types using `abi.decode(address,address,address,uint256,bytes)`.
+     *
+     * @custom:info Any logic in the:
+     * - {_beforeTokenTransfer} function will run before updating the balances.
+     * - {_afterTokenTransfer} function will run after updating the balances, **but before notifying the sender via LSP1**.
      */
     function _burn(
         address from,
@@ -732,22 +768,30 @@ abstract contract LSP7DigitalAssetInitAbstract is
      * function, if they are contracts that support the LSP1 interface. Their `universalReceiver` function will receive
      * all the parameters in the calldata packed encoded.
      *
-     * @custom:info Any logic in the:
-     * - {_beforeTokenTransfer} function will run before updating the balances.
-     * - {_afterTokenTransfer} function will run after updating the balances, **but before notifying the sender/recipient via LSP1**.
-     *
      * @param from The address to decrease the balance.
      * @param to The address to increase the balance.
      * @param amount The amount of tokens to transfer from `from` to `to`.
      * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
      * @param data Additional data the caller wants included in the emitted event, and sent in the LSP1 hook to the `from` and `to` address.
      *
+     * @custom:events {Transfer} event.
+     *
      * @custom:requirements
      * - `from` cannot be the zero address.
      * - `to` cannot be the zero address.
      * - `from` must have at least `amount` of tokens.
      *
-     * @custom:events {Transfer} event.
+     * @custom:hint Note that the sender and recipient address will be notified in their `universalReceiver(bytes32,bytes)` functions with the following parameters:
+     * - `bytes32 typeId` = `_TYPEID_LSP7_TOKENSSENDER` for sender (`from`), `_TYPEID_LSP7_TOKENSRECIPIENT` for recipient (`to`)
+     * - `bytes data` = `abi.encode(msg.sender, from, to, amount, data)`, where:
+     *      - `msg.sender` (caller) is the operator
+     *      - `data` is the parameter that was passed to the {_transfer} function.
+     * You can use this information to extract the transfer parameters easily within the `universalReceiver(bytes32,bytes)` function of both sender and recipient
+     * by decoding them with the relevant types using `abi.decode(address,address,address,uint256,bytes)`.
+     *
+     * @custom:info Any logic in the:
+     * - {_beforeTokenTransfer} function will run before updating the balances.
+     * - {_afterTokenTransfer} function will run after updating the balances, **but before notifying the sender/recipient via LSP1**.
      */
     function _transfer(
         address from,

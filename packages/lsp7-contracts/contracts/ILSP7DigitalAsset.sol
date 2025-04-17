@@ -102,11 +102,11 @@ interface ILSP7DigitalAsset {
      * @param amount The allowance amount of tokens operator has access to.
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
-     * @custom:requirements
-     * - `operator` cannot be the zero address.
-     *
      * @custom:events {OperatorAuthorizationChanged} when allowance is given to a new operator or
      * an existing operator's allowance is updated.
+     *
+     * @custom:requirements
+     * - `operator` cannot be the zero address.
      */
     function authorizeOperator(
         address operator,
@@ -123,11 +123,11 @@ interface ILSP7DigitalAsset {
      * @param notify Boolean indicating whether to notify the operator or not.
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      *
+     * @custom:events {OperatorRevoked} event with address of the operator being revoked for the caller (token holder).
+     *
      * @custom:requirements
      * - caller MUST be `operator` or `tokenOwner`
      * - `operator` cannot be the zero address.
-     *
-     * @custom:events {OperatorRevoked} event with address of the operator being revoked for the caller (token holder).
      */
     function revokeOperator(
         address operator,
