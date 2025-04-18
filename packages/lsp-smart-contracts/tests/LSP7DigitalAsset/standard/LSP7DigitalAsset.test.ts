@@ -1,8 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LSP7Tester__factory, LSP7DigitalAsset } from '../../../typechain';
-
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP7,
@@ -32,7 +30,9 @@ describe('LSP7DigitalAsset with constructor', () => {
       lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
     };
 
-    const lsp7 = await new LSP7Tester__factory(accounts.owner).deploy(
+    const LSP7Tester__factory = await ethers.getContractFactory('LSP7Tester', accounts.owner);
+
+    const lsp7 = await LSP7Tester__factory.deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,
@@ -56,7 +56,7 @@ describe('LSP7DigitalAsset with constructor', () => {
       };
 
       return {
-        contract: lsp7 as LSP7DigitalAsset,
+        contract: lsp7,
         accounts,
         deployParams,
       };

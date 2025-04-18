@@ -37,17 +37,8 @@ import {
   provider,
 } from '../../utils/helpers';
 
-import {
-  Reentrancy,
-  Reentrancy__factory,
-  FirstToCallLSP6__factory,
-  SecondToCallLSP6__factory,
-  SecondToCallLSP6,
-  FirstToCallLSP6,
-  UniversalReceiverDelegateDataUpdater__factory,
-} from '../../../typechain';
-
 import { setupKeyManager } from '../../utils/fixtures';
+import { ethers } from 'hardhat';
 
 export const shouldBehaveLikeLSP6ReentrancyScenarios = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
@@ -57,7 +48,9 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
     let signer: SignerWithAddress, relayer: SignerWithAddress, attacker: SignerWithAddress;
 
-    let maliciousContract: Reentrancy;
+    let maliciousContract;
+
+    let Reentrancy__factory;
 
     before(async () => {
       context = await buildContext();
@@ -66,9 +59,9 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
       relayer = context.accounts[2];
       attacker = context.accounts[4];
 
-      maliciousContract = await new Reentrancy__factory(attacker).deploy(
-        await context.keyManager.getAddress(),
-      );
+      Reentrancy__factory = await ethers.getContractFactory('Reentrancy', context.accounts[0]);
+
+      maliciousContract = await Reentrancy__factory.deploy(await context.keyManager.getAddress());
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -225,9 +218,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
       });
 
       it('should pass when reentered by URD and the URD has REENTRANCY permission', async () => {
-        const URDDummy = await new Reentrancy__factory(context.mainController).deploy(
-          await context.keyManager.getAddress(),
-        );
+        const URDDummy = await Reentrancy__factory.deploy(await context.keyManager.getAddress());
 
         const setDataPayload = context.universalProfile.interface.encodeFunctionData(
           'setDataBatch',
@@ -288,8 +279,12 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
       });
 
       it('should allow the URD to use `setData(..)` through the LSP6', async () => {
+        const UniversalReceiverDelegateDataUpdater__factory = await ethers.getContractFactory(
+          'UniversalReceiverDelegateDataUpdater',
+          context.accounts[0],
+        );
         const universalReceiverDelegateDataUpdater =
-          await new UniversalReceiverDelegateDataUpdater__factory(context.mainController).deploy();
+          await UniversalReceiverDelegateDataUpdater__factory.deploy();
 
         const randomHardcodedKey = keccak256(toUtf8Bytes('some random data key'));
         const randomHardcodedValue = hexlify(toUtf8Bytes('some random text for the data value'));
@@ -336,14 +331,23 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
     });
 
     describe('when chaining reentrancy', () => {
-      let firstReentrant: FirstToCallLSP6;
-      let secondReentrant: SecondToCallLSP6;
+      let firstReentrant;
+      let secondReentrant;
 
       before(async () => {
-        secondReentrant = await new SecondToCallLSP6__factory(context.accounts[0]).deploy(
+        const SecondToCallLSP6__factory = await ethers.getContractFactory(
+          'SecondToCallLSP6',
+          context.accounts[0],
+        );
+        secondReentrant = await SecondToCallLSP6__factory.deploy(
           await context.keyManager.getAddress(),
         );
-        firstReentrant = await new FirstToCallLSP6__factory(context.accounts[0]).deploy(
+
+        const FirstToCallLSP6__factory = await ethers.getContractFactory(
+          'FirstToCallLSP6',
+          context.accounts[0],
+        );
+        firstReentrant = await FirstToCallLSP6__factory.deploy(
           await context.keyManager.getAddress(),
           await secondReentrant.getAddress(),
         );

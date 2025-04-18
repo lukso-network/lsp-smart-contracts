@@ -3,7 +3,6 @@ import { ethers } from 'hardhat';
 
 // types
 import { BytesLike } from 'ethers';
-import { SingleReentrancyRelayer__factory, UniversalProfile__factory } from '../../../typechain';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';
@@ -42,11 +41,20 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
     context = await buildContext(ethers.parseEther('10'));
     reentrancyContext = await buildReentrancyContext(context);
 
-    const reentrantCallPayload =
-      new SingleReentrancyRelayer__factory().interface.encodeFunctionData('relayCallThatReenters', [
-        await context.keyManager.getAddress(),
-      ]);
-    executePayload = new UniversalProfile__factory().interface.encodeFunctionData('execute', [
+    const SingleReentrancyRelayer__factory = await ethers.getContractFactory(
+      'SingleReentrancyRelayer',
+      context.accounts[0],
+    );
+    const UniversalProfile__factory = await ethers.getContractFactory(
+      'UniversalProfile',
+      context.accounts[0],
+    );
+
+    const reentrantCallPayload = SingleReentrancyRelayer__factory.interface.encodeFunctionData(
+      'relayCallThatReenters',
+      [await context.keyManager.getAddress()],
+    );
+    executePayload = UniversalProfile__factory.interface.encodeFunctionData('execute', [
       0,
       await reentrancyContext.singleReentarncyRelayer.getAddress(),
       0,

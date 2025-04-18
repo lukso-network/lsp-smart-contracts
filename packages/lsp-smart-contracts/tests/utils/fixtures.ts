@@ -2,12 +2,6 @@ import hre from 'hardhat';
 const { ethers } = hre;
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import {
-  LSP1UniversalReceiverDelegateUP__factory,
-  LSP6KeyManager__factory,
-  UniversalProfile__factory,
-} from '../../typechain';
-
 import { ERC725YDataKeys } from '../../constants';
 import { PERMISSIONS, ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
 
@@ -103,23 +97,24 @@ export async function setupKeyManagerHelper(
  * Deploy 1 Profile + 1 KeyManager + 1 URD and set all needed permissions
  */
 export async function setupProfileWithKeyManagerWithURD(EOA: SignerWithAddress) {
-  const universalProfile = await new UniversalProfile__factory(EOA).deploy(EOA.address, {
+  const LSP1UniversalReceiverDelegateUP__factory = await ethers.getContractFactory(
+    'LSP1UniversalReceiverDelegateUP',
+    EOA,
+  );
+  const LSP6KeyManager__factory = await ethers.getContractFactory('LSP6KeyManager', EOA);
+  const UniversalProfile__factory = await ethers.getContractFactory('UniversalProfile', EOA);
+
+  const universalProfile = await UniversalProfile__factory.deploy(EOA.address, {
     value: ethers.parseEther('10'),
   });
 
-  const lsp6KeyManager = await new LSP6KeyManager__factory(EOA).deploy(
-    await universalProfile.getAddress(),
-  );
-
+  const lsp6KeyManager = await LSP6KeyManager__factory.deploy(await universalProfile.getAddress());
   const lsp6KeyManagerAddress = await lsp6KeyManager.getAddress();
-
-  const lsp1universalReceiverDelegateUP = await new LSP1UniversalReceiverDelegateUP__factory(
-    EOA,
-  ).deploy();
+  const lsp1universalReceiverDelegateUP = await LSP1UniversalReceiverDelegateUP__factory.deploy();
 
   await universalProfile
     .connect(EOA)
-    .setDataBatch(
+    ['setDataBatch(bytes32[],bytes[])'](
       [
         ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
         ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '00000000000000000000000000000000',
@@ -139,11 +134,13 @@ export async function setupProfileWithKeyManagerWithURD(EOA: SignerWithAddress) 
       ],
     );
 
-  await universalProfile.connect(EOA).transferOwnership(lsp6KeyManagerAddress);
+  await universalProfile.connect(EOA)['transferOwnership(address)'](lsp6KeyManagerAddress);
 
   const claimOwnershipPayload = universalProfile.interface.getFunction('acceptOwnership').selector;
 
-  await lsp6KeyManager.connect(EOA).execute(claimOwnershipPayload);
+  await lsp6KeyManager
+    .connect(EOA)
+    ['execute(uint256,address,uint256,bytes)'](claimOwnershipPayload);
 
   return [universalProfile, lsp6KeyManager, lsp1universalReceiverDelegateUP];
 }

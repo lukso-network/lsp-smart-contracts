@@ -26,7 +26,6 @@ import {
   loadTestCase,
 } from './reentrancyHelpers';
 
-import { LSP20ReentrantContractBatch__factory } from '../../../typechain';
 import { Interface } from 'ethers';
 import { provider } from '../../utils/helpers';
 
@@ -41,7 +40,12 @@ export const testERC725XExecuteToERC725XExecuteBatch = (
   before(async () => {
     context = await buildContext(ethers.parseEther('10'));
     reentrancyContext = await buildReentrancyContext(context);
-    reentrantContractInterface = new LSP20ReentrantContractBatch__factory().interface;
+
+    const LSP20ReentrantContractBatch__factory = await ethers.getContractFactory(
+      'LSP20ReentrantContractBatch',
+      context.accounts[0],
+    );
+    reentrantContractInterface = LSP20ReentrantContractBatch__factory.interface;
   });
 
   describe('when reentering and transferring value', () => {

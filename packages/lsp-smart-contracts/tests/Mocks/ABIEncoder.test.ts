@@ -1,15 +1,17 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { ABIEncoder, ABIEncoder__factory } from '../../typechain';
 
 describe('ABI Encoder Contract', () => {
   let accounts: SignerWithAddress[];
-  let contract: ABIEncoder;
+  let contract;
 
   before(async () => {
     accounts = await ethers.getSigners();
-    contract = await new ABIEncoder__factory(accounts[0]).deploy();
+
+    const ABIEncoder__factory = await ethers.getContractFactory('ABIEncoder', accounts[0]);
+
+    contract = await ABIEncoder__factory.deploy();
   });
 
   const verifyResult = async (txParameterA, txParameterB) => {

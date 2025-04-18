@@ -1,8 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LSP7InitTester__factory, LSP7DigitalAsset, LSP7InitTester } from '../../../typechain';
-
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP7,
@@ -29,11 +27,16 @@ describe('LSP7DigitalAssetInit with proxy', () => {
       lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
     };
 
-    const lsp7TesterInit = await new LSP7InitTester__factory(accounts.owner).deploy();
+    const LSP7InitTester__factory = await ethers.getContractFactory(
+      'LSP7InitTester',
+      accounts.owner,
+    );
+
+    const lsp7TesterInit = await LSP7InitTester__factory.deploy();
 
     const lsp7Proxy = await deployProxy(await lsp7TesterInit.getAddress(), accounts.owner);
 
-    const lsp7 = lsp7TesterInit.attach(lsp7Proxy) as LSP7InitTester;
+    const lsp7 = lsp7TesterInit.attach(lsp7Proxy);
 
     // mint tokens for the owner
     await lsp7.mint(accounts.owner.address, initialSupply, true, '0x');
@@ -52,7 +55,7 @@ describe('LSP7DigitalAssetInit with proxy', () => {
       };
 
       return {
-        contract: lsp7 as LSP7DigitalAsset,
+        contract: lsp7,
         accounts,
         deployParams,
       };

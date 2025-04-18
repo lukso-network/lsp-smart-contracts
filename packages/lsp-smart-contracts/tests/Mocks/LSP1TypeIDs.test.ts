@@ -1,7 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { hexlify, keccak256, toUtf8Bytes } from 'ethers';
-import { LSP1TypeIDsTester, LSP1TypeIDsTester__factory } from '../../typechain';
+import { ContractFactory, hexlify, keccak256, toUtf8Bytes } from 'ethers';
 import { LSP1_TYPE_IDS } from '../../constants';
 
 describe('calculate LSP1 Type IDs', () => {
@@ -16,11 +15,15 @@ describe('calculate LSP1 Type IDs', () => {
   });
 
   describe('Testing solidity constants', () => {
-    let LSP1TypeIDsTester: LSP1TypeIDsTester;
+    let LSP1TypeIDsTester;
 
     before('Deploying `LSP1TypeIDs` tester contract', async () => {
       const signers = await ethers.getSigners();
-      LSP1TypeIDsTester = await new LSP1TypeIDsTester__factory(signers[0]).deploy();
+      const LSP1TypeIDsTester__factory = await ethers.getContractFactory(
+        'LSP1TypeIDsTester',
+        signers[0],
+      );
+      LSP1TypeIDsTester = await LSP1TypeIDsTester__factory.deploy();
     });
 
     LSP1TypeIds.forEach(([typeIdName, typeIdHash]) =>

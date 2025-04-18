@@ -126,17 +126,10 @@ const config: HardhatUserConfig = {
       'LSP8VotesInitAbstract',
       'LSP8MintableInit',
     ],
-    // Whether to include the TypeChain factories or not.
-    // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
-    includeFactories: true,
   },
   paths: {
     artifacts: 'artifacts',
     tests: 'tests',
-  },
-  typechain: {
-    outDir: 'typechain',
-    target: 'ethers-v6',
   },
   mocha: {
     timeout: 10000000,

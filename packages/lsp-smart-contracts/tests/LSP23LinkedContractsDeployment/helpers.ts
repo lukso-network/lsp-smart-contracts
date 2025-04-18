@@ -1,13 +1,6 @@
 import { ethers } from 'hardhat';
 import { BytesLike } from 'ethers';
 import { PromiseOrValue } from '../../types/common';
-import {
-  UniversalProfileInit__factory,
-  LSP6KeyManagerInit__factory,
-  LSP23LinkedContractsFactory__factory,
-  UniversalProfileInitPostDeploymentModule__factory,
-  UniversalProfilePostDeploymentModule__factory,
-} from '../../typechain';
 
 export async function calculateProxiesAddresses(
   salt: PromiseOrValue<BytesLike>,
@@ -69,30 +62,42 @@ export const create16BytesUint = (value: number) => {
 export async function deployImplementationContracts() {
   const [deployer] = await ethers.getSigners();
 
-  const KeyManagerInitFactory = new LSP6KeyManagerInit__factory(deployer);
-  const keyManagerInit = await KeyManagerInitFactory.deploy();
-
-  const UniversalProfileInitFactory = new UniversalProfileInit__factory(deployer);
-  const universalProfileInit = await UniversalProfileInitFactory.deploy();
-
-  const LinkedContractsFactoryFactory = new LSP23LinkedContractsFactory__factory(deployer);
-  const LSP23LinkedContractsFactory = await LinkedContractsFactoryFactory.deploy();
-
-  const UPPostDeploymentManagerFactory = new UniversalProfilePostDeploymentModule__factory(
+  const LSP6KeyManagerInit__factory = await ethers.getContractFactory(
+    'LSP6KeyManagerInit',
     deployer,
   );
-  const upPostDeploymentModule = await UPPostDeploymentManagerFactory.deploy();
-
-  const UPInitPostDeploymentManagerFactory = new UniversalProfileInitPostDeploymentModule__factory(
+  const UniversalProfileInit__factory = await ethers.getContractFactory(
+    'UniversalProfileInit',
     deployer,
   );
-  const upInitPostDeploymentModule = await UPInitPostDeploymentManagerFactory.deploy();
+  const LSP23LinkedContractsFactory__factory = await ethers.getContractFactory(
+    'LSP23LinkedContractsFactory',
+    deployer,
+  );
+  const UniversalProfilePostDeploymentModule__factory = await ethers.getContractFactory(
+    'UniversalProfilePostDeploymentModule',
+    deployer,
+  );
+  const UniversalProfileInitPostDeploymentModule__factory = await ethers.getContractFactory(
+    'UniversalProfileInitPostDeploymentModule',
+    deployer,
+  );
+
+  const keyManagerInit = await LSP6KeyManagerInit__factory.deploy();
+  const universalProfileInit = await UniversalProfileInit__factory.deploy();
+
+  const LSP23LinkedContractsFactory = await LSP23LinkedContractsFactory__factory.deploy();
+
+  const upPostDeploymentModule = await UniversalProfilePostDeploymentModule__factory.deploy();
+
+  const upInitPostDeploymentModule =
+    await UniversalProfileInitPostDeploymentModule__factory.deploy();
 
   return {
     keyManagerInit,
-    KeyManagerInitFactory,
+    KeyManagerInitFactory: LSP6KeyManagerInit__factory,
     universalProfileInit,
-    UniversalProfileInitFactory,
+    UniversalProfileInitFactory: UniversalProfileInit__factory,
     LSP23LinkedContractsFactory,
     upPostDeploymentModule,
     upInitPostDeploymentModule,

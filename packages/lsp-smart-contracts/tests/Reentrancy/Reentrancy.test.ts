@@ -1,7 +1,5 @@
 import { ethers } from 'hardhat';
 
-import { UniversalProfile__factory, LSP6KeyManager__factory } from '../../typechain';
-
 import { LSP6TestContext } from '../utils/context';
 
 import { shouldBehaveLikeLSP6ReentrancyScenarios } from './LSP6/LSP6Reentrancy.test';
@@ -12,16 +10,17 @@ describe('Reentrancy scenarios with constructor', () => {
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
-    const universalProfile = await new UniversalProfile__factory(mainController).deploy(
-      mainController.address,
-      {
-        value: initialFunding,
-      },
+    const UniversalProfile__factory = await ethers.getContractFactory(
+      'UniversalProfile',
+      accounts[0],
     );
+    const LSP6KeyManager__factory = await ethers.getContractFactory('LSP6KeyManager', accounts[0]);
 
-    const keyManager = await new LSP6KeyManager__factory(mainController).deploy(
-      await universalProfile.getAddress(),
-    );
+    const universalProfile = await UniversalProfile__factory.deploy(mainController.address, {
+      value: initialFunding,
+    });
+
+    const keyManager = await LSP6KeyManager__factory.deploy(await universalProfile.getAddress());
 
     return { accounts, mainController, universalProfile, keyManager, initialFunding };
   };

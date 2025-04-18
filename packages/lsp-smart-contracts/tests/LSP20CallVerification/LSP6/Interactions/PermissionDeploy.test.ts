@@ -3,8 +3,6 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { calculateCreate2 } from 'eth-create2-calculator';
 
-import { TargetContract__factory } from '../../../../typechain';
-
 // constants
 import { ERC725YDataKeys } from '../../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -17,10 +15,17 @@ import { setupKeyManager } from '../../../utils/fixtures';
 export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
+  let TargetContract__factory;
+
   let addressCanDeploy: SignerWithAddress, addressCannotDeploy: SignerWithAddress;
 
   before(async () => {
     context = await buildContext();
+
+    TargetContract__factory = await ethers.getContractFactory(
+      'TargetContract',
+      context.accounts[0],
+    );
 
     addressCanDeploy = context.accounts[1];
     addressCannotDeploy = context.accounts[2];

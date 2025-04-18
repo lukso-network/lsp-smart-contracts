@@ -1,18 +1,26 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
+import { ContractFactory } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import {
-  MyVotingToken,
-  MyVotingToken__factory,
-  MyGovernor,
-  MyGovernor__factory,
-} from '../typechain';
 import { time, mine } from '@nomicfoundation/hardhat-network-helpers';
 import { LSP7_TYPE_IDS } from '../constants';
 
+import MyVotingTokenArtifacts from '../artifacts/contracts/Mocks/MyVotingToken.sol/MyVotingToken.json';
+import MyGovernorArtifacts from '../artifacts/contracts/Mocks/MyGovernor.sol/MyGovernor.json';
+
+const MyVotingToken__factory = new ContractFactory(
+  MyVotingTokenArtifacts.abi,
+  MyVotingTokenArtifacts.bytecode,
+);
+
+const MyGovernor__factory = new ContractFactory(
+  MyGovernorArtifacts.abi,
+  MyGovernorArtifacts.bytecode,
+);
+
 describe('Comprehensive Governor and Token Tests', () => {
-  let token: MyVotingToken;
-  let governor: MyGovernor;
+  let token;
+  let governor;
   let owner: SignerWithAddress;
   let proposer: SignerWithAddress;
   let voter1: SignerWithAddress;
@@ -28,8 +36,8 @@ describe('Comprehensive Governor and Token Tests', () => {
   beforeEach(async () => {
     [owner, proposer, voter1, voter2, voter3, randomEOA] = await ethers.getSigners();
 
-    token = await new MyVotingToken__factory(owner).deploy();
-    governor = await new MyGovernor__factory(owner).deploy(token.target);
+    token = await MyVotingToken__factory.connect(owner).deploy();
+    governor = await MyGovernor__factory.connect(owner).deploy(token.target);
 
     // Mint initial tokens
     await token.mint(proposer.address, PROPOSAL_THRESHOLD * BigInt(2));

@@ -4,8 +4,6 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { calculateCreate2 } from 'eth-create2-calculator';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import { TargetContract__factory, UniversalProfile__factory } from '../../../typechain';
-
 // constants
 import { ERC725YDataKeys } from '../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -23,6 +21,8 @@ export const shouldBehaveLikePermissionDeploy = (
 ) => {
   let context: LSP6TestContext;
 
+  let TargetContract__factory, UniversalProfile__factory;
+
   let addressCanDeploy: SignerWithAddress,
     addressCanDeployAndTransferValue: SignerWithAddress,
     addressCanDeployAndSuperTransferValue: SignerWithAddress,
@@ -30,6 +30,9 @@ export const shouldBehaveLikePermissionDeploy = (
 
   before(async () => {
     context = await buildContext(ethers.parseEther('100'));
+
+    TargetContract__factory = await ethers.getContractFactory('TargetContract');
+    UniversalProfile__factory = await ethers.getContractFactory('UniversalProfile');
 
     addressCanDeploy = context.accounts[1];
     addressCanDeployAndTransferValue = context.accounts[2];
@@ -102,7 +105,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
-      const upDeploymentTx = await new UniversalProfile__factory(
+      const upDeploymentTx = await UniversalProfile__factory(
         context.accounts[0],
       ).getDeployTransaction(initialUpOwner);
 
@@ -134,9 +137,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
       // check that the newly deployed contract (UP) has the correct owner
-      const newUp = new UniversalProfile__factory(context.accounts[0]).attach(
-        expectedContractAddress,
-      ) as UniversalProfile;
+      const newUp = UniversalProfile__factory(context.accounts[0]).attach(expectedContractAddress);
       expect(await newUp.owner()).to.equal(initialUpOwner);
 
       // check that the newly deployed contract (UP) has beedn funded with the correct balance
@@ -170,7 +171,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
-      const upDeploymentTx = await new UniversalProfile__factory(
+      const upDeploymentTx = await UniversalProfile__factory(
         context.accounts[0],
       ).getDeployTransaction(initialUpOwner);
 
@@ -202,9 +203,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
       // check that the newly deployed contract (UP) has the correct owner
-      const newUp = new UniversalProfile__factory(context.accounts[0]).attach(
-        preComputedAddress,
-      ) as UniversalProfile;
+      const newUp = UniversalProfile__factory(context.accounts[0]).attach(preComputedAddress);
 
       expect(await newUp.owner()).to.equal(initialUpOwner);
 
@@ -243,7 +242,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
-      const upDeploymentTx = await new UniversalProfile__factory(
+      const upDeploymentTx = await UniversalProfile__factory(
         context.accounts[0],
       ).getDeployTransaction(initialUpOwner);
 
@@ -289,7 +288,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
-      const upDeploymentTx = await new UniversalProfile__factory(
+      const upDeploymentTx = await UniversalProfile__factory(
         context.accounts[0],
       ).getDeployTransaction(initialUpOwner);
 
@@ -345,7 +344,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
-      const upDeploymentTx = await new UniversalProfile__factory(
+      const upDeploymentTx = await UniversalProfile__factory(
         context.accounts[0],
       ).getDeployTransaction(initialUpOwner);
 
@@ -391,7 +390,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
-      const upDeploymentTx = await new UniversalProfile__factory(
+      const upDeploymentTx = await UniversalProfile__factory(
         context.accounts[0],
       ).getDeployTransaction(initialUpOwner);
 
@@ -449,7 +448,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
-      const upDeploymentTx = await new UniversalProfile__factory(
+      const upDeploymentTx = await UniversalProfile__factory(
         context.accounts[0],
       ).getDeployTransaction(initialUpOwner);
 
@@ -483,9 +482,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
       // check that the newly deployed contract (UP) has the correct owner
-      const newUp = new UniversalProfile__factory(context.accounts[0]).attach(
-        expectedContractAddress,
-      ) as UniversalProfile;
+      const newUp = UniversalProfile__factory(context.accounts[0]).attach(expectedContractAddress);
       expect(await newUp.owner()).to.equal(initialUpOwner);
 
       // check that the newly deployed contract (UP) has beedn funded with the correct balance
@@ -521,7 +518,7 @@ export const shouldBehaveLikePermissionDeploy = (
       const initialUpOwner = context.mainController.address;
 
       // generate the init code that contains the constructor args with the initial UP owner
-      const upDeploymentTx = await new UniversalProfile__factory(
+      const upDeploymentTx = await UniversalProfile__factory(
         context.accounts[0],
       ).getDeployTransaction(initialUpOwner);
 
@@ -555,9 +552,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
       // check that the newly deployed contract (UP) has the correct owner
-      const newUp = new UniversalProfile__factory(context.accounts[0]).attach(
-        preComputedAddress,
-      ) as UniversalProfile;
+      const newUp = UniversalProfile__factory(context.accounts[0]).attach(preComputedAddress);
 
       expect(await newUp.owner()).to.equal(initialUpOwner);
 

@@ -71,8 +71,6 @@
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "@turbo/gen": "^1.12.3",
-    "@typechain/ethers-v6": "^0.5.1",
-    "@typechain/hardhat": "9.1.0",
     "@wagmi/cli": "^2.1.18",
     "all-contributors-cli": "^6.26.1",
     "dotenv": "^16.0.3",
@@ -96,7 +94,6 @@
     "solhint": "^5.0.3",
     "ts-node": "^10.2.0",
     "turbo": "latest",
-    "typechain": "^8.3.2",
     "typescript": "^5.3.3",
     "unbuild": "^2.0.0",
     "vite-plugin-checker": "^0.5.6",
@@ -107,8 +104,5 @@
   "workspaces": [
     "config/*",
     "packages/*"
-  ],
-  "resolutions": {
-    "@typechain/hardhat": "9.1.0"
-  }
+  ]
 }

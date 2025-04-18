@@ -3,7 +3,6 @@ import { ethers } from 'hardhat';
 
 // types
 import { BytesLike } from 'ethers';
-import { SingleReentrancyRelayer__factory } from '../../../typechain';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';
@@ -46,7 +45,12 @@ export const testERC725XExecuteToLSP6ExecuteRelayCall = (
     context = await buildContext(ethers.parseEther('10'));
     reentrancyContext = await buildReentrancyContext(context);
 
-    const reentrantCall = new SingleReentrancyRelayer__factory().interface.encodeFunctionData(
+    const SingleReentrancyRelayer__factory = await ethers.getContractFactory(
+      'SingleReentrancyRelayer',
+      context.accounts[0],
+    );
+
+    const reentrantCall = SingleReentrancyRelayer__factory.interface.encodeFunctionData(
       'relayCallThatReenters',
       [await context.keyManager.getAddress()],
     );

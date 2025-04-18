@@ -1,7 +1,6 @@
 import { expect } from 'chai';
+import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-
-import { ERC725YDelegateCall, ERC725YDelegateCall__factory } from '../../../typechain';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';
@@ -20,10 +19,16 @@ export const shouldBehaveLikePermissionDelegateCall = (
 ) => {
   let context: LSP6TestContext;
 
+  let ERC725YDelegateCall__factory;
+
+  before(async () => {
+    ERC725YDelegateCall__factory = await ethers.getContractFactory('DelegateCallTester');
+  });
+
   describe('when trying to make a DELEGATECALL via UP, DELEGATECALL is disallowed', () => {
     let addressCanDelegateCall: SignerWithAddress, addressCannotDelegateCall: SignerWithAddress;
 
-    let erc725YDelegateCallContract: ERC725YDelegateCall;
+    let erc725YDelegateCallContract;
 
     before(async () => {
       context = await buildContext();
@@ -31,8 +36,8 @@ export const shouldBehaveLikePermissionDelegateCall = (
       addressCanDelegateCall = context.accounts[1];
       addressCannotDelegateCall = context.accounts[2];
 
-      erc725YDelegateCallContract = await new ERC725YDelegateCall__factory(
-        context.mainController,
+      erc725YDelegateCallContract = await ERC725YDelegateCall__factory.connect(
+        context.accounts[0],
       ).deploy(await context.universalProfile.getAddress());
 
       const permissionKeys = [
@@ -137,7 +142,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
   describe('when caller has permission SUPER_DELEGATECALL + 2 x allowed addresses', () => {
     let caller: SignerWithAddress;
 
-    let allowedDelegateCallContracts: [ERC725YDelegateCall, ERC725YDelegateCall];
+    let allowedDelegateCallContracts;
 
     before(async () => {
       context = await buildContext();
@@ -145,10 +150,10 @@ export const shouldBehaveLikePermissionDelegateCall = (
       caller = context.accounts[1];
 
       allowedDelegateCallContracts = [
-        await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
+        await ERC725YDelegateCall__factory.connect(context.accounts[0]).deploy(
           context.accounts[0].address,
         ),
-        await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
+        await ERC725YDelegateCall__factory.connect(context.accounts[0]).deploy(
           context.accounts[0].address,
         ),
       ];
@@ -175,23 +180,23 @@ export const shouldBehaveLikePermissionDelegateCall = (
     });
 
     describe('when calling a disallowed contract', () => {
-      let randomContracts: ERC725YDelegateCall[];
+      let randomContracts;
 
       before(async () => {
         randomContracts = [
-          await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
+          await ERC725YDelegateCall__factory.connect(context.accounts[0]).deploy(
             context.accounts[0].address,
           ),
-          await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
+          await ERC725YDelegateCall__factory.connect(context.accounts[0]).deploy(
             context.accounts[0].address,
           ),
-          await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
+          await ERC725YDelegateCall__factory.connect(context.accounts[0]).deploy(
             context.accounts[0].address,
           ),
-          await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
+          await ERC725YDelegateCall__factory.connect(context.accounts[0]).deploy(
             context.accounts[0].address,
           ),
-          await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
+          await ERC725YDelegateCall__factory.connect(context.accounts[0]).deploy(
             context.accounts[0].address,
           ),
         ];

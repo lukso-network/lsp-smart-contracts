@@ -1,5 +1,4 @@
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
-import { LSP7Mintable, LSP7Mintable__factory } from '../../../typechain';
 
 import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour';
 import {
@@ -8,6 +7,7 @@ import {
   LSP7MintableTestContext,
   LSP7MintableDeployParams,
 } from '../LSP7Mintable.behaviour';
+import { ethers } from 'hardhat';
 
 describe('LSP7Mintable with constructor', () => {
   const buildTestContext = async (): Promise<LSP7MintableTestContext> => {
@@ -21,7 +21,9 @@ describe('LSP7Mintable with constructor', () => {
       lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
     };
 
-    const lsp7Mintable: LSP7Mintable = await new LSP7Mintable__factory(accounts.owner).deploy(
+    const LSP7Mintable__factory = await ethers.getContractFactory('LSP7Mintable', accounts[0]);
+
+    const lsp7Mintable = await LSP7Mintable__factory.deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.newOwner,

@@ -2,7 +2,6 @@ import { expect } from 'chai';
 
 // types
 import { BytesLike, hexlify, keccak256, parseEther, toUtf8Bytes } from 'ethers';
-import { SingleReentrancyRelayer__factory, UniversalProfile__factory } from '../../../typechain';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants';
@@ -26,6 +25,7 @@ import {
   loadTestCase,
 } from './reentrancyHelpers';
 import { provider } from '../../utils/helpers';
+import { ethers } from 'hardhat';
 
 export const testSingleExecuteToSingleExecuteRelayCall = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
@@ -39,11 +39,20 @@ export const testSingleExecuteToSingleExecuteRelayCall = (
     context = await buildContext(parseEther('10'));
     reentrancyContext = await buildReentrancyContext(context);
 
-    const reentrantCallPayload =
-      new SingleReentrancyRelayer__factory().interface.encodeFunctionData('relayCallThatReenters', [
-        await context.keyManager.getAddress(),
-      ]);
-    executePayload = new UniversalProfile__factory().interface.encodeFunctionData('execute', [
+    const SingleReentrancyRelayer__factory = await ethers.getContractFactory(
+      'SingleReentrancyRelayer',
+      context.accounts[0],
+    );
+    const UniversalProfile__factory = await ethers.getContractFactory(
+      'SingleReentrancyRelayer',
+      context.accounts[0],
+    );
+
+    const reentrantCallPayload = SingleReentrancyRelayer__factory.interface.encodeFunctionData(
+      'relayCallThatReenters',
+      [await context.keyManager.getAddress()],
+    );
+    executePayload = UniversalProfile__factory.interface.encodeFunctionData('execute', [
       0,
       await reentrancyContext.singleReentarncyRelayer.getAddress(),
       0,

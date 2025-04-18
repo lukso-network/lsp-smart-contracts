@@ -2,22 +2,6 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import {
-  ExecutorLSP20,
-  ExecutorLSP20__factory,
-  TargetContract__factory,
-  TargetPayableContract,
-  TargetPayableContract__factory,
-  GraffitiEventExtension__factory,
-  GraffitiEventExtension,
-  LSP7Mintable,
-  LSP7Mintable__factory,
-  UniversalProfile__factory,
-  UniversalProfile,
-  FallbackContract__factory,
-  FallbackContract,
-} from '../../../../typechain';
-
 // constants
 import { ERC725YDataKeys } from '../../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -48,10 +32,10 @@ export const shouldBehaveLikePermissionTransferValue = (
 
     let recipient;
 
-    let recipientUP: UniversalProfile;
+    let recipientUP;
 
     // used to test when sending data as graffiti
-    let graffitiExtension: GraffitiEventExtension;
+    let graffitiExtension;
 
     before(async () => {
       context = await buildContext(ethers.parseEther('100'));
@@ -61,11 +45,17 @@ export const shouldBehaveLikePermissionTransferValue = (
       cannotTransferValue = context.accounts[3];
       recipient = context.accounts[4];
 
-      recipientUP = await new UniversalProfile__factory(context.accounts[0]).deploy(
-        context.accounts[0].address,
+      const UniversalProfile__factory = await ethers.getContractFactory(
+        'UniversalProfile',
+        context.accounts[0],
+      );
+      const GraffitiEventExtension__factory = await ethers.getContractFactory(
+        'GraffitiEventExtension',
+        context.accounts[0],
       );
 
-      graffitiExtension = await new GraffitiEventExtension__factory(context.accounts[0]).deploy();
+      recipientUP = await UniversalProfile__factory.deploy(context.accounts[0].address);
+      graffitiExtension = await GraffitiEventExtension__factory.deploy();
 
       const lsp17ExtensionDataKeyForGraffiti =
         ERC725YDataKeys.LSP17['LSP17ExtensionPrefix'] +
@@ -370,7 +360,7 @@ export const shouldBehaveLikePermissionTransferValue = (
   });
 
   describe('when caller = contract', () => {
-    let contractCanTransferValue: ExecutorLSP20;
+    let contractCanTransferValue;
 
     let recipient: string;
 
@@ -388,7 +378,12 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       recipient = context.accounts[1].address;
 
-      contractCanTransferValue = await new ExecutorLSP20__factory(context.accounts[0]).deploy(
+      const ExecutorLSP20__factory = await ethers.getContractFactory(
+        'ExecutorLSP20',
+        context.accounts[0],
+      );
+
+      contractCanTransferValue = await ExecutorLSP20__factory.deploy(
         await context.universalProfile.getAddress(),
       );
 
@@ -573,11 +568,11 @@ export const shouldBehaveLikePermissionTransferValue = (
 
   describe('when caller has SUPER_TRANSFERVALUE + CALL', () => {
     let caller: SignerWithAddress;
-    let lsp7Token: LSP7Mintable;
-    let targetContract: TargetPayableContract;
+    let lsp7Token;
+    let targetContract;
 
     let lyxRecipientEOA: string;
-    let lyxRecipientContract: FallbackContract;
+    let lyxRecipientContract;
 
     const recipientsEOA: string[] = [
       ethers.Wallet.createRandom().address,
@@ -589,10 +584,22 @@ export const shouldBehaveLikePermissionTransferValue = (
 
     const recipientUPs: string[] = [];
 
+    let LSP7Mintable__factory, TargetPayableContract__factory, FallbackContract__factory;
+
     before(async () => {
       context = await buildContext(ethers.parseEther('100'));
 
       caller = context.accounts[1];
+
+      LSP7Mintable__factory = await ethers.getContractFactory('LSP7Mintable', context.accounts[0]);
+      TargetPayableContract__factory = await ethers.getContractFactory(
+        'TargetPayableContract',
+        context.accounts[0],
+      );
+      FallbackContract__factory = await ethers.getContractFactory(
+        'FallbackContract',
+        context.accounts[0],
+      );
 
       lsp7Token = await new LSP7Mintable__factory(context.accounts[0]).deploy(
         'LSP7 Token',
@@ -643,10 +650,13 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       await setupKeyManager(context, permissionsKeys, permissionsValues);
 
+      const UniversalProfile__factory = await ethers.getContractFactory(
+        'UniversalProfile',
+        context.accounts[0],
+      );
+
       for (let ii = 0; ii < 5; ii++) {
-        const newUP = await new UniversalProfile__factory(context.accounts[0]).deploy(
-          context.accounts[0].address,
-        );
+        const newUP = await UniversalProfile__factory.deploy(context.accounts[0].address);
         recipientUPs.push(newUP.target as string);
       }
     });
@@ -972,7 +982,11 @@ export const shouldBehaveLikePermissionTransferValue = (
       describe('eg: any TargetContract', () => {
         for (let ii = 1; ii <= 5; ii++) {
           it(`TargetContract nb ${ii}`, async () => {
-            const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+            const TargetContract__factory = await ethers.getContractFactory(
+              'TargetContract',
+              context.accounts[0],
+            );
+            const targetContract = await TargetContract__factory.deploy();
 
             const newValue = 12345;
 
@@ -991,7 +1005,11 @@ export const shouldBehaveLikePermissionTransferValue = (
       describe('eg: any LSP7 Token owned by the UP', () => {
         for (let ii = 1; ii <= 5; ii++) {
           it(`LSP7DigitalAsset nb ${ii}`, async () => {
-            const lsp7Token = await new LSP7Mintable__factory(context.accounts[0]).deploy(
+            const LSP7Mintable__factory = await ethers.getContractFactory(
+              'LSP7Mintable',
+              context.accounts[0],
+            );
+            const lsp7Token = await LSP7Mintable__factory.deploy(
               'LSP7 Token',
               'LSP7',
               context.accounts[0].address,
@@ -1044,9 +1062,11 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       for (let ii = 1; ii <= 5; ii++) {
         it(`Target Payable Contract nb ${ii}`, async () => {
-          const targetContract = await new TargetPayableContract__factory(
+          const TargetPayableContract__factory = await ethers.getContractFactory(
+            'TargetPayableContract',
             context.accounts[0],
-          ).deploy();
+          );
+          const targetContract = await TargetPayableContract__factory.deploy();
 
           const upLyxBalanceBefore = await provider.getBalance(
             await context.universalProfile.getAddress(),
@@ -1150,7 +1170,11 @@ export const shouldBehaveLikePermissionTransferValue = (
       describe('eg: any TargetContract', () => {
         for (let ii = 1; ii <= 5; ii++) {
           it(`TargetContract nb ${ii}`, async () => {
-            const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+            const TargetContract__factory = await ethers.getContractFactory(
+              'TargetContract',
+              context.accounts[0],
+            );
+            const targetContract = await TargetContract__factory.deploy();
 
             const newValue = 12345;
 
@@ -1169,7 +1193,11 @@ export const shouldBehaveLikePermissionTransferValue = (
       describe('eg: any LSP7 Token owned by the UP', () => {
         for (let ii = 1; ii <= 5; ii++) {
           it(`LSP7DigitalAsset nb ${ii}`, async () => {
-            const lsp7Token = await new LSP7Mintable__factory(context.accounts[0]).deploy(
+            const LSP7Mintable__factory = await ethers.getContractFactory(
+              'LSP7Mintable',
+              context.accounts[0],
+            );
+            const lsp7Token = await LSP7Mintable__factory.deploy(
               'LSP7 Token',
               'LSP7',
               context.accounts[0].address,

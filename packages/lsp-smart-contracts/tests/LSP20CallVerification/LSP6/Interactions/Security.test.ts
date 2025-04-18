@@ -2,18 +2,6 @@ import { expect } from 'chai';
 import { ethers, artifacts } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import {
-  FirstToCallLSP20,
-  Reentrancy,
-  Reentrancy__factory,
-  SecondToCallLSP20,
-  SecondToCallLSP20__factory,
-  FirstToCallLSP20__factory,
-  TargetContract,
-  TargetContract__factory,
-  UniversalReceiverDelegateDataUpdater__factory,
-} from '../../../../typechain';
-
 // constants
 import { ERC725YDataKeys, LSP1_TYPE_IDS } from '../../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -36,14 +24,40 @@ import {
 export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
+  let FirstToCallLSP20,
+    Reentrancy__factory,
+    SecondToCallLSP20__factory,
+    FirstToCallLSP20__factory,
+    TargetContract__factory,
+    UniversalReceiverDelegateDataUpdater__factory;
+
   let signer: SignerWithAddress, addressWithNoPermissions: SignerWithAddress;
 
   let attacker: SignerWithAddress;
 
-  let targetContract: TargetContract, maliciousContract: Reentrancy;
+  let targetContract, maliciousContract;
 
   before(async () => {
     context = await buildContext();
+
+    FirstToCallLSP20 = await ethers.getContractFactory('FirstTo', context.accounts[0]);
+    Reentrancy__factory = await ethers.getContractFactory('  Reentrancy', context.accounts[0]);
+    SecondToCallLSP20__factory = await ethers.getContractFactory(
+      '  SecondToCallLSP20',
+      context.accounts[0],
+    );
+    FirstToCallLSP20__factory = await ethers.getContractFactory(
+      '  FirstToCallLSP20',
+      context.accounts[0],
+    );
+    TargetContract__factory = await ethers.getContractFactory(
+      '  TargetContract',
+      context.accounts[0],
+    );
+    UniversalReceiverDelegateDataUpdater__factory = await ethers.getContractFactory(
+      '  UniversalReceiverDelegateDataUpdater',
+      context.accounts[0],
+    );
 
     signer = context.accounts[1];
     addressWithNoPermissions = context.accounts[3];
@@ -52,7 +66,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
 
     targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
 
-    maliciousContract = await new Reentrancy__factory(attacker).deploy(
+    maliciousContract = await new Reentrancy__factory.connect(attacker).deploy(
       await context.keyManager.getAddress(),
     );
 
@@ -224,14 +238,23 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
   });
 
   describe('when chaining reentrancy', () => {
-    let firstReentrant: FirstToCallLSP20;
-    let secondReentrant: SecondToCallLSP20;
+    let firstReentrant;
+    let secondReentrant;
 
     before(async () => {
-      secondReentrant = await new SecondToCallLSP20__factory(context.accounts[0]).deploy(
+      const FirstToCallLSP20 = await ethers.getContractFactory(
+        'FirstToCallLSP20',
+        context.accounts[0],
+      );
+      const SecondToCallLSP20 = await ethers.getContractFactory(
+        'SecondToCallLSP20',
+        context.accounts[0],
+      );
+
+      secondReentrant = await SecondToCallLSP20__factory.deploy(
         await context.universalProfile.getAddress(),
       );
-      firstReentrant = await new FirstToCallLSP20__factory(context.accounts[0]).deploy(
+      firstReentrant = await FirstToCallLSP20__factory.deploy(
         await context.universalProfile.getAddress(),
         await secondReentrant.getAddress(),
       );

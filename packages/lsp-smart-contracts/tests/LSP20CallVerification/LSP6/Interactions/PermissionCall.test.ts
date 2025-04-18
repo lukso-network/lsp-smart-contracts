@@ -2,15 +2,6 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import {
-  FallbackInitializer,
-  FallbackInitializer__factory,
-  FallbackRevert,
-  FallbackRevert__factory,
-  TargetContract,
-  TargetContract__factory,
-} from '../../../../typechain';
-
 // constants
 import { ERC725YDataKeys } from '../../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -43,11 +34,25 @@ export const shouldBehaveLikePermissionCall = (
 
     let allowedEOA: string;
 
-    let allowedContractWithFallback: FallbackInitializer,
-      allowedContractWithFallbackRevert: FallbackRevert;
+    let allowedContractWithFallback, allowedContractWithFallbackRevert;
+
+    let FallbackRevert__factory, FallbackInitializer__factory, TargetContract__factory;
 
     before(async () => {
       context = await buildContext();
+
+      FallbackInitializer__factory = await ethers.getContractFactory(
+        'FallbackInitializer',
+        context.accounts[0],
+      );
+      FallbackRevert__factory = await ethers.getContractFactory(
+        'FallbackRevert',
+        context.accounts[0],
+      );
+      TargetContract__factory = await ethers.getContractFactory(
+        'TargetContract',
+        context.accounts[0],
+      );
 
       addressCannotMakeCallNoAllowedCalls = context.accounts[1];
       addressCannotMakeCallWithAllowedCalls = context.accounts[2];
@@ -57,13 +62,9 @@ export const shouldBehaveLikePermissionCall = (
 
       allowedEOA = context.accounts[6].address;
 
-      allowedContractWithFallback = await new FallbackInitializer__factory(
-        context.accounts[0],
-      ).deploy();
+      allowedContractWithFallback = await FallbackInitializer__factory.deploy();
 
-      allowedContractWithFallbackRevert = await new FallbackRevert__factory(
-        context.accounts[0],
-      ).deploy();
+      allowedContractWithFallbackRevert = await FallbackRevert__factory.deploy();
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -120,7 +121,7 @@ export const shouldBehaveLikePermissionCall = (
       });
 
       it('should fail with `NotAuthorised` error when `to` is a contract', async () => {
-        const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+        const targetContract = await TargetContract__factory.deploy();
 
         await expect(
           context.universalProfile
@@ -146,7 +147,7 @@ export const shouldBehaveLikePermissionCall = (
       });
 
       it('should fail with `NotAuthorised` error when `to` is a contract', async () => {
-        const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+        const targetContract = await TargetContract__factory.deploy();
 
         await expect(
           context.universalProfile
@@ -172,7 +173,7 @@ export const shouldBehaveLikePermissionCall = (
       });
 
       it('should fail with `NoCallsAllowed` error when `to` is a contract', async () => {
-        const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+        const targetContract = await TargetContract__factory.deploy();
 
         await expect(
           context.universalProfile
@@ -324,20 +325,27 @@ export const shouldBehaveLikePermissionCall = (
   });
 
   describe('when making a ERC25X.execute(...) call with some `data` payload', () => {
+    let TargetContract__factory;
+
     let addressCanMakeCallNoAllowedCalls: SignerWithAddress,
       addressCanMakeCallWithAllowedCalls: SignerWithAddress,
       addressCannotMakeCall: SignerWithAddress;
 
-    let targetContract: TargetContract;
+    let targetContract;
 
     before(async () => {
       context = await buildContext();
+
+      TargetContract__factory = await ethers.getContractFactory(
+        'TargetContract',
+        context.accounts[0],
+      );
 
       addressCanMakeCallNoAllowedCalls = context.accounts[1];
       addressCanMakeCallWithAllowedCalls = context.accounts[2];
       addressCannotMakeCall = context.accounts[3];
 
-      targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+      targetContract = await TargetContract__factory.deploy();
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -530,6 +538,8 @@ export const shouldBehaveLikePermissionCall = (
 
     describe('when the offset of the `data` payload is not `0x00...80`', () => {
       describe('if the offset points backwards to the `value` parameter', () => {
+        let FallbackInitializer__factory;
+
         // We add the target in the allowed calls for each of these controller
         let controllerCanTransferValue;
         let controllerCanTransferValueAndCall;
@@ -540,7 +550,7 @@ export const shouldBehaveLikePermissionCall = (
         let controllerCanSuperCall;
         let controllerCanSuperTransferValue;
 
-        let targetContract: FallbackInitializer;
+        let targetContract;
 
         let executePayload;
 
@@ -548,6 +558,11 @@ export const shouldBehaveLikePermissionCall = (
           context = await buildContext(ethers.parseEther('50'));
 
           const accounts = await ethers.getSigners();
+
+          FallbackInitializer__factory = await ethers.getContractFactory(
+            'FallbackInitializer',
+            accounts[0],
+          );
 
           controllerCanTransferValue = accounts[1];
           controllerCanTransferValueAndCall = accounts[2];
@@ -558,7 +573,7 @@ export const shouldBehaveLikePermissionCall = (
           controllerCanSuperCall = accounts[5];
           controllerCanSuperTransferValue = accounts[6];
 
-          targetContract = await new FallbackInitializer__factory(context.accounts[0]).deploy();
+          targetContract = await FallbackInitializer__factory.deploy();
 
           const permissionKeys = [
             // permissions
@@ -743,12 +758,14 @@ export const shouldBehaveLikePermissionCall = (
       });
 
       describe("if the offset points forwards (there are 32 random bytes between the data's offset and the data's length", () => {
+        let FallbackInitializer__factory;
+
         // We add the target in the allowed calls for each of these controller
         let controllerCanCall;
         let controllerCanSuperCall;
         let controllerCanOnlySign;
 
-        let targetContract: FallbackInitializer;
+        let targetContract;
 
         let executePayload;
 
@@ -757,11 +774,16 @@ export const shouldBehaveLikePermissionCall = (
 
           const accounts = await ethers.getSigners();
 
+          FallbackInitializer__factory = await ethers.getContractFactory(
+            'FallbackInitializer',
+            accounts[0],
+          );
+
           controllerCanCall = accounts[1];
           controllerCanSuperCall = accounts[2];
           controllerCanOnlySign = accounts[3];
 
-          targetContract = await new FallbackInitializer__factory(context.accounts[0]).deploy();
+          targetContract = await FallbackInitializer__factory.deploy();
 
           const permissionKeys = [
             // permissions

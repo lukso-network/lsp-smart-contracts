@@ -1,14 +1,6 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import {
-  CalculateLSPInterfaces,
-  CalculateLSPInterfaces__factory,
-  CalculateERCInterfaces,
-  CalculateERCInterfaces__factory,
-} from '../../typechain';
-
-// utils
 import { INTERFACE_IDS } from '../../constants';
 
 /**
@@ -22,11 +14,17 @@ import { INTERFACE_IDS } from '../../constants';
  */
 describe('Calculate LSP interfaces', () => {
   let accounts: SignerWithAddress[];
-  let contract: CalculateLSPInterfaces;
+  let contract;
 
   before(async () => {
     accounts = await ethers.getSigners();
-    contract = await new CalculateLSPInterfaces__factory(accounts[0]).deploy();
+
+    const CalculateLSPInterfaces__factory = await ethers.getContractFactory(
+      'CalculateLSPInterfaces',
+      accounts[0],
+    );
+
+    contract = await CalculateLSPInterfaces__factory.deploy();
   });
 
   it('LSP0', async () => {
@@ -107,11 +105,16 @@ describe('Calculate LSP interfaces', () => {
 
 describe('Calculate ERC interfaces', () => {
   let accounts: SignerWithAddress[];
-  let contract: CalculateERCInterfaces;
+  let contract;
 
   before(async () => {
     accounts = await ethers.getSigners();
-    contract = await new CalculateERCInterfaces__factory(accounts[0]).deploy();
+
+    const CalculateERCInterfaces__factory = await ethers.getContractFactory(
+      'CalculateERCInterfaces',
+      accounts[0],
+    );
+    contract = await CalculateERCInterfaces__factory.deploy();
   });
 
   it('ERC20', async () => {

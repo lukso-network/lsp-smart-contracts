@@ -2,8 +2,6 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LSP8EnumerableTester } from '../../typechain';
-
 export type LSP8EnumerableTestAccounts = {
   owner: SignerWithAddress;
   tokenReceiver: SignerWithAddress;
@@ -24,7 +22,7 @@ export type LSP8EnumerableDeployParams = {
 
 export type LSP8EnumerableTestContext = {
   accounts: LSP8EnumerableTestAccounts;
-  lsp8Enumerable: LSP8EnumerableTester;
+  lsp8Enumerable;
   deployParams: LSP8EnumerableDeployParams;
 };
 

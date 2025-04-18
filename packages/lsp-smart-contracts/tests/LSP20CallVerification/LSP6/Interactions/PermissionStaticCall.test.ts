@@ -1,8 +1,6 @@
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
-import { TargetContract, TargetContract__factory } from '../../../../typechain';
-
 // constants
 import { ERC725YDataKeys } from '../../../../constants';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
@@ -14,26 +12,34 @@ import { setupKeyManager } from '../../../utils/fixtures';
 
 // helpers
 import { abiCoder, combineAllowedCalls, combineCallTypes } from '../../../utils/helpers';
+import { ethers } from 'hardhat';
 
 export const shouldBehaveLikePermissionStaticCall = (
   buildContext: () => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
 
+  let TargetContract__factory;
+
   let addressCanMakeStaticCall: SignerWithAddress,
     addressCannotMakeStaticCall: SignerWithAddress,
     addressCanMakeStaticCallNoAllowedCalls: SignerWithAddress;
 
-  let targetContract: TargetContract;
+  let targetContract;
 
   before(async () => {
     context = await buildContext();
+
+    TargetContract__factory = await ethers.getContractFactory(
+      'TargetContract',
+      context.accounts[0],
+    );
 
     addressCanMakeStaticCall = context.accounts[1];
     addressCannotMakeStaticCall = context.accounts[2];
     addressCanMakeStaticCallNoAllowedCalls = context.accounts[3];
 
-    targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+    targetContract = await TargetContract__factory.deploy();
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -186,7 +192,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
   describe('when caller has permission STATICCALL + 2 x allowed addresses', () => {
     let caller: SignerWithAddress;
-    let allowedTargetContracts: [TargetContract, TargetContract];
+    let allowedTargetContracts;
 
     before(async () => {
       context = await buildContext();
@@ -387,7 +393,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
   describe('when caller has permission SUPER_STATICCALL + 2 allowed addresses', () => {
     let caller: SignerWithAddress;
-    let allowedTargetContracts: [TargetContract, TargetContract];
+    let allowedTargetContracts;
 
     before(async () => {
       context = await buildContext();

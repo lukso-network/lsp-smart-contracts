@@ -13,7 +13,6 @@ import hre from 'hardhat';
 const {
   ethers: { provider: hreProvider },
 } = hre;
-import { LSP6KeyManager } from '../../types/index.js';
 
 // constants
 import { LSP25_VERSION } from '@lukso/lsp25-contracts';
@@ -156,7 +155,7 @@ export function createValidityTimestamps(
 }
 
 export async function signLSP6ExecuteRelayCall(
-  _keyManager: LSP6KeyManager,
+  _keyManager,
   _signerNonce: string | bigint,
   _signerValidityTimestamps: BytesLike | number | bigint,
   _signerPrivateKey: string,
