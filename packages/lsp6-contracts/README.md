@@ -36,3 +36,14 @@ import {
   _ERC1271_FAILVALUE
 } from "@lukso/lsp6-contracts/contracts/constants.sol";
 ```
+
+## Typescript types
+
+You can also import the [type-safe ABI](https://abitype.dev/) from the `/abi` path.
+
+```ts
+import {
+  lsp6KeyManagerAbi,
+  lsp6KeyManagerInitAbi,
+} from "@lukso/lsp6-contracts/abi";
+```

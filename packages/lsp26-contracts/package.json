@@ -4,18 +4,12 @@
   "description": "Package for the LSP26 Follower System standard",
   "license": "Apache-2.0",
   "author": "",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "typings": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
-    },
-    "./artifacts/*": "./artifacts/*",
-    "./package.json": "./package.json"
-  },
+  "files": [
+    "contracts/**/*.sol",
+    "!contracts/Mocks/**/*.sol",
+    "artifacts/*.json",
+    "dist"
+  ],
   "keywords": [
     "LUKSO",
     "LSP",
@@ -26,15 +20,29 @@
     "EVM",
     "Solidity"
   ],
-  "files": [
-    "contracts/**/*.sol",
-    "!contracts/Mocks/**/*.sol",
-    "artifacts/*.json",
-    "dist",
-    "types",
-    "!types/factories",
-    "./README.md"
-  ],
+  "main": "./dist/constants.cjs",
+  "module": "./dist/constants.mjs",
+  "typings": "./dist/constants.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/constants.cjs",
+      "import": "./dist/constants.mjs",
+      "types": "./dist/constants.d.ts"
+    },
+    "./constants": {
+      "require": "./dist/constants.cjs",
+      "import": "./dist/constants.mjs",
+      "types": "./dist/constants.d.ts"
+    },
+    "./abi": {
+      "require": "./dist/abi.cjs",
+      "import": "./dist/abi.mjs",
+      "types": "./dist/abi.d.ts"
+    },
+    "./artifacts/*": "./artifacts/*",
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
     "build:js": "unbuild",
@@ -45,7 +53,7 @@
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "test": "hardhat test --no-compile tests/*.test.ts",
     "test:coverage": "hardhat coverage",
-    "package": "hardhat prepare-package"
+    "build:package": "hardhat prepare-package"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.6",

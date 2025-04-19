@@ -47,3 +47,21 @@ The `LSP7_TYPE_IDS` includes type IDs for the following type of notifications:
 'LSP7Tokens_VotesDelegatorNotification';
 'LSP7Tokens_VotesDelegateeNotification';
 ```
+
+## Typescript types
+
+You can also import the [type-safe ABI](https://abitype.dev/) from the `/abi` path.
+
+```ts
+import {
+    // standard version
+    lsp7DigitalAssetAbi,
+    lsp7CappedSupplyAbi,
+    lsp7MintableAbi,
+    lsp7VotesAbi
+    // proxy version
+    lsp7CappedSupplyInitAbstractAbi,
+    lsp7DigitalAssetInitAbstractAbi,
+    lsp7MintableInitAbi,
+ } from '@lukso/lsp7-contracts/abi';
+```

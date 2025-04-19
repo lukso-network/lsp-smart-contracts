@@ -47,19 +47,24 @@ jobs:
         if: ${{ steps.release.outputs.releases_created }}
         run: npm ci
 
-      # `npm run build:js` will also generate the auto-generated constants for methods, errors and events,
-      # including extracting their devdocs and userdocs
-      # `npm run build:types` will generate:
-      # - the artifacts with abis for release (artifacts/*.json)
-      # - the wagmi hooks (types/index.ts)
-      # - the typed abis (types/index.ts)
+      # `npm run build:package` will generate the artifacts with abis for release (artifacts/*.json)
       #
-      # # The turbo configs in `turbo.json` is setup to run `npm run package` command first before `npm run build:types`.
+      # `npm run build:types` will generate the Typescript typed abis (abi.ts)
+      #
+      # `npm run build:js` will generate the `dist/` folder and include:
+      # - the constants for:
+      #   - methods (`FunctionSelectors`)
+      #   - errors (`ErrorSelectors`)
+      #   - events (`EventSigHashes`)
+      #   - state variables (`StateVariables`)
+      # - the typed ABIs that can be exported in ESM / common JS
+      #
       - name: Prepare artifacts to publish
         if: ${{ steps.release.outputs.releases_created }}
         run: |
-          npm run build:js
+          npm run build:package
           npm run build:types
+          npm run build:js
 
       - name: Publish on NPM
         if: ${{ steps.release.outputs.releases_created }}

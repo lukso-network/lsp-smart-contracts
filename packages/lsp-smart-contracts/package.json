@@ -21,12 +21,7 @@
     "contracts/**/*.sol",
     "!contracts/Mocks/**/*.sol",
     "artifacts/*.json",
-    "dist",
-    "types",
-    "!types/factories",
-    "./README.md",
-    "./CONTRIBUTING.md",
-    "./LICENSE"
+    "dist"
   ],
   "main": "./dist/constants.cjs",
   "module": "./dist/constants.mjs",
@@ -47,6 +42,11 @@
       "import": "./dist/constants.mjs",
       "types": "./dist/constants.d.ts"
     },
+    "./abi": {
+      "require": "./dist/abi.cjs",
+      "import": "./dist/abi.mjs",
+      "types": "./dist/abi.d.ts"
+    },
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
@@ -61,7 +61,7 @@
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
-    "package": "hardhat prepare-package",
+    "build:package": "hardhat prepare-package",
     "test": "hardhat test --no-compile tests/**/*.test.ts tests/LSP7DigitalAsset/**/*.ts tests/LSP8IdentifiableDigitalAsset/**/*.ts",
     "test:foundry": "FOUNDRY_PROFILE=lsp_smart_contracts forge test -vvvv",
     "test:coverage": "hardhat coverage",

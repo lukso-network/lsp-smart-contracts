@@ -1,10 +1,12 @@
 import { defineBuildConfig } from 'unbuild';
 
 export default defineBuildConfig({
-  entries: ['./index'],
-  declaration: 'compatible', // generate .d.ts files
+  entries: ['./abi'],
+  outDir: 'dist/',
   rollup: {
     emitCJS: true,
   },
+  // generate .d.ts files
+  declaration: 'compatible',
   failOnWarn: false,
 });
