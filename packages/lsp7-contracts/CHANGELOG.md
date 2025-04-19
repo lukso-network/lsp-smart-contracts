@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.16.4](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.16.3...lsp7-contracts-v0.16.4) (2025-04-19)
+
+
+### Bug Fixes
+
+* adjust build to export without errors Typescript typed ABIs from `@lukso/lsp7-contracts` package ([7750782](https://github.com/lukso-network/lsp-smart-contracts/commit/7750782b80676c97ca73c5d94c5ba3875261b0b1))
+* error when importing `/types` folder from packages ([a4ac079](https://github.com/lukso-network/lsp-smart-contracts/commit/a4ac079e8ee06d14f0a2c2b042c5cf9c178c32fb))
+* use correct contract `LSP17ExtendableInitAbstract` in inheritance of LSP7 Init ([1cf2726](https://github.com/lukso-network/lsp-smart-contracts/commit/1cf27267784fa0f8aa79214bf1acc89dbbbd7a03))
+
 ## [0.16.3](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.16.2...lsp7-contracts-v0.16.3) (2025-01-17)
 
 

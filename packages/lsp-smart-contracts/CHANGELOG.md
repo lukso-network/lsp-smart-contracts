@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.16.3](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.16.2...lsp-smart-contracts-v0.16.3) (2025-04-19)
+
+
+### Bug Fixes
+
+* adjust build to export without errors Typescript typed ABIs from `@lukso/lsp-smart-contracts` package ([cb546a9](https://github.com/lukso-network/lsp-smart-contracts/commit/cb546a997252674321b860dd17af49d6497bb79e))
+* error when importing `/types` folder from packages ([a4ac079](https://github.com/lukso-network/lsp-smart-contracts/commit/a4ac079e8ee06d14f0a2c2b042c5cf9c178c32fb))
+
 ## [0.16.2](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.16.1...lsp-smart-contracts-v0.16.2) (2025-01-14)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.1](https://github.com/lukso-network/lsp-smart-contracts/compare/universalprofile-contracts-v0.15.0...universalprofile-contracts-v0.15.1) (2025-04-19)
+
+
+### Bug Fixes
+
+* adjust build to export without errors Typescript typed ABIs from `@lukso/universalprofile-contracts` package ([ecbde8d](https://github.com/lukso-network/lsp-smart-contracts/commit/ecbde8dcf159fa08523f76934a42a7c7b53aea52))
+
 ## [0.15.0](https://github.com/lukso-network/lsp-smart-contracts/compare/universalprofile-contracts-v0.15.0-rc.5...universalprofile-contracts-v0.15.0) (2024-04-05)
 
 
