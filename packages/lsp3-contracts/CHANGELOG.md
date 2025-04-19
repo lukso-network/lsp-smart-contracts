@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.3](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp3-contracts-v0.16.2...lsp3-contracts-v0.16.3) (2025-04-19)
+
+
+### Bug Fixes
+
+* error when importing `/types` folder from packages ([a4ac079](https://github.com/lukso-network/lsp-smart-contracts/commit/a4ac079e8ee06d14f0a2c2b042c5cf9c178c32fb))
+
 ## [0.16.2](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp3-contracts-v0.16.1...lsp3-contracts-v0.16.2) (2025-01-14)
 
 

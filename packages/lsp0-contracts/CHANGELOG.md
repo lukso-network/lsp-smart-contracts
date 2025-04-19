@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp0-contracts-v0.15.0...lsp0-contracts-v0.15.1) (2025-04-19)
+
+
+### Bug Fixes
+
+* adjust build to export without errors Typescript typed ABIs from `@lukso/lsp0-contracts` package ([90e0a0f](https://github.com/lukso-network/lsp-smart-contracts/commit/90e0a0f8224a4f5644bd9a5d5f29282e5d5e95a3))
+* error when importing `/types` folder from packages ([a4ac079](https://github.com/lukso-network/lsp-smart-contracts/commit/a4ac079e8ee06d14f0a2c2b042c5cf9c178c32fb))
+
 ## [0.15.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp0-contracts-v0.15.0-rc.5...lsp0-contracts-v0.15.0) (2024-04-05)
 
 
