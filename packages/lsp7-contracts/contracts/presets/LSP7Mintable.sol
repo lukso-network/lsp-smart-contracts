@@ -10,7 +10,6 @@ import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
 
 /**
  * @title LSP7DigitalAsset deployable preset contract with a public {mint} function callable only by the contract {owner}.
- * @author Jean Cavallera, Yamen Merhi
  */
 contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable {
     /**
