@@ -40,7 +40,7 @@
     "build": "hardhat compile --show-stack-traces",
     "build:foundry": "forge build",
     "build:js": "unbuild",
-    "build:types": "npx wagmi generate",
+    "build:types": "wagmi generate",
     "build:package": "hardhat prepare-package",
     "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/",
     "format": "prettier --write .",
