@@ -26,6 +26,14 @@ src = 'packages/lsp6-contracts/contracts'
 test = 'packages/lsp6-contracts/foundry'
 out = 'packages/lsp6-contracts/contracts/foundry_artifacts'
 
+[profile.lsp7]
+src = 'packages/lsp7-contracts/contracts'
+test = 'packages/lsp7-contracts/foundry'
+out = 'packages/lsp7-contracts/contracts/foundry_artifacts'
+optimizer = true
+optimizer_runs = 1000
+via_ir = true
+
 [profile.lsp11]
 src = 'packages/lsp11-contracts/contracts'
 test = 'packages/lsp11-contracts/foundry'
