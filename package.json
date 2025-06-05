@@ -69,7 +69,6 @@
     "@erc725/erc725.js": "0.23.0",
     "@lukso/eip191-signer.js": "^0.2.2",
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
-    "@nomiclabs/hardhat-web3": "^2.0.0",
     "@turbo/gen": "^1.12.3",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "9.1.0",
