@@ -634,7 +634,7 @@ export const shouldBehaveLikePermissionDeploy = (
                 await context.keyManager.getAddress(),
                 encodedMessage,
               ),
-              ethereumSignature,
+              ethereumSignature as `0x${string}`,
             );
 
             await expect(
@@ -674,10 +674,10 @@ export const shouldBehaveLikePermissionDeploy = (
 
             const eip191Signer = new EIP191Signer();
 
-            const { signature } = eip191Signer.signDataWithIntendedValidator(
+            const { signature } = await eip191Signer.signDataWithIntendedValidator(
               await context.keyManager.getAddress(),
               encodedMessage,
-              LOCAL_PRIVATE_KEYS.ACCOUNT4,
+              LOCAL_PRIVATE_KEYS.ACCOUNT4 as `0x${string}`,
             );
 
             await expect(
@@ -726,7 +726,7 @@ export const shouldBehaveLikePermissionDeploy = (
                 await context.keyManager.getAddress(),
                 encodedMessage,
               ),
-              ethereumSignature,
+              ethereumSignature as `0x${string}`,
             );
 
             await expect(
@@ -767,10 +767,10 @@ export const shouldBehaveLikePermissionDeploy = (
 
             const lsp6Signer = new EIP191Signer();
 
-            const { signature } = lsp6Signer.signDataWithIntendedValidator(
+            const { signature } = await lsp6Signer.signDataWithIntendedValidator(
               await context.keyManager.getAddress(),
               encodedMessage,
-              LOCAL_PRIVATE_KEYS.ACCOUNT4,
+              LOCAL_PRIVATE_KEYS.ACCOUNT4 as `0x${string}`,
             );
 
             await expect(

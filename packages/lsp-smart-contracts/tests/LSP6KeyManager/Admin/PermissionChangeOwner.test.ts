@@ -413,11 +413,11 @@ export const shouldBehaveLikePermissionChangeOwner = (
             [LSP25_VERSION, HARDHAT_CHAINID, firstNonce, validityTimestamps, valueToSend, payload],
           );
 
-          const firstSignature = await eip191Signer.signDataWithIntendedValidator(
+          const { signature: firstSignature } = await eip191Signer.signDataWithIntendedValidator(
             await context.keyManager.getAddress(),
             firstEncodedMessage,
-            LOCAL_PRIVATE_KEYS.ACCOUNT0,
-          ).signature;
+            LOCAL_PRIVATE_KEYS.ACCOUNT0 as `0x${string}`,
+          );
 
           renounceOwnershipFirstTx = await context.keyManager
             .connect(context.mainController)
@@ -437,11 +437,11 @@ export const shouldBehaveLikePermissionChangeOwner = (
             [LSP25_VERSION, HARDHAT_CHAINID, secondNonce, validityTimestamps, valueToSend, payload],
           );
 
-          const secondSignature = await eip191Signer.signDataWithIntendedValidator(
+          const { signature: secondSignature } = await eip191Signer.signDataWithIntendedValidator(
             await context.keyManager.getAddress(),
             secondEncodedMessage,
-            LOCAL_PRIVATE_KEYS.ACCOUNT0,
-          ).signature;
+            LOCAL_PRIVATE_KEYS.ACCOUNT0 as `0x${string}`,
+          );
 
           renounceOwnershipSecondTx = await context.keyManager
             .connect(context.mainController)
