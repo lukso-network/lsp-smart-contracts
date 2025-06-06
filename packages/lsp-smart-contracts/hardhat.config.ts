@@ -25,9 +25,6 @@ import './scripts/ci/gas_benchmark';
 import './scripts/ci/check-deployer-balance';
 import './scripts/ci/verify-all-contracts';
 
-// Typescript types for web3.js
-import '@nomiclabs/hardhat-web3';
-
 /**
  * @dev uncomment to generate contract docs in Markdown
  */
