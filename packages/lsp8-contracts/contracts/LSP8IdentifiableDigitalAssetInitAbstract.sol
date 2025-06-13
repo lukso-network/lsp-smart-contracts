@@ -776,6 +776,8 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
      * - `tokenId` must exist.
      *
      * @custom:events {Transfer} event with `address(0)` as the `to` address.
+     *
+     * @custom:warning This internal function does not check if the sender is authorized or not to operate on the `tokenId`.
      */
     function _burn(bytes32 tokenId, bytes memory data) internal virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
@@ -832,7 +834,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
      *
      * @custom:events {Transfer} event.
      *
-     * @custom:danger This internal function does not check if the sender is authorized or not to operate on the `tokenId`.
+     * @custom:warning This internal function does not check if the sender is authorized or not to operate on the `tokenId`.
      */
     function _transfer(
         address from,
