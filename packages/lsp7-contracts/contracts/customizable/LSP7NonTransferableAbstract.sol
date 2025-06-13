@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP7Allowlist} from "./LSP7Allowlist.sol";
+import {LSP7AllowlistAbstract} from "./LSP7AllowlistAbstract.sol";
 
 // interfaces
 import {ILSP7NonTransferable} from "./ILSP7NonTransferable.sol";
@@ -20,9 +20,12 @@ import {
     LSP7CannotUpdateTransferLockEnd
 } from "./LSP7NonTransferableErrors.sol";
 
-/// @title LSP7NonTransferable
+/// @title LSP7NonTransferableAbstract
 /// @dev Abstract contract implementing non-transferable LSP7 token functionality with transfer lock periods and allowlist support.
-abstract contract LSP7NonTransferable is ILSP7NonTransferable, LSP7Allowlist {
+abstract contract LSP7NonTransferableAbstract is
+    ILSP7NonTransferable,
+    LSP7AllowlistAbstract
+{
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /// @notice Indicates whether the token is currently transferable.

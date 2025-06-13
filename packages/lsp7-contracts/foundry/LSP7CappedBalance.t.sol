@@ -1,20 +1,31 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
+// test
 import "forge-std/Test.sol";
+
+// modules
 import {
-    LSP7CappedBalance,
+    LSP7CappedBalanceAbstract
+} from "../contracts/customizable/LSP7CappedBalanceAbstract.sol";
+import {
+    LSP7AllowlistAbstract
+} from "../contracts/customizable/LSP7AllowlistAbstract.sol";
+import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
+
+// errors
+import {
     LSP7CappedBalanceRequired,
     LSP7CappedBalanceExceeded
-} from "../contracts/customizable/LSP7CappedBalance.sol";
-import {LSP7Allowlist} from "../contracts/customizable/LSP7Allowlist.sol";
-import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
+} from "../contracts/customizable/LSP7CappedBalanceErrors.sol";
+
+// constants
 import {
     _LSP4_TOKEN_TYPE_TOKEN
 } from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
-// Mock contract to test LSP7CappedBalance functionality
-contract MockLSP7CappedBalance is LSP7CappedBalance {
+// Mock contract to test LSP7CappedBalanceAbstract functionality
+contract MockLSP7CappedBalance is LSP7CappedBalanceAbstract {
     constructor(
         string memory name_,
         string memory symbol_,
@@ -30,8 +41,8 @@ contract MockLSP7CappedBalance is LSP7CappedBalance {
             lsp4TokenType_,
             isNonDivisible_
         )
-        LSP7Allowlist(newOwner_)
-        LSP7CappedBalance(tokenBalanceCap_)
+        LSP7AllowlistAbstract(newOwner_)
+        LSP7CappedBalanceAbstract(tokenBalanceCap_)
     {}
 
     // Helper function to mint tokens for testing

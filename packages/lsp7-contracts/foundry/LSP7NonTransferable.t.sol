@@ -6,10 +6,12 @@ import "forge-std/Test.sol";
 
 // modules
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
-import {LSP7Allowlist} from "../contracts/customizable/LSP7Allowlist.sol";
 import {
-    LSP7NonTransferable
-} from "../contracts/customizable/LSP7NonTransferable.sol";
+    LSP7AllowlistAbstract
+} from "../contracts/customizable/LSP7AllowlistAbstract.sol";
+import {
+    LSP7NonTransferableAbstract
+} from "../contracts/customizable/LSP7NonTransferableAbstract.sol";
 
 // interfaces
 import {
@@ -29,7 +31,7 @@ import {
     _LSP4_TOKEN_TYPE_TOKEN
 } from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
-contract MockLSP7NonTransferable is LSP7NonTransferable {
+contract MockLSP7NonTransferable is LSP7NonTransferableAbstract {
     constructor(
         string memory name_,
         string memory symbol_,
@@ -47,8 +49,12 @@ contract MockLSP7NonTransferable is LSP7NonTransferable {
             lsp4TokenType_,
             isNonDivisible_
         )
-        LSP7NonTransferable(transferable_, transferLockStart_, transferLockEnd_)
-        LSP7Allowlist(newOwner_)
+        LSP7NonTransferableAbstract(
+            transferable_,
+            transferLockStart_,
+            transferLockEnd_
+        )
+        LSP7AllowlistAbstract(newOwner_)
     {}
 
     function mint(

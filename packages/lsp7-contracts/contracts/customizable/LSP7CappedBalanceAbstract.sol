@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP7Allowlist} from "./LSP7Allowlist.sol";
+import {LSP7AllowlistAbstract} from "./LSP7AllowlistAbstract.sol";
 
 // interfaces
 import {ILSP7CappedBalance} from "./ILSP7CappedBalance.sol";
@@ -17,16 +17,19 @@ import {
     LSP7CappedBalanceExceeded
 } from "./LSP7CappedBalanceErrors.sol";
 
-/// @title LSP7CappedBalance
-/// @dev Abstract contract implementing a per-address balance cap for LSP7 tokens, with exemptions for allowlisted addresses. Inherits from LSP7Allowlist to integrate allowlist functionality.
-abstract contract LSP7CappedBalance is LSP7Allowlist, ILSP7CappedBalance {
+/// @title LSP7CappedBalanceAbstract
+/// @dev Abstract contract implementing a per-address balance cap for LSP7 tokens, with exemptions for allowlisted addresses. Inherits from LSP7AllowlistAbstract to integrate allowlist functionality.
+abstract contract LSP7CappedBalanceAbstract is
+    LSP7AllowlistAbstract,
+    ILSP7CappedBalance
+{
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /// @notice The immutable maximum token balance allowed per address.
     uint256 private immutable _TOKEN_BALANCE_CAP;
 
     /// @notice Initializes the contract with a token balance cap.
-    /// @dev Sets the immutable balance cap and reverts if the cap is zero. Inherits LSP7Allowlist constructor logic.
+    /// @dev Sets the immutable balance cap and reverts if the cap is zero. Inherits LSP7AllowlistAbstract constructor logic.
     /// @param tokenBalanceCap_ The maximum token balance allowed per address.
     constructor(uint256 tokenBalanceCap_) {
         if (tokenBalanceCap_ == 0) {

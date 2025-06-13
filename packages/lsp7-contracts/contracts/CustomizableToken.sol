@@ -5,20 +5,27 @@ pragma solidity ^0.8.4;
 import {LSP7DigitalAsset} from "./LSP7DigitalAsset.sol";
 import {LSP7CappedSupply} from "./extensions/LSP7CappedSupply.sol";
 import {LSP7Burnable} from "./extensions/LSP7Burnable.sol";
-import {LSP7CappedBalance} from "./customizable/LSP7CappedBalance.sol";
-import {LSP7Mintable} from "./customizable/LSP7Mintable.sol";
-import {LSP7NonTransferable} from "./customizable/LSP7NonTransferable.sol";
-import {LSP7Allowlist} from "./customizable/LSP7Allowlist.sol";
+import {
+    LSP7CappedBalanceAbstract
+} from "./customizable/LSP7CappedBalanceAbstract.sol";
+import {LSP7MintableAbstract} from "./customizable/LSP7MintableAbstract.sol";
+import {
+    LSP7NonTransferableAbstract
+} from "./customizable/LSP7NonTransferableAbstract.sol";
+import {LSP7AllowlistAbstract} from "./customizable/LSP7AllowlistAbstract.sol";
 
 // errors
 import {LSP7MintDisabled} from "./customizable/LSP7MintableErrors.sol";
+import {
+    LSP7CappedSupplyCannotMintOverCap
+} from "./extensions/LSP7CappedSupplyErrors.sol";
 
 /// @title CustomizableToken
-/// @dev A customizable LSP7 token implementing minting, balance caps, transfer restrictions, and allowlist exemptions. Inherits from LSP7Mintable, LSP7CappedBalance, LSP7NonTransferable, LSP7CappedSupply and LSP7Burnable to provide comprehensive token functionality.
+/// @dev A customizable LSP7 token implementing minting, balance caps, transfer restrictions, and allowlist exemptions. Inherits from {LSP7MintableAbstract}, {LSP7CappedBalanceAbstract}, {LSP7NonTransferableAbstract}, {LSP7CappedSupply} and {LSP7Burnable} to provide comprehensive token functionality.
 contract CustomizableToken is
-    LSP7Mintable,
-    LSP7CappedBalance,
-    LSP7NonTransferable,
+    LSP7MintableAbstract,
+    LSP7NonTransferableAbstract,
+    LSP7CappedBalanceAbstract,
     LSP7CappedSupply,
     LSP7Burnable
 {
@@ -57,10 +64,10 @@ contract CustomizableToken is
             lsp4TokenType_,
             isNonDivisible_
         )
-        LSP7Allowlist(newOwner_)
-        LSP7CappedBalance(tokenBalanceCap_)
-        LSP7Mintable(mintable_)
-        LSP7NonTransferable(
+        LSP7AllowlistAbstract(newOwner_)
+        LSP7CappedBalanceAbstract(tokenBalanceCap_)
+        LSP7MintableAbstract(mintable_)
+        LSP7NonTransferableAbstract(
             transferable_,
             nonTransferableFrom_,
             nonTransferableUntil_
@@ -81,8 +88,8 @@ contract CustomizableToken is
         return mintable ? super.tokenSupplyCap() : totalSupply();
     }
 
-    /// @inheritdoc LSP7Mintable
-    /// @dev Relies on LSP7CappedSupply for supply cap enforcement.
+    /// @inheritdoc LSP7MintableAbstract
+    /// @dev Relies on {LSP7CappedSupply} for supply cap enforcement.
     function _mint(
         address to,
         uint256 amount,
@@ -91,7 +98,7 @@ contract CustomizableToken is
     )
         internal
         virtual
-        override(LSP7Mintable, LSP7CappedSupply, LSP7DigitalAsset)
+        override(LSP7MintableAbstract, LSP7CappedSupply, LSP7DigitalAsset)
     {
         if (!mintable) {
             revert LSP7MintDisabled();
@@ -105,7 +112,7 @@ contract CustomizableToken is
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
-    /// @dev Combines checks from LSP7CappedBalance and LSP7NonTransferable. Bypasses all checks for allowlisted senders (from LSP7NonTransferable) or recipients (from LSP7CappedBalance). Allows burning to address(0) regardless of restrictions.
+    /// @dev Combines checks from {LSP7CappedBalanceAbstract} and {LSP7NonTransferableAbstract}. Bypasses all checks for allowlisted senders (from {LSP7NonTransferableAbstract}) or recipients (from {LSP7CappedBalanceAbstract}). Allows burning to address(0) regardless of restrictions.
     /// @param from The address sending the tokens.
     /// @param to The address receiving the tokens.
     /// @param amount The amount of tokens being transferred.
@@ -120,9 +127,25 @@ contract CustomizableToken is
     )
         internal
         virtual
-        override(LSP7DigitalAsset, LSP7CappedBalance, LSP7NonTransferable)
+        override(
+            LSP7DigitalAsset,
+            LSP7CappedBalanceAbstract,
+            LSP7NonTransferableAbstract
+        )
     {
-        LSP7NonTransferable._beforeTokenTransfer(from, to, amount, force, data);
-        LSP7CappedBalance._beforeTokenTransfer(from, to, amount, force, data);
+        LSP7NonTransferableAbstract._beforeTokenTransfer(
+            from,
+            to,
+            amount,
+            force,
+            data
+        );
+        LSP7CappedBalanceAbstract._beforeTokenTransfer(
+            from,
+            to,
+            amount,
+            force,
+            data
+        );
     }
 }

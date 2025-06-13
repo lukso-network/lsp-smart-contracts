@@ -10,10 +10,9 @@ import {ILSP7Mintable} from "./ILSP7Mintable.sol";
 // errors
 import {LSP7MintDisabled} from "./LSP7MintableErrors.sol";
 
-/// @title LSP7Mintable
-/// @dev Abstract contract implementing a mintable LSP7 token extension, allowing the owner to mint new tokens until minting is disabled.
-///      Inherits from LSP7DigitalAsset to provide core token functionality.
-abstract contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable {
+/// @title LSP7MintableAbstract
+/// @dev Abstract contract implementing a mintable LSP7 token extension, allowing the owner to mint new tokens until minting is disabled. Inherits from LSP7DigitalAsset to provide core token functionality.
+abstract contract LSP7MintableAbstract is LSP7DigitalAsset, ILSP7Mintable {
     /// @notice Indicates whether minting is currently enabled.
     bool public mintable;
 
