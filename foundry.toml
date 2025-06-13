@@ -5,7 +5,7 @@ libs = ['node_modules','lib']
 gas_reports = ["LSP6ExecuteRestrictedController", "LSP6ExecuteUnrestrictedController", "LSP6SetDataRestrictedController", "LSP6SetDataUnrestrictedController"]
 cache_path = 'forge-cache'
 test = 'tests/foundry'
-solc = "0.8.17"
+solc = "0.8.22"
 
 [fuzz]
 runs = 10_000

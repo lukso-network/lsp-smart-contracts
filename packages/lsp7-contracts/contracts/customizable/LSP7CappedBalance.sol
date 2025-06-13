@@ -1,41 +1,87 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
-import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
+// modules
+import {LSP7Allowlist} from "./LSP7Allowlist.sol";
 
-contract LSP7CappedBalance is LSP7DigitalAsset {
-    uint256 public immutable MAX_ALLOWED_BALANCE;
+// interfaces
+import {ILSP7CappedBalance} from "./ILSP7CappedBalance.sol";
 
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        address newOwner_,
-        uint256 lsp4TokenType_,
-        bool isNonDivisible_,
-        uint256 maxAllowedBalance_
-    )
-        LSP7DigitalAsset(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            isNonDivisible_
-        )
-    {
-        MAX_ALLOWED_BALANCE = maxAllowedBalance_;
+// libraries
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+
+import {
+    LSP7CappedBalanceRequired,
+    LSP7CappedBalanceExceeded
+} from "./LSP7CappedBalanceErrors.sol";
+
+/// @title LSP7CappedBalance
+/// @dev Abstract contract implementing a per-address balance cap for LSP7 tokens, with exemptions for allowlisted addresses. Inherits from LSP7Allowlist to integrate allowlist functionality.
+abstract contract LSP7CappedBalance is LSP7Allowlist, ILSP7CappedBalance {
+    using EnumerableSet for EnumerableSet.AddressSet;
+
+    /// @notice The immutable maximum token balance allowed per address.
+    uint256 private immutable _TOKEN_BALANCE_CAP;
+
+    /// @notice Initializes the contract with a token balance cap.
+    /// @dev Sets the immutable balance cap and reverts if the cap is zero. Inherits LSP7Allowlist constructor logic.
+    /// @param tokenBalanceCap_ The maximum token balance allowed per address.
+    constructor(uint256 tokenBalanceCap_) {
+        if (tokenBalanceCap_ == 0) {
+            revert LSP7CappedBalanceRequired();
+        }
+
+        _TOKEN_BALANCE_CAP = tokenBalanceCap_;
     }
 
-    function _beforeTokenTransfer(
-        address /* from */,
+    /// @inheritdoc ILSP7CappedBalance
+    function tokenBalanceCap() public view virtual override returns (uint256) {
+        return _TOKEN_BALANCE_CAP;
+    }
+
+    /// @notice Checks if a token transfer complies with the balance cap.
+    /// @dev Allows transfers to address(0) (burning) without cap checks. Reverts with LSP7CappedBalanceExceeded if the recipient's balance would exceed the cap.
+    /// @param from The address sending the tokens (ignored in this implementation).
+    /// @param to The address receiving the tokens.
+    /// @param amount The amount of tokens being transferred.
+    /// @param force Whether to force the transfer (ignored in this implementation).
+    /// @param data Additional data for the transfer (ignored in this implementation).
+    function _tokenBalanceCapCheck(
+        address from,
         address to,
         uint256 amount,
-        bool /* force */,
-        bytes memory /* data */
-    ) internal virtual override {
-        // CHECK that recipient can only hold x amount of tokens
-        require(
-            balanceOf(to) + amount <= MAX_ALLOWED_BALANCE,
-            "Maximum allowed balance exeeded"
+        bool force,
+        bytes memory data
+    ) internal virtual {
+        // Allow burning
+        if (to == address(0)) return;
+        if (balanceOf(to) + amount <= tokenBalanceCap()) return;
+
+        revert LSP7CappedBalanceExceeded(
+            to,
+            amount,
+            balanceOf(to),
+            _TOKEN_BALANCE_CAP
         );
+    }
+
+    /// @notice Hook called before a token transfer to enforce balance cap restrictions.
+    /// @dev Bypasses balance cap checks for allowlisted recipients. Applies cap checks for non-allowlisted recipients.
+    /// @param from The address sending the tokens.
+    /// @param to The address receiving the tokens.
+    /// @param amount The amount of tokens being transferred.
+    /// @param force Whether to force the transfer (passed to _tokenBalanceCapCheck).
+    /// @param data Additional data for the transfer (passed to _tokenBalanceCapCheck).
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
+        if (isAllowlisted(to)) return;
+        _tokenBalanceCapCheck(from, to, amount, force, data);
     }
 }

@@ -117,6 +117,9 @@ const config: HardhatUserConfig = {
       'LSP7CappedSupply',
       'LSP7Votes',
       'LSP7Mintable',
+      'LSP7AllowlistAbstract',
+      'LSP7CappedBalanceAbstract',
+      'LSP7NonTransferableAbstract',
       // Proxy version
       // ------------------
       'LSP7DigitalAssetInitAbstract',

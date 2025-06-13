@@ -2,11 +2,18 @@
 pragma solidity ^0.8.4;
 
 import "forge-std/Test.sol";
-
 import {
-    LSP7CappedBalance
+    LSP7CappedBalance,
+    LSP7CappedBalanceRequired,
+    LSP7CappedBalanceExceeded
 } from "../contracts/customizable/LSP7CappedBalance.sol";
+import {LSP7Allowlist} from "../contracts/customizable/LSP7Allowlist.sol";
+import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
+import {
+    _LSP4_TOKEN_TYPE_TOKEN
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
+// Mock contract to test LSP7CappedBalance functionality
 contract MockLSP7CappedBalance is LSP7CappedBalance {
     constructor(
         string memory name_,
@@ -14,75 +21,248 @@ contract MockLSP7CappedBalance is LSP7CappedBalance {
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        uint256 maxAllowedBalance_
+        uint256 tokenBalanceCap_
     )
-        LSP7CappedBalance(
+        LSP7DigitalAsset(
             name_,
             symbol_,
             newOwner_,
             lsp4TokenType_,
-            isNonDivisible_,
-            maxAllowedBalance_
+            isNonDivisible_
         )
+        LSP7Allowlist(newOwner_)
+        LSP7CappedBalance(tokenBalanceCap_)
     {}
 
-    function mint(uint256 amount, address _recipient) public {
-        _mint(_recipient, amount, true, "");
+    // Helper function to mint tokens for testing
+    function mint(
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) public {
+        _mint(to, amount, force, data);
+    }
+
+    // Helper function to burn tokens for testing
+    function burn(address from, uint256 amount, bytes memory data) public {
+        if (msg.sender != from) {
+            _spendAllowance(msg.sender, from, amount);
+        }
+        _burn(from, amount, data);
     }
 }
 
 contract LSP7CappedBalanceTest is Test {
+    string name = "Capped Token";
+    string symbol = "CT";
+    uint256 tokenType = _LSP4_TOKEN_TYPE_TOKEN;
+    bool isNonDivisible = false;
+    uint256 balanceCap = 1000;
+
+    address zeroAddress = address(0);
+    address owner = address(this);
+    address allowlistedUser = vm.addr(101);
+    address allowlistedUserExtra = vm.addr(102);
+    address nonAllowlistedUser = vm.addr(103);
+    address recipient = vm.addr(104);
+
     MockLSP7CappedBalance lsp7CappedBalance;
 
-    uint256 constant MAX_BALANCE_ALLOWED = 100;
-
-    address recipient;
-
     function setUp() public {
-        // 1. Deploy the contract that has CappedBalance
         lsp7CappedBalance = new MockLSP7CappedBalance(
-            "Daniel Token to become rich",
-            "NFA",
-            address(this),
-            0,
-            false,
-            MAX_BALANCE_ALLOWED
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            balanceCap
         );
 
-        recipient = vm.addr(100);
-
-        // 2. mint some tokens
-        lsp7CappedBalance.mint(90, recipient);
+        lsp7CappedBalance.addToAllowlist(allowlistedUser);
+        lsp7CappedBalance.addToAllowlist(allowlistedUserExtra);
     }
 
-    function test_CannotHoldMoreThanMaxBalance() public {
-        // 3. test that it does not go over
-        assertEq(lsp7CappedBalance.balanceOf(recipient), 90);
-
-        vm.expectRevert("Maximum allowed balance exeeded");
-        lsp7CappedBalance.mint(100, recipient);
+    // Test constructor initialization
+    function test_ConstructorSetsBalanceCap() public {
+        assertEq(
+            lsp7CappedBalance.tokenBalanceCap(),
+            balanceCap,
+            "Balance cap should be set correctly"
+        );
+        assertTrue(
+            lsp7CappedBalance.isAllowlisted(owner),
+            "Owner should be allowlisted"
+        );
+        assertTrue(
+            lsp7CappedBalance.isAllowlisted(zeroAddress),
+            "Zero address should be allowlisted"
+        );
     }
+
+    function test_ConstructorRevertsWithZeroCap() public {
+        vm.expectRevert(LSP7CappedBalanceRequired.selector);
+        new MockLSP7CappedBalance(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            0
+        );
+    }
+
+    // Test tokenBalanceCap function
+    function test_TokenBalanceCapReturnsCorrectValue() public {
+        assertEq(
+            lsp7CappedBalance.tokenBalanceCap(),
+            balanceCap,
+            "Should return the correct balance cap"
+        );
+    }
+
+    // Test balance cap enforcement
+    function test_TransferFailsWhenExceedingCapForNonAllowlisted() public {
+        uint256 overCapAmount = balanceCap * 2;
+
+        vm.expectRevert(LSP7CappedBalanceExceeded.selector);
+        lsp7CappedBalance.mint(recipient, overCapAmount, true, "");
+        assertEq(
+            lsp7CappedBalance.balanceOf(recipient),
+            0,
+            "recipient should have no tokens"
+        );
+    }
+
+    function test_TransferSucceedsWithinCapForNonAllowlisted() public {
+        lsp7CappedBalance.mint(nonAllowlistedUser, 500, true, "");
+        assertEq(
+            lsp7CappedBalance.balanceOf(nonAllowlistedUser),
+            500,
+            "nonAllowlistedUser should have 500 tokens"
+        );
+
+        vm.prank(nonAllowlistedUser);
+        lsp7CappedBalance.transfer(
+            nonAllowlistedUser,
+            recipient,
+            400,
+            true,
+            ""
+        );
+        assertEq(
+            lsp7CappedBalance.balanceOf(recipient),
+            400,
+            "recipient should have 400 tokens"
+        );
+    }
+
+    // Test allowlist exemption
+    function test_AllowlistedAddressCanExceedCap() public {
+        uint256 amountToMint = 1100;
+        lsp7CappedBalance.mint(allowlistedUser, amountToMint, true, "");
+        assertEq(
+            lsp7CappedBalance.balanceOf(allowlistedUser),
+            amountToMint,
+            "allowlistedUser should have 1100 tokens despite cap"
+        );
+    }
+
+    // Test burning exemption
+    function test_NonAllowlistedAddressCanBurnTokens() public {
+        lsp7CappedBalance.mint(nonAllowlistedUser, 500, true, "");
+        assertEq(
+            lsp7CappedBalance.balanceOf(nonAllowlistedUser),
+            500,
+            "nonAllowlistedUser should have 500 tokens"
+        );
+
+        vm.prank(nonAllowlistedUser);
+        lsp7CappedBalance.burn(nonAllowlistedUser, 200, "");
+        assertEq(
+            lsp7CappedBalance.balanceOf(nonAllowlistedUser),
+            300,
+            "nonAllowlistedUser should have 300 tokens after burning"
+        );
+    }
+
+    // Test edge cases
+    function test_ZeroAmountTransferSucceedsForNonAllowlisted() public {
+        lsp7CappedBalance.mint(nonAllowlistedUser, 500, true, "");
+        vm.prank(nonAllowlistedUser);
+        lsp7CappedBalance.transfer(nonAllowlistedUser, recipient, 0, true, "");
+        assertEq(
+            lsp7CappedBalance.balanceOf(recipient),
+            0,
+            "recipient should have no tokens"
+        );
+    }
+
+    function test_TransferToSelfWithinCap() public {
+        lsp7CappedBalance.mint(nonAllowlistedUser, 500, true, "");
+        vm.prank(nonAllowlistedUser);
+        lsp7CappedBalance.transfer(
+            nonAllowlistedUser,
+            nonAllowlistedUser,
+            200,
+            true,
+            ""
+        );
+        assertEq(
+            lsp7CappedBalance.balanceOf(nonAllowlistedUser),
+            500,
+            "nonAllowlistedUser balance should remain 500"
+        );
+    }
+
+    function test_TransferToSelfExceedingCapFailsForNonAllowlisted() public {
+        lsp7CappedBalance.mint(nonAllowlistedUser, 900, true, "");
+        vm.prank(nonAllowlistedUser);
+        vm.expectRevert(LSP7CappedBalanceExceeded.selector);
+        lsp7CappedBalance.transfer(
+            nonAllowlistedUser,
+            nonAllowlistedUser,
+            200,
+            true,
+            ""
+        );
+        assertEq(
+            lsp7CappedBalance.balanceOf(nonAllowlistedUser),
+            900,
+            "nonAllowlistedUser balance should remain 900"
+        );
+    }
+
+    function test_AllowlistedAddressCanReceiveTokensFromAllowlisted() public {
+        lsp7CappedBalance.mint(allowlistedUser, 1200, true, "");
+
+        vm.prank(allowlistedUser);
+        lsp7CappedBalance.transfer(
+            allowlistedUser,
+            allowlistedUserExtra,
+            1100,
+            true,
+            ""
+        );
+        assertEq(
+            lsp7CappedBalance.balanceOf(allowlistedUserExtra),
+            1100,
+            "allowlistedUserExtra should have 1100 tokens"
+        );
+    }
+
+    // ------ Fuzzing ------
 
     function testFuzz_CannotHoldMoreThanMaxBalance(uint256 amount) public {
-        assertEq(lsp7CappedBalance.balanceOf(recipient), 90);
+        lsp7CappedBalance.mint(recipient, 900, true, "");
+        assertEq(lsp7CappedBalance.balanceOf(recipient), 900);
 
-        vm.assume(amount > 10);
+        vm.assume(amount > 100);
         vm.assume(
             amount <= type(uint256).max - lsp7CappedBalance.totalSupply()
         );
 
-        vm.expectRevert("Maximum allowed balance exeeded");
-        lsp7CappedBalance.mint(amount, recipient);
-    }
-
-    function test_CanHoldUpToTheMaxBalance() public {
-        assertEq(lsp7CappedBalance.balanceOf(recipient), 90);
-
-        lsp7CappedBalance.mint(10, recipient);
-
-        assertEq(lsp7CappedBalance.balanceOf(recipient), 100);
-
-        vm.expectRevert("Maximum allowed balance exeeded");
-        lsp7CappedBalance.mint(10, recipient);
+        vm.expectRevert(LSP7CappedBalanceExceeded.selector);
+        lsp7CappedBalance.mint(recipient, amount, true, "");
     }
 }
