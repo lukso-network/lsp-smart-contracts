@@ -5,6 +5,12 @@ pragma solidity ^0.8.4;
 // modules
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
 
+// errors
+import {
+    LSP7CappedSupplyRequired,
+    LSP7CappedSupplyCannotMintOverCap
+} from "./LSP7CappedSupplyErrors.sol";
+
 /**
  * @dev LSP7 token extension to add a max token supply cap.
  */

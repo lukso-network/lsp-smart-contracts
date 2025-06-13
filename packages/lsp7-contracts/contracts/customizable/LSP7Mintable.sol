@@ -1,0 +1,59 @@
+// SPDX-License-Identifier: Apache-2.0
+pragma solidity ^0.8.4;
+
+// modules
+import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
+
+// interfaces
+import {ILSP7Mintable} from "./ILSP7Mintable.sol";
+
+// errors
+import {LSP7MintDisabled} from "./LSP7MintableErrors.sol";
+
+/// @title LSP7Mintable
+/// @dev Abstract contract implementing a mintable LSP7 token extension, allowing the owner to mint new tokens until minting is disabled.
+///      Inherits from LSP7DigitalAsset to provide core token functionality.
+abstract contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable {
+    /// @notice Indicates whether minting is currently enabled.
+    bool public mintable;
+
+    /// @notice Initializes the contract with the minting status.
+    /// @dev Sets the initial minting status. Inherits LSP7DigitalAsset constructor logic.
+    /// @param mintable_ True to enable minting initially, false to disable it.
+    constructor(bool mintable_) {
+        mintable = mintable_;
+    }
+
+    /// @inheritdoc ILSP7Mintable
+    function disableMinting() public virtual override onlyOwner {
+        mintable = false;
+    }
+
+    /// @inheritdoc ILSP7Mintable
+    function mint(
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) public virtual override onlyOwner {
+        _mint(to, amount, force, data);
+    }
+
+    /// @notice Internal function to mint tokens, overridden to enforce minting status.
+    /// @dev Checks if minting is enabled, reverting with LSP7MintDisabled if not. Calls the parent _mint function from LSP7DigitalAsset.
+    /// @param to The address to receive the minted tokens.
+    /// @param amount The number of tokens to mint.
+    /// @param force When true, allows minting to any address; when false, requires `to` to support LSP1 UniversalReceiver.
+    /// @param data Additional data included in the Transfer event and sent to `to`’s UniversalReceiver hook, if applicable.
+    function _mint(
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
+        if (!mintable) {
+            revert LSP7MintDisabled();
+        }
+        super._mint(to, amount, force, data);
+    }
+}
