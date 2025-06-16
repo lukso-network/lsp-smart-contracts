@@ -31,14 +31,16 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        bool isNonDivisible_
+        bool isNonDivisible_,
+        bool mintable_
     ) external virtual initializer {
         LSP7MintableInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
             lsp4TokenType_,
-            isNonDivisible_
+            isNonDivisible_,
+            mintable_
         );
     }
 }

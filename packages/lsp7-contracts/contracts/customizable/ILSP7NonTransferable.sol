@@ -20,10 +20,13 @@ interface ILSP7NonTransferable {
 
     /// @notice Removes all transfer lock, enabling token transfers for non-allowlisted addresses outside the lock period.
     /// @dev Can only be called by the contract owner. Sets the transferable flag to true, and emits a {TransferabilityChanged} event with enabled set to true.
+    /// @custom:emits {TransferLockPeriodChanged} event.
+    /// @custom:emits {TransferabilityChanged} event.
     function makeTransferable() external;
 
     /// @notice Updates the transfer lock period with new start and end timestamps.
     /// @dev Can only be called by the contract owner. Reverts if the current lock period has already started or ended, or if the new end timestamp is before the new start timestamp.
+    /// @custom:emits {TransferLockPeriodChanged} event.
     /// @param newTransferLockStart The new start timestamp for the transfer lock period.
     /// @param newTransferLockEnd The new end timestamp for the transfer lock period.
     function updateTransferLockPeriod(
@@ -33,6 +36,7 @@ interface ILSP7NonTransferable {
 
     /// @notice Updates the end timestamp of the transfer lock period.
     /// @dev Can only be called by the contract owner. Reverts if the current lock period has already ended or if the new end timestamp is before the current start timestamp.
+    /// @custom:emits {TransferLockPeriodChanged} event.
     /// @param newTransferLockEnd The new end timestamp for the transfer lock period.
     function updateTransferLockEnd(uint256 newTransferLockEnd) external;
 }

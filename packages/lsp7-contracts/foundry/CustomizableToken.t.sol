@@ -34,7 +34,7 @@ contract CustomizableTokenTest is Test {
     bool isNonDivisible = false;
     uint256 initialMintAmount = 1000;
     uint256 tokenBalanceCap = 2000;
-    bool mintable = true;
+    bool isMintable = true;
     bool transferable = true;
     uint256 nonTransferableFrom = 0;
     uint256 nonTransferableUntil = 0;
@@ -57,7 +57,7 @@ contract CustomizableTokenTest is Test {
             isNonDivisible,
             initialMintAmount,
             tokenBalanceCap,
-            mintable,
+            isMintable,
             transferable,
             nonTransferableFrom,
             nonTransferableUntil,
@@ -70,7 +70,7 @@ contract CustomizableTokenTest is Test {
         assertEq(token.balanceOf(owner), initialMintAmount, "Owner should have initial tokens");
         assertEq(token.totalSupply(), initialMintAmount, "Total supply should match initial mint");
         assertEq(token.tokenBalanceCap(), tokenBalanceCap, "Balance cap should be set");
-        assertEq(token.mintable(), mintable, "Mintable status should be set");
+        assertEq(token.isMintable(), isMintable, "Mintable status should be set");
         assertTrue(token.isTransferable(), "Token should be transferable");
         assertEq(token.transferLockStart(), nonTransferableFrom, "Lock start should be set");
         assertEq(token.transferLockEnd(), nonTransferableUntil, "Lock end should be set");
@@ -89,7 +89,7 @@ contract CustomizableTokenTest is Test {
             isNonDivisible,
             tokenSupplyCap + 1,
             tokenBalanceCap,
-            mintable,
+            isMintable,
             transferable,
             nonTransferableFrom,
             nonTransferableUntil,
@@ -106,7 +106,7 @@ contract CustomizableTokenTest is Test {
             isNonDivisible,
             0,
             tokenBalanceCap,
-            mintable,
+            isMintable,
             transferable,
             nonTransferableFrom,
             nonTransferableUntil,
@@ -126,7 +126,7 @@ contract CustomizableTokenTest is Test {
             isNonDivisible,
             initialMintAmount,
             tokenBalanceCap,
-            mintable,
+            isMintable,
             transferable,
             200,
             100,
@@ -144,7 +144,7 @@ contract CustomizableTokenTest is Test {
             isNonDivisible,
             initialMintAmount,
             tokenBalanceCap,
-            mintable,
+            isMintable,
             transferable,
             nonTransferableFrom,
             nonTransferableUntil,
@@ -154,9 +154,9 @@ contract CustomizableTokenTest is Test {
 
     // Supply Cap Tests
     function test_TokenSupplyCapReturnsCorrectValue() public {
-        assertEq(token.tokenSupplyCap(), tokenSupplyCap, "Should return supply cap when mintable");
+        assertEq(token.tokenSupplyCap(), tokenSupplyCap, "Should return supply cap when isMintable");
         token.disableMinting();
-        assertEq(token.tokenSupplyCap(), initialMintAmount, "Should return totalSupply when not mintable");
+        assertEq(token.tokenSupplyCap(), initialMintAmount, "Should return totalSupply when not isMintable");
     }
 
     function test_MintFailsWhenExceedingSupplyCap() public {
@@ -182,7 +182,7 @@ contract CustomizableTokenTest is Test {
             isNonDivisible,
             initialMintAmount,
             tokenBalanceCap,
-            mintable,
+            isMintable,
             transferable,
             nonTransferableFrom,
             nonTransferableUntil,

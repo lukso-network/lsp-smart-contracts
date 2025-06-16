@@ -3,7 +3,7 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {ILSP7Mintable} from "./ILSP7Mintable.sol";
+import {ILSP7Mintable} from "../customizable/ILSP7Mintable.sol";
 
 // modules
 import {
@@ -17,6 +17,9 @@ abstract contract LSP7MintableInitAbstract is
     LSP7DigitalAssetInitAbstract,
     ILSP7Mintable
 {
+    /// @notice Indicates whether minting is currently enabled.
+    bool public isMintable;
+
     /**
      * @notice Initialize a `LSP7MintableInitAbstract` token contract with: token name = `name_`, token symbol = `symbol_`, and
      * address `newOwner_` as the token contract owner.
@@ -32,8 +35,9 @@ abstract contract LSP7MintableInitAbstract is
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        bool isNonDivisible_
-    ) internal virtual override onlyInitializing {
+        bool isNonDivisible_,
+        bool mintable_
+    ) internal virtual onlyInitializing {
         LSP7DigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
@@ -41,6 +45,8 @@ abstract contract LSP7MintableInitAbstract is
             lsp4TokenType_,
             isNonDivisible_
         );
+
+        isMintable = mintable_;
     }
 
     /**
@@ -53,5 +59,10 @@ abstract contract LSP7MintableInitAbstract is
         bytes memory data
     ) public virtual override onlyOwner {
         _mint(to, amount, force, data);
+    }
+
+    /// @inheritdoc ILSP7Mintable
+    function disableMinting() public virtual override onlyOwner {
+        isMintable = false;
     }
 }
