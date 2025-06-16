@@ -7,7 +7,7 @@ import {
 } from "../ILSP8IdentifiableDigitalAsset.sol";
 
 /**
- * @dev LSP8 extension, mintable.
+ * @dev LSP8 extension, isMintable.
  */
 interface ILSP8Mintable is ILSP8IdentifiableDigitalAsset {
     /**

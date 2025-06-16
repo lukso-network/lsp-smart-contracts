@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP7Allowlist} from "./LSP7Allowlist.sol";
+import {LSP7AllowlistAbstract} from "./LSP7AllowlistAbstract.sol";
 
 // interfaces
 import {ILSP7NonTransferable} from "./ILSP7NonTransferable.sol";
@@ -20,9 +20,12 @@ import {
     LSP7CannotUpdateTransferLockEnd
 } from "./LSP7NonTransferableErrors.sol";
 
-/// @title LSP7NonTransferable
+/// @title LSP7NonTransferableAbstract
 /// @dev Abstract contract implementing non-transferable LSP7 token functionality with transfer lock periods and allowlist support.
-abstract contract LSP7NonTransferable is ILSP7NonTransferable, LSP7Allowlist {
+abstract contract LSP7NonTransferableAbstract is
+    ILSP7NonTransferable,
+    LSP7AllowlistAbstract
+{
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /// @notice Indicates whether the token is currently transferable.
@@ -50,12 +53,7 @@ abstract contract LSP7NonTransferable is ILSP7NonTransferable, LSP7Allowlist {
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
 
-        if (transferable_) {
-            emit TransferabilityChanged(true);
-        } else {
-            emit TransferabilityChanged(false);
-        }
-
+        emit TransferabilityChanged(transferable_);
         emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
     }
 
@@ -119,7 +117,7 @@ abstract contract LSP7NonTransferable is ILSP7NonTransferable, LSP7Allowlist {
     /// @param amount The amount of tokens being transferred.
     /// @param force Whether to force the transfer (ignored in this implementation).
     /// @param data Additional data for the transfer (ignored in this implementation).
-    function _nonTransfrableCheck(
+    function _nonTransferableCheck(
         address from,
         address to,
         uint256 amount,
@@ -138,8 +136,8 @@ abstract contract LSP7NonTransferable is ILSP7NonTransferable, LSP7Allowlist {
     /// @param from The address sending the tokens.
     /// @param to The address receiving the tokens.
     /// @param amount The amount of tokens being transferred.
-    /// @param force Whether to force the transfer (passed to _nonTransfrableCheck).
-    /// @param data Additional data for the transfer (passed to _nonTransfrableCheck).
+    /// @param force Whether to force the transfer (passed to _nonTransferableCheck).
+    /// @param data Additional data for the transfer (passed to _nonTransferableCheck).
     function _beforeTokenTransfer(
         address from,
         address to,
@@ -148,6 +146,6 @@ abstract contract LSP7NonTransferable is ILSP7NonTransferable, LSP7Allowlist {
         bytes memory data
     ) internal virtual override {
         if (isAllowlisted(from)) return;
-        _nonTransfrableCheck(from, to, amount, force, data);
+        _nonTransferableCheck(from, to, amount, force, data);
     }
 }

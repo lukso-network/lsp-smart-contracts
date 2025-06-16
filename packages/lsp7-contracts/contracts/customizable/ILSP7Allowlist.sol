@@ -10,12 +10,14 @@ interface ILSP7Allowlist {
     event AllowlistChanged(address indexed _address, bool indexed added);
 
     /// @notice Adds an address to the allowlist, enabling it to bypass specific restrictions (e.g., transfer locks).
-    /// @dev Can only be called by the contract owner. Emits an {AllowlistChanged} event with added set to true.
+    /// @dev Can only be called by the contract owner.
+    /// @custom:events {AllowlistChanged} event with added set to true.
     /// @param _address The address to add to the allowlist.
     function addToAllowlist(address _address) external;
 
     /// @notice Removes an address from the allowlist, subjecting it to standard restrictions.
-    /// @dev Can only be called by the contract owner. Emits an {AllowlistChanged} event with added set to false.
+    /// @dev Can only be called by the contract owner.
+    /// @custom:events {AllowlistChanged} event with added set to false.
     /// @param _address The address to remove from the allowlist.
     function removeFromAllowlist(address _address) external;
 
