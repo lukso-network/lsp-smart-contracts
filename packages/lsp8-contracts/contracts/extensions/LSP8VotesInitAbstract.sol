@@ -20,6 +20,10 @@ import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
  * Tokens do not count as votes until they are delegated, because votes must be tracked which incurs an additional cost
  * on every transfer. Token holders can either delegate to a trusted representative who will decide how to make use of
  * the votes in governance decisions, or they can delegate to themselves to be their own representative.
+ *
+ * @custom:warning This extension contract is not formally audited.
+ * For any contract intended to be deployed in production that inherits from this extension, it is recommended to conduct
+ * an independent security audit, including this extension in the audit scope.
  */
 abstract contract LSP8VotesInitAbstract is
     LSP8IdentifiableDigitalAssetInitAbstract,

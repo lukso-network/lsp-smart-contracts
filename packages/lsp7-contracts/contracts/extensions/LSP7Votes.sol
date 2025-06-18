@@ -24,6 +24,10 @@ import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
  *
  * By default, token balance does not account for voting power. This makes transfers cheaper. The downside is that it
  * requires users to delegate to themselves in order to activate checkpoints and have their voting power tracked.
+ *
+ * @custom:warning This extension contract is not formally audited.
+ * For any contract intended to be deployed in production that inherits from this extension, it is recommended to conduct
+ * an independent security audit, including this extension in the audit scope.
  */
 abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
     using Counters for Counters.Counter;

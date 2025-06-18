@@ -2,6 +2,8 @@
 
 Package for the LSP7 Digital Asset standard.
 
+> The contracts [`LSP7Votes`](contracts/extensions/LSP7Votes.sol) and [`LSP7VotesInitiAbstract`](contracts/extensions/LSP7VotesInitAbstract.sol) have not been formally audited by an external third party and are not recommended to be used in production without undergoing an independent security audit.
+
 ## Installation
 
 ```console
