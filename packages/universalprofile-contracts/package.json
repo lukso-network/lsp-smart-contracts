@@ -1,6 +1,6 @@
 {
   "name": "@lukso/universalprofile-contracts",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "description": "Package for Universal Profile, an implementation of LSP0 ERC725 Account & LSP3 Profile Metadata standards combined together.",
   "license": "Apache-2.0",
   "author": "",
