@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp20-contracts",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "description": "Package for the LSP20 Call Verification standard",
   "license": "Apache-2.0",
   "author": "",

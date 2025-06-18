@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp0-contracts",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "description": "Package for the LSP0ERC725Account standard",
   "license": "Apache-2.0",
   "author": "",

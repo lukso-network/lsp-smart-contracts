@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp26-contracts-v0.1.3...lsp26-contracts-v0.1.4) (2025-06-18)
+
+
+### Bug Fixes
+
+* abi exports for up, lsp16 & lsp23 packages ([4486fdb](https://github.com/lukso-network/lsp-smart-contracts/commit/4486fdb59bc7b460919a8c751a1ff718abcde926))
+
 ## [0.1.3](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp26-contracts-v0.1.2...lsp26-contracts-v0.1.3) (2025-04-19)
 
 

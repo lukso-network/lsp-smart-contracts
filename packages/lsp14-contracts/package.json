@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp14-contracts",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "description": "Package for the LSP14 Ownable 2 Step standard",
   "license": "Apache-2.0",
   "author": "",
