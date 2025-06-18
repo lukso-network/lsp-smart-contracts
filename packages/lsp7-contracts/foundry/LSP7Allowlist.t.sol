@@ -240,4 +240,40 @@ contract LSP7AllowlistTest is Test {
             "User2 should still be allowlisted"
         );
     }
+
+    // ------ Fuzzing ------
+
+    function testFuzz_AllowlistManagement(address addr, bool add) public {
+        vm.assume(addr != address(0));
+        vm.assume(addr != owner); // Exclude owner to test new addresses
+
+        bool initialStatus = lsp7Allowlist.isAllowlisted(addr);
+
+        if (add) {
+            vm.expectEmit(true, true, false, true, address(lsp7Allowlist));
+            emit ILSP7Allowlist.AllowlistChanged(addr, true);
+            lsp7Allowlist.addToAllowlist(addr);
+            assertTrue(
+                lsp7Allowlist.isAllowlisted(addr),
+                "Address should be allowlisted"
+            );
+        } else {
+            vm.expectEmit(true, true, false, true, address(lsp7Allowlist));
+            emit ILSP7Allowlist.AllowlistChanged(addr, false);
+            lsp7Allowlist.removeFromAllowlist(addr);
+            assertFalse(
+                lsp7Allowlist.isAllowlisted(addr),
+                "Address should not be allowlisted"
+            );
+        }
+
+        // Non-owner should revert
+        vm.prank(addr);
+        vm.expectRevert(); // Expect revert due to onlyOwner
+        if (add) {
+            lsp7Allowlist.addToAllowlist(addr);
+        } else {
+            lsp7Allowlist.removeFromAllowlist(addr);
+        }
+    }
 }

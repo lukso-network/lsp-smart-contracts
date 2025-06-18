@@ -424,4 +424,108 @@ contract LSP7NonTransferableTest is Test {
         vm.expectRevert(); // Expect revert due to onlyOwner modifier
         lsp7NonTransferable.updateTransferLockEnd(block.timestamp + 200);
     }
+
+    // ------ Fuzzing ------
+
+    function testFuzz_TransferRespectsLockPeriod(
+        uint256 amount,
+        uint256 timestamp
+    ) public {
+        vm.assume(
+            amount <= type(uint256).max - lsp7NonTransferable.totalSupply()
+        );
+        vm.assume(timestamp <= type(uint64).max);
+
+        lsp7NonTransferable.mint(nonAllowlistedUser, amount, true, "");
+        vm.warp(timestamp);
+
+        if (!lsp7NonTransferable.isTransferable()) {
+            vm.prank(nonAllowlistedUser);
+            vm.expectRevert(LSP7TransferDisabled.selector);
+            lsp7NonTransferable.transfer(
+                nonAllowlistedUser,
+                recipient,
+                amount,
+                true,
+                ""
+            );
+        } else {
+            vm.prank(nonAllowlistedUser);
+            lsp7NonTransferable.transfer(
+                nonAllowlistedUser,
+                recipient,
+                amount,
+                true,
+                ""
+            );
+            assertEq(
+                lsp7NonTransferable.balanceOf(recipient),
+                amount,
+                "Recipient balance should increase"
+            );
+        }
+    }
+
+    function testFuzz_UpdateLockPeriod(
+        uint256 newStart,
+        uint256 newEnd,
+        uint256 currentTime
+    ) public {
+        vm.assume(newStart <= type(uint64).max);
+        vm.assume(newEnd <= type(uint64).max);
+        vm.assume(currentTime <= type(uint64).max);
+
+        vm.warp(currentTime);
+
+        // If newEnd < newStart, expect revert
+        if (newEnd < newStart) {
+            vm.expectRevert(LSP7InvalidTransferLockPeriod.selector);
+            lsp7NonTransferable.updateTransferLockPeriod(newStart, newEnd);
+        }
+        // If currentTime >= transferLockStart, expect revert
+        else if (currentTime >= transferLockStart) {
+            vm.expectRevert(LSP7CannotUpdateTransferLockPeriod.selector);
+            lsp7NonTransferable.updateTransferLockPeriod(newStart, newEnd);
+        } else {
+            vm.expectEmit(true, true, false, false);
+            emit ILSP7NonTransferable.TransferLockPeriodChanged(
+                newStart,
+                newEnd
+            );
+            lsp7NonTransferable.updateTransferLockPeriod(newStart, newEnd);
+            assertEq(
+                lsp7NonTransferable.transferLockStart(),
+                newStart,
+                "Lock start should update"
+            );
+            assertEq(
+                lsp7NonTransferable.transferLockEnd(),
+                newEnd,
+                "Lock end should update"
+            );
+        }
+    }
+
+    function testFuzz_BurningAllowedAnyTime(
+        uint256 amount,
+        uint256 timestamp
+    ) public {
+        vm.assume(
+            amount < type(uint256).max - lsp7NonTransferable.totalSupply()
+        );
+        vm.assume(timestamp <= type(uint64).max);
+
+        lsp7NonTransferable.mint(nonAllowlistedUser, amount, true, "");
+
+        vm.warp(timestamp);
+
+        // Burning should always succeed
+        vm.prank(nonAllowlistedUser);
+        lsp7NonTransferable.burn(nonAllowlistedUser, amount, "");
+        assertEq(
+            lsp7NonTransferable.balanceOf(nonAllowlistedUser),
+            0,
+            "Balance should be zero after burning"
+        );
+    }
 }

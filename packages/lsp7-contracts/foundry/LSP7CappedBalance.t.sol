@@ -69,7 +69,7 @@ contract LSP7CappedBalanceTest is Test {
     string symbol = "CT";
     uint256 tokenType = _LSP4_TOKEN_TYPE_TOKEN;
     bool isNonDivisible = false;
-    uint256 balanceCap = 1000;
+    uint256 tokenBalanceCap = 1000;
 
     address zeroAddress = address(0);
     address owner = address(this);
@@ -87,7 +87,7 @@ contract LSP7CappedBalanceTest is Test {
             owner,
             tokenType,
             isNonDivisible,
-            balanceCap
+            tokenBalanceCap
         );
 
         lsp7CappedBalance.addToAllowlist(allowlistedUser);
@@ -98,7 +98,7 @@ contract LSP7CappedBalanceTest is Test {
     function test_ConstructorSetsBalanceCap() public {
         assertEq(
             lsp7CappedBalance.tokenBalanceCap(),
-            balanceCap,
+            tokenBalanceCap,
             "Balance cap should be set correctly"
         );
         assertTrue(
@@ -127,16 +127,24 @@ contract LSP7CappedBalanceTest is Test {
     function test_TokenBalanceCapReturnsCorrectValue() public {
         assertEq(
             lsp7CappedBalance.tokenBalanceCap(),
-            balanceCap,
+            tokenBalanceCap,
             "Should return the correct balance cap"
         );
     }
 
     // Test balance cap enforcement
     function test_TransferFailsWhenExceedingCapForNonAllowlisted() public {
-        uint256 overCapAmount = balanceCap * 2;
+        uint256 overCapAmount = tokenBalanceCap * 2;
 
-        vm.expectRevert(LSP7CappedBalanceExceeded.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP7CappedBalanceExceeded.selector,
+                recipient,
+                overCapAmount,
+                lsp7CappedBalance.balanceOf(recipient),
+                tokenBalanceCap
+            )
+        );
         lsp7CappedBalance.mint(recipient, overCapAmount, true, "");
         assertEq(
             lsp7CappedBalance.balanceOf(recipient),
@@ -228,12 +236,23 @@ contract LSP7CappedBalanceTest is Test {
 
     function test_TransferToSelfExceedingCapFailsForNonAllowlisted() public {
         lsp7CappedBalance.mint(nonAllowlistedUser, 900, true, "");
+
+        uint256 amount = 200;
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP7CappedBalanceExceeded.selector,
+                nonAllowlistedUser,
+                amount,
+                lsp7CappedBalance.balanceOf(nonAllowlistedUser),
+                tokenBalanceCap
+            )
+        );
         vm.prank(nonAllowlistedUser);
-        vm.expectRevert(LSP7CappedBalanceExceeded.selector);
         lsp7CappedBalance.transfer(
             nonAllowlistedUser,
             nonAllowlistedUser,
-            200,
+            amount,
             true,
             ""
         );
@@ -273,7 +292,111 @@ contract LSP7CappedBalanceTest is Test {
             amount <= type(uint256).max - lsp7CappedBalance.totalSupply()
         );
 
-        vm.expectRevert(LSP7CappedBalanceExceeded.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP7CappedBalanceExceeded.selector,
+                recipient,
+                amount,
+                lsp7CappedBalance.balanceOf(recipient),
+                tokenBalanceCap
+            )
+        );
         lsp7CappedBalance.mint(recipient, amount, true, "");
+    }
+
+    function testFuzz_TransferRespectsBalanceCap(uint256 amount) public {
+        vm.assume(
+            amount <= type(uint256).max - lsp7CappedBalance.totalSupply()
+        );
+
+        lsp7CappedBalance.mint(owner, amount, true, "");
+
+        if (amount > tokenBalanceCap) {
+            vm.expectRevert(
+                abi.encodeWithSelector(
+                    LSP7CappedBalanceExceeded.selector,
+                    nonAllowlistedUser,
+                    amount,
+                    lsp7CappedBalance.balanceOf(nonAllowlistedUser),
+                    tokenBalanceCap
+                )
+            );
+            lsp7CappedBalance.transfer(
+                owner,
+                nonAllowlistedUser,
+                amount,
+                true,
+                ""
+            );
+        } else {
+            lsp7CappedBalance.transfer(
+                owner,
+                nonAllowlistedUser,
+                amount,
+                true,
+                ""
+            );
+            assertEq(
+                lsp7CappedBalance.balanceOf(nonAllowlistedUser),
+                amount,
+                "Recipient balance should increase"
+            );
+        }
+    }
+
+    function testFuzz_MintRespectsBalanceCap(uint256 amount) public {
+        vm.assume(
+            amount <= type(uint256).max - lsp7CappedBalance.totalSupply()
+        );
+
+        if (amount > tokenBalanceCap) {
+            vm.expectRevert(
+                abi.encodeWithSelector(
+                    LSP7CappedBalanceExceeded.selector,
+                    nonAllowlistedUser,
+                    amount,
+                    lsp7CappedBalance.balanceOf(nonAllowlistedUser),
+                    tokenBalanceCap
+                )
+            );
+            lsp7CappedBalance.mint(nonAllowlistedUser, amount, true, "");
+        } else {
+            lsp7CappedBalance.mint(nonAllowlistedUser, amount, true, "");
+            assertEq(
+                lsp7CappedBalance.balanceOf(nonAllowlistedUser),
+                amount,
+                "Recipient balance should increase"
+            );
+        }
+    }
+
+    function testFuzz_ConstructorBalanceCap(uint256 cap) public {
+        vm.assume(cap <= type(uint256).max / 2); // Avoid overflow
+
+        if (cap == 0) {
+            vm.expectRevert(LSP7CappedBalanceRequired.selector);
+            new MockLSP7CappedBalance(
+                name,
+                symbol,
+                owner,
+                tokenType,
+                isNonDivisible,
+                cap
+            );
+        } else {
+            MockLSP7CappedBalance newToken = new MockLSP7CappedBalance(
+                name,
+                symbol,
+                owner,
+                tokenType,
+                isNonDivisible,
+                cap
+            );
+            assertEq(
+                newToken.tokenBalanceCap(),
+                cap,
+                "Balance cap should be set"
+            );
+        }
     }
 }
