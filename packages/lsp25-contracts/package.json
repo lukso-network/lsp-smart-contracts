@@ -18,7 +18,8 @@
     "contracts/**/*.sol",
     "!contracts/Mocks/**/*.sol",
     "artifacts/*.json",
-    "dist"
+    "dist",
+    "./README.md"
   ],
   "main": "./dist/constants.cjs",
   "module": "./dist/constants.mjs",
@@ -48,7 +49,7 @@
     "build:js": "unbuild",
     "build:types": "wagmi generate",
     "build:package": "hardhat prepare-package",
-    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/",
+    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",

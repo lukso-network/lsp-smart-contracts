@@ -32,7 +32,7 @@
     "build:js": "turbo build:js",
     "build:types": "turbo build:types",
     "build:package": "turbo build:package",
-    "clean": "turbo clean",
+    "clean": "turbo clean && rm -Rf .turbo/ cache/",
     "format": "prettier --write .",
     "lint": "turbo lint",
     "lint:solidity": "turbo lint:solidity",

@@ -21,12 +21,13 @@
     },
     "build:types": {
       "dependsOn": ["^build:package", "build:package", "^build:types"],
-      "outputs": ["types/**"],
+      "outputs": ["./abi.ts"],
       "cache": true
     },
     "build:package": {
       "dependsOn": ["^build:package"],
-      "outputs": ["artifacts/*.json"]
+      "outputs": ["artifacts/*.json"],
+      "cache": true
     },
     "lint": {
       "env": [
