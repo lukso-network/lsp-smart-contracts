@@ -59,12 +59,16 @@ jobs:
       #   - state variables (`StateVariables`)
       # - the typed ABIs that can be exported in ESM / common JS
       #
+      # We want the `artifacts/` folder to be in the format `artifacts/*.json`. So we need to run `npm run build:package` twice:
+      # - 1st time so that `npm run build:types` generate the typed ABIs consumed from `artifacts/*.json`
+      # - 2nd time to regenerate the `artifacs/*.json` structure as `npm run build:js` cleans the `artifacts/` folder, re-compile the contracts and regenerate artifacts with `artifacts/**/*.json` structure
       - name: Prepare artifacts to publish
         if: ${{ steps.release.outputs.releases_created }}
         run: |
-          npm run build:package
+          npm run build:package 
           npm run build:types
           npm run build:js
+          npm run build:package
 
       - name: Publish on NPM
         if: ${{ steps.release.outputs.releases_created }}
