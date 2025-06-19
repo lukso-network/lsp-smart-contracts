@@ -25,7 +25,7 @@ import {
 
 You can also import the [type-safe ABI](https://abitype.dev/) of each LSP smart contracts from the `/abi` path.
 
-```ts
+```typescript
 import {
   universalProfileAbi,
   universalProfileInitAbi,

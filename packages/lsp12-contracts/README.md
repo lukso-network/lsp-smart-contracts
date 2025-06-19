@@ -14,7 +14,7 @@ The `@lukso/lsp12-contracts` npm package contains useful constants such as ERC72
 
 In Javascript.
 
-```js
+```javascript
 import { LSP12DataKeys } from "@lukso/lsp12-contracts";
 ```
 

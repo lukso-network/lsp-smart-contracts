@@ -12,6 +12,6 @@ npm install @lukso/lsp10-contracts
 
 The `@lukso/lsp10-contracts` npm package contains useful constants such as ERC725Y Data Keys related to the LSP10 Standard. You can import and access them as follow:
 
-```js
+```javascript
 import { LSP10DataKeys } from "@lukso/lsp10-contracts";
 ```

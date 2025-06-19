@@ -14,7 +14,7 @@ The `@lukso/lsp5-contracts` npm package contains useful constants such as ERC725
 
 In Javascript.
 
-```js
+```javascript
 import { LSP5DataKeys } from "@lukso/lsp5-contracts";
 ```
 

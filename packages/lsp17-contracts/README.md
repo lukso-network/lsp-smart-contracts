@@ -16,6 +16,6 @@ npm install @lukso/lsp17-contracts
 
 The `@lukso/lsp17-contracts` npm package contains useful constants such as interface IDs related to the LSP17 Extensions. You can import and access them as follows.
 
-```js
+```javascript
 import { INTERFACE_ID_LSP17Extension } from "@lukso/lsp17-contracts";
 ```

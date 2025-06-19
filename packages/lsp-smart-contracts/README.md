@@ -12,7 +12,7 @@ npm install @lukso/lsp-smart-contracts
 
 ### in Javascript
 
-You can use the contracts JSON ABI by importing them as follow:
+The JSON ABIs of the smart contracts can be imported as follow:
 
 ```javascript
 import LSP0ERC725Account from "@lukso/lsp-smart-contracts/artifacts/LSP0ERC725Account.json";

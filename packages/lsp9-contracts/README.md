@@ -10,9 +10,9 @@ npm install @lukso/lsp9-contracts
 
 ## Available Constants & Types
 
-The `@lukso/lsp9-contracts` npm package contains useful constants such as InterfaceIds, ERC725Y Data Keys related to the LSP9 Standard. You can import and access them as follows.
+The `@lukso/lsp9-contracts` npm package contains useful constants such as interface IDs, ERC725Y Data Keys related to the LSP9 Standard. You can import and access them as follows.
 
-```js
+```javascript
 import {
   OPERATION_TYPES,
   INTERFACE_ID_LSP9,

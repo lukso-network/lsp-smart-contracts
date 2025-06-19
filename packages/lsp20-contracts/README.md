@@ -14,7 +14,7 @@ The `@lukso/lsp20-contracts` npm package contains useful constants such as inter
 
 In Javascript.
 
-```js
+```javascript
 import {
   LSP20_SUCCESS_VALUES,
   INTERFACE_ID_LSP20CallVerifier,
