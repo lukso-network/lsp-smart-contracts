@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp26-contracts",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Package for the LSP26 Follower System standard",
   "license": "Apache-2.0",
   "author": "",
