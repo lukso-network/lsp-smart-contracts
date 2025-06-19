@@ -25,16 +25,6 @@
   "module": "./dist/constants.mjs",
   "typings": "./dist/constants.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/constants.d.ts",
-      "require": "./dist/constants.cjs",
-      "import": "./dist/constants.mjs"
-    },
-    "./constants": {
-      "types": "./dist/constants.d.ts",
-      "require": "./dist/constants.cjs",
-      "import": "./dist/constants.mjs"
-    },
     "./abi": {
       "types": "./dist/abi.d.ts",
       "require": "./dist/abi.cjs",
