@@ -26,19 +26,19 @@
   "typings": "./dist/dist.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/dist.d.ts",
       "require": "./dist/dist.cjs",
-      "import": "./dist/dist.mjs",
-      "types": "./dist/dist.d.ts"
+      "import": "./dist/dist.mjs"
     },
     "./constants": {
+      "types": "./dist/constants.d.ts",
       "require": "./dist/constants.cjs",
-      "import": "./dist/constants.mjs",
-      "types": "./dist/constants.d.ts"
+      "import": "./dist/constants.mjs"
     },
     "./abi": {
+      "types": "./dist/abi.d.ts",
       "require": "./dist/abi.cjs",
-      "import": "./dist/abi.mjs",
-      "types": "./dist/abi.d.ts"
+      "import": "./dist/abi.mjs"
     },
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
