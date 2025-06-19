@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp-smart-contracts",
-  "version": "0.16.4",
+  "version": "0.16.5",
   "description": "The reference smart contract implementation for the LUKSO LSP standards",
   "license": "Apache-2.0",
   "author": "",

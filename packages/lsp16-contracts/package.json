@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp16-contracts",
-  "version": "0.15.2",
+  "version": "0.15.3",
   "description": "Package for the LSP16 Universal Factory standard",
   "license": "Apache-2.0",
   "author": "",
