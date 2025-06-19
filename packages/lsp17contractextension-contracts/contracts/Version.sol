@@ -11,7 +11,7 @@ abstract contract Version {
     // DO NOT CHANGE
     // Comments block below is used by release-please to automatically update the version in this file.
     // x-release-please-start-version
-    string public constant VERSION = "0.16.4";
+    string public constant VERSION = "0.16.5";
 
     // x-release-please-end
 }

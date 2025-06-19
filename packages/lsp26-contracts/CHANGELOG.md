@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp26-contracts-v0.1.4...lsp26-contracts-v0.1.5) (2025-06-19)
+
+
+### Bug Fixes
+
+* fix release process to include `artifacts/*.json` folder ([ab58e3d](https://github.com/lukso-network/lsp-smart-contracts/commit/ab58e3da2300bb6032cc90a51fe6a7762b3ae068))
+
 ## [0.1.4](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp26-contracts-v0.1.3...lsp26-contracts-v0.1.4) (2025-06-18)
 
 
