@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.6](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp4-contracts-v0.16.5...lsp4-contracts-v0.16.6) (2025-06-19)
+
+
+### Bug Fixes
+
+* order of exports to allow exporting constants + abi from CJS and ESM ([823a24f](https://github.com/lukso-network/lsp-smart-contracts/commit/823a24f433312250b3116054b3bfbe9dc8ad314d))
+
 ## [0.16.5](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp4-contracts-v0.16.4...lsp4-contracts-v0.16.5) (2025-06-19)
 
 
