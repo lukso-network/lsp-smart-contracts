@@ -14,7 +14,7 @@ The `@lukso/lsp4-contracts` npm package contains useful constants such as ERC725
 
 In Javascript.
 
-```js
+```javascript
 import {
   LSP4_TOKEN_TYPES,
   LSP4SupportedStandard,

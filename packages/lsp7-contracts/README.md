@@ -16,7 +16,7 @@ The `@lukso/lsp7-contracts` npm package contains useful constants such as interf
 
 In Javascript.
 
-```js
+```javascript
 import {
   INTERFACE_ID_LSP7,
   INTERFACE_ID_LSP7_PREVIOUS,

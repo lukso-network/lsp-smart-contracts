@@ -14,7 +14,7 @@ The `@lukso/lsp26-contracts` npm package contains useful constants such as inter
 
 In Javascript.
 
-```js
+```javascript
 import { INTERFACE_ID_LSP26, LSP26_TYPE_IDS } from "@lukso/lsp26-contracts";
 ```
 

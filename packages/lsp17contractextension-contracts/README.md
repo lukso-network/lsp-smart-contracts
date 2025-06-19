@@ -14,7 +14,7 @@ The `@lukso/lsp17contractextension-contracts` npm package contains useful consta
 
 In Javascript.
 
-```js
+```javascript
 import {
   INTERFACE_ID_LSP17Extendable,
   INTERFACE_ID_LSP17Extension,
