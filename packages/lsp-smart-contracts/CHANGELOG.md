@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.16.7](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.16.6...lsp-smart-contracts-v0.16.7) (2025-06-19)
+
+
+### Bug Fixes
+
+* upgrade nodejs to v22 to fix failed release CI ([93e19e6](https://github.com/lukso-network/lsp-smart-contracts/commit/93e19e6849e7587822fa353ec3c8dac5632039b5))
+
 ## [0.16.6](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.16.5...lsp-smart-contracts-v0.16.6) (2025-06-19)
 
 

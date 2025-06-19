@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.5](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp6-contracts-v0.15.4...lsp6-contracts-v0.15.5) (2025-06-19)
+
+
+### Bug Fixes
+
+* upgrade nodejs to v22 to fix failed release CI ([93e19e6](https://github.com/lukso-network/lsp-smart-contracts/commit/93e19e6849e7587822fa353ec3c8dac5632039b5))
+
 ## [0.15.4](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp6-contracts-v0.15.3...lsp6-contracts-v0.15.4) (2025-06-19)
 
 
