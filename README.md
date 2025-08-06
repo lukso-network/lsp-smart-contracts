@@ -68,7 +68,7 @@ See the `README.md` file of each individual package to learn more.
 
 ## Testing
 
-For detailed instructions on how to run tests, please refer to our [Testing Guide](./tests/README.md).
+For detailed instructions on how to run tests, please refer to our [Testing Guide](./packages/lsp-smart-contracts/tests/README.md).
 
 ### Deployment via hardhat
 
