@@ -88,6 +88,7 @@ const config: HardhatUserConfig = {
   solidity: {
     version: '0.8.17',
     settings: {
+      viaIR: true,
       optimizer: {
         enabled: true,
         /**
@@ -108,21 +109,50 @@ const config: HardhatUserConfig = {
   packager: {
     // What contracts to keep the artifacts and the bindings for.
     contracts: [
+      // Interfaces
+      // ------------------
       'ILSP7DigitalAsset',
+      'ILSP7Mintable',
+      'ILSP7Allowlist',
+      'ILSP7CappedBalance',
+      'ILSP7CappedSupply',
+      'ILSP7NonTransferable',
+
       // Standard version
       // ------------------
       'LSP7DigitalAsset',
-      'LSP7Burnable',
-      'LSP7CappedSupply',
-      'LSP7Votes',
-      'LSP7Mintable',
+
       // Proxy version
       // ------------------
       'LSP7DigitalAssetInitAbstract',
-      'LSP7BurnableInitAbstract',
+
+      // Extensions
+      // ------------------
+      'LSP7AllowlistInitAbstract',
+      'LSP7AllowlistAbstract',
+      'LSP7MintableAbstract',
+      'LSP7MintableInitAbstract',
+      'LSP7CappedBalanceAbstract',
+      'LSP7CappedBalanceInitAbstract',
+      'LSP7CappedSupplyAbstract',
       'LSP7CappedSupplyInitAbstract',
+      'LSP7NonTransferableAbstract',
+      'LSP7NonTransferableInitAbstract',
+      'LSP7Burnable',
+      'LSP7BurnableInitAbstract',
+      'LSP7Votes',
       'LSP7VotesInitAbstract',
+
+      // Presets
+      // ------------------
+      'LSP7Mintable',
       'LSP7MintableInit',
+      'LSP7CappedBalance',
+      'LSP7CappedBalanceInit',
+      'LSP7CappedSupply',
+      'LSP7CappedSupplyInit',
+      'LSP7NonTransferable',
+      'LSP7NonTransferableInit',
     ],
     // Whether to include the TypeChain factories or not.
     // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.

@@ -24,6 +24,7 @@ describe('LSP7MintableInit with proxy', () => {
       newOwner: accounts.owner.address,
       isNFT: false,
       lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
+      mintable: true,
     };
 
     const LSP7MintableInit: LSP7MintableInit = await new LSP7MintableInit__factory(
@@ -42,12 +43,13 @@ describe('LSP7MintableInit with proxy', () => {
   };
 
   const initializeProxy = async (context: LSP7MintableTestContext) => {
-    return context.lsp7Mintable['initialize(string,string,address,uint256,bool)'](
+    return context.lsp7Mintable['initialize(string,string,address,uint256,bool,bool)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
       context.deployParams.lsp4TokenType,
       context.deployParams.isNFT,
+      context.deployParams.mintable,
     );
   };
 
@@ -73,12 +75,13 @@ describe('LSP7MintableInit with proxy', () => {
       const randomCaller = accounts[1];
 
       await expect(
-        lsp7MintableInit['initialize(string,string,address,uint256,bool)'](
+        lsp7MintableInit['initialize(string,string,address,uint256,bool,bool)'](
           'XXXXXXXXXXX',
           'XXX',
           randomCaller.address,
           12345,
           false,
+          true,
         ),
       ).to.be.revertedWith('Initializable: contract is already initialized');
     });

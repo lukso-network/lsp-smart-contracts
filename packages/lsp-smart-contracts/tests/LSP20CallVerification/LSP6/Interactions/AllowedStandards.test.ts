@@ -272,6 +272,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           context.accounts[0].address,
           LSP4_TOKEN_TYPES.TOKEN,
           false,
+          true,
         );
 
         lsp7TokenB = await new LSP7Mintable__factory(context.accounts[0]).deploy(
@@ -280,6 +281,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           context.accounts[0].address,
           LSP4_TOKEN_TYPES.TOKEN,
           false,
+          true,
         );
 
         lsp7TokenC = await new LSP7Mintable__factory(context.accounts[0]).deploy(
@@ -288,6 +290,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
           context.accounts[0].address,
           LSP4_TOKEN_TYPES.TOKEN,
           false,
+          true,
         );
 
         await lsp7TokenA

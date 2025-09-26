@@ -129,6 +129,7 @@ describe('⛽📊 Gas Benchmark', () => {
         accounts[0].address,
         LSP4_TOKEN_TYPES.TOKEN,
         false,
+        true,
       );
 
       const lsp7DeployTransaction = lsp7Mintable.deploymentTransaction();
@@ -539,6 +540,7 @@ describe('⛽📊 Gas Benchmark', () => {
           context.mainController.address,
           LSP4_TOKEN_TYPES.TOKEN,
           false,
+          true,
         );
 
         // deploy a LSP8 token
@@ -698,6 +700,7 @@ describe('⛽📊 Gas Benchmark', () => {
             context.mainController.address,
             LSP4_TOKEN_TYPES.TOKEN,
             false,
+            true,
           );
 
           // deploy a LSP8 NFT
@@ -887,6 +890,7 @@ describe('⛽📊 Gas Benchmark', () => {
             context.mainController.address,
             LSP4_TOKEN_TYPES.TOKEN,
             false,
+            true,
           );
 
           lsp7LyxDai = await new LSP7Mintable__factory(context.mainController).deploy(
@@ -895,6 +899,7 @@ describe('⛽📊 Gas Benchmark', () => {
             context.mainController.address,
             LSP4_TOKEN_TYPES.TOKEN,
             false,
+            true,
           );
 
           [lsp7MetaCoin, lsp7LyxDai].forEach(async (token) => {

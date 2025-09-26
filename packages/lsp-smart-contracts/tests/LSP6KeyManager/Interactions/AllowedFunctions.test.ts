@@ -333,6 +333,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
         context.accounts[0].address,
         LSP4_TOKEN_TYPES.TOKEN,
         false,
+        true,
       );
 
       lsp8Contract = await new LSP8Mintable__factory(context.accounts[0]).deploy(

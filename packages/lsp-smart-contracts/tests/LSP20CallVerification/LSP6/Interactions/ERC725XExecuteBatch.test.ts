@@ -43,6 +43,7 @@ export const shouldBehaveLikeBatchExecute = (
       context.accounts[0].address,
       LSP4_TOKEN_TYPES.TOKEN,
       false,
+      true,
     );
 
     metaCoin = await new LSP7Mintable__factory(context.accounts[0]).deploy(
@@ -51,6 +52,7 @@ export const shouldBehaveLikeBatchExecute = (
       context.accounts[0].address,
       LSP4_TOKEN_TYPES.TOKEN,
       false,
+      true,
     );
 
     rLyxToken = await new LSP7Mintable__factory(context.accounts[0]).deploy(
@@ -59,6 +61,7 @@ export const shouldBehaveLikeBatchExecute = (
       context.accounts[0].address,
       LSP4_TOKEN_TYPES.TOKEN,
       false,
+      true,
     );
 
     await lyxDaiToken.mint(await context.universalProfile.getAddress(), 100, false, '0x');
@@ -237,6 +240,7 @@ export const shouldBehaveLikeBatchExecute = (
         await context.universalProfile.getAddress(),
         LSP4_TOKEN_TYPES.TOKEN,
         false,
+        true,
       ]);
 
       // use interface of an existing token contract
@@ -286,13 +290,14 @@ export const shouldBehaveLikeBatchExecute = (
     it('should 1) deploy a LSP7 token, 2) mint some tokens, 3) `transferBatch(...)` to multiple recipients', async () => {
       // step 1 - deploy token contract
       const lsp7ConstructorArguments = abiCoder.encode(
-        ['string', 'string', 'address', 'uint256', 'bool'],
+        ['string', 'string', 'address', 'uint256', 'bool', 'bool'],
         [
           'My UP LSP7 Token',
           'UPLSP7',
           await context.universalProfile.getAddress(),
           LSP4_TOKEN_TYPES.TOKEN,
           false,
+          true,
         ],
       );
 

@@ -1381,6 +1381,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         await context.universalProfile.getAddress(),
         LSP4_TOKEN_TYPES.TOKEN,
         false,
+        true,
       );
 
       const permissionKeys = [
