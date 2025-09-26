@@ -34,6 +34,7 @@ export type LSP7MintableDeployParams = {
   newOwner: string;
   isNFT: boolean;
   lsp4TokenType: number;
+  mintable: boolean;
 };
 
 export type LSP7MintableTestContext = {

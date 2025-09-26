@@ -4,17 +4,21 @@ pragma solidity ^0.8.4;
 // modules
 import {LSP7DigitalAsset} from "./LSP7DigitalAsset.sol";
 import {
-    LSP7CappedSupply
-} from "./extensions/LSP7CappedSupply/LSP7CappedSupply.sol";
+    LSP7CappedSupplyAbstract
+} from "./extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";
 import {LSP7Burnable} from "./extensions/LSP7Burnable.sol";
 import {
-    LSP7CappedBalance
-} from "./extensions/LSP7CappedBalance/LSP7CappedBalance.sol";
-import {LSP7Mintable} from "./extensions/LSP7Mintable/LSP7Mintable.sol";
+    LSP7CappedBalanceAbstract
+} from "./extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
 import {
-    LSP7NonTransferable
-} from "./extensions/LSP7NonTransferable/LSP7NonTransferable.sol";
-import {LSP7Allowlist} from "./extensions/LSP7Allowlist/LSP7Allowlist.sol";
+    LSP7MintableAbstract
+} from "./extensions/LSP7Mintable/LSP7MintableAbstract.sol";
+import {
+    LSP7NonTransferableAbstract
+} from "./extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
+import {
+    LSP7AllowlistAbstract
+} from "./extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
 
 // errors
 import {
@@ -30,10 +34,10 @@ import {
 /// Implements {LSP7CappedSupply} to set total supply cap.
 /// Implements {LSP7Allowlist} to create allowlist exemptions
 contract CustomizableToken is
-    LSP7Mintable,
-    LSP7NonTransferable,
-    LSP7CappedBalance,
-    LSP7CappedSupply,
+    LSP7MintableAbstract,
+    LSP7NonTransferableAbstract,
+    LSP7CappedBalanceAbstract,
+    LSP7CappedSupplyAbstract,
     LSP7Burnable
 {
     /// @notice Initializes the token with name, symbol, owner, and customizable features.
@@ -71,23 +75,27 @@ contract CustomizableToken is
             lsp4TokenType_,
             isNonDivisible_
         )
-        LSP7Allowlist(newOwner_)
-        LSP7Mintable(mintable_)
-        LSP7NonTransferable(transferable_, transferLockStart_, transferLockEnd_)
-        LSP7CappedBalance(tokenBalanceCap_)
-        LSP7CappedSupply(tokenSupplyCap_)
+        LSP7AllowlistAbstract(newOwner_)
+        LSP7MintableAbstract(mintable_)
+        LSP7NonTransferableAbstract(
+            transferable_,
+            transferLockStart_,
+            transferLockEnd_
+        )
+        LSP7CappedBalanceAbstract(tokenBalanceCap_)
+        LSP7CappedSupplyAbstract(tokenSupplyCap_)
     {
         if (initialMintAmount_ > 0) {
             _mint(newOwner_, initialMintAmount_, true, "");
         }
     }
 
-    /// @inheritdoc LSP7CappedSupply
+    /// @inheritdoc LSP7CappedSupplyAbstract
     function tokenSupplyCap() public view virtual override returns (uint256) {
         return isMintable ? super.tokenSupplyCap() : totalSupply();
     }
 
-    /// @inheritdoc LSP7Mintable
+    /// @inheritdoc LSP7MintableAbstract
     /// @dev Relies on {LSP7CappedSupply} for supply cap enforcement.
     function _mint(
         address to,
@@ -97,7 +105,11 @@ contract CustomizableToken is
     )
         internal
         virtual
-        override(LSP7Mintable, LSP7CappedSupply, LSP7DigitalAsset)
+        override(
+            LSP7DigitalAsset,
+            LSP7MintableAbstract,
+            LSP7CappedSupplyAbstract
+        )
     {
         if (!isMintable) {
             revert LSP7MintDisabled();
@@ -124,9 +136,25 @@ contract CustomizableToken is
     )
         internal
         virtual
-        override(LSP7DigitalAsset, LSP7CappedBalance, LSP7NonTransferable)
+        override(
+            LSP7DigitalAsset,
+            LSP7CappedBalanceAbstract,
+            LSP7NonTransferableAbstract
+        )
     {
-        LSP7NonTransferable._beforeTokenTransfer(from, to, amount, force, data);
-        LSP7CappedBalance._beforeTokenTransfer(from, to, amount, force, data);
+        LSP7NonTransferableAbstract._beforeTokenTransfer(
+            from,
+            to,
+            amount,
+            force,
+            data
+        );
+        LSP7CappedBalanceAbstract._beforeTokenTransfer(
+            from,
+            to,
+            amount,
+            force,
+            data
+        );
     }
 }

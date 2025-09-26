@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP7Allowlist} from "../LSP7Allowlist/LSP7Allowlist.sol";
+import {
+    LSP7AllowlistAbstract
+} from "../LSP7Allowlist/LSP7AllowlistAbstract.sol";
 
 // interfaces
 import {ILSP7CappedBalance} from "./ILSP7CappedBalance.sol";
@@ -14,9 +16,12 @@ import {
 
 import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 
-/// @title LSP7CappedBalance
+/// @title LSP7CappedBalanceAbstract
 /// @dev Abstract contract implementing a per-address balance cap for LSP7 tokens, with exemptions for allowlisted addresses. Inherits from LSP7AllowlistAbstract to integrate allowlist functionality.
-abstract contract LSP7CappedBalance is ILSP7CappedBalance, LSP7Allowlist {
+abstract contract LSP7CappedBalanceAbstract is
+    ILSP7CappedBalance,
+    LSP7AllowlistAbstract
+{
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /// @notice The immutable maximum token balance allowed per address.

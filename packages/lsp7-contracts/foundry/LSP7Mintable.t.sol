@@ -6,8 +6,8 @@ import "forge-std/Test.sol";
 
 // modules
 import {
-    LSP7Mintable
-} from "../contracts/extensions/LSP7Mintable/LSP7Mintable.sol";
+    LSP7MintableAbstract
+} from "../contracts/extensions/LSP7Mintable/LSP7MintableAbstract.sol";
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 
 // errors
@@ -20,7 +20,7 @@ import {
     _LSP4_TOKEN_TYPE_TOKEN
 } from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
-contract MockLSP7Mintable is LSP7Mintable {
+contract MockLSP7Mintable is LSP7MintableAbstract {
     constructor(
         string memory name_,
         string memory symbol_,
@@ -36,7 +36,7 @@ contract MockLSP7Mintable is LSP7Mintable {
             lsp4TokenType_,
             isNonDivisible_
         )
-        LSP7Mintable(mintable_)
+        LSP7MintableAbstract(mintable_)
     {}
 }
 

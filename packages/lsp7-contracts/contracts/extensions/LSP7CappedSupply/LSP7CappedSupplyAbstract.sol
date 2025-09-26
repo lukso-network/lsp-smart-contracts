@@ -8,10 +8,9 @@ import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
 // errors
 import {LSP7CappedSupplyCannotMintOverCap} from "./LSP7CappedSupplyErrors.sol";
 
-/**
- * @dev LSP7 token extension to add a max token supply cap.
- */
-abstract contract LSP7CappedSupply is LSP7DigitalAsset {
+/// @title LSP7CappedSupplyAbstract
+/// @dev Abstract contract implementing a token supply cap.
+abstract contract LSP7CappedSupplyAbstract is LSP7DigitalAsset {
     uint256 private immutable _TOKEN_SUPPLY_CAP;
 
     /// @notice Deploying a `LSP7CappedSupply` token contract with max token supply cap set to `tokenSupplyCap_`.

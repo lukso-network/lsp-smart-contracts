@@ -6,8 +6,8 @@ import "forge-std/Test.sol";
 
 // modules
 import {
-    LSP7Allowlist
-} from "../contracts/extensions/LSP7Allowlist/LSP7Allowlist.sol";
+    LSP7AllowlistAbstract
+} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 
 // interfaces
@@ -20,8 +20,8 @@ import {
     _LSP4_TOKEN_TYPE_TOKEN
 } from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
-// Mock contract to test LSP7Allowlist functionality
-contract MockLSP7Allowlist is LSP7Allowlist {
+// Mock contract to test LSP7AllowlistAbstract functionality
+contract MockLSP7Allowlist is LSP7AllowlistAbstract {
     constructor(
         string memory name_,
         string memory symbol_,
@@ -36,7 +36,7 @@ contract MockLSP7Allowlist is LSP7Allowlist {
             lsp4TokenType_,
             isNonDivisible_
         )
-        LSP7Allowlist(newOwner_)
+        LSP7AllowlistAbstract(newOwner_)
     {}
 
     // Helper function to mint tokens for testing

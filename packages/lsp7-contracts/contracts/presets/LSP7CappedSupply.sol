@@ -5,8 +5,8 @@ pragma solidity ^0.8.4;
 // modules
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
 import {
-    LSP7CappedSupply as LSP7CappedSupplyAbstract
-} from "../extensions/LSP7CappedSupply/LSP7CappedSupply.sol";
+    LSP7CappedSupplyAbstract
+} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";
 
 contract LSP7CappedSupply is LSP7CappedSupplyAbstract {
     /// @notice Deploying a `LSP7CappedSupply` token contract.

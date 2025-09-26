@@ -188,9 +188,17 @@ const config: HardhatUserConfig = {
       'LSP4DigitalAssetMetadata',
       'LSP6KeyManager',
       'LSP7DigitalAsset',
-      'LSP7Votes',
-      'LSP7CappedSupply',
+      'LSP7AllowlistAbstract',
       'LSP7Mintable',
+      'LSP7MintableAbstract',
+      'LSP7CappedBalance',
+      'LSP7CappedBalanceAbstract',
+      'LSP7CappedSupply',
+      'LSP7CappedSupplyAbstract',
+      'LSP7NonTransferable',
+      'LSP7NonTransferableAbstract',
+      'LSP7Burnable',
+      'LSP7Votes',
       'LSP8IdentifiableDigitalAsset',
       'LSP8Burnable',
       'LSP8CappedSupply',
@@ -199,6 +207,7 @@ const config: HardhatUserConfig = {
       'LSP8Mintable',
       'LSP9Vault',
       'LSP11SocialRecovery',
+
       // Proxy version
       // ------------------
       'UniversalProfileInit',
@@ -206,8 +215,17 @@ const config: HardhatUserConfig = {
       'LSP4DigitalAssetMetadataInitAbstract',
       'LSP6KeyManagerInit',
       'LSP7DigitalAssetInitAbstract',
-      'LSP7CappedSupplyInitAbstract',
+      'LSP7AllowlistInitAbstract',
       'LSP7MintableInit',
+      'LSP7MintableInitAbstract',
+      'LSP7CappedBalanceInit',
+      'LSP7CappedBalanceInitAbstract',
+      'LSP7CappedSupplyInit',
+      'LSP7CappedSupplyInitAbstract',
+      'LSP7NonTransferableInit',
+      'LSP7NonTransferableInitAbstract',
+      'LSP7BurnableInitAbstract',
+      'LSP7VotesInitAbstract',
       'LSP8IdentifiableDigitalAssetInitAbstract',
       'LSP8BurnableInitAbstract',
       'LSP8CappedSupplyInitAbstract',
@@ -215,6 +233,16 @@ const config: HardhatUserConfig = {
       'LSP8VotesInitAbstract',
       'LSP8MintableInit',
       'LSP9VaultInit',
+
+      // Interfaces
+      // ------------------
+      'ILSP7DigitalAsset',
+      'ILSP7Mintable',
+      'ILSP7Allowlist',
+      'ILSP7CappedBalance',
+      'ILSP7CappedSupply',
+      'ILSP7NonTransferable',
+
       // Tools
       // ------------------
       'LSP23LinkedContractsFactory',

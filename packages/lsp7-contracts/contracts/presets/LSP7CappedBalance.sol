@@ -5,11 +5,11 @@ pragma solidity ^0.8.4;
 // modules
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
 import {
-    LSP7CappedBalance as LSP7CappedBalanceAbstract
-} from "../extensions/LSP7CappedBalance/LSP7CappedBalance.sol";
+    LSP7CappedBalanceAbstract
+} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
 import {
-    LSP7Allowlist as LSP7AllowlistAbstract
-} from "../extensions/LSP7Allowlist/LSP7Allowlist.sol";
+    LSP7AllowlistAbstract
+} from "../extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
 
 contract LSP7CappedBalance is LSP7CappedBalanceAbstract {
     /// @notice Deploying a `LSP7CappedBalance` token contract.

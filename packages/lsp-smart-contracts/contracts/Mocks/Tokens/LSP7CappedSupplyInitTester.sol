@@ -8,7 +8,7 @@ import {
 } from "@lukso/lsp7-contracts/contracts/LSP7DigitalAssetInitAbstract.sol";
 import {
     LSP7CappedSupplyInitAbstract
-} from "@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupplyInitAbstract.sol";
+} from "@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol";
 
 contract LSP7CappedSupplyInitTester is LSP7CappedSupplyInitAbstract {
     function initialize(

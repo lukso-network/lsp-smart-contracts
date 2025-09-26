@@ -7,10 +7,10 @@ import {
     LSP7DigitalAsset
 } from "@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol";
 import {
-    LSP7CappedSupply
-} from "@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply.sol";
+    LSP7CappedSupplyAbstract
+} from "@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";
 
-contract LSP7CappedSupplyTester is LSP7CappedSupply {
+contract LSP7CappedSupplyTester is LSP7CappedSupplyAbstract {
     constructor(
         string memory name_,
         string memory symbol_,
@@ -19,7 +19,7 @@ contract LSP7CappedSupplyTester is LSP7CappedSupply {
         uint256 tokenSupplyCap_
     )
         LSP7DigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, true)
-        LSP7CappedSupply(tokenSupplyCap_)
+        LSP7CappedSupplyAbstract(tokenSupplyCap_)
     {}
 
     function mint(address to, uint256 amount) public {
