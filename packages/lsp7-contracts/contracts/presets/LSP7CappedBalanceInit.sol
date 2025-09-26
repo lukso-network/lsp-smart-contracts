@@ -7,32 +7,32 @@ import {
     LSP7DigitalAssetInitAbstract
 } from "../LSP7DigitalAssetInitAbstract.sol";
 import {
-    LSP7MintableInitAbstract
-} from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
+    LSP7CappedBalanceInitAbstract
+} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
+import {
+    LSP7AllowlistInitAbstract
+} from "../extensions/LSP7Allowlist/LSP7AllowlistInitAbstract.sol";
 
-/**
- * @dev LSP7DigitalAsset deployable preset contract (proxy version) with a public {mint} function callable only by the contract {owner}.
- */
-contract LSP7MintableInit is LSP7MintableInitAbstract {
+contract LSP7CappedBalanceInit is LSP7CappedBalanceInitAbstract {
     /// @dev initialize (= lock) base implementation contract on deployment
     constructor() {
         _disableInitializers();
     }
 
-    /// @notice Initializing a `LSP7MintableInit` token contract.
+    /// @notice Deploying a `LSP7CappedBalanceInit` token contract.
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param newOwner_ The owner of the token contract.
     /// @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
     /// @param isNonDivisible_ Specify if the LSP7 token is a fungible or non-fungible token.
-    /// @param mintable_ True to enable minting initially, false to disable it.
+    /// @param tokenBalanceCap_ The maximum balance per address in wei, 0 to disable.
     function initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        bool mintable_
+        uint256 tokenBalanceCap_
     ) external virtual initializer {
         LSP7DigitalAssetInitAbstract._initialize(
             name_,
@@ -41,6 +41,7 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
             lsp4TokenType_,
             isNonDivisible_
         );
-        LSP7MintableInitAbstract._initialize(mintable_);
+        LSP7CappedBalanceInitAbstract._initialize(tokenBalanceCap_);
+        LSP7AllowlistInitAbstract._initialize(newOwner_);
     }
 }

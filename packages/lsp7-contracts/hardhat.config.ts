@@ -88,6 +88,7 @@ const config: HardhatUserConfig = {
   solidity: {
     version: '0.8.17',
     settings: {
+      viaIR: true,
       optimizer: {
         enabled: true,
         /**
@@ -109,20 +110,35 @@ const config: HardhatUserConfig = {
     // What contracts to keep the artifacts and the bindings for.
     contracts: [
       'ILSP7DigitalAsset',
+      'ILSP7Mintable',
+      'ILSP7Allowlist',
+      'ILSP7CappedBalance',
+      'ILSP7CappedSupply',
+      'ILSP7NonTransferable',
       // Standard version
       // ------------------
       'LSP7DigitalAsset',
-      'LSP7Burnable',
-      'LSP7CappedSupply',
-      'LSP7Votes',
       'LSP7Mintable',
+      'LSP7Allowlist',
+      'LSP7CappedBalance',
+      'LSP7CappedSupply',
+      'LSP7NonTransferable',
+      'LSP7Burnable',
+      'LSP7Votes',
       // Proxy version
       // ------------------
       'LSP7DigitalAssetInitAbstract',
-      'LSP7BurnableInitAbstract',
-      'LSP7CappedSupplyInitAbstract',
-      'LSP7VotesInitAbstract',
+      'LSP7MintableInitAbstract',
       'LSP7MintableInit',
+      'LSP7AllowlistInitAbstract',
+      'LSP7CappedBalanceInitAbstract',
+      'LSP7CappedBalanceInit',
+      'LSP7CappedSupplyInitAbstract',
+      'LSP7CappedSupplyInit',
+      'LSP7NonTransferableInitAbstract',
+      'LSP7NonTransferableInit',
+      'LSP7BurnableInitAbstract',
+      'LSP7VotesInitAbstract',
     ],
     // Whether to include the TypeChain factories or not.
     // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
