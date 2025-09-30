@@ -25,4 +25,10 @@ for (const key in outputs) {
 
   // publish to npm registry
   await $`npm publish --workspace=./${workspace} --tag ${tag} --no-git-checks --access public`;
+
+  for (const network of ['luksoTestnet', 'luksoMainnet']) {
+    await $`npm run verify-balance --workspace=./${workspace} -- --network ${network}`;
+    await $`npm run deploy --workspace=./${workspace} -- --network ${network} --tags $TAGS --write true`;
+    await $`npm run verify-all --workspace=./${workspace} -- --network ${network}`;
+  }
 }
